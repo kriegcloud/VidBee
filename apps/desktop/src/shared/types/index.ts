@@ -333,6 +333,11 @@ export interface AppSettings {
   embedMetadata: boolean
   embedChapters: boolean
   shareWatermark: boolean
+  // Local patch: when true, name each download `<N>.<ext>` where N is the
+  // next free integer in the destination directory (max existing prefix + 1,
+  // or 0 if empty). Extension-agnostic so videos/audio/subs/etc. all share
+  // one counter and never collide on titles like "Instagram".
+  sequentialFilenames: boolean
 }
 
 export const DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE = '%(uploader)s/%(title)s.%(ext)s'
@@ -365,5 +370,6 @@ export const defaultSettings: AppSettings = {
   embedThumbnail: false,
   embedMetadata: true,
   embedChapters: true,
-  shareWatermark: false
+  shareWatermark: false,
+  sequentialFilenames: true
 }

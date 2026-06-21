@@ -15,6 +15,7 @@
  * subscribers (TODO follow-up tracked in the NEX-131 wrap-up comment).
  */
 import { EventEmitter } from 'node:events'
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { PRIORITY_USER, type Task, type TaskInput, type TaskQueueAPI } from '@vidbee/task-queue'
@@ -59,6 +60,36 @@ const ensureDirectoryExists = (dir?: string): void => {
   }
 }
 
+// Per-directory counter so two downloads queued back-to-back into the same
+// folder don't race on the filesystem scan and both pick the same index.
+// Keyed by the resolved absolute download path.
+const sequentialNextByDir = new Map<string, number>()
+
+const SEQUENTIAL_PREFIX_REGEX = /^(\d+)\./
+
+const scanMaxSequentialIndex = (dir: string): number => {
+  let max = -1
+  try {
+    for (const name of fs.readdirSync(dir)) {
+      const m = SEQUENTIAL_PREFIX_REGEX.exec(name)
+      if (!m) continue
+      const n = Number.parseInt(m[1] ?? '', 10)
+      if (Number.isFinite(n) && n > max) max = n
+    }
+  } catch {
+    // Directory doesn't exist yet (or unreadable) — treat as empty.
+  }
+  return max
+}
+
+const reserveSequentialIndex = (dir: string): number => {
+  const fsMax = scanMaxSequentialIndex(dir)
+  const reserved = sequentialNextByDir.get(dir) ?? 0
+  const next = Math.max(fsMax + 1, reserved)
+  sequentialNextByDir.set(dir, next + 1)
+  return next
+}
+
 /** True when a caller already provided enough video metadata for list rendering. */
 const hasDisplayMetadata = (options: DownloadOptions): boolean =>
   Boolean(options.title?.trim() && options.thumbnail?.trim())
@@ -86,6 +117,29 @@ const hydrateDownloadMetadata = async (options: DownloadOptions): Promise<Downlo
     logger.warn('download-facade: failed to hydrate video metadata', err)
     return options
   }
+}
+
+/**
+ * Replace the filename template with a directory-scoped sequential index
+ * (`0.%(ext)s`, `1.%(ext)s`, …) when the `sequentialFilenames` setting is
+ * on and the caller hasn't already specified its own template. Extension-
+ * agnostic and keeps an in-memory counter so concurrent downloads to the
+ * same dir don't pick the same index before either file lands on disk.
+ */
+const applySequentialFilename = (options: DownloadOptions): DownloadOptions => {
+  const settings = settingsManager.getAll()
+  if (!settings.sequentialFilenames) {
+    return options
+  }
+  if (options.customFilenameTemplate?.trim()) {
+    return options
+  }
+  const dir = options.customDownloadPath?.trim() || settings.downloadPath || ''
+  if (!dir) {
+    return options
+  }
+  const next = reserveSequentialIndex(dir)
+  return { ...options, customFilenameTemplate: `${next}.%(ext)s` }
 }
 
 const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
@@ -212,11 +266,12 @@ class DownloadFacade extends EventEmitter {
         await startDesktopTaskQueue()
         ensureDirectoryExists(options.customDownloadPath)
         const hydratedOptions = await hydrateDownloadMetadata(options)
+        const finalOptions = applySequentialFilename(hydratedOptions)
         // Pass the renderer-generated id through so optimistic-UI rows merge
         // with the real task instead of showing as two separate entries.
         await this.queue.add({
           id,
-          input: buildTaskInput(id, hydratedOptions),
+          input: buildTaskInput(id, finalOptions),
           priority: PRIORITY_USER
         })
       } catch (err) {

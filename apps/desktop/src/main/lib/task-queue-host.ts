@@ -15,11 +15,18 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
 import { YtDlpExecutor } from '@vidbee/downloader-core'
-import { MemoryPersistAdapter, SqlitePersistAdapter, TaskQueueAPI } from '@vidbee/task-queue'
+import { normalizeBrowserCookiesSettingForYtDlp } from '@vidbee/downloader-core/yt-dlp-args'
+import {
+  type Executor,
+  MemoryPersistAdapter,
+  SqlitePersistAdapter,
+  TaskQueueAPI
+} from '@vidbee/task-queue'
 import { app } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { ffmpegManager } from './ffmpeg-manager'
+import { GalleryDlExecutor, HostRoutingExecutor } from './gallery-dl-executor'
 import { ytdlpManager } from './ytdlp-manager'
 
 const TASK_QUEUE_DB_NAME = 'task-queue.db'
@@ -56,13 +63,41 @@ let started = false
 let dbPath: string | null = null
 let persistent = false
 
-const buildExecutor = (): YtDlpExecutor =>
-  new YtDlpExecutor({
+const GALLERY_DL_BIN = path.join(process.env.HOME ?? '/home/elpresidank', '.local/bin/gallery-dl')
+
+const resolveGalleryDlCookieArgs = (): readonly string[] => {
+  const args: string[] = []
+  const browser = normalizeBrowserCookiesSettingForYtDlp(
+    settingsManager.get('browserForCookies') as string | undefined
+  )
+  if (browser && browser !== 'none') {
+    args.push('--cookies-from-browser', browser)
+  }
+  const cookiesPath = (settingsManager.get('cookiesPath') as string | undefined)?.trim()
+  if (cookiesPath) {
+    args.push('--cookies', cookiesPath)
+  }
+  const proxy = (settingsManager.get('proxy') as string | undefined)?.trim()
+  if (proxy) {
+    args.push('--proxy', proxy)
+  }
+  return args
+}
+
+const buildExecutor = (): Executor => {
+  const ytDlp = new YtDlpExecutor({
     resolveYtDlpPath,
     resolveFfmpegLocation,
     defaultDownloadDir: resolveDownloadDir(),
     extraArgs: () => ytdlpManager.getJsRuntimeArgs?.() ?? []
   })
+  const galleryDl = new GalleryDlExecutor({
+    resolveBinaryPath: () => GALLERY_DL_BIN,
+    defaultDownloadDir: resolveDownloadDir(),
+    resolveExtraArgs: resolveGalleryDlCookieArgs
+  })
+  return new HostRoutingExecutor(ytDlp, galleryDl)
+}
 
 const buildPersistAdapter = (
   desiredDbPath: string,

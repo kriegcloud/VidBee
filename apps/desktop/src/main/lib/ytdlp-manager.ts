@@ -58,9 +58,20 @@ class YtDlpManager {
 
   /**
    * Resolve the resources directory used by packaged desktop binaries.
+   *
+   * Only the current platform's yt-dlp binary is shipped, so we ask the
+   * resolver to look for that one. Asking for all three causes `.every()`
+   * to fail on every candidate and silently fall back to the wrong path.
    */
   private getResourcesPath(): string {
-    return resolveBundledResourcesPath(['yt-dlp.exe', 'yt-dlp_macos', 'yt-dlp_linux'])
+    return resolveBundledResourcesPath([this.getBundledBinaryName()])
+  }
+
+  private getBundledBinaryName(): string {
+    const platform = os.platform()
+    if (platform === 'win32') return 'yt-dlp.exe'
+    if (platform === 'darwin') return 'yt-dlp_macos'
+    return 'yt-dlp_linux'
   }
 
   /**
@@ -68,16 +79,7 @@ class YtDlpManager {
    */
   private resolveBundledYtDlp(): string {
     const platform = os.platform()
-    let bundledName: string
-
-    // Determine the binary name based on platform
-    if (platform === 'win32') {
-      bundledName = 'yt-dlp.exe'
-    } else if (platform === 'darwin') {
-      bundledName = 'yt-dlp_macos'
-    } else {
-      bundledName = 'yt-dlp_linux'
-    }
+    const bundledName = this.getBundledBinaryName()
 
     // Desktop only supports the bundled yt-dlp binary shipped in resources.
     const resourcesPath = this.getResourcesPath()
