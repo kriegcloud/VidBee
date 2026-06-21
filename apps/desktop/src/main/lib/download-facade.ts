@@ -76,9 +76,13 @@ const scanMaxSequentialIndex = (dir: string): number => {
   try {
     for (const name of fs.readdirSync(dir)) {
       const m = SEQUENTIAL_PREFIX_REGEX.exec(name)
-      if (!m) continue
+      if (!m) {
+        continue
+      }
       const n = Number.parseInt(m[1] ?? '', 10)
-      if (Number.isFinite(n) && n > max) max = n
+      if (Number.isFinite(n) && n > max) {
+        max = n
+      }
     }
   } catch {
     // Directory doesn't exist yet (or unreadable) — treat as empty.

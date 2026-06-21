@@ -6,19 +6,17 @@
  * Mirrors YtDlpExecutor's lifecycle (onSpawn → onStd* → onFinish) so the
  * orchestrator can treat both interchangeably via `HostRoutingExecutor`.
  */
-import { spawn, type ChildProcess } from 'node:child_process'
+import { type ChildProcess, spawn } from 'node:child_process'
 import { existsSync, statSync } from 'node:fs'
-
+import type { YtDlpTaskOptions } from '@vidbee/downloader-core'
 import {
-  virtualError,
   type Executor,
   type ExecutorContext,
   type ExecutorEvents,
   type ExecutorRun,
-  type TaskOutput
+  type TaskOutput,
+  virtualError
 } from '@vidbee/task-queue'
-
-import type { YtDlpTaskOptions } from '@vidbee/downloader-core'
 
 const DEFAULT_KILL_GRACE_MS = 10_000
 const STDOUT_TAIL_BYTES = 8 * 1024
@@ -104,9 +102,7 @@ const buildArgs = (
 }
 
 export class GalleryDlExecutor implements Executor {
-  private readonly opts: Required<
-    Omit<GalleryDlExecutorOptions, 'resolveExtraArgs'>
-  > & {
+  private readonly opts: Required<Omit<GalleryDlExecutorOptions, 'resolveExtraArgs'>> & {
     resolveExtraArgs?: GalleryDlExecutorOptions['resolveExtraArgs']
   }
 
@@ -130,7 +126,9 @@ export class GalleryDlExecutor implements Executor {
     let stdoutCarry = ''
 
     const finishOnce = (e: Parameters<ExecutorEvents['onFinish']>[0]): void => {
-      if (settled) return
+      if (settled) {
+        return
+      }
       settled = true
       if (killTimer) {
         clearTimeout(killTimer)
@@ -260,7 +258,9 @@ export class GalleryDlExecutor implements Executor {
         let realSize = 0
         if (filePath) {
           try {
-            if (existsSync(filePath)) realSize = statSync(filePath).size
+            if (existsSync(filePath)) {
+              realSize = statSync(filePath).size
+            }
           } catch {
             /* ignore */
           }
@@ -325,7 +325,9 @@ export class GalleryDlExecutor implements Executor {
     })
 
     const cancel = async (timeout?: number): Promise<void> => {
-      if (settled) return
+      if (settled) {
+        return
+      }
       cancelRequested = true
       const grace = timeout ?? this.opts.killGraceMs
       try {
@@ -333,7 +335,9 @@ export class GalleryDlExecutor implements Executor {
       } catch {
         /* noop */
       }
-      if (killTimer) clearTimeout(killTimer)
+      if (killTimer) {
+        clearTimeout(killTimer)
+      }
       if (grace > 0) {
         killTimer = setTimeout(() => {
           try {
@@ -367,11 +371,7 @@ const makeNoopRun = (): ExecutorRun => ({
   }
 })
 
-const GALLERY_DL_HOSTS = [
-  'instagram.com',
-  'instagr.am',
-  'cdninstagram.com'
-] as const
+const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
 export const shouldUseGalleryDl = (url: string): boolean => {
   try {
@@ -389,10 +389,13 @@ export const shouldUseGalleryDl = (url: string): boolean => {
  * actually ran.
  */
 export class HostRoutingExecutor implements Executor {
-  constructor(
-    private readonly ytDlp: Executor,
-    private readonly galleryDl: Executor
-  ) {}
+  private readonly ytDlp: Executor
+  private readonly galleryDl: Executor
+
+  constructor(ytDlp: Executor, galleryDl: Executor) {
+    this.ytDlp = ytDlp
+    this.galleryDl = galleryDl
+  }
 
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
     return shouldUseGalleryDl(ctx.input.url)
