@@ -8,11 +8,14 @@
     "./browser-cookies-setting": "./src/browser-cookies-setting.ts",
     "./download-file": "./src/download-file.ts",
     "./format-preferences": "./src/format-preferences.ts",
+    "./gallery-dl-executor": "./src/gallery-dl-executor.ts",
+    "./instagram-profile": "./src/instagram-profile.ts",
     "./yt-dlp-args": "./src/yt-dlp-args.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@orpc/contract": "^1.13.5",
@@ -22,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

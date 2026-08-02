@@ -5,9 +5,9 @@
  * projection — Desktop carries some of the same fields but renders them
  * differently.
  */
-import { projectTaskToLegacy } from '@vidbee/task-queue'
-import type { Task } from '@vidbee/task-queue'
 import type { DownloadTask } from '@vidbee/downloader-core'
+import type { Task } from '@vidbee/task-queue'
+import { projectTaskToLegacy } from '@vidbee/task-queue'
 
 export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
   const proj = projectTaskToLegacy(task)
@@ -35,6 +35,19 @@ export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
     playlistTitle: proj.playlistTitle,
     playlistIndex: proj.playlistIndex,
     playlistSize: proj.playlistSize,
+    batchId: proj.batchId,
+    batchKind: proj.batchKind,
+    batchTitle: proj.batchTitle,
+    batchCategory: proj.batchCategory,
+    batchOrder: proj.batchOrder,
+    batchSourceCount: proj.batchSourceCount,
+    batchAssetCount: proj.batchAssetCount,
+    outputDirectory: proj.outputDirectory,
+    fileCount: proj.fileCount,
+    downloadedCount: proj.downloadedCount,
+    skippedCount: proj.skippedCount,
+    failedCount: proj.failedCount,
+    totalSize: proj.totalSize,
     error: proj.error,
     internalStatus: proj.internalStatus,
     subStatus: proj.subStatus,

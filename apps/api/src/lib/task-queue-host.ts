@@ -20,13 +20,15 @@ import { createRequire } from 'node:module'
 import os from 'node:os'
 import path from 'node:path'
 
-import {
-  MemoryPersistAdapter,
-  SqlitePersistAdapter,
-  TaskQueueAPI
-} from '@vidbee/task-queue'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
-import { YtDlpExecutor } from '@vidbee/downloader-core'
+import {
+  GalleryDlExecutor,
+  HostRoutingExecutor,
+  InstagramProfileInspector,
+  restoreInstagramProfileGroupCaps,
+  YtDlpExecutor
+} from '@vidbee/downloader-core'
+import { MemoryPersistAdapter, SqlitePersistAdapter, TaskQueueAPI } from '@vidbee/task-queue'
 
 const require = createRequire(import.meta.url)
 
@@ -107,10 +109,49 @@ const resolveFfmpegLocation = (): string | undefined => {
   return undefined
 }
 
-const executor = new YtDlpExecutor({
+let cachedGalleryDlPath: string | null = null
+const resolveGalleryDlPath = (): string => {
+  if (cachedGalleryDlPath && fs.existsSync(cachedGalleryDlPath)) {
+    return cachedGalleryDlPath
+  }
+  const envPath = trimEnv('GALLERY_DL_PATH')
+  if (envPath && fs.existsSync(envPath)) {
+    cachedGalleryDlPath = envPath
+    return envPath
+  }
+  try {
+    const out = require('node:child_process')
+      .execSync(process.platform === 'win32' ? 'where gallery-dl' : 'which gallery-dl', {
+        stdio: ['ignore', 'pipe', 'ignore']
+      })
+      .toString()
+      .split(/\r?\n/)
+      .map((candidate: string) => candidate.trim())
+      .find((candidate: string) => candidate.length > 0)
+    if (out && fs.existsSync(out)) {
+      cachedGalleryDlPath = out
+      return out
+    }
+  } catch {
+    // Fall through to the actionable error below.
+  }
+  throw new Error('gallery-dl binary not found. Set GALLERY_DL_PATH or install gallery-dl in PATH.')
+}
+
+const ytDlpExecutor = new YtDlpExecutor({
   resolveYtDlpPath,
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
+})
+const galleryDlExecutor = new GalleryDlExecutor({
+  resolveBinaryPath: resolveGalleryDlPath,
+  resolveFfmpegLocation,
+  defaultDownloadDir: apiDefaultDownloadDir
+})
+const executor = new HostRoutingExecutor(ytDlpExecutor, galleryDlExecutor)
+
+export const instagramProfileInspector = new InstagramProfileInspector({
+  resolveBinaryPath: resolveGalleryDlPath
 })
 
 const buildPersistAdapter = () => {
@@ -145,6 +186,7 @@ let started = false
 export const startTaskQueue = async (): Promise<void> => {
   if (started) return
   await taskQueue.start()
+  await restoreInstagramProfileGroupCaps(taskQueue)
   started = true
 }
 

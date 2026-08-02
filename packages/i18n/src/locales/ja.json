@@ -344,6 +344,37 @@
     "urlCopied": "URLがクリップボードにコピーされました",
     "videoCopied": "ビデオがクリップボードにコピーされました"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} ファイル",
+    "categories": {
+      "highlights": "ハイライト",
+      "posts": "投稿",
+      "reels": "リール",
+      "stories": "ストーリーズ",
+      "tagged": "タグ付けされた投稿"
+    },
+    "categoryCounts": "{{sources}} 件 · {{assets}} ファイル",
+    "downloadFailed": "Instagramプロフィールのダウンロードを開始できませんでした",
+    "downloadSelected": "選択項目をダウンロード",
+    "downloadStarted": "{{count}} 個のInstagramファイルをキューに追加しました",
+    "emptyHint": "公開またはアクセス可能なInstagramプロフィールのリンクを貼り付けると、投稿、リール、ストーリーズ、ハイライト、タグ付けされた投稿を確認できます。",
+    "emptyTitle": "Instagramプロフィールをダウンロード",
+    "partialHint": "一部のカテゴリを確認できませんでした。非公開プロフィール、ストーリーズ、ハイライト、タグ付けされた投稿にはInstagramのログインCookieが必要な場合があります。",
+    "scan": "プロフィールを確認",
+    "scanFailed": "Instagramプロフィールを確認できませんでした",
+    "scanning": "Instagramプロフィールを確認中",
+    "scanningHint": "VidBeeが各カテゴリを確認しています。レート制限を避けるためリクエスト間隔を空けているので、少し時間がかかる場合があります。",
+    "selectAtLeastOne": "利用可能なカテゴリを1つ以上選択してください",
+    "sourceTotal": "{{count}} 件",
+    "states": {
+      "auth-required": "ログインが必要",
+      "empty": "コンテンツなし",
+      "ready": "準備完了",
+      "unavailable": "利用不可"
+    },
+    "tab": "Instagramプロフィール",
+    "urlPlaceholder": "https://www.instagram.com/ユーザー名/"
+  },
   "playlist": {
     "badgeLabel": "プレイリスト",
     "clearPreview": "プレビューをクリアする",

@@ -18,6 +18,8 @@
     "build": "electron-vite build",
     "build:glitchtip": "pnpm run build && node scripts/upload-glitchtip-sourcemaps.mjs",
     "setup": "node scripts/setup-dev-binaries.js",
+    "build:ytdlp": "node scripts/build-vendored-ytdlp.js",
+    "verify:ytdlp": "node scripts/verify-vendored-ytdlp.js",
     "postinstall": "node scripts/postinstall.mjs",
     "build:unpack": "pnpm run setup && pnpm run build && electron-builder --dir",
     "build:win": "pnpm run setup && node scripts/check-ytdlp.js win && pnpm run build && electron-builder --win --publish never && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/create-windows-portable-folder.ps1",

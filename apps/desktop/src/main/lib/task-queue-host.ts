@@ -14,8 +14,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
-import { YtDlpExecutor } from '@vidbee/downloader-core'
-import { normalizeBrowserCookiesSettingForYtDlp } from '@vidbee/downloader-core/yt-dlp-args'
+import {
+  GalleryDlExecutor,
+  HostRoutingExecutor,
+  InstagramProfileInspector,
+  restoreInstagramProfileGroupCaps,
+  YtDlpExecutor
+} from '@vidbee/downloader-core'
 import {
   type Executor,
   MemoryPersistAdapter,
@@ -26,12 +31,12 @@ import { app } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { ffmpegManager } from './ffmpeg-manager'
-import { GalleryDlExecutor, HostRoutingExecutor } from './gallery-dl-executor'
+import { galleryDlManager } from './gallery-dl-manager'
 import { ytdlpManager } from './ytdlp-manager'
 
 const TASK_QUEUE_DB_NAME = 'task-queue.db'
 
-const resolveDownloadDir = (): string => {
+export const resolveDesktopDownloadDir = (): string => {
   const fromSettings = settingsManager.get('downloadPath') as string | undefined
   if (fromSettings && typeof fromSettings === 'string' && fromSettings.trim().length > 0) {
     return fromSettings
@@ -63,40 +68,30 @@ let started = false
 let dbPath: string | null = null
 let persistent = false
 
-const GALLERY_DL_BIN = path.join(process.env.HOME ?? '/home/elpresidank', '.local/bin/gallery-dl')
-
-const resolveGalleryDlCookieArgs = (): readonly string[] => {
-  const args: string[] = []
-  const browser = normalizeBrowserCookiesSettingForYtDlp(
-    settingsManager.get('browserForCookies') as string | undefined
-  )
-  if (browser && browser !== 'none') {
-    args.push('--cookies-from-browser', browser)
-  }
-  const cookiesPath = (settingsManager.get('cookiesPath') as string | undefined)?.trim()
-  if (cookiesPath) {
-    args.push('--cookies', cookiesPath)
-  }
-  const proxy = (settingsManager.get('proxy') as string | undefined)?.trim()
-  if (proxy) {
-    args.push('--proxy', proxy)
-  }
-  return args
-}
-
 const buildExecutor = (): Executor => {
   const ytDlp = new YtDlpExecutor({
     resolveYtDlpPath,
     resolveFfmpegLocation,
-    defaultDownloadDir: resolveDownloadDir(),
+    defaultDownloadDir: resolveDesktopDownloadDir(),
     extraArgs: () => ytdlpManager.getJsRuntimeArgs?.() ?? []
   })
   const galleryDl = new GalleryDlExecutor({
-    resolveBinaryPath: () => GALLERY_DL_BIN,
-    defaultDownloadDir: resolveDownloadDir(),
-    resolveExtraArgs: resolveGalleryDlCookieArgs
+    resolveBinaryPath: () => galleryDlManager.getPath(),
+    defaultDownloadDir: resolveDesktopDownloadDir(),
+    resolveFfmpegLocation
   })
   return new HostRoutingExecutor(ytDlp, galleryDl)
+}
+
+let instagramProfileInspector: InstagramProfileInspector | null = null
+
+export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector => {
+  if (!instagramProfileInspector) {
+    instagramProfileInspector = new InstagramProfileInspector({
+      resolveBinaryPath: () => galleryDlManager.getPath()
+    })
+  }
+  return instagramProfileInspector
 }
 
 const buildPersistAdapter = (
@@ -157,6 +152,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   }
   const queue = getDesktopTaskQueue()
   await queue.start()
+  await restoreInstagramProfileGroupCaps(queue)
   started = true
 }
 

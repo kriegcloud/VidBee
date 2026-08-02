@@ -79,6 +79,19 @@ export interface DownloadTask {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  outputDirectory?: string
+  fileCount?: number
+  downloadedCount?: number
+  skippedCount?: number
+  failedCount?: number
+  totalSize?: number
   progress?: DownloadProgress
   error?: string
   internalStatus?: TaskQueueInternalStatus
@@ -220,6 +233,69 @@ export interface PlaylistDownloadResult {
   startIndex: number
   endIndex: number
   entries: PlaylistDownloadEntry[]
+}
+
+export type InstagramProfileCategory = 'posts' | 'reels' | 'stories' | 'highlights' | 'tagged'
+
+export type InstagramCategoryState = 'ready' | 'empty' | 'auth-required' | 'unavailable'
+
+export type InstagramInspectionErrorCode =
+  | 'auth-required'
+  | 'rate-limited'
+  | 'not-found'
+  | 'network'
+  | 'binary-missing'
+  | 'unavailable'
+
+export interface InstagramCategorySummary {
+  category: InstagramProfileCategory
+  state: InstagramCategoryState
+  sourceCount: number
+  assetCount: number
+  errorCode?: InstagramInspectionErrorCode
+}
+
+export interface InstagramProfileInspectInput {
+  url: string
+  settings?: DownloadRuntimeSettings
+}
+
+export interface InstagramProfileInspection {
+  inspectionId: string
+  expiresAt: number
+  complete: boolean
+  profile: {
+    username: string
+    profileUrl: string
+    displayName?: string
+    avatarUrl?: string
+    isPrivate?: boolean
+  }
+  categories: InstagramCategorySummary[]
+  totalSourceCount: number
+  totalAssetCount: number
+}
+
+export interface InstagramProfileDownloadInput {
+  inspectionId: string
+  categories: InstagramProfileCategory[]
+  customDownloadPath?: string
+  settings?: DownloadRuntimeSettings
+}
+
+export interface InstagramProfileDownloadTask {
+  downloadId: string
+  category: InstagramProfileCategory
+  sourceCount: number
+  assetCount: number
+}
+
+export interface InstagramProfileDownloadResult {
+  groupId: string
+  username: string
+  totalSourceCount: number
+  totalAssetCount: number
+  tasks: InstagramProfileDownloadTask[]
 }
 
 export interface FilePathInput {

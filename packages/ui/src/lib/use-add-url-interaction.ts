@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { isPlaylistLikeUrl } from './url-kind'
+import { isInstagramProfileUrl, isPlaylistLikeUrl } from './url-kind'
 
 const isLikelyUrl = (value: string): boolean => {
   try {
@@ -11,12 +11,14 @@ const isLikelyUrl = (value: string): boolean => {
 }
 
 interface UseAddUrlInteractionOptions {
-  activeTab: 'single' | 'playlist'
+  activeTab: 'single' | 'playlist' | 'profile'
   isOneClickDownloadEnabled: boolean
   isPlaylistBusy: boolean
+  isProfileBusy: boolean
   onEmptyUrl: () => void
   onInvalidUrl: () => void
   onOneClickDownload: (url: string) => Promise<void> | void
+  onParseProfile: (url: string) => Promise<void> | void
   onParsePlaylist: (url: string) => Promise<void> | void
   onParseSingle: (url: string) => Promise<void> | void
 }
@@ -36,9 +38,11 @@ export const useAddUrlInteraction = ({
   activeTab,
   isOneClickDownloadEnabled,
   isPlaylistBusy,
+  isProfileBusy,
   onEmptyUrl,
   onInvalidUrl,
   onOneClickDownload,
+  onParseProfile,
   onParsePlaylist,
   onParseSingle
 }: UseAddUrlInteractionOptions): UseAddUrlInteractionResult => {
@@ -78,6 +82,14 @@ export const useAddUrlInteraction = ({
 
     setAddUrlPopoverOpen(false)
 
+    if (isInstagramProfileUrl(trimmedUrl) || activeTab === 'profile') {
+      if (isProfileBusy) {
+        return
+      }
+      await onParseProfile(trimmedUrl)
+      return
+    }
+
     if (isPlaylistLikeUrl(trimmedUrl)) {
       if (isPlaylistBusy) {
         return
@@ -105,9 +117,11 @@ export const useAddUrlInteraction = ({
     addUrlValue,
     isOneClickDownloadEnabled,
     isPlaylistBusy,
+    isProfileBusy,
     onEmptyUrl,
     onInvalidUrl,
     onOneClickDownload,
+    onParseProfile,
     onParsePlaylist,
     onParseSingle
   ])

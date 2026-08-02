@@ -174,6 +174,53 @@ describe('projectTaskToLegacy', () => {
     expect(proj.duration).toBe(60)
   })
 
+  it('projects Instagram batch metadata and multi-file output', () => {
+    const proj = projectTaskToLegacy(
+      baseTask({
+        kind: 'instagram-profile-category',
+        input: {
+          url: 'https://www.instagram.com/example/photos/',
+          kind: 'instagram-profile-category',
+          title: '@example · Posts',
+          options: {
+            batchId: 'instagram-batch-1',
+            batchKind: 'instagram-profile',
+            batchTitle: '@example',
+            batchCategory: 'posts',
+            batchOrder: 0,
+            batchSourceCount: 2,
+            batchAssetCount: 3
+          }
+        },
+        status: 'completed',
+        output: {
+          filePath: '/tmp/Instagram/example/Posts/2026-07-27_1.jpg',
+          size: 1234,
+          durationMs: null,
+          sha256: null,
+          outputDirectory: '/tmp/Instagram/example/Posts',
+          fileCount: 3,
+          downloadedCount: 2,
+          skippedCount: 1,
+          failedCount: 0,
+          totalSize: 4321
+        }
+      })
+    )
+
+    expect(proj.batchId).toBe('instagram-batch-1')
+    expect(proj.batchKind).toBe('instagram-profile')
+    expect(proj.batchCategory).toBe('posts')
+    expect(proj.batchSourceCount).toBe(2)
+    expect(proj.batchAssetCount).toBe(3)
+    expect(proj.downloadPath).toBe('/tmp/Instagram/example/Posts')
+    expect(proj.fileCount).toBe(3)
+    expect(proj.downloadedCount).toBe(2)
+    expect(proj.skippedCount).toBe(1)
+    expect(proj.failedCount).toBe(0)
+    expect(proj.totalSize).toBe(4321)
+  })
+
   it('projects failed task and surfaces error/category/uiMessageKey', () => {
     const proj = projectTaskToLegacy(
       baseTask({

@@ -11,6 +11,7 @@ interface PlaylistDownloadGroupProps {
   title: string
   records: DownloadRecord[]
   totalCount: number
+  isPlaylist?: boolean
   selectedIds?: Set<string>
   onToggleSelect?: (id: string) => void
   onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void
@@ -45,6 +46,7 @@ export function PlaylistDownloadGroup({
   title,
   records,
   totalCount,
+  isPlaylist = true,
   selectedIds,
   onToggleSelect,
   onDeletePlaylist
@@ -99,7 +101,10 @@ export function PlaylistDownloadGroup({
             <p className="truncate font-medium text-foreground text-sm">{displayTitle}</p>
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
               <span>
-                {t('playlist.collapsedProgress', { completed: completedCount, total: totalCount })}
+                {t(isPlaylist ? 'playlist.collapsedProgress' : 'playlist.groupSummary', {
+                  completed: completedCount,
+                  total: totalCount
+                })}
               </span>
               {activeCount > 0 && (
                 <>

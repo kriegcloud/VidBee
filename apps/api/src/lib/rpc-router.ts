@@ -5,12 +5,17 @@ import { access, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { implement, ORPCError } from '@orpc/server'
-import { downloaderContract } from '@vidbee/downloader-core'
 import type { DownloadTask } from '@vidbee/downloader-core'
+import { downloaderContract, enqueueInstagramProfileDownload } from '@vidbee/downloader-core'
 import type { Task, TaskStatus } from '@vidbee/task-queue'
 
 import { projectTaskForApi } from './projection'
-import { taskQueue, taskQueueExecutor } from './downloader'
+import {
+  apiDefaultDownloadDir as downloadDir,
+  instagramProfileInspector,
+  taskQueue,
+  taskQueueExecutor
+} from './task-queue-host'
 import { webSettingsStore } from './web-settings-store'
 import { fetchPlaylistInfo, fetchVideoInfo } from './yt-dlp-info'
 
@@ -226,9 +231,7 @@ const listTasksByStatuses = (statuses: ReadonlySet<TaskStatus>): DownloadTask[] 
     }
     cursor = page.nextCursor
   } while (cursor)
-  return tasks
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .map(projectTask)
+  return tasks.sort((a, b) => b.createdAt - a.createdAt).map(projectTask)
 }
 
 export const rpcRouter = os.router({
@@ -356,6 +359,34 @@ export const rpcRouter = os.router({
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
           message: toErrorMessage(error, 'Failed to start playlist download.')
+        })
+      }
+    })
+  },
+
+  instagramProfile: {
+    inspect: os.instagramProfile.inspect.handler(async ({ input }) => {
+      try {
+        const inspection = await instagramProfileInspector.inspect(input.url, input.settings)
+        return { inspection }
+      } catch (error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: toErrorMessage(error, 'Failed to inspect Instagram profile.')
+        })
+      }
+    }),
+    download: os.instagramProfile.download.handler(async ({ input }) => {
+      try {
+        const result = await enqueueInstagramProfileDownload({
+          queue: taskQueue,
+          inspector: instagramProfileInspector,
+          input,
+          defaultDownloadDir: downloadDir
+        })
+        return { result }
+      } catch (error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: toErrorMessage(error, 'Failed to start Instagram profile download.')
         })
       }
     })

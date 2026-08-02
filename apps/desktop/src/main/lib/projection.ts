@@ -123,6 +123,45 @@ export const projectTaskForRenderer = (task: Readonly<Task>): DownloadItem => {
   if (proj.playlistSize !== undefined) {
     item.playlistSize = proj.playlistSize
   }
+  if (proj.batchId !== undefined) {
+    item.batchId = proj.batchId
+  }
+  if (proj.batchKind !== undefined) {
+    item.batchKind = proj.batchKind
+  }
+  if (proj.batchTitle !== undefined) {
+    item.batchTitle = proj.batchTitle
+  }
+  if (proj.batchCategory !== undefined) {
+    item.batchCategory = proj.batchCategory
+  }
+  if (proj.batchOrder !== undefined) {
+    item.batchOrder = proj.batchOrder
+  }
+  if (proj.batchSourceCount !== undefined) {
+    item.batchSourceCount = proj.batchSourceCount
+  }
+  if (proj.batchAssetCount !== undefined) {
+    item.batchAssetCount = proj.batchAssetCount
+  }
+  if (proj.outputDirectory !== undefined) {
+    item.outputDirectory = proj.outputDirectory
+  }
+  if (proj.fileCount !== undefined) {
+    item.fileCount = proj.fileCount
+  }
+  if (proj.downloadedCount !== undefined) {
+    item.downloadedCount = proj.downloadedCount
+  }
+  if (proj.skippedCount !== undefined) {
+    item.skippedCount = proj.skippedCount
+  }
+  if (proj.failedCount !== undefined) {
+    item.failedCount = proj.failedCount
+  }
+  if (proj.totalSize !== undefined) {
+    item.totalSize = proj.totalSize
+  }
   if (proj.error !== undefined) {
     item.error = proj.error
   }
@@ -234,6 +273,45 @@ export const projectTaskForRendererHistory = (task: Readonly<Task>): DownloadHis
   }
   if (proj.playlistSize !== undefined) {
     item.playlistSize = proj.playlistSize
+  }
+  if (proj.batchId !== undefined) {
+    item.batchId = proj.batchId
+  }
+  if (proj.batchKind !== undefined) {
+    item.batchKind = proj.batchKind
+  }
+  if (proj.batchTitle !== undefined) {
+    item.batchTitle = proj.batchTitle
+  }
+  if (proj.batchCategory !== undefined) {
+    item.batchCategory = proj.batchCategory
+  }
+  if (proj.batchOrder !== undefined) {
+    item.batchOrder = proj.batchOrder
+  }
+  if (proj.batchSourceCount !== undefined) {
+    item.batchSourceCount = proj.batchSourceCount
+  }
+  if (proj.batchAssetCount !== undefined) {
+    item.batchAssetCount = proj.batchAssetCount
+  }
+  if (proj.outputDirectory !== undefined) {
+    item.outputDirectory = proj.outputDirectory
+  }
+  if (proj.fileCount !== undefined) {
+    item.fileCount = proj.fileCount
+  }
+  if (proj.downloadedCount !== undefined) {
+    item.downloadedCount = proj.downloadedCount
+  }
+  if (proj.skippedCount !== undefined) {
+    item.skippedCount = proj.skippedCount
+  }
+  if (proj.failedCount !== undefined) {
+    item.failedCount = proj.failedCount
+  }
+  if (proj.totalSize !== undefined) {
+    item.totalSize = proj.totalSize
   }
   if (renderer.origin !== undefined) {
     item.origin = renderer.origin

@@ -100,6 +100,19 @@ export interface DownloadItem {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  outputDirectory?: string
+  fileCount?: number
+  downloadedCount?: number
+  skippedCount?: number
+  failedCount?: number
+  totalSize?: number
   // NEX-131 §10.A.5 projection passthrough fields. Optional so renderer
   // components that haven't opted in keep working unchanged. internalStatus
   // is the underlying 8-state TaskStatus; subStatus carries 'paused' or
@@ -157,6 +170,19 @@ export interface DownloadHistoryItem {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  outputDirectory?: string
+  fileCount?: number
+  downloadedCount?: number
+  skippedCount?: number
+  failedCount?: number
+  totalSize?: number
 }
 
 export interface DownloadOptions {

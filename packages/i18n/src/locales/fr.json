@@ -344,6 +344,37 @@
     "urlCopied": "URL copiée dans le presse-papiers",
     "videoCopied": "Vidéo copiée dans le presse-papiers"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} fichiers",
+    "categories": {
+      "highlights": "Stories à la une",
+      "posts": "Publications",
+      "reels": "Reels",
+      "stories": "Stories",
+      "tagged": "Publications identifiées"
+    },
+    "categoryCounts": "{{sources}} éléments · {{assets}} fichiers",
+    "downloadFailed": "Impossible de lancer le téléchargement du profil Instagram",
+    "downloadSelected": "Télécharger la sélection",
+    "downloadStarted": "{{count}} fichiers Instagram ajoutés à la file d’attente",
+    "emptyHint": "Collez le lien d’un profil Instagram public ou accessible pour répertorier ses publications, reels, stories, stories à la une et publications identifiées.",
+    "emptyTitle": "Télécharger un profil Instagram",
+    "partialHint": "Certaines catégories n’ont pas pu être analysées. Des cookies de connexion Instagram peuvent être nécessaires pour les profils privés, les stories, les stories à la une ou les publications identifiées.",
+    "scan": "Analyser le profil",
+    "scanFailed": "Impossible d’analyser le profil Instagram",
+    "scanning": "Analyse du profil Instagram",
+    "scanningHint": "VidBee répertorie chaque catégorie. Cela peut prendre un peu de temps, car les requêtes sont espacées pour limiter les blocages.",
+    "selectAtLeastOne": "Sélectionnez au moins une catégorie disponible",
+    "sourceTotal": "{{count}} éléments",
+    "states": {
+      "auth-required": "Connexion requise",
+      "empty": "Aucun contenu trouvé",
+      "ready": "Prêt",
+      "unavailable": "Indisponible"
+    },
+    "tab": "Profil Instagram",
+    "urlPlaceholder": "https://www.instagram.com/nom_utilisateur/"
+  },
   "playlist": {
     "badgeLabel": "Liste de lecture",
     "clearPreview": "Effacer l'aperçu",

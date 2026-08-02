@@ -344,6 +344,37 @@
     "urlCopied": "URL скопирован в буфер обмена",
     "videoCopied": "Видео скопировано в буфер обмена"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} файлов",
+    "categories": {
+      "highlights": "Актуальное",
+      "posts": "Публикации",
+      "reels": "Reels",
+      "stories": "Истории",
+      "tagged": "Публикации с отметками"
+    },
+    "categoryCounts": "{{sources}} элементов · {{assets}} файлов",
+    "downloadFailed": "Не удалось начать скачивание профиля Instagram",
+    "downloadSelected": "Скачать выбранное",
+    "downloadStarted": "В очередь добавлено файлов Instagram: {{count}}",
+    "emptyHint": "Вставьте ссылку на общедоступный профиль Instagram, чтобы найти его публикации, reels, истории, актуальное и публикации с отметками.",
+    "emptyTitle": "Скачать профиль Instagram",
+    "partialHint": "Некоторые категории не удалось проверить. Для закрытых профилей, историй, актуального или публикаций с отметками могут потребоваться файлы cookie входа в Instagram.",
+    "scan": "Проверить профиль",
+    "scanFailed": "Не удалось проверить профиль Instagram",
+    "scanning": "Проверка профиля Instagram",
+    "scanningHint": "VidBee проверяет каждую категорию. Это может занять некоторое время, поскольку запросы выполняются с паузами во избежание ограничений.",
+    "selectAtLeastOne": "Выберите хотя бы одну доступную категорию",
+    "sourceTotal": "{{count}} элементов",
+    "states": {
+      "auth-required": "Требуется вход",
+      "empty": "Ничего не найдено",
+      "ready": "Готово",
+      "unavailable": "Недоступно"
+    },
+    "tab": "Профиль Instagram",
+    "urlPlaceholder": "https://www.instagram.com/имя_пользователя/"
+  },
   "playlist": {
     "badgeLabel": "Плейлист",
     "clearPreview": "Очистить предпросмотр",

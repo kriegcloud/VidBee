@@ -344,6 +344,37 @@
     "urlCopied": "URL copiato negli appunti",
     "videoCopied": "Video copiato negli appunti"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} file",
+    "categories": {
+      "highlights": "Storie in evidenza",
+      "posts": "Post",
+      "reels": "Reel",
+      "stories": "Storie",
+      "tagged": "Post con tag"
+    },
+    "categoryCounts": "{{sources}} elementi · {{assets}} file",
+    "downloadFailed": "Impossibile avviare il download del profilo Instagram",
+    "downloadSelected": "Scarica selezionati",
+    "downloadStarted": "{{count}} file Instagram aggiunti alla coda",
+    "emptyHint": "Incolla il link di un profilo Instagram pubblico o accessibile per mappare post, reel, storie, contenuti in evidenza e post con tag.",
+    "emptyTitle": "Scarica un profilo Instagram",
+    "partialHint": "Non è stato possibile analizzare alcune categorie. Per profili privati, storie, contenuti in evidenza o post con tag potrebbero essere necessari i cookie di accesso a Instagram.",
+    "scan": "Analizza profilo",
+    "scanFailed": "Impossibile analizzare il profilo Instagram",
+    "scanning": "Analisi del profilo Instagram",
+    "scanningHint": "VidBee sta mappando ogni categoria. Potrebbe richiedere un po’ di tempo perché le richieste vengono distanziate per ridurre i limiti di frequenza.",
+    "selectAtLeastOne": "Seleziona almeno una categoria disponibile",
+    "sourceTotal": "{{count}} elementi",
+    "states": {
+      "auth-required": "Accesso richiesto",
+      "empty": "Nessun contenuto trovato",
+      "ready": "Pronto",
+      "unavailable": "Non disponibile"
+    },
+    "tab": "Profilo Instagram",
+    "urlPlaceholder": "https://www.instagram.com/nomeutente/"
+  },
   "playlist": {
     "badgeLabel": "Playlist",
     "clearPreview": "Anteprima chiara",

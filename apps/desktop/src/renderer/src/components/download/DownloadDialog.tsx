@@ -4,6 +4,7 @@ import { Checkbox } from '@renderer/components/ui/checkbox'
 import { DownloadDialogLayout } from '@renderer/components/ui/download-dialog-layout'
 import { Input } from '@renderer/components/ui/input'
 import { Label } from '@renderer/components/ui/label'
+import { RemoteImage } from '@renderer/components/ui/remote-image'
 import type { PlaylistInfo, VideoFormat, VideoInfo } from '@shared/types'
 import {
   buildAudioFormatPreference,
@@ -13,6 +14,8 @@ import {
   buildVideoInfoDownloadMetadata,
   pickOneClickSelectedFormat
 } from '@shared/utils/video-info-metadata'
+import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidbee/downloader-core'
+import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
 import { useAddUrlInteraction } from '@vidbee/ui/lib/use-add-url-interaction'
 import { useAddUrlShortcut } from '@vidbee/ui/lib/use-add-url-shortcut'
@@ -102,7 +105,7 @@ export function DownloadDialog({
   const saveSetting = useSetAtom(saveSettingAtom)
 
   const [url, setUrl] = useState('')
-  const [activeTab, setActiveTab] = useState<'single' | 'playlist'>('single')
+  const [activeTab, setActiveTab] = useState<'single' | 'playlist' | 'profile'>('single')
 
   // Single video state
   const [singleVideoState, setSingleVideoState] = useState<SingleVideoState>({
@@ -129,10 +132,23 @@ export function DownloadDialog({
   const [playlistDownloadLoading, setPlaylistDownloadLoading] = useState(false)
   const [playlistPreviewError, setPlaylistPreviewError] = useState<string | null>(null)
   const playlistBusy = playlistPreviewLoading || playlistDownloadLoading
+  const [profileUrl, setProfileUrl] = useState('')
+  const [profileCustomDownloadPath, setProfileCustomDownloadPath] = useState('')
+  const [profileInspection, setProfileInspection] = useState<InstagramProfileInspection | null>(
+    null
+  )
+  const [profileInspectionLoading, setProfileInspectionLoading] = useState(false)
+  const [profileDownloadLoading, setProfileDownloadLoading] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [selectedProfileCategories, setSelectedProfileCategories] = useState<
+    Set<InstagramProfileCategory>
+  >(new Set())
+  const profileBusy = profileInspectionLoading || profileDownloadLoading
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false)
   const [selectedEntryIds, setSelectedEntryIds] = useState<Set<string>>(new Set())
   const lockDialogHeight =
-    activeTab === 'playlist' && (playlistPreviewLoading || playlistInfo !== null)
+    (activeTab === 'playlist' && (playlistPreviewLoading || playlistInfo !== null)) ||
+    (activeTab === 'profile' && (profileInspectionLoading || profileInspection !== null))
 
   const computePlaylistRange = useCallback(
     (info: PlaylistInfo) => {
@@ -342,6 +358,7 @@ export function DownloadDialog({
       // #379: drop any stale single-video info when switching to a playlist.
       clearVideoInfo()
       setOpen(true)
+      setActiveTab('playlist')
       setPlaylistUrl(trimmedUrl)
       setPlaylistInfo(null)
       setPlaylistPreviewError(null)
@@ -400,6 +417,7 @@ export function DownloadDialog({
       // #379: reset stale info and invalidate in-flight fetches before re-fetch.
       clearVideoInfo()
       setOpen(true)
+      setActiveTab('single')
       setUrl(trimmedUrl)
       setSingleVideoState((prev) => ({
         ...prev,
@@ -412,6 +430,54 @@ export function DownloadDialog({
       await fetchVideoInfo(trimmedUrl)
     },
     [clearVideoInfo, fetchVideoInfo]
+  )
+
+  const inspectInstagramProfile = useCallback(
+    async (targetUrl: string) => {
+      const trimmedUrl = targetUrl.trim()
+      if (!trimmedUrl) {
+        toast.error(t('errors.emptyUrl'))
+        return
+      }
+
+      clearVideoInfo()
+      setProfileInspectionLoading(true)
+      setProfileError(null)
+      setProfileInspection(null)
+      setSelectedProfileCategories(new Set())
+      try {
+        const inspection = await ipcServices.download.inspectInstagramProfile(trimmedUrl)
+        setProfileInspection(inspection)
+        setSelectedProfileCategories(
+          new Set(
+            inspection.categories
+              .filter((category) => category.state === 'ready' && category.assetCount > 0)
+              .map((category) => category.category)
+          )
+        )
+      } catch (inspectionError) {
+        console.error('Failed to inspect Instagram profile:', inspectionError)
+        const message =
+          inspectionError instanceof Error && inspectionError.message
+            ? inspectionError.message
+            : t('instagramProfile.scanFailed')
+        setProfileError(message)
+      } finally {
+        setProfileInspectionLoading(false)
+      }
+    },
+    [clearVideoInfo, t]
+  )
+
+  const handleParseProfileUrl = useCallback(
+    async (trimmedUrl: string) => {
+      setOpen(true)
+      setActiveTab('profile')
+      setProfileUrl(trimmedUrl)
+      setProfileCustomDownloadPath('')
+      await inspectInstagramProfile(trimmedUrl)
+    },
+    [inspectInstagramProfile]
   )
 
   const handleOneClickFromAddUrl = useCallback(
@@ -434,6 +500,7 @@ export function DownloadDialog({
     activeTab,
     isOneClickDownloadEnabled: settings.oneClickDownload,
     isPlaylistBusy: playlistBusy,
+    isProfileBusy: profileBusy,
     onEmptyUrl: () => {
       toast.error(t('errors.emptyUrl'))
     },
@@ -441,9 +508,37 @@ export function DownloadDialog({
       toast.error(t('errors.invalidUrl'))
     },
     onOneClickDownload: handleOneClickFromAddUrl,
+    onParseProfile: handleParseProfileUrl,
     onParsePlaylist: handleParsePlaylistUrl,
     onParseSingle: handleParseSingleUrl
   })
+
+  const handleDownloadProfile = useCallback(async () => {
+    if (!(profileInspection && selectedProfileCategories.size > 0)) {
+      toast.error(t('instagramProfile.selectAtLeastOne'))
+      return
+    }
+
+    setProfileDownloadLoading(true)
+    try {
+      const result = await ipcServices.download.startInstagramProfileDownload({
+        inspectionId: profileInspection.inspectionId,
+        categories: [...selectedProfileCategories],
+        customDownloadPath: profileCustomDownloadPath.trim() || undefined
+      })
+      toast.success(
+        t('instagramProfile.downloadStarted', {
+          count: result.totalAssetCount
+        })
+      )
+      setOpen(false)
+    } catch (downloadError) {
+      console.error('Failed to start Instagram profile download:', downloadError)
+      toast.error(t('instagramProfile.downloadFailed'))
+    } finally {
+      setProfileDownloadLoading(false)
+    }
+  }, [profileCustomDownloadPath, profileInspection, selectedProfileCategories, t])
 
   // The Add URL trigger button is always rendered in the toolbar, so the
   // shortcut should fire even when the dialog itself is closed.
@@ -741,6 +836,13 @@ export function DownloadDialog({
       setStartIndex('1')
       setEndIndex('')
       setSelectedEntryIds(new Set())
+      setProfileUrl('')
+      setProfileCustomDownloadPath('')
+      setProfileInspection(null)
+      setProfileInspectionLoading(false)
+      setProfileDownloadLoading(false)
+      setProfileError(null)
+      setSelectedProfileCategories(new Set())
     }
   }, [open, clearVideoInfo])
 
@@ -910,6 +1012,48 @@ export function DownloadDialog({
                 </Label>
               </div>
             )}
+
+            {activeTab === 'profile' && !profileInspection && !profileInspectionLoading && (
+              <Input
+                className="h-8 w-[320px] text-xs"
+                onChange={(event) => setProfileUrl(event.target.value)}
+                placeholder={t('instagramProfile.urlPlaceholder')}
+                value={profileUrl}
+              />
+            )}
+
+            {activeTab === 'profile' && profileInspection && !profileInspectionLoading && (
+              <div className="flex items-center gap-2">
+                <div className="relative w-[200px]">
+                  <Input
+                    className="h-8 bg-muted/30 pr-7 text-xs"
+                    placeholder={t('download.autoFolderPlaceholder')}
+                    readOnly
+                    value={profileCustomDownloadPath || settings.downloadPath}
+                  />
+                  <FolderOpen className="absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                </div>
+                <Button
+                  className="h-8"
+                  disabled={profileBusy}
+                  onClick={async () => {
+                    try {
+                      const path = await ipcServices.fs.selectDirectory()
+                      if (path) {
+                        setProfileCustomDownloadPath(path)
+                      }
+                    } catch (selectError) {
+                      console.error('Failed to select directory:', selectError)
+                      toast.error(t('settings.directorySelectError'))
+                    }
+                  }}
+                  size="sm"
+                  variant="outline"
+                >
+                  {t('settings.selectPath')}
+                </Button>
+              </div>
+            )}
           </div>
           <div className="ml-auto flex gap-2">
             {activeTab === 'single' ? (
@@ -932,6 +1076,25 @@ export function DownloadDialog({
                   {settings.oneClickDownload
                     ? t('download.oneClickDownloadNow')
                     : t('download.startDownload')}
+                </Button>
+              )
+            ) : activeTab === 'profile' ? (
+              profileInspection ? (
+                <Button
+                  disabled={profileDownloadLoading || selectedProfileCategories.size === 0}
+                  onClick={handleDownloadProfile}
+                >
+                  {profileDownloadLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('instagramProfile.downloadSelected')}
+                </Button>
+              ) : profileInspectionLoading ? null : (
+                <Button
+                  disabled={profileBusy || !profileUrl.trim()}
+                  onClick={() => {
+                    void inspectInstagramProfile(profileUrl)
+                  }}
+                >
+                  {t('instagramProfile.scan')}
                 </Button>
               )
             ) : playlistInfo && !playlistPreviewLoading ? (
@@ -989,6 +1152,34 @@ export function DownloadDialog({
         />
       }
       playlistTabLabel={t('download.metadata.playlist')}
+      profileTabContent={
+        <InstagramProfilePreview
+          error={profileError}
+          inspection={profileInspection}
+          loading={profileInspectionLoading}
+          onToggleCategory={(category, selected) => {
+            setSelectedProfileCategories((current) => {
+              const next = new Set(current)
+              if (selected) {
+                next.add(category)
+              } else {
+                next.delete(category)
+              }
+              return next
+            })
+          }}
+          renderAvatar={(avatarUrl) => (
+            <RemoteImage
+              alt=""
+              className="h-full w-full object-cover"
+              placeholderClassName="h-full w-full"
+              src={avatarUrl}
+            />
+          )}
+          selectedCategories={selectedProfileCategories}
+        />
+      }
+      profileTabLabel={t('instagramProfile.tab')}
       singleTabContent={
         <SingleVideoDownload
           error={error}

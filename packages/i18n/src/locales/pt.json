@@ -344,6 +344,37 @@
     "urlCopied": "URL copiada para área de transferência",
     "videoCopied": "Vídeo copiado para área de transferência"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} arquivos",
+    "categories": {
+      "highlights": "Destaques",
+      "posts": "Publicações",
+      "reels": "Reels",
+      "stories": "Stories",
+      "tagged": "Publicações marcadas"
+    },
+    "categoryCounts": "{{sources}} itens · {{assets}} arquivos",
+    "downloadFailed": "Não foi possível iniciar o download do perfil do Instagram",
+    "downloadSelected": "Baixar selecionados",
+    "downloadStarted": "{{count}} arquivos do Instagram adicionados à fila",
+    "emptyHint": "Cole o link de um perfil público ou acessível do Instagram para mapear publicações, reels, stories, destaques e publicações marcadas.",
+    "emptyTitle": "Baixar um perfil do Instagram",
+    "partialHint": "Algumas categorias não puderam ser verificadas. Cookies de login do Instagram podem ser necessários para perfis privados, stories, destaques ou publicações marcadas.",
+    "scan": "Verificar perfil",
+    "scanFailed": "Não foi possível verificar o perfil do Instagram",
+    "scanning": "Verificando perfil do Instagram",
+    "scanningHint": "O VidBee está mapeando cada categoria. Isso pode levar algum tempo, pois as solicitações são espaçadas para reduzir limitações.",
+    "selectAtLeastOne": "Selecione pelo menos uma categoria disponível",
+    "sourceTotal": "{{count}} itens",
+    "states": {
+      "auth-required": "Login necessário",
+      "empty": "Nada encontrado",
+      "ready": "Pronto",
+      "unavailable": "Indisponível"
+    },
+    "tab": "Perfil do Instagram",
+    "urlPlaceholder": "https://www.instagram.com/usuario/"
+  },
   "playlist": {
     "badgeLabel": "Lista de reprodução",
     "clearPreview": "Limpar visualização",

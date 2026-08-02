@@ -15,16 +15,8 @@ import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, statSync } from 'node:fs'
 
 import { defaultMaxAttempts, virtualError } from '../classifier'
-import {
-  EventBus,
-  type TaskQueueEvent,
-  type TaskQueueListener
-} from '../events'
-import {
-  IllegalTransitionError,
-  transition as fsmTransition,
-  type TransitionContext
-} from '../fsm'
+import { EventBus, type TaskQueueEvent, type TaskQueueListener } from '../events'
+import { IllegalTransitionError, transition as fsmTransition, type TransitionContext } from '../fsm'
 import type { Executor, ExecutorRun } from '../executor'
 import type { PersistAdapter } from '../persist'
 import { ProcessRegistry, Watchdog, readPidStartTime } from '../process'
@@ -547,9 +539,13 @@ export class TaskQueueAPI {
 
     if (e.result.type === 'success') {
       const out = e.result.output
-      const guardOk = out.filePath
-        ? this.filePresent(out.filePath) && out.size > 0
-        : false
+      const multiFileGuardOk =
+        out.outputDirectory !== undefined &&
+        out.fileCount !== undefined &&
+        out.fileCount > 0 &&
+        this.filePresent(out.outputDirectory)
+      const guardOk =
+        multiFileGuardOk || (out.filePath ? this.filePresent(out.filePath) && out.size > 0 : false)
       if (guardOk) {
         await this.persist.closeAttempt({
           taskId: id,
@@ -567,10 +563,7 @@ export class TaskQueueAPI {
           output: out
         })
       } else {
-        const err = virtualError(
-          'output-missing',
-          `output ${out.filePath} missing or empty`
-        )
+        const err = virtualError('output-missing', `output ${out.filePath} missing or empty`)
         await this.persist.closeAttempt({
           taskId: id,
           attemptId,
@@ -639,17 +632,10 @@ export class TaskQueueAPI {
     })
 
     const t = this.store.get(id)
-    const maxAttempts = Math.max(
-      t?.maxAttempts ?? 0,
-      defaultMaxAttempts(err.category)
-    )
+    const maxAttempts = Math.max(t?.maxAttempts ?? 0, defaultMaxAttempts(err.category))
     const willRetry = err.retryable && (t?.attempt ?? 0) < maxAttempts
     if (willRetry) {
-      const wait = computeBackoffMs(
-        t?.attempt ?? 0,
-        err.suggestedRetryAfterMs,
-        this.rng
-      )
+      const wait = computeBackoffMs(t?.attempt ?? 0, err.suggestedRetryAfterMs, this.rng)
       const nextRetryAt = this.clock() + wait
       await this.applyTransition(id, 'retry-scheduled', {
         trigger: 'finalize-error',
@@ -695,11 +681,7 @@ export class TaskQueueAPI {
       if (!t) return
       const max = Math.max(t.maxAttempts, defaultMaxAttempts('stalled'))
       if (t.attempt < max) {
-        const wait = computeBackoffMs(
-          t.attempt,
-          err.suggestedRetryAfterMs,
-          this.rng
-        )
+        const wait = computeBackoffMs(t.attempt, err.suggestedRetryAfterMs, this.rng)
         const nextRetryAt = this.clock() + wait
         await this.applyTransition(id, 'retry-scheduled', {
           trigger: 'finalize-error',
@@ -719,11 +701,7 @@ export class TaskQueueAPI {
     })()
   }
 
-  private async applyTransition(
-    id: string,
-    to: TaskStatus,
-    ctx: TransitionContext
-  ): Promise<Task> {
+  private async applyTransition(id: string, to: TaskStatus, ctx: TransitionContext): Promise<Task> {
     const cur = this.store.get(id)
     if (!cur) throw new Error(`applyTransition: missing task ${id}`)
     let next: Task

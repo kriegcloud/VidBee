@@ -344,6 +344,37 @@
     "urlCopied": "تم نسخ الرابط إلى الحافظة",
     "videoCopied": "تم نسخ الفيديو إلى الحافظة"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} ملفات",
+    "categories": {
+      "highlights": "القصص المميزة",
+      "posts": "المنشورات",
+      "reels": "ريلز",
+      "stories": "القصص",
+      "tagged": "المنشورات المشار إليك فيها"
+    },
+    "categoryCounts": "{{sources}} عناصر · {{assets}} ملفات",
+    "downloadFailed": "تعذر بدء تنزيل ملف Instagram الشخصي",
+    "downloadSelected": "تنزيل المحدد",
+    "downloadStarted": "تمت إضافة {{count}} من ملفات Instagram إلى قائمة الانتظار",
+    "emptyHint": "الصق رابط ملف Instagram شخصي عام أو متاح لحصر منشوراته وريلز والقصص والقصص المميزة والمنشورات المشار إليه فيها.",
+    "emptyTitle": "تنزيل ملف Instagram شخصي",
+    "partialHint": "تعذر فحص بعض الفئات. قد تكون ملفات تعريف الارتباط لتسجيل الدخول إلى Instagram مطلوبة للملفات الخاصة أو القصص أو القصص المميزة أو المنشورات المشار إليها.",
+    "scan": "فحص الملف الشخصي",
+    "scanFailed": "تعذر فحص ملف Instagram الشخصي",
+    "scanning": "جارٍ فحص ملف Instagram الشخصي",
+    "scanningHint": "يقوم VidBee بحصر كل فئة. قد يستغرق ذلك بعض الوقت لأن الطلبات متباعدة لتقليل قيود المعدل.",
+    "selectAtLeastOne": "حدد فئة متاحة واحدة على الأقل",
+    "sourceTotal": "{{count}} عناصر",
+    "states": {
+      "auth-required": "تسجيل الدخول مطلوب",
+      "empty": "لم يتم العثور على شيء",
+      "ready": "جاهز",
+      "unavailable": "غير متاح"
+    },
+    "tab": "ملف Instagram الشخصي",
+    "urlPlaceholder": "https://www.instagram.com/username/"
+  },
   "playlist": {
     "badgeLabel": "قائمة التشغيل",
     "clearPreview": "مسح المعاينة",

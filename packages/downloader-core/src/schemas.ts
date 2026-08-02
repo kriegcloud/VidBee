@@ -76,6 +76,19 @@ export const DownloadTaskSchema = z.object({
   playlistTitle: z.string().optional(),
   playlistIndex: z.number().optional(),
   playlistSize: z.number().optional(),
+  batchId: z.string().optional(),
+  batchKind: z.literal('instagram-profile').optional(),
+  batchTitle: z.string().optional(),
+  batchCategory: z.string().optional(),
+  batchOrder: z.number().int().nonnegative().optional(),
+  batchSourceCount: z.number().int().nonnegative().optional(),
+  batchAssetCount: z.number().int().nonnegative().optional(),
+  outputDirectory: z.string().optional(),
+  fileCount: z.number().int().nonnegative().optional(),
+  downloadedCount: z.number().int().nonnegative().optional(),
+  skippedCount: z.number().int().nonnegative().optional(),
+  failedCount: z.number().int().nonnegative().optional(),
+  totalSize: z.number().int().nonnegative().optional(),
   progress: DownloadProgressSchema.optional(),
   error: z.string().optional(),
   // ── NEX-131 projection extras ──
@@ -101,21 +114,9 @@ export const DownloadRuntimeSettingsSchema = z.object({
   embedChapters: z.boolean().optional()
 })
 
-export const OneClickQualityPresetSchema = z.enum([
-  'best',
-  'good',
-  'normal',
-  'bad',
-  'worst'
-])
+export const OneClickQualityPresetSchema = z.enum(['best', 'good', 'normal', 'bad', 'worst'])
 
-export const OneClickContainerOptionSchema = z.enum([
-  'auto',
-  'mp4',
-  'mkv',
-  'webm',
-  'original'
-])
+export const OneClickContainerOptionSchema = z.enum(['auto', 'mp4', 'mkv', 'webm', 'original'])
 
 export const ThemeValueSchema = z.enum(['light', 'dark', 'system'])
 
@@ -261,6 +262,89 @@ export const PlaylistDownloadResultSchema = z.object({
   startIndex: z.number(),
   endIndex: z.number(),
   entries: z.array(PlaylistDownloadEntrySchema)
+})
+
+export const InstagramProfileCategorySchema = z.enum([
+  'posts',
+  'reels',
+  'stories',
+  'highlights',
+  'tagged'
+])
+
+export const InstagramCategoryStateSchema = z.enum([
+  'ready',
+  'empty',
+  'auth-required',
+  'unavailable'
+])
+
+export const InstagramInspectionErrorCodeSchema = z.enum([
+  'auth-required',
+  'rate-limited',
+  'not-found',
+  'network',
+  'binary-missing',
+  'unavailable'
+])
+
+export const InstagramCategorySummarySchema = z.object({
+  category: InstagramProfileCategorySchema,
+  state: InstagramCategoryStateSchema,
+  sourceCount: z.number().int().nonnegative(),
+  assetCount: z.number().int().nonnegative(),
+  errorCode: InstagramInspectionErrorCodeSchema.optional()
+})
+
+export const InstagramProfileInspectInputSchema = z.object({
+  url: z.url(),
+  settings: DownloadRuntimeSettingsSchema.optional()
+})
+
+export const InstagramProfileInspectionSchema = z.object({
+  inspectionId: z.string().min(1),
+  expiresAt: z.number().int().positive(),
+  complete: z.boolean(),
+  profile: z.object({
+    username: z.string().min(1),
+    profileUrl: z.url(),
+    displayName: z.string().optional(),
+    avatarUrl: z.url().optional(),
+    isPrivate: z.boolean().optional()
+  }),
+  categories: z.array(InstagramCategorySummarySchema),
+  totalSourceCount: z.number().int().nonnegative(),
+  totalAssetCount: z.number().int().nonnegative()
+})
+
+export const InstagramProfileInspectOutputSchema = z.object({
+  inspection: InstagramProfileInspectionSchema
+})
+
+export const InstagramProfileDownloadInputSchema = z.object({
+  inspectionId: z.string().min(1),
+  categories: z.array(InstagramProfileCategorySchema).min(1),
+  customDownloadPath: z.string().optional(),
+  settings: DownloadRuntimeSettingsSchema.optional()
+})
+
+export const InstagramProfileDownloadTaskSchema = z.object({
+  downloadId: z.string(),
+  category: InstagramProfileCategorySchema,
+  sourceCount: z.number().int().nonnegative(),
+  assetCount: z.number().int().nonnegative()
+})
+
+export const InstagramProfileDownloadResultSchema = z.object({
+  groupId: z.string(),
+  username: z.string(),
+  totalSourceCount: z.number().int().nonnegative(),
+  totalAssetCount: z.number().int().nonnegative(),
+  tasks: z.array(InstagramProfileDownloadTaskSchema)
+})
+
+export const InstagramProfileDownloadOutputSchema = z.object({
+  result: InstagramProfileDownloadResultSchema
 })
 
 export const StatusOutputSchema = z.object({

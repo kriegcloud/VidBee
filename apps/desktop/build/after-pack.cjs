@@ -4,6 +4,7 @@ const path = require('node:path')
 
 const BINARIES = [
   'yt-dlp_macos',
+  'gallery-dl_macos',
   path.join('ffmpeg', 'ffmpeg'),
   path.join('ffmpeg', 'ffprobe'),
   'deno'

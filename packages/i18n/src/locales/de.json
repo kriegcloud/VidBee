@@ -344,6 +344,37 @@
     "urlCopied": "URL in Zwischenablage kopiert",
     "videoCopied": "Video in Zwischenablage kopiert"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} Dateien",
+    "categories": {
+      "highlights": "Highlights",
+      "posts": "Beiträge",
+      "reels": "Reels",
+      "stories": "Storys",
+      "tagged": "Markierte Beiträge"
+    },
+    "categoryCounts": "{{sources}} Elemente · {{assets}} Dateien",
+    "downloadFailed": "Der Download des Instagram-Profils konnte nicht gestartet werden",
+    "downloadSelected": "Auswahl herunterladen",
+    "downloadStarted": "{{count}} Instagram-Dateien wurden zur Warteschlange hinzugefügt",
+    "emptyHint": "Füge den Link zu einem öffentlichen oder zugänglichen Instagram-Profil ein, um Beiträge, Reels, Storys, Highlights und markierte Beiträge zu erfassen.",
+    "emptyTitle": "Instagram-Profil herunterladen",
+    "partialHint": "Einige Kategorien konnten nicht geprüft werden. Für private Profile, Storys, Highlights oder markierte Beiträge können Instagram-Anmeldecookies erforderlich sein.",
+    "scan": "Profil prüfen",
+    "scanFailed": "Das Instagram-Profil konnte nicht geprüft werden",
+    "scanning": "Instagram-Profil wird geprüft",
+    "scanningHint": "VidBee erfasst jede Kategorie. Dies kann etwas dauern, da Anfragen verzögert werden, um Ratenbegrenzungen zu vermeiden.",
+    "selectAtLeastOne": "Wähle mindestens eine verfügbare Kategorie aus",
+    "sourceTotal": "{{count}} Elemente",
+    "states": {
+      "auth-required": "Anmeldung erforderlich",
+      "empty": "Nichts gefunden",
+      "ready": "Bereit",
+      "unavailable": "Nicht verfügbar"
+    },
+    "tab": "Instagram-Profil",
+    "urlPlaceholder": "https://www.instagram.com/benutzername/"
+  },
   "playlist": {
     "badgeLabel": "Playlist",
     "clearPreview": "Vorschau löschen",

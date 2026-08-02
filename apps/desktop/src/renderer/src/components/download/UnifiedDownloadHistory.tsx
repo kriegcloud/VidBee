@@ -367,27 +367,35 @@ export function UnifiedDownloadHistory({
   const groupedView = useMemo(() => {
     const groups = new Map<
       string,
-      { id: string; title: string; totalCount: number; records: DownloadRecord[] }
+      {
+        id: string
+        title: string
+        totalCount: number
+        isPlaylist: boolean
+        records: DownloadRecord[]
+      }
     >()
     const order: Array<{ type: 'group'; id: string } | { type: 'single'; record: DownloadRecord }> =
       []
 
     for (const record of filteredRecords) {
-      if (record.playlistId) {
-        let group = groups.get(record.playlistId)
+      const groupId = record.batchId ?? record.playlistId
+      if (groupId) {
+        let group = groups.get(groupId)
         if (!group) {
           group = {
-            id: record.playlistId,
-            title: record.playlistTitle || record.title,
-            totalCount: record.playlistSize || 0,
+            id: groupId,
+            title: record.batchTitle || record.playlistTitle || record.title,
+            totalCount: record.batchId ? 0 : record.playlistSize || 0,
+            isPlaylist: !record.batchId,
             records: []
           }
-          groups.set(record.playlistId, group)
-          order.push({ type: 'group', id: record.playlistId })
+          groups.set(groupId, group)
+          order.push({ type: 'group', id: groupId })
         }
         group.records.push(record)
-        if (!group.title && record.playlistTitle) {
-          group.title = record.playlistTitle
+        if (!group.title && (record.batchTitle || record.playlistTitle)) {
+          group.title = record.batchTitle || record.playlistTitle || record.title
         }
         if (!group.totalCount && record.playlistSize) {
           group.totalCount = record.playlistSize
@@ -399,8 +407,8 @@ export function UnifiedDownloadHistory({
 
     for (const group of groups.values()) {
       group.records.sort((a, b) => {
-        const aIndex = a.playlistIndex ?? Number.MAX_SAFE_INTEGER
-        const bIndex = b.playlistIndex ?? Number.MAX_SAFE_INTEGER
+        const aIndex = a.batchOrder ?? a.playlistIndex ?? Number.MAX_SAFE_INTEGER
+        const bIndex = b.batchOrder ?? b.playlistIndex ?? Number.MAX_SAFE_INTEGER
         if (aIndex !== bIndex) {
           return aIndex - bIndex
         }
@@ -527,8 +535,9 @@ export function UnifiedDownloadHistory({
                 return (
                   <PlaylistDownloadGroup
                     groupId={group.id}
+                    isPlaylist={group.isPlaylist}
                     key={`group:${group.id}`}
-                    onDeletePlaylist={handleRequestDeletePlaylist}
+                    onDeletePlaylist={group.isPlaylist ? handleRequestDeletePlaylist : undefined}
                     onToggleSelect={handleToggleSelect}
                     records={group.records}
                     selectedIds={selectedIds}

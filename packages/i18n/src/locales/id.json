@@ -344,6 +344,37 @@
     "urlCopied": "URL disalin ke clipboard",
     "videoCopied": "Video disalin ke clipboard"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} berkas",
+    "categories": {
+      "highlights": "Sorotan",
+      "posts": "Postingan",
+      "reels": "Reels",
+      "stories": "Cerita",
+      "tagged": "Postingan bertanda"
+    },
+    "categoryCounts": "{{sources}} item · {{assets}} berkas",
+    "downloadFailed": "Gagal memulai pengunduhan profil Instagram",
+    "downloadSelected": "Unduh yang dipilih",
+    "downloadStarted": "{{count}} berkas Instagram ditambahkan ke antrean",
+    "emptyHint": "Tempel tautan profil Instagram publik atau yang dapat diakses untuk memetakan postingan, reels, cerita, sorotan, dan postingan bertandanya.",
+    "emptyTitle": "Unduh profil Instagram",
+    "partialHint": "Beberapa kategori tidak dapat dipindai. Cookie masuk Instagram mungkin diperlukan untuk profil privat, cerita, sorotan, atau postingan bertanda.",
+    "scan": "Pindai profil",
+    "scanFailed": "Gagal memindai profil Instagram",
+    "scanning": "Memindai profil Instagram",
+    "scanningHint": "VidBee sedang memetakan setiap kategori. Proses ini mungkin memerlukan waktu karena permintaan diberi jeda untuk mengurangi pembatasan laju.",
+    "selectAtLeastOne": "Pilih setidaknya satu kategori yang tersedia",
+    "sourceTotal": "{{count}} item",
+    "states": {
+      "auth-required": "Perlu masuk",
+      "empty": "Tidak ada yang ditemukan",
+      "ready": "Siap",
+      "unavailable": "Tidak tersedia"
+    },
+    "tab": "Profil Instagram",
+    "urlPlaceholder": "https://www.instagram.com/nama_pengguna/"
+  },
   "playlist": {
     "badgeLabel": "Playlist",
     "clearPreview": "Hapus pratinjau",

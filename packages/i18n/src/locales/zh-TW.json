@@ -344,6 +344,37 @@
     "urlCopied": "連結已複製到剪貼簿",
     "videoCopied": "影片已複製到剪貼簿"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} 個檔案",
+    "categories": {
+      "highlights": "精選動態",
+      "posts": "貼文",
+      "reels": "Reels",
+      "stories": "限時動態",
+      "tagged": "被標註的貼文"
+    },
+    "categoryCounts": "{{sources}} 個項目 · {{assets}} 個檔案",
+    "downloadFailed": "無法開始下載 Instagram 個人檔案",
+    "downloadSelected": "下載所選內容",
+    "downloadStarted": "已將 {{count}} 個 Instagram 檔案加入佇列",
+    "emptyHint": "貼上公開或可存取的 Instagram 個人檔案連結，以整理貼文、Reels、限時動態、精選動態及被標註的貼文。",
+    "emptyTitle": "下載 Instagram 個人檔案",
+    "partialHint": "部分分類無法掃描。私人帳號、限時動態、精選動態或被標註的貼文可能需要 Instagram 登入 Cookie。",
+    "scan": "掃描個人檔案",
+    "scanFailed": "無法掃描 Instagram 個人檔案",
+    "scanning": "正在掃描 Instagram 個人檔案",
+    "scanningHint": "VidBee 正在整理每個分類。為減少觸發速率限制，請求會間隔傳送，因此可能需要一些時間。",
+    "selectAtLeastOne": "請至少選擇一個可用分類",
+    "sourceTotal": "{{count}} 個項目",
+    "states": {
+      "auth-required": "需要登入",
+      "empty": "找不到內容",
+      "ready": "已就緒",
+      "unavailable": "無法使用"
+    },
+    "tab": "Instagram 個人檔案",
+    "urlPlaceholder": "https://www.instagram.com/使用者名稱/"
+  },
   "playlist": {
     "badgeLabel": "播放列表",
     "clearPreview": "清晰預覽",

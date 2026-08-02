@@ -10,6 +10,7 @@ export type TaskKind =
   | 'video'
   | 'audio'
   | 'playlist'
+  | 'instagram-profile-category'
   | 'subscription-item'
   | 'yt-dlp-forward'
 
@@ -84,6 +85,18 @@ export interface TaskOutput {
    * one (e.g. fake fixtures, raw `yt-dlp -j` info-fetch).
    */
   formatId?: string | null
+  /** Root directory for multi-file tasks such as an Instagram profile category. */
+  outputDirectory?: string
+  /** Total files materialized by the task, including files skipped because they exist. */
+  fileCount?: number
+  /** Files downloaded during this attempt. */
+  downloadedCount?: number
+  /** Files already present and therefore skipped during this attempt. */
+  skippedCount?: number
+  /** Files gallery-dl reported as failed during this attempt. */
+  failedCount?: number
+  /** Aggregate size of materialized files when cheaply available. */
+  totalSize?: number
 }
 
 export interface TaskProgress {
@@ -170,7 +183,7 @@ export interface ProcessJournalRow {
   signal: string | null
 }
 
-export type ProcessKind = 'yt-dlp' | 'ffmpeg' | 'ffprobe'
+export type ProcessKind = 'yt-dlp' | 'gallery-dl' | 'ffmpeg' | 'ffprobe'
 
 /**
  * Read-only snapshot returned by TaskStore.snapshot(). Consumers MUST treat

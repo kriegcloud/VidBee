@@ -4,6 +4,7 @@ export const TaskKindSchema = z.enum([
   'video',
   'audio',
   'playlist',
+  'instagram-profile-category',
   'subscription-item',
   'yt-dlp-forward'
 ])
@@ -19,11 +20,7 @@ export const TaskStatusSchema = z.enum([
   'cancelled'
 ])
 
-export const TaskPrioritySchema = z.union([
-  z.literal(0),
-  z.literal(10),
-  z.literal(20)
-])
+export const TaskPrioritySchema = z.union([z.literal(0), z.literal(10), z.literal(20)])
 
 export const ErrorCategorySchema = z.enum([
   'http-429',
@@ -57,7 +54,14 @@ export const TaskOutputSchema = z.object({
   filePath: z.string(),
   size: z.number().int().nonnegative(),
   durationMs: z.number().int().nullable(),
-  sha256: z.string().nullable()
+  sha256: z.string().nullable(),
+  formatId: z.string().nullable().optional(),
+  outputDirectory: z.string().optional(),
+  fileCount: z.number().int().nonnegative().optional(),
+  downloadedCount: z.number().int().nonnegative().optional(),
+  skippedCount: z.number().int().nonnegative().optional(),
+  failedCount: z.number().int().nonnegative().optional(),
+  totalSize: z.number().int().nonnegative().optional()
 })
 
 export const TaskProgressSchema = z.object({

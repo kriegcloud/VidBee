@@ -6,12 +6,14 @@
  */
 
 import { execSync, spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import http from 'node:http'
 import https from 'node:https'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { GALLERY_DL_PLATFORM_ASSETS, GALLERY_DL_RELEASE } from './gallerydl-assets.js'
 import { YTDLP_PLATFORM_ASSETS } from './ytdlp-assets.js'
 
 // Configuration
@@ -20,6 +22,7 @@ const currentDirPath = path.dirname(currentFilePath)
 const RESOURCES_DIR = path.join(currentDirPath, '..', 'resources')
 const FFMPEG_DIR = path.join(RESOURCES_DIR, 'ffmpeg')
 const YTDLP_BASE_URL = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
+const GALLERY_DL_BASE_URL = `https://github.com/gdl-org/builds/releases/download/${GALLERY_DL_RELEASE}`
 const DENO_BASE_URL = 'https://github.com/denoland/deno/releases/latest/download'
 const MAC_FFMPEG_MODE = (process.env.VIDBEE_MAC_FFMPEG_MODE || 'native').trim().toLowerCase()
 const GITHUB_TOKEN =
@@ -30,6 +33,7 @@ const YTDLP_VERSION_CHECK_TIMEOUT_MS = 30_000
 const PLATFORM_CONFIG = {
   win32: {
     ytdlp: YTDLP_PLATFORM_ASSETS.win32,
+    gallerydl: GALLERY_DL_PLATFORM_ASSETS.win32,
     ffmpeg: {
       url: 'https://github.com/yt-dlp/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-win64-gpl.zip',
       innerPath: 'ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe',
@@ -46,6 +50,7 @@ const PLATFORM_CONFIG = {
   },
   darwin: {
     ytdlp: YTDLP_PLATFORM_ASSETS.darwin,
+    gallerydl: GALLERY_DL_PLATFORM_ASSETS.darwin,
     ffmpeg: {
       // For development, download only the architecture matching current system
       arm64: {
@@ -76,6 +81,7 @@ const PLATFORM_CONFIG = {
   },
   linux: {
     ytdlp: YTDLP_PLATFORM_ASSETS.linux,
+    gallerydl: GALLERY_DL_PLATFORM_ASSETS.linux,
     ffmpeg: {
       url: 'https://github.com/yt-dlp/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl.tar.xz',
       innerPath: 'ffmpeg-master-latest-linux64-gpl/bin/ffmpeg',
@@ -354,6 +360,10 @@ function fileExists(filePath) {
   return fs.existsSync(filePath)
 }
 
+function sha256File(filePath) {
+  return createHash('sha256').update(fs.readFileSync(filePath)).digest('hex')
+}
+
 function findFirstFileByName(dirPath, fileName) {
   if (!fileExists(dirPath)) {
     return null
@@ -536,10 +546,37 @@ async function resolveMacFfmpegDownloadUrl(ffmpegConfig) {
   return downloadUrl
 }
 
+const YTDLP_VENDOR_MARKER = path.join(RESOURCES_DIR, '.ytdlp-vendored')
+
+function hasVendoredYtDlpMarker() {
+  return fileExists(YTDLP_VENDOR_MARKER)
+}
+
 // Main download functions
 async function downloadYtDlp(config) {
   const { asset, output } = config.ytdlp
   const outputPath = path.join(RESOURCES_DIR, output)
+
+  // Local engine builds install a zipapp + marker via `pnpm run build:ytdlp`.
+  // Keep that binary instead of overwriting with a stock GitHub release.
+  if (hasVendoredYtDlpMarker()) {
+    if (fileExists(outputPath)) {
+      const validation = checkYtDlpBinary(outputPath)
+      if (validation.ok) {
+        logBinaryVersion('yt-dlp', validation)
+        log(`${output} is a vendored build (.ytdlp-vendored present); skipping download`, 'info')
+        return
+      }
+      log(
+        `Vendored ${output} failed version check: ${validation.message}. ` +
+          'Re-run pnpm run build:ytdlp or delete resources/.ytdlp-vendored to restore stock downloads.',
+        'warn'
+      )
+      return
+    }
+    log(`Found .ytdlp-vendored but ${output} is missing. Run pnpm run build:ytdlp`, 'warn')
+    return
+  }
 
   if (fileExists(outputPath)) {
     const validation = checkYtDlpBinary(outputPath)
@@ -571,6 +608,45 @@ async function downloadYtDlp(config) {
     if (fs.existsSync(tempPath)) {
       fs.unlinkSync(tempPath)
     }
+    throw error
+  }
+}
+
+async function downloadGalleryDl(config) {
+  const { asset, output, sha256 } = config.gallerydl
+  const outputPath = path.join(RESOURCES_DIR, output)
+
+  if (fileExists(outputPath)) {
+    const actualDigest = sha256File(outputPath)
+    const validation = checkBinary(outputPath, ['--version'], 'gallery-dl')
+    if (actualDigest === sha256 && validation.ok) {
+      logBinaryVersion('gallery-dl', validation)
+      log(`${output} already exists and matches the pinned digest`, 'info')
+      return
+    }
+    log(`Existing ${output} does not match the pinned, working build; replacing it`, 'warn')
+  }
+
+  const url = `${GALLERY_DL_BASE_URL}/${asset}`
+  const tempPath = path.join(RESOURCES_DIR, `.${output}.tmp`)
+  try {
+    await downloadFileWithRetry(url, tempPath)
+    const actualDigest = sha256File(tempPath)
+    if (actualDigest !== sha256) {
+      throw new Error(`SHA-256 mismatch for ${asset}: expected ${sha256}, received ${actualDigest}`)
+    }
+    safeUnlink(outputPath)
+    fs.renameSync(tempPath, outputPath)
+    setExecutable(outputPath)
+    const validation = checkBinary(outputPath, ['--version'], 'gallery-dl')
+    if (!validation.ok) {
+      safeUnlink(outputPath)
+      throw new Error(`Downloaded ${output} failed version check: ${validation.message}`)
+    }
+    logBinaryVersion('gallery-dl', validation)
+    log(`Downloaded pinned ${output} successfully`, 'success')
+  } catch (error) {
+    safeUnlink(tempPath)
     throw error
   }
 }
@@ -1039,6 +1115,9 @@ async function setup() {
   try {
     // Download yt-dlp
     await downloadYtDlp(config)
+
+    // Download gallery-dl for Instagram collections
+    await downloadGalleryDl(config)
 
     // Download JS runtime (Deno)
     await downloadDenoRuntime()

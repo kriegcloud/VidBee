@@ -344,6 +344,37 @@
     "urlCopied": "URL panoya kopyalandı",
     "videoCopied": "Video panoya kopyalandı"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} dosya",
+    "categories": {
+      "highlights": "Öne çıkanlar",
+      "posts": "Gönderiler",
+      "reels": "Reels",
+      "stories": "Hikâyeler",
+      "tagged": "Etiketli gönderiler"
+    },
+    "categoryCounts": "{{sources}} öğe · {{assets}} dosya",
+    "downloadFailed": "Instagram profili indirmesi başlatılamadı",
+    "downloadSelected": "Seçilenleri indir",
+    "downloadStarted": "{{count}} Instagram dosyası kuyruğa eklendi",
+    "emptyHint": "Gönderileri, reels videolarını, hikâyeleri, öne çıkanları ve etiketli gönderileri eşlemek için herkese açık veya erişilebilir bir Instagram profil bağlantısı yapıştırın.",
+    "emptyTitle": "Instagram profili indir",
+    "partialHint": "Bazı kategoriler taranamadı. Gizli profiller, hikâyeler, öne çıkanlar veya etiketli gönderiler için Instagram oturum çerezleri gerekebilir.",
+    "scan": "Profili tara",
+    "scanFailed": "Instagram profili taranamadı",
+    "scanning": "Instagram profili taranıyor",
+    "scanningHint": "VidBee her kategoriyi eşliyor. Hız sınırlamasını azaltmak için istekler aralıklı gönderildiğinden bu işlem biraz sürebilir.",
+    "selectAtLeastOne": "En az bir kullanılabilir kategori seçin",
+    "sourceTotal": "{{count}} öğe",
+    "states": {
+      "auth-required": "Oturum açma gerekli",
+      "empty": "İçerik bulunamadı",
+      "ready": "Hazır",
+      "unavailable": "Kullanılamıyor"
+    },
+    "tab": "Instagram Profili",
+    "urlPlaceholder": "https://www.instagram.com/kullanici_adi/"
+  },
   "playlist": {
     "badgeLabel": "Oynatma listesi",
     "clearPreview": "Önizlemeyi temizle",

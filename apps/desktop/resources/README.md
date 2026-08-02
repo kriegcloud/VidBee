@@ -2,6 +2,19 @@
 
 This directory contains bundled resources for the application.
 
+## gallery-dl Binary
+
+VidBee uses `gallery-dl` for Instagram profile and gallery downloads. Running
+`pnpm --filter vidbee setup` downloads the pinned standalone build for the
+current platform, verifies its SHA-256 digest, and stores it as:
+
+1. **Windows**: `gallery-dl.exe`
+2. **macOS**: `gallery-dl_macos`
+3. **Linux**: `gallery-dl_linux`
+
+Set `GALLERY_DL_PATH` to use a compatible system installation during
+development. See `THIRD_PARTY_NOTICES.md` for source and license information.
+
 ## yt-dlp Binaries
 
 To bundle yt-dlp with the application, place the appropriate binaries in this directory:
@@ -11,6 +24,21 @@ To bundle yt-dlp with the application, place the appropriate binaries in this di
 1. **Windows**: `yt-dlp.exe`
 2. **macOS**: `yt-dlp_macos`
 3. **Linux**: `yt-dlp_linux`
+
+### Local vendor build (source)
+
+For engine development, clone yt-dlp under `vendor/yt-dlp` and install a zipapp
+into this directory:
+
+```bash
+git clone --depth 1 https://github.com/yt-dlp/yt-dlp.git vendor/yt-dlp
+pnpm run build:ytdlp
+pnpm run verify:ytdlp
+```
+
+That writes the platform binary plus `.ytdlp-vendored`. While the marker exists,
+`pnpm setup` will not replace the binary with a stock GitHub release download.
+See `vendor/README.md` for details.
 
 ### How to Download
 

@@ -40,7 +40,7 @@ export const CLASSIFIER_RULES: readonly Rule[] = [
   {
     category: 'auth-required',
     regex:
-      /Sign in to confirm|Login required|Private video|members-only|cookies are no longer valid/i,
+      /Sign in to confirm|Login required|Private (?:video|profile)|members-only|cookies are no longer valid|redirect to (?:login|challenge) page|authentication required/i,
     exitCodeHint: null,
     defaultMaxAttempts: 0,
     defaultBackoffMs: null,
@@ -60,7 +60,7 @@ export const CLASSIFIER_RULES: readonly Rule[] = [
   {
     category: 'not-found',
     regex:
-      /HTTP Error 404|Video unavailable|This video has been removed|Requested format is not available/i,
+      /HTTP Error 404|Video unavailable|This video has been removed|Requested format is not available|NotFoundError|profile not found/i,
     exitCodeHint: null,
     defaultMaxAttempts: 0,
     defaultBackoffMs: null,
@@ -87,7 +87,7 @@ export const CLASSIFIER_RULES: readonly Rule[] = [
   },
   {
     category: 'binary-missing',
-    regex: /yt-dlp.*not found|ffmpeg.*not found|ffprobe.*not found/i,
+    regex: /yt-dlp.*not found|gallery-dl.*not found|ffmpeg.*not found|ffprobe.*not found/i,
     exitCodeHint: 127,
     defaultMaxAttempts: 0,
     defaultBackoffMs: null,
@@ -257,10 +257,7 @@ export function classify(input: ClassifyInput): ClassifiedError {
  * `cancelled-by-user`). No stderr regex is consulted; the rule's defaults are
  * used directly.
  */
-export function virtualError(
-  category: ErrorCategory,
-  rawMessage: string
-): ClassifiedError {
+export function virtualError(category: ErrorCategory, rawMessage: string): ClassifiedError {
   const rule = getRuleForCategory(category)
   return {
     category,
@@ -273,11 +270,7 @@ export function virtualError(
   }
 }
 
-function buildError(
-  rule: Rule,
-  sanitizedTail: string,
-  input: ClassifyInput
-): ClassifiedError {
+function buildError(rule: Rule, sanitizedTail: string, input: ClassifyInput): ClassifiedError {
   let suggestedRetryAfterMs = rule.defaultBackoffMs
   if (rule.category === 'http-429') {
     const fromInput = parseRetryAfter(input.retryAfterHeader ?? null)

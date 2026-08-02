@@ -344,6 +344,37 @@
     "urlCopied": "URL copied to clipboard",
     "videoCopied": "Video copied to clipboard"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} files",
+    "categories": {
+      "highlights": "Highlights",
+      "posts": "Posts",
+      "reels": "Reels",
+      "stories": "Stories",
+      "tagged": "Tagged posts"
+    },
+    "categoryCounts": "{{sources}} items · {{assets}} files",
+    "downloadFailed": "Failed to start the Instagram profile download",
+    "downloadSelected": "Download selected",
+    "downloadStarted": "Queued {{count}} Instagram files",
+    "emptyHint": "Paste a public or accessible Instagram profile link to map its posts, reels, stories, highlights, and tagged posts.",
+    "emptyTitle": "Download an Instagram profile",
+    "partialHint": "Some categories could not be scanned. Instagram login cookies may be required for private profiles, stories, highlights, or tagged posts.",
+    "scan": "Scan profile",
+    "scanFailed": "Failed to scan the Instagram profile",
+    "scanning": "Scanning Instagram profile",
+    "scanningHint": "VidBee is mapping each category. This can take a little while because requests are paced to reduce rate limiting.",
+    "selectAtLeastOne": "Select at least one available category",
+    "sourceTotal": "{{count}} items",
+    "states": {
+      "auth-required": "Login required",
+      "empty": "Nothing found",
+      "ready": "Ready",
+      "unavailable": "Unavailable"
+    },
+    "tab": "Instagram Profile",
+    "urlPlaceholder": "https://www.instagram.com/username/"
+  },
   "playlist": {
     "badgeLabel": "Playlist",
     "clearPreview": "Clear preview",

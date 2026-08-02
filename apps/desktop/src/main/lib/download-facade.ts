@@ -18,6 +18,12 @@ import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import {
+  enqueueInstagramProfileDownload,
+  type InstagramProfileDownloadInput,
+  type InstagramProfileDownloadResult,
+  type InstagramProfileInspection
+} from '@vidbee/downloader-core'
 import { PRIORITY_USER, type Task, type TaskInput, type TaskQueueAPI } from '@vidbee/task-queue'
 
 import type {
@@ -35,7 +41,12 @@ import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { toSharedSettings } from './command-utils'
 import { projectProgressForRenderer, projectTaskForRenderer } from './projection'
-import { getDesktopTaskQueue, startDesktopTaskQueue } from './task-queue-host'
+import {
+  getDesktopInstagramProfileInspector,
+  getDesktopTaskQueue,
+  resolveDesktopDownloadDir,
+  startDesktopTaskQueue
+} from './task-queue-host'
 import { fetchPlaylistInfo, fetchVideoInfo, fetchVideoInfoWithCommand } from './yt-dlp-info'
 
 const logger = scopedLoggers.download
@@ -283,6 +294,11 @@ class DownloadFacade extends EventEmitter {
     return fetchPlaylistInfo(url)
   }
 
+  inspectInstagramProfile(url: string): Promise<InstagramProfileInspection> {
+    const settings = toSharedSettings(settingsManager.getAll())
+    return getDesktopInstagramProfileInspector().inspect(url, settings)
+  }
+
   // ───────────── Queue control ─────────────
 
   startDownload(id: string, options: DownloadOptions): boolean {
@@ -409,6 +425,23 @@ class DownloadFacade extends EventEmitter {
       endIndex: selected.at(-1)?.index ?? 0,
       entries
     }
+  }
+
+  async startInstagramProfileDownload(
+    input: InstagramProfileDownloadInput
+  ): Promise<InstagramProfileDownloadResult> {
+    this.subscribeOnce()
+    await startDesktopTaskQueue()
+    const settings = toSharedSettings(settingsManager.getAll())
+    return enqueueInstagramProfileDownload({
+      queue: this.queue,
+      inspector: getDesktopInstagramProfileInspector(),
+      input: {
+        ...input,
+        settings
+      },
+      defaultDownloadDir: resolveDesktopDownloadDir()
+    })
   }
 
   // ───────────── Read-only ─────────────

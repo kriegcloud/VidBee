@@ -1,4 +1,6 @@
 import type {
+	InstagramProfileCategory,
+	InstagramProfileInspection,
 	PlaylistInfo,
 	VideoFormat,
 	VideoInfo,
@@ -8,7 +10,9 @@ import { Button } from "@vidbee/ui/components/ui/button";
 import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
 import { DownloadDialogLayout } from "@vidbee/ui/components/ui/download-dialog-layout";
 import { Input } from "@vidbee/ui/components/ui/input";
+import { InstagramProfilePreview } from "@vidbee/ui/components/ui/instagram-profile-preview";
 import { Label } from "@vidbee/ui/components/ui/label";
+import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
 import { useAddUrlInteraction } from "@vidbee/ui/lib/use-add-url-interaction";
 import { useAddUrlShortcut } from "@vidbee/ui/lib/use-add-url-shortcut";
 import { FolderOpen, Loader2 } from "lucide-react";
@@ -22,6 +26,7 @@ import {
 } from "../../lib/download-format-preferences";
 import { orpcClient } from "../../lib/orpc-client";
 import { readOrpcDownloadSettings } from "../../lib/orpc-download-settings";
+import { resolveImageProxyUrl } from "../../lib/remote-image-proxy";
 import { PlaylistDownload } from "./playlist-download";
 import {
 	SingleVideoDownload,
@@ -83,7 +88,9 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { settings, updateSettings } = useWebDownloadSettings();
 
 	const [url, setUrl] = useState("");
-	const [activeTab, setActiveTab] = useState<"single" | "playlist">("single");
+	const [activeTab, setActiveTab] = useState<"single" | "playlist" | "profile">(
+		"single",
+	);
 
 	const [singleVideoState, setSingleVideoState] = useState<SingleVideoState>({
 		title: "",
@@ -108,13 +115,26 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		string | null
 	>(null);
 	const playlistBusy = playlistPreviewLoading || playlistDownloadLoading;
+	const [profileUrl, setProfileUrl] = useState("");
+	const [profileInspection, setProfileInspection] =
+		useState<InstagramProfileInspection | null>(null);
+	const [profileInspectionLoading, setProfileInspectionLoading] =
+		useState(false);
+	const [profileDownloadLoading, setProfileDownloadLoading] = useState(false);
+	const [profileError, setProfileError] = useState<string | null>(null);
+	const [selectedProfileCategories, setSelectedProfileCategories] = useState<
+		Set<InstagramProfileCategory>
+	>(new Set());
+	const profileBusy = profileInspectionLoading || profileDownloadLoading;
 	const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
 	const [selectedEntryIds, setSelectedEntryIds] = useState<Set<string>>(
 		new Set(),
 	);
 	const lockDialogHeight =
-		activeTab === "playlist" &&
-		(playlistPreviewLoading || playlistInfo !== null);
+		(activeTab === "playlist" &&
+			(playlistPreviewLoading || playlistInfo !== null)) ||
+		(activeTab === "profile" &&
+			(profileInspectionLoading || profileInspection !== null));
 
 	const notifyDownloadsChanged = useCallback(async () => {
 		if (!onDownloadsChanged) {
@@ -258,6 +278,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const handleParsePlaylistUrl = useCallback(
 		async (trimmedUrl: string) => {
 			setOpen(true);
+			setActiveTab("playlist");
 			setPlaylistUrl(trimmedUrl);
 			setPlaylistInfo(null);
 			setPlaylistPreviewError(null);
@@ -297,6 +318,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const handleParseSingleUrl = useCallback(
 		async (trimmedUrl: string) => {
 			setOpen(true);
+			setActiveTab("single");
 			setUrl(trimmedUrl);
 			setSingleVideoState((prev) => ({
 				...prev,
@@ -309,6 +331,58 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			await fetchVideoInfo(trimmedUrl);
 		},
 		[fetchVideoInfo],
+	);
+
+	const inspectInstagramProfile = useCallback(
+		async (targetUrl: string) => {
+			const trimmedUrl = targetUrl.trim();
+			if (!trimmedUrl) {
+				toast.error(t("errors.emptyUrl"));
+				return;
+			}
+
+			setProfileInspectionLoading(true);
+			setProfileError(null);
+			setProfileInspection(null);
+			setSelectedProfileCategories(new Set());
+			try {
+				const result = await orpcClient.instagramProfile.inspect({
+					url: trimmedUrl,
+					settings: readOrpcDownloadSettings(),
+				});
+				setProfileInspection(result.inspection);
+				setSelectedProfileCategories(
+					new Set(
+						result.inspection.categories
+							.filter(
+								(category) =>
+									category.state === "ready" && category.assetCount > 0,
+							)
+							.map((category) => category.category),
+					),
+				);
+			} catch (inspectionError) {
+				console.error("Failed to inspect Instagram profile:", inspectionError);
+				const message =
+					inspectionError instanceof Error && inspectionError.message
+						? inspectionError.message
+						: t("instagramProfile.scanFailed");
+				setProfileError(message);
+			} finally {
+				setProfileInspectionLoading(false);
+			}
+		},
+		[t],
+	);
+
+	const handleParseProfileUrl = useCallback(
+		async (trimmedUrl: string) => {
+			setOpen(true);
+			setActiveTab("profile");
+			setProfileUrl(trimmedUrl);
+			await inspectInstagramProfile(trimmedUrl);
+		},
+		[inspectInstagramProfile],
 	);
 
 	const handleOneClickFromAddUrl = useCallback(
@@ -334,6 +408,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		activeTab,
 		isOneClickDownloadEnabled: settings.oneClickDownload,
 		isPlaylistBusy: playlistBusy,
+		isProfileBusy: profileBusy,
 		onEmptyUrl: () => {
 			toast.error(t("errors.emptyUrl"));
 		},
@@ -341,9 +416,41 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			toast.error(t("errors.invalidUrl"));
 		},
 		onOneClickDownload: handleOneClickFromAddUrl,
+		onParseProfile: handleParseProfileUrl,
 		onParsePlaylist: handleParsePlaylistUrl,
 		onParseSingle: handleParseSingleUrl,
 	});
+
+	const handleDownloadProfile = useCallback(async () => {
+		if (!(profileInspection && selectedProfileCategories.size > 0)) {
+			toast.error(t("instagramProfile.selectAtLeastOne"));
+			return;
+		}
+
+		setProfileDownloadLoading(true);
+		try {
+			const result = await orpcClient.instagramProfile.download({
+				inspectionId: profileInspection.inspectionId,
+				categories: [...selectedProfileCategories],
+				settings: readOrpcDownloadSettings(),
+			});
+			await notifyDownloadsChanged();
+			toast.success(
+				t("instagramProfile.downloadStarted", {
+					count: result.result.totalAssetCount,
+				}),
+			);
+			setOpen(false);
+		} catch (downloadError) {
+			console.error(
+				"Failed to start Instagram profile download:",
+				downloadError,
+			);
+			toast.error(t("instagramProfile.downloadFailed"));
+		} finally {
+			setProfileDownloadLoading(false);
+		}
+	}, [notifyDownloadsChanged, profileInspection, selectedProfileCategories, t]);
 
 	useAddUrlShortcut({
 		enabled: open,
@@ -570,6 +677,12 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			setStartIndex("1");
 			setEndIndex("");
 			setSelectedEntryIds(new Set());
+			setProfileUrl("");
+			setProfileInspection(null);
+			setProfileInspectionLoading(false);
+			setProfileDownloadLoading(false);
+			setProfileError(null);
+			setSelectedProfileCategories(new Set());
 		}
 	}, [open]);
 
@@ -672,6 +785,16 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 								</div>
 							</div>
 						)}
+						{activeTab === "profile" &&
+							!profileInspection &&
+							!profileInspectionLoading && (
+								<Input
+									className="h-8 w-[320px] text-xs"
+									onChange={(event) => setProfileUrl(event.target.value)}
+									placeholder={t("instagramProfile.urlPlaceholder")}
+									value={profileUrl}
+								/>
+							)}
 					</div>
 					<div className="ml-auto flex gap-2">
 						{activeTab === "single" ? (
@@ -698,6 +821,30 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 									{settings.oneClickDownload
 										? t("download.oneClickDownloadNow")
 										: t("download.startDownload")}
+								</Button>
+							)
+						) : activeTab === "profile" ? (
+							profileInspection ? (
+								<Button
+									disabled={
+										profileDownloadLoading ||
+										selectedProfileCategories.size === 0
+									}
+									onClick={handleDownloadProfile}
+								>
+									{profileDownloadLoading && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
+									{t("instagramProfile.downloadSelected")}
+								</Button>
+							) : profileInspectionLoading ? null : (
+								<Button
+									disabled={profileBusy || !profileUrl.trim()}
+									onClick={() => {
+										void inspectInstagramProfile(profileUrl);
+									}}
+								>
+									{t("instagramProfile.scan")}
 								</Button>
 							)
 						) : playlistInfo && !playlistPreviewLoading ? (
@@ -760,6 +907,35 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				/>
 			}
 			playlistTabLabel={t("download.metadata.playlist")}
+			profileTabContent={
+				<InstagramProfilePreview
+					error={profileError}
+					inspection={profileInspection}
+					loading={profileInspectionLoading}
+					onToggleCategory={(category, selected) => {
+						setSelectedProfileCategories((current) => {
+							const next = new Set(current);
+							if (selected) {
+								next.add(category);
+							} else {
+								next.delete(category);
+							}
+							return next;
+						});
+					}}
+					renderAvatar={(avatarUrl) => (
+						<RemoteImage
+							alt=""
+							cacheResolver={resolveImageProxyUrl}
+							className="h-full w-full object-cover"
+							placeholderClassName="h-full w-full"
+							src={avatarUrl}
+						/>
+					)}
+					selectedCategories={selectedProfileCategories}
+				/>
+			}
+			profileTabLabel={t("instagramProfile.tab")}
 			singleTabContent={
 				<SingleVideoDownload
 					error={error}

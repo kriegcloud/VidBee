@@ -11,6 +11,8 @@
     "start": "pnpm --filter ./apps/desktop run start",
     "build": "pnpm --filter ./apps/desktop run build",
     "setup": "pnpm --filter ./apps/desktop run setup",
+    "build:ytdlp": "pnpm --filter ./apps/desktop run build:ytdlp",
+    "verify:ytdlp": "pnpm --filter ./apps/desktop run verify:ytdlp",
     "build:unpack": "pnpm --filter ./apps/desktop run build:unpack",
     "build:win": "pnpm --filter ./apps/desktop run build:win",
     "build:mac": "pnpm --filter ./apps/desktop run build:mac",

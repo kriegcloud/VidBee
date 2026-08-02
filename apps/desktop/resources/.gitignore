@@ -3,6 +3,9 @@
 yt-dlp.exe
 yt-dlp_macos
 yt-dlp_linux
+gallery-dl.exe
+gallery-dl_macos
+gallery-dl_linux
 ffmpeg.exe
 ffmpeg_macos
 ffmpeg_linux
@@ -12,6 +15,9 @@ ffprobe
 ffprobe.exe
 deno.exe
 deno
+
+# Local vendor-build marker written by `pnpm run build:ytdlp`
+.ytdlp-vendored
 
 # But keep the README
 !README.md

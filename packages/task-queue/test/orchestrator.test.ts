@@ -19,6 +19,8 @@ interface ScriptStep {
     | 'spawn'
     | 'progress'
     | 'success'
+    | 'multiSuccess'
+    | 'emptyMultiSuccess'
     | 'errorRetryable'
     | 'errorFatal'
     | 'cancelled'
@@ -85,6 +87,27 @@ function makeFakeExecutor(scriptByUrl: Map<string, ScriptStep[]>): Executor {
                     size: 1234,
                     durationMs: null,
                     sha256: null
+                  }
+                },
+                closedAt: 1,
+                stdoutTail: '',
+                stderrTail: ''
+              })
+              break
+            case 'multiSuccess':
+            case 'emptyMultiSuccess':
+              events.onFinish({
+                taskId: ctx.taskId,
+                attemptId: ctx.attemptId,
+                result: {
+                  type: 'success',
+                  output: {
+                    filePath: '/fake/gallery',
+                    size: step.type === 'multiSuccess' ? 4321 : 0,
+                    durationMs: null,
+                    sha256: null,
+                    outputDirectory: '/fake/gallery',
+                    fileCount: step.type === 'multiSuccess' ? 3 : 0
                   }
                 },
                 closedAt: 1,
@@ -319,6 +342,38 @@ describe('TaskQueueAPI orchestrator', () => {
     const t = api.get(id)!
     expect(t.status).toBe('failed')
     expect(t.lastError?.category).toBe('output-missing')
+  })
+
+  it('multi-file completion requires at least one materialized file', async () => {
+    const scriptByUrl = new Map<string, ScriptStep[]>([
+      ['https://e.com/gallery', [{ type: 'spawn' }, { type: 'multiSuccess' }]],
+      ['https://e.com/empty-gallery', [{ type: 'spawn' }, { type: 'emptyMultiSuccess' }]]
+    ])
+    const api = new TaskQueueAPI({
+      persist: new MemoryPersistAdapter(),
+      executor: makeFakeExecutor(scriptByUrl),
+      filePresent: () => true,
+      maxConcurrency: 2
+    })
+    await api.start()
+
+    const materialized = await api.add({
+      input: {
+        url: 'https://e.com/gallery',
+        kind: 'instagram-profile-category'
+      }
+    })
+    const empty = await api.add({
+      input: {
+        url: 'https://e.com/empty-gallery',
+        kind: 'instagram-profile-category'
+      }
+    })
+    await flush()
+
+    expect(api.get(materialized.id)?.status).toBe('completed')
+    expect(api.get(empty.id)?.status).toBe('failed')
+    expect(api.get(empty.id)?.lastError?.category).toBe('output-missing')
   })
 
   it('crash recovery: paused/recovered tasks survive restart', async () => {

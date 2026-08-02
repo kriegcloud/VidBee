@@ -43,10 +43,7 @@ export type LegacyDownloadStatus =
  * the same legacy status. UIs that opt-in can show a richer label
  * ("Paused" / "Retrying in 23s") instead of a flat "pending".
  */
-export type LegacySubStatus =
-  | 'queued'
-  | 'paused'
-  | 'retry-scheduled'
+export type LegacySubStatus = 'queued' | 'paused' | 'retry-scheduled'
 
 export interface LegacyDownloadProgress {
   percent: number
@@ -98,6 +95,19 @@ export interface LegacyTaskProjection {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  outputDirectory?: string
+  fileCount?: number
+  downloadedCount?: number
+  skippedCount?: number
+  failedCount?: number
+  totalSize?: number
   progress?: LegacyDownloadProgress
   error?: string
   /** Set when status === 'error'. */
@@ -167,6 +177,13 @@ interface MaybeHostFields {
   startedAt?: number
   completedAt?: number
   downloadPath?: string
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
 }
 
 /**
@@ -199,6 +216,13 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     playlistTitle: opts.playlistTitle,
     playlistIndex: task.input.playlistIndex,
     playlistSize: opts.playlistSize,
+    batchId: opts.batchId,
+    batchKind: opts.batchKind,
+    batchTitle: opts.batchTitle,
+    batchCategory: opts.batchCategory,
+    batchOrder: opts.batchOrder,
+    batchSourceCount: opts.batchSourceCount,
+    batchAssetCount: opts.batchAssetCount,
     fileSize: opts.fileSize,
     startedAt: opts.startedAt,
     completedAt: opts.completedAt,
@@ -222,7 +246,13 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     const out = task.output as TaskOutput
     proj.fileSize = out.size
     proj.savedFileName = basenameOf(out.filePath)
-    proj.downloadPath = dirnameOf(out.filePath)
+    proj.downloadPath = out.outputDirectory ?? dirnameOf(out.filePath)
+    proj.outputDirectory = out.outputDirectory
+    proj.fileCount = out.fileCount
+    proj.downloadedCount = out.downloadedCount
+    proj.skippedCount = out.skippedCount
+    proj.failedCount = out.failedCount
+    proj.totalSize = out.totalSize
     if (out.durationMs != null) proj.duration = Math.round(out.durationMs / 1000)
     if (out.formatId) proj.resolvedFormatId = out.formatId
   }

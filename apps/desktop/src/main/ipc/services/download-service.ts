@@ -1,3 +1,8 @@
+import type {
+  InstagramProfileDownloadInput,
+  InstagramProfileDownloadResult,
+  InstagramProfileInspection
+} from '@vidbee/downloader-core'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type {
   DownloadItem,
@@ -32,6 +37,14 @@ class DownloadService extends IpcService {
   }
 
   @IpcMethod()
+  async inspectInstagramProfile(
+    _context: IpcContext,
+    url: string
+  ): Promise<InstagramProfileInspection> {
+    return downloadEngine.inspectInstagramProfile(url)
+  }
+
+  @IpcMethod()
   startDownload(_context: IpcContext, id: string, options: DownloadOptions): boolean {
     return downloadEngine.startDownload(id, options)
   }
@@ -62,6 +75,14 @@ class DownloadService extends IpcService {
     options: PlaylistDownloadOptions
   ): Promise<PlaylistDownloadResult> {
     return downloadEngine.startPlaylistDownload(options)
+  }
+
+  @IpcMethod()
+  async startInstagramProfileDownload(
+    _context: IpcContext,
+    input: InstagramProfileDownloadInput
+  ): Promise<InstagramProfileDownloadResult> {
+    return downloadEngine.startInstagramProfileDownload(input)
   }
 }
 

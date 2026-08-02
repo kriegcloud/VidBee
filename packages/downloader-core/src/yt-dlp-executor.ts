@@ -94,6 +94,16 @@ export interface YtDlpTaskOptions {
   tags?: readonly string[]
   playlistTitle?: string
   playlistSize?: number
+  batchId?: string
+  batchKind?: 'instagram-profile'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  galleryDlDirectoryTemplate?: string
+  galleryDlFilenameTemplate?: string
+  expectedAssetCount?: number
   fileSize?: number
   startedAt?: number
   completedAt?: number

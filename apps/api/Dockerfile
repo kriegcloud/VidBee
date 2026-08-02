@@ -4,8 +4,10 @@ ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
 ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
+ENV GALLERY_DL_PATH=/usr/local/bin/gallery-dl
 
-RUN apk add --no-cache yt-dlp ffmpeg python3 make g++
+RUN apk add --no-cache yt-dlp ffmpeg python3 py3-pip make g++ \
+  && python3 -m pip install --break-system-packages --no-cache-dir "gallery-dl==1.32.8"
 
 RUN corepack enable
 

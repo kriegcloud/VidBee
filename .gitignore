@@ -19,4 +19,7 @@ config.json
 labels/
 statuses/
 
+# Vendored yt-dlp source tree (clone locally; see vendor/README.md)
+/vendor/yt-dlp/
+
 .env

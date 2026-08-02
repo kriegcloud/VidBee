@@ -1,4 +1,4 @@
-import { List, Rocket, Video } from 'lucide-react'
+import { Instagram, List, Rocket, Video } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { Button } from './button'
@@ -11,16 +11,18 @@ interface DownloadDialogLayoutProps {
   lockDialogHeight: boolean
   oneClickDownloadEnabled: boolean
   oneClickTooltip: string
-  activeTab: 'single' | 'playlist'
+  activeTab: 'single' | 'playlist' | 'profile'
   singleTabLabel: string
   playlistTabLabel: string
+  profileTabLabel: string
   addUrlPopover: ReactNode
   singleTabContent: ReactNode
   playlistTabContent: ReactNode
+  profileTabContent: ReactNode
   footer: ReactNode
   onOpenChange: (open: boolean) => void
   onToggleOneClickDownload: () => void
-  onActiveTabChange: (tab: 'single' | 'playlist') => void
+  onActiveTabChange: (tab: 'single' | 'playlist' | 'profile') => void
 }
 
 export const DownloadDialogLayout = ({
@@ -31,9 +33,11 @@ export const DownloadDialogLayout = ({
   activeTab,
   singleTabLabel,
   playlistTabLabel,
+  profileTabLabel,
   addUrlPopover,
   singleTabContent,
   playlistTabContent,
+  profileTabContent,
   footer,
   onOpenChange,
   onToggleOneClickDownload,
@@ -75,7 +79,7 @@ export const DownloadDialogLayout = ({
         <Tabs
           className="flex min-h-0 w-full flex-1 flex-col gap-0"
           defaultValue="single"
-          onValueChange={(value) => onActiveTabChange(value as 'single' | 'playlist')}
+          onValueChange={(value) => onActiveTabChange(value as 'single' | 'playlist' | 'profile')}
           value={activeTab}
         >
           <DialogHeader>
@@ -88,6 +92,10 @@ export const DownloadDialogLayout = ({
                 <List className="h-3.5 w-3.5" />
                 {playlistTabLabel}
               </TabsTrigger>
+              <TabsTrigger onClick={() => onActiveTabChange('profile')} value="profile">
+                <Instagram className="h-3.5 w-3.5" />
+                {profileTabLabel}
+              </TabsTrigger>
             </TabsList>
           </DialogHeader>
           <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="single">
@@ -95,6 +103,9 @@ export const DownloadDialogLayout = ({
           </TabsContent>
           <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="playlist">
             {playlistTabContent}
+          </TabsContent>
+          <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="profile">
+            {profileTabContent}
           </TabsContent>
         </Tabs>
         <DialogFooter className="relative z-10 shrink-0 border-t bg-background pt-3">

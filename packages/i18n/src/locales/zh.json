@@ -344,6 +344,37 @@
     "urlCopied": "链接已复制到剪贴板",
     "videoCopied": "视频已复制到剪贴板"
   },
+  "instagramProfile": {
+    "assetTotal": "{{count}} 个文件",
+    "categories": {
+      "highlights": "精选动态",
+      "posts": "帖子",
+      "reels": "Reels",
+      "stories": "快拍",
+      "tagged": "被标记的帖子"
+    },
+    "categoryCounts": "{{sources}} 个项目 · {{assets}} 个文件",
+    "downloadFailed": "无法开始下载 Instagram 个人主页",
+    "downloadSelected": "下载所选内容",
+    "downloadStarted": "已将 {{count}} 个 Instagram 文件加入队列",
+    "emptyHint": "粘贴公开或可访问的 Instagram 个人主页链接，以整理其中的帖子、Reels、快拍、精选动态和被标记的帖子。",
+    "emptyTitle": "下载 Instagram 个人主页",
+    "partialHint": "部分分类无法扫描。私密主页、快拍、精选动态或被标记的帖子可能需要 Instagram 登录 Cookie。",
+    "scan": "扫描个人主页",
+    "scanFailed": "无法扫描 Instagram 个人主页",
+    "scanning": "正在扫描 Instagram 个人主页",
+    "scanningHint": "VidBee 正在整理各个分类。为减少触发访问频率限制，请求会间隔发送，因此可能需要一些时间。",
+    "selectAtLeastOne": "请至少选择一个可用分类",
+    "sourceTotal": "{{count}} 个项目",
+    "states": {
+      "auth-required": "需要登录",
+      "empty": "未找到内容",
+      "ready": "已就绪",
+      "unavailable": "不可用"
+    },
+    "tab": "Instagram 个人主页",
+    "urlPlaceholder": "https://www.instagram.com/用户名/"
+  },
   "playlist": {
     "badgeLabel": "播放列表",
     "clearPreview": "清晰预览",

@@ -5,19 +5,83 @@ export {
 } from './browser-cookies-setting'
 export { downloaderContract } from './contract'
 export { DownloaderCore } from './downloader-core'
-export { YtDlpExecutor } from './yt-dlp-executor'
-export type { YtDlpExecutorOptions, YtDlpTaskOptions } from './yt-dlp-executor'
-export { WebAppSettingsSchema } from './schemas'
 export type {
   OneClickContainerOption,
   OneClickFormatSettings,
   OneClickQualityPreset
 } from './format-preferences'
 export {
-  ONE_CLICK_CONTAINER_OPTIONS,
   buildAudioFormatPreference,
-  buildVideoFormatPreference
+  buildVideoFormatPreference,
+  ONE_CLICK_CONTAINER_OPTIONS
 } from './format-preferences'
+export type { GalleryDlExecutorOptions } from './gallery-dl-executor'
+export {
+  GalleryDlExecutor,
+  HostRoutingExecutor,
+  shouldUseGalleryDl
+} from './gallery-dl-executor'
+export type {
+  EnqueueInstagramProfileOptions,
+  InstagramProfileInspectorOptions
+} from './instagram-profile'
+export {
+  buildGalleryDlRuntimeArgs,
+  buildInstagramCategoryUrl,
+  enqueueInstagramProfileDownload,
+  INSTAGRAM_PROFILE_CATEGORIES,
+  InstagramProfileInspector,
+  normalizeInstagramProfileUrl,
+  restoreInstagramProfileGroupCaps
+} from './instagram-profile'
+export {
+  InstagramCategoryStateSchema,
+  InstagramCategorySummarySchema,
+  InstagramInspectionErrorCodeSchema,
+  InstagramProfileCategorySchema,
+  InstagramProfileDownloadInputSchema,
+  InstagramProfileDownloadOutputSchema,
+  InstagramProfileDownloadResultSchema,
+  InstagramProfileInspectInputSchema,
+  InstagramProfileInspectionSchema,
+  InstagramProfileInspectOutputSchema,
+  WebAppSettingsSchema
+} from './schemas'
+export type {
+  CreateDownloadInput,
+  DirectoryEntry,
+  DirectoryListInput,
+  DownloadProgress,
+  DownloadRuntimeSettings,
+  DownloadStatus,
+  DownloadTask,
+  DownloadType,
+  FileExistsOutput,
+  FileOperationOutput,
+  FilePathInput,
+  InstagramCategoryState,
+  InstagramCategorySummary,
+  InstagramInspectionErrorCode,
+  InstagramProfileCategory,
+  InstagramProfileDownloadInput,
+  InstagramProfileDownloadResult,
+  InstagramProfileDownloadTask,
+  InstagramProfileInspectInput,
+  InstagramProfileInspection,
+  ListDirectoriesOutput,
+  PlaylistDownloadEntry,
+  PlaylistDownloadInput,
+  PlaylistDownloadResult,
+  PlaylistEntry,
+  PlaylistInfo,
+  PlaylistInfoInput,
+  UploadSettingsFileInput,
+  UploadSettingsFileKind,
+  UploadSettingsFileOutput,
+  VideoFormat,
+  VideoInfo,
+  VideoInfoInput
+} from './types'
 export {
   appendYouTubeSafeExtractorArgs,
   buildDownloadArgs,
@@ -30,29 +94,5 @@ export {
   resolveVideoFormatSelector,
   sanitizeFilenameTemplate
 } from './yt-dlp-args'
-export type {
-  CreateDownloadInput,
-  DownloadRuntimeSettings,
-  DownloadProgress,
-  DownloadStatus,
-  DownloadTask,
-  DownloadType,
-  DirectoryEntry,
-  DirectoryListInput,
-  FileExistsOutput,
-  FileOperationOutput,
-  FilePathInput,
-  ListDirectoriesOutput,
-  PlaylistDownloadEntry,
-  PlaylistDownloadInput,
-  PlaylistDownloadResult,
-  PlaylistEntry,
-  PlaylistInfoInput,
-  PlaylistInfo,
-  UploadSettingsFileInput,
-  UploadSettingsFileKind,
-  UploadSettingsFileOutput,
-  VideoFormat,
-  VideoInfoInput,
-  VideoInfo
-} from './types'
+export type { YtDlpExecutorOptions, YtDlpTaskOptions } from './yt-dlp-executor'
+export { YtDlpExecutor } from './yt-dlp-executor'
