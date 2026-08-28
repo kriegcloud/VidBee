@@ -1,5 +1,19 @@
 # Third-party notices
 
+## yt-dlp
+
+VidBee builds and bundles a customized yt-dlp executable from the source
+snapshot tracked in `vendor/yt-dlp`.
+
+- Project: <https://github.com/yt-dlp/yt-dlp>
+- Upstream ref: `2026.07.04`
+- Upstream commit: `fdec00e0bf530dc6c3cc7b1dd780e95d9ae460e9`
+- License: The Unlicense (`vendor/yt-dlp/LICENSE`)
+- Bundled dependency licenses:
+  `vendor/yt-dlp/THIRD_PARTY_LICENSES.txt`
+
+The build copies both license files beside the packaged executable.
+
 ## gallery-dl
 
 VidBee bundles a pinned standalone build of gallery-dl for Instagram profile

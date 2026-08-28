@@ -1,4 +1,4 @@
 * text=auto eol=lf
+vendor/yt-dlp/** whitespace=-trailing-space
 *.{cmd,[cC][mM][dD]} text eol=crlf
 *.{bat,[bB][aA][tT]} text eol=crlf
-

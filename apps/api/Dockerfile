@@ -6,10 +6,22 @@ ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV GALLERY_DL_PATH=/usr/local/bin/gallery-dl
 
-RUN apk add --no-cache yt-dlp ffmpeg python3 py3-pip make g++ \
-  && python3 -m pip install --break-system-packages --no-cache-dir "gallery-dl==1.32.8"
+RUN apk add --no-cache ffmpeg python3 py3-pip make g++
 
 RUN corepack enable
+
+WORKDIR /app
+
+COPY vendor/yt-dlp vendor/yt-dlp
+
+WORKDIR /app/vendor/yt-dlp
+
+RUN python3 devscripts/make_lazy_extractors.py \
+  && python3 -m pip install --break-system-packages --no-cache-dir \
+  ".[pin,pin-curl-cffi]" "gallery-dl==1.32.8" \
+  && test "$(command -v yt-dlp)" = "${YTDLP_PATH}" \
+  && "${YTDLP_PATH}" --version \
+  && "${YTDLP_PATH}" --list-impersonate-targets | grep -Eq '^Chrome-'
 
 WORKDIR /app
 

@@ -10,6 +10,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { computeVendorSourceDigest, readVendorMetadata } from './build-vendored-ytdlp.js'
 import { YTDLP_PLATFORM_ASSETS } from './ytdlp-assets.js'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -25,6 +26,11 @@ if (!platformAsset) {
 const outputName = platformAsset.output
 const binaryPath = path.join(resourcesDir, outputName)
 const markerPath = path.join(resourcesDir, '.ytdlp-vendored')
+const vendorDir = path.resolve(resourcesDir, '..', '..', '..', 'vendor', 'yt-dlp')
+const LICENSE_FILES = [
+  ['LICENSE', 'yt-dlp-LICENSE.txt'],
+  ['THIRD_PARTY_LICENSES.txt', 'yt-dlp-THIRD_PARTY_LICENSES.txt']
+]
 
 // Public, stable short clip used only for --skip-download metadata probe.
 const PROBE_URL =
@@ -51,14 +57,7 @@ function run(bin, args, options = {}) {
 
 function checkMarker() {
   if (!fs.existsSync(markerPath)) {
-    fail(
-      `Missing ${markerPath}. Run: pnpm run build:ytdlp\n` +
-        '  (or set VIDBEE_YTDLP_ALLOW_STOCK=1 to verify a stock binary instead)'
-    )
-  }
-  if (process.env.VIDBEE_YTDLP_ALLOW_STOCK === '1') {
-    ok('VIDBEE_YTDLP_ALLOW_STOCK=1 — skipping vendor marker requirement')
-    return null
+    fail(`Missing ${markerPath}. Run: pnpm run build:ytdlp`)
   }
   const raw = fs.readFileSync(markerPath, 'utf8')
   let marker
@@ -70,10 +69,64 @@ function checkMarker() {
   if (marker.source !== 'vendor') {
     fail(`.ytdlp-vendored source is ${marker.source}, expected vendor`)
   }
+  if (marker.kind !== 'standalone') {
+    fail(`.ytdlp-vendored kind is ${marker.kind}, expected standalone`)
+  }
+  if (marker.output !== outputName) {
+    fail(`.ytdlp-vendored output is ${marker.output}, expected ${outputName}`)
+  }
+  if (marker.platform !== platform || marker.arch !== os.arch()) {
+    fail(
+      `.ytdlp-vendored target is ${marker.platform}/${marker.arch}, expected ${platform}/${os.arch()}`
+    )
+  }
+  const metadata = readVendorMetadata()
+  if (marker.commit !== metadata.commit) {
+    fail(`Vendor marker commit ${marker.commit} does not match ${metadata.commit}`)
+  }
+  const sourceDigest = computeVendorSourceDigest()
+  if (marker.sourceDigest !== sourceDigest) {
+    fail('Vendored yt-dlp source changed after the resource binary was built')
+  }
   ok(
     `Vendor marker: commit ${marker.describe || marker.commit} kind=${marker.kind} output=${marker.output}`
   )
   return marker
+}
+
+function checkStandaloneFormat() {
+  const header = fs.readFileSync(binaryPath).subarray(0, 4)
+  if (platform === 'linux' && !header.equals(Buffer.from([0x7f, 0x45, 0x4c, 0x46]))) {
+    fail('Linux resource is not an ELF standalone executable')
+  }
+  if (platform === 'win32' && header.subarray(0, 2).toString('ascii') !== 'MZ') {
+    fail('Windows resource is not a PE standalone executable')
+  }
+  if (platform === 'darwin') {
+    const magic = header.readUInt32BE(0)
+    const machOMagic = new Set([
+      0xfe_ed_fa_ce, 0xfe_ed_fa_cf, 0xce_fa_ed_fe, 0xcf_fa_ed_fe, 0xca_fe_ba_be, 0xbe_ba_fe_ca,
+      0xca_fe_ba_bf, 0xbf_ba_fe_ca
+    ])
+    if (!machOMagic.has(magic)) {
+      fail('macOS resource is not a Mach-O standalone executable')
+    }
+  }
+  ok(`Resource is a standalone ${platform} executable`)
+}
+
+function checkLicenseFiles() {
+  for (const [sourceName, resourceName] of LICENSE_FILES) {
+    const sourcePath = path.join(vendorDir, sourceName)
+    const resourcePath = path.join(resourcesDir, resourceName)
+    if (!fs.existsSync(resourcePath)) {
+      fail(`Missing bundled yt-dlp notice: ${resourcePath}`)
+    }
+    if (!fs.readFileSync(sourcePath).equals(fs.readFileSync(resourcePath))) {
+      fail(`Bundled yt-dlp notice does not match vendor/yt-dlp/${sourceName}`)
+    }
+  }
+  ok('Bundled yt-dlp license notices match the vendored source')
 }
 
 function checkBinaryExists() {
@@ -93,6 +146,24 @@ function checkVersion() {
   const version = `${result.stdout || ''}${result.stderr || ''}`.trim().split(/\r?\n/)[0]
   ok(`yt-dlp --version => ${version}`)
   return version
+}
+
+function checkImpersonationSupport() {
+  const result = run(binaryPath, ['--ignore-config', '--list-impersonate-targets'], {
+    timeoutMs: 30_000
+  })
+  if (result.error || result.status !== 0) {
+    fail(
+      `--list-impersonate-targets failed: ${result.error?.message || result.stderr || result.stdout || result.status}`
+    )
+  }
+
+  const output = `${result.stdout || ''}\n${result.stderr || ''}`
+  const chrome = output.split(/\r?\n/).find((line) => /^Chrome(?:-\S+)?\s/.test(line))
+  if (!chrome || chrome.includes('(unavailable)')) {
+    fail('Vendored yt-dlp is missing curl_cffi Chrome impersonation support')
+  }
+  ok(`Browser impersonation available — ${chrome.trim()}`)
 }
 
 /**
@@ -172,7 +243,10 @@ function main() {
   console.log('Verifying vendored yt-dlp for VidBee...\n')
   checkMarker()
   checkBinaryExists()
+  checkStandaloneFormat()
+  checkLicenseFiles()
   checkVersion()
+  checkImpersonationSupport()
   checkDesktopResourceLayout()
   checkSetupRespectsVendor()
   checkMetadataProbe()

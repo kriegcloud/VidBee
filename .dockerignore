@@ -8,3 +8,8 @@ build
 **/dist
 **/out
 **/.turbo
+**/.venv
+**/__pycache__
+**/*.pyc
+/vendor/yt-dlp/*.spec
+/vendor/yt-dlp/yt_dlp/extractor/lazy_extractors.py

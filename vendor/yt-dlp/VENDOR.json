@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "name": "yt-dlp",
+  "upstream": "https://github.com/yt-dlp/yt-dlp",
+  "ref": "2026.07.04",
+  "commit": "fdec00e0bf530dc6c3cc7b1dd780e95d9ae460e9",
+  "importedAt": "2026-08-02",
+  "license": "Unlicense"
+}

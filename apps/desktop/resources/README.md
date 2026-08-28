@@ -25,24 +25,25 @@ To bundle yt-dlp with the application, place the appropriate binaries in this di
 2. **macOS**: `yt-dlp_macos`
 3. **Linux**: `yt-dlp_linux`
 
-### Local vendor build (source)
+### Vendored source build
 
-For engine development, clone yt-dlp under `vendor/yt-dlp` and install a zipapp
-into this directory:
+VidBee tracks yt-dlp under `vendor/yt-dlp`. Customize that source and build the
+standalone executable for the current platform with:
 
 ```bash
-git clone --depth 1 https://github.com/yt-dlp/yt-dlp.git vendor/yt-dlp
 pnpm run build:ytdlp
 pnpm run verify:ytdlp
 ```
 
-That writes the platform binary plus `.ytdlp-vendored`. While the marker exists,
-`pnpm setup` will not replace the binary with a stock GitHub release download.
-See `vendor/README.md` for details.
+That writes the platform binary plus `.ytdlp-vendored`. `pnpm setup` checks the
+effective source digest and rebuilds changed source instead of downloading a
+stock release. See `vendor/README.md` for build prerequisites and update notes.
 
-### How to Download
+### Stock fallback
 
-You can download the latest yt-dlp binaries from the official GitHub releases:
+The setup script can still download official binaries if the vendored source is
+intentionally removed. Normal VidBee development and release builds use the
+tracked source snapshot.
 
 **Option 1: Manual Download**
 

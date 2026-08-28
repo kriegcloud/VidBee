@@ -13,6 +13,11 @@ import https from 'node:https'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  buildVendoredYtDlp,
+  isVendoredBuildCurrent,
+  vendorMetadataPath
+} from './build-vendored-ytdlp.js'
 import { GALLERY_DL_PLATFORM_ASSETS, GALLERY_DL_RELEASE } from './gallerydl-assets.js'
 import { YTDLP_PLATFORM_ASSETS } from './ytdlp-assets.js'
 
@@ -546,35 +551,32 @@ async function resolveMacFfmpegDownloadUrl(ffmpegConfig) {
   return downloadUrl
 }
 
-const YTDLP_VENDOR_MARKER = path.join(RESOURCES_DIR, '.ytdlp-vendored')
-
-function hasVendoredYtDlpMarker() {
-  return fileExists(YTDLP_VENDOR_MARKER)
-}
-
 // Main download functions
 async function downloadYtDlp(config) {
   const { asset, output } = config.ytdlp
   const outputPath = path.join(RESOURCES_DIR, output)
 
-  // Local engine builds install a zipapp + marker via `pnpm run build:ytdlp`.
-  // Keep that binary instead of overwriting with a stock GitHub release.
-  if (hasVendoredYtDlpMarker()) {
-    if (fileExists(outputPath)) {
+  // The tracked source snapshot is authoritative. Rebuild automatically after
+  // a source change, and never replace it with an upstream release download.
+  if (fileExists(vendorMetadataPath)) {
+    if (isVendoredBuildCurrent()) {
       const validation = checkYtDlpBinary(outputPath)
       if (validation.ok) {
         logBinaryVersion('yt-dlp', validation)
-        log(`${output} is a vendored build (.ytdlp-vendored present); skipping download`, 'info')
+        log(`${output} already matches the tracked vendored source`, 'info')
         return
       }
-      log(
-        `Vendored ${output} failed version check: ${validation.message}. ` +
-          'Re-run pnpm run build:ytdlp or delete resources/.ytdlp-vendored to restore stock downloads.',
-        'warn'
-      )
-      return
+      log(`Vendored ${output} failed validation; rebuilding it`, 'warn')
+    } else {
+      log('Vendored yt-dlp source changed or has not been built; building it now', 'info')
     }
-    log(`Found .ytdlp-vendored but ${output} is missing. Run pnpm run build:ytdlp`, 'warn')
+
+    buildVendoredYtDlp()
+    const validation = checkYtDlpBinary(outputPath)
+    if (!validation.ok) {
+      throw new Error(`Built vendored ${output} failed version check: ${validation.message}`)
+    }
+    logBinaryVersion('yt-dlp', validation)
     return
   }
 

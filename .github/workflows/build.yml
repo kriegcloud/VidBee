@@ -41,11 +41,15 @@ jobs:
             build_script: pnpm run build:win
             mac_ffmpeg_mode: native
           - platform: macos
-            os: macos-latest
+            os: macos-15
             build_script: pnpm run build:mac
-            mac_ffmpeg_mode: universal
+            mac_ffmpeg_mode: native
+          - platform: macos
+            os: macos-15-intel
+            build_script: pnpm run build:mac
+            mac_ffmpeg_mode: native
           - platform: linux
-            os: ubuntu-latest
+            os: ubuntu-22.04
             build_script: pnpm run build:linux
             mac_ffmpeg_mode: native
     steps:
@@ -61,6 +65,14 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 11.1.2
+
+      - name: Install Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: python -m pip install uv==0.11.19
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile

@@ -1,162 +1,225 @@
 #!/usr/bin/env node
 
 /**
- * Build yt-dlp from vendor/yt-dlp and install it into apps/desktop/resources.
- *
- * Produces the platform resource name VidBee expects (yt-dlp_linux / yt-dlp_macos
- * / yt-dlp.exe). The artifact is yt-dlp's Python zipapp, which requires python3
- * on PATH at runtime — suitable for local engine development, not a drop-in for
- * the official standalone ELF used in production packages.
+ * Build the tracked yt-dlp source snapshot as a standalone executable and
+ * install it into the platform-specific Desktop resources path.
  */
 
 import { execFileSync, spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { YTDLP_PLATFORM_ASSETS } from './ytdlp-assets.js'
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const scriptPath = fileURLToPath(import.meta.url)
+const scriptDir = path.dirname(scriptPath)
 const desktopRoot = path.resolve(scriptDir, '..')
 const repoRoot = path.resolve(desktopRoot, '..', '..')
 const vendorDir = path.join(repoRoot, 'vendor', 'yt-dlp')
+const vendorMetadataPath = path.join(vendorDir, 'VENDOR.json')
 const resourcesDir = path.join(desktopRoot, 'resources')
 const markerPath = path.join(resourcesDir, '.ytdlp-vendored')
-
 const platform = os.platform()
 const platformAsset = YTDLP_PLATFORM_ASSETS[platform]
 
 if (!platformAsset) {
-  console.error(`Unsupported platform for vendored yt-dlp: ${platform}`)
-  process.exit(1)
+  throw new Error(`Unsupported platform for vendored yt-dlp: ${platform}`)
 }
 
 const outputName = platformAsset.output
 const outputPath = path.join(resourcesDir, outputName)
+const SOURCE_DIRECTORIES = ['bundle', 'devscripts', 'yt_dlp']
+const SOURCE_FILES = [
+  'LICENSE',
+  'Makefile',
+  'pyproject.toml',
+  'THIRD_PARTY_LICENSES.txt',
+  'uv.lock',
+  'VENDOR.json'
+]
+const EXCLUDED_SOURCE_NAMES = new Set(['.venv', '__pycache__', 'build', 'dist', 'zip'])
+const EXCLUDED_SOURCE_PATHS = new Set(['yt_dlp/extractor/lazy_extractors.py'])
 
-function log(message, type = 'info') {
+const log = (message, type = 'info') => {
   const icons = {
     info: '📦',
     success: '✅',
-    error: '❌',
-    warn: '⚠️'
+    error: '❌'
   }
-  console.log(`${icons[type] || 'ℹ️'} ${message}`)
+  console.log(`${icons[type] ?? 'ℹ️'} ${message}`)
 }
 
-function ensureVendorSource() {
-  if (!fs.existsSync(path.join(vendorDir, 'Makefile'))) {
-    log(
-      'Missing vendor/yt-dlp source. Clone it first:\n' +
-        '  git clone --depth 1 https://github.com/yt-dlp/yt-dlp.git vendor/yt-dlp',
-      'error'
+const readVendorMetadata = () => {
+  if (!fs.existsSync(vendorMetadataPath)) {
+    throw new Error(`Missing tracked yt-dlp metadata: ${vendorMetadataPath}`)
+  }
+
+  const metadata = JSON.parse(fs.readFileSync(vendorMetadataPath, 'utf8'))
+  if (
+    metadata.schemaVersion !== 1 ||
+    typeof metadata.upstream !== 'string' ||
+    typeof metadata.ref !== 'string' ||
+    typeof metadata.commit !== 'string'
+  ) {
+    throw new Error(`${vendorMetadataPath} has an invalid schema`)
+  }
+  return metadata
+}
+
+const collectSourceFiles = (directory, relativeDirectory, files) => {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (EXCLUDED_SOURCE_NAMES.has(entry.name)) {
+      continue
+    }
+
+    const absolutePath = path.join(directory, entry.name)
+    const relativePath = path.posix.join(relativeDirectory, entry.name)
+    if (EXCLUDED_SOURCE_PATHS.has(relativePath)) {
+      continue
+    }
+    if (entry.isDirectory()) {
+      collectSourceFiles(absolutePath, relativePath, files)
+    } else if (entry.isFile()) {
+      files.push(relativePath)
+    }
+  }
+}
+
+const computeVendorSourceDigest = () => {
+  readVendorMetadata()
+  const files = []
+  for (const relativePath of SOURCE_FILES) {
+    const absolutePath = path.join(vendorDir, relativePath)
+    if (!fs.existsSync(absolutePath)) {
+      throw new Error(`Vendored yt-dlp source is incomplete: missing ${relativePath}`)
+    }
+    files.push(relativePath)
+  }
+  for (const relativeDirectory of SOURCE_DIRECTORIES) {
+    const absoluteDirectory = path.join(vendorDir, relativeDirectory)
+    if (!fs.existsSync(absoluteDirectory)) {
+      throw new Error(`Vendored yt-dlp source is incomplete: missing ${relativeDirectory}`)
+    }
+    collectSourceFiles(absoluteDirectory, relativeDirectory, files)
+  }
+
+  const digest = createHash('sha256')
+  for (const relativePath of files.sort()) {
+    digest.update(relativePath)
+    digest.update('\0')
+    digest.update(fs.readFileSync(path.join(vendorDir, relativePath)))
+    digest.update('\0')
+  }
+  return digest.digest('hex')
+}
+
+const readBuildMarker = () => {
+  if (!fs.existsSync(markerPath)) {
+    return null
+  }
+  try {
+    return JSON.parse(fs.readFileSync(markerPath, 'utf8'))
+  } catch {
+    return null
+  }
+}
+
+const isVendoredBuildCurrent = () => {
+  if (!(fs.existsSync(vendorMetadataPath) && fs.existsSync(outputPath))) {
+    return false
+  }
+  const marker = readBuildMarker()
+  return (
+    marker?.source === 'vendor' &&
+    marker.kind === 'standalone' &&
+    marker.output === outputName &&
+    marker.platform === platform &&
+    marker.arch === os.arch() &&
+    marker.sourceDigest === computeVendorSourceDigest()
+  )
+}
+
+const resolveUv = () => {
+  const command = process.env.UV?.trim() || 'uv'
+  const result = spawnSync(command, ['--version'], {
+    encoding: 'utf8',
+    windowsHide: true
+  })
+  if (result.status !== 0) {
+    throw new Error(
+      'uv is required to build the vendored standalone yt-dlp executable. Install uv and retry.'
     )
-    process.exit(1)
   }
+  return command
 }
 
-function gitRev() {
-  try {
-    return execFileSync('git', ['rev-parse', 'HEAD'], {
-      cwd: vendorDir,
-      encoding: 'utf8'
-    }).trim()
-  } catch {
-    return 'unknown'
-  }
-}
-
-function gitDescribe() {
-  try {
-    return execFileSync('git', ['describe', '--tags', '--always'], {
-      cwd: vendorDir,
-      encoding: 'utf8'
-    }).trim()
-  } catch {
-    return 'unknown'
-  }
-}
-
-function resolvePython() {
-  const candidates = process.env.PYTHON
-    ? [process.env.PYTHON]
-    : platform === 'win32'
-      ? ['python', 'python3']
-      : ['python3', 'python']
-
-  for (const candidate of candidates) {
-    const probe = spawnSync(candidate, ['--version'], {
-      encoding: 'utf8',
-      windowsHide: true
-    })
-    if (probe.status === 0) {
-      return candidate
-    }
+const prepareBuildEnvironment = (uvCommand) => {
+  const args = [
+    'sync',
+    '--locked',
+    '--no-default-groups',
+    '--extra',
+    'default',
+    '--extra',
+    'curl-cffi',
+    '--group',
+    'pyinstaller'
+  ]
+  const python = process.env.PYTHON?.trim()
+  if (python) {
+    args.push('--python', python)
   }
 
-  log('python3 not found on PATH (required to build vendored yt-dlp)', 'error')
-  process.exit(1)
-}
-
-function buildZipapp(pythonCmd) {
-  // Portable shebang so the installed resource can run via env lookup.
-  // Pass via env (not CLI) so values with spaces like `/usr/bin/env python3` work.
-  const makePython = platform === 'win32' ? pythonCmd : `/usr/bin/env ${path.basename(pythonCmd)}`
-
-  log(`Building yt-dlp zipapp in ${vendorDir} (PYTHON=${makePython})...`)
-  if (platform === 'win32') {
-    // Windows often lacks make; require make or WSL/MSYS2 for now.
-    const makeProbe = spawnSync('make', ['--version'], {
-      encoding: 'utf8',
-      windowsHide: true
-    })
-    if (makeProbe.status !== 0) {
-      log(
-        'make is required to build vendored yt-dlp on this platform. ' +
-          'Install make (or use Git Bash/MSYS2) and retry.',
-        'error'
-      )
-      process.exit(1)
-    }
-  }
-
-  execFileSync('make', ['yt-dlp'], {
+  log('Syncing yt-dlp build dependencies from vendor/yt-dlp/uv.lock...')
+  execFileSync(uvCommand, args, {
     cwd: vendorDir,
-    stdio: 'inherit',
-    env: { ...process.env, PYTHON: makePython }
+    stdio: 'inherit'
   })
 
-  const builtPath = path.join(vendorDir, 'yt-dlp')
-  if (!fs.existsSync(builtPath)) {
-    log(`Build finished but ${builtPath} is missing`, 'error')
-    process.exit(1)
+  const pythonPath = path.join(
+    vendorDir,
+    '.venv',
+    platform === 'win32' ? 'Scripts' : 'bin',
+    platform === 'win32' ? 'python.exe' : 'python'
+  )
+  if (!fs.existsSync(pythonPath)) {
+    throw new Error(`uv completed but the build interpreter is missing at ${pythonPath}`)
   }
-  return builtPath
+  return pythonPath
 }
 
-function installBinary(builtPath) {
-  fs.mkdirSync(resourcesDir, { recursive: true })
-  fs.copyFileSync(builtPath, outputPath)
-  if (platform !== 'win32') {
-    fs.chmodSync(outputPath, 0o755)
-  }
+const buildStandalone = (pythonPath) => {
+  const buildDir = path.join(vendorDir, 'build')
+  const distDir = path.join(vendorDir, 'dist')
+  fs.rmSync(buildDir, { force: true, recursive: true })
+  fs.rmSync(distDir, { force: true, recursive: true })
 
-  const rev = gitRev()
-  const describe = gitDescribe()
-  const marker = {
-    source: 'vendor',
-    kind: 'zipapp',
-    commit: rev,
-    describe,
-    installedAt: new Date().toISOString(),
-    output: outputName,
-    note: 'Python zipapp built from vendor/yt-dlp. Requires python3 on PATH.'
+  log('Generating yt-dlp lazy extractors...')
+  execFileSync(pythonPath, ['devscripts/make_lazy_extractors.py'], {
+    cwd: vendorDir,
+    stdio: 'inherit'
+  })
+
+  log(`Building standalone yt-dlp for ${platform}/${os.arch()}...`)
+  execFileSync(pythonPath, ['-m', 'bundle.pyinstaller'], {
+    cwd: vendorDir,
+    stdio: 'inherit'
+  })
+
+  const candidates = fs
+    .readdirSync(distDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.startsWith('yt-dlp'))
+  if (candidates.length !== 1) {
+    throw new Error(
+      `Expected one standalone yt-dlp artifact in ${distDir}, found ${candidates.length}`
+    )
   }
-  fs.writeFileSync(markerPath, `${JSON.stringify(marker, null, 2)}\n`, 'utf8')
-  log(`Installed ${outputName} from vendor commit ${describe} (${rev.slice(0, 12)})`, 'success')
+  return path.join(distDir, candidates[0].name)
 }
 
-function verifyBinary() {
+const verifyBinary = () => {
   const result = spawnSync(outputPath, ['--version'], {
     encoding: 'utf8',
     timeout: 30_000,
@@ -165,34 +228,73 @@ function verifyBinary() {
   if (result.error || result.status !== 0) {
     const detail =
       result.error?.message ||
-      `${result.stdout || ''}\n${result.stderr || ''}`.trim() ||
+      `${result.stdout ?? ''}\n${result.stderr ?? ''}`.trim() ||
       `exit ${result.status}`
-    log(`Installed binary failed --version: ${detail}`, 'error')
-    process.exit(1)
+    throw new Error(`Installed yt-dlp failed --version: ${detail}`)
   }
-  const version = `${result.stdout || ''}${result.stderr || ''}`.trim().split(/\r?\n/)[0]
-  log(`yt-dlp --version => ${version}`, 'success')
-  return version
+  return `${result.stdout ?? ''}${result.stderr ?? ''}`.trim().split(/\r?\n/)[0]
 }
 
-function main() {
-  ensureVendorSource()
-  const pythonCmd = resolvePython()
-  log(`Using Python: ${pythonCmd}`)
-  const builtPath = buildZipapp(pythonCmd)
-  installBinary(builtPath)
-  verifyBinary()
+const installBinary = (builtPath, metadata, sourceDigest) => {
+  fs.mkdirSync(resourcesDir, { recursive: true })
+  fs.copyFileSync(builtPath, outputPath)
+  if (platform !== 'win32') {
+    fs.chmodSync(outputPath, 0o755)
+  }
+  fs.copyFileSync(path.join(vendorDir, 'LICENSE'), path.join(resourcesDir, 'yt-dlp-LICENSE.txt'))
+  fs.copyFileSync(
+    path.join(vendorDir, 'THIRD_PARTY_LICENSES.txt'),
+    path.join(resourcesDir, 'yt-dlp-THIRD_PARTY_LICENSES.txt')
+  )
+
+  const version = verifyBinary()
+  const marker = {
+    source: 'vendor',
+    kind: 'standalone',
+    commit: metadata.commit,
+    describe: metadata.ref,
+    sourceDigest,
+    version,
+    builtAt: new Date().toISOString(),
+    platform,
+    arch: os.arch(),
+    output: outputName
+  }
+  fs.writeFileSync(markerPath, `${JSON.stringify(marker, null, 2)}\n`, 'utf8')
   log(
-    'Vendored yt-dlp is ready. Run VidBee with pnpm dev (setup will keep this binary while .ytdlp-vendored exists).',
+    `Installed ${outputName} ${version} from ${metadata.ref} (${metadata.commit.slice(0, 12)})`,
     'success'
   )
 }
 
-const isDirectExecution =
-  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
-
-if (isDirectExecution) {
-  main()
+const buildVendoredYtDlp = () => {
+  const metadata = readVendorMetadata()
+  const sourceDigest = computeVendorSourceDigest()
+  const uvCommand = resolveUv()
+  const pythonPath = prepareBuildEnvironment(uvCommand)
+  const builtPath = buildStandalone(pythonPath)
+  installBinary(builtPath, metadata, sourceDigest)
+  log('VidBee will now use the vendored standalone yt-dlp build.', 'success')
 }
 
-export { main as buildVendoredYtDlp, markerPath, outputPath }
+const isDirectExecution =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(scriptPath)
+
+if (isDirectExecution) {
+  try {
+    buildVendoredYtDlp()
+  } catch (error) {
+    log(error instanceof Error ? error.message : String(error), 'error')
+    process.exitCode = 1
+  }
+}
+
+export {
+  buildVendoredYtDlp,
+  computeVendorSourceDigest,
+  isVendoredBuildCurrent,
+  markerPath,
+  outputPath,
+  readVendorMetadata,
+  vendorMetadataPath
+}

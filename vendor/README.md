@@ -2,38 +2,46 @@
 
 ## yt-dlp
 
-VidBee normally downloads prebuilt yt-dlp binaries into `apps/desktop/resources/`.
-For local engine work (extractor fixes, experiments), clone and build from source here.
+VidBee tracks the complete yt-dlp source snapshot in `vendor/yt-dlp`. The
+upstream ref and commit are recorded in `vendor/yt-dlp/VENDOR.json`; the
+upstream license and bundled-component notices remain beside the source as
+`LICENSE` and `THIRD_PARTY_LICENSES.txt`.
 
-### One-time clone
+### Customize and build
 
-```bash
-git clone --depth 1 https://github.com/yt-dlp/yt-dlp.git vendor/yt-dlp
-# optional: pin a release
-# cd vendor/yt-dlp && git fetch --tags && git checkout 2026.07.04
-```
-
-The clone is gitignored (large upstream tree + nested `.git`).
-
-### Build & install into desktop resources
+Make yt-dlp changes directly under `vendor/yt-dlp` (extractors live in
+`vendor/yt-dlp/yt_dlp/extractor`), then run:
 
 ```bash
-pnpm --filter vidbee run build:ytdlp
-# or from repo root:
 pnpm run build:ytdlp
+pnpm run verify:ytdlp
 ```
 
-This runs yt-dlp's `make yt-dlp` (Python zipapp) and installs the result as the
-platform resource binary (`yt-dlp_linux` / `yt-dlp_macos` / `yt-dlp.exe`).
+The build uses yt-dlp's locked Python environment, including its `curl_cffi`
+browser-impersonation support, and official PyInstaller entrypoint to create a
+standalone executable for the current OS and CPU. It installs that executable
+using VidBee's existing resource name:
 
-A marker file `apps/desktop/resources/.ytdlp-vendored` records the source commit.
-While that marker exists, `pnpm setup` will not replace the binary with a stock
-GitHub release download.
+- Windows: `apps/desktop/resources/yt-dlp.exe`
+- macOS: `apps/desktop/resources/yt-dlp_macos`
+- Linux: `apps/desktop/resources/yt-dlp_linux`
 
-### Notes
+`uv` and Python 3.10 or newer are required. Set `PYTHON` to choose a specific
+interpreter. The generated environment and build outputs are ignored by the
+vendored source's `.gitignore`.
 
-- The local build is a **Python zipapp**, not the official standalone
-  `yt-dlp_linux` ELF. It needs a working `python3` on `PATH` (3.9+ recommended).
-- Official packaged apps keep using the standalone release binaries for broader
-  OS compatibility (see Sentry VIDBEE-397).
-- After editing extractors under `vendor/yt-dlp/`, re-run `pnpm run build:ytdlp`.
+The marker at `apps/desktop/resources/.ytdlp-vendored` records the upstream
+commit plus a digest of the effective source. `pnpm setup`, `pnpm dev`, and the
+Desktop packaging scripts rebuild when that digest changes, so a stock release
+download cannot silently replace a customized build.
+
+The standalone executable is native to the build machine. VidBee's release CI
+therefore builds Windows, Linux, macOS arm64, and macOS x64 artifacts on their
+matching runners.
+
+### Update the snapshot
+
+Import a reviewed upstream tag as a plain source snapshot (without a nested
+`.git` directory), then update `VENDOR.json`. Keep VidBee-specific changes as
+ordinary repository commits so they remain visible and reviewable when the
+next snapshot is imported.

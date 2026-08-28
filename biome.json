@@ -66,6 +66,7 @@
       "!apps/desktop/build",
       "!apps/desktop/dist",
       "!apps/desktop/out",
+      "!vendor",
       "!dist",
       "!out",
       "!build"
