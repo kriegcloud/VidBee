@@ -6,6 +6,7 @@ import {
   buildGalleryDlRuntimeArgs,
   buildInstagramCategoryUrl,
   enqueueInstagramProfileDownload,
+  INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
   type InstagramProfileInspector,
   normalizeInstagramProfileUrl
 } from '../src/instagram-profile'
@@ -43,6 +44,16 @@ describe('Instagram profile URL routing', () => {
 })
 
 describe('gallery-dl runtime settings', () => {
+  it('preserves video-backed Instagram stories and highlights', () => {
+    expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).toContain('extractor.instagram.videos=true')
+    expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).toContain(
+      'extractor.instagram.static-videos=true'
+    )
+    expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).not.toContain(
+      'extractor.instagram.static-videos=false'
+    )
+  })
+
   it('forwards browser cookies, cookie files, and proxy settings', () => {
     expect(
       buildGalleryDlRuntimeArgs({

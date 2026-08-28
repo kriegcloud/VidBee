@@ -13,7 +13,10 @@ import {
   virtualError
 } from '@vidbee/task-queue'
 
-import { buildGalleryDlRuntimeArgs } from './instagram-profile'
+import {
+  buildGalleryDlRuntimeArgs,
+  INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
+} from './instagram-profile'
 import type { DownloadRuntimeSettings } from './types'
 import type { YtDlpTaskOptions } from './yt-dlp-executor'
 
@@ -102,16 +105,7 @@ const buildArgs = (
   '--no-colors',
   '--user-agent',
   CHROME_USER_AGENT,
-  '-o',
-  'extractor.instagram.api=rest',
-  '-o',
-  'extractor.instagram.videos=true',
-  '-o',
-  'extractor.instagram.static-videos=false',
-  '-o',
-  'extractor.instagram.previews=false',
-  '-o',
-  'extractor.instagram.audio=false',
+  ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
   ...(filter ? ['--filter', filter] : []),
   '--Print',
   `prepare:${EVENT_PREFIX}\tprepare\t{_path}`,

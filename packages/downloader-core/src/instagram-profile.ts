@@ -79,6 +79,19 @@ const DOWNLOAD_CATEGORY_ORDERS: Record<InstagramProfileCategory, number> = {
 }
 const INSTAGRAM_POST_FILTER = "type == 'post'"
 
+export const INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS = [
+  '-o',
+  'extractor.instagram.api=rest',
+  '-o',
+  'extractor.instagram.videos=true',
+  '-o',
+  'extractor.instagram.static-videos=true',
+  '-o',
+  'extractor.instagram.previews=false',
+  '-o',
+  'extractor.instagram.audio=false'
+] as const
+
 interface InspectionCacheEntry {
   inspection: InstagramProfileInspection
   categoryUrls: Record<InstagramProfileCategory, string>
@@ -223,16 +236,7 @@ const runGalleryJson = (
       'output.jsonl=true',
       '--no-input',
       '--no-colors',
-      '-o',
-      'extractor.instagram.api=rest',
-      '-o',
-      'extractor.instagram.videos=true',
-      '-o',
-      'extractor.instagram.static-videos=false',
-      '-o',
-      'extractor.instagram.previews=false',
-      '-o',
-      'extractor.instagram.audio=false',
+      ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
       ...(sleepBeforeExtraction ? ['--sleep-extractor', '6.0-12.0'] : []),
       ...extraArgs,
       url
