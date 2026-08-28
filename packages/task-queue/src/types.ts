@@ -11,6 +11,7 @@ export type TaskKind =
   | 'audio'
   | 'playlist'
   | 'instagram-profile-category'
+  | 'vsco-gallery'
   | 'subscription-item'
   | 'yt-dlp-forward'
   | 'transcription'

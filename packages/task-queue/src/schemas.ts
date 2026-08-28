@@ -5,6 +5,7 @@ export const TaskKindSchema = z.enum([
   'audio',
   'playlist',
   'instagram-profile-category',
+  'vsco-gallery',
   'subscription-item',
   'yt-dlp-forward',
   'transcription'

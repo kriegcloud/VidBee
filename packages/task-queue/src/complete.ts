@@ -16,7 +16,7 @@ export function isOutputComplete(
   output: TaskOutput,
   check: OutputCompleteCheck
 ): boolean {
-  if (kind === 'instagram-profile-category') {
+  if (kind === 'instagram-profile-category' || kind === 'vsco-gallery') {
     return Boolean(
       output.outputDirectory &&
         output.fileCount &&

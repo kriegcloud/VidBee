@@ -6,7 +6,11 @@ import path from 'node:path'
 
 import { implement, ORPCError } from '@orpc/server'
 import type { DownloadTask } from '@vidbee/downloader-core'
-import { downloaderContract, enqueueInstagramProfileDownload } from '@vidbee/downloader-core'
+import {
+  downloaderContract,
+  enqueueInstagramProfileDownload,
+  resolveDownloadTaskKind
+} from '@vidbee/downloader-core'
 import type { Task, TaskStatus } from '@vidbee/task-queue'
 import { downloadDir, taskQueue } from './downloader'
 import { projectTaskForApi } from './projection'
@@ -432,7 +436,7 @@ export const rpcRouter = os.router({
         const result = await taskQueue.add({
           input: {
             url: input.url,
-            kind: input.type === 'audio' ? 'audio' : 'video',
+            kind: resolveDownloadTaskKind(input.url, input.type),
             title: input.title,
             thumbnail: input.thumbnail,
             playlistId: input.playlistId,

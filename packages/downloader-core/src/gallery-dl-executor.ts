@@ -8,15 +8,13 @@ import {
   type ExecutorContext,
   type ExecutorEvents,
   type ExecutorRun,
+  type TaskKind,
   type TaskOutput,
   type TaskProgress,
   virtualError
 } from '@vidbee/task-queue'
 
-import {
-  buildGalleryDlRuntimeArgs,
-  INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
-} from './instagram-profile'
+import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
 import type { DownloadRuntimeSettings } from './types'
 import type { YtDlpTaskOptions } from './yt-dlp-executor'
 
@@ -27,6 +25,25 @@ const EVENT_PREFIX = '__VIDBEE_GDL__'
 const CHROME_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
 const SEQUENTIAL_TEMPLATE_REGEX = /^(\d+)\.%\(ext\)s$/
+const VSCO_GALLERY_PATH = /^\/([^/?#]+)\/(?:gallery|images)\/?$/i
+
+export const VSCO_GALLERY_DL_EXTRACTOR_ARGS = [
+  '-o',
+  'extractor.vsco.tls12=true',
+  '-o',
+  'extractor.vsco.videos=true',
+  '--sleep-request',
+  '1',
+  '--sleep-429',
+  '60',
+  '--retries',
+  '8'
+] as const
+
+export interface NormalizedVscoGalleryUrl {
+  username: string
+  profileUrl: string
+}
 
 interface GalleryDlTaskOptions extends YtDlpTaskOptions {
   galleryDlBaseDirectory?: string
@@ -51,6 +68,35 @@ interface TailBuffer {
   read: () => string
 }
 
+/** Normalize the VSCO profile gallery aliases supported by gallery-dl. */
+export const normalizeVscoGalleryUrl = (value: string): NormalizedVscoGalleryUrl | null => {
+  try {
+    const parsed = new URL(value)
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return null
+    }
+    const host = parsed.hostname.toLowerCase()
+    if (!(host === 'vsco.co' || host === 'www.vsco.co')) {
+      return null
+    }
+    const match = VSCO_GALLERY_PATH.exec(parsed.pathname)
+    const username = match?.[1]
+    if (!username) {
+      return null
+    }
+    return {
+      username,
+      profileUrl: `https://vsco.co/${username}/gallery`
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Keep multi-file VSCO galleries out of single-media and transcription flows. */
+export const resolveDownloadTaskKind = (url: string, requestedType: 'audio' | 'video'): TaskKind =>
+  normalizeVscoGalleryUrl(url) ? 'vsco-gallery' : requestedType
+
 const createTailBuffer = (maxBytes: number): TailBuffer => {
   let buffer = ''
   return {
@@ -66,14 +112,25 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
   }
 }
 
-const resolveFilenameTemplate = (options: GalleryDlTaskOptions): string => {
+export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string =>
+  normalizeVscoGalleryUrl(url)
+    ? '{id}.{extension}'
+    : '{sidecar_media_id:?/_/}{media_id}.{extension}'
+
+export const resolveGalleryDlFilenameTemplate = (
+  url: string,
+  options: GalleryDlTaskOptions
+): string => {
+  if (normalizeVscoGalleryUrl(url)) {
+    return resolveDefaultGalleryDlFilenameTemplate(url)
+  }
   const galleryTemplate = options.galleryDlFilenameTemplate?.trim()
   if (galleryTemplate) {
     return galleryTemplate
   }
   const trimmed = options.customFilenameTemplate?.trim() ?? ''
   if (!trimmed) {
-    return '{sidecar_media_id:?/_/}{media_id}.{extension}'
+    return resolveDefaultGalleryDlFilenameTemplate(url)
   }
   const sequential = SEQUENTIAL_TEMPLATE_REGEX.exec(trimmed)
   if (sequential) {
@@ -101,11 +158,11 @@ const buildArgs = (
     : ['--directory', directoryTemplate]),
   '--filename',
   filenameTemplate,
+  '--config-ignore',
   '--no-input',
   '--no-colors',
   '--user-agent',
   CHROME_USER_AGENT,
-  ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
   ...(filter ? ['--filter', filter] : []),
   '--Print',
   `prepare:${EVENT_PREFIX}\tprepare\t{_path}`,
@@ -205,27 +262,34 @@ export class GalleryDlExecutor implements Executor {
     }
 
     const taskOptions = (ctx.input.options ?? {}) as GalleryDlTaskOptions
-    const outputDirectory =
+    const configuredOutputDirectory =
       taskOptions.customDownloadPath?.trim() ||
       taskOptions.settings?.downloadPath?.trim() ||
       this.options.defaultDownloadDir
+    const vscoGallery = normalizeVscoGalleryUrl(ctx.input.url)
+    const outputDirectory = vscoGallery
+      ? path.join(configuredOutputDirectory, 'VSCO', vscoGallery.username, 'Gallery')
+      : configuredOutputDirectory
     const directoryTemplate = taskOptions.galleryDlDirectoryTemplate?.trim() || outputDirectory
     const baseDirectory = taskOptions.galleryDlBaseDirectory?.trim()
     const directorySegments = taskOptions.galleryDlDirectorySegments
       ?.map((segment) => segment.trim())
       .filter(Boolean)
-    const filenameTemplate = resolveFilenameTemplate(taskOptions)
+    const filenameTemplate = resolveGalleryDlFilenameTemplate(ctx.input.url, taskOptions)
     const filter = taskOptions.galleryDlFilter?.trim()
     const expectedAssetCount = Math.max(taskOptions.expectedAssetCount ?? 0, 0)
     const extraArgs = [
       ...(this.options.resolveExtraArgs?.(taskOptions.settings) ??
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
+    const extractorArgs = vscoGallery
+      ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
+      : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
     const args = buildArgs(
-      ctx.input.url,
+      vscoGallery?.profileUrl ?? ctx.input.url,
       directoryTemplate,
       filenameTemplate,
-      extraArgs,
+      [...extractorArgs, ...extraArgs],
       baseDirectory,
       directorySegments,
       filter
@@ -389,11 +453,37 @@ export class GalleryDlExecutor implements Executor {
       }
 
       if (exitCode === 0) {
+        const completedAssetCount = downloadedCount + skippedCount
+        const missingAssetCount = Math.max(discoveredCount - completedAssetCount - failedCount, 0)
+        const nonUniqueAssetCount = Math.max(completedAssetCount - materializedFiles.size, 0)
+        if (
+          vscoGallery &&
+          (failedCount > 0 || missingAssetCount > 0 || nonUniqueAssetCount > 0)
+        ) {
+          const message = `VSCO gallery incomplete: ${failedCount} failed, ${missingAssetCount} unfinished, and ${nonUniqueAssetCount} non-unique assets.`
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: {
+              type: 'error',
+              error: virtualError('unknown', message),
+              exitCode: 0
+            },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr || message
+          })
+          return
+        }
         const files = [...materializedFiles]
         const firstFile = files[0] ?? ''
         const firstFileSize = firstFile ? readFileSize(firstFile) : 0
         const totalSize = files.reduce((sum, filePath) => sum + readFileSize(filePath), 0)
-        const isProfileCategory = ctx.input.kind === 'instagram-profile-category'
+        const isProfileCategory =
+          ctx.input.kind === 'instagram-profile-category' || Boolean(vscoGallery)
+        const profileFileCount = vscoGallery
+          ? materializedFiles.size
+          : downloadedCount + skippedCount
         const output: TaskOutput = {
           filePath: firstFile || outputDirectory,
           size: isProfileCategory ? totalSize : firstFileSize,
@@ -401,7 +491,7 @@ export class GalleryDlExecutor implements Executor {
           sha256: null,
           formatId: null,
           outputDirectory: isProfileCategory ? outputDirectory : undefined,
-          fileCount: isProfileCategory ? downloadedCount + skippedCount : undefined,
+          fileCount: isProfileCategory ? profileFileCount : undefined,
           downloadedCount: isProfileCategory ? downloadedCount : undefined,
           skippedCount: isProfileCategory ? skippedCount : undefined,
           failedCount: isProfileCategory ? failedCount : undefined,
@@ -503,6 +593,9 @@ export class GalleryDlExecutor implements Executor {
 const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
 export const shouldUseGalleryDl = (url: string): boolean => {
+  if (normalizeVscoGalleryUrl(url)) {
+    return true
+  }
   try {
     const host = new URL(url).hostname.toLowerCase()
     return GALLERY_DL_HOSTS.some(

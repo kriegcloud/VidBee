@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { isInstagramProfileUrl, isPlaylistLikeUrl } from './url-kind'
+import { isInstagramProfileUrl, isPlaylistLikeUrl, isVscoGalleryUrl } from './url-kind'
 
 const isLikelyUrl = (value: string): boolean => {
   try {
@@ -86,6 +86,11 @@ export const useAddUrlInteraction = ({
       }
 
       setAddUrlPopoverOpen(false)
+
+      if (isVscoGalleryUrl(trimmedUrl)) {
+        await onOneClickDownload(trimmedUrl)
+        return
+      }
 
       if (isInstagramProfileUrl(trimmedUrl) || activeTab === 'profile') {
         if (isProfileBusy) {

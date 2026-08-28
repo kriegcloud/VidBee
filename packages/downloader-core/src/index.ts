@@ -70,7 +70,11 @@ export type { GalleryDlExecutorOptions } from './gallery-dl-executor'
 export {
   GalleryDlExecutor,
   HostRoutingExecutor,
-  shouldUseGalleryDl
+  normalizeVscoGalleryUrl,
+  resolveDefaultGalleryDlFilenameTemplate,
+  resolveDownloadTaskKind,
+  shouldUseGalleryDl,
+  VSCO_GALLERY_DL_EXTRACTOR_ARGS
 } from './gallery-dl-executor'
 export type {
   EnqueueInstagramProfileOptions,

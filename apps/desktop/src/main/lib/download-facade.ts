@@ -22,7 +22,8 @@ import {
   enqueueInstagramProfileDownload,
   type InstagramProfileDownloadInput,
   type InstagramProfileDownloadResult,
-  type InstagramProfileInspection
+  type InstagramProfileInspection,
+  resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import {
   isDownloadTaskKind,
@@ -157,7 +158,7 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
   const downloadPath = options.customDownloadPath?.trim() || settings.downloadPath || ''
   return {
     url: options.url,
-    kind: options.type === 'audio' ? 'audio' : 'video',
+    kind: resolveDownloadTaskKind(options.url, options.type),
     subscriptionId: options.subscriptionId,
     // Stash renderer-fetched metadata at the canonical TaskInput slots so
     // projectTaskToLegacy round-trips them. Without these, the renderer's

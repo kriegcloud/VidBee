@@ -6,11 +6,11 @@ Saving a complete VSCO profile gallery currently means repeatedly loading more p
 
 ## Success metric
 
-For each acceptance-test gallery, VidBee saves exactly one highest-available-resolution image for 100% of the gallery posts visible to the authenticated user, with zero manual scrolling, lightbox navigation, or per-image save actions after the download begins.
+For each acceptance-test gallery, VidBee saves exactly one highest-available-resolution image or available video for 100% of the gallery assets visible to the authenticated user, with zero manual scrolling, lightbox navigation, or per-item save actions after the download begins.
 
 ## Announcement — the blog post before the feature
 
-VidBee can now download complete VSCO profile galleries. Paste a VSCO gallery link, choose your existing browser-cookie file when the gallery requires your signed-in access, and start the download just as you already do for Instagram. VidBee finds every available post and saves the best-resolution image from each one, even when VSCO initially shows only part of the gallery. Progress and failures remain visible in the familiar download queue, so large galleries no longer require repetitive browser work.
+VidBee can now download complete VSCO profile galleries. Paste a VSCO gallery link, choose your existing browser-cookie file when the gallery requires your signed-in access, and start the download just as you already do for Instagram. VidBee finds every available photo and video, saving native-resolution images even when VSCO initially shows only part of the gallery. Progress and failures remain visible in the familiar download queue, so large galleries no longer require repetitive browser work.
 
 ## Screens
 
@@ -18,9 +18,9 @@ VidBee can now download complete VSCO profile galleries. Paste a VSCO gallery li
 
 ## Product boundaries
 
-- The first release covers still images in VSCO profile gallery pages.
+- The first release covers photos and videos in VSCO profile gallery pages.
 - It downloads only posts that the user can legitimately view with the access they provide.
-- One saved file represents one gallery post; duplicate discovery must not create duplicate files.
+- One saved file represents one gallery asset; duplicate discovery must not create duplicate files.
 - The best image resolution available to VidBee is preferred over thumbnails or viewport-sized copies.
 - Interrupted or individual failed items must be reported rather than silently omitted.
-- Video posts, journals, collections, reposts, and bulk downloads across multiple profiles are outside the first release unless they are already handled automatically by the existing download experience.
+- Journals, collections, reposts, and bulk downloads across multiple profiles are outside the first release unless they are already handled automatically by the existing download experience.

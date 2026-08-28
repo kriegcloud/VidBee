@@ -2,245 +2,146 @@
 
 ## Fit
 
-VSCO gallery downloads will extend the same shared layers used by Instagram
-profile downloads instead of introducing browser automation:
+VSCO gallery downloads extend VidBee's existing one-click and gallery-dl path:
 
-- `vendor/yt-dlp` owns the VSCO page/API extractor because its packaged
-  `curl_cffi` transport can impersonate a current browser through VSCO's
-  Cloudflare edge on Desktop and in the API container.
-- `@vidbee/downloader-core` owns URL normalization, inspection caching, safe
-  metadata projection, queue creation, output naming, and VSCO-specific yt-dlp
-  arguments.
-- `@vidbee/task-queue` owns retries, cancellation, persistence, concurrency, and
-  individual image outcomes.
-- Desktop IPC and the Web/API oRPC router expose the same inspect/download
-  operations.
-- The existing Profile tab shell recognizes a VSCO gallery URL and renders a
-  dedicated VSCO preview; Instagram keeps its existing preview and behavior.
-- Existing queue/history grouping uses a VSCO `batchId`, so the gallery appears
-  as one grouped job while every image retains its own progress and failure.
+- `@vidbee/ui` recognizes only `https://vsco.co/<username>/gallery` and the
+  equivalent `/images` alias as full-gallery URLs, then starts the download in
+  one action even when ordinary single-video one-click mode is disabled.
+- `@vidbee/downloader-core` normalizes those URLs, selects the dedicated
+  `vsco-gallery` task kind, routes the host to `GalleryDlExecutor`, supplies the
+  VSCO extractor settings, and aggregates the output directory and file counts.
+- `@vidbee/task-queue` persists the new task kind with no database migration.
+  The kind is deliberately not transcribable because its output is a mixed,
+  multi-file gallery rather than one video.
+- Desktop and API create the same task kind and use the same executor routing.
+- VidBee's existing packaged gallery-dl binary owns VSCO page parsing, cursor
+  pagination, native image URL selection, and HLS video delegation.
 
-The design intentionally does not scroll the VSCO page, click **Load more**,
-open the lightbox, or walk the left chevron. Those are viewport behaviors over
-the same cursor-paginated data that VSCO exposes to its page.
+The implementation does not automate scrolling, **Load more**, the lightbox,
+or chevron clicks. Those UI actions expose the same cursor-paginated media feed
+that gallery-dl already supports.
 
 ## Endpoints
 
-Add the following shared contract under `downloaderContract.vscoGallery`, with
-matching Desktop IPC methods:
-
-### `vscoGallery.inspect`
-
-Input:
-
-```ts
-interface VscoGalleryInspectInput {
-  url: string
-  settings?: DownloadRuntimeSettings
-}
-```
-
-Output:
-
-```ts
-interface VscoGalleryInspection {
-  inspectionId: string
-  expiresAt: number
-  complete: boolean
-  profile: {
-    username: string
-    profileUrl: string
-    displayName?: string
-    avatarUrl?: string
-  }
-  sourceCount: number
-  imageCount: number
-  excludedVideoCount: number
-}
-```
-
-`complete` is true only after pagination ends normally. Inspection fails rather
-than presenting a partial gallery as complete when a page cannot be fetched.
-The public response contains counts and display metadata, not VSCO bearer
-tokens, response cookies, or the internal list of CDN URLs.
-
-### `vscoGallery.download`
-
-Input:
-
-```ts
-interface VscoGalleryDownloadInput {
-  inspectionId: string
-  customDownloadPath?: string
-  settings?: DownloadRuntimeSettings
-}
-```
-
-Output:
-
-```ts
-interface VscoGalleryDownloadResult {
-  groupId: string
-  username: string
-  totalImageCount: number
-  tasks: Array<{
-    downloadId: string
-    mediaId: string
-    index: number
-  }>
-}
-```
-
-The download call consumes a still-valid inspection. An expired inspection
-returns an actionable “scan again” error rather than silently performing a
-second discovery with possibly different access.
+No new endpoint is required. Existing Desktop download IPC and the shared
+`downloads.create` oRPC operation accept the VSCO gallery URL and create one
+`vsco-gallery` queue task.
 
 ## Data
 
-No relational database migration is required. Task kind and options are stored
-in the queue's existing text/JSON fields. The shared task/schema unions gain:
+No database migration is required. The task-kind union and Zod schema add:
 
 ```ts
-type TaskKind = /* existing kinds */ | 'vsco-gallery-image'
-type BatchKind = 'instagram-profile' | 'vsco-gallery'
+type TaskKind = /* existing kinds */ | 'vsco-gallery'
 ```
 
-Each image task stores only the metadata needed after a restart:
+Successful task output uses the queue's existing multi-file fields:
 
-- the resolved native image URL;
-- media ID, upload timestamp, width, height, and stable gallery index;
-- `batchId`, `batchKind`, batch title/order/count, and output directory;
-- the user's existing runtime settings reference/path values; and
-- the deterministic output filename.
+- `outputDirectory`
+- `fileCount`
+- `downloadedCount`
+- `skippedCount`
+- `failedCount`
+- `totalSize`
 
-The inspector keeps a bounded in-memory cache, following the Instagram
-inspector's 15-minute TTL and maximum-entry policy. Cached entries are
-whitelisted objects rather than raw yt-dlp output. VSCO bearer tokens and
-response-cookie values are never returned, persisted, or logged.
-
-The default layout is:
+Files are placed at:
 
 ```text
-<download root>/VSCO/<username>/Gallery/YYYY-MM-DD_<media-id>.<extension>
+<download root>/VSCO/<username>/Gallery/<media-id>.<extension>
 ```
 
-The media ID is the deduplication key within an inspection. A repeated cursor
-entry creates no second task, and the deterministic filename lets yt-dlp treat
-an already-present image as completed rather than overwriting it.
+The VSCO media ID is stable and collision-safe. Existing files are skipped on
+a repeated or resumed run instead of being renamed or duplicated.
 
 ## Flow
 
-1. The shared URL classifier recognizes only
-   `https://vsco.co/<username>/gallery` (and VSCO's equivalent `/images` alias)
-   as a VSCO gallery. This check runs before one-click single-media routing.
-2. Desktop or Web opens the existing Profile tab shell in VSCO mode and calls
-   `vscoGallery.inspect`.
-3. `VscoGalleryInspector` invokes the resolved vendored yt-dlp with proxy,
-   browser-cookie, Netscape-cookie, and config settings already supported by
-   VidBee. Child output is captured in a bounded buffer, parsed, whitelisted,
-   and never echoed verbatim.
-4. The vendored `VscoGalleryIE` uses browser impersonation to fetch the gallery
-   page, reads the page's preloaded state for the site ID and short-lived API
-   token, then follows `next_cursor` through
-   `/api/3.0/medias/profile?site_id=...&limit=14` until the cursor ends.
-5. The extractor ignores video media for this release (including records marked
-   by either `is_video` or `playback_url`), deduplicates stills by media ID, and
-   emits the unscaled `responsive_url` plus native dimensions and upload
-   metadata. It never selects DOM `srcset` thumbnails or adds a `w=` scaling
-   parameter.
-6. The preview shows the discovered still-image count and any excluded video
-   count. The user starts the complete gallery with one action.
-7. `enqueueVscoGalleryDownload` creates one `vsco-gallery-image` task per still,
-   all sharing the same `batchId`. A VSCO group cap of three allows useful
-   parallelism without issuing an unbounded burst to the image CDN; the cap is
-   restored for persisted tasks after restart.
-8. `YtDlpExecutor` uses a dedicated image argument builder for this task kind:
-   browser impersonation, retries, timeout, cookies/proxy/config, `--continue`,
-   deterministic output, and no video format selection, remuxing, subtitle, or
-   metadata-embedding flags.
-9. The existing projections and grouped queue/history UI report each image's
-   queued, running, retrying, completed, failed, or cancelled state and derive
-   gallery-level progress from the batch.
+1. The shared UI classifier recognizes an exact VSCO gallery URL and sends it
+   directly to the existing download action.
+2. Desktop or API snapshots the configured Netscape cookie path, proxy, and
+   other runtime settings into a `vsco-gallery` task.
+3. `HostRoutingExecutor` selects `GalleryDlExecutor` for the normalized URL.
+4. The executor invokes the packaged gallery-dl with:
+   - `extractor.vsco.tls12=true`, required by the packaged transport at VSCO's
+     Cloudflare edge;
+   - `extractor.vsco.videos=true`, so “full profile” includes videos;
+   - one-second extraction-request pacing to reduce 429 risk;
+   - a 60-second 429 wait and eight bounded request retries;
+   - `{id}.{extension}`, because VSCO exposes `id`, not Instagram's
+     `media_id`; and
+   - VidBee's existing cookie/proxy/runtime arguments.
+5. gallery-dl reads VSCO's page preload state and follows the profile media API
+   cursor until `next_cursor` ends. Images use the native responsive URL; HLS
+   videos use the yt-dlp module embedded in VidBee's gallery-dl executable.
+6. Every prepare/download/skip/error event updates the one queue task. Exit zero
+   is rejected as incomplete when any discovered asset failed, never reached a
+   terminal file event, or collapsed onto a non-unique output path.
+7. A complete run reports its aggregate directory, counts, and total size. The
+   task is not passed to VidBee's automatic transcription coordinator.
 
-## External integration
+## External
 
 ### VSCO
 
 - Page: `https://vsco.co/<username>/gallery`
-- Pagination API: `https://vsco.co/api/3.0/medias/profile`
-- Page size: 14, advanced with `next_cursor` until absent
-- Original image candidate: each still's `responsive_url` without a viewport
-  width query
-- Authentication: public access when available, otherwise VidBee's already
-  configured browser-cookie source or Netscape cookie file
+- Pagination: VSCO's private profile-media cursor API, consumed internally by
+  gallery-dl
+- Authentication: public access when available; otherwise VidBee's configured
+  browser-cookie source or Netscape cookie file
 
-The endpoint and preloaded-state shape are private VSCO implementation details,
-so parsing lives behind one extractor with fixture coverage and explicit errors
-for a changed page shape. There is no new secret, environment variable, browser
-extension permission, credential prompt, or remote service.
+Ephemeral page bearer tokens, cursors, response-cookie values, and raw API
+responses are never placed in queue input, logs, or persisted settings.
 
-### Vendored yt-dlp
+### gallery-dl
 
-Add a VidBee-maintained VSCO extractor to the tracked source snapshot and
-register it with yt-dlp's extractor index. The normal vendored build regenerates
-lazy extractors and source-digest markers. `curl_cffi` is a required build extra
-for both the standalone Desktop executable and the API image; verification must
-fail if a Chrome impersonation target is unavailable.
-
-### Host parity
-
-- Desktop resolves the packaged yt-dlp binary through `ytdlpManager`.
-- API/Docker resolves the yt-dlp installation built from the same tracked
-  source under `/usr/bin/yt-dlp`.
-- Both hosts construct `VscoGalleryInspector` and restore VSCO group caps next
-  to their existing Instagram setup.
-- Web and Desktop use the same Zod/oRPC domain types and the same shared VSCO
-  preview component and English-first i18n keys.
+VidBee's existing Linux resource reports `1.32.9-dev:2026.07.27` and includes
+`VscoGalleryExtractor` plus an embedded yt-dlp module. No new binary, vendored
+Python source, API token, extension permission, or remote service is added.
 
 ## Failure and privacy behavior
 
-- 401/403 or a private gallery without usable access maps to `auth-required`.
-- 429 maps to `rate-limited`/`http-429` and uses the queue's bounded retry
-  behavior.
-- Missing user or media maps to `not-found`.
-- A cursor loop, malformed state, missing native URL, or truncated pagination
-  fails inspection; it cannot be labeled a complete gallery.
-- A failed image task remains visible and does not erase successful siblings.
-- Cancellation stops pending/running image tasks through the existing queue
-  controls.
-- Logs may contain URLs and media IDs but must not contain raw cookie values,
-  Authorization headers, the page token, or unfiltered yt-dlp JSON.
+- 401/403 failures remain visible and use the existing cookie guidance.
+- 429 responses use gallery-dl's bounded wait/retry behavior; extraction is
+  paced before the rate limit is reached.
+- Non-zero process exits fail the task through VidBee's existing classifier.
+- A zero exit with failed, unfinished, or non-unique media also fails the task,
+  preventing a partial profile from being reported as complete.
+- Logs may contain ordinary media URLs and IDs, but never cookie values,
+  Authorization headers, page bearer tokens, or raw API responses.
 
 ## Decisions and rejected alternatives
 
-1. Use VSCO's cursor API, not scroll/lightbox automation; it is faster, more
-   deterministic, and exposes the native image URL directly.
-2. Extend vendored yt-dlp rather than gallery-dl because gallery-dl's current
-   requests transport receives VSCO Cloudflare 403s, while the verified
-   curl-cffi-backed yt-dlp transport reaches the page and API.
-3. Queue one task per image and group them visually; one monolithic process
-   would hide which image failed and would not fit the queue's single-file
-   output contract.
-4. Use a dedicated image argument path rather than pretending JPEG files are
-   videos; video format/remux/embed flags are incorrect for image assets.
-5. Cache discovery behind an inspection ID; this prevents a preview/download
-   race and keeps temporary VSCO API material out of public contracts.
-6. Keep the first release still-only and single-profile, matching the approved
-   product boundary.
+1. Reuse the bundled VSCO extractor rather than add a VidBee-maintained yt-dlp
+   extractor. Live testing proved the functionality already ships in the
+   gallery-dl resource; VidBee simply never routed VSCO to it.
+2. Keep one grouped queue task. gallery-dl already owns cursor pagination,
+   per-file resume/skip behavior, and mixed image/video downloading in one
+   process, matching the requested single-shot workflow.
+3. Use `{id}.{extension}` rather than VidBee's Instagram default. VSCO has no
+   `media_id`; the old template would collapse assets onto `None.jpg` and
+   `None.mp4`.
+4. Explicitly enable TLS 1.2 and pace extraction requests. Without TLS 1.2 the
+   packaged binary receives Cloudflare 403; repeated unpaced 130-page scans can
+   receive 429.
+5. Include videos because the user clarified that the result must be the full
+   profile, and the packaged binary contains the required HLS dependency.
 
 ## Validation evidence
 
-On 2026-08-27, the packaged Linux yt-dlp binary successfully exposed a
-curl-cffi Chrome impersonation target and reached the example VSCO page through
-the Cloudflare edge. An authenticated, metadata-only probe using a
-user-supplied Netscape jar followed the example gallery to cursor exhaustion:
+On 2026-08-28, a complete metadata-only pass over the example profile found:
 
-- 130 API pages;
-- 1,812 unique media records;
-- 1,801 still images eligible for v1;
-- 11 videos excluded by the approved boundary;
-- zero duplicate IDs; and
-- zero unusable media records.
+- 130 cursor pages;
+- 1,812 unique assets;
+- 1,801 images and 11 videos;
+- zero duplicate media IDs; and
+- image dimensions up to 3024×4032.
 
-The cookie values, page bearer token, and raw API responses were not printed or
-written into the repository.
+A real, cookie-bearing `GalleryDlExecutor` run downloaded all 1,812 assets into
+the planned directory: 1,801 JPEGs, 10 MOVs, and one MP4; 1,130,794,337 bytes;
+zero failed, partial, zero-byte, or duplicate-ID files. All 1,801 images decoded,
+including a 3024×4032 JPEG, and all 11 videos contained a valid video stream.
+
+A separate collision smoke supplied both an unsupported generic filename
+template and the Instagram-only `{media_id}` gallery template through an HTTP
+`/images` URL containing credentials, a non-default port, and a query. VidBee
+canonicalized the child request to the HTTPS `/gallery` URL and produced two
+distinct `{id}.jpg` files with zero failures.

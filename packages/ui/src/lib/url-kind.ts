@@ -30,6 +30,8 @@ const INSTAGRAM_RESERVED_PATHS = new Set([
   'tv',
   'web'
 ])
+const VSCO_HOSTS = new Set(['vsco.co', 'www.vsco.co'])
+const VSCO_GALLERY_PATH = /^\/[^/?#]+\/(?:gallery|images)\/?$/i
 
 /**
  * Check whether a URL points to an Instagram profile root.
@@ -55,6 +57,20 @@ export const isInstagramProfileUrl = (value: string): boolean => {
       Boolean(username) &&
       INSTAGRAM_PROFILE_NAME.test(username) &&
       !INSTAGRAM_RESERVED_PATHS.has(username.toLowerCase())
+    )
+  } catch {
+    return false
+  }
+}
+
+/** Check whether a URL points to a complete VSCO profile gallery. */
+export const isVscoGalleryUrl = (value: string): boolean => {
+  try {
+    const parsed = new URL(value)
+    return (
+      ['http:', 'https:'].includes(parsed.protocol) &&
+      VSCO_HOSTS.has(parsed.hostname.toLowerCase()) &&
+      VSCO_GALLERY_PATH.test(parsed.pathname)
     )
   } catch {
     return false
