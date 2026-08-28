@@ -97,8 +97,13 @@ class FfmpegManager {
 
     if (platform !== 'win32') {
       try {
-        fs.chmodSync(ffmpegPath, 0o755)
-        fs.chmodSync(ffprobePath, 0o755)
+        for (const binaryPath of [ffmpegPath, ffprobePath]) {
+          try {
+            fs.accessSync(binaryPath, fs.constants.X_OK)
+          } catch {
+            fs.chmodSync(binaryPath, 0o755)
+          }
+        }
       } catch (error) {
         scopedLoggers.engine.warn('Failed to set executable permission on bundled ffmpeg:', error)
       }
