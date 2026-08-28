@@ -88,10 +88,11 @@ export const decideAutoDownloads = ({
     .filter((item) => !(isHistoryDup?.(item.url) ?? false))
     .sort((a, b) => b.publishedAt - a.publishedAt)
 
-  const items =
+  const queued =
     subscription.onlyDownloadLatest && deduped.length > 0
       ? [deduped[0] as NormalizedFeedItem]
       : deduped
+  const items = subscription.autoDownload ? queued : []
 
   const latest = normalized[0]
   const coverUrl = resolveFeedCover(feed, normalized, rawItems)

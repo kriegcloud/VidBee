@@ -16,8 +16,21 @@
     "betaProgramDescription": "Получайте ранние сборки и предстоящие функции раньше всех.",
     "betaProgramTitle": "Канал предпросмотра",
     "description": "VidBee — это бесплатный загрузчик с открытым исходным кодом, созданный на Electron и работающий на yt-dlp.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "Встроенная резервная версия",
+        "checking": "Проверка",
+        "installing": "Установка",
+        "preparing": "Подготовка",
+        "retry-scheduled": "Повтор запланирован",
+        "unavailable": "Недоступно",
+        "up-to-date": "Актуально"
+      },
+      "title": "Модуль загрузки",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "Подписаться на @nexmoex"
+      "follow": "Подписаться на @nexmoe"
     },
     "followAuthorDescription": "Будьте в курсе последних новостей и обновлений VidBee.",
     "followAuthorSupport": "Подпишитесь на разработчика в X (Twitter), чтобы получать последние обновления и новости о VidBee.",
@@ -40,8 +53,6 @@
       "updateError": "Не удалось проверить обновления: {{error}}",
       "unknownErrorFallback": "Неизвестная ошибка"
     },
-    "preferencesDescription": "Настройте параметры обновления, не покидая эту страницу.",
-    "preferencesTitle": "Быстрые переключатели",
     "resources": {
       "changelog": "Примечания к выпуску",
       "changelogDescription": "Узнайте, что изменилось в каждой версии.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "Сообщайте об ошибках или предлагайте функции на GitHub.",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "Поделитесь отзывом или предложениями в X, упомянув @nexmoex.",
+      "xFeedbackDescription": "Поделитесь отзывом или предложениями в X, упомянув @nexmoe.",
       "discord": "Discord",
       "discordDescription": "Присоединяйтесь к нашему сообществу Discord для обсуждений и поддержки.",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "Загружайте видео и аудио с сотен сайтов",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "Выйти из VidBee?",
+      "message": "Ещё выполняется {{count}} задача. Выход прервёт её.",
+      "messagePlural": "Ещё выполняется {{count}} задач. Выход прервёт их.",
+      "quit": "Выход",
+      "cancel": "Отмена"
+    }
   },
   "download": {
     "active": "Активные",
@@ -117,10 +135,15 @@
     "back": "Назад",
     "cancel": "Отмена",
     "cancelled": "Отменено",
+    "pause": "Пауза",
+    "paused": "На паузе",
+    "resume": "Продолжить",
     "clearCompleted": "Очистить завершённые",
     "clearDownloads": "Очистить загрузки",
     "completed": "Завершено",
     "downloadAudio": "Загрузить аудио",
+    "dialogSubtitle": "Выберите формат и папку сохранения",
+    "dialogTitle": "Скачать",
     "downloadBtn": "Загрузить",
     "downloadPending": "Ожидание",
     "downloadQueue": "Очередь загрузки",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "Нажмите, чтобы вставить ссылку на плейлист из буфера обмена [Ctrl + V]",
     "pasteUrl": "Нажмите, чтобы вставить URL видео или ID [Ctrl + V]",
     "pasteUrlButton": "Вставить URL",
+    "ingestDropUrl": "Отпустите, чтобы скачать",
+    "ingestDropMedia": "Отпустите, чтобы расшифровать",
+    "ingestDropMixed": "Отпустите, чтобы скачать и расшифровать",
+    "ingestDropDescription": "Ссылки запускают загрузку. Аудио и видео запускают расшифровку.",
+    "ingestEmptyHint": "Вставьте ссылку для загрузки или перетащите аудио/видео для расшифровки.",
     "preparing": "Подготовка...",
     "processing": "Обработка",
     "progress": "Прогресс",
@@ -192,6 +220,9 @@
     "video": "Видео",
     "videoInfo": "Информация о видео",
     "videoInfoUpdated": "Информация о видео обновлена",
+    "frameRate": "Частота кадров",
+    "codecAuto": "Авто",
+    "fpsHighest": "Наивысшая",
     "metadata": {
       "source": "Источник",
       "playlist": "Плейлист",
@@ -219,7 +250,22 @@
       "subscription": "Подписка"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "Настроить cookies",
+    "cookiesSetupDialogTitle": "Настроить cookies",
+    "cookiesSetupNeeded": "Для этой загрузки нужна авторизованная сессия. Настройте cookies и повторите попытку.",
+    "cookiesSetupLocked": "Chrome блокирует базу cookies. Используйте Firefox, импортируйте файл cookies или полностью закройте Chrome.",
+    "cookiesSetupMacFiles": "macOS блокирует чтение cookies этого браузера. Откройте «Системные настройки → Конфиденциальность и безопасность → Файлы и папки», разрешите VidBee доступ к этому браузеру и повторите попытку. Если доступ уже разрешён, полностью закройте VidBee и откройте снова.",
+    "cookiesSetupOpenFilesSettings": "Открыть настройки «Файлы и папки»",
+    "cookiesSetupDecrypt": "Windows не может расшифровать cookies Chrome. Используйте Firefox или импортируйте файл cookies.",
+    "cookiesSetupFileInvalid": "Выбранный файл cookies не является корректным экспортом. Экспортируйте cookies.txt и попробуйте снова.",
+    "cookiesSetupKeyring": "Эта сборка Linux не может читать cookies Chrome. Используйте Firefox или импортируйте файл cookies.",
+    "cookiesSetupStale": "Текущие cookies устарели или заблокированы. Обновите вход и повторите попытку.",
+    "cookiesSetupRetry": "Повторить загрузку",
+    "cookiesSetupDone": "Готово",
+    "pause": "Пауза",
+    "paused": "На паузе",
+    "resume": "Продолжить"
   },
   "error": {
     "title": "Что-то пошло не так",
@@ -319,6 +365,7 @@
     "download": "Загрузить",
     "playlist": "Загрузить плейлист",
     "rss": "RSS",
+    "transcripts": "Расшифровки",
     "subscriptions": "Подписки",
     "preferences": "Настройки",
     "supportedSites": "Поддерживаемые сайты",
@@ -342,7 +389,12 @@
     "removeFailed": "Не удалось удалить элемент",
     "settingsSaved": "Настройки сохранены",
     "urlCopied": "URL скопирован в буфер обмена",
-    "videoCopied": "Видео скопировано в буфер обмена"
+    "videoCopied": "Видео скопировано в буфер обмена",
+    "transcriptionStarted": "Расшифровка запущена",
+    "transcriptionStartedMany": "Запущена расшифровка {{count}} файлов",
+    "transcriptionStartFailed": "Не удалось запустить расшифровку",
+    "unsupportedDrop": "Вставьте ссылку или перетащите аудио- или видеофайл",
+    "localMediaDesktopOnly": "Локальные файлы расшифровываются в приложении для компьютера"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} файлов",
@@ -429,9 +481,9 @@
     "audio": "Настройки аудио",
     "browserForCookies": "Выбрать браузер для использования cookie",
     "browserForCookiesDescription": "Браузер для извлечения cookie для аутентификации",
-    "browserForCookiesWindowsNote": "В Windows поддерживаются только cookie Firefox. Для других браузеров вручную укажите файл cookie.",
+    "browserForCookiesWindowsNote": "В Windows поддерживаются только cookie Firefox. Для других браузеров вручную укажите файл cookie",
     "browserForCookiesProfile": "Имя профиля или путь",
-    "browserForCookiesProfileDescription": "Путь профиля для выбранного выше браузера. Заполняется автоматически, если возможно.",
+    "browserForCookiesProfileDescription": "Путь профиля для выбранного выше браузера. Заполняется автоматически, если возможно",
     "browserForCookiesProfilePlaceholder": "Имя профиля или полный путь (необязательно)",
     "browserForCookiesProfileInvalid": "Путь профиля недействителен. Выберите папку профиля для выбранного браузера.",
     "browserForCookiesProfileInvalidPath": "Эта папка не существует. Выберите существующую папку профиля.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "Выберите ваш браузер выше, чтобы автоматически использовать его сеанс входа.",
     "cookiesHelpFile": "Экспортируйте файл cookie Netscape (см. FAQ yt-dlp) и выберите его здесь при необходимости.",
     "cookiesGuideTitle": "Нужна инструкция?",
-    "cookiesGuideDescription": "Посмотрите пошаговое руководство по использованию cookie в VidBee.",
+    "cookiesGuideDescription": "Посмотрите пошаговое руководство по использованию cookie в VidBee",
     "cookiesGuideLink": "Открыть руководство по cookie",
     "openLinkError": "Не удалось открыть ссылку",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "Выберите предпочтительный язык интерфейса приложения",
     "light": "Светлая",
     "hideDockIcon": "Скрывать иконку Dock при закрытии",
-    "hideDockIconDescription": "Автоматически скрывает иконку Dock при закрытии окна. Используйте строку меню или иконку в трее для повторного открытия.",
+    "hideDockIconDescription": "Автоматически скрывает иконку Dock при закрытии окна. Используйте строку меню или иконку в трее для повторного открытия",
     "launchAtLogin": "Запускать при входе",
-    "launchAtLoginDescription": "Автоматически открывать VidBee после входа в систему.",
-    "launchAtLoginUnsupported": "Автозапуск доступен только в macOS и Windows.",
+    "launchAtLoginDescription": "Автоматически открывать VidBee после входа в систему",
+    "launchAtLoginUnsupported": "Автозапуск доступен только в macOS и Windows",
     "enableAnalytics": "Помочь улучшить VidBee",
-    "enableAnalyticsDescription": "Поделитесь анонимными данными об использовании, чтобы помочь нам понять, как используется приложение, и расставить приоритеты улучшений.",
+    "enableAnalyticsDescription": "Поделитесь анонимными данными об использовании, чтобы помочь нам понять, как используется приложение, и расставить приоритеты улучшений",
     "enableDownloadNotifications": "Уведомления о загрузке",
-    "enableDownloadNotificationsDescription": "Показывать системное уведомление, когда загрузка завершена.",
+    "enableDownloadNotificationsDescription": "Показывать системное уведомление, когда загрузка завершена",
     "downloadWithoutChannelSubfolders": "Сохранять видео без подпапок канала",
-    "downloadWithoutChannelSubfoldersDescription": "Сохранять одиночные загрузки видео прямо в папку Videos, не создавая подпапку канала.",
+    "downloadWithoutChannelSubfoldersDescription": "Сохранять одиночные загрузки видео прямо в папку Videos, не создавая подпапку канала",
+    "downloadSubtitles": "Скачивать субтитры",
+    "downloadSubtitlesDescription": "Скачивать только субтитры на выбранных языках, если они доступны",
+    "subtitleLanguages": "Языки субтитров",
+    "subtitleLanguagesDescription": "Выберите языки субтитров, которые VidBee должен запрашивать для каждого видео",
+    "subtitleLanguageSearch": "Поиск языков субтитров",
+    "subtitleLanguageEmpty": "Подходящие языки не найдены",
+    "subtitleLanguageLimit": "Выберите не более {{count}} языков, чтобы снизить риск ограничений платформы",
+    "followInterfaceLanguage": "Следовать языку интерфейса ({{language}})",
     "embedChapters": "Встраивать главы",
     "embedChaptersDescription": "Добавлять маркеры глав в файл, если доступны",
     "embedMetadata": "Встраивать метаданные",
     "embedMetadataDescription": "Записывать название, исполнителя и другие метаданные, если доступны",
     "embedSubs": "Встраивать субтитры",
-    "embedSubsDescription": "Встраивать субтитры в файл видео (mp4, webm, mkv)",
+    "embedSubsDescription": "Встраивать выбранные субтитры в файл видео (mp4, webm, mkv)",
+    "writeAutoSubs": "Использовать автоматически созданные субтитры",
+    "writeAutoSubsDescription": "Использовать автоматические субтитры, если авторские субтитры на выбранных языках недоступны",
     "embedThumbnail": "Встраивать миниатюру",
     "embedThumbnailDescription": "Добавлять миниатюру как обложку",
+    "filenameStyle": "Стиль имени файла",
+    "filenameStyleDescription": "Выберите, как VidBee называет сохранённые видео- и аудиофайлы",
+    "filenameStyleNote": "Используется для файлов, сохранённых VidBee. Пользовательские шаблоны подписок и плейлистов имеют приоритет",
+    "filenameStyleOptions": {
+      "basic": "базовый",
+      "classic": "классика",
+      "nerdy": "гик",
+      "pretty": "красивый"
+    },
+    "filenameStylePreviewAudio": "предпросмотр аудиофайла",
+    "filenameStylePreviewVideo": "предпросмотр видеофайла",
+    "filenameViaVidBee": "Добавить via VidBee",
+    "filenameViaVidBeeDescription": "Автоматически добавляет via VidBee к именам сохранённых видео- и аудиофайлов",
+    "metadataTab": "Метаданные",
+    "navGroup": {
+      "app": "Приложение",
+      "download": "Загрузка",
+      "system": "Система",
+      "ai": "ИИ"
+    },
     "shareWatermark": "Водяной знак для обмена",
     "shareWatermarkDescription": "Добавляет водяной знак с оригинальным названием, автором и брендом VidBee",
     "maxConcurrentDownloads": "Максимальное количество активных загрузок",
@@ -502,7 +584,7 @@
     "oneClickDownload": "Загрузка одним кликом",
     "oneClickDownloadDescription": "Включить загрузку одним кликом с настройками по умолчанию",
     "oneClickDownloadType": "Тип загрузки по умолчанию",
-    "oneClickDownloadTypeDescription": "Выберите тип загрузки по умолчанию для загрузок одним кликом. Качество использует предустановку ниже.",
+    "oneClickDownloadTypeDescription": "Выберите тип загрузки по умолчанию для загрузок одним кликом. Качество использует предустановку ниже",
     "oneClickQuality": "Предпочтительное качество",
     "oneClickQualityDescription": "Выберите предустановку качества, используемую для загрузок одним кликом",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "Прокси",
     "proxyDescription": "Прокси-сервер для сетевых запросов",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "Источник загрузок",
+    "downloadMirrorDescription": "Использует китайские зеркала (ModelScope, прокси GitHub) для yt-dlp, ffmpeg, Node и моделей транскрипции, если GitHub медленный или недоступен",
+    "downloadMirrorAuto": "Авто",
+    "downloadMirrorChina": "Китай (ModelScope)",
+    "downloadMirrorGlobal": "Официальный",
     "rememberLastAudioLanguage": "Запоминать последний язык аудио",
-    "rememberLastAudioLanguageDescription": "Повторно использовать последний выбранный язык аудио как значение по умолчанию для будущих аудиозагрузок.",
+    "rememberLastAudioLanguageDescription": "Повторно использовать последний выбранный язык аудио как значение по умолчанию для будущих аудиозагрузок",
     "selectConfigFile": "Выбрать файл конфигурации",
     "selectPath": "Выбрать",
     "showMoreFormats": "Показать больше вариантов форматов",
     "showMoreFormatsDescription": "Отображать дополнительные варианты форматов в интерфейсе",
     "subscriptionDefaults": {
-      "filenameDescription": "Шаблон, используемый, когда подписка не переопределяет имя файла."
+      "filenameDescription": "Шаблон, используемый, когда подписка не переопределяет имя файла"
     },
     "system": "Системная",
     "theme": "Тема",
@@ -535,13 +622,243 @@
     },
     "video": "Настройки видео",
     "oneClickContainer": "Контейнер",
-    "oneClickContainerDescription": "Выберите контейнер вывода для загрузки в один клик. Auto предпочитает MP4 и переходит к MKV при несовместимых кодеках.",
+    "oneClickContainerDescription": "Выберите контейнер вывода для загрузки в один клик. Auto предпочитает MP4 и переходит к MKV при несовместимых кодеках",
     "oneClickContainerOptions": {
       "auto": "Auto (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "Оригинал (по умолчанию yt-dlp)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "Максимум одновременных расшифровок",
+    "maxConcurrentTranscriptionsDescription": "Сколько расшифровок может выполняться одновременно. Каждая задача использует этот компьютер. Уменьшение значения не останавливает уже запущенные задачи",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "Скачивание моделей: {{count}}",
+    "asrDelete": "Удалить",
+    "asrDeleteError": "Не удалось удалить эту модель ИИ.",
+    "asrCancel": "Отмена",
+    "asrCancelError": "Не удалось отменить эту загрузку.",
+    "asrDownloadError": "Не удалось скачать эту модель ИИ.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "Самый быстрый многоязычный старт. Для слабых ПК",
+        "size": "~75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Чуть точнее Tiny, по-прежнему лёгкая",
+        "size": "~150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "Обычные ПК. Хорошая многоязычная точность",
+        "size": "~250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "Быстро для CJK + английского, включая кантонский",
+        "size": "~230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "Лучшая точность по китайскому. Нужен мощный ПК",
+        "size": "~840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "Выше многоязычная точность. Нужно больше ОЗУ",
+        "size": "~770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "Близко к large-v3, заметно быстрее",
+        "size": "~810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "Более новый пакет CJK+английский. По-прежнему лёгкий",
+        "size": "~230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "Сильный английский. Быстрый на обычных ПК",
+        "size": "~650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "Новый английский Parakeet. Лучший выбор для английского",
+        "size": "~650 MB"
+      }
+    },
+    "asrDownload": "Скачать",
+    "asrDownloadAndUse": "Скачать и использовать",
+    "asrDownloaded": "Загружено",
+    "asrRecommended": "Рекомендуемые",
+    "asrRecommendedFor": "Рекомендовано для {{os}} · {{gpu}} · {{ram}} · {{cores}} ядер · {{language}}",
+    "asrAllModels": "Все модели",
+    "asrBestMatch": "Лучший вариант",
+    "asrMachine": {
+      "low": "слабого ПК",
+      "mid": "обычного ПК",
+      "high": "мощного ПК"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — многоязычная",
+      "sense-voice": "SenseVoice — китайский, японский, корейский, английский",
+      "qwen3": "Qwen3-ASR — лучшая точность по китайскому",
+      "parakeet": "Parakeet — английский"
+    },
+    "asrLanguages": {
+      "multi": "многоязычный"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "эта ОС"
+    },
+    "asrGpu": {
+      "apple": "GPU Apple",
+      "nvidia": "GPU NVIDIA",
+      "amd": "GPU AMD",
+      "intel": "GPU Intel",
+      "unknown": "неизвестный GPU"
+    },
+    "providersTab": "Провайдеры",
+    "promptsTab": "Промпты",
+    "transcriptionTab": "Транскрипция",
+    "ai": {
+      "allServices": "Все сервисы",
+      "configured": "Настроенные",
+      "useProvider": "Использовать",
+      "inUse": "Используется",
+      "addProvider": "Добавить {{name}}",
+      "editProvider": "Изменить провайдера",
+      "deleteProvider": "Удалить провайдера",
+      "edit": "Изменить",
+      "apiKey": "API-ключ",
+      "apiKeyKept": "Оставьте пустым, чтобы сохранить текущий ключ",
+      "baseUrl": "Base URL",
+      "modelId": "ID модели",
+      "modelIdPlaceholder": "model-id",
+      "name": "Имя",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "saveError": "Не удалось сохранить настройки ИИ.",
+      "providerDialogDescription": "API-ключи хранятся только на этом компьютере. У готовых провайдеров уже есть base URL",
+      "testConnection": "Проверить соединение",
+      "testingConnection": "Проверка…",
+      "testSuccess": "Подключено. Ответ: {{reply}}",
+      "testFailed": "Не удалось подключиться к этой модели.",
+      "addPrompt": "Добавить промпт",
+      "editPrompt": "Изменить промпт",
+      "deletePrompt": "Удалить промпт",
+      "promptTitle": "Название",
+      "promptIcon": "Значок",
+      "promptBody": "Промпт",
+      "promptDialogDescription": "Этот промпт запускается для расшифровки через включённого провайдера",
+      "restorePresets": "Восстановить по умолчанию",
+      "testTitle": "Проверить на примере расшифровки",
+      "testRun": "Запустить",
+      "testStop": "Остановить",
+      "testOutput": "Результат",
+      "testPlaceholder": "Результат промпта появится здесь",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "Маркированный список"
+        },
+        "improve-grammar": {
+          "title": "Исправить грамматику и пунктуацию"
+        },
+        "generate-faq": {
+          "title": "Составить FAQ"
+        },
+        "extract-statistics": {
+          "title": "Извлечь статистику"
+        },
+        "paraphrase-content": {
+          "title": "Перефразировать"
+        },
+        "create-mindmap": {
+          "title": "Создать интеллект-карту"
+        },
+        "translate": {
+          "title": "Перевести"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "Не настроено",
+      "statusNotConfiguredHint": "Загрузки, которым нужен аккаунт, будут падать, пока вы это не настроите",
+      "statusUsingBrowser": "Используется вход {{browser}}",
+      "statusUsingFile": "Используется файл cookies",
+      "statusOk": "Готово",
+      "statusExpired": "Истекло",
+      "statusEmpty": "Вход не найден",
+      "statusInvalid": "Требует внимания",
+      "healthOkBrowser": "VidBee может читать cookies из {{browser}}. Оставайтесь в аккаунте на сайте в этом браузере",
+      "healthOkFile": "Найдены cookies входа для {{sites}}",
+      "healthOkFileGeneric": "Этот файл cookies выглядит корректным",
+      "healthExpired": "Эти cookies истекли. Войдите снова и импортируйте новый файл",
+      "healthEmpty": "В этом файле нет cookies входа для поддерживаемых сайтов. Экспортируйте файл, будучи в аккаунте",
+      "healthInvalidFile": "Файл cookies отсутствует или это некорректный экспорт",
+      "healthInvalidBrowser": "VidBee не может прочитать cookies этого профиля браузера",
+      "healthMacosFilesPermission": "macOS блокирует доступ к cookies. Разрешите VidBee доступ к этому браузеру в «Системные настройки → Конфиденциальность и безопасность → Файлы и папки» и проверьте снова.",
+      "healthUnsupportedBrowser": "Этот браузер нельзя использовать для cookies в вашей системе",
+      "sitesLabel": "Сайты: {{sites}}",
+      "recommendedTitle": "Рекомендуется",
+      "recommendedUseBrowser": "Использовать {{browser}}",
+      "recommendedUseBrowserHint": "Повторно используйте аккаунт, в который вы уже вошли в {{browser}}",
+      "recommendedImportFile": "Импортировать файл cookies",
+      "recommendedImportFileWindowsHint": "В Windows Chrome и Edge не могут передать cookies в VidBee. Экспортируйте файл cookies из браузера",
+      "recommendedImportFileHint": "Экспортируйте cookies из браузера и выберите файл здесь",
+      "recommendedFirefoxHint": "В Windows Firefox — единственный браузер, который VidBee может читать напрямую",
+      "useThisBrowser": "Использовать {{browser}}",
+      "importFile": "Выбрать файл cookies",
+      "clearSetup": "Очистить cookies",
+      "checkStatus": "Проверить снова",
+      "otherOptions": "Другие варианты",
+      "hideOtherOptions": "Скрыть другие варианты",
+      "chooseBrowser": "Выбрать другой браузер",
+      "advancedProfile": "Путь профиля",
+      "windowsUnsupportedCurrent": "{{browser}} нельзя использовать для cookies в Windows. Используйте Firefox или импортируйте файл cookies.",
+      "fileExportStep1": "Установите расширение для экспорта cookies, например Get cookies.txt LOCALLY",
+      "fileExportStep2": "Войдите на сайт, затем экспортируйте файл cookies",
+      "fileExportStep3": "Выберите этот файл здесь",
+      "fileExportExtension": "Расширение Chrome / Edge",
+      "checking": "Проверка cookies…",
+      "applied": "Cookies обновлены",
+      "profileMissingDb": "У этого профиля Firefox нет базы cookies. Откройте Firefox один раз и повторите попытку."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "Автоматические теги",
       "customDirectory": "Пользовательская директория",
       "namingTemplate": "Пользовательский шаблон имени файла (только файл)",
+      "autoDownload": "Автозагрузка",
       "onlyLatest": "Загружать только последнее видео",
       "onlyLatestDescription": "Игнорировать элементы из очереди и загружать только последнюю загрузку из этого канала.",
       "enabled": "Включено",
@@ -655,6 +973,18 @@
       "hint": "Нет URL RSS-канала? Используйте RSSHub для создания RSS-каналов для YouTube, Twitter и тысяч других платформ."
     }
   },
+  "kernelPreparation": {
+    "copying": "Копирование модуля загрузки…",
+    "description": "VidBee подготавливает модуль загрузки. Это займёт всего несколько секунд.",
+    "errorDescription": "VidBee не удалось подготовить рабочий модуль загрузки. Проверьте доступ к локальному хранилищу и повторите попытку.",
+    "errorTitle": "Модуль загрузки недоступен",
+    "finalizing": "Завершение настройки…",
+    "progressLabel": "Ход подготовки модуля загрузки",
+    "retry": "Повторить",
+    "retrying": "Повторная попытка…",
+    "title": "Подготовка VidBee",
+    "validating": "Проверка модуля загрузки…"
+  },
   "sites": {
     "homeInlineDescription": "Поддерживает {{sites}} и другие.",
     "moreDescription": "Полный список yt-dlp постоянно обновляется сообществом.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "Основные платформы",
     "viewAll": "Просмотреть все поддерживаемые сайты"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "Подготовка моделей транскрипции…",
+    "preparingSpeakerModels": "Подготовка моделей говорящих…",
+    "modelsProgressLabel": "Прогресс загрузки моделей транскрипции",
+    "view": "View transcript",
+    "sourceCaptions": "Субтитры видео",
+    "sourceAi": "ИИ-расшифровка",
+    "sourceSwitch": "Источник расшифровки",
+    "sourceCaptionNamed": "Субтитры ({{language}})",
+    "sourceCaptionAutoNamed": "Автосубтитры ({{language}})",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "Расшифровка остановилась до завершения. Можно повторить.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "Остановить",
+    "stopFailed": "Не удалось остановить расшифровку.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "Подготовка аудио",
+    "identifyingSpeakers": "Определение говорящих",
+    "back": "Назад к расшифровкам",
+    "library": {
+      "empty": "Расшифровок пока нет",
+      "emptyHint": "Выберите локальный аудио- или видеофайл либо расшифруйте завершённую загрузку.",
+      "addMedia": "Добавить аудио или видео",
+      "goToDownloads": "К загрузкам",
+      "untitled": "Медиа без названия",
+      "previewPending": "Текст появится здесь по мере расшифровки.",
+      "queued": "В очереди",
+      "processing": "Обработка",
+      "retrySoon": "Скоро повтор",
+      "cancelled": "Отменено",
+      "open": "Открыть расшифровку «{{title}}»",
+      "dropDescription": "Перетащите или вставьте аудио- или видеофайлы, чтобы расшифровать.",
+      "experimentalBadge": "Экспериментально",
+      "experimentalHint": "Позже может быть объединена с загрузками."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "Копировать расшифровку",
+    "copied": "Расшифровка скопирована",
+    "copyFailed": "Не удалось скопировать расшифровку.",
+    "captionSelect": "Выбранная расшифровка",
+    "captionSelectClear": "Снять выделение",
+    "export": {
+      "action": "Экспорт",
+      "preview": "Предпросмотр экспорта",
+      "description": "Просмотрите расшифровку, затем скопируйте или сохраните её как текстовый файл.",
+      "styleLabel": "Стиль",
+      "style": {
+        "transcript": "Расшифровка",
+        "subtitles": "Субтитры",
+        "segments": "Сегменты",
+        "whisper": "Whisper",
+        "video": "Видео + субтитры"
+      },
+      "formatLabel": "Формат",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "Кодирование",
+      "encode": {
+        "soft": "Софтсаб",
+        "hard": "Хардсаб"
+      },
+      "softHint": "Вшивает дорожку субтитров. В плеере их можно включать и выключать. Быстро, без потери качества.",
+      "hardHint": "Выжигает субтитры в картинку. Видео перекодируется, субтитры нельзя отключить.",
+      "noMedia": "Исходное видео отсутствует, экспорт видео недоступен.",
+      "audioOnly": "Это только аудио. Экспортируйте текстовую расшифровку.",
+      "videoSaved": "Видео экспортировано",
+      "videoSaveFailed": "Не удалось экспортировать видео.",
+      "exporting": "Экспорт…",
+      "cancelExport": "Отменить экспорт",
+      "cancelled": "Экспорт отменён",
+      "progress": "{{percent}}%",
+      "options": "Параметры",
+      "grouping": "Группировка",
+      "groupingValue": {
+        "none": "Нет",
+        "words": "Слова",
+        "sentences": "Предложения"
+      },
+      "showTimestamp": "Показывать метки времени",
+      "close": "Закрыть",
+      "copy": "Копировать",
+      "copied": "Скопировано в буфер обмена",
+      "copyFailed": "Не удалось скопировать предпросмотр экспорта.",
+      "saved": "Расшифровка экспортирована",
+      "saveFailed": "Не удалось экспортировать расшифровку.",
+      "empty": "Пока нечего экспортировать."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "Изменить размер панели расшифровки",
+    "unknownSpeaker": "Неизвестный спикер",
+    "speakers": "Спикеры ({{count}})",
+    "info": {
+      "tab": "Сведения",
+      "channel": "Канал",
+      "duration": "Длительность",
+      "file": "Файл",
+      "fileSize": "Размер файла",
+      "url": "Исходный URL",
+      "source": "Источник",
+      "model": "Модель",
+      "language": "Язык",
+      "speakers": "Спикеры",
+      "segments": "Сегменты",
+      "createdAt": "Расшифровано",
+      "empty": "Пока нет сведений.",
+      "openUrl": "Открыть исходный URL"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "Перейти к {{name}}",
+    "seekAt": "Перейти к {{time}}",
+    "searchPlaceholder": "Искать в расшифровке",
+    "searchMatches": "{{count}} совпадений",
+    "searchNoMatches": "Совпадений нет",
+    "searchNext": "Следующее",
+    "searchPrevious": "Предыдущее",
+    "searchJumpTo": "Перейти к этой реплике",
+    "collapsePanel": "Свернуть расшифровку",
+    "expandPanel": "Развернуть расшифровку",
+    "player": {
+      "play": "Воспроизвести",
+      "pause": "Пауза",
+      "seek": "Перемотка",
+      "volume": "Громкость",
+      "mute": "Без звука",
+      "unmute": "Включить звук",
+      "playbackRate": "Скорость воспроизведения",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "Подготовка файла к воспроизведению…",
+      "unavailable": "Не удалось подготовить этот файл для воспроизведения на странице.",
+      "failedTitle": "Это видео здесь не воспроизводится",
+      "failedAudioTitle": "Это аудио здесь не воспроизводится",
+      "failedDetail": "Текст расшифровки по-прежнему доступен.",
+      "retry": "Повторить",
+      "error": "Ошибка воспроизведения: {{message}}",
+      "captionsShow": "Показать субтитры",
+      "captionsHide": "Скрыть субтитры",
+      "skipBack": "Назад на 15 секунд",
+      "skipForward": "Вперёд на 15 секунд",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "Полный экран",
+      "fullscreenExit": "Выйти из полного экрана",
+      "resumed": "Продолжено с {{time}}",
+      "startOver": "С начала",
+      "nowPlaying": "Сейчас играет",
+      "closeBar": "Закрыть плеер",
+      "openTranscript": "Назад к расшифровке"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "Уже использована модель максимального качества. Если метки смешались, измените число говорящих. Фоновая музыка и пересекающаяся речь всё ещё могут путать говорящих.",
+    "speakerCount": {
+      "adjust": "Настроить говорящих",
+      "auto": "Авто (определить)",
+      "one": "1 говорящий",
+      "count": "{{count}} говорящих",
+      "apply": "Расшифровать снова",
+      "detail": "Мы расшифруем снова с этим числом говорящих. Авто — значение по умолчанию. Можно покинуть страницу. Текущая расшифровка сохранится в истории."
+    },
+    "promptMenu": "Все промпты",
+    "promptStop": "Остановить",
+    "promptRerun": "Запустить снова",
+    "promptCopy": "Копировать",
+    "promptShare": "Поделиться изображением",
+    "promptShareTitle": "Поделиться изображением",
+    "promptShareDownload": "Скачать",
+    "promptShareNative": "Поделиться",
+    "promptSharing": "Подготовка изображения…",
+    "promptShared": "Изображение скопировано",
+    "promptShareSaved": "Изображение сохранено",
+    "promptShareFailed": "Не удалось подготовить изображение.",
+    "promptShareSaveFailed": "Не удалось сохранить изображение.",
+    "promptShareNativeFailed": "Не удалось открыть меню «Поделиться».",
+    "promptShareFooter": "Сделано в VidBee",
+    "promptShareTagline": "Открытый исходный код. Скачайте видео. Спросите ИИ.",
+    "captionShareSaid": "{{name}} сказал",
+    "promptOutput": "Результат промпта",
+    "promptScrollToEnd": "К последнему",
+    "promptCopied": "Скопировано",
+    "promptNoProvider": "Чтобы запустить этот промпт, настройте ИИ-провайдера в параметрах.",
+    "promptOpenSettings": "Открыть настройки провайдера",
+    "promptEmpty": "Результат появится здесь.",
+    "promptRunning": "Пишет…",
+    "promptThinking": "Размышление",
+    "promptThinkingFor": "Думает {{seconds}} с",
+    "promptThoughtFor": "Думал {{seconds}} с",
+    "promptAborted": "Остановлено",
+    "promptNoTranscript": "Сначала нужна расшифровка, чтобы запустить этот промпт.",
+    "promptTryAgain": "Повторить",
+    "promptLoading": "Загрузка настроек ИИ…",
+    "promptGuide": {
+      "noProvider": "ИИ-провайдер не включён, поэтому этот промпт нельзя запустить.",
+      "missingApiKey": "У активного провайдера нет API-ключа.",
+      "missingModel": "У активного провайдера нет ID модели.",
+      "unknownPrompt": "Этот промпт больше недоступен.",
+      "emptyTranscript": "Для этого промпта нужна готовая расшифровка.",
+      "auth": "Провайдер отклонил запрос. Скорее всего, неверный API-ключ или аккаунт.",
+      "network": "Не удалось связаться с провайдером.",
+      "emptyOutput": "Провайдер завершил запрос, но не вернул текст.",
+      "unknown": "Промпт не удалось выполнить."
+    },
+    "promptErrorDetails": "Подробности ошибки",
+    "promptWhatToDo": "Что сделать",
+    "promptUsingProvider": "Провайдер: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "Откройте Параметры → Провайдеры.",
+        "s2": "Добавьте сервис, сохраните API-ключ и ID модели, затем нажмите Использовать.",
+        "s3": "Вернитесь сюда и запустите промпт снова."
+      },
+      "missingApiKey": {
+        "s1": "Откройте Параметры → Провайдеры и отредактируйте активного провайдера.",
+        "s2": "Вставьте действующий API-ключ и сохраните.",
+        "s3": "Запустите промпт снова."
+      },
+      "missingModel": {
+        "s1": "Откройте Параметры → Провайдеры и отредактируйте активного провайдера.",
+        "s2": "Укажите ID модели, который этот сервис действительно поддерживает.",
+        "s3": "Запустите промпт снова."
+      },
+      "unknownPrompt": {
+        "s1": "Откройте Параметры → Промпты.",
+        "s2": "Восстановите значения по умолчанию или создайте промпт заново."
+      },
+      "emptyTranscript": {
+        "s1": "Дождитесь окончания расшифровки.",
+        "s2": "Если речи нет, всё равно запустите расшифровку или выберите другой файл."
+      },
+      "auth": {
+        "s1": "Откройте настройки провайдера и замените API-ключ.",
+        "s2": "Проверьте баланс и право вызывать эту модель.",
+        "s3": "Для своего endpoint убедитесь, что он принимает этот ключ."
+      },
+      "network": {
+        "s1": "Проверьте интернет и прокси.",
+        "s2": "Для своего провайдера проверьте доступность base URL и при необходимости /v1.",
+        "s3": "Если хост недоступен, смените провайдера."
+      },
+      "emptyOutput": {
+        "s1": "В Параметры → Провайдеры проверьте, что ID модели подходит этому сервису.",
+        "s2": "Для своего endpoint проверьте URL, ключ и что модель развёрнута.",
+        "s3": "Смотрите подробности ниже, затем повторите попытку или смените провайдера."
+      },
+      "unknown": {
+        "s1": "Сначала прочитайте подробности ошибки ниже.",
+        "s2": "В Параметры → Провайдеры проверьте ключ, ID модели и URL.",
+        "s3": "Повторите попытку или смените провайдера."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Что нового",
+    "description": "Расшифровки и ИИ — на этом компьютере.",
+    "tryIt": "Попробовать",
+    "features": {
+      "transcript": {
+        "title": "Автоматические расшифровки",
+        "description": "После загрузки VidBee автоматически создаёт расшифровку видео на этом компьютере. Ничего не отправляется."
+      },
+      "speakers": {
+        "title": "Метки говорящих",
+        "description": "Смотрите, кто что сказал, и переходите к этому моменту в видео."
+      },
+      "summary": {
+        "title": "ИИ-резюме",
+        "description": "Превратите расшифровку в пункты, FAQ, интеллект-карту или пересказ. Свои промпты — в настройках."
+      },
+      "localFiles": {
+        "title": "Расшифруйте любой файл",
+        "description": "Перетащите локальное аудио или видео в Расшифровки. Экспортируйте текст, субтитры или видео с вшитыми титрами."
+      }
+    }
   }
 }

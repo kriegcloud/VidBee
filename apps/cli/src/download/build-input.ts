@@ -117,6 +117,7 @@ const VALUE_CONSUMING_FLAGS = new Set<string>([
   '--limit-rate',
   '--retries',
   '--fragment-retries',
+  '--extractor-retries',
   '--retry-sleep',
   '-N',
   '--concurrent-fragments',

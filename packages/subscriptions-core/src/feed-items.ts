@@ -50,7 +50,44 @@ const extractImageFromHtml = (html?: string): string | undefined => {
   return undefined
 }
 
+/**
+ * Read an iTunes-style image URL from a string or `{ href }` / `{ url }` object.
+ *
+ * Ximalaya and most podcast feeds use `<itunes:image href="..."/>` with no RSS
+ * 2.0 `<image>` / `<media:thumbnail>`, so this is the primary cover source.
+ *
+ * @param image rss-parser `itunes.image` value
+ */
+const extractItunesImageUrl = (image: unknown): string | undefined => {
+  if (typeof image === 'string') {
+    const trimmed = image.trim()
+    return trimmed || undefined
+  }
+  if (!image || typeof image !== 'object') {
+    return undefined
+  }
+  const record = image as { href?: unknown; url?: unknown }
+  if (typeof record.href === 'string' && record.href.trim()) {
+    return record.href.trim()
+  }
+  if (typeof record.url === 'string' && record.url.trim()) {
+    return record.url.trim()
+  }
+  return undefined
+}
+
+/**
+ * Pick the best thumbnail for one feed item: iTunes episode artwork first,
+ * then media/enclosure images, then an `<img>` extracted from HTML content.
+ *
+ * @param item Parsed rss-parser item
+ */
 export const resolveThumbnail = (item: ParsedFeedItem): string | undefined => {
+  const itunesImageUrl = extractItunesImageUrl(item.itunes?.image)
+  if (itunesImageUrl) {
+    return itunesImageUrl
+  }
+
   const thumbnail = item.mediaThumbnail
   if (Array.isArray(thumbnail)) {
     const found = thumbnail.find((entry) => entry?.url)
@@ -119,7 +156,7 @@ export const resolveFeedCover = (
     return feedImageUrl
   }
 
-  const itunesImageUrl = typeof feed.itunes?.image === 'string' ? feed.itunes.image : undefined
+  const itunesImageUrl = extractItunesImageUrl(feed.itunes?.image)
   if (itunesImageUrl) {
     return itunesImageUrl
   }

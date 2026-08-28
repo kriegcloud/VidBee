@@ -2,3 +2,44 @@
 @import "@vidbee/ui/theme.css";
 @import "tw-animate-css";
 @import "@vidbee/ui/base.css";
+@import "streamdown/styles.css";
+@import "katex/dist/katex.min.css";
+@import "./view-transitions.css";
+
+/* Streamdown core + plugin utilities live in package JS, not this app tree. */
+@source "../../../../node_modules/streamdown/dist/*.js";
+@source "../../../../node_modules/@streamdown/code/dist/*.js";
+@source "../../../../node_modules/@streamdown/mermaid/dist/*.js";
+@source "../../../../node_modules/@streamdown/math/dist/*.js";
+@source "../../../../node_modules/@streamdown/cjk/dist/*.js";
+
+/* Fluid surface/shadow/hover tokens and @theme mappings live in
+   @vidbee/ui/base.css. Switch still pins --accent to Fluid's track gray. */
+:root {
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: ui-serif, Georgia, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  --accent: #e5e5e5;
+  --accent-foreground: #171717;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+  --font-inter: var(--font-sans);
+}
+
+.dark {
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: ui-serif, Georgia, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  --accent: #525252;
+  --accent-foreground: #f5f5f5;
+}

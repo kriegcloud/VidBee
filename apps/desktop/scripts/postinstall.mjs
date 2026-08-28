@@ -2,6 +2,7 @@
 
 import { execSync } from 'node:child_process'
 import path from 'node:path'
+import { log } from '@vidbee/logger/script'
 
 const desktopRoot = path.resolve(import.meta.dirname, '..')
 const initCwd = process.env.INIT_CWD ? path.resolve(process.env.INIT_CWD) : ''
@@ -9,7 +10,7 @@ const forceDesktopPostinstall = process.env.VIDBEE_DESKTOP_POSTINSTALL === '1'
 const isDesktopInstall = initCwd.startsWith(desktopRoot)
 
 if (!(forceDesktopPostinstall || isDesktopInstall)) {
-  console.log('Skipping desktop postinstall in workspace-level install.')
+  log.info('Skipping desktop postinstall in workspace-level install.')
   process.exit(0)
 }
 

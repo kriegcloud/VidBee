@@ -6,7 +6,7 @@
  *
  *   - a `SubscriptionsStore` (use `createSqliteSubscriptionsStore`),
  *   - a `MetaStore` (use `createSqliteMetaStore`) or `InMemoryMetaStore`,
- *   - a `FeedFetcher` (use `RssParserFeedFetcher` for prod, in-memory for tests),
+ *   - a `FeedFetcher` (use `RssParserFeedFetcher` in production),
  *   - an `EnqueueItem` callback that pushes the item into the shared
  *     task-queue,
  *   - and the host's own logger.
@@ -18,6 +18,7 @@
 import { decideAutoDownloads } from './auto-download'
 import { dedupeFeedItems } from './feed-items'
 import type { FeedFetcher } from './feed-parser'
+import { resolveFeedFromInput } from './feed-resolver'
 import { LeaderElection, type LeaderElectionOptions, type MetaStore } from './leader'
 import { FeedCheckScheduler, type FeedCheckSchedulerOptions } from './scheduler'
 import type { SubscriptionsStore } from './store'
@@ -33,7 +34,6 @@ import type {
   SubscriptionUpdateInput,
   SubscriptionWithItems
 } from './types'
-import { resolveFeedFromInput } from './feed-resolver'
 
 export interface EnqueueItemContext {
   subscription: SubscriptionRule
@@ -187,9 +187,7 @@ export class SubscriptionsApi {
     return created
   }
 
-  async update(
-    input: { id: string } & SubscriptionUpdateInput
-  ): Promise<SubscriptionWithItems> {
+  async update(input: { id: string } & SubscriptionUpdateInput): Promise<SubscriptionWithItems> {
     const { id, ...patch } = input
     if (patch.feedUrl) {
       const dup = await this.store.findDuplicateFeed(patch.feedUrl, id)
@@ -261,7 +259,9 @@ export class SubscriptionsApi {
       title: item.title,
       publishedAt: item.publishedAt
     }
-    if (item.thumbnail) normalized.thumbnail = item.thumbnail
+    if (item.thumbnail) {
+      normalized.thumbnail = item.thumbnail
+    }
     const taskId = await this.enqueueItem({
       subscription: sub,
       item: normalized,
@@ -318,10 +318,7 @@ export class SubscriptionsApi {
         isHistoryDup: this.isHistoryDup,
         now: this.now
       })
-      await this.store.replaceItems(
-        subscriptionId,
-        decision.feedItemsToPersist
-      )
+      await this.store.replaceItems(subscriptionId, decision.feedItemsToPersist)
       const queueable = dedupeFeedItems(decision.items).filter(
         (item) => !this.isHistoryDup(item.url)
       )
@@ -348,10 +345,15 @@ export class SubscriptionsApi {
         lastSuccessAt: this.now(),
         lastError: undefined
       }
-      if (decision.latestVideoTitle) patch.latestVideoTitle = decision.latestVideoTitle
-      if (decision.latestPublishedAt !== null)
+      if (decision.latestVideoTitle) {
+        patch.latestVideoTitle = decision.latestVideoTitle
+      }
+      if (decision.latestPublishedAt !== null) {
         patch.latestVideoPublishedAt = decision.latestPublishedAt
-      if (decision.coverUrl) patch.coverUrl = decision.coverUrl
+      }
+      if (decision.coverUrl) {
+        patch.coverUrl = decision.coverUrl
+      }
       if (typeof feed.title === 'string' && feed.title.trim()) {
         patch.title = feed.title.trim()
       }

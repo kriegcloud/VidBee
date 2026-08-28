@@ -63,7 +63,7 @@ function defaultCandidatePaths(): string[] {
   }
   const dir = dirname(here)
   // dist/index.mjs            → ../package.json  (npm tarball + Desktop bundle)
-  // src/local-info/version.ts → ../../package.json (dev / vitest)
+  // src/local-info/version.ts → ../../package.json (dev)
   return [
     resolve(dir, '..', 'package.json'),
     resolve(dir, '..', '..', 'package.json'),

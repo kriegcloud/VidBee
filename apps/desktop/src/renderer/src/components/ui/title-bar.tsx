@@ -1,5 +1,5 @@
 import { TitleBar as SharedTitleBar } from '@vidbee/ui/components/ui/title-bar'
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import IconFluentDismiss20Regular from '~icons/fluent/dismiss-20-regular'
 import IconFluentMaximize20Regular from '~icons/fluent/maximize-20-regular'
 import IconFluentSquareMultiple20Regular from '~icons/fluent/square-multiple-20-regular'
@@ -8,10 +8,12 @@ import { ipcEvents, ipcServices } from '../../lib/ipc'
 import '../../assets/title-bar.css'
 
 interface TitleBarProps {
+  className?: string
   platform?: string
+  children?: ReactNode
 }
 
-export function TitleBar({ platform }: TitleBarProps) {
+export function TitleBar({ children, className, platform }: TitleBarProps) {
   const [isMaximized, setIsMaximized] = useState(false)
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export function TitleBar({ platform }: TitleBarProps) {
 
   return (
     <SharedTitleBar
+      className={className}
       icons={{
         close: IconFluentDismiss20Regular,
         maximize: IconFluentMaximize20Regular,
@@ -45,6 +48,8 @@ export function TitleBar({ platform }: TitleBarProps) {
       onMaximize={() => ipcServices.window.maximize()}
       onMinimize={() => ipcServices.window.minimize()}
       platform={platform}
-    />
+    >
+      {children}
+    </SharedTitleBar>
   )
 }

@@ -1,0 +1,22 @@
+{
+  "name": "@vidbee/logger",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/node.ts",
+    "./client": "./src/client.ts",
+    "./script": "./src/script.mjs"
+  },
+  "types": "./src/node.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "evlog": "^2.26.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.6",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,6 +1,7 @@
 import { ipcServices } from '@renderer/lib/ipc'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from '../lib/logger'
 
 /**
  * Example custom hook demonstrating IPC communication using electron-ipc-decorator
@@ -24,7 +25,7 @@ export function useIpcExample() {
       return 'Example service not available'
     } catch (error) {
       toast.error('Failed to ping')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)
@@ -40,7 +41,7 @@ export function useIpcExample() {
       return `Hello ${name}!`
     } catch (error) {
       toast.error('Failed to greet')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)
@@ -56,7 +57,7 @@ export function useIpcExample() {
       return { platform }
     } catch (error) {
       toast.error('Failed to get system info')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)
@@ -73,7 +74,7 @@ export function useIpcExample() {
       return version
     } catch (error) {
       toast.error('获取应用版本失败')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)
@@ -91,7 +92,7 @@ export function useIpcExample() {
       return info
     } catch (error) {
       toast.error('获取应用信息失败')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)
@@ -107,7 +108,7 @@ export function useIpcExample() {
       return true
     } catch (error) {
       toast.error('切换语言失败')
-      console.error(error)
+      logger.error(error)
       throw error
     } finally {
       setLoading(false)

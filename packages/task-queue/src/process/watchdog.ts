@@ -1,3 +1,4 @@
+import { logCaughtError } from '@vidbee/logger'
 /**
  * Watchdog — fires when a task makes no observable progress for too long.
  *
@@ -105,8 +106,7 @@ export class Watchdog {
         try {
           this.onStalled(entry.taskId)
         } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('[task-queue] watchdog handler threw', err)
+          logCaughtError('task_queue_watchdog_threw', err)
         }
         return
       }

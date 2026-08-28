@@ -5,6 +5,7 @@ interface SettingSideEffectHandlers {
   onHideDockIcon: (value: boolean) => void
   onLaunchAtLogin: (value: boolean) => void
   onMaxConcurrentDownloads: (value: number) => void
+  onMaxConcurrentTranscriptions: (value: number) => void
   onBetaProgram: (value: boolean) => void
 }
 
@@ -33,6 +34,11 @@ export const applySingleSettingSideEffects = <K extends keyof AppSettings>(
 
   if (key === 'maxConcurrentDownloads') {
     handlers.onMaxConcurrentDownloads(Number(value))
+    return
+  }
+
+  if (key === 'maxConcurrentTranscriptions') {
+    handlers.onMaxConcurrentTranscriptions(Number(value))
     return
   }
 

@@ -6,6 +6,8 @@
  *
  * Reference: docs/vidbee-task-queue-state-machine-design.md §3.1, §7.2.
  */
+
+import { logCaughtError } from '@vidbee/logger'
 import { MinHeap } from '../util/min-heap'
 
 /**
@@ -18,8 +20,10 @@ export function computeBackoffMs(
   suggestedMs: number | null,
   rng: () => number = Math.random
 ): number {
-  if (suggestedMs != null && suggestedMs >= 0) return suggestedMs
-  const base = 2_000
+  if (suggestedMs != null && suggestedMs >= 0) {
+    return suggestedMs
+  }
+  const base = 2000
   const cap = 60_000
   const exp = Math.min(cap, base * 2 ** Math.max(0, attempt))
   return Math.floor(rng() * exp)
@@ -48,9 +52,7 @@ export interface RetrySchedulerOptions {
 
 export class RetryScheduler {
   private readonly heap = new MinHeap<HeapItem>((a, b) =>
-    a.nextRetryAt !== b.nextRetryAt
-      ? a.nextRetryAt - b.nextRetryAt
-      : a.seq - b.seq
+    a.nextRetryAt === b.nextRetryAt ? a.seq - b.seq : a.nextRetryAt - b.nextRetryAt
   )
   private timer: unknown = null
   private seqCounter = 0
@@ -87,26 +89,26 @@ export class RetryScheduler {
   }
 
   /**
-   * Drain all items whose nextRetryAt <= now. Public for tests; in production
-   * the timer fires this. Bumping a per-item handler error is logged and the
-   * handler is retried on the next tick.
+   * Drain all items whose nextRetryAt <= now. The timer fires this.
+   * A per-item handler error is logged and the handler is retried on the next tick.
    */
   async tick(): Promise<void> {
     const now = this.clock()
     while (true) {
       const top = this.heap.peek()
-      if (!top || top.nextRetryAt > now) break
+      if (!top || top.nextRetryAt > now) {
+        break
+      }
       const item = this.heap.pop()!
       try {
         await this.onDue(item.taskId, now)
       } catch (err) {
         // Re-enqueue so we try again shortly. We bump the time slightly to
         // avoid a hot loop if the orchestrator is in a bad state.
-        // eslint-disable-next-line no-console
-        console.error('[task-queue] retry tick handler threw', err)
+        logCaughtError('task_queue_retry_tick_threw', err)
         this.heap.push({
           taskId: item.taskId,
-          nextRetryAt: now + 1_000,
+          nextRetryAt: now + 1000,
           seq: ++this.seqCounter
         })
       }
@@ -128,7 +130,9 @@ export class RetryScheduler {
       this.timer = null
     }
     const top = this.heap.peek()
-    if (!top) return
+    if (!top) {
+      return
+    }
     const wait = Math.max(0, top.nextRetryAt - this.clock())
     this.timer = this.setTimer(() => {
       this.timer = null

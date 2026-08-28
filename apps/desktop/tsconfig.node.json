@@ -10,11 +10,10 @@
     "composite": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["electron-vite/node"],
-    "baseUrl": ".",
+    "types": ["node", "electron-vite/node"],
     "paths": {
-      "@main/*": ["src/main/*"],
-      "@shared/*": ["src/shared/*"]
+      "@main/*": ["./src/main/*"],
+      "@shared/*": ["./src/shared/*"]
     },
     "strictNullChecks": true
   }

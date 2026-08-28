@@ -34,6 +34,8 @@ export interface SubscriptionRule {
   keywords: string[]
   tags: string[]
   onlyDownloadLatest: boolean
+  /** When false, feed items are listed but not queued automatically. */
+  autoDownload: boolean
   enabled: boolean
   coverUrl?: string
   latestVideoTitle?: string
@@ -73,6 +75,7 @@ export interface SubscriptionCreateInput {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
@@ -86,6 +89,7 @@ export interface SubscriptionUpdateInput {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   enabled?: boolean
   downloadDirectory?: string
   namingTemplate?: string
@@ -108,6 +112,8 @@ export interface ParsedFeedItem {
   mediaThumbnail?: Array<{ url?: string }> | { url?: string }
   mediaContent?: Array<{ url?: string }> | { url?: string }
   enclosure?: Array<{ url?: string; type?: string }> | { url?: string; type?: string }
+  /** Podcast episode artwork (`itunes:image` href or nested `{ href }` / `{ url }`). */
+  itunes?: { image?: string | { href?: string; url?: string } }
   [key: string]: unknown
 }
 

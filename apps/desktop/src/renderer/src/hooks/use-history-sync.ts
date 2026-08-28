@@ -2,6 +2,7 @@ import { useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 // import type { DownloadHistoryItem } from '../../../shared/types'
 import { ipcServices } from '../lib/ipc'
+import { logger } from '../lib/logger'
 import { addHistoryRecordAtom, clearHistoryRecordsAtom } from '../store/downloads'
 
 export function useHistorySync() {
@@ -19,7 +20,7 @@ export function useHistorySync() {
           addHistoryItem(item)
         })
       } catch (error) {
-        console.error('Failed to load history:', error)
+        logger.error('Failed to load history:', error)
       }
     }
 

@@ -15,6 +15,7 @@ import {
 	FileText,
 	Github,
 	Link as LinkIcon,
+	Mail,
 	MessageSquare,
 	RefreshCw,
 	Twitter,
@@ -30,7 +31,10 @@ interface AboutResource {
 	description?: string;
 	actionLabel: string;
 	href?: string;
+	external?: boolean;
 }
+
+const SUPPORT_EMAIL = "team@vidbee.org";
 
 type LatestVersionState =
 	| { status: "available"; version: string }
@@ -133,9 +137,7 @@ export const AboutPage = () => {
 
 	const shareLinks = useMemo(() => {
 		const encodedUrl = encodeURIComponent(SHARE_TARGET_URL);
-		const encodedText = encodeURIComponent(
-			`${t("about.description")} @nexmoex`,
-		);
+		const encodedText = encodeURIComponent(`${t("about.description")} @nexmoe`);
 
 		return {
 			facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
@@ -185,11 +187,19 @@ export const AboutPage = () => {
 	const aboutResources = useMemo<AboutResource[]>(
 		() => [
 			{
+				icon: Mail,
+				label: t("about.resources.contact"),
+				description: t("about.resources.contactDescription"),
+				actionLabel: SUPPORT_EMAIL,
+				href: `mailto:${SUPPORT_EMAIL}`,
+			},
+			{
 				icon: LinkIcon,
 				label: t("about.resources.website"),
 				description: t("about.resources.websiteDescription"),
 				actionLabel: t("about.actions.visit"),
 				href: "https://vidbee.org/",
+				external: true,
 			},
 			{
 				icon: FileText,
@@ -197,6 +207,7 @@ export const AboutPage = () => {
 				description: t("about.resources.changelogDescription"),
 				actionLabel: t("about.actions.view"),
 				href: "https://github.com/nexmoe/VidBee/releases",
+				external: true,
 			},
 		],
 		[t],
@@ -307,7 +318,8 @@ export const AboutPage = () => {
 								</div>
 								<Switch
 									checked={autoUpdate}
-									onCheckedChange={setAutoUpdateValue}
+									label=""
+									onToggle={() => setAutoUpdateValue(!autoUpdate)}
 								/>
 							</div>
 							<div className="flex items-center justify-between gap-4 pt-6">
@@ -321,7 +333,8 @@ export const AboutPage = () => {
 								</div>
 								<Switch
 									checked={previewChannel}
-									onCheckedChange={setPreviewChannelValue}
+									label=""
+									onToggle={() => setPreviewChannelValue(!previewChannel)}
 								/>
 							</div>
 							<p className="text-muted-foreground text-xs">{osVersion}</p>
@@ -374,7 +387,7 @@ export const AboutPage = () => {
 								<div className="flex flex-wrap gap-2">
 									<Button
 										className="gap-2"
-										onClick={() => openShareUrl("https://x.com/nexmoex")}
+										onClick={() => openShareUrl("https://x.com/nexmoe")}
 										size="sm"
 										variant="outline"
 									>
@@ -447,8 +460,8 @@ export const AboutPage = () => {
 											<Button asChild size="sm" variant="outline">
 												<a
 													href={resource.href}
-													rel="noreferrer"
-													target="_blank"
+													rel={resource.external ? "noreferrer" : undefined}
+													target={resource.external ? "_blank" : undefined}
 												>
 													{resource.actionLabel}
 												</a>

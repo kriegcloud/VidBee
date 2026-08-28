@@ -17,6 +17,9 @@ ffprobe
 ffprobe.exe
 deno.exe
 deno
+node/
+node.exe
+mpv/
 
 # Local vendor-build marker written by `pnpm run build:ytdlp`
 .ytdlp-vendored

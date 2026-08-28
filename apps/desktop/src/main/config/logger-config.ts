@@ -1,3 +1,4 @@
+import { initVidbeeLogger } from '@vidbee/logger'
 import log from 'electron-log/main'
 
 /**
@@ -5,6 +6,8 @@ import log from 'electron-log/main'
  * Set log format, file path, transport methods, etc.
  */
 export function configureLogger() {
+  initVidbeeLogger({ service: 'vidbee-desktop' })
+
   // Set log levels
   // Development: show all logs
   // Production: show info level and above only

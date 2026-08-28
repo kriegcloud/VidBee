@@ -12,7 +12,7 @@ const FEEDBACK_SOURCE_LABEL = 'Source URL'
 const FEEDBACK_ERROR_LABEL = 'Error'
 const FEEDBACK_COMMAND_LABEL = 'yt-dlp command'
 const FEEDBACK_MAX_GITHUB_URL_LENGTH = 7000
-const FAQ_URL = 'https://docs.vidbee.org/faq/'
+const FAQ_URL = 'https://vidbee.org/docs/faq/'
 
 const normalizeErrorText = (value?: string | null): string =>
   value ? value.replace(/\s+/g, ' ').trim() : ''

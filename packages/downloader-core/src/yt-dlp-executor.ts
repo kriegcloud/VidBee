@@ -11,8 +11,6 @@
  * Reference: NEX-131 issue body §A; design doc §5 / §10.
  */
 import { existsSync, statSync } from 'node:fs'
-import { createRequire } from 'node:module'
-
 import type {
   ClassifiedError,
   Executor,
@@ -20,18 +18,16 @@ import type {
   ExecutorEvents,
   ExecutorRun,
   TaskInput,
-  TaskOutput,
-  TaskProgress
+  TaskOutput
 } from '@vidbee/task-queue'
-import { killProcessTree } from '@vidbee/task-queue/process'
 import { virtualError } from '@vidbee/task-queue'
-
-import type { DownloadRuntimeSettings } from './types'
+import { killProcessTree } from '@vidbee/task-queue/process'
+import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type { OneClickContainerOption } from './format-preferences'
-import { buildDownloadArgs, formatYtDlpCommand } from './yt-dlp-args'
-
-const require = createRequire(import.meta.url)
-const YTDlpWrapModule = require('yt-dlp-wrap-plus')
+import type { DownloadRuntimeSettings } from './types'
+import { buildDownloadArgs, formatYtDlpCommand, VIDBEE_OUTPUT_PATH_PREFIX } from './yt-dlp-args'
+import { DownloadProgressAggregator, type YtDlpProgressPayload } from './yt-dlp-progress'
+import { resolveYtDlpWrapCtor } from './yt-dlp-wrap'
 
 interface YtDlpExecProcess {
   ytDlpProcess?: {
@@ -40,7 +36,7 @@ interface YtDlpExecProcess {
     stderr?: NodeJS.ReadableStream
     kill: (signal?: NodeJS.Signals | number) => boolean
   }
-  on(event: 'progress', listener: (payload: ProgressPayload) => void): this
+  on(event: 'progress', listener: (payload: YtDlpProgressPayload) => void): this
   on(event: 'close', listener: (code: number | null) => void): this
   on(event: 'error', listener: (error: Error) => void): this
   once(event: 'close', listener: (code: number | null) => void): this
@@ -52,15 +48,7 @@ interface YtDlpWrapInstance {
 }
 
 type YtDlpWrapConstructor = new (binaryPath: string) => YtDlpWrapInstance
-const YTDlpWrapCtor = (YTDlpWrapModule.default ?? YTDlpWrapModule) as YtDlpWrapConstructor
-
-interface ProgressPayload {
-  percent?: number
-  currentSpeed?: string
-  eta?: string
-  downloaded?: string
-  total?: string
-}
+const YTDlpWrapCtor = resolveYtDlpWrapCtor<YtDlpWrapConstructor>(YTDlpWrap)
 
 /**
  * Per-task data hosts pack into `Task.input.options` when calling
@@ -141,12 +129,25 @@ export interface YtDlpExecutorOptions {
 const DEFAULT_KILL_GRACE_MS = 10_000
 const STDOUT_TAIL_BYTES = 8 * 1024
 const STDERR_TAIL_BYTES = 8 * 1024
+const OUTPUT_PATH_SCAN_BYTES = 4 * 1024
 const PROCESSING_DETECT_PATTERNS = [
   /\bMerging formats?\b/i,
   /^\[Postprocess\]/m,
   /\b(?:Embedding|Adding|Fixing|Converting)\b/i,
   /\b(?:ExtractAudio|VideoConvertor|FFmpeg)\b/i
 ]
+const SUBTITLE_DOWNLOAD_ERROR = /Unable to download video subtitles for/i
+const SUBTITLE_OPTIONS_WITH_VALUE = new Set(['--sleep-subtitles', '--sub-langs'])
+const SUBTITLE_TOGGLE_OPTIONS = new Set([
+  '--embed-subs',
+  '--no-embed-subs',
+  '--no-write-auto-subs',
+  '--no-write-subs',
+  '--write-auto-subs',
+  '--write-subs'
+])
+const SUBTITLE_FALLBACK_LOG =
+  '[VidBee] Subtitle download failed; retrying the video without subtitles.'
 
 const FFMPEG_NOT_FOUND_ERROR =
   'ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.'
@@ -188,9 +189,25 @@ export class YtDlpExecutor implements Executor {
     // body so it can fall outside the 8KB stdout tail; we sniff streaming
     // chunks instead and keep the last value across the whole run.
     let formatIdSeen: string | undefined
+    let filePathSeen: string | undefined
+    let outputPathProbe = ''
+    let progressAggregator = new DownloadProgressAggregator()
+    let subtitleFallbackAttempted = false
+    const canRetryWithoutSubtitles = !(ctx.input.rawArgs?.length || this.opts.buildArgs)
+
+    /** Preserve complete path signals even after the persisted log tail rolls over. */
+    const captureOutputPath = (text: string): void => {
+      outputPathProbe = `${outputPathProbe}${text}`.slice(-OUTPUT_PATH_SCAN_BYTES)
+      const filePath = extractSavedFilePath(outputPathProbe)
+      if (filePath) {
+        filePathSeen = filePath
+      }
+    }
 
     const finishOnce = (e: Parameters<ExecutorEvents['onFinish']>[0]) => {
-      if (settled) return
+      if (settled) {
+        return
+      }
       settled = true
       if (killTimer) {
         clearTimeout(killTimer)
@@ -253,41 +270,11 @@ export class YtDlpExecutor implements Executor {
       return makeNoopRun()
     }
 
-    try {
-      proc = this.opts.spawnFn
-        ? this.opts.spawnFn(ytDlpPath, args, controller.signal)
-        : this.getYtDlp(ytDlpPath).exec(args, { signal: controller.signal })
-    } catch (err) {
-      finishOnce({
-        taskId: ctx.taskId,
-        attemptId: ctx.attemptId,
-        result: {
-          type: 'error',
-          error: virtualError('unknown', String(err instanceof Error ? err.message : err)),
-          exitCode: null
-        },
-        closedAt: this.opts.clock(),
-        stdoutTail: stdoutTail.read(),
-        stderrTail: stderrTail.read()
-      })
-      return makeNoopRun()
-    }
-
-    // Emit onSpawn as soon as we can read pid. yt-dlp-wrap-plus exposes
-    // `ytDlpProcess` synchronously after exec().
-    const pid = proc.ytDlpProcess?.pid ?? -1
-    events.onSpawn({
-      taskId: ctx.taskId,
-      attemptId: ctx.attemptId,
-      pid,
-      pidStartedAt: null,
-      kind: 'yt-dlp',
-      spawnedAt: this.opts.clock()
-    })
-
+    /** Record stdout signals used for progress, output discovery, and format diagnostics. */
     const pumpStdoutPostprocess = (chunk: Buffer): void => {
       const text = chunk.toString()
       stdoutTail.append(text)
+      captureOutputPath(text)
       if (!postprocessSeen && hasPostprocessSignal(text)) {
         postprocessSeen = true
       }
@@ -297,9 +284,11 @@ export class YtDlpExecutor implements Executor {
       }
     }
 
+    /** Record stderr and forward it to the task log stream. */
     const pumpStderrPostprocess = (chunk: Buffer): void => {
       const text = chunk.toString()
       stderrTail.append(text)
+      captureOutputPath(text)
       if (!postprocessSeen && hasPostprocessSignal(text)) {
         postprocessSeen = true
       }
@@ -311,90 +300,54 @@ export class YtDlpExecutor implements Executor {
       })
     }
 
-    proc.ytDlpProcess?.stdout?.on('data', (chunk: Buffer) => {
-      pumpStdoutPostprocess(chunk)
-      events.onStd({
-        taskId: ctx.taskId,
-        attemptId: ctx.attemptId,
-        stream: 'stdout',
-        line: chunk.toString().replace(/\r?\n$/, '')
-      })
-    })
+    /** Spawn one yt-dlp child with the shared cancellation signal. */
+    const spawnProcess = (processArgs: string[]): YtDlpExecProcess =>
+      this.opts.spawnFn
+        ? this.opts.spawnFn(ytDlpPath, processArgs, controller.signal)
+        : this.getYtDlp(ytDlpPath).exec(processArgs, { signal: controller.signal })
 
-    proc.ytDlpProcess?.stderr?.on('data', pumpStderrPostprocess)
-
-    proc.on('progress', (payload: ProgressPayload) => {
-      const progress = mapProgress(payload)
-      events.onProgress({
-        taskId: ctx.taskId,
-        attemptId: ctx.attemptId,
-        progress,
-        enteredProcessing: postprocessSeen
-      })
-    })
-
-    proc.on('close', (code: number | null) => {
-      const closedAt = this.opts.clock()
+    /** Finish a successful child after verifying the output file on disk. */
+    const finishSuccessfulProcess = (closedAt: number): void => {
       const stdout = stdoutTail.read()
       const stderr = stderrTail.read()
-      if (cancelRequested) {
-        finishOnce({
-          taskId: ctx.taskId,
-          attemptId: ctx.attemptId,
-          result: { type: 'cancelled' },
-          closedAt,
-          stdoutTail: stdout,
-          stderrTail: stderr
-        })
-        return
-      }
-      if (code === 0) {
-        const filePath = extractSavedFilePath(stdout) || ''
-        // Stat the produced file so the kernel's processing→completed guard
-        // (size > 0) sees real bytes and downstream projections (history UI,
-        // SSE events, CLI envelope) report the correct file size. statSync
-        // here is the safest place: yt-dlp has just exited 0 so the file is
-        // closed and on disk.
-        let realSize = 0
-        if (filePath) {
-          try {
-            if (existsSync(filePath)) realSize = statSync(filePath).size
-          } catch {
-            // ignore — kernel guard will demote to failed('output-missing')
+      const filePath = filePathSeen ?? extractSavedFilePath(`${stdout}\n${stderr}`) ?? ''
+      // Stat the produced file so the kernel's processing→completed guard
+      // (size > 0) sees real bytes and downstream projections (history UI,
+      // SSE events, CLI envelope) report the correct file size. statSync
+      // here is the safest place: yt-dlp has just exited 0 so the file is
+      // closed and on disk.
+      let realSize = 0
+      if (filePath) {
+        try {
+          if (existsSync(filePath)) {
+            realSize = statSync(filePath).size
           }
+        } catch {
+          // ignore — kernel guard will demote to failed('output-missing')
         }
-        const output: TaskOutput = {
-          filePath,
-          size: realSize,
-          durationMs: null,
-          sha256: null,
-          // Prefer the streaming sniff (captures even if pushed out of the
-          // tail buffer); fall back to a tail re-scan when running with
-          // tiny test fixtures whose entire run fits in 8KB.
-          formatId: formatIdSeen ?? extractFormatId(stdout) ?? null
-        }
-        finishOnce({
-          taskId: ctx.taskId,
-          attemptId: ctx.attemptId,
-          result: { type: 'success', output },
-          closedAt,
-          stdoutTail: stdout,
-          stderrTail: stderr
-        })
-        return
       }
-      const error = classifyYtDlpExit(code, stderr)
+      const output: TaskOutput = {
+        filePath,
+        size: realSize,
+        durationMs: null,
+        sha256: null,
+        // Prefer the streaming sniff (captures even if pushed out of the
+        // tail buffer); fall back to a tail re-scan when running with
+        // tiny test fixtures whose entire run fits in 8KB.
+        formatId: formatIdSeen ?? extractFormatId(stdout) ?? null
+      }
       finishOnce({
         taskId: ctx.taskId,
         attemptId: ctx.attemptId,
-        result: { type: 'error', error, exitCode: code ?? null },
+        result: { type: 'success', output },
         closedAt,
         stdoutTail: stdout,
         stderrTail: stderr
       })
-    })
+    }
 
-    proc.on('error', (err: Error) => {
+    /** Finish one uncaught child-process error without waiting for close. */
+    const finishProcessError = (err: Error): void => {
       const closedAt = this.opts.clock()
       if (cancelRequested) {
         finishOnce({
@@ -416,10 +369,148 @@ export class YtDlpExecutor implements Executor {
         stdoutTail: stdoutTail.read(),
         stderrTail: stderrTail.read()
       })
+    }
+
+    /** Bind one process, transparently replacing subtitle-only failures once. */
+    const bindProcess = (target: YtDlpExecProcess, processArgs: string[]): void => {
+      let processStderr = ''
+
+      target.ytDlpProcess?.stdout?.on('data', (chunk: Buffer) => {
+        if (target !== proc) {
+          return
+        }
+        pumpStdoutPostprocess(chunk)
+        events.onStd({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          stream: 'stdout',
+          line: chunk.toString().replace(/\r?\n$/, '')
+        })
+      })
+
+      target.ytDlpProcess?.stderr?.on('data', (chunk: Buffer) => {
+        if (target === proc) {
+          processStderr = `${processStderr}${chunk.toString()}`.slice(-STDERR_TAIL_BYTES)
+          pumpStderrPostprocess(chunk)
+        }
+      })
+
+      target.on('progress', (payload: YtDlpProgressPayload) => {
+        if (target !== proc) {
+          return
+        }
+        const progress = progressAggregator.apply(payload)
+        if (!progress) {
+          return
+        }
+        events.onProgress({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          progress,
+          enteredProcessing: postprocessSeen
+        })
+      })
+
+      target.on('close', (code: number | null) => {
+        if (target !== proc || settled) {
+          return
+        }
+        const closedAt = this.opts.clock()
+        const stdout = stdoutTail.read()
+        const stderr = stderrTail.read()
+        if (cancelRequested) {
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'cancelled' },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr
+          })
+          return
+        }
+        if (code === 0) {
+          finishSuccessfulProcess(closedAt)
+          return
+        }
+        if (
+          !subtitleFallbackAttempted &&
+          canRetryWithoutSubtitles &&
+          hasSubtitleDownloadArgs(processArgs) &&
+          SUBTITLE_DOWNLOAD_ERROR.test(processStderr)
+        ) {
+          subtitleFallbackAttempted = true
+          stderrTail.append(`${SUBTITLE_FALLBACK_LOG}\n`)
+          events.onStd({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            stream: 'stderr',
+            line: SUBTITLE_FALLBACK_LOG
+          })
+          progressAggregator = new DownloadProgressAggregator()
+          postprocessSeen = false
+          try {
+            const fallbackArgs = withoutSubtitleDownloadArgs(processArgs)
+            proc = spawnProcess(fallbackArgs)
+            bindProcess(proc, fallbackArgs)
+          } catch (err) {
+            finishProcessError(err instanceof Error ? err : new Error(String(err)))
+          }
+          return
+        }
+        const error = classifyYtDlpExit(code, processStderr || stderr)
+        finishOnce({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          result: { type: 'error', error, exitCode: code ?? null },
+          closedAt,
+          stdoutTail: stdout,
+          stderrTail: stderr
+        })
+      })
+
+      target.on('error', (err: Error) => {
+        if (target === proc) {
+          finishProcessError(err)
+        }
+      })
+    }
+
+    try {
+      proc = spawnProcess(args)
+    } catch (err) {
+      finishOnce({
+        taskId: ctx.taskId,
+        attemptId: ctx.attemptId,
+        result: {
+          type: 'error',
+          error: virtualError('unknown', String(err instanceof Error ? err.message : err)),
+          exitCode: null
+        },
+        closedAt: this.opts.clock(),
+        stdoutTail: stdoutTail.read(),
+        stderrTail: stderrTail.read()
+      })
+      return makeNoopRun()
+    }
+
+    // Emit onSpawn once for the executor attempt. A subtitle-only fallback is
+    // an internal recovery and keeps the same task attempt and cancellation handle.
+    const pid = proc.ytDlpProcess?.pid ?? -1
+    events.onSpawn({
+      taskId: ctx.taskId,
+      attemptId: ctx.attemptId,
+      pid,
+      pidStartedAt: null,
+      kind: 'yt-dlp',
+      spawnedAt: this.opts.clock()
     })
+    bindProcess(proc, args)
 
     const cancel = async (timeout?: number): Promise<void> => {
-      if (settled) return
+      if (settled) {
+        return
+      }
       cancelRequested = true
       const grace = timeout ?? this.opts.killGraceMs
       try {
@@ -432,7 +523,9 @@ export class YtDlpExecutor implements Executor {
       } catch {
         /* noop */
       }
-      if (killTimer) clearTimeout(killTimer)
+      if (killTimer) {
+        clearTimeout(killTimer)
+      }
       if (grace > 0) {
         killTimer = setTimeout(() => {
           try {
@@ -457,7 +550,9 @@ export class YtDlpExecutor implements Executor {
   }
 
   private buildArgsFor(input: TaskInput): string[] {
-    if (this.opts.buildArgs) return this.opts.buildArgs(input, this.opts.defaultDownloadDir)
+    if (this.opts.buildArgs) {
+      return this.opts.buildArgs(input, this.opts.defaultDownloadDir)
+    }
     if (input.rawArgs && input.rawArgs.length > 0) {
       return [...input.rawArgs]
     }
@@ -498,11 +593,57 @@ export class YtDlpExecutor implements Executor {
   }
 
   private getYtDlp(binaryPath: string): YtDlpWrapInstance {
-    if (this.cachedYtDlp && this.cachedYtDlpPath === binaryPath) return this.cachedYtDlp
+    if (this.cachedYtDlp && this.cachedYtDlpPath === binaryPath) {
+      return this.cachedYtDlp
+    }
     this.cachedYtDlp = new YTDlpWrapCtor(binaryPath)
     this.cachedYtDlpPath = binaryPath
     return this.cachedYtDlp
   }
+}
+
+/**
+ * Return whether an argv snapshot asks yt-dlp to fetch or embed subtitles.
+ *
+ * @param args Full yt-dlp argv.
+ * @returns True when subtitle download behavior is enabled.
+ */
+const hasSubtitleDownloadArgs = (args: readonly string[]): boolean =>
+  args.some(
+    (arg) => arg === '--embed-subs' || arg === '--write-auto-subs' || arg === '--write-subs'
+  )
+
+/**
+ * Remove subtitle options and append explicit opt-outs before the source URL.
+ *
+ * @param args Full yt-dlp argv from the failed process.
+ * @returns A retry argv that downloads the media without subtitles.
+ */
+const withoutSubtitleDownloadArgs = (args: readonly string[]): string[] => {
+  const filtered: string[] = []
+  let skipNextValue = false
+
+  for (const arg of args) {
+    if (skipNextValue) {
+      skipNextValue = false
+      continue
+    }
+    if (SUBTITLE_OPTIONS_WITH_VALUE.has(arg)) {
+      skipNextValue = true
+      continue
+    }
+    if (SUBTITLE_TOGGLE_OPTIONS.has(arg)) {
+      continue
+    }
+    filtered.push(arg)
+  }
+
+  const sourceUrl = filtered.pop()
+  filtered.push('--no-write-subs', '--no-write-auto-subs', '--no-embed-subs')
+  if (sourceUrl) {
+    filtered.push(sourceUrl)
+  }
+  return filtered
 }
 
 function makeNoopRun(): ExecutorRun {
@@ -519,59 +660,9 @@ function makeNoopRun(): ExecutorRun {
 function insertFfmpegLocation(args: string[], ffmpegLocation: string): void {
   const urlArg = args.pop()
   args.push('--ffmpeg-location', ffmpegLocation)
-  if (urlArg !== undefined) args.push(urlArg)
-}
-
-function mapProgress(payload: ProgressPayload): TaskProgress {
-  const percent =
-    typeof payload.percent === 'number' && !Number.isNaN(payload.percent)
-      ? Math.max(0, Math.min(1, payload.percent / 100))
-      : null
-  return {
-    percent,
-    bytesDownloaded: parseSize(payload.downloaded),
-    bytesTotal: parseSize(payload.total),
-    speedBps: parseSpeed(payload.currentSpeed),
-    etaMs: parseEtaMs(payload.eta),
-    ticks: 0
+  if (urlArg !== undefined) {
+    args.push(urlArg)
   }
-}
-
-function parseSize(value: string | undefined): number | null {
-  if (!value) return null
-  const m = /([0-9]+(?:\.[0-9]+)?)\s*(B|KB|KiB|MB|MiB|GB|GiB|TB|TiB)/i.exec(value)
-  if (!m) return null
-  const n = Number.parseFloat(m[1] ?? '')
-  if (!Number.isFinite(n)) return null
-  const unit = (m[2] ?? 'B').toLowerCase()
-  const factor =
-    unit === 'kb' || unit === 'kib'
-      ? 1024
-      : unit === 'mb' || unit === 'mib'
-        ? 1024 ** 2
-        : unit === 'gb' || unit === 'gib'
-          ? 1024 ** 3
-          : unit === 'tb' || unit === 'tib'
-            ? 1024 ** 4
-            : 1
-  return Math.round(n * factor)
-}
-
-function parseSpeed(value: string | undefined): number | null {
-  if (!value) return null
-  const cleaned = value.replace(/\/s$/i, '').trim()
-  return parseSize(cleaned)
-}
-
-function parseEtaMs(value: string | undefined): number | null {
-  if (!value) return null
-  const trimmed = value.trim()
-  if (!trimmed || trimmed === 'Unknown') return null
-  const parts = trimmed.split(':').map((p) => Number.parseInt(p, 10))
-  if (parts.some((n) => !Number.isFinite(n))) return null
-  let seconds = 0
-  for (const p of parts) seconds = seconds * 60 + p
-  return seconds * 1000
 }
 
 function hasPostprocessSignal(text: string): boolean {
@@ -586,37 +677,58 @@ function hasPostprocessSignal(text: string): boolean {
  */
 function extractFormatId(rawLog: string): string | undefined {
   const log = rawLog.trim()
-  if (!log) return undefined
+  if (!log) {
+    return undefined
+  }
   // [info] BV...: Downloading 1 format(s): 30080+30280
   const re = /Downloading\s+\d+\s+format\(s\):\s+([^\r\n]+)/gi
   const matches = Array.from(log.matchAll(re))
   const last = matches.at(-1)
   const value = last?.[1]?.trim()
-  if (!value) return undefined
+  if (!value) {
+    return undefined
+  }
   return value
 }
 
 function extractSavedFilePath(rawLog: string): string | undefined {
   const log = rawLog.trim()
-  if (!log) return undefined
-  const patterns = [
+  if (!log) {
+    return undefined
+  }
+  const patterns: RegExp[] = [
+    new RegExp(`^${VIDBEE_OUTPUT_PATH_PREFIX}(.+)$`, 'gm'),
     /Merging formats into "([^"]+)"/g,
     /Destination:\s+"([^"]+)"/g,
     /Destination:\s+'([^']+)'/g,
-    /\[download\]\s+([^\r\n]+?)\s+has already been downloaded/g
+    /\[download\]\s+([^\r\n]+?)\s+has already been downloaded/g,
+    /\[MoveFiles\]\s+Moving file "[^"]+" to "([^"]+)"/g,
+    /\[(?:EmbedSubtitle|EmbedThumbnail|FixupM3u8|Metadata)\].*?"([^"]+)"/g,
+    /\[(?:ExtractAudio|VideoConvertor|VideoRemuxer)\].*?\bto "([^"]+)"/g
   ]
+  let latestMatchIndex = -1
+  let latestCandidate: string | undefined
   for (const re of patterns) {
-    const matches = Array.from(log.matchAll(re))
-    const last = matches.at(-1)
-    const candidate = last?.[1]?.trim()
-    if (candidate) return candidate
+    for (const match of log.matchAll(re)) {
+      const candidate = match[1]?.trim()
+      const matchIndex = match.index ?? -1
+      if (candidate && matchIndex >= latestMatchIndex) {
+        latestMatchIndex = matchIndex
+        latestCandidate = candidate
+      }
+    }
+  }
+  if (latestCandidate) {
+    return latestCandidate
   }
   const lines = log.split(/\r?\n/).reverse()
   for (const line of lines) {
     const idx = line.indexOf('Destination:')
     if (idx >= 0) {
       const candidate = line.slice(idx + 'Destination:'.length).trim()
-      if (candidate) return candidate
+      if (candidate) {
+        return candidate
+      }
     }
   }
   return undefined
@@ -629,22 +741,30 @@ function extractSavedFilePath(rawLog: string): string | undefined {
  */
 function classifyYtDlpExit(exitCode: number | null, stderr: string): ClassifiedError {
   const txt = stderr.toLowerCase()
-  if (/(http error 429|too many requests|rate.?limit)/.test(txt))
+  if (/(http error 429|too many requests|rate.?limit)/.test(txt)) {
     return virtualError('http-429', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(login required|requires (?:cookies|authentication)|sign in to confirm)/.test(txt))
+  }
+  if (/(login required|requires (?:cookies|authentication)|sign in to confirm)/.test(txt)) {
     return virtualError('auth-required', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(not available in your country|geo.?restricted|geographic)/.test(txt))
+  }
+  if (/(not available in your country|geo.?restricted|geographic)/.test(txt)) {
     return virtualError('geo-blocked', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(video unavailable|not found|404)/.test(txt))
+  }
+  if (/(video unavailable|not found|404)/.test(txt)) {
     return virtualError('not-found', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(no space left|disk full|enospc)/.test(txt))
+  }
+  if (/(no space left|disk full|enospc)/.test(txt)) {
     return virtualError('disk-full', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(permission denied|eacces)/.test(txt))
+  }
+  if (/(permission denied|eacces)/.test(txt)) {
     return virtualError('permission-denied', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(ffmpeg|ffprobe)/.test(txt))
+  }
+  if (/(ffmpeg|ffprobe)/.test(txt)) {
     return virtualError('ffmpeg', stderr || `yt-dlp exited ${exitCode}`)
-  if (/(network|timeout|econnreset|enotfound|ehostunreach)/.test(txt))
+  }
+  if (/(network|timeout|econnreset|enotfound|ehostunreach)/.test(txt)) {
     return virtualError('network-transient', stderr || `yt-dlp exited ${exitCode}`)
+  }
   return virtualError('unknown', stderr || `yt-dlp exited with code ${exitCode ?? -1}`)
 }
 
@@ -670,4 +790,4 @@ function createTailBuffer(maxBytes: number): TailBuffer {
 }
 
 // Re-export types adapters need to wire host-specific args building.
-export type { TaskInput, ExecutorContext, ExecutorEvents, ExecutorRun }
+export type { ExecutorContext, ExecutorEvents, ExecutorRun, TaskInput }

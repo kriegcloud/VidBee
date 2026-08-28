@@ -20,16 +20,18 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
-import { SUBSCRIPTIONS_DDL_V1 } from '@vidbee/db/subscriptions'
+import { applySubscriptionsMigrations } from '@vidbee/db/subscriptions'
+import { log } from '@vidbee/logger'
 import {
-  RssParserFeedFetcher,
-  SubscriptionsApi,
   createSqliteMetaStore,
-  createSqliteSubscriptionsStore
+  createSqliteSubscriptionsStore,
+  RssParserFeedFetcher,
+  SubscriptionsApi
 } from '@vidbee/subscriptions-core'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 
 import { apiDefaultDownloadDir, taskQueue } from './task-queue-host'
+import { toWebDownloadRuntimeSettings, webSettingsStore } from './web-settings-store'
 
 const require = createRequire(import.meta.url)
 
@@ -40,7 +42,9 @@ const trimEnv = (name: string): string | undefined => {
 
 const resolveDbPath = (): string => {
   const override = trimEnv('VIDBEE_SUBSCRIPTIONS_DB')
-  if (override) return override
+  if (override) {
+    return override
+  }
   return path.join(apiDefaultDownloadDir, '.vidbee', 'subscriptions.db')
 }
 
@@ -55,7 +59,9 @@ let started = false
  * inside one process's transaction, not split across re-opened handles.
  */
 export const getApiSubscriptions = (): SubscriptionsApi => {
-  if (api) return api
+  if (api) {
+    return api
+  }
   const dbPath = resolveDbPath()
   fs.mkdirSync(path.dirname(dbPath), { recursive: true })
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -63,7 +69,11 @@ export const getApiSubscriptions = (): SubscriptionsApi => {
   const sqlite = new Database(dbPath, { timeout: 5000 })
   sqlite.pragma('journal_mode = WAL')
   sqlite.pragma('foreign_keys = ON')
-  sqlite.exec(SUBSCRIPTIONS_DDL_V1)
+  const subscriptionCols = sqlite.prepare('PRAGMA table_info(subscriptions)').all() as Array<{
+    name?: string
+  }>
+  const subscriptionColNames = subscriptionCols.map((c) => c.name).filter(Boolean) as string[]
+  applySubscriptionsMigrations((sql) => sqlite.exec(sql), subscriptionColNames)
   const db = drizzle(sqlite)
 
   const store = createSqliteSubscriptionsStore({ db })
@@ -77,12 +87,13 @@ export const getApiSubscriptions = (): SubscriptionsApi => {
     fetcher: new RssParserFeedFetcher(),
     enqueueItem: async ({ subscription, item }) => {
       const tags = Array.from(new Set([subscription.platform, ...subscription.tags]))
+      const settings = toWebDownloadRuntimeSettings(await webSettingsStore.get())
       const result = await taskQueue.add({
         input: {
           url: item.url,
           kind: 'subscription-item',
           title: item.title,
-          ...(item.thumbnail !== undefined ? { thumbnail: item.thumbnail } : {}),
+          ...(item.thumbnail === undefined ? {} : { thumbnail: item.thumbnail }),
           subscriptionId: subscription.id,
           options: {
             origin: 'subscription',
@@ -94,6 +105,7 @@ export const getApiSubscriptions = (): SubscriptionsApi => {
             ...(subscription.namingTemplate
               ? { customFilenameTemplate: subscription.namingTemplate }
               : {}),
+            settings,
             tags
           }
         },
@@ -103,25 +115,35 @@ export const getApiSubscriptions = (): SubscriptionsApi => {
       return result.id
     },
     log: (level, msg, meta) => {
-      // The API uses fastify's logger via stdout; emit through console here
-      // so the message lands in the same stream without binding to fastify.
-      const line = meta === undefined ? msg : `${msg} ${JSON.stringify(meta)}`
-      if (level === 'error') console.error(`subscriptions: ${line}`)
-      else if (level === 'warn') console.warn(`subscriptions: ${line}`)
-      else console.info(`subscriptions: ${line}`)
+      const event = {
+        event: 'subscriptions',
+        message: msg,
+        ...(meta === undefined ? {} : { meta })
+      }
+      if (level === 'error') {
+        log.error(event)
+      } else if (level === 'warn') {
+        log.warn(event)
+      } else {
+        log.info(event)
+      }
     }
   })
   return api
 }
 
 export const startApiSubscriptions = async (): Promise<void> => {
-  if (started) return
+  if (started) {
+    return
+  }
   await getApiSubscriptions().start()
   started = true
 }
 
 export const stopApiSubscriptions = async (): Promise<void> => {
-  if (!started) return
+  if (!started) {
+    return
+  }
   await api?.stop()
   started = false
 }

@@ -14,20 +14,71 @@
  *     `taskQueue.add()`); nothing else legitimately needs to write to
  *     history. We log an info breadcrumb so any straggling caller is loud.
  *   - `removeHistoryItem` / `removeHistoryItems` / `removeHistoryByPlaylistId` /
- *     `clearHistory` delegate to `taskQueue.removeFromHistory`, the kernel's
- *     single supported history-mutation entry point.
+ *     `clearHistory` delegate to `taskQueue.removeFromHistory`, then drop the
+ *     stored transcripts and prompt runs for those downloads.
  */
-import type { Task } from '@vidbee/task-queue'
+import { isDownloadTaskKind, type Task } from '@vidbee/task-queue'
 
 import type { DownloadHistoryItem } from '../../shared/types'
 import { scopedLoggers } from '../utils/logger'
 
+import { getDatabaseConnection } from './database'
 import { projectTaskForRendererHistory } from './projection'
 import { getDesktopTaskQueue } from './task-queue-host'
+import { deleteTranscriptsForDownload } from './transcript-host'
 
 const logger = scopedLoggers.engine
 
 const TERMINAL: ReadonlySet<Task['status']> = new Set(['completed', 'failed', 'cancelled'])
+
+/**
+ * Remove a terminal download from the queue and drop its stored transcripts.
+ *
+ * @param id Download task id.
+ * @returns True when the history row was removed.
+ */
+const removeTerminalDownload = async (id: string): Promise<boolean> => {
+  const queue = getDesktopTaskQueue()
+  const task = queue.get(id)
+  if (!(task && TERMINAL.has(task.status))) {
+    return false
+  }
+  await queue.removeFromHistory(id)
+  try {
+    deleteTranscriptsForDownload(id)
+  } catch (error) {
+    logger.warn('history-manager: failed to delete transcripts', { id, error })
+  }
+  return true
+}
+
+/**
+ * Drop matching rows from the pre-NEX-131 `download_history` table so the
+ * boot importer cannot resurrect a record the user just removed.
+ */
+const deleteLegacyHistoryRows = (ids: string[]): void => {
+  if (ids.length === 0) {
+    return
+  }
+  try {
+    const { sqlite } = getDatabaseConnection()
+    const table = sqlite
+      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='download_history'")
+      .get() as { name?: string } | undefined
+    if (!table?.name) {
+      return
+    }
+    const del = sqlite.prepare('DELETE FROM download_history WHERE id = ?')
+    const tx = sqlite.transaction((taskIds: string[]) => {
+      for (const id of taskIds) {
+        del.run(id)
+      }
+    })
+    tx(ids)
+  } catch (err) {
+    logger.warn('history-manager: failed to delete legacy download_history rows', { ids, err })
+  }
+}
 
 const allTerminalTasks = (): Task[] => {
   const queue = getDesktopTaskQueue()
@@ -36,7 +87,7 @@ const allTerminalTasks = (): Task[] => {
   do {
     const page = queue.list({ limit: 200, cursor })
     for (const t of page.tasks) {
-      if (TERMINAL.has(t.status)) {
+      if (TERMINAL.has(t.status) && isDownloadTaskKind(t.kind)) {
         all.push(t)
       }
     }
@@ -97,63 +148,57 @@ class HistoryFacade {
     })
   }
 
-  removeHistoryItem(id: string): boolean {
-    const queue = getDesktopTaskQueue()
-    const task = queue.get(id)
-    if (!(task && TERMINAL.has(task.status))) {
-      return false
-    }
-    void queue.removeFromHistory(id).catch((err) => {
-      logger.error('history-manager: removeHistoryItem failed', { id, err })
-    })
-    return true
+  /**
+   * Persistently remove one terminal download. Awaits disk delete so a
+   * restart cannot resurrect the row.
+   */
+  async removeHistoryItem(id: string): Promise<boolean> {
+    deleteLegacyHistoryRows([id])
+    return removeTerminalDownload(id)
   }
 
-  removeHistoryItems(ids: string[]): number {
-    const queue = getDesktopTaskQueue()
+  /**
+   * Persistently remove many terminal downloads.
+   */
+  async removeHistoryItems(ids: string[]): Promise<number> {
     const unique = Array.from(new Set(ids.map((s) => s.trim()).filter((s) => s.length > 0)))
+    deleteLegacyHistoryRows(unique)
     let removed = 0
     for (const id of unique) {
-      const task = queue.get(id)
-      if (!(task && TERMINAL.has(task.status))) {
-        continue
+      if (await removeTerminalDownload(id)) {
+        removed += 1
       }
-      void queue.removeFromHistory(id).catch((err) => {
-        logger.error('history-manager: removeHistoryItems failed', { id, err })
-      })
-      removed += 1
     }
     return removed
   }
 
-  removeHistoryByPlaylistId(playlistId: string): number {
+  /**
+   * Persistently remove every terminal download in a playlist group.
+   */
+  async removeHistoryByPlaylistId(playlistId: string): Promise<number> {
     const normalized = playlistId.trim()
     if (!normalized) {
       return 0
     }
-    const queue = getDesktopTaskQueue()
+    const matching = allTerminalTasks().filter((task) => task.input.playlistId === normalized)
+    deleteLegacyHistoryRows(matching.map((task) => task.id))
     let removed = 0
-    for (const task of allTerminalTasks()) {
-      if (task.input.playlistId !== normalized) {
-        continue
+    for (const task of matching) {
+      if (await removeTerminalDownload(task.id)) {
+        removed += 1
       }
-      void queue.removeFromHistory(task.id).catch((err) => {
-        logger.error('history-manager: removeHistoryByPlaylistId failed', {
-          id: task.id,
-          err
-        })
-      })
-      removed += 1
     }
     return removed
   }
 
-  clearHistory(): void {
-    const queue = getDesktopTaskQueue()
-    for (const task of allTerminalTasks()) {
-      void queue.removeFromHistory(task.id).catch((err) => {
-        logger.error('history-manager: clearHistory failed', { id: task.id, err })
-      })
+  /**
+   * Persistently remove every terminal download from history.
+   */
+  async clearHistory(): Promise<void> {
+    const tasks = allTerminalTasks()
+    deleteLegacyHistoryRows(tasks.map((task) => task.id))
+    for (const task of tasks) {
+      await removeTerminalDownload(task.id)
     }
   }
 

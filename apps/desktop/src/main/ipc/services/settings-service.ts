@@ -1,10 +1,10 @@
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type { AppSettings } from '../../../shared/types'
-import { downloadEngine } from '../../lib/download-facade'
 import {
   applyBatchSettingSideEffects,
   applySingleSettingSideEffects
 } from '../../lib/settings-effects'
+import { applyDesktopQueueConcurrency } from '../../lib/task-queue-host'
 import { applyUpdateChannel, refreshUpdateChannel } from '../../lib/update-channel'
 import { settingsManager } from '../../settings'
 import { updateTrayMenu } from '../../tray'
@@ -21,8 +21,11 @@ const settingSideEffectHandlers = {
   onLaunchAtLogin: (value: boolean) => {
     applyAutoLaunchSetting(value)
   },
-  onMaxConcurrentDownloads: (value: number) => {
-    downloadEngine.updateMaxConcurrent(value)
+  onMaxConcurrentDownloads: () => {
+    applyDesktopQueueConcurrency()
+  },
+  onMaxConcurrentTranscriptions: () => {
+    applyDesktopQueueConcurrency()
   },
   onBetaProgram: (value: boolean) => {
     refreshUpdateChannel(value)
@@ -59,8 +62,24 @@ class SettingsService extends IpcService {
     settingsManager.reset()
     applyDockVisibility(settingsManager.get('hideDockIcon'))
     applyAutoLaunchSetting(settingsManager.get('launchAtLogin'))
-    downloadEngine.updateMaxConcurrent(settingsManager.get('maxConcurrentDownloads'))
+    applyDesktopQueueConcurrency()
     applyUpdateChannel(settingsManager.get('betaProgram'))
+  }
+
+  /**
+   * True when a returning user should see the current What's New card.
+   */
+  @IpcMethod()
+  shouldPromptWhatsNew(_context: IpcContext): boolean {
+    return settingsManager.shouldPromptWhatsNew()
+  }
+
+  /**
+   * Record that the current What's New card has been dismissed.
+   */
+  @IpcMethod()
+  markWhatsNewSeen(_context: IpcContext): void {
+    settingsManager.markWhatsNewSeen()
   }
 }
 

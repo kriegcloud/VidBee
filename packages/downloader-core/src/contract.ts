@@ -16,6 +16,8 @@ import {
   ListDirectoriesOutputSchema,
   ListDownloadsOutputSchema,
   ListHistoryOutputSchema,
+  PauseDownloadInputSchema,
+  PauseDownloadOutputSchema,
   PlaylistDownloadInputSchema,
   PlaylistDownloadOutputSchema,
   PlaylistInfoInputSchema,
@@ -23,6 +25,10 @@ import {
   RemoveHistoryByPlaylistInputSchema,
   RemoveHistoryItemsInputSchema,
   RemoveHistoryOutputSchema,
+  ResumeDownloadInputSchema,
+  ResumeDownloadOutputSchema,
+  RetryDownloadInputSchema,
+  RetryDownloadOutputSchema,
   SetWebSettingsInputSchema,
   StatusOutputSchema,
   UploadSettingsFileInputSchema,
@@ -49,7 +55,10 @@ export const downloaderContract = {
   downloads: {
     create: oc.input(CreateDownloadInputSchema).output(CreateDownloadOutputSchema),
     list: oc.output(ListDownloadsOutputSchema),
-    cancel: oc.input(CancelDownloadInputSchema).output(CancelDownloadOutputSchema)
+    cancel: oc.input(CancelDownloadInputSchema).output(CancelDownloadOutputSchema),
+    pause: oc.input(PauseDownloadInputSchema).output(PauseDownloadOutputSchema),
+    resume: oc.input(ResumeDownloadInputSchema).output(ResumeDownloadOutputSchema),
+    retry: oc.input(RetryDownloadInputSchema).output(RetryDownloadOutputSchema)
   },
   history: {
     list: oc.output(ListHistoryOutputSchema),

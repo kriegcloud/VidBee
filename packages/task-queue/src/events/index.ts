@@ -1,3 +1,4 @@
+import { logCaughtError } from '@vidbee/logger'
 import type { ClassifiedError, Task, TaskProgress, TaskStatus } from '../types'
 
 export interface TransitionEvent {
@@ -61,9 +62,7 @@ export type TaskQueueEvent =
 
 export type TaskQueueEventType = TaskQueueEvent['type']
 
-export type TaskQueueListener<E extends TaskQueueEvent = TaskQueueEvent> = (
-  event: E
-) => void
+export type TaskQueueListener<E extends TaskQueueEvent = TaskQueueEvent> = (event: E) => void
 
 export class EventBus {
   private readonly listeners = new Map<TaskQueueEventType | '*', Set<TaskQueueListener>>()
@@ -82,18 +81,24 @@ export class EventBus {
   emit(event: TaskQueueEvent): void {
     const typed = this.listeners.get(event.type)
     if (typed) {
-      for (const l of typed) this.safeCall(l, event)
+      for (const l of typed) {
+        this.safeCall(l, event)
+      }
     }
     const wildcard = this.listeners.get('*')
     if (wildcard) {
-      for (const l of wildcard) this.safeCall(l, event)
+      for (const l of wildcard) {
+        this.safeCall(l, event)
+      }
     }
   }
 
-  /** Number of subscribers; for tests/diagnostics. */
+  /** Number of subscribers. */
   size(): number {
     let n = 0
-    for (const set of this.listeners.values()) n += set.size
+    for (const set of this.listeners.values()) {
+      n += set.size
+    }
     return n
   }
 
@@ -109,7 +114,9 @@ export class EventBus {
     set.add(listener)
     return () => {
       set!.delete(listener)
-      if (set!.size === 0) this.listeners.delete(key)
+      if (set!.size === 0) {
+        this.listeners.delete(key)
+      }
     }
   }
 
@@ -118,8 +125,7 @@ export class EventBus {
       listener(event)
     } catch (err) {
       // Listener errors must never poison kernel control flow.
-      // eslint-disable-next-line no-console
-      console.error('[task-queue] listener threw', err)
+      logCaughtError('task_queue_listener_threw', err)
     }
   }
 }

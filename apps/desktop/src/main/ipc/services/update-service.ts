@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import { autoUpdater } from 'electron-updater'
+import { allowAppQuit } from '../../lib/quit-confirmation-host'
 import { isPortableMode } from '../../portable'
 
 const isNewerVersion = (latest: string, current: string): boolean => {
@@ -94,6 +95,7 @@ class UpdateService extends IpcService {
       return
     }
 
+    allowAppQuit()
     autoUpdater.quitAndInstall()
   }
 

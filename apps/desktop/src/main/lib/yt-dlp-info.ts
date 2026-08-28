@@ -7,18 +7,20 @@
  * cookies/proxy/runtime args stay consistent with the queue executor.
  */
 
+import { retryTransientYtDlpNetworkError } from '@vidbee/downloader-core'
 import type { PlaylistInfo, VideoInfo, VideoInfoCommandResult } from '../../shared/types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
-import { resolvePathWithHome } from '../utils/path-helpers'
 import { createBoundedTextBuffer } from './bounded-output-buffer'
-import {
-  appendJsRuntimeArgs,
-  appendYouTubeSafeExtractorArgs,
-  buildVideoInfoArgs,
-  formatYtDlpCommand
-} from './command-utils'
+import { probeConfiguredBrowserCookieAccess } from './browser-cookie-access'
+import { buildPlaylistInfoArgs, buildVideoInfoArgs, formatYtDlpCommand } from './command-utils'
 import { ytdlpManager } from './ytdlp-manager'
+
+/**
+ * Return a cookie-permission error when macOS blocks the configured browser.
+ */
+const cookieAccessError = (): string | null =>
+  probeConfiguredBrowserCookieAccess(settingsManager.getAll().browserForCookies)
 
 const logger = scopedLoggers.download
 
@@ -54,11 +56,12 @@ const parseVideoInfoPayload = (stdout: string): VideoInfo => {
   }
 }
 
-export const fetchVideoInfo = async (url: string): Promise<VideoInfo> => {
-  const ytdlp = ytdlpManager.getInstance()
-  const args = buildVideoInfoArgs(url, settingsManager.getAll())
-  return new Promise<VideoInfo>((resolve, reject) => {
-    const proc = ytdlp.exec(args)
+/**
+ * Run one yt-dlp `-j` probe and parse the resulting video info payload.
+ */
+const execVideoInfo = (url: string, args: string[]): Promise<VideoInfo> =>
+  new Promise((resolve, reject) => {
+    const proc = ytdlpManager.getInstance().exec(args)
     const stdout = createBoundedTextBuffer()
     const stderr = createBoundedTextBuffer()
     proc.ytDlpProcess?.stdout?.on('data', (d: Buffer) => stdout.append(d))
@@ -79,42 +82,32 @@ export const fetchVideoInfo = async (url: string): Promise<VideoInfo> => {
     })
     proc.on('error', reject)
   })
+
+export const fetchVideoInfo = async (url: string): Promise<VideoInfo> => {
+  const blocked = cookieAccessError()
+  if (blocked) {
+    throw new Error(blocked)
+  }
+  const args = buildVideoInfoArgs(url, settingsManager.getAll())
+  return retryTransientYtDlpNetworkError(() => execVideoInfo(url, args))
 }
 
 export const fetchVideoInfoWithCommand = async (url: string): Promise<VideoInfoCommandResult> => {
   const args = buildVideoInfoArgs(url, settingsManager.getAll())
   const ytDlpCommand = formatYtDlpCommand(args)
-  return new Promise<VideoInfoCommandResult>((resolve) => {
-    const ytdlp = ytdlpManager.getInstance()
-    const proc = ytdlp.exec(args)
-    const stdout = createBoundedTextBuffer()
-    const stderr = createBoundedTextBuffer()
-    proc.ytDlpProcess?.stdout?.on('data', (d: Buffer) => stdout.append(d))
-    proc.ytDlpProcess?.stderr?.on('data', (d: Buffer) => stderr.append(d))
-    proc.on('close', (code) => {
-      const out = stdout.get()
-      const err = stderr.get()
-      if (code === 0 && out) {
-        try {
-          resolve({ info: inflateEstimatedSizes(parseVideoInfoPayload(out)), ytDlpCommand })
-          return
-        } catch (error) {
-          resolve({
-            ytDlpCommand,
-            error: `Failed to parse video info: ${error instanceof Error ? error.message : error}`
-          })
-          return
-        }
-      }
-      resolve({ ytDlpCommand, error: err || 'Failed to fetch video info' })
-    })
-    proc.on('error', (error) => {
-      resolve({
-        ytDlpCommand,
-        error: error instanceof Error ? error.message : 'Failed to fetch video info'
-      })
-    })
-  })
+  const blocked = cookieAccessError()
+  if (blocked) {
+    return { error: blocked, ytDlpCommand }
+  }
+  try {
+    const info = await retryTransientYtDlpNetworkError(() => execVideoInfo(url, args))
+    return { info, ytDlpCommand }
+  } catch (error) {
+    return {
+      ytDlpCommand,
+      error: error instanceof Error ? error.message : 'Failed to fetch video info'
+    }
+  }
 }
 
 interface RawPlaylistEntry {
@@ -149,35 +142,12 @@ const resolveEntryUrl = (entry: RawPlaylistEntry): string => {
   return entry.id ?? ''
 }
 
-const buildPlaylistArgs = (url: string): string[] => {
-  const settings = settingsManager.getAll()
-  const args: string[] = ['-J', '--flat-playlist', '--no-warnings', '--encoding', 'utf-8']
-  if (settings.proxy) {
-    args.push('--proxy', settings.proxy)
-  }
-  if (settings.browserForCookies && settings.browserForCookies !== 'none') {
-    args.push('--cookies-from-browser', settings.browserForCookies)
-  }
-  const cookiesPath = settings.cookiesPath?.trim()
-  if (cookiesPath) {
-    args.push('--cookies', cookiesPath)
-  }
-  const configPath = resolvePathWithHome(settings.configPath)
-  if (configPath) {
-    args.push('--config-location', configPath)
-  } else {
-    appendYouTubeSafeExtractorArgs(args, url)
-  }
-  appendJsRuntimeArgs(args)
-  args.push(url)
-  return args
-}
-
-export const fetchPlaylistInfo = async (url: string): Promise<PlaylistInfo> => {
-  const ytdlp = ytdlpManager.getInstance()
-  const args = buildPlaylistArgs(url)
-  return new Promise<PlaylistInfo>((resolve, reject) => {
-    const proc = ytdlp.exec(args)
+/**
+ * Run one yt-dlp playlist listing probe.
+ */
+const execPlaylistInfo = (url: string, args: string[]): Promise<PlaylistInfo> =>
+  new Promise((resolve, reject) => {
+    const proc = ytdlpManager.getInstance().exec(args)
     const stdout = createBoundedTextBuffer()
     const stderr = createBoundedTextBuffer()
     proc.ytDlpProcess?.stdout?.on('data', (d: Buffer) => stdout.append(d))
@@ -218,4 +188,12 @@ export const fetchPlaylistInfo = async (url: string): Promise<PlaylistInfo> => {
     })
     proc.on('error', reject)
   })
+
+export const fetchPlaylistInfo = async (url: string): Promise<PlaylistInfo> => {
+  const blocked = cookieAccessError()
+  if (blocked) {
+    throw new Error(blocked)
+  }
+  const args = buildPlaylistInfoArgs(url, settingsManager.getAll())
+  return retryTransientYtDlpNetworkError(() => execPlaylistInfo(url, args))
 }

@@ -19,7 +19,7 @@
  * `subscription-manager.ts` / `subscription-scheduler.ts` modules they
  * superseded have been removed.
  */
-import { SUBSCRIPTIONS_DDL_V1 } from '@vidbee/db/subscriptions'
+import { applySubscriptionsMigrations } from '@vidbee/db/subscriptions'
 import {
   createSqliteMetaStore,
   createSqliteSubscriptionsStore,
@@ -43,8 +43,8 @@ const logger = scopedLoggers.engine
 
 /**
  * Apply subscription DDL on top of the existing desktop SQLite. Renames
- * `download_id` → `task_id` once and adds the new `subscriptions_meta`
- * table. Idempotent.
+ * `download_id` → `task_id` once, adds `subscriptions_meta`, and additive
+ * columns such as `auto_download`. Idempotent.
  */
 const ensureSubscriptionsSchema = (): void => {
   const { sqlite } = getDatabaseConnection()
@@ -58,9 +58,14 @@ const ensureSubscriptionsSchema = (): void => {
     sqlite.exec('ALTER TABLE subscription_items RENAME COLUMN download_id TO task_id')
     logger.info('subscriptions: migrated download_id → task_id on subscription_items')
   }
+  const subscriptionCols = sqlite.prepare('PRAGMA table_info(subscriptions)').all() as Array<{
+    name?: string
+  }>
+  const subscriptionColNames = subscriptionCols.map((c) => c.name).filter(Boolean) as string[]
   // CREATE TABLE IF NOT EXISTS for `subscriptions_meta` and indexes; existing
   // `subscriptions` / `subscription_items` are no-op'd by IF NOT EXISTS.
-  sqlite.exec(SUBSCRIPTIONS_DDL_V1)
+  // V2 adds `auto_download` for databases created before that column existed.
+  applySubscriptionsMigrations((sql) => sqlite.exec(sql), subscriptionColNames)
 }
 
 const ensureDirectoryExists = (dir?: string): void => {
@@ -229,6 +234,7 @@ export const projectSubscriptionForRenderer = (sub: SubscriptionWithItems): Subs
     keywords: sub.keywords,
     tags: sub.tags,
     onlyDownloadLatest: sub.onlyDownloadLatest,
+    autoDownload: sub.autoDownload,
     enabled: sub.enabled,
     status: sub.status,
     createdAt: sub.createdAt,

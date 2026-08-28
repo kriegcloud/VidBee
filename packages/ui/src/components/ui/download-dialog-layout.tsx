@@ -2,9 +2,19 @@ import { Instagram, List, Rocket, Video } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { Button } from './button'
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from './dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from './dialog'
+import { TabItem, TabPanel, Tabs, TabsList } from './tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip'
+
+/** Chip/list/button radius for the download dialog — never larger than rounded-md. */
+export const downloadDialogRadius = 'rounded-md'
 
 interface DownloadDialogLayoutProps {
   open: boolean
@@ -12,6 +22,8 @@ interface DownloadDialogLayoutProps {
   oneClickDownloadEnabled: boolean
   oneClickTooltip: string
   activeTab: 'single' | 'playlist' | 'profile'
+  dialogTitle: string
+  dialogSubtitle: string
   singleTabLabel: string
   playlistTabLabel: string
   profileTabLabel: string
@@ -25,12 +37,17 @@ interface DownloadDialogLayoutProps {
   onActiveTabChange: (tab: 'single' | 'playlist' | 'profile') => void
 }
 
+/**
+ * Download dialog chrome modeled on a title / chips / preview / footer card.
+ */
 export const DownloadDialogLayout = ({
   open,
   lockDialogHeight,
   oneClickDownloadEnabled,
   oneClickTooltip,
   activeTab,
+  dialogTitle,
+  dialogSubtitle,
   singleTabLabel,
   playlistTabLabel,
   profileTabLabel,
@@ -72,43 +89,40 @@ export const DownloadDialogLayout = ({
       </div>
       <DialogContent
         className={cn(
-          'flex max-h-[90vh] flex-col gap-0 overflow-hidden p-5 sm:max-w-xl',
-          lockDialogHeight && 'h-[90vh]'
+          'flex max-h-[90vh] flex-col gap-0 overflow-hidden rounded-md p-6 sm:max-w-lg',
+          lockDialogHeight && 'min-h-[24rem]'
         )}
       >
+        <DialogHeader className="items-start space-y-1.5 pr-8 text-left">
+          <DialogTitle className="text-xl leading-tight">{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogSubtitle}</DialogDescription>
+        </DialogHeader>
+
         <Tabs
-          className="flex min-h-0 w-full flex-1 flex-col gap-0"
+          className="flex min-h-0 w-full flex-col"
           defaultValue="single"
           onValueChange={(value) => onActiveTabChange(value as 'single' | 'playlist' | 'profile')}
+          size="compact"
           value={activeTab}
         >
-          <DialogHeader>
-            <TabsList>
-              <TabsTrigger onClick={() => onActiveTabChange('single')} value="single">
-                <Video className="h-3.5 w-3.5" />
-                {singleTabLabel}
-              </TabsTrigger>
-              <TabsTrigger onClick={() => onActiveTabChange('playlist')} value="playlist">
-                <List className="h-3.5 w-3.5" />
-                {playlistTabLabel}
-              </TabsTrigger>
-              <TabsTrigger onClick={() => onActiveTabChange('profile')} value="profile">
-                <Instagram className="h-3.5 w-3.5" />
-                {profileTabLabel}
-              </TabsTrigger>
+          <div className="mt-3 border-border/60 border-t pt-3">
+            <TabsList className={cn('w-fit', downloadDialogRadius, '[&>div]:rounded-md')}>
+              <TabItem icon={Video} label={singleTabLabel} value="single" />
+              <TabItem icon={List} label={playlistTabLabel} value="playlist" />
+              <TabItem icon={Instagram} label={profileTabLabel} value="profile" />
             </TabsList>
-          </DialogHeader>
-          <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="single">
+          </div>
+          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="single">
             {singleTabContent}
-          </TabsContent>
-          <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="playlist">
+          </TabPanel>
+          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="playlist">
             {playlistTabContent}
-          </TabsContent>
-          <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value="profile">
+          </TabPanel>
+          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="profile">
             {profileTabContent}
-          </TabsContent>
+          </TabPanel>
         </Tabs>
-        <DialogFooter className="relative z-10 shrink-0 border-t bg-background pt-3">
+        <DialogFooter className="relative z-10 mt-3 shrink-0 border-border/60 border-t pt-3">
           {footer}
         </DialogFooter>
       </DialogContent>

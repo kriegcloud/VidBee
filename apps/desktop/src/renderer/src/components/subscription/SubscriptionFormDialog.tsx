@@ -22,15 +22,34 @@ import { ChevronRight } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { logger } from '../../lib/logger'
 
+/**
+ * Split a comma-separated string into unique trimmed entries.
+ *
+ * @param value Raw comma-separated input.
+ * @returns Deduplicated non-empty entries.
+ */
 const sanitizeCommaList = (value: string) =>
   value
     .split(',')
     .map((entry) => entry.trim())
     .filter((entry, index, array) => entry.length > 0 && array.indexOf(entry) === index)
 
+/**
+ * Normalize a filename template to use single forward slashes.
+ *
+ * @param value Raw template input.
+ * @returns Sanitized template.
+ */
 const sanitizeTemplateInput = (value: string) => value.replace(/\\/g, '/').replace(/\/{2,}/g, '/')
 
+/**
+ * Build the default Subscriptions folder under the user's download path.
+ *
+ * @param downloadPath Configured download directory.
+ * @returns Subscriptions directory path.
+ */
 const buildDefaultSubscriptionDirectory = (downloadPath: string) => {
   const trimmed = downloadPath.trim().replace(/[\\/]+$/, '')
   if (!trimmed) {
@@ -44,6 +63,7 @@ export interface SubscriptionFormData {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
@@ -57,6 +77,9 @@ interface SubscriptionFormDialogProps {
   onClose: () => void
 }
 
+/**
+ * Add or edit an RSS subscription, including auto-download options.
+ */
 export function SubscriptionFormDialog({
   mode,
   subscription,
@@ -73,6 +96,7 @@ export function SubscriptionFormDialog({
   const [keywords, setKeywords] = useState('')
   const [tags, setTags] = useState('')
   const [onlyLatest, setOnlyLatest] = useState(false)
+  const [autoDownload, setAutoDownload] = useState(true)
   const [downloadDirectory, setDownloadDirectory] = useState('')
   const [namingTemplate, setNamingTemplate] = useState('')
 
@@ -98,6 +122,7 @@ export function SubscriptionFormDialog({
       setKeywords(subscription.keywords.join(', '))
       setTags(subscription.tags.join(', '))
       setOnlyLatest(subscription.onlyDownloadLatest)
+      setAutoDownload(subscription.autoDownload !== false)
       setDownloadDirectory(subscription.downloadDirectory || '')
       setNamingTemplate(subscription.namingTemplate || '')
     } else {
@@ -106,6 +131,7 @@ export function SubscriptionFormDialog({
       setKeywords('')
       setTags('')
       setOnlyLatest(settings.subscriptionOnlyLatestDefault)
+      setAutoDownload(true)
       setDownloadDirectory(buildDefaultSubscriptionDirectory(settings.downloadPath))
       setNamingTemplate(DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE)
     }
@@ -152,7 +178,7 @@ export function SubscriptionFormDialog({
       try {
         await resolveFeed(url.trim())
       } catch (error) {
-        console.error('Failed to resolve feed:', error)
+        logger.error('Failed to resolve feed:', error)
       } finally {
         setDetectingFeed(false)
       }
@@ -165,6 +191,9 @@ export function SubscriptionFormDialog({
     }
   }, [url, resolveFeed, mode, subscription])
 
+  /**
+   * Open a native directory picker and store the chosen path.
+   */
   const handleSelectDirectory = async () => {
     try {
       const path = await ipcServices.fs.selectDirectory()
@@ -172,20 +201,26 @@ export function SubscriptionFormDialog({
         setDownloadDirectory(path)
       }
     } catch (error) {
-      console.error('Failed to select directory:', error)
+      logger.error('Failed to select directory:', error)
       toast.error(t('subscriptions.notifications.directoryError'))
     }
   }
 
+  /**
+   * Open the RSS documentation in the default browser.
+   */
   const handleOpenRSSHubDocs = async () => {
     try {
-      await ipcServices.fs.openExternal(withDesktopUtm('https://docs.vidbee.org/rss'))
+      await ipcServices.fs.openExternal(withDesktopUtm('https://vidbee.org/docs/rss/'))
     } catch (error) {
-      console.error('Failed to open RSS documentation:', error)
+      logger.error('Failed to open RSS documentation:', error)
       toast.error(t('subscriptions.notifications.openLinkError'))
     }
   }
 
+  /**
+   * Validate the form, resolve the feed URL when needed, and persist the subscription.
+   */
   const handleSave = async () => {
     // Validate URL for add mode
     if (mode === 'add' && !url.trim()) {
@@ -197,6 +232,7 @@ export function SubscriptionFormDialog({
       keywords: sanitizeCommaList(keywords),
       tags: sanitizeCommaList(tags),
       onlyDownloadLatest: onlyLatest,
+      autoDownload,
       downloadDirectory: downloadDirectory || undefined,
       namingTemplate: namingTemplate || undefined
     }
@@ -210,7 +246,7 @@ export function SubscriptionFormDialog({
         await resolveFeed(url.trim())
         formData.url = url.trim()
       } catch (error) {
-        console.error('Failed to resolve feed:', error)
+        logger.error('Failed to resolve feed:', error)
         toast.error(t('subscriptions.notifications.resolveError'))
         return
       }
@@ -275,9 +311,23 @@ export function SubscriptionFormDialog({
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-4 rounded-md border px-3 py-2">
-              <p className="text-sm">{t('subscriptions.fields.onlyLatest')}</p>
-              <Switch checked={onlyLatest} onCheckedChange={setOnlyLatest} />
+              <p className="text-sm">{t('subscriptions.fields.autoDownload')}</p>
+              <Switch
+                checked={autoDownload}
+                label=""
+                onToggle={() => setAutoDownload((current) => !current)}
+              />
             </div>
+            {autoDownload ? (
+              <div className="flex items-center justify-between gap-4 rounded-md border px-3 py-2">
+                <p className="text-sm">{t('subscriptions.fields.onlyLatest')}</p>
+                <Switch
+                  checked={onlyLatest}
+                  label=""
+                  onToggle={() => setOnlyLatest((current) => !current)}
+                />
+              </div>
+            ) : null}
           </div>
           <div
             aria-hidden={!advancedOptionsOpen}

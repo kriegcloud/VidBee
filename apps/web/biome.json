@@ -1,5 +1,6 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+	"root": false,
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -24,7 +25,12 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": {
+				"noNoninteractiveElementInteractions": "off",
+				"noStaticElementInteractions": "off",
+				"useKeyWithClickEvents": "off"
+			}
 		}
 	},
 	"javascript": {

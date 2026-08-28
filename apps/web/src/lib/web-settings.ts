@@ -1,5 +1,13 @@
 import type { DownloadType } from "@vidbee/downloader-core";
 import {
+	type FilenameStyle,
+	isFilenameStyle,
+} from "@vidbee/downloader-core/filename-style";
+import {
+	DEFAULT_SUBTITLE_LANGUAGES,
+	normalizeSubtitleLanguages,
+} from "@vidbee/downloader-core/subtitle-languages";
+import {
 	defaultLanguageCode,
 	type LanguageCode,
 	normalizeLanguageCode,
@@ -39,10 +47,15 @@ export interface WebAppSettings {
 	autoUpdate: boolean;
 	subscriptionOnlyLatestDefault: boolean;
 	enableAnalytics: boolean;
+	downloadSubtitles: boolean;
+	subtitleLanguages: string[];
 	embedSubs: boolean;
+	writeAutoSubs: boolean;
 	embedThumbnail: boolean;
 	embedMetadata: boolean;
 	embedChapters: boolean;
+	filenameStyle: FilenameStyle;
+	filenameViaVidBee: boolean;
 	shareWatermark: boolean;
 }
 
@@ -66,10 +79,15 @@ export const defaultWebSettings: WebAppSettings = {
 	autoUpdate: true,
 	subscriptionOnlyLatestDefault: true,
 	enableAnalytics: true,
+	downloadSubtitles: true,
+	subtitleLanguages: [...DEFAULT_SUBTITLE_LANGUAGES],
 	embedSubs: true,
+	writeAutoSubs: true,
 	embedThumbnail: false,
 	embedMetadata: true,
 	embedChapters: true,
+	filenameStyle: "pretty",
+	filenameViaVidBee: true,
 	shareWatermark: false,
 };
 
@@ -106,6 +124,9 @@ const toOneClickContainer = (value: unknown): OneClickContainerOption => {
 	return defaultWebSettings.oneClickContainer;
 };
 
+const toFilenameStyle = (value: unknown): FilenameStyle =>
+	isFilenameStyle(value) ? value : defaultWebSettings.filenameStyle;
+
 const toDownloadType = (value: unknown): DownloadType => {
 	if (value === "audio" || value === "video") {
 		return value;
@@ -121,6 +142,19 @@ const toNumber = (value: unknown, fallback: number): number =>
 
 const toStringValue = (value: unknown, fallback = ""): string =>
 	typeof value === "string" ? value : fallback;
+
+/**
+ * Normalize persisted subtitle language selections from local storage.
+ *
+ * @param value Untrusted local-storage value.
+ * @returns A bounded list with the interface-language default.
+ */
+const toSubtitleLanguages = (value: unknown): string[] =>
+	normalizeSubtitleLanguages(
+		Array.isArray(value)
+			? value.filter((item): item is string => typeof item === "string")
+			: undefined,
+	);
 
 const parseSettings = (raw: string | null): WebAppSettings => {
 	if (!raw) {
@@ -169,7 +203,16 @@ const parseSettings = (raw: string | null): WebAppSettings => {
 				parsed.enableAnalytics,
 				defaultWebSettings.enableAnalytics,
 			),
+			downloadSubtitles: toBoolean(
+				parsed.downloadSubtitles,
+				defaultWebSettings.downloadSubtitles,
+			),
+			subtitleLanguages: toSubtitleLanguages(parsed.subtitleLanguages),
 			embedSubs: toBoolean(parsed.embedSubs, defaultWebSettings.embedSubs),
+			writeAutoSubs: toBoolean(
+				parsed.writeAutoSubs,
+				defaultWebSettings.writeAutoSubs,
+			),
 			embedThumbnail: toBoolean(
 				parsed.embedThumbnail,
 				defaultWebSettings.embedThumbnail,
@@ -181,6 +224,11 @@ const parseSettings = (raw: string | null): WebAppSettings => {
 			embedChapters: toBoolean(
 				parsed.embedChapters,
 				defaultWebSettings.embedChapters,
+			),
+			filenameStyle: toFilenameStyle(parsed.filenameStyle),
+			filenameViaVidBee: toBoolean(
+				parsed.filenameViaVidBee,
+				defaultWebSettings.filenameViaVidBee,
 			),
 			shareWatermark: toBoolean(
 				parsed.shareWatermark,

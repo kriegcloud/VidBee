@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { constants as fsConstants } from 'node:fs'
 import { access, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
@@ -8,13 +8,12 @@ import { implement, ORPCError } from '@orpc/server'
 import type { DownloadTask } from '@vidbee/downloader-core'
 import { downloaderContract, enqueueInstagramProfileDownload } from '@vidbee/downloader-core'
 import type { Task, TaskStatus } from '@vidbee/task-queue'
-
+import { downloadDir, taskQueue } from './downloader'
 import { projectTaskForApi } from './projection'
 import {
-  apiDefaultDownloadDir as downloadDir,
+  applyApiTranscriptionConcurrency,
   instagramProfileInspector,
-  taskQueue,
-  taskQueueExecutor
+  setApiAutoTranscribe
 } from './task-queue-host'
 import { webSettingsStore } from './web-settings-store'
 import { fetchPlaylistInfo, fetchVideoInfo } from './yt-dlp-info'
@@ -25,6 +24,13 @@ const MAX_WEB_SETTINGS_FILE_BYTES = 1_000_000
 const MANAGED_SETTINGS_FILE_RETENTION_MS = 30 * 24 * 60 * 60 * 1000
 const SAFE_FILE_NAME_REGEX = /[^A-Za-z0-9._-]+/g
 type ManagedSettingsFileKind = 'cookies' | 'config'
+type SystemCommand =
+  | 'explorer.exe'
+  | 'open'
+  | 'osascript'
+  | 'powershell.exe'
+  | 'rundll32.exe'
+  | 'xdg-open'
 
 const TERMINAL_TASK_STATUSES = new Set<TaskStatus>(['completed', 'failed', 'cancelled'])
 const NON_TERMINAL_TASK_STATUSES = new Set<TaskStatus>([
@@ -42,14 +48,10 @@ const toErrorMessage = (error: unknown, fallbackMessage: string): string => {
   return fallbackMessage
 }
 
-const runProcess = (command: string, args: string[]): Promise<boolean> =>
+/** Execute an allowlisted system helper without invoking a shell. */
+const runProcess = (command: SystemCommand, args: string[]): Promise<boolean> =>
   new Promise((resolve) => {
-    const child = spawn(command, args, {
-      stdio: 'ignore',
-      windowsHide: true
-    })
-    child.on('error', () => resolve(false))
-    child.on('close', (code) => resolve(code === 0))
+    execFile(command, args, { shell: false, windowsHide: true }, (error) => resolve(error === null))
   })
 
 const pathExists = async (targetPath: string): Promise<boolean> => {
@@ -69,28 +71,44 @@ const isPathWithinBase = (basePath: string, targetPath: string): boolean => {
 }
 
 const openFileWithSystem = async (targetPath: string): Promise<boolean> => {
-  if (process.platform === 'darwin') return runProcess('open', [targetPath])
-  if (process.platform === 'win32') return runProcess('cmd', ['/c', 'start', '', targetPath])
+  if (process.platform === 'darwin') {
+    return runProcess('open', [targetPath])
+  }
+  if (process.platform === 'win32') {
+    return runProcess('rundll32.exe', ['url.dll,FileProtocolHandler', targetPath])
+  }
   return runProcess('xdg-open', [targetPath])
 }
 
 const openFileLocationWithSystem = async (targetPath: string): Promise<boolean> => {
-  if (process.platform === 'darwin') return runProcess('open', ['-R', targetPath])
-  if (process.platform === 'win32') return runProcess('explorer', [`/select,${targetPath}`])
+  if (process.platform === 'darwin') {
+    return runProcess('open', ['-R', targetPath])
+  }
+  if (process.platform === 'win32') {
+    return runProcess('explorer.exe', [`/select,${targetPath}`])
+  }
   return runProcess('xdg-open', [path.dirname(targetPath)])
 }
 
 const copyFileToClipboardWithSystem = async (targetPath: string): Promise<boolean> => {
   if (process.platform === 'darwin') {
-    const escapedPath = targetPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-    return runProcess('osascript', ['-e', `set the clipboard to (POSIX file "${escapedPath}")`])
+    return runProcess('osascript', [
+      '-e',
+      'on run argv',
+      '-e',
+      'set the clipboard to (POSIX file (item 1 of argv))',
+      '-e',
+      'end run',
+      targetPath
+    ])
   }
   if (process.platform === 'win32') {
-    const escapedPath = targetPath.replace(/'/g, "''")
-    return runProcess('powershell', [
+    return runProcess('powershell.exe', [
       '-NoProfile',
+      '-NonInteractive',
       '-Command',
-      `Set-Clipboard -Path '${escapedPath}'`
+      'Set-Clipboard -LiteralPath $args[0]',
+      targetPath
     ])
   }
   return false
@@ -133,7 +151,9 @@ const sanitizeUploadedFileName = (fileName: string, fallbackFileName: string): s
     .replace(SAFE_FILE_NAME_REGEX, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
-  if (!normalized) return fallbackFileName
+  if (!normalized) {
+    return fallbackFileName
+  }
   return normalized.slice(0, 120)
 }
 
@@ -164,10 +184,14 @@ const resolveManagedSettingsFilePath = (
   kind: ManagedSettingsFileKind
 ): string | null => {
   const trimmedPath = rawPath.trim()
-  if (!trimmedPath) return null
+  if (!trimmedPath) {
+    return null
+  }
   const resolvedPath = path.resolve(trimmedPath)
   const managedDirectory = path.join(WEB_SETTINGS_FILES_DIR, kind)
-  if (!isPathWithinBase(managedDirectory, resolvedPath)) return null
+  if (!isPathWithinBase(managedDirectory, resolvedPath)) {
+    return null
+  }
   return resolvedPath
 }
 
@@ -179,7 +203,9 @@ const pruneManagedSettingsFiles = async (
   const keepPaths = new Set<string>()
   for (const rawPath of referencedPaths) {
     const managedPath = resolveManagedSettingsFilePath(rawPath, kind)
-    if (managedPath) keepPaths.add(managedPath)
+    if (managedPath) {
+      keepPaths.add(managedPath)
+    }
   }
   let entries: { isFile: () => boolean; name: string }[] = []
   try {
@@ -189,12 +215,18 @@ const pruneManagedSettingsFiles = async (
   }
   const now = Date.now()
   for (const entry of entries) {
-    if (!entry.isFile()) continue
+    if (!entry.isFile()) {
+      continue
+    }
     const candidatePath = path.resolve(path.join(managedDirectory, entry.name))
-    if (keepPaths.has(candidatePath)) continue
+    if (keepPaths.has(candidatePath)) {
+      continue
+    }
     try {
       const candidateInfo = await stat(candidatePath)
-      if (now - candidateInfo.mtimeMs < MANAGED_SETTINGS_FILE_RETENTION_MS) continue
+      if (now - candidateInfo.mtimeMs < MANAGED_SETTINGS_FILE_RETENTION_MS) {
+        continue
+      }
       await rm(candidatePath, { force: true })
     } catch {
       // Ignore cleanup errors to keep upload and settings updates resilient.
@@ -227,7 +259,9 @@ const listTasksByStatuses = (statuses: ReadonlySet<TaskStatus>): DownloadTask[] 
   do {
     const page = taskQueue.list({ limit: 200, cursor })
     for (const t of page.tasks) {
-      if (statuses.has(t.status)) tasks.push(t)
+      if (statuses.has(t.status)) {
+        tasks.push(t)
+      }
     }
     cursor = page.nextCursor
   } while (cursor)
@@ -444,12 +478,56 @@ export const rpcRouter = os.router({
     cancel: os.downloads.cancel.handler(async ({ input }) => {
       try {
         const task = taskQueue.get(input.id)
-        if (!task) return { cancelled: false }
+        if (!task) {
+          return { cancelled: false }
+        }
         await taskQueue.cancel(input.id)
         return { cancelled: true }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
           message: toErrorMessage(error, 'Failed to cancel download.')
+        })
+      }
+    }),
+    pause: os.downloads.pause.handler(async ({ input }) => {
+      try {
+        const task = taskQueue.get(input.id)
+        if (!task) {
+          return { paused: false }
+        }
+        await taskQueue.pause(input.id)
+        return { paused: true }
+      } catch (error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: toErrorMessage(error, 'Failed to pause download.')
+        })
+      }
+    }),
+    resume: os.downloads.resume.handler(async ({ input }) => {
+      try {
+        const task = taskQueue.get(input.id)
+        if (!task) {
+          return { resumed: false }
+        }
+        await taskQueue.resume(input.id)
+        return { resumed: true }
+      } catch (error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: toErrorMessage(error, 'Failed to resume download.')
+        })
+      }
+    }),
+    retry: os.downloads.retry.handler(async ({ input }) => {
+      try {
+        const task = taskQueue.get(input.id)
+        if (!task || (task.status !== 'failed' && task.status !== 'cancelled')) {
+          return { retried: false }
+        }
+        await taskQueue.retryManual(input.id)
+        return { retried: true }
+      } catch (error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: toErrorMessage(error, 'Failed to retry download.')
         })
       }
     })
@@ -463,9 +541,13 @@ export const rpcRouter = os.router({
       let removed = 0
       for (const rawId of input.ids) {
         const id = rawId.trim()
-        if (!id) continue
+        if (!id) {
+          continue
+        }
         const task = taskQueue.get(id)
-        if (!task) continue
+        if (!task) {
+          continue
+        }
         try {
           await taskQueue.removeFromHistory(id)
           removed += 1
@@ -477,7 +559,9 @@ export const rpcRouter = os.router({
     }),
     removeByPlaylist: os.history.removeByPlaylist.handler(async ({ input }) => {
       const playlistId = input.playlistId.trim()
-      if (!playlistId) return { removed: 0 }
+      if (!playlistId) {
+        return { removed: 0 }
+      }
       let removed = 0
       let cursor: string | null = null
       do {
@@ -522,7 +606,9 @@ export const rpcRouter = os.router({
       try {
         const resolvedPath = path.resolve(input.path)
         const exists = await pathExists(resolvedPath)
-        if (!exists) return { success: false }
+        if (!exists) {
+          return { success: false }
+        }
         return { success: await openFileWithSystem(resolvedPath) }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
@@ -534,7 +620,9 @@ export const rpcRouter = os.router({
       try {
         const resolvedPath = path.resolve(input.path)
         const exists = await pathExists(resolvedPath)
-        if (!exists) return { success: false }
+        if (!exists) {
+          return { success: false }
+        }
         return { success: await openFileLocationWithSystem(resolvedPath) }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
@@ -546,7 +634,9 @@ export const rpcRouter = os.router({
       try {
         const resolvedPath = path.resolve(input.path)
         const exists = await pathExists(resolvedPath)
-        if (!exists) return { success: false }
+        if (!exists) {
+          return { success: false }
+        }
         return { success: await copyFileToClipboardWithSystem(resolvedPath) }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
@@ -570,7 +660,9 @@ export const rpcRouter = os.router({
           })
         }
         const exists = await pathExists(resolvedPath)
-        if (!exists) return { success: false }
+        if (!exists) {
+          return { success: false }
+        }
         await rm(resolvedPath)
         return { success: true }
       } catch (error) {
@@ -606,6 +698,8 @@ export const rpcRouter = os.router({
     set: os.settings.set.handler(async ({ input }) => {
       try {
         const settings = await webSettingsStore.set(input.settings)
+        setApiAutoTranscribe(settings.autoTranscribeAfterDownload === true)
+        applyApiTranscriptionConcurrency(settings.maxConcurrentTranscriptions)
         return { settings }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {
@@ -615,8 +709,3 @@ export const rpcRouter = os.router({
     })
   }
 })
-
-// `taskQueueExecutor` is intentionally re-exported from this module so the
-// integration test (packages/task-queue/__integration__/three-host-equivalence)
-// can introspect host wiring without reaching into apps/api directly.
-export { taskQueueExecutor }

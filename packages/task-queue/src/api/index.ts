@@ -15,17 +15,28 @@ import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, statSync } from 'node:fs'
 
 import { defaultMaxAttempts, virtualError } from '../classifier'
-import { EventBus, type TaskQueueEvent, type TaskQueueListener } from '../events'
-import { IllegalTransitionError, transition as fsmTransition, type TransitionContext } from '../fsm'
+import {
+  EventBus,
+  type TaskQueueEvent,
+  type TaskQueueListener
+} from '../events'
+import {
+  IllegalTransitionError,
+  transition as fsmTransition,
+  type TransitionContext
+} from '../fsm'
+import { isOutputComplete } from '../complete'
 import type { Executor, ExecutorRun } from '../executor'
 import type { PersistAdapter } from '../persist'
 import { ProcessRegistry, Watchdog, readPidStartTime } from '../process'
 import { RetryScheduler, Scheduler, computeBackoffMs } from '../scheduler'
 import { TaskStore } from '../store'
+import { logCaughtError } from '@vidbee/logger'
 import {
   EMPTY_PROGRESS,
   PRIORITY_USER,
   TERMINAL_STATUSES,
+  TRANSCRIPTION_GROUP_KEY,
   type ClassifiedError,
   type Task,
   type TaskInput,
@@ -60,6 +71,27 @@ export interface TaskQueueAPIOptions {
   rng?: () => number
   /** Process kill function for ProcessRegistry. Test seam. */
   killProcess?: (pid: number, signal: 'SIGTERM' | 'SIGKILL') => void
+  /**
+   * How often to look for queued work with no live runner. `0` disables the
+   * timer (tests). Default 15s.
+   */
+  idleQueueKickMs?: number
+  /**
+   * Running/processing tasks younger than this are not treated as zombies.
+   * Default 8s.
+   */
+  zombieRunningMs?: number
+}
+
+export interface ImportCompletedRequest {
+  input: TaskInput
+  output: TaskOutput
+  /**
+   * Optional caller-supplied identifier. Idempotent: re-importing an existing
+   * id returns `{ id, created: false }` without rewriting the task.
+   */
+  id?: string
+  groupKey?: string
 }
 
 export interface AddTaskRequest {
@@ -111,7 +143,17 @@ export class TaskQueueAPI {
   private readonly active = new Map<string, ActiveRun>()
   private readonly progressLastWrite = new Map<string, number>()
   private readonly progressDirty = new Map<string, TaskProgress>()
+  /** Running tasks whose current cancel was requested as pause, not user-cancel. */
+  private readonly pendingPause = new Map<string, string>()
+  /** Running tasks whose user-cancel should win over an in-flight pause. */
+  private readonly pendingCancel = new Set<string>()
   private started = false
+  private reconcileBusy = false
+  private idleKickTimer: unknown = null
+  private readonly setTimer: NonNullable<TaskQueueAPIOptions['setTimer']>
+  private readonly clearTimer: NonNullable<TaskQueueAPIOptions['clearTimer']>
+  private readonly idleQueueKickMs: number
+  private readonly zombieRunningMs: number
 
   constructor(opts: TaskQueueAPIOptions) {
     this.persist = opts.persist
@@ -127,6 +169,16 @@ export class TaskQueueAPI {
         }
       })
     this.rng = opts.rng ?? Math.random
+    this.setTimer =
+      opts.setTimer ??
+      ((fn, ms) => {
+        const handle = setTimeout(fn, ms)
+        handle.unref?.()
+        return handle
+      })
+    this.clearTimer = opts.clearTimer ?? ((handle) => clearTimeout(handle as never))
+    this.idleQueueKickMs = opts.idleQueueKickMs ?? 15_000
+    this.zombieRunningMs = opts.zombieRunningMs ?? 8_000
 
     this.scheduler = new Scheduler({
       maxConcurrency: opts.maxConcurrency ?? 4,
@@ -165,8 +217,9 @@ export class TaskQueueAPI {
    *  1. load tasks from persistence
    *  2. reconcile process_journal: kill orphans, journal `killed`
    *  3. running/processing → paused('crash-recovery'); preserve progress
-   *  4. queued → re-enqueue
-   *  5. retry-scheduled → re-arm RetryScheduler with original nextRetryAt
+   *  4. crash-recovery paused (including those just demoted) → resume to queued
+   *  5. queued → re-enqueue
+   *  6. retry-scheduled → re-arm RetryScheduler with original nextRetryAt
    */
   async start(): Promise<void> {
     if (this.started) return
@@ -195,16 +248,101 @@ export class TaskQueueAPI {
           trigger: 'crash-recovery',
           reason: 'crash-recovery'
         })
+        await this.resume(t.id)
+      } else if (t.status === 'paused' && t.statusReason === 'crash-recovery') {
+        await this.resume(t.id)
       } else if (t.status === 'queued') {
         await this.scheduler.enqueue(t.id, t.priority)
       } else if (t.status === 'retry-scheduled' && t.nextRetryAt != null) {
         this.retry.enqueue(t.id, t.nextRetryAt)
       }
     }
+    await this.reconcileQueue()
+    this.armIdleKick()
+  }
+
+  /**
+   * Recover stalled groups: resume crash-recovery, free ghost slots, and
+   * dispatch queued work when nothing is actually running.
+   */
+  async reconcileQueue(): Promise<void> {
+    if (!this.started || this.reconcileBusy) {
+      return
+    }
+    this.reconcileBusy = true
+    try {
+      const now = this.clock()
+      for (const task of this.store.list({ limit: 1000, status: 'paused' }).tasks) {
+        if (task.statusReason === 'crash-recovery') {
+          await this.resume(task.id)
+        }
+      }
+      for (const status of ['running', 'processing'] as const) {
+        for (const task of this.store.list({ limit: 1000, status }).tasks) {
+          if (this.active.has(task.id)) {
+            continue
+          }
+          if (now - task.enteredStatusAt < this.zombieRunningMs) {
+            continue
+          }
+          await this.applyTransition(task.id, 'paused', {
+            reason: 'crash-recovery',
+            trigger: 'crash-recovery'
+          })
+          await this.resume(task.id)
+        }
+      }
+      await this.scheduler.sweepDeadSlots((id) => this.isLiveRun(id, now))
+      for (const task of this.store.list({ limit: 1000, status: 'queued' }).tasks) {
+        await this.scheduler.ensureEnqueued(task.id, task.priority)
+      }
+    } finally {
+      this.reconcileBusy = false
+    }
+  }
+
+  /**
+   * Return whether a task still owns a live executor run or is within grace.
+   *
+   * @param id Task id.
+   * @param now Clock used for the zombie grace window.
+   */
+  private isLiveRun(id: string, now: number): boolean {
+    const task = this.store.get(id)
+    if (!task || (task.status !== 'running' && task.status !== 'processing')) {
+      return false
+    }
+    if (this.active.has(id)) {
+      return true
+    }
+    return now - task.enteredStatusAt < this.zombieRunningMs
+  }
+
+  /**
+   * Periodically re-check for queued work with no live runner.
+   */
+  private armIdleKick(): void {
+    if (this.idleQueueKickMs <= 0) {
+      return
+    }
+    const tick = (): void => {
+      this.idleKickTimer = this.setTimer(() => {
+        void this.reconcileQueue().finally(() => {
+          if (this.started) {
+            tick()
+          }
+        })
+      }, this.idleQueueKickMs)
+    }
+    tick()
   }
 
   async stop(): Promise<void> {
     if (!this.started) return
+    if (this.idleKickTimer != null) {
+      this.clearTimer(this.idleKickTimer)
+      this.idleKickTimer = null
+    }
     this.retry.stop()
     // Cancel all active runs; let the executor reap.
     for (const a of [...this.active.values()]) {
@@ -272,6 +410,60 @@ export class TaskQueueAPI {
     return { id }
   }
 
+  /**
+   * Insert an already-complete media task (local file import) without
+   * scheduling an executor run.
+   */
+  async importCompleted(req: ImportCompletedRequest): Promise<{ id: string; created: boolean }> {
+    if (req.id) {
+      const existing = this.store.get(req.id)
+      if (existing) {
+        return { id: existing.id, created: false }
+      }
+    }
+    const now = this.clock()
+    const id = req.id ?? randomUUID()
+    const size = req.output.size
+    const task: Task = {
+      id,
+      kind: req.input.kind,
+      parentId: null,
+      input: req.input,
+      priority: PRIORITY_USER,
+      groupKey: req.groupKey ?? defaultGroupKey(req.input),
+      status: 'completed',
+      prevStatus: null,
+      statusReason: 'local-import',
+      enteredStatusAt: now,
+      attempt: 0,
+      maxAttempts: 0,
+      nextRetryAt: null,
+      progress: {
+        percent: 1,
+        bytesDownloaded: size,
+        bytesTotal: size,
+        speedBps: null,
+        etaMs: null,
+        ticks: 1
+      },
+      output: req.output,
+      lastError: null,
+      pid: null,
+      pidStartedAt: null,
+      createdAt: now,
+      updatedAt: now
+    }
+    this.store.insert(task)
+    await this.persist.insertTask(task)
+    this.bus.emit({
+      type: 'snapshot-changed',
+      taskId: id,
+      task,
+      at: now
+    })
+    return { id, created: true }
+  }
+
   get(id: string): Readonly<Task> | undefined {
     return this.store.get(id)
   }
@@ -296,13 +488,27 @@ export class TaskQueueAPI {
     return combined.length > 0 ? combined : null
   }
 
+  /**
+   * Persist cancellation before stopping an active executor so a restart cannot resume it.
+   *
+   * @param id Task id.
+   * @param reason Cancellation reason stored on the FSM transition.
+   */
   async cancel(id: string, reason = 'user'): Promise<void> {
     const t = this.store.get(id)
-    if (!t) return
-    if (TERMINAL_STATUSES.has(t.status)) return
+    if (!t) {
+      return
+    }
+    this.pendingCancel.add(id)
+    this.pendingPause.delete(id)
+    if (TERMINAL_STATUSES.has(t.status)) {
+      this.pendingCancel.delete(id)
+      return
+    }
     if (t.status === 'queued' || t.status === 'paused') {
       await this.scheduler.dequeue(id)
       this.retry.remove(id)
+      this.pendingCancel.delete(id)
       await this.applyTransition(id, 'cancelled', {
         trigger: 'cancel',
         reason
@@ -311,28 +517,44 @@ export class TaskQueueAPI {
     }
     if (t.status === 'retry-scheduled') {
       this.retry.remove(id)
+      this.pendingCancel.delete(id)
       await this.applyTransition(id, 'cancelled', {
         trigger: 'cancel',
         reason
       })
       return
     }
-    // running/processing — issue cancel through the executor; the finish
-    // event will drive the FSM transition. ProcessRegistry handles the
-    // SIGTERM→SIGKILL grace period.
+    // Record user intent before signalling the child. If the app exits before
+    // onFinish arrives, startup must still see a terminal task instead of
+    // treating it as crash-recovery work and resuming the download.
+    await this.applyTransition(id, 'cancelled', {
+      trigger: 'cancel',
+      reason
+    })
+
     const active = this.active.get(id)
-    if (active) {
-      try {
-        await active.run.cancel()
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[task-queue] cancel run threw', err)
-      }
+    if (!active) {
+      this.pendingCancel.delete(id)
+      await this.scheduler.releaseSlot(id)
+      return
     }
-    // The orchestrator transitions to `cancelled` from the onFinish callback
-    // (executor reports `result.type === 'cancelled'`).
+
+    try {
+      await active.run.cancel()
+    } catch (err) {
+      logCaughtError('task_queue_cancel_threw', err)
+    } finally {
+      this.pendingCancel.delete(id)
+    }
   }
 
+  /**
+   * Pause a queued, retrying, or running task. Running work is stopped via
+   * the executor pause path (SIGTERM); resume re-queues and respawns.
+   *
+   * @param id Task id.
+   * @param reason Pause reason stored on the FSM transition.
+   */
   async pause(id: string, reason = 'user'): Promise<void> {
     const t = this.store.get(id)
     if (!t) return
@@ -349,11 +571,12 @@ export class TaskQueueAPI {
     if (t.status === 'running' || t.status === 'processing') {
       const active = this.active.get(id)
       if (active) {
+        this.pendingPause.set(id, reason)
         try {
           await active.run.pause()
         } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('[task-queue] pause run threw', err)
+          this.pendingPause.delete(id)
+          logCaughtError('task_queue_pause_threw', err)
         }
       }
     }
@@ -390,8 +613,36 @@ export class TaskQueueAPI {
     if (!TERMINAL_STATUSES.has(t.status)) {
       throw new Error(`removeFromHistory: ${id} is not in a terminal state`)
     }
+    const descendants = this.collectDescendantIds(id)
+    for (const childId of descendants) {
+      const child = this.store.get(childId)
+      if (child && !TERMINAL_STATUSES.has(child.status)) {
+        try {
+          await this.cancel(childId, 'user')
+        } catch {
+          // Persist cascade still removes the child even if cancel is illegal.
+        }
+      }
+      this.store.remove(childId)
+    }
     this.store.remove(id)
     await this.persist.deleteTask(id)
+  }
+
+  /**
+   * Return descendant task ids, deepest-first, so parent_id FKs can be cleared.
+   */
+  private collectDescendantIds(id: string): string[] {
+    const out: string[] = []
+    const walk = (parentId: string): void => {
+      const { tasks } = this.store.list({ parentId, limit: 1000, cursor: null })
+      for (const child of tasks) {
+        walk(child.id)
+        out.push(child.id)
+      }
+    }
+    walk(id)
+    return out
   }
 
   stats(): TaskQueueStats {
@@ -472,6 +723,10 @@ export class TaskQueueAPI {
             this.watchdog.arm(id, 'running')
           },
           onProgress: (e) => {
+            const current = this.store.get(id)
+            if (!current || TERMINAL_STATUSES.has(current.status)) {
+              return
+            }
             this.applyProgress(id, e.progress)
             this.watchdog.bump(id)
             if (e.enteredProcessing) {
@@ -516,17 +771,14 @@ export class TaskQueueAPI {
   private async demoteOne(id: string): Promise<void> {
     const a = this.active.get(id)
     if (a) {
+      this.pendingPause.set(id, 'demote')
       try {
         await a.run.pause()
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[task-queue] demote pause threw', err)
+        this.pendingPause.delete(id)
+        logCaughtError('task_queue_demote_pause_threw', err)
       }
     }
-    // applyTransition(running -> paused) happens from the executor's
-    // onFinish callback when the child reports cancelled/paused. If it
-    // doesn't fire (executor is stuck), the watchdog will eventually
-    // surface it.
   }
 
   private async handleFinish(
@@ -536,16 +788,48 @@ export class TaskQueueAPI {
   ): Promise<void> {
     this.watchdog.disarm(id)
     this.active.delete(id)
+    try {
+      await this.finishAttempt(id, attemptId, e)
+    } catch (err) {
+      logCaughtError('task_queue_handle_finish_threw', err)
+    } finally {
+      await this.scheduler.releaseSlot(id)
+    }
+  }
 
+  /**
+   * Persist the attempt outcome and apply the matching terminal transition.
+   *
+   * @param id Task id.
+   * @param attemptId Attempt row id.
+   * @param e Executor finish event.
+   */
+  private async finishAttempt(
+    id: string,
+    attemptId: string,
+    e: import('../executor').ExecutorFinishEvent
+  ): Promise<void> {
+    const pauseReason = this.pendingPause.get(id)
+    this.pendingPause.delete(id)
     if (e.result.type === 'success') {
       const out = e.result.output
-      const multiFileGuardOk =
-        out.outputDirectory !== undefined &&
-        out.fileCount !== undefined &&
-        out.fileCount > 0 &&
-        this.filePresent(out.outputDirectory)
-      const guardOk =
-        multiFileGuardOk || (out.filePath ? this.filePresent(out.filePath) && out.size > 0 : false)
+      const current = this.store.get(id)
+      if (current?.status === 'cancelled') {
+        await this.persist.closeAttempt({
+          taskId: id,
+          attemptId,
+          endedAt: e.closedAt,
+          exitCode: 0,
+          errorCategory: null,
+          stdoutTail: e.stdoutTail,
+          stderrTail: e.stderrTail
+        })
+        await this.processes.recordClose(id, attemptId, 0, null)
+        return
+      }
+      const guardOk = isOutputComplete(current?.kind ?? 'video', out, {
+        filePresent: this.filePresent
+      })
       if (guardOk) {
         await this.persist.closeAttempt({
           taskId: id,
@@ -557,13 +841,19 @@ export class TaskQueueAPI {
           stderrTail: e.stderrTail
         })
         await this.processes.recordClose(id, attemptId, 0, null)
+        if (this.store.get(id)?.status === 'cancelled') {
+          return
+        }
         await this.applyTransition(id, 'completed', {
           trigger: 'finalize-success',
           reason: null,
           output: out
         })
       } else {
-        const err = virtualError('output-missing', `output ${out.filePath} missing or empty`)
+        const err = virtualError(
+          'output-missing',
+          `output ${out.filePath} missing or empty`
+        )
         await this.persist.closeAttempt({
           taskId: id,
           attemptId,
@@ -574,13 +864,15 @@ export class TaskQueueAPI {
           stderrTail: e.stderrTail
         })
         await this.processes.recordClose(id, attemptId, null, null)
+        if (this.store.get(id)?.status === 'cancelled') {
+          return
+        }
         await this.applyTransition(id, 'failed', {
           trigger: 'finalize-error',
           reason: 'output-missing',
           error: err
         })
       }
-      await this.scheduler.releaseSlot(id)
       return
     }
 
@@ -599,14 +891,22 @@ export class TaskQueueAPI {
         stderrTail: e.stderrTail
       })
       await this.processes.recordClose(id, attemptId, null, 'SIGTERM')
+      const cancelRequested = this.pendingCancel.has(id)
+      this.pendingCancel.delete(id)
       const t = this.store.get(id)
       if (t && (t.status === 'running' || t.status === 'processing')) {
-        await this.applyTransition(id, 'cancelled', {
-          trigger: 'cancel',
-          reason: 'user'
-        })
+        if (!cancelRequested && pauseReason !== undefined) {
+          await this.applyTransition(id, 'paused', {
+            trigger: 'pause',
+            reason: pauseReason
+          })
+        } else {
+          await this.applyTransition(id, 'cancelled', {
+            trigger: 'cancel',
+            reason: 'user'
+          })
+        }
       }
-      await this.scheduler.releaseSlot(id)
       return
     }
 
@@ -623,6 +923,9 @@ export class TaskQueueAPI {
       stderrTail: e.stderrTail
     })
     await this.processes.recordClose(id, attemptId, exitCode, null)
+    if (this.store.get(id)?.status === 'cancelled') {
+      return
+    }
     this.bus.emit({
       type: 'error-classified',
       taskId: id,
@@ -632,10 +935,17 @@ export class TaskQueueAPI {
     })
 
     const t = this.store.get(id)
-    const maxAttempts = Math.max(t?.maxAttempts ?? 0, defaultMaxAttempts(err.category))
+    const maxAttempts = Math.max(
+      t?.maxAttempts ?? 0,
+      defaultMaxAttempts(err.category)
+    )
     const willRetry = err.retryable && (t?.attempt ?? 0) < maxAttempts
     if (willRetry) {
-      const wait = computeBackoffMs(t?.attempt ?? 0, err.suggestedRetryAfterMs, this.rng)
+      const wait = computeBackoffMs(
+        t?.attempt ?? 0,
+        err.suggestedRetryAfterMs,
+        this.rng
+      )
       const nextRetryAt = this.clock() + wait
       await this.applyTransition(id, 'retry-scheduled', {
         trigger: 'finalize-error',
@@ -651,7 +961,6 @@ export class TaskQueueAPI {
         error: err
       })
     }
-    await this.scheduler.releaseSlot(id)
   }
 
   private async handleRetryDue(id: string): Promise<void> {
@@ -681,7 +990,11 @@ export class TaskQueueAPI {
       if (!t) return
       const max = Math.max(t.maxAttempts, defaultMaxAttempts('stalled'))
       if (t.attempt < max) {
-        const wait = computeBackoffMs(t.attempt, err.suggestedRetryAfterMs, this.rng)
+        const wait = computeBackoffMs(
+          t.attempt,
+          err.suggestedRetryAfterMs,
+          this.rng
+        )
         const nextRetryAt = this.clock() + wait
         await this.applyTransition(id, 'retry-scheduled', {
           trigger: 'finalize-error',
@@ -701,7 +1014,11 @@ export class TaskQueueAPI {
     })()
   }
 
-  private async applyTransition(id: string, to: TaskStatus, ctx: TransitionContext): Promise<Task> {
+  private async applyTransition(
+    id: string,
+    to: TaskStatus,
+    ctx: TransitionContext
+  ): Promise<Task> {
     const cur = this.store.get(id)
     if (!cur) throw new Error(`applyTransition: missing task ${id}`)
     let next: Task
@@ -792,6 +1109,7 @@ export class TaskQueueAPI {
 }
 
 function defaultGroupKey(input: TaskInput): string {
+  if (input.kind === 'transcription') return TRANSCRIPTION_GROUP_KEY
   if (input.subscriptionId) return `sub:${input.subscriptionId}`
   try {
     return new URL(input.url).host || 'unknown'

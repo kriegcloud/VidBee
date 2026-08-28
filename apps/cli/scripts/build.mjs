@@ -13,6 +13,7 @@ import { build } from 'esbuild'
 import { mkdirSync, chmodSync, rmSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from '@vidbee/logger/script'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -52,4 +53,4 @@ const fs = await import('node:fs/promises')
 await fs.writeFile(npmBinPath, npmBin, 'utf-8')
 chmodSync(npmBinPath, 0o755)
 
-console.log('built', dist)
+log.log('built', dist)

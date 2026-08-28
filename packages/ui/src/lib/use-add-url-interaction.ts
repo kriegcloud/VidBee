@@ -32,6 +32,7 @@ interface UseAddUrlInteractionResult {
   handleOpenAddUrlPopover: () => Promise<void>
   setAddUrlPopoverOpen: (open: boolean) => void
   setAddUrlValue: (value: string) => void
+  submitUrl: (rawUrl: string) => Promise<void>
 }
 
 export const useAddUrlInteraction = ({
@@ -69,62 +70,71 @@ export const useAddUrlInteraction = ({
     }
   }, [])
 
+  /**
+   * Route a confirmed URL into one-click download or the parse dialog.
+   */
+  const submitUrl = useCallback(
+    async (rawUrl: string) => {
+      const trimmedUrl = rawUrl.trim()
+      if (!trimmedUrl) {
+        onEmptyUrl()
+        return
+      }
+      if (!isLikelyUrl(trimmedUrl)) {
+        onInvalidUrl()
+        return
+      }
+
+      setAddUrlPopoverOpen(false)
+
+      if (isInstagramProfileUrl(trimmedUrl) || activeTab === 'profile') {
+        if (isProfileBusy) {
+          return
+        }
+        await onParseProfile(trimmedUrl)
+        return
+      }
+
+      if (isPlaylistLikeUrl(trimmedUrl)) {
+        if (isPlaylistBusy) {
+          return
+        }
+        await onParsePlaylist(trimmedUrl)
+        return
+      }
+
+      if (activeTab === 'playlist') {
+        if (isPlaylistBusy) {
+          return
+        }
+        await onParsePlaylist(trimmedUrl)
+        return
+      }
+
+      if (isOneClickDownloadEnabled) {
+        await onOneClickDownload(trimmedUrl)
+        return
+      }
+
+      await onParseSingle(trimmedUrl)
+    },
+    [
+      activeTab,
+      isOneClickDownloadEnabled,
+      isPlaylistBusy,
+      isProfileBusy,
+      onEmptyUrl,
+      onInvalidUrl,
+      onOneClickDownload,
+      onParseProfile,
+      onParsePlaylist,
+      onParseSingle
+    ]
+  )
+
   const handleConfirmAddUrl = useCallback(async () => {
-    const trimmedUrl = addUrlValue.trim()
-    if (!trimmedUrl) {
-      onEmptyUrl()
-      return
-    }
-    if (!isLikelyUrl(trimmedUrl)) {
-      onInvalidUrl()
-      return
-    }
-
-    setAddUrlPopoverOpen(false)
-
-    if (isInstagramProfileUrl(trimmedUrl) || activeTab === 'profile') {
-      if (isProfileBusy) {
-        return
-      }
-      await onParseProfile(trimmedUrl)
-      return
-    }
-
-    if (isPlaylistLikeUrl(trimmedUrl)) {
-      if (isPlaylistBusy) {
-        return
-      }
-      await onParsePlaylist(trimmedUrl)
-      return
-    }
-
-    if (activeTab === 'playlist') {
-      if (isPlaylistBusy) {
-        return
-      }
-      await onParsePlaylist(trimmedUrl)
-      return
-    }
-
-    if (isOneClickDownloadEnabled) {
-      await onOneClickDownload(trimmedUrl)
-      return
-    }
-
-    await onParseSingle(trimmedUrl)
-  }, [
-    activeTab,
-    addUrlValue,
-    isOneClickDownloadEnabled,
-    isPlaylistBusy,
-    isProfileBusy,
-    onEmptyUrl,
-    onInvalidUrl,
-    onOneClickDownload,
-    onParseProfile,
-    onParsePlaylist,
-    onParseSingle
-  ])
+    await submitUrl(addUrlValue)
+  }, [addUrlValue, submitUrl])
 
   return {
     addUrlPopoverOpen,
@@ -134,6 +144,7 @@ export const useAddUrlInteraction = ({
     handleConfirmAddUrl,
     handleOpenAddUrlPopover,
     setAddUrlPopoverOpen,
-    setAddUrlValue
+    setAddUrlValue,
+    submitUrl
   }
 }

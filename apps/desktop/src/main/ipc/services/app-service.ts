@@ -1,7 +1,9 @@
 import os from 'node:os'
+import type { YtDlpKernelStatus } from '@shared/types'
 import { app, BrowserWindow, dialog } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import { ffmpegManager } from '../../lib/ffmpeg-manager'
+import { getYtDlpKernelService } from '../../lib/ytdlp-kernel-host'
 import { ytdlpManager } from '../../lib/ytdlp-manager'
 import { scopedLoggers } from '../../utils/logger'
 import { buildSiteIconUrl } from './site-icon-url'
@@ -25,6 +27,24 @@ class AppService extends IpcService {
   ): Promise<{ ytdlpReady: boolean; ffmpegReady: boolean }> {
     const ffmpegReady = await ffmpegManager.isReady()
     return { ytdlpReady: ytdlpManager.isReady(), ffmpegReady }
+  }
+
+  /**
+   * Return the current yt-dlp and Deno kernel status.
+   */
+  @IpcMethod()
+  getYtDlpKernelStatus(_context: IpcContext): YtDlpKernelStatus {
+    return getYtDlpKernelService().getStatus()
+  }
+
+  /**
+   * Retry local kernel preparation after a fatal startup failure.
+   */
+  @IpcMethod()
+  async retryYtDlpKernelPreparation(_context: IpcContext): Promise<YtDlpKernelStatus> {
+    const service = getYtDlpKernelService()
+    await service.prepare()
+    return service.getStatus()
   }
 
   @IpcMethod()

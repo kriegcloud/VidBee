@@ -60,13 +60,36 @@ export interface SqlitePersistOptions {
   db: SqliteLikeDatabase
   /** Override journal-aging window. Default 30 days. */
   journalAgeMs?: number
+  /**
+   * When false, `close()` does not close the underlying connection. Hosts
+   * that share `vidbee.db` with other services must pass false.
+   */
+  ownsConnection?: boolean
 }
 
 const DEFAULT_JOURNAL_AGE_MS = 30 * 24 * 60 * 60 * 1000
 
+/**
+ * Return descendant task ids, deepest-first, so `parent_id` FKs can be
+ * deleted before the parent row.
+ */
+const collectDescendantIds = (selectChildIds: SqliteLikeStatement, rootId: string): string[] => {
+  const out: string[] = []
+  const walk = (id: string): void => {
+    const rows = selectChildIds.all(id) as Array<{ id: string }>
+    for (const row of rows) {
+      walk(row.id)
+      out.push(row.id)
+    }
+  }
+  walk(rootId)
+  return out
+}
+
 export class SqlitePersistAdapter implements PersistAdapter {
   private readonly db: SqliteLikeDatabase
   private readonly journalAgeMs: number
+  private readonly ownsConnection: boolean
 
   // Prepared statements (lazy on first use to allow construction before
   // migrations have run in some test setups).
@@ -75,6 +98,7 @@ export class SqlitePersistAdapter implements PersistAdapter {
   constructor(opts: SqlitePersistOptions) {
     this.db = opts.db
     this.journalAgeMs = opts.journalAgeMs ?? DEFAULT_JOURNAL_AGE_MS
+    this.ownsConnection = opts.ownsConnection ?? true
     this.applyPragmas()
   }
 
@@ -103,6 +127,10 @@ export class SqlitePersistAdapter implements PersistAdapter {
   async deleteTask(taskId: string): Promise<void> {
     this.ensureStmts()
     const tx = this.db.transaction((id: string) => {
+      for (const childId of collectDescendantIds(this.stmts.selectChildIds, id)) {
+        this.stmts.deleteAttempts.run(childId)
+        this.stmts.deleteTask.run(childId)
+      }
       this.stmts.deleteAttempts.run(id)
       this.stmts.deleteTask.run(id)
     })
@@ -214,6 +242,9 @@ export class SqlitePersistAdapter implements PersistAdapter {
   }
 
   close(): void {
+    if (!this.ownsConnection) {
+      return
+    }
     try {
       this.db.close()
     } catch {
@@ -239,6 +270,7 @@ export class SqlitePersistAdapter implements PersistAdapter {
       upsertProgress: this.db.prepare(SQL_UPSERT_PROGRESS),
       deleteTask: this.db.prepare('DELETE FROM tasks WHERE id = ?'),
       deleteAttempts: this.db.prepare('DELETE FROM attempts WHERE task_id = ?'),
+      selectChildIds: this.db.prepare('SELECT id FROM tasks WHERE parent_id = ?'),
       insertAttempt: this.db.prepare(SQL_INSERT_ATTEMPT),
       closeAttempt: this.db.prepare(SQL_CLOSE_ATTEMPT),
       appendJournal: this.db.prepare(SQL_APPEND_JOURNAL),
@@ -284,6 +316,7 @@ interface Stmts {
   upsertProgress: SqliteLikeStatement
   deleteTask: SqliteLikeStatement
   deleteAttempts: SqliteLikeStatement
+  selectChildIds: SqliteLikeStatement
   insertAttempt: SqliteLikeStatement
   closeAttempt: SqliteLikeStatement
   appendJournal: SqliteLikeStatement

@@ -13,7 +13,7 @@
  *
  * // Event listening
  * const unsubscribe = ipcEvents.on('download:started', (id: string) => {
- *   console.log('Download started:', id)
+ *   logger.info('Download started:', id)
  * })
  * ipcEvents.removeListener('download:started', unsubscribe)
  */
@@ -38,7 +38,11 @@ export const ipcEvents = {
   },
   send: (channel: string, ...args: unknown[]) => {
     window.api.send(channel, ...args)
-  }
+  },
+  /**
+   * Resolve a dropped or pasted File to a local filesystem path.
+   */
+  getPathForFile: (file: File): string | null => window.api.getPathForFile?.(file) ?? null
 }
 
 // Export types for use in other files

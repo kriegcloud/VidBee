@@ -3,18 +3,12 @@
  * these directly so all three hosts (desktop / api / cli) agree byte-for-byte
  * on the input/output shapes.
  *
- * Keep these in lockstep with `./types.ts`. The package-level test
- * `test/contract.test.ts` enforces compatibility.
+ * Keep these in lockstep with `./types.ts`.
  */
 import { z } from 'zod'
 
 export const SubscriptionPlatformSchema = z.enum(['youtube', 'bilibili', 'custom'])
-export const SubscriptionStatusSchema = z.enum([
-  'idle',
-  'checking',
-  'up-to-date',
-  'failed'
-])
+export const SubscriptionStatusSchema = z.enum(['idle', 'checking', 'up-to-date', 'failed'])
 export const LeaderKindSchema = z.enum(['desktop', 'api'])
 
 export const ResolvedFeedSchema = z.object({
@@ -32,6 +26,7 @@ export const SubscriptionRuleSchema = z.object({
   keywords: z.array(z.string()),
   tags: z.array(z.string()),
   onlyDownloadLatest: z.boolean(),
+  autoDownload: z.boolean(),
   enabled: z.boolean(),
   coverUrl: z.string().optional(),
   latestVideoTitle: z.string().optional(),
@@ -68,6 +63,7 @@ export const SubscriptionCreateInputSchema = z.object({
   keywords: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   onlyDownloadLatest: z.boolean().optional(),
+  autoDownload: z.boolean().optional(),
   downloadDirectory: z.string().optional(),
   namingTemplate: z.string().optional(),
   enabled: z.boolean().optional()
@@ -81,6 +77,7 @@ export const SubscriptionUpdateInputSchema = z.object({
   keywords: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   onlyDownloadLatest: z.boolean().optional(),
+  autoDownload: z.boolean().optional(),
   enabled: z.boolean().optional(),
   downloadDirectory: z.string().optional(),
   namingTemplate: z.string().optional()

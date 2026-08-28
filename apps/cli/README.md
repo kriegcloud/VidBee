@@ -63,7 +63,7 @@ The CLI talks to a `taskQueueContract` host. There are three transports, all wir
 
 - **Desktop loopback** (default when a Desktop install is detected): reads the per-user automation descriptor (`~/Library/Application Support/VidBee/automation.json` on macOS, `${XDG_CONFIG_HOME:-~/.config}/VidBee/automation.json` on Linux, `%APPDATA%\VidBee\automation.json` on Windows), handshakes for a 1h bearer token, and POSTs JSON to `http://127.0.0.1:<port>/automation/v1/*`.
 - **Remote API** (`--vidbee-api <url>`): same wire format against any VidBee Web/API host. Plain HTTP is rejected unless the host is loopback or RFC1918 private. HTTPS is required everywhere else.
-- **In-process** (`--vidbee-local`): instantiates `TaskQueueAPI` + `YtDlpExecutor` directly. No Desktop, no API server, no descriptor. Used for CI, Docker images, and the three-host equivalence test.
+- **In-process** (`--vidbee-local`): instantiates `TaskQueueAPI` + `YtDlpExecutor` directly. No Desktop, no API server, no descriptor. Used for CI and Docker images.
 
 If the Desktop descriptor is missing or its PID is stale, the CLI tries to launch Desktop in background mode. Pass `--vidbee-no-autostart` to opt out and exit `3` instead. On a host with no Desktop installed, use `--vidbee-api` or `--vidbee-local`.
 
@@ -193,9 +193,7 @@ CLI semver is **independent of VidBee Desktop**. The CLI starts at `0.1.0`; Desk
 To cut a release:
 
 1. Update `apps/cli/package.json` `version` and add a `CHANGELOG.md` entry.
-2. Push a `cli-vX.Y.Z` tag. The [`cli-publish.yml`](https://github.com/nexmoe/vidbee/blob/main/.github/workflows/cli-publish.yml) workflow runs the build, runs the tests, and publishes to npm with `pnpm publish` using the `NPM_TOKEN` secret.
+2. Push a `cli-vX.Y.Z` tag. The [`cli-publish.yml`](https://github.com/nexmoe/vidbee/blob/main/.github/workflows/cli-publish.yml) workflow typechecks, builds, and publishes to npm with `pnpm publish` using the `NPM_TOKEN` secret.
 3. Verify on a clean machine: `npx @vidbee/cli@latest :version` should report the new version.
 
-`pnpm --filter @vidbee/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the npm `bin`). The published tarball includes only `dist/`, the README, the CHANGELOG, and the LICENSE — no source, no tests.
-
-CI runs `pnpm --filter @vidbee/cli test` on every PR; the suite ships with 149+ unit tests covering parser, probe, envelope, transports, autostart, descriptor handshake, and the new local-info commands.
+`pnpm --filter @vidbee/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the npm `bin`). The published tarball includes only `dist/`, the README, the CHANGELOG, and the LICENSE — no source.

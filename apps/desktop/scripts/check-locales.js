@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from '@vidbee/logger/script'
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirPath = path.dirname(currentFilePath)
@@ -14,8 +15,8 @@ const readJson = (filePath) => {
     const raw = fs.readFileSync(filePath, 'utf8')
     return JSON.parse(raw)
   } catch (error) {
-    console.error(`ERROR: Failed to read ${filePath}`)
-    console.error(String(error))
+    log.error(`ERROR: Failed to read ${filePath}`)
+    log.error(String(error))
     process.exit(1)
   }
 }
@@ -41,7 +42,7 @@ const collectLeafKeys = (value, prefix = '', keys = new Set()) => {
 }
 
 if (!fs.existsSync(localesDir)) {
-  console.error(`ERROR: Locales directory not found: ${localesDir}`)
+  log.error(`ERROR: Locales directory not found: ${localesDir}`)
   process.exit(1)
 }
 
@@ -51,7 +52,7 @@ const localeFiles = fs
   .sort()
 
 if (!localeFiles.includes(baseLocaleFile)) {
-  console.error(`ERROR: Base locale file not found: ${baseLocaleFile}`)
+  log.error(`ERROR: Base locale file not found: ${baseLocaleFile}`)
   process.exit(1)
 }
 
@@ -76,17 +77,17 @@ for (const file of localeFiles) {
 
   if (missing.length > 0) {
     hasMissing = true
-    console.error(`ERROR: Missing keys in ${file}`)
+    log.error(`ERROR: Missing keys in ${file}`)
     for (const key of missing) {
-      console.error(`  - ${key}`)
+      log.error(`  - ${key}`)
     }
   }
 
   if (extra.length > 0) {
     hasExtra = true
-    console.warn(`WARN: Extra keys in ${file}`)
+    log.warn(`WARN: Extra keys in ${file}`)
     for (const key of extra) {
-      console.warn(`  - ${key}`)
+      log.warn(`  - ${key}`)
     }
   }
 }
@@ -96,8 +97,8 @@ if (hasMissing) {
 }
 
 if (hasExtra) {
-  console.log('INFO: No missing keys, but extra keys were found.')
+  log.log('INFO: No missing keys, but extra keys were found.')
   process.exit(0)
 }
 
-console.log('OK: All locale files include every key from en.json.')
+log.log('OK: All locale files include every key from en.json.')

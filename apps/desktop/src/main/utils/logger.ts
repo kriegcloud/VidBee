@@ -21,5 +21,7 @@ export const scopedLoggers = {
   system: log.scope('system'),
   storage: log.scope('storage'),
   thumbnail: log.scope('thumbnail'),
-  history: log.scope('history')
+  history: log.scope('history'),
+  player: log.scope('player'),
+  ai: log.scope('ai')
 }

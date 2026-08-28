@@ -5,7 +5,10 @@ import viteReact from "@vitejs/plugin-react";
 import Icons from "unplugin-icons/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import packageJson from "./package.json";
+import packageJson from "./package.json" with { type: "json" };
+
+const apiProxyTarget =
+	process.env.VIDBEE_API_URL_INTERNAL?.trim() || "http://localhost:3100";
 
 // Self-hosters behind a reverse proxy (e.g. Traefik) must allow their domain
 // in Vite's host check (GitHub issue #404). VIDBEE_ALLOWED_HOSTS="*" (or "all")
@@ -25,9 +28,23 @@ function resolveAllowedHosts(): true | string[] | undefined {
 		.filter(Boolean);
 }
 
-const config = defineConfig({
+const reactSsrDeps = [
+	"react",
+	"react-dom",
+	"react/jsx-runtime",
+	"react/jsx-dev-runtime",
+	"react-dom/server",
+];
+
+const config = defineConfig(({ command }) => ({
 	define: {
 		__APP_VERSION__: JSON.stringify(packageJson.version),
+	},
+	legacy: {
+		inconsistentCjsInterop: true,
+	},
+	optimizeDeps: {
+		include: reactSsrDeps,
 	},
 	plugins: [
 		devtools({
@@ -48,22 +65,27 @@ const config = defineConfig({
 		allowedHosts: resolveAllowedHosts(),
 		proxy: {
 			"/events": {
-				target: "http://localhost:3100",
+				target: apiProxyTarget,
 				changeOrigin: true,
 			},
 			"/rpc": {
-				target: "http://localhost:3100",
+				target: apiProxyTarget,
 				changeOrigin: true,
 			},
 			"/images": {
-				target: "http://localhost:3100",
+				target: apiProxyTarget,
 				changeOrigin: true,
 			},
 		},
 	},
 	ssr: {
-		noExternal: ["@vidbee/i18n"],
+		// Vite 8's module runner evaluates unoptimized CJS as ESM. Bundle CJS
+		// only in production; in dev let Node load those packages natively.
+		...(command === "build" ? { noExternal: true as const } : {}),
+		optimizeDeps: {
+			include: reactSsrDeps,
+		},
 	},
-});
+}));
 
 export default config;

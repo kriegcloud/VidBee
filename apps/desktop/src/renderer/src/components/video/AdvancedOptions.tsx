@@ -68,7 +68,11 @@ export function AdvancedOptions({
             {t('advancedOptions.downloadSubsHint')}
           </p>
         </div>
-        <Switch checked={downloadSubs} onCheckedChange={onDownloadSubsChange} />
+        <Switch
+          checked={downloadSubs}
+          label=""
+          onToggle={() => onDownloadSubsChange(!downloadSubs)}
+        />
       </div>
     </div>
   )

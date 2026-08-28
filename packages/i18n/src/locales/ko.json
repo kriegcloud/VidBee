@@ -16,8 +16,21 @@
     "betaProgramDescription": "다른 사람들보다 먼저 초기 빌드와 다가오는 기능을 받으세요.",
     "betaProgramTitle": "미리보기 채널",
     "description": "VidBee는 Electron으로 구축되고 yt-dlp로 구동되는 무료 오픈소스 다운로더입니다.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "내장 버전으로 전환됨",
+        "checking": "확인 중",
+        "installing": "설치 중",
+        "preparing": "준비 중",
+        "retry-scheduled": "재시도 예정",
+        "unavailable": "사용할 수 없음",
+        "up-to-date": "최신 상태"
+      },
+      "title": "다운로드 엔진",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "@nexmoex 팔로우"
+      "follow": "@nexmoe 팔로우"
     },
     "followAuthorDescription": "VidBee의 최신 뉴스와 업데이트를 받아보세요.",
     "followAuthorSupport": "X (Twitter)에서 개발자를 팔로우하여 VidBee의 최신 업데이트와 뉴스를 받아보세요.",
@@ -40,8 +53,6 @@
       "updateError": "업데이트 확인 실패: {{error}}",
       "unknownErrorFallback": "알 수 없는 오류"
     },
-    "preferencesDescription": "이 페이지를 떠나지 않고 업데이트 설정을 조정하세요.",
-    "preferencesTitle": "빠른 토글",
     "resources": {
       "changelog": "릴리스 노트",
       "changelogDescription": "각 버전에서 변경된 내용을 확인하세요.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "GitHub에서 버그를 보고하거나 기능을 요청하세요.",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "X에서 @nexmoex를 멘션하여 피드백이나 제안을 공유하세요.",
+      "xFeedbackDescription": "X에서 @nexmoe를 멘션하여 피드백이나 제안을 공유하세요.",
       "discord": "Discord",
       "discordDescription": "Discord 커뮤니티에 참여해 토론과 지원을 받으세요.",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "수백 개의 사이트에서 비디오와 오디오 다운로드",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "VidBee를 종료할까요?",
+      "message": "진행 중인 작업이 {{count}}개 있습니다. 종료하면 작업이 중단됩니다.",
+      "messagePlural": "진행 중인 작업이 {{count}}개 있습니다. 종료하면 작업이 중단됩니다.",
+      "quit": "종료",
+      "cancel": "취소"
+    }
   },
   "download": {
     "active": "활성",
@@ -117,10 +135,15 @@
     "back": "뒤로",
     "cancel": "취소",
     "cancelled": "취소됨",
+    "pause": "일시정지",
+    "paused": "일시정지됨",
+    "resume": "재개",
     "clearCompleted": "완료된 항목 지우기",
     "clearDownloads": "다운로드 지우기",
     "completed": "완료",
     "downloadAudio": "오디오 다운로드",
+    "dialogSubtitle": "형식과 저장 위치를 선택하세요",
+    "dialogTitle": "다운로드",
     "downloadBtn": "다운로드",
     "downloadPending": "대기 중",
     "downloadQueue": "다운로드 큐",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "클립보드에서 재생목록 링크 붙여넣기 [Ctrl + V]",
     "pasteUrl": "비디오 URL 또는 ID 붙여넣기 [Ctrl + V]",
     "pasteUrlButton": "URL 붙여넣기",
+    "ingestDropUrl": "놓으면 다운로드",
+    "ingestDropMedia": "놓으면 받아쓰기",
+    "ingestDropMixed": "놓으면 다운로드와 받아쓰기",
+    "ingestDropDescription": "링크는 다운로드로, 오디오·동영상 파일은 받아쓰기로 시작합니다.",
+    "ingestEmptyHint": "링크를 붙여넣어 다운로드하거나, 오디오·동영상을 놓아 받아쓰기를 시작하세요.",
     "preparing": "준비 중...",
     "processing": "처리 중",
     "progress": "진행률",
@@ -192,6 +220,9 @@
     "video": "비디오",
     "videoInfo": "비디오 정보",
     "videoInfoUpdated": "비디오 정보 업데이트됨",
+    "frameRate": "프레임 레이트",
+    "codecAuto": "자동",
+    "fpsHighest": "최고",
     "metadata": {
       "source": "원천",
       "playlist": "재생목록",
@@ -219,7 +250,22 @@
       "subscription": "신청"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "쿠키 설정",
+    "cookiesSetupDialogTitle": "쿠키 설정",
+    "cookiesSetupNeeded": "이 다운로드에는 로그인된 세션이 필요합니다. 쿠키를 설정한 뒤 다시 시도하세요.",
+    "cookiesSetupLocked": "Chrome이 쿠키 데이터베이스를 잠그고 있습니다. Firefox를 사용하거나 쿠키 파일을 가져오거나 Chrome을 완전히 종료한 뒤 다시 시도하세요.",
+    "cookiesSetupMacFiles": "macOS가 이 브라우저의 쿠키 읽기를 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBee가 이 브라우저에 접근하도록 허용한 뒤 다시 시도하세요. 이미 허용했다면 VidBee를 완전히 종료한 다음 다시 여세요.",
+    "cookiesSetupOpenFilesSettings": "파일 및 폴더 설정 열기",
+    "cookiesSetupDecrypt": "Windows에서는 Chrome 쿠키를 복호화할 수 없습니다. Firefox를 사용하거나 쿠키 파일을 가져오세요.",
+    "cookiesSetupFileInvalid": "선택한 쿠키 파일이 올바른 내보내기가 아닙니다. cookies.txt를 내보낸 뒤 다시 시도하세요.",
+    "cookiesSetupKeyring": "이 Linux 빌드는 Chrome 쿠키를 읽을 수 없습니다. Firefox를 사용하거나 쿠키 파일을 가져오세요.",
+    "cookiesSetupStale": "현재 쿠키가 만료되었거나 차단된 것 같습니다. 로그인을 새로 고친 뒤 다시 시도하세요.",
+    "cookiesSetupRetry": "다운로드 다시 시도",
+    "cookiesSetupDone": "완료",
+    "pause": "일시정지",
+    "paused": "일시정지됨",
+    "resume": "재개"
   },
   "error": {
     "title": "문제가 발생했습니다",
@@ -319,6 +365,7 @@
     "download": "다운로드",
     "playlist": "재생목록 다운로드",
     "rss": "RSS",
+    "transcripts": "대본",
     "subscriptions": "구독",
     "preferences": "환경설정",
     "supportedSites": "지원되는 사이트",
@@ -342,7 +389,12 @@
     "removeFailed": "항목 제거 실패",
     "settingsSaved": "설정 저장됨",
     "urlCopied": "URL이 클립보드에 복사됨",
-    "videoCopied": "비디오가 클립보드에 복사됨"
+    "videoCopied": "비디오가 클립보드에 복사됨",
+    "transcriptionStarted": "받아쓰기를 시작했습니다",
+    "transcriptionStartedMany": "파일 {{count}}개의 받아쓰기를 시작했습니다",
+    "transcriptionStartFailed": "받아쓰기를 시작하지 못했습니다",
+    "unsupportedDrop": "링크를 붙여넣거나 오디오·동영상 파일을 놓아 주세요",
+    "localMediaDesktopOnly": "로컬 파일 받아쓰기는 데스크톱 앱에서 사용할 수 있습니다"
   },
   "instagramProfile": {
     "assetTotal": "파일 {{count}}개",
@@ -429,9 +481,9 @@
     "audio": "오디오 환경설정",
     "browserForCookies": "쿠키를 사용할 브라우저 선택",
     "browserForCookiesDescription": "인증을 위한 쿠키 추출 브라우저",
-    "browserForCookiesWindowsNote": "Windows에서는 Firefox 쿠키만 지원됩니다. 다른 브라우저는 쿠키 파일을 수동으로 설정하세요.",
+    "browserForCookiesWindowsNote": "Windows에서는 Firefox 쿠키만 지원됩니다. 다른 브라우저는 쿠키 파일을 수동으로 설정하세요",
     "browserForCookiesProfile": "프로필 이름 또는 경로",
-    "browserForCookiesProfileDescription": "위에서 선택한 브라우저의 프로필 경로입니다. 가능하면 자동으로 채워집니다.",
+    "browserForCookiesProfileDescription": "위에서 선택한 브라우저의 프로필 경로입니다. 가능하면 자동으로 채워집니다",
     "browserForCookiesProfilePlaceholder": "프로필 이름 또는 전체 경로(선택 사항)",
     "browserForCookiesProfileInvalid": "프로필 경로가 유효하지 않습니다. 선택한 브라우저의 프로필 폴더를 선택하세요.",
     "browserForCookiesProfileInvalidPath": "해당 폴더가 없습니다. 기존 프로필 폴더를 선택하세요.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "로그인된 세션을 자동으로 재사용하려면 위에서 브라우저를 선택하세요.",
     "cookiesHelpFile": "Netscape 쿠키 파일을 내보내고(yt-dlp FAQ 참조) 필요할 때 여기에서 선택하세요.",
     "cookiesGuideTitle": "가이드가 필요하신가요?",
-    "cookiesGuideDescription": "VidBee에서 쿠키를 사용하는 단계별 안내를 확인하세요.",
+    "cookiesGuideDescription": "VidBee에서 쿠키를 사용하는 단계별 안내를 확인하세요",
     "cookiesGuideLink": "Cookies 가이드 열기",
     "openLinkError": "링크를 열지 못했습니다.",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "앱 인터페이스에 사용할 언어를 선택하세요",
     "light": "라이트",
     "hideDockIcon": "창을 닫으면 Dock 아이콘 숨기기",
-    "hideDockIconDescription": "창이 닫히면 자동으로 Dock 아이콘을 숨깁니다. 메뉴 바 또는 트레이 아이콘으로 다시 열 수 있습니다.",
+    "hideDockIconDescription": "창이 닫히면 자동으로 Dock 아이콘을 숨깁니다. 메뉴 바 또는 트레이 아이콘으로 다시 열 수 있습니다",
     "launchAtLogin": "시작 시 실행",
-    "launchAtLoginDescription": "컴퓨터에 로그인한 후 자동으로 VidBee를 엽니다.",
-    "launchAtLoginUnsupported": "자동 실행은 macOS 및 Windows에서만 사용할 수 있습니다.",
+    "launchAtLoginDescription": "컴퓨터에 로그인한 후 자동으로 VidBee를 엽니다",
+    "launchAtLoginUnsupported": "자동 실행은 macOS 및 Windows에서만 사용할 수 있습니다",
     "enableAnalytics": "VidBee 개선에 참여해주세요",
-    "enableAnalyticsDescription": "익명의 사용 데이터를 공유하면 앱이 어떻게 사용되는지 이해하고 개선 우선순위를 정하는 데 도움이 됩니다.",
+    "enableAnalyticsDescription": "익명의 사용 데이터를 공유하면 앱이 어떻게 사용되는지 이해하고 개선 우선순위를 정하는 데 도움이 됩니다",
     "enableDownloadNotifications": "다운로드 알림",
-    "enableDownloadNotificationsDescription": "다운로드가 완료되면 시스템 알림을 표시합니다.",
+    "enableDownloadNotificationsDescription": "다운로드가 완료되면 시스템 알림을 표시합니다",
     "downloadWithoutChannelSubfolders": "채널 하위 폴더 없이 비디오 저장",
-    "downloadWithoutChannelSubfoldersDescription": "단일 비디오 다운로드를 채널 하위 폴더 대신 Videos 폴더에 바로 저장합니다.",
+    "downloadWithoutChannelSubfoldersDescription": "단일 비디오 다운로드를 채널 하위 폴더 대신 Videos 폴더에 바로 저장합니다",
+    "downloadSubtitles": "자막 다운로드",
+    "downloadSubtitlesDescription": "사용 가능한 경우 선택한 언어의 자막만 다운로드합니다",
+    "subtitleLanguages": "자막 언어",
+    "subtitleLanguagesDescription": "각 동영상에서 VidBee가 요청할 자막 언어를 선택하세요",
+    "subtitleLanguageSearch": "자막 언어 검색",
+    "subtitleLanguageEmpty": "일치하는 언어 없음",
+    "subtitleLanguageLimit": "플랫폼 요청 제한을 줄이려면 최대 {{count}}개 언어를 선택하세요",
+    "followInterfaceLanguage": "인터페이스 언어 따르기 ({{language}})",
     "embedChapters": "챕터 포함",
     "embedChaptersDescription": "사용 가능한 경우 파일에 챕터 마커를 추가",
     "embedMetadata": "메타데이터 포함",
     "embedMetadataDescription": "사용 가능한 경우 제목, 아티스트 및 기타 메타데이터 기록",
     "embedSubs": "자막 포함",
-    "embedSubsDescription": "자막을 비디오 파일에 포함(mp4, webm, mkv)",
+    "embedSubsDescription": "선택한 자막을 동영상 파일에 포함합니다(mp4, webm, mkv)",
+    "writeAutoSubs": "자동 생성 자막 사용",
+    "writeAutoSubsDescription": "선택한 언어의 제작자 자막이 없을 때 자동 자막을 사용합니다",
     "embedThumbnail": "썸네일 포함",
     "embedThumbnailDescription": "썸네일을 커버 아트로 추가",
+    "filenameStyle": "파일 이름 스타일",
+    "filenameStyleDescription": "저장된 동영상과 오디오 파일의 이름 지정 방식을 선택합니다",
+    "filenameStyleNote": "VidBee가 저장하는 파일에 사용됩니다. 구독 또는 재생목록의 사용자 지정 템플릿이 우선합니다",
+    "filenameStyleOptions": {
+      "basic": "기본",
+      "classic": "클래식",
+      "nerdy": "너디",
+      "pretty": "프리티"
+    },
+    "filenameStylePreviewAudio": "오디오 파일 미리보기",
+    "filenameStylePreviewVideo": "동영상 파일 미리보기",
+    "filenameViaVidBee": "파일 이름에 via VidBee 추가",
+    "filenameViaVidBeeDescription": "저장하는 동영상과 오디오 파일 이름에 via VidBee를 자동으로 붙입니다",
+    "metadataTab": "메타데이터",
+    "navGroup": {
+      "app": "앱",
+      "download": "다운로드",
+      "system": "시스템",
+      "ai": "AI"
+    },
     "shareWatermark": "공유 워터마크",
     "shareWatermarkDescription": "원본 제목, 작성자, VidBee 브랜드명을 포함한 워터마크를 추가합니다",
     "maxConcurrentDownloads": "최대 활성 다운로드 수",
@@ -502,7 +584,7 @@
     "oneClickDownload": "원클릭 다운로드",
     "oneClickDownloadDescription": "기본 설정으로 원클릭 다운로드 활성화",
     "oneClickDownloadType": "기본 다운로드 유형",
-    "oneClickDownloadTypeDescription": "원클릭 다운로드의 기본 다운로드 유형을 선택하세요. 품질은 아래 사전 설정을 사용합니다.",
+    "oneClickDownloadTypeDescription": "원클릭 다운로드의 기본 다운로드 유형을 선택하세요. 품질은 아래 사전 설정을 사용합니다",
     "oneClickQuality": "선호 품질",
     "oneClickQualityDescription": "원클릭 다운로드에 사용되는 품질 사전 설정을 선택하세요",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "프록시",
     "proxyDescription": "네트워크 요청용 프록시 서버",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "다운로드 소스",
+    "downloadMirrorDescription": "GitHub이 느리거나 차단되면 yt-dlp, ffmpeg, Node, 받아쓰기 모델을 중국 미러(ModelScope, GitHub 프록시)에서 받습니다",
+    "downloadMirrorAuto": "자동",
+    "downloadMirrorChina": "중국(ModelScope)",
+    "downloadMirrorGlobal": "공식",
     "rememberLastAudioLanguage": "마지막 오디오 언어 기억",
-    "rememberLastAudioLanguageDescription": "앞으로의 오디오 다운로드에서 마지막으로 선택한 오디오 언어를 기본값으로 다시 사용합니다.",
+    "rememberLastAudioLanguageDescription": "앞으로의 오디오 다운로드에서 마지막으로 선택한 오디오 언어를 기본값으로 다시 사용합니다",
     "selectConfigFile": "설정 파일 선택",
     "selectPath": "선택",
     "showMoreFormats": "더 많은 형식 옵션 표시",
     "showMoreFormatsDescription": "인터페이스에 추가 형식 옵션 표시",
     "subscriptionDefaults": {
-      "filenameDescription": "구독이 파일 이름을 재정의하지 않을 때 사용되는 패턴입니다."
+      "filenameDescription": "구독이 파일 이름을 재정의하지 않을 때 사용되는 패턴입니다"
     },
     "system": "시스템",
     "theme": "테마",
@@ -535,13 +622,243 @@
     },
     "video": "비디오 환경설정",
     "oneClickContainer": "컨테이너 형식",
-    "oneClickContainerDescription": "원클릭 다운로드의 출력 컨테이너를 선택하세요. Auto는 MP4를 우선하고 코덱 호환 문제가 있으면 MKV로 대체합니다.",
+    "oneClickContainerDescription": "원클릭 다운로드의 출력 컨테이너를 선택하세요. Auto는 MP4를 우선하고 코덱 호환 문제가 있으면 MKV로 대체합니다",
     "oneClickContainerOptions": {
       "auto": "자동 (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "원본 (yt-dlp 기본)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "동시 받아쓰기 수",
+    "maxConcurrentTranscriptionsDescription": "동시에 실행할 받아쓰기 작업 수입니다. 각 작업은 이 컴퓨터의 CPU와 메모리를 사용합니다. 값을 낮춰도 이미 실행 중인 작업은 중단되지 않습니다",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "모델 {{count}}개 다운로드 중",
+    "asrDelete": "삭제",
+    "asrDeleteError": "AI 모델을 삭제하지 못했습니다.",
+    "asrCancel": "취소",
+    "asrCancelError": "이 다운로드를 취소하지 못했습니다.",
+    "asrDownloadError": "AI 모델을 다운로드하지 못했습니다.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "가장 빠른 다국어 시작. 저사양에 적합",
+        "size": "약 75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Tiny보다 조금 더 정확하고 여전히 가볍습니다",
+        "size": "약 150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "일반 PC용. 다국어 정확도가 좋습니다",
+        "size": "약 250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "한중일영이 빠르며 광둥어도 지원합니다",
+        "size": "약 230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "중국어 정확도가 가장 높습니다. 고성능 PC가 필요합니다",
+        "size": "약 840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "다국어가 더 정확합니다. 메모리가 더 필요합니다",
+        "size": "약 770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "large-v3에 가까운 품질, 더 빠릅니다",
+        "size": "약 810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "더 새로운 한중일영 패키지. 여전히 가볍습니다",
+        "size": "약 230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "영어에 강합니다. 일반 PC에서도 빠릅니다",
+        "size": "약 650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "더 새로운 영어 Parakeet. 영어에 가장 적합합니다",
+        "size": "약 650 MB"
+      }
+    },
+    "asrDownload": "다운로드",
+    "asrDownloadAndUse": "다운로드 후 사용",
+    "asrDownloaded": "다운로드됨",
+    "asrRecommended": "추천",
+    "asrRecommendedFor": "{{os}} · {{gpu}} · {{ram}} · {{cores}}코어 · {{language}} 기준 추천",
+    "asrAllModels": "모든 모델",
+    "asrBestMatch": "최적",
+    "asrMachine": {
+      "low": "저사양 PC",
+      "mid": "일반 PC",
+      "high": "고성능 PC"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — 다국어",
+      "sense-voice": "SenseVoice — 중국어, 일본어, 한국어, 영어",
+      "qwen3": "Qwen3-ASR — 중국어 정확도 최고",
+      "parakeet": "Parakeet — 영어"
+    },
+    "asrLanguages": {
+      "multi": "다국어"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "현재 OS"
+    },
+    "asrGpu": {
+      "apple": "Apple GPU",
+      "nvidia": "NVIDIA GPU",
+      "amd": "AMD GPU",
+      "intel": "Intel GPU",
+      "unknown": "알 수 없는 GPU"
+    },
+    "providersTab": "제공자",
+    "promptsTab": "프롬프트",
+    "transcriptionTab": "전사",
+    "ai": {
+      "allServices": "모든 서비스",
+      "configured": "구성됨",
+      "useProvider": "사용",
+      "inUse": "사용 중",
+      "addProvider": "{{name}} 추가",
+      "editProvider": "제공자 편집",
+      "deleteProvider": "제공자 삭제",
+      "edit": "편집",
+      "apiKey": "API 키",
+      "apiKeyKept": "비워 두면 저장된 키를 유지합니다",
+      "baseUrl": "Base URL",
+      "modelId": "모델 ID",
+      "modelIdPlaceholder": "model-id",
+      "name": "이름",
+      "save": "저장",
+      "cancel": "취소",
+      "saveError": "AI 설정을 저장할 수 없습니다.",
+      "providerDialogDescription": "API 키는 이 컴퓨터에만 저장됩니다. 기본 제공자는 Base URL이 이미 설정되어 있습니다",
+      "testConnection": "연결 테스트",
+      "testingConnection": "테스트 중…",
+      "testSuccess": "연결됨. 응답: {{reply}}",
+      "testFailed": "이 모델에 연결할 수 없습니다.",
+      "addPrompt": "프롬프트 추가",
+      "editPrompt": "프롬프트 편집",
+      "deletePrompt": "프롬프트 삭제",
+      "promptTitle": "제목",
+      "promptIcon": "아이콘",
+      "promptBody": "프롬프트",
+      "promptDialogDescription": "활성화된 제공자로 전사에 이 프롬프트를 실행합니다",
+      "restorePresets": "기본값 복원",
+      "testTitle": "샘플 전사로 테스트",
+      "testRun": "실행",
+      "testStop": "중지",
+      "testOutput": "출력",
+      "testPlaceholder": "프롬프트 결과가 여기에 표시됩니다",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "글머리 기호"
+        },
+        "improve-grammar": {
+          "title": "문법 및 구두점 교정"
+        },
+        "generate-faq": {
+          "title": "FAQ 생성"
+        },
+        "extract-statistics": {
+          "title": "통계 추출"
+        },
+        "paraphrase-content": {
+          "title": "내용 바꿔 쓰기"
+        },
+        "create-mindmap": {
+          "title": "마인드맵 만들기"
+        },
+        "translate": {
+          "title": "번역"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "설정되지 않음",
+      "statusNotConfiguredHint": "로그인이 필요한 다운로드는 설정을 마치기 전까지 실패합니다",
+      "statusUsingBrowser": "{{browser}} 로그인 사용 중",
+      "statusUsingFile": "쿠키 파일 사용 중",
+      "statusOk": "준비됨",
+      "statusExpired": "만료됨",
+      "statusEmpty": "로그인 없음",
+      "statusInvalid": "확인 필요",
+      "healthOkBrowser": "VidBee가 {{browser}}에서 쿠키를 읽을 수 있습니다. 해당 브라우저에서 사이트에 로그인한 상태를 유지하세요",
+      "healthOkFile": "{{sites}}의 로그인 쿠키를 찾았습니다",
+      "healthOkFileGeneric": "이 쿠키 파일은 유효해 보입니다",
+      "healthExpired": "이 쿠키는 만료되었습니다. 다시 로그인한 뒤 새 파일을 가져오세요",
+      "healthEmpty": "이 파일에는 지원 사이트의 로그인 쿠키가 없습니다. 로그인한 상태에서 내보낸 뒤 다시 시도하세요",
+      "healthInvalidFile": "쿠키 파일이 없거나 올바른 내보내기가 아닙니다",
+      "healthInvalidBrowser": "이 브라우저 프로필의 쿠키를 읽을 수 없습니다",
+      "healthMacosFilesPermission": "macOS가 쿠키 접근을 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBee가 이 브라우저에 접근하도록 허용한 뒤 다시 확인하세요.",
+      "healthUnsupportedBrowser": "현재 시스템에서는 이 브라우저로 쿠키를 사용할 수 없습니다",
+      "sitesLabel": "사이트: {{sites}}",
+      "recommendedTitle": "권장",
+      "recommendedUseBrowser": "{{browser}} 사용",
+      "recommendedUseBrowserHint": "{{browser}}에 이미 로그인한 계정을 재사용합니다",
+      "recommendedImportFile": "쿠키 파일 가져오기",
+      "recommendedImportFileWindowsHint": "Windows에서는 Chrome과 Edge가 VidBee와 쿠키를 공유할 수 없습니다. 브라우저에서 쿠키 파일을 내보내세요",
+      "recommendedImportFileHint": "브라우저에서 쿠키를 내보낸 다음 여기에서 파일을 선택하세요",
+      "recommendedFirefoxHint": "Windows에서 VidBee가 직접 읽을 수 있는 브라우저는 Firefox뿐입니다",
+      "useThisBrowser": "{{browser}} 사용",
+      "importFile": "쿠키 파일 선택",
+      "clearSetup": "쿠키 지우기",
+      "checkStatus": "다시 확인",
+      "otherOptions": "기타 옵션",
+      "hideOtherOptions": "기타 옵션 숨기기",
+      "chooseBrowser": "다른 브라우저 선택",
+      "advancedProfile": "프로필 경로",
+      "windowsUnsupportedCurrent": "Windows에서는 {{browser}}로 쿠키를 사용할 수 없습니다. Firefox를 사용하거나 쿠키 파일을 가져오세요.",
+      "fileExportStep1": "Get cookies.txt LOCALLY 같은 쿠키 내보내기 확장 프로그램을 설치하세요",
+      "fileExportStep2": "사이트에 로그인한 다음 쿠키 파일을 내보내세요",
+      "fileExportStep3": "여기에서 해당 파일을 선택하세요",
+      "fileExportExtension": "Chrome / Edge 확장 프로그램",
+      "checking": "쿠키 확인 중…",
+      "applied": "쿠키가 업데이트되었습니다",
+      "profileMissingDb": "이 Firefox 프로필에는 쿠키 데이터베이스가 없습니다. Firefox를 한 번 연 다음 다시 시도하세요."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "자동 태그",
       "customDirectory": "맞춤 디렉터리",
       "namingTemplate": "사용자 정의 파일 이름 템플릿(파일만 해당)",
+      "autoDownload": "자동 다운로드",
       "onlyLatest": "최신 영상만 다운로드하세요",
       "onlyLatestDescription": "백로그 항목을 무시하고 이 피드에서 최신 업로드만 가져옵니다.",
       "enabled": "활성화됨",
@@ -655,6 +973,18 @@
       "hint": "RSS 피드 URL이 없나요? \nRSSHub를 사용하여 YouTube, Twitter 및 기타 수천 개의 플랫폼에 대한 RSS 피드를 생성하세요."
     }
   },
+  "kernelPreparation": {
+    "copying": "다운로드 엔진을 복사하는 중…",
+    "description": "VidBee가 다운로드 엔진을 준비하고 있습니다. 잠시만 기다려 주세요.",
+    "errorDescription": "VidBee가 작동하는 다운로드 엔진을 준비하지 못했습니다. 로컬 저장소 접근 권한을 확인한 후 다시 시도하세요.",
+    "errorTitle": "다운로드 엔진을 사용할 수 없음",
+    "finalizing": "설정을 마무리하는 중…",
+    "progressLabel": "다운로드 엔진 준비 진행률",
+    "retry": "다시 시도",
+    "retrying": "다시 시도하는 중…",
+    "title": "VidBee 준비 중",
+    "validating": "다운로드 엔진을 확인하는 중…"
+  },
   "sites": {
     "homeInlineDescription": "{{sites}} 및 더 많은 사이트를 지원합니다.",
     "moreDescription": "완전한 yt-dlp 목록은 커뮤니티에 의해 지속적으로 업데이트됩니다.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "주요 플랫폼",
     "viewAll": "지원되는 모든 사이트 보기"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "받아쓰기 모델을 준비하는 중…",
+    "preparingSpeakerModels": "화자 모델 준비 중…",
+    "modelsProgressLabel": "받아쓰기 모델 다운로드 진행률",
+    "view": "View transcript",
+    "sourceCaptions": "영상 자막",
+    "sourceAi": "AI 대본",
+    "sourceSwitch": "대본 소스",
+    "sourceCaptionNamed": "{{language}} 자막",
+    "sourceCaptionAutoNamed": "{{language}} 자동 자막",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "전사가 완료되기 전에 중단되었습니다. 다시 시도하세요.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "중지",
+    "stopFailed": "전사를 중지할 수 없습니다.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "오디오 준비 중",
+    "identifyingSpeakers": "화자 구분 중",
+    "back": "대본 목록으로",
+    "library": {
+      "empty": "아직 대본이 없습니다",
+      "emptyHint": "로컬 오디오·동영상 파일을 선택하거나 완료된 다운로드를 변환하세요.",
+      "addMedia": "오디오 또는 동영상 추가",
+      "goToDownloads": "다운로드로 이동",
+      "untitled": "제목 없는 미디어",
+      "previewPending": "대본이 생성되면 여기에 표시됩니다.",
+      "queued": "대기 중",
+      "processing": "처리 중",
+      "retrySoon": "곧 다시 시도",
+      "cancelled": "취소됨",
+      "open": "{{title}} 대본 열기",
+      "dropDescription": "오디오나 동영상 파일을 끌어다 놓거나 붙여넣으면 변환을 시작합니다.",
+      "experimentalBadge": "실험적",
+      "experimentalHint": "나중에 다운로드 화면으로 통합될 수 있습니다."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "전사 복사",
+    "copied": "전사를 복사했습니다",
+    "copyFailed": "전사를 복사할 수 없습니다.",
+    "captionSelect": "선택한 전사",
+    "captionSelectClear": "선택 해제",
+    "export": {
+      "action": "내보내기",
+      "preview": "내보내기 미리보기",
+      "description": "전사를 미리본 뒤 텍스트 파일로 복사하거나 저장합니다.",
+      "styleLabel": "스타일",
+      "style": {
+        "transcript": "전사",
+        "subtitles": "자막",
+        "segments": "구간",
+        "whisper": "Whisper",
+        "video": "영상 + 자막"
+      },
+      "formatLabel": "형식",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "인코딩",
+      "encode": {
+        "soft": "소프트",
+        "hard": "하드"
+      },
+      "softHint": "자막을 별도 트랙으로 영상에 넣습니다. 플레이어에서 자막을 켜고 끌 수 있으며 화질은 유지됩니다.",
+      "hardHint": "자막을 화면에 구워 넣습니다. 영상을 다시 인코딩하며 자막을 끌 수 없습니다.",
+      "noMedia": "원본 영상을 찾을 수 없어 영상을 내보낼 수 없습니다.",
+      "audioOnly": "이 파일은 오디오만 있습니다. 텍스트 전사를 내보내세요.",
+      "videoSaved": "영상을 내보냈습니다",
+      "videoSaveFailed": "영상을 내보낼 수 없습니다.",
+      "exporting": "내보내는 중…",
+      "cancelExport": "내보내기 취소",
+      "cancelled": "내보내기를 취소했습니다",
+      "progress": "{{percent}}%",
+      "options": "옵션",
+      "grouping": "그룹",
+      "groupingValue": {
+        "none": "없음",
+        "words": "단어",
+        "sentences": "문장"
+      },
+      "showTimestamp": "타임스탬프 표시",
+      "close": "닫기",
+      "copy": "복사",
+      "copied": "클립보드에 복사됨",
+      "copyFailed": "내보내기 미리보기를 복사할 수 없습니다.",
+      "saved": "전사를 내보냈습니다",
+      "saveFailed": "전사를 내보낼 수 없습니다.",
+      "empty": "내보낼 내용이 없습니다."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "자막 패널 크기 조절",
+    "unknownSpeaker": "알 수 없는 화자",
+    "speakers": "화자 ({{count}})",
+    "info": {
+      "tab": "정보",
+      "channel": "채널",
+      "duration": "길이",
+      "file": "파일",
+      "fileSize": "파일 크기",
+      "url": "원본 URL",
+      "source": "출처",
+      "model": "모델",
+      "language": "언어",
+      "speakers": "화자",
+      "segments": "구간",
+      "createdAt": "변환 시각",
+      "empty": "표시할 정보가 없습니다.",
+      "openUrl": "원본 URL 열기"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "{{name}}(으)로 이동",
+    "seekAt": "{{time}}(으)로 이동",
+    "searchPlaceholder": "전사 검색",
+    "searchMatches": "{{count}}개 일치",
+    "searchNoMatches": "일치 항목 없음",
+    "searchNext": "다음",
+    "searchPrevious": "이전",
+    "searchJumpTo": "이 자막으로 이동",
+    "collapsePanel": "전사 접기",
+    "expandPanel": "전사 펼치기",
+    "player": {
+      "play": "재생",
+      "pause": "일시정지",
+      "seek": "탐색",
+      "volume": "볼륨",
+      "mute": "음소거",
+      "unmute": "음소거 해제",
+      "playbackRate": "재생 속도",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "재생할 수 있게 파일을 준비하는 중…",
+      "unavailable": "이 파일을 페이지에서 재생할 수 있는 형식으로 만들지 못했습니다.",
+      "failedTitle": "이 동영상은 여기서 재생할 수 없습니다",
+      "failedAudioTitle": "이 오디오는 여기서 재생할 수 없습니다",
+      "failedDetail": "스크립트는 계속 읽을 수 있습니다.",
+      "retry": "다시 시도",
+      "error": "재생 실패: {{message}}",
+      "captionsShow": "자막 표시",
+      "captionsHide": "자막 숨기기",
+      "skipBack": "15초 뒤로",
+      "skipForward": "15초 앞으로",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "전체 화면",
+      "fullscreenExit": "전체 화면 종료",
+      "resumed": "{{time}}부터 이어서 재생합니다",
+      "startOver": "처음부터",
+      "nowPlaying": "재생 중",
+      "closeBar": "플레이어 닫기",
+      "openTranscript": "전사로 돌아가기"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "이미 최고 품질 모델입니다. 화자 라벨이 섞이면 화자 수를 조정해 보세요. 배경 음악과 겹치는 발화는 여전히 화자를 혼동시킬 수 있습니다.",
+    "speakerCount": {
+      "adjust": "화자 조정",
+      "auto": "자동 감지",
+      "one": "화자 1명",
+      "count": "화자 {{count}}명",
+      "apply": "다시 받아쓰기",
+      "detail": "이 화자 수로 다시 받아씁니다. 기본값은 자동입니다. 이 페이지를 떠나도 됩니다. 현재 받아쓰기는 기록으로 남습니다."
+    },
+    "promptMenu": "모든 프롬프트",
+    "promptStop": "중지",
+    "promptRerun": "다시 실행",
+    "promptCopy": "복사",
+    "promptShare": "이미지로 공유",
+    "promptShareTitle": "이미지로 공유",
+    "promptShareDownload": "다운로드",
+    "promptShareNative": "공유",
+    "promptSharing": "이미지 준비 중…",
+    "promptShared": "공유 이미지가 복사됨",
+    "promptShareSaved": "공유 이미지를 저장했습니다",
+    "promptShareFailed": "공유 이미지를 만들지 못했습니다.",
+    "promptShareSaveFailed": "공유 이미지를 저장하지 못했습니다.",
+    "promptShareNativeFailed": "공유 시트를 열 수 없습니다.",
+    "promptShareFooter": "VidBee로 제작",
+    "promptShareTagline": "오픈소스. 영상을 받고 AI에게 물어보세요",
+    "captionShareSaid": "{{name}}에서",
+    "promptOutput": "프롬프트 결과",
+    "promptScrollToEnd": "최신으로 이동",
+    "promptCopied": "복사됨",
+    "promptNoProvider": "이 프롬프트를 실행하려면 설정에서 AI 제공자를 구성하세요.",
+    "promptOpenSettings": "제공자 설정 열기",
+    "promptEmpty": "결과가 여기에 표시됩니다.",
+    "promptRunning": "작성 중…",
+    "promptThinking": "생각 중",
+    "promptThinkingFor": "{{seconds}}초 동안 생각 중",
+    "promptThoughtFor": "{{seconds}}초 동안 생각함",
+    "promptAborted": "중지됨",
+    "promptNoTranscript": "이 프롬프트를 실행하려면 전사가 필요합니다.",
+    "promptTryAgain": "다시 시도",
+    "promptLoading": "AI 설정을 불러오는 중…",
+    "promptGuide": {
+      "noProvider": "사용 중인 AI 제공자가 없어 이 프롬프트를 실행할 수 없습니다.",
+      "missingApiKey": "사용 중인 제공자에 API 키가 없습니다.",
+      "missingModel": "사용 중인 제공자에 모델 ID가 없습니다.",
+      "unknownPrompt": "이 프롬프트를 더 이상 사용할 수 없습니다.",
+      "emptyTranscript": "이 프롬프트에는 완료된 전사가 필요합니다.",
+      "auth": "제공자가 요청을 거부했습니다. API 키나 계정이 잘못되었을 수 있습니다.",
+      "network": "제공자에 연결할 수 없습니다.",
+      "emptyOutput": "제공자가 끝났지만 텍스트를 반환하지 않았습니다.",
+      "unknown": "프롬프트를 실행할 수 없습니다."
+    },
+    "promptErrorDetails": "오류 상세",
+    "promptWhatToDo": "이렇게 해보세요",
+    "promptUsingProvider": "사용 중: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "설정 → 제공자를 엽니다.",
+        "s2": "서비스를 추가하고 API 키와 모델 ID를 저장한 다음 사용을 누릅니다.",
+        "s3": "여기로 돌아와 프롬프트를 다시 실행합니다."
+      },
+      "missingApiKey": {
+        "s1": "설정 → 제공자에서 사용 중인 항목을 편집합니다.",
+        "s2": "유효한 API 키를 붙여넣고 저장합니다.",
+        "s3": "프롬프트를 다시 실행합니다."
+      },
+      "missingModel": {
+        "s1": "설정 → 제공자에서 사용 중인 항목을 편집합니다.",
+        "s2": "이 서비스가 실제로 지원하는 모델 ID를 입력합니다.",
+        "s3": "프롬프트를 다시 실행합니다."
+      },
+      "unknownPrompt": {
+        "s1": "설정 → 프롬프트를 엽니다.",
+        "s2": "기본값을 복원하거나 이 프롬프트를 다시 추가합니다."
+      },
+      "emptyTranscript": {
+        "s1": "전사가 끝날 때까지 기다립니다.",
+        "s2": "음성이 없으면 그래도 전사하거나 다른 파일을 고릅니다."
+      },
+      "auth": {
+        "s1": "제공자 설정에서 API 키를 바꿉니다.",
+        "s2": "크레딧과 이 모델 권한이 있는지 확인합니다.",
+        "s3": "사용자 지정 엔드포인트라면 이 키를 받는지 확인합니다."
+      },
+      "network": {
+        "s1": "인터넷과 프록시를 확인합니다.",
+        "s2": "사용자 지정 제공자는 Base URL 접근과 필요 시 /v1을 확인합니다.",
+        "s3": "호스트가 다운이면 다른 제공자를 씁니다."
+      },
+      "emptyOutput": {
+        "s1": "설정 → 제공자에서 모델 ID가 맞는지 확인합니다.",
+        "s2": "사용자 지정이면 Base URL, API 키, 모델 배포를 확인합니다.",
+        "s3": "아래 오류 상세를 본 뒤 다시 시도하거나 제공자를 바꿉니다."
+      },
+      "unknown": {
+        "s1": "아래 오류 상세를 먼저 확인합니다.",
+        "s2": "설정 → 제공자에서 API 키, 모델 ID, Base URL을 확인합니다.",
+        "s3": "다시 시도하거나 다른 제공자로 바꿉니다."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "새로운 기능",
+    "description": "이 컴퓨터에서 전사와 AI 요약을 사용하세요.",
+    "tryIt": "한번 써보기",
+    "features": {
+      "transcript": {
+        "title": "영상 자동 전사",
+        "description": "다운로드가 끝나면 VidBee가 이 컴퓨터에서 영상에 대한 전사를 자동으로 만듭니다. 아무것도 업로드하지 않습니다."
+      },
+      "speakers": {
+        "title": "화자 라벨",
+        "description": "누가 무엇을 말했는지 보고, 해당 장면으로 바로 이동하세요."
+      },
+      "summary": {
+        "title": "AI 요약",
+        "description": "전사를 불릿, FAQ, 마인드맵 또는 다시 쓰기로 바꿉니다. 설정에서 내 프롬프트도 추가할 수 있습니다."
+      },
+      "localFiles": {
+        "title": "모든 파일 전사",
+        "description": "로컬 오디오나 비디오를 전사에 끌어다 놓으세요. 텍스트, 자막, 또는 자막이 입혀진 영상으로 내보낼 수 있습니다."
+      }
+    }
   }
 }

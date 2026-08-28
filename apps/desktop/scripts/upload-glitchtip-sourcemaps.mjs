@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
+import { log } from '@vidbee/logger/script'
 
 const require = createRequire(import.meta.url)
 const pkg = require('../package.json')
@@ -10,14 +11,14 @@ const requiredEnvKeys = ['SENTRY_AUTH_TOKEN', 'SENTRY_ORG', 'SENTRY_PROJECT', 'S
 const missingEnvKeys = requiredEnvKeys.filter((key) => !process.env[key]?.trim())
 
 if (missingEnvKeys.length > 0) {
-  console.error(`Missing required GlitchTip environment variables: ${missingEnvKeys.join(', ')}`)
+  log.error(`Missing required GlitchTip environment variables: ${missingEnvKeys.join(', ')}`)
   process.exit(1)
 }
 
 const projectRoot = path.resolve(import.meta.dirname, '..')
 const outputDir = path.join(projectRoot, 'out')
 if (!existsSync(outputDir)) {
-  console.error(`Build output not found at ${outputDir}. Run "pnpm run build" first.`)
+  log.error(`Build output not found at ${outputDir}. Run "pnpm run build" first.`)
   process.exit(1)
 }
 
@@ -33,7 +34,7 @@ const cli = new SentryCli(undefined, {
 })
 
 try {
-  console.info(`Creating release ${release}`)
+  log.info(`Creating release ${release}`)
   await cli.releases.new(release)
   await cli.releases.setCommits(release, {
     auto: true,
@@ -45,12 +46,12 @@ try {
     urlPrefix: '~/'
   })
   await cli.releases.finalize(release)
-  console.info(`Uploaded source maps for ${release}`)
+  log.info(`Uploaded source maps for ${release}`)
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error)
-  console.error(`Failed to upload GlitchTip source maps: ${message}`)
+  log.error(`Failed to upload GlitchTip source maps: ${message}`)
   if (message.includes('download the sentry-cli binary')) {
-    console.error(
+    log.error(
       'If pnpm blocked @sentry/cli postinstall, run "pnpm approve-builds" and allow @sentry/cli.'
     )
   }

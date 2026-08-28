@@ -1,17 +1,11 @@
 /**
- * Memory implementation of PersistAdapter — used by tests and for the
- * `--vidbee-local` CLI mode where there is no SQLite file.
+ * Memory implementation of PersistAdapter — used by the `--vidbee-local`
+ * CLI mode where there is no SQLite file.
  *
- * Behaves like SQLite for the purposes of our state-machine tests:
  * findOpenSpawns walks the journal looking for spawn rows without a
  * close/killed peer.
  */
-import type {
-  AttemptRow,
-  ProcessJournalRow,
-  Task,
-  TaskProgress
-} from '../types'
+import type { AttemptRow, ProcessJournalRow, Task, TaskProgress } from '../types'
 import type {
   JournalAppendInput,
   PersistAdapter,
@@ -19,6 +13,24 @@ import type {
   RecordCloseInput,
   RecordSpawnInput
 } from './adapter'
+
+/**
+ * Return descendant task ids, deepest-first, so parent_id rows can be removed
+ * before their parent.
+ */
+const collectDescendantIds = (tasks: Map<string, Task>, rootId: string): string[] => {
+  const out: string[] = []
+  const walk = (parentId: string): void => {
+    for (const [id, task] of tasks) {
+      if (task.parentId === parentId) {
+        walk(id)
+        out.push(id)
+      }
+    }
+  }
+  walk(rootId)
+  return out
+}
 
 export class MemoryPersistAdapter implements PersistAdapter {
   private readonly tasks = new Map<string, Task>()
@@ -40,10 +52,16 @@ export class MemoryPersistAdapter implements PersistAdapter {
   async upsertProgress(taskId: string, progress: TaskProgress): Promise<void> {
     this.progress.set(taskId, structuredClone(progress))
     const t = this.tasks.get(taskId)
-    if (t) t.progress = structuredClone(progress)
+    if (t) {
+      t.progress = structuredClone(progress)
+    }
   }
 
   async deleteTask(taskId: string): Promise<void> {
+    for (const id of collectDescendantIds(this.tasks, taskId)) {
+      this.tasks.delete(id)
+      this.progress.delete(id)
+    }
     this.tasks.delete(taskId)
     this.progress.delete(taskId)
   }
@@ -67,7 +85,9 @@ export class MemoryPersistAdapter implements PersistAdapter {
 
   async closeAttempt(input: RecordCloseInput): Promise<void> {
     const existing = this.attempts.get(input.attemptId)
-    if (!existing) return
+    if (!existing) {
+      return
+    }
     this.attempts.set(input.attemptId, {
       ...existing,
       endedAt: input.endedAt,
@@ -101,8 +121,12 @@ export class MemoryPersistAdapter implements PersistAdapter {
     }
     const result: ProcessJournalRow[] = []
     for (const row of this.journal) {
-      if (row.op !== 'spawn') continue
-      if (closed.has(this.journalKey(row))) continue
+      if (row.op !== 'spawn') {
+        continue
+      }
+      if (closed.has(this.journalKey(row))) {
+        continue
+      }
       result.push(row)
     }
     return result
@@ -115,8 +139,12 @@ export class MemoryPersistAdapter implements PersistAdapter {
   async loadLatestAttempt(taskId: string): Promise<AttemptRow | null> {
     let best: AttemptRow | null = null
     for (const a of this.attempts.values()) {
-      if (a.taskId !== taskId) continue
-      if (!best || a.attemptNumber > best.attemptNumber) best = a
+      if (a.taskId !== taskId) {
+        continue
+      }
+      if (!best || a.attemptNumber > best.attemptNumber) {
+        best = a
+      }
     }
     return best
   }

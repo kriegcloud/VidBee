@@ -1,5 +1,9 @@
 /// <reference types="vite/client" />
 
+interface Document {
+  readonly activeViewTransition?: ViewTransition | null
+}
+
 interface RybbitClient {
   clearUserId: () => void
   event: (eventName: string, properties?: Record<string, unknown>) => void

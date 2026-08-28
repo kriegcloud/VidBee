@@ -16,8 +16,21 @@
     "betaProgramDescription": "Ricevi build anticipate e prossime funzionalità prima di tutti.",
     "betaProgramTitle": "Canale anteprima",
     "description": "VidBee è un downloader gratuito e open-source costruito con Electron e alimentato da yt-dlp.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "Riserva integrata",
+        "checking": "Verifica in corso",
+        "installing": "Installazione",
+        "preparing": "Preparazione",
+        "retry-scheduled": "Nuovo tentativo pianificato",
+        "unavailable": "Non disponibile",
+        "up-to-date": "Aggiornato"
+      },
+      "title": "Motore di download",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "Segui @nexmoex"
+      "follow": "Segui @nexmoe"
     },
     "followAuthorDescription": "Rimani aggiornato con le ultime notizie e aggiornamenti di VidBee.",
     "followAuthorSupport": "Segui lo sviluppatore su X (Twitter) per ottenere gli ultimi aggiornamenti e notizie su VidBee.",
@@ -40,8 +53,6 @@
       "updateError": "Errore nel controllo degli aggiornamenti: {{error}}",
       "unknownErrorFallback": "Errore sconosciuto"
     },
-    "preferencesDescription": "Regola le impostazioni di aggiornamento senza lasciare questa pagina.",
-    "preferencesTitle": "Toggle Rapidi",
     "resources": {
       "changelog": "Note di rilascio",
       "changelogDescription": "Tieni traccia di cosa è cambiato in ogni versione.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "Segnala bug o richiedi funzionalità su GitHub.",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "Condividi feedback o suggerimenti su X menzionando @nexmoex.",
+      "xFeedbackDescription": "Condividi feedback o suggerimenti su X menzionando @nexmoe.",
       "discord": "Discord",
       "discordDescription": "Unisciti alla nostra community Discord per discussioni e supporto.",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "Scarica video e audio da centinaia di siti",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "Uscire da VidBee?",
+      "message": "C'è {{count}} attività in corso. Uscire la interromperà.",
+      "messagePlural": "Ci sono {{count}} attività in corso. Uscire le interromperà.",
+      "quit": "Esci",
+      "cancel": "Annulla"
+    }
   },
   "download": {
     "active": "Attivo",
@@ -117,10 +135,15 @@
     "back": "Indietro",
     "cancel": "Annulla",
     "cancelled": "Annullato",
+    "pause": "Pausa",
+    "paused": "In pausa",
+    "resume": "Riprendi",
     "clearCompleted": "Cancella Completati",
     "clearDownloads": "Cancella Download",
     "completed": "Completato",
     "downloadAudio": "Scarica Audio",
+    "dialogSubtitle": "Scegli un formato e la cartella di salvataggio",
+    "dialogTitle": "Scarica",
     "downloadBtn": "Scarica",
     "downloadPending": "In attesa",
     "downloadQueue": "Coda Download",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "Clicca per incollare link playlist dagli appunti [Ctrl + V]",
     "pasteUrl": "Clicca per incollare URL video o ID [Ctrl + V]",
     "pasteUrlButton": "Incolla URL",
+    "ingestDropUrl": "Rilascia per scaricare",
+    "ingestDropMedia": "Rilascia per trascrivere",
+    "ingestDropMixed": "Rilascia per scaricare e trascrivere",
+    "ingestDropDescription": "I link avviano un download. I file audio e video avviano una trascrizione.",
+    "ingestEmptyHint": "Incolla un link per scaricare, oppure rilascia audio o video per trascrivere.",
     "preparing": "Preparazione...",
     "processing": "Elaborazione",
     "progress": "Progresso",
@@ -192,6 +220,9 @@
     "video": "Video",
     "videoInfo": "Informazioni Video",
     "videoInfoUpdated": "Informazioni video aggiornate",
+    "frameRate": "Frequenza fotogrammi",
+    "codecAuto": "Auto",
+    "fpsHighest": "Più alta",
     "metadata": {
       "source": "Fonte",
       "playlist": "Playlist",
@@ -219,7 +250,22 @@
       "subscription": "Sottoscrizione"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "Configura i cookie",
+    "cookiesSetupDialogTitle": "Configura i cookie",
+    "cookiesSetupNeeded": "Questo download richiede una sessione connessa. Configura i cookie e riprova.",
+    "cookiesSetupLocked": "Chrome sta bloccando il database dei cookie. Usa Firefox, importa un file di cookie o chiudi completamente Chrome.",
+    "cookiesSetupMacFiles": "macOS sta impedendo a VidBee di leggere i cookie di questo browser. Apri Impostazioni di Sistema → Privacy e sicurezza → File e cartelle, consenti a VidBee l’accesso a questo browser e riprova. Se l’hai già consentito, chiudi completamente VidBee e riaprilo.",
+    "cookiesSetupOpenFilesSettings": "Apri impostazioni File e cartelle",
+    "cookiesSetupDecrypt": "Windows non può decifrare i cookie di Chrome. Usa Firefox o importa un file di cookie.",
+    "cookiesSetupFileInvalid": "Il file dei cookie non è un export valido. Esporta un cookies.txt e riprova.",
+    "cookiesSetupKeyring": "Questa build Linux non può leggere i cookie di Chrome. Usa Firefox o importa un file di cookie.",
+    "cookiesSetupStale": "I cookie attuali sembrano scaduti o bloccati. Aggiorna l’accesso e riprova.",
+    "cookiesSetupRetry": "Riprova il download",
+    "cookiesSetupDone": "Fatto",
+    "pause": "Pausa",
+    "paused": "In pausa",
+    "resume": "Riprendi"
   },
   "error": {
     "title": "Qualcosa è andato storto",
@@ -319,6 +365,7 @@
     "download": "Scarica",
     "playlist": "Scarica Playlist",
     "rss": "RSS",
+    "transcripts": "Trascrizioni",
     "subscriptions": "Abbonamenti",
     "preferences": "Preferenze",
     "supportedSites": "Siti Supportati",
@@ -342,7 +389,12 @@
     "removeFailed": "Errore nella rimozione dell'elemento",
     "settingsSaved": "Impostazioni salvate",
     "urlCopied": "URL copiato negli appunti",
-    "videoCopied": "Video copiato negli appunti"
+    "videoCopied": "Video copiato negli appunti",
+    "transcriptionStarted": "Trascrizione avviata",
+    "transcriptionStartedMany": "Avviata la trascrizione di {{count}} file",
+    "transcriptionStartFailed": "Impossibile avviare la trascrizione",
+    "unsupportedDrop": "Incolla un link, oppure rilascia un file audio o video",
+    "localMediaDesktopOnly": "I file locali si trascrivono nell'app desktop"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} file",
@@ -429,9 +481,9 @@
     "audio": "Preferenze Audio",
     "browserForCookies": "Seleziona browser per usare i cookie",
     "browserForCookiesDescription": "Browser per estrarre i cookie per l'autenticazione",
-    "browserForCookiesWindowsNote": "Su Windows sono supportati solo i cookie di Firefox. Per altri browser, configura manualmente un file di cookie.",
+    "browserForCookiesWindowsNote": "Su Windows sono supportati solo i cookie di Firefox. Per altri browser, configura manualmente un file di cookie",
     "browserForCookiesProfile": "Nome profilo o percorso",
-    "browserForCookiesProfileDescription": "Percorso del profilo per il browser selezionato sopra. Compilato automaticamente quando possibile.",
+    "browserForCookiesProfileDescription": "Percorso del profilo per il browser selezionato sopra. Compilato automaticamente quando possibile",
     "browserForCookiesProfilePlaceholder": "Nome profilo o percorso completo (opzionale)",
     "browserForCookiesProfileInvalid": "Il percorso del profilo non è valido. Scegli la cartella del profilo del browser selezionato.",
     "browserForCookiesProfileInvalidPath": "Quella cartella non esiste. Scegli una cartella del profilo esistente.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "Scegli il tuo browser qui sopra per riutilizzare automaticamente la sessione a cui hai effettuato l'accesso.",
     "cookiesHelpFile": "Esporta un file cookie di Netscape (vedi le FAQ yt-dlp) e selezionalo qui quando necessario.",
     "cookiesGuideTitle": "Serve una guida?",
-    "cookiesGuideDescription": "Consulta una guida passo passo per usare i cookie in VidBee.",
+    "cookiesGuideDescription": "Consulta una guida passo passo per usare i cookie in VidBee",
     "cookiesGuideLink": "Apri la guida ai cookie",
     "openLinkError": "Impossibile aprire il collegamento",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "Scegli la lingua preferita per l'interfaccia dell'applicazione",
     "light": "Chiaro",
     "hideDockIcon": "Nascondi l'icona del Dock alla chiusura",
-    "hideDockIconDescription": "Nasconde automaticamente l'icona del Dock quando la finestra viene chiusa. Usa la barra dei menu o l'icona per riaprire.",
+    "hideDockIconDescription": "Nasconde automaticamente l'icona del Dock quando la finestra viene chiusa. Usa la barra dei menu o l'icona per riaprire",
     "launchAtLogin": "Avvia all'avvio",
-    "launchAtLoginDescription": "Apri VidBee automaticamente dopo aver effettuato l'accesso al tuo computer.",
-    "launchAtLoginUnsupported": "L'avvio automatico è disponibile solo su macOS e Windows.",
+    "launchAtLoginDescription": "Apri VidBee automaticamente dopo aver effettuato l'accesso al tuo computer",
+    "launchAtLoginUnsupported": "L'avvio automatico è disponibile solo su macOS e Windows",
     "enableAnalytics": "Aiutaci a migliorare VidBee",
-    "enableAnalyticsDescription": "Condividi dati di utilizzo anonimi per aiutarci a capire come viene utilizzata l'app e dare priorità ai miglioramenti.",
+    "enableAnalyticsDescription": "Condividi dati di utilizzo anonimi per aiutarci a capire come viene utilizzata l'app e dare priorità ai miglioramenti",
     "enableDownloadNotifications": "Notifiche di download",
-    "enableDownloadNotificationsDescription": "Mostra una notifica di sistema quando un download è completato.",
+    "enableDownloadNotificationsDescription": "Mostra una notifica di sistema quando un download è completato",
     "downloadWithoutChannelSubfolders": "Salva i video senza sottocartelle del canale",
-    "downloadWithoutChannelSubfoldersDescription": "Salva i download video singoli direttamente nella cartella Videos invece di creare una sottocartella del canale.",
+    "downloadWithoutChannelSubfoldersDescription": "Salva i download video singoli direttamente nella cartella Videos invece di creare una sottocartella del canale",
+    "downloadSubtitles": "Scarica sottotitoli",
+    "downloadSubtitlesDescription": "Scarica solo i sottotitoli nelle lingue selezionate quando disponibili",
+    "subtitleLanguages": "Lingue dei sottotitoli",
+    "subtitleLanguagesDescription": "Scegli le lingue dei sottotitoli che VidBee deve richiedere per ogni video",
+    "subtitleLanguageSearch": "Cerca lingue dei sottotitoli",
+    "subtitleLanguageEmpty": "Nessuna lingua corrispondente",
+    "subtitleLanguageLimit": "Seleziona fino a {{count}} lingue per ridurre i limiti di richieste della piattaforma",
+    "followInterfaceLanguage": "Segui la lingua dell'interfaccia ({{language}})",
     "embedChapters": "Incorpora capitoli",
     "embedChaptersDescription": "Aggiungi marcatori di capitolo al file quando disponibili",
     "embedMetadata": "Incorpora metadati",
     "embedMetadataDescription": "Scrivi titolo, artista e altri metadati quando disponibili",
     "embedSubs": "Incorpora sottotitoli",
-    "embedSubsDescription": "Incorpora i sottotitoli nel file video (mp4, webm, mkv)",
+    "embedSubsDescription": "Incorpora i sottotitoli selezionati nel file video (mp4, webm, mkv)",
+    "writeAutoSubs": "Usa sottotitoli generati automaticamente",
+    "writeAutoSubsDescription": "Usa i sottotitoli automatici quando quelli del creatore non sono disponibili nelle lingue selezionate",
     "embedThumbnail": "Incorpora miniatura",
     "embedThumbnailDescription": "Aggiungi la miniatura come copertina",
+    "filenameStyle": "Stile del nome file",
+    "filenameStyleDescription": "Scegli come VidBee assegna il nome ai file video e audio salvati",
+    "filenameStyleNote": "Usato per i file salvati da VidBee. I modelli personalizzati di iscrizioni o playlist hanno ancora la priorità",
+    "filenameStyleOptions": {
+      "basic": "base",
+      "classic": "classico",
+      "nerdy": "nerd",
+      "pretty": "carino"
+    },
+    "filenameStylePreviewAudio": "anteprima file audio",
+    "filenameStylePreviewVideo": "anteprima file video",
+    "filenameViaVidBee": "Aggiungi via VidBee",
+    "filenameViaVidBeeDescription": "Aggiunge automaticamente via VidBee ai nomi dei file video e audio salvati",
+    "metadataTab": "Metadati",
+    "navGroup": {
+      "app": "App",
+      "download": "Download",
+      "system": "Sistema",
+      "ai": "IA"
+    },
     "shareWatermark": "Filigrana di condivisione",
     "shareWatermarkDescription": "Aggiunge una filigrana con il titolo originale, l'autore e il marchio VidBee",
     "maxConcurrentDownloads": "Numero massimo di download attivi",
@@ -502,7 +584,7 @@
     "oneClickDownload": "Download con Un Clic",
     "oneClickDownloadDescription": "Abilita download con un clic con impostazioni predefinite",
     "oneClickDownloadType": "Tipo download predefinito",
-    "oneClickDownloadTypeDescription": "Scegli il tipo di download predefinito per i download con un clic. La qualità usa il preset qui sotto.",
+    "oneClickDownloadTypeDescription": "Scegli il tipo di download predefinito per i download con un clic. La qualità usa il preset qui sotto",
     "oneClickQuality": "Qualità preferita",
     "oneClickQualityDescription": "Seleziona il preset di qualità utilizzato per i download con un clic",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "Proxy",
     "proxyDescription": "Server proxy per le richieste di rete",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "Origine download",
+    "downloadMirrorDescription": "Usa mirror cinesi (ModelScope, proxy GitHub) per yt-dlp, ffmpeg, Node e i modelli di trascrizione quando GitHub è lento o bloccato",
+    "downloadMirrorAuto": "Automatico",
+    "downloadMirrorChina": "Cina (ModelScope)",
+    "downloadMirrorGlobal": "Ufficiale",
     "rememberLastAudioLanguage": "Ricorda l’ultima lingua audio",
-    "rememberLastAudioLanguageDescription": "Riutilizza l’ultima lingua audio selezionata come predefinita per i prossimi download audio.",
+    "rememberLastAudioLanguageDescription": "Riutilizza l’ultima lingua audio selezionata come predefinita per i prossimi download audio",
     "selectConfigFile": "Seleziona file di configurazione",
     "selectPath": "Seleziona",
     "showMoreFormats": "Mostra più opzioni formato",
     "showMoreFormatsDescription": "Visualizza opzioni di formato aggiuntive nell'interfaccia",
     "subscriptionDefaults": {
-      "filenameDescription": "Modello utilizzato quando una sottoscrizione non sovrascrive il relativo nome file."
+      "filenameDescription": "Modello utilizzato quando una sottoscrizione non sovrascrive il relativo nome file"
     },
     "system": "Sistema",
     "theme": "Tema",
@@ -535,13 +622,243 @@
     },
     "video": "Preferenze Video",
     "oneClickContainer": "Contenitore",
-    "oneClickContainerDescription": "Scegli il contenitore di output per i download a un clic. Auto preferisce MP4 e ricade su MKV con codec incompatibili.",
+    "oneClickContainerDescription": "Scegli il contenitore di output per i download a un clic. Auto preferisce MP4 e ricade su MKV con codec incompatibili",
     "oneClickContainerOptions": {
       "auto": "Auto (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "Originale (default yt-dlp)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "Numero massimo di trascrizioni attive",
+    "maxConcurrentTranscriptionsDescription": "Quante trascrizioni possono essere eseguite contemporaneamente. Ogni processo usa questo computer. Ridurre il valore non interrompe i processi già in corso",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "Download di {{count}} modelli",
+    "asrDelete": "Elimina",
+    "asrDeleteError": "Impossibile eliminare questo modello IA.",
+    "asrCancel": "Annulla",
+    "asrCancelError": "Impossibile annullare questo download.",
+    "asrDownloadError": "Impossibile scaricare questo modello IA.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "Avvio multilingue più veloce. Va bene sui PC deboli",
+        "size": "~75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Un po’ meglio di Tiny, ancora leggero",
+        "size": "~150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "PC tipici. Buona accuratezza multilingue",
+        "size": "~250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "Veloce per CJK + inglese, incluso il cantonese",
+        "size": "~230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "Massima accuratezza in cinese. Serve un PC potente",
+        "size": "~840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "Più accurato in più lingue. Serve più RAM",
+        "size": "~770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "Vicino a large-v3, molto più veloce",
+        "size": "~810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "Pacchetto CJK+inglese più recente. Ancora leggero",
+        "size": "~230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "Ottimo inglese. Veloce sui PC tipici",
+        "size": "~650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "Parakeet inglese più recente. Migliore scelta inglese",
+        "size": "~650 MB"
+      }
+    },
+    "asrDownload": "Scarica",
+    "asrDownloadAndUse": "Scarica e usa",
+    "asrDownloaded": "Scaricati",
+    "asrRecommended": "Consigliati",
+    "asrRecommendedFor": "Consigliato per {{os}} · {{gpu}} · {{ram}} · {{cores}} core · {{language}}",
+    "asrAllModels": "Tutti i modelli",
+    "asrBestMatch": "Scelta migliore",
+    "asrMachine": {
+      "low": "PC di fascia bassa",
+      "mid": "PC tipico",
+      "high": "PC potente"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — multilingue",
+      "sense-voice": "SenseVoice — cinese, giapponese, coreano, inglese",
+      "qwen3": "Qwen3-ASR — massima accuratezza in cinese",
+      "parakeet": "Parakeet — inglese"
+    },
+    "asrLanguages": {
+      "multi": "multilingue"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "questo sistema"
+    },
+    "asrGpu": {
+      "apple": "GPU Apple",
+      "nvidia": "GPU NVIDIA",
+      "amd": "GPU AMD",
+      "intel": "GPU Intel",
+      "unknown": "GPU sconosciuta"
+    },
+    "providersTab": "Provider",
+    "promptsTab": "Prompt",
+    "transcriptionTab": "Trascrizione",
+    "ai": {
+      "allServices": "Tutti i servizi",
+      "configured": "Configurati",
+      "useProvider": "Usa",
+      "inUse": "In uso",
+      "addProvider": "Aggiungi {{name}}",
+      "editProvider": "Modifica provider",
+      "deleteProvider": "Rimuovi provider",
+      "edit": "Modifica",
+      "apiKey": "Chiave API",
+      "apiKeyKept": "Lascia vuoto per mantenere la chiave salvata",
+      "baseUrl": "Base URL",
+      "modelId": "ID modello",
+      "modelIdPlaceholder": "model-id",
+      "name": "Nome",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "saveError": "Impossibile salvare le impostazioni IA.",
+      "providerDialogDescription": "Le chiavi API restano su questo computer. I provider preimpostati hanno già una base URL",
+      "testConnection": "Prova connessione",
+      "testingConnection": "Test in corso…",
+      "testSuccess": "Connesso. Risposta: {{reply}}",
+      "testFailed": "Impossibile raggiungere questo modello.",
+      "addPrompt": "Aggiungi prompt",
+      "editPrompt": "Modifica prompt",
+      "deletePrompt": "Elimina prompt",
+      "promptTitle": "Titolo",
+      "promptIcon": "Icona",
+      "promptBody": "Prompt",
+      "promptDialogDescription": "Questo prompt viene eseguito su una trascrizione con il provider attivo",
+      "restorePresets": "Ripristina predefiniti",
+      "testTitle": "Prova con una trascrizione di esempio",
+      "testRun": "Esegui",
+      "testStop": "Interrompi",
+      "testOutput": "Output",
+      "testPlaceholder": "Il risultato del prompt apparirà qui",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "Elenco puntato"
+        },
+        "improve-grammar": {
+          "title": "Correggi grammatica e punteggiatura"
+        },
+        "generate-faq": {
+          "title": "Genera FAQ"
+        },
+        "extract-statistics": {
+          "title": "Estrai le statistiche"
+        },
+        "paraphrase-content": {
+          "title": "Parafrasa il contenuto"
+        },
+        "create-mindmap": {
+          "title": "Crea una mappa mentale"
+        },
+        "translate": {
+          "title": "Traduci"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "Non configurato",
+      "statusNotConfiguredHint": "I download che richiedono un account falliranno finché non completi la configurazione",
+      "statusUsingBrowser": "Uso l’accesso di {{browser}}",
+      "statusUsingFile": "Uso un file di cookie",
+      "statusOk": "Pronto",
+      "statusExpired": "Scaduto",
+      "statusEmpty": "Nessun accesso trovato",
+      "statusInvalid": "Richiede attenzione",
+      "healthOkBrowser": "VidBee può leggere i cookie da {{browser}}. Resta connesso al sito lì",
+      "healthOkFile": "Cookie di accesso trovati per {{sites}}",
+      "healthOkFileGeneric": "Questo file di cookie sembra valido",
+      "healthExpired": "Questi cookie sono scaduti. Accedi di nuovo e importa un nuovo file",
+      "healthEmpty": "Questo file non ha cookie di accesso per i siti supportati. Esporta mentre sei connesso, poi riprova",
+      "healthInvalidFile": "Il file di cookie manca o non è un export valido",
+      "healthInvalidBrowser": "VidBee non può leggere i cookie di questo profilo del browser",
+      "healthMacosFilesPermission": "macOS sta bloccando l’accesso ai cookie. Consenti a VidBee l’accesso a questo browser in Impostazioni di Sistema → Privacy e sicurezza → File e cartelle, poi controlla di nuovo.",
+      "healthUnsupportedBrowser": "Questo browser non può essere usato per i cookie sul tuo sistema",
+      "sitesLabel": "Siti: {{sites}}",
+      "recommendedTitle": "Consigliato",
+      "recommendedUseBrowser": "Usa {{browser}}",
+      "recommendedUseBrowserHint": "Riutilizza l’account con cui hai già effettuato l’accesso in {{browser}}",
+      "recommendedImportFile": "Importa un file di cookie",
+      "recommendedImportFileWindowsHint": "Su Windows, Chrome ed Edge non possono condividere i cookie con VidBee. Esporta invece un file di cookie dal browser",
+      "recommendedImportFileHint": "Esporta i cookie dal browser, poi scegli il file qui",
+      "recommendedFirefoxHint": "Su Windows, Firefox è l’unico browser che VidBee può leggere direttamente",
+      "useThisBrowser": "Usa {{browser}}",
+      "importFile": "Scegli file di cookie",
+      "clearSetup": "Cancella cookie",
+      "checkStatus": "Controlla di nuovo",
+      "otherOptions": "Altre opzioni",
+      "hideOtherOptions": "Nascondi altre opzioni",
+      "chooseBrowser": "Scegli un altro browser",
+      "advancedProfile": "Percorso del profilo",
+      "windowsUnsupportedCurrent": "{{browser}} non può essere usato per i cookie su Windows. Usa Firefox o importa un file di cookie.",
+      "fileExportStep1": "Installa un’estensione per esportare i cookie, ad esempio Get cookies.txt LOCALLY",
+      "fileExportStep2": "Accedi al sito, poi esporta il file di cookie",
+      "fileExportStep3": "Scegli quel file qui",
+      "fileExportExtension": "Estensione Chrome / Edge",
+      "checking": "Controllo dei cookie…",
+      "applied": "Cookie aggiornati",
+      "profileMissingDb": "Questo profilo Firefox non ha un database dei cookie. Apri Firefox una volta, poi riprova."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "Tag automatici",
       "customDirectory": "Directory personalizzata",
       "namingTemplate": "Modello nome file personalizzato (solo file)",
+      "autoDownload": "Download automatico",
       "onlyLatest": "Scarica solo il video più recente",
       "onlyLatestDescription": "Ignora gli elementi del backlog e recupera solo il caricamento più recente da questo feed.",
       "enabled": "Abilitato",
@@ -655,6 +973,18 @@
       "hint": "Non hai l'URL del feed RSS? \nUtilizza RSSHub per generare feed RSS per YouTube, Twitter e migliaia di altre piattaforme."
     }
   },
+  "kernelPreparation": {
+    "copying": "Copia del motore di download…",
+    "description": "VidBee sta preparando il motore di download. Ci vorrà solo un momento.",
+    "errorDescription": "VidBee non è riuscito a preparare un motore di download funzionante. Controlla l’accesso all’archivio locale e riprova.",
+    "errorTitle": "Motore di download non disponibile",
+    "finalizing": "Completamento della configurazione…",
+    "progressLabel": "Avanzamento della preparazione del motore di download",
+    "retry": "Riprova",
+    "retrying": "Nuovo tentativo…",
+    "title": "Preparazione di VidBee",
+    "validating": "Verifica del motore di download…"
+  },
   "sites": {
     "homeInlineDescription": "Supporta {{sites}} e altro.",
     "moreDescription": "La lista completa yt-dlp viene aggiornata costantemente dalla comunità.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "Piattaforme principali",
     "viewAll": "Visualizza tutti i siti supportati"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "Preparazione dei modelli di trascrizione…",
+    "preparingSpeakerModels": "Preparazione dei modelli speaker…",
+    "modelsProgressLabel": "Avanzamento del download dei modelli di trascrizione",
+    "view": "View transcript",
+    "sourceCaptions": "Sottotitoli del video",
+    "sourceAi": "Trascrizione IA",
+    "sourceSwitch": "Origine della trascrizione",
+    "sourceCaptionNamed": "Sottotitoli in {{language}}",
+    "sourceCaptionAutoNamed": "Sottotitoli automatici in {{language}}",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "La trascrizione si è interrotta prima della fine. Puoi riprovare.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "Interrompi",
+    "stopFailed": "Impossibile interrompere la trascrizione.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "Preparazione audio",
+    "identifyingSpeakers": "Identificazione degli speaker",
+    "back": "Torna alle trascrizioni",
+    "library": {
+      "empty": "Nessuna trascrizione",
+      "emptyHint": "Scegli un file audio o video locale, oppure trascrivi un download completato.",
+      "addMedia": "Aggiungi audio o video",
+      "goToDownloads": "Vai ai download",
+      "untitled": "Media senza titolo",
+      "previewPending": "La trascrizione apparirà qui man mano che viene generata.",
+      "queued": "In coda",
+      "processing": "In elaborazione",
+      "retrySoon": "Nuovo tentativo a breve",
+      "cancelled": "Annullata",
+      "open": "Apri la trascrizione di {{title}}",
+      "dropDescription": "Trascina o incolla file audio o video per trascrivere.",
+      "experimentalBadge": "Sperimentale",
+      "experimentalHint": "Potrebbe essere unita a Download."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "Copia trascrizione",
+    "copied": "Trascrizione copiata",
+    "copyFailed": "Impossibile copiare la trascrizione.",
+    "captionSelect": "Trascrizione selezionata",
+    "captionSelectClear": "Cancella selezione",
+    "export": {
+      "action": "Esporta",
+      "preview": "Anteprima di esportazione",
+      "description": "Anteprima della trascrizione da copiare o salvare come file di testo.",
+      "styleLabel": "Stile",
+      "style": {
+        "transcript": "Trascrizione",
+        "subtitles": "Sottotitoli",
+        "segments": "Segmenti",
+        "whisper": "Whisper",
+        "video": "Video + sottotitoli"
+      },
+      "formatLabel": "Formato",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "Codifica",
+      "encode": {
+        "soft": "Softsubs",
+        "hard": "Hardsubs"
+      },
+      "softHint": "Muxa una traccia sottotitoli. I player possono attivarli o disattivarli. Veloce, senza perdita di qualità.",
+      "hardHint": "Incide i sottotitoli nell’immagine. Il video viene ricodificato e i sottotitoli non si possono disattivare.",
+      "noMedia": "Manca il video di origine, l’esportazione video non è disponibile.",
+      "audioOnly": "Questo file è solo audio. Esporta invece una trascrizione di testo.",
+      "videoSaved": "Video esportato",
+      "videoSaveFailed": "Impossibile esportare il video.",
+      "exporting": "Esportazione…",
+      "cancelExport": "Annulla esportazione",
+      "cancelled": "Esportazione annullata",
+      "progress": "{{percent}}%",
+      "options": "Opzioni",
+      "grouping": "Raggruppamento",
+      "groupingValue": {
+        "none": "Nessuno",
+        "words": "Parole",
+        "sentences": "Frasi"
+      },
+      "showTimestamp": "Mostra timestamp",
+      "close": "Chiudi",
+      "copy": "Copia",
+      "copied": "Copiato negli appunti",
+      "copyFailed": "Impossibile copiare l’anteprima di esportazione.",
+      "saved": "Trascrizione esportata",
+      "saveFailed": "Impossibile esportare la trascrizione.",
+      "empty": "Non c’è ancora nulla da esportare."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "Ridimensiona il pannello della trascrizione",
+    "unknownSpeaker": "Relatore sconosciuto",
+    "speakers": "Relatori ({{count}})",
+    "info": {
+      "tab": "Info",
+      "channel": "Canale",
+      "duration": "Durata",
+      "file": "File",
+      "fileSize": "Dimensione",
+      "url": "URL di origine",
+      "source": "Origine",
+      "model": "Modello",
+      "language": "Lingua",
+      "speakers": "Relatori",
+      "segments": "Segmenti",
+      "createdAt": "Trascritto",
+      "empty": "Nessun dettaglio disponibile.",
+      "openUrl": "Apri URL di origine"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "Vai a {{name}}",
+    "seekAt": "Vai a {{time}}",
+    "searchPlaceholder": "Cerca nella trascrizione",
+    "searchMatches": "{{count}} risultati",
+    "searchNoMatches": "Nessun risultato",
+    "searchNext": "Successivo",
+    "searchPrevious": "Precedente",
+    "searchJumpTo": "Vai a questo sottotitolo",
+    "collapsePanel": "Comprimi trascrizione",
+    "expandPanel": "Espandi trascrizione",
+    "player": {
+      "play": "Riproduci",
+      "pause": "Pausa",
+      "seek": "Posizione",
+      "volume": "Volume",
+      "mute": "Disattiva audio",
+      "unmute": "Attiva audio",
+      "playbackRate": "Velocità di riproduzione",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "Preparazione del file per la riproduzione…",
+      "unavailable": "Impossibile preparare questo file per la riproduzione nella pagina.",
+      "failedTitle": "Questo video non può essere riprodotto qui",
+      "failedAudioTitle": "Questo audio non può essere riprodotto qui",
+      "failedDetail": "Puoi comunque leggere la trascrizione.",
+      "retry": "Riprova",
+      "error": "Riproduzione non riuscita: {{message}}",
+      "captionsShow": "Mostra i sottotitoli",
+      "captionsHide": "Nascondi i sottotitoli",
+      "skipBack": "Indietro di 15 secondi",
+      "skipForward": "Avanti di 15 secondi",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "Schermo intero",
+      "fullscreenExit": "Esci da schermo intero",
+      "resumed": "Ripreso da {{time}}",
+      "startOver": "Ricomincia",
+      "nowPlaying": "In riproduzione",
+      "closeBar": "Chiudi player",
+      "openTranscript": "Torna alla trascrizione"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "È già stato usato il modello di qualità più alta. Prova a regolare il numero di parlanti se le etichette sono mescolate. Musica di sottofondo e voci sovrapposte possono ancora confondere i parlanti.",
+    "speakerCount": {
+      "adjust": "Regola parlanti",
+      "auto": "Automatico (rileva)",
+      "one": "1 parlante",
+      "count": "{{count}} parlanti",
+      "apply": "Trascrivi di nuovo",
+      "detail": "Trascriveremo di nuovo con questo numero di parlanti. Automatico è il valore predefinito. Puoi lasciare questa pagina. La trascrizione attuale resta nella cronologia."
+    },
+    "promptMenu": "Tutti i prompt",
+    "promptStop": "Interrompi",
+    "promptRerun": "Esegui di nuovo",
+    "promptCopy": "Copia",
+    "promptShare": "Condividi immagine",
+    "promptShareTitle": "Condividi immagine",
+    "promptShareDownload": "Scarica",
+    "promptShareNative": "Condividi",
+    "promptSharing": "Preparazione dell'immagine…",
+    "promptShared": "Immagine copiata",
+    "promptShareSaved": "Immagine salvata",
+    "promptShareFailed": "Impossibile preparare l'immagine.",
+    "promptShareSaveFailed": "Impossibile salvare l'immagine.",
+    "promptShareNativeFailed": "Impossibile aprire il menu di condivisione.",
+    "promptShareFooter": "Creato con VidBee",
+    "promptShareTagline": "Open source. Scarica un video. Chiedi all'IA.",
+    "captionShareSaid": "{{name}} ha detto",
+    "promptOutput": "Risultato del prompt",
+    "promptScrollToEnd": "Vai all'ultimo",
+    "promptCopied": "Copiato",
+    "promptNoProvider": "Configura un provider IA nelle impostazioni per eseguire questo prompt.",
+    "promptOpenSettings": "Apri le impostazioni del provider",
+    "promptEmpty": "Il risultato apparirà qui.",
+    "promptRunning": "Scrittura…",
+    "promptThinking": "Ragionamento",
+    "promptThinkingFor": "Ragiona da {{seconds}} s",
+    "promptThoughtFor": "Ha ragionato per {{seconds}} s",
+    "promptAborted": "Interrotto",
+    "promptNoTranscript": "Serve una trascrizione prima di eseguire questo prompt.",
+    "promptTryAgain": "Riprova",
+    "promptLoading": "Caricamento impostazioni IA…",
+    "promptGuide": {
+      "noProvider": "Nessun provider IA è attivo, quindi questo prompt non può partire.",
+      "missingApiKey": "Al provider attivo manca la chiave API.",
+      "missingModel": "Al provider attivo manca l’ID del modello.",
+      "unknownPrompt": "Questo prompt non è più disponibile.",
+      "emptyTranscript": "Questo prompt richiede una trascrizione completata.",
+      "auth": "Il provider ha rifiutato la richiesta. La chiave API o l’account sono probabilmente non validi.",
+      "network": "Impossibile raggiungere il provider.",
+      "emptyOutput": "Il provider ha finito senza restituire testo.",
+      "unknown": "Il prompt non è stato eseguito."
+    },
+    "promptErrorDetails": "Dettagli errore",
+    "promptWhatToDo": "Cosa provare",
+    "promptUsingProvider": "In uso: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "Apri Impostazioni → Provider.",
+        "s2": "Aggiungi un servizio, salva chiave API e ID modello, poi fai clic su Usa.",
+        "s3": "Torna qui e riesegui il prompt."
+      },
+      "missingApiKey": {
+        "s1": "Apri Impostazioni → Provider e modifica il provider attivo.",
+        "s2": "Incolla una chiave API valida e salva.",
+        "s3": "Riesegui il prompt."
+      },
+      "missingModel": {
+        "s1": "Apri Impostazioni → Provider e modifica il provider attivo.",
+        "s2": "Inserisci un ID modello realmente supportato da questo servizio.",
+        "s3": "Riesegui il prompt."
+      },
+      "unknownPrompt": {
+        "s1": "Apri Impostazioni → Prompt.",
+        "s2": "Ripristina i valori predefiniti o ricrea questo prompt."
+      },
+      "emptyTranscript": {
+        "s1": "Attendi che la trascrizione finisca.",
+        "s2": "Se non c’è voce, trascrivi comunque o scegli un altro file."
+      },
+      "auth": {
+        "s1": "Apri le impostazioni del provider e sostituisci la chiave API.",
+        "s2": "Verifica credito e permesso per questo modello.",
+        "s3": "Se è un endpoint personalizzato, verifica che accetti questa chiave."
+      },
+      "network": {
+        "s1": "Controlla Internet e il proxy.",
+        "s2": "Per un provider personalizzato, verifica che l’URL di base sia raggiungibile e includa /v1 se serve.",
+        "s3": "Se l’host è giù, cambia provider."
+      },
+      "emptyOutput": {
+        "s1": "In Impostazioni → Provider, verifica che l’ID modello sia corretto.",
+        "s2": "Per un endpoint personalizzato, controlla URL, chiave e che il modello sia distribuito.",
+        "s3": "Leggi i dettagli sotto, poi riprova o cambia provider."
+      },
+      "unknown": {
+        "s1": "Leggi prima i dettagli errore sotto.",
+        "s2": "In Impostazioni → Provider, verifica chiave, ID modello e URL.",
+        "s3": "Riprova o cambia provider."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Novità",
+    "description": "Trascrizioni e IA, su questo computer.",
+    "tryIt": "Prova",
+    "features": {
+      "transcript": {
+        "title": "Trascrizioni video automatiche",
+        "description": "Al termine del download, VidBee genera automaticamente una trascrizione del video su questo computer. Non viene caricato nulla."
+      },
+      "speakers": {
+        "title": "Etichette dei parlanti",
+        "description": "Vedi chi ha detto cosa e vai a quel momento nel video."
+      },
+      "summary": {
+        "title": "Riassunti IA",
+        "description": "Trasforma una trascrizione in elenchi, FAQ, mappa mentale o parafrasi. Aggiungi i tuoi prompt in Impostazioni."
+      },
+      "localFiles": {
+        "title": "Trascrivi qualsiasi file",
+        "description": "Trascina un audio o un video locale in Trascrizioni. Esporta testo, sottotitoli o un video con didascalie incise."
+      }
+    }
   }
 }

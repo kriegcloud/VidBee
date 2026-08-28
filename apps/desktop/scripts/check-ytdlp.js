@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from '@vidbee/logger/script'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 
@@ -10,16 +11,16 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const platform = process.argv[2]
 
 if (!platform) {
-  console.error('❌ Error: Platform argument is required!')
-  console.error('Usage: node scripts/check-ytdlp.js [win|mac|linux]')
+  log.error('❌ Error: Platform argument is required!')
+  log.error('Usage: node scripts/check-ytdlp.js [win|mac|linux]')
   process.exit(1)
 }
 
 const supportedPlatforms = ['win', 'mac', 'linux']
 
 if (!supportedPlatforms.includes(platform)) {
-  console.error('❌ Error: Invalid platform specified!')
-  console.error('Usage: node scripts/check-ytdlp.js [win|mac|linux]')
+  log.error('❌ Error: Invalid platform specified!')
+  log.error('Usage: node scripts/check-ytdlp.js [win|mac|linux]')
   process.exit(1)
 }
 
@@ -62,14 +63,14 @@ const binaries = [
     }
   },
   {
-    label: 'deno',
+    label: 'Node.js',
     paths: {
-      win: ['deno.exe'],
-      mac: ['deno'],
-      linux: ['deno']
+      win: ['node/node.exe'],
+      mac: ['node/node'],
+      linux: ['node/node']
     },
     help: {
-      default: 'https://github.com/denoland/deno/releases/latest'
+      default: 'https://nodejs.org/en/download'
     }
   }
 ]
@@ -83,15 +84,15 @@ for (const binary of binaries) {
   )
 
   if (found) {
-    console.log(`✅ ${binary.label} found: resources/${found}`)
+    log.log(`✅ ${binary.label} found: resources/${found}`)
   } else {
     const expected = candidates.length ? candidates.join(' or ') : binary.label
-    console.error(`❌ Error: resources/${expected} not found!`)
-    console.error(`Please download ${binary.label} to the resources/ directory first.`)
+    log.error(`❌ Error: resources/${expected} not found!`)
+    log.error(`Please download ${binary.label} to the resources/ directory first.`)
     const help =
       typeof binary.help === 'string' ? binary.help : binary.help[platform] || binary.help.default
     if (help) {
-      console.error(`See ${help}`)
+      log.error(`See ${help}`)
     }
     hasMissingBinary = true
   }

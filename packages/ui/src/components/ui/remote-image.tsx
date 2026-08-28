@@ -18,7 +18,7 @@ interface RemoteImageProps {
 }
 
 const DEFAULT_CACHE_TIMEOUT_MS = 30_000
-const DEFAULT_LOCAL_URL_PREFIXES = ['file://', 'data:', 'blob:']
+const DEFAULT_LOCAL_URL_PREFIXES = ['file://', 'data:']
 
 const isHttpUrl = (value: string): boolean => {
   return value.startsWith('http://') || value.startsWith('https://')
@@ -64,13 +64,19 @@ export function RemoteImage({
         return
       }
 
+      if (value.startsWith('blob:')) {
+        setResolvedSrc(undefined)
+        setIsResolving(false)
+        return
+      }
+
       const shouldResolveFromCache =
         useCache &&
         Boolean(cacheResolver) &&
         isHttpUrl(value) &&
         !isLocalUrl(value, localUrlPrefixes)
 
-      if (!shouldResolveFromCache || !cacheResolver) {
+      if (!(shouldResolveFromCache && cacheResolver)) {
         setResolvedSrc(value)
         setIsResolving(false)
         return

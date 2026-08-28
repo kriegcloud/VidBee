@@ -1,4 +1,7 @@
+import { initVidbeeLogger } from '@vidbee/logger'
 import { createApiServer } from './server'
+
+initVidbeeLogger({ service: 'vidbee-api' })
 
 const host = process.env.VIDBEE_API_HOST?.trim() || '0.0.0.0'
 const portValue = Number(process.env.VIDBEE_API_PORT ?? '')

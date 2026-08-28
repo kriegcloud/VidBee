@@ -13,6 +13,18 @@ export type TaskKind =
   | 'instagram-profile-category'
   | 'subscription-item'
   | 'yt-dlp-forward'
+  | 'transcription'
+
+/** Media download kinds that may receive a transcription child task. */
+export const TRANSCRIBABLE_TASK_KINDS: ReadonlySet<TaskKind> = new Set([
+  'video',
+  'audio',
+  'subscription-item'
+])
+
+export const TRANSCRIPTION_GROUP_KEY = 'transcription'
+
+export const isDownloadTaskKind = (kind: TaskKind): boolean => kind !== 'transcription'
 
 export type TaskStatus =
   | 'queued'
@@ -72,6 +84,13 @@ export interface TaskInput {
   options?: Record<string, unknown>
 }
 
+export type TranscriptResultKind = 'transcript' | 'no-speech'
+
+export interface TranscriptTaskResult {
+  resultKind: TranscriptResultKind
+  transcriptId: string
+}
+
 export interface TaskOutput {
   filePath: string
   size: number
@@ -87,16 +106,22 @@ export interface TaskOutput {
   formatId?: string | null
   /** Root directory for multi-file tasks such as an Instagram profile category. */
   outputDirectory?: string
-  /** Total files materialized by the task, including files skipped because they exist. */
+  /** Total files materialized by the task, including existing files. */
   fileCount?: number
   /** Files downloaded during this attempt. */
   downloadedCount?: number
-  /** Files already present and therefore skipped during this attempt. */
+  /** Files already present and skipped during this attempt. */
   skippedCount?: number
   /** Files gallery-dl reported as failed during this attempt. */
   failedCount?: number
   /** Aggregate size of materialized files when cheaply available. */
   totalSize?: number
+  /**
+   * Set by the transcription executor after the transcript or explicit
+   * no-speech result has been committed to SQLite. Download tasks leave
+   * this unset.
+   */
+  transcript?: TranscriptTaskResult
 }
 
 export interface TaskProgress {
@@ -183,7 +208,7 @@ export interface ProcessJournalRow {
   signal: string | null
 }
 
-export type ProcessKind = 'yt-dlp' | 'gallery-dl' | 'ffmpeg' | 'ffprobe'
+export type ProcessKind = 'yt-dlp' | 'gallery-dl' | 'ffmpeg' | 'ffprobe' | 'ai-worker'
 
 /**
  * Read-only snapshot returned by TaskStore.snapshot(). Consumers MUST treat

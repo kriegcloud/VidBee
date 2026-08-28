@@ -27,6 +27,7 @@ export const subscriptionsTable = sqliteTable('subscriptions', {
   /** JSON array of strings. */
   tags: text('tags').notNull(),
   onlyDownloadLatest: integer('only_latest', { mode: 'number' }).notNull(),
+  autoDownload: integer('auto_download', { mode: 'number' }).notNull(),
   enabled: integer('enabled', { mode: 'number' }).notNull(),
   coverUrl: text('cover_url'),
   latestVideoTitle: text('latest_video_title'),
@@ -156,3 +157,29 @@ INSERT INTO subscriptions_meta (key, value, updated_at)
   VALUES ('subscriptions_version', '1', 0)
   ON CONFLICT(key) DO UPDATE SET value = excluded.value;
 `
+
+/**
+ * Existing databases created with `SUBSCRIPTIONS_DDL_V1` lack `auto_download`.
+ * Default 1 keeps current auto-queue behavior for already-saved subscriptions.
+ */
+export const SUBSCRIPTIONS_DDL_V2 = `
+ALTER TABLE subscriptions ADD COLUMN auto_download INTEGER NOT NULL DEFAULT 1;
+`
+
+/**
+ * Apply subscription DDL and additive column migrations. `columns` is the
+ * current `PRAGMA table_info(subscriptions)` name list (empty when the table
+ * does not exist yet). Idempotent.
+ *
+ * @param exec SQLite exec callback used by the host.
+ * @param columns Existing `subscriptions` column names.
+ */
+export const applySubscriptionsMigrations = (
+  exec: (sql: string) => void,
+  columns: string[]
+): void => {
+  exec(SUBSCRIPTIONS_DDL_V1)
+  if (!columns.includes('auto_download')) {
+    exec(SUBSCRIPTIONS_DDL_V2)
+  }
+}

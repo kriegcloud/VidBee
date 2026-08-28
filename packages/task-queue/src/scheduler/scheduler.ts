@@ -11,6 +11,7 @@
 import type { Task, TaskPriority } from '../types'
 import { AsyncMutex } from '../util/async-mutex'
 import { MinHeap } from '../util/min-heap'
+import { logCaughtError } from '@vidbee/logger'
 
 interface ReadyEntry {
   taskId: string
@@ -88,6 +89,57 @@ export class Scheduler {
   }
 
   /**
+   * Push a queued task onto the ready heap if it is not already waiting or running.
+   *
+   * @param taskId Task to schedule.
+   * @param priority Heap priority.
+   */
+  async ensureEnqueued(taskId: string, priority: TaskPriority): Promise<void> {
+    await this.mutex.runExclusive(() => {
+      if (this.running.has(taskId)) {
+        return
+      }
+      if (this.readyHeap.toArray().some((entry) => entry.taskId === taskId)) {
+        return
+      }
+      this.readyHeap.push({
+        taskId,
+        priority,
+        seq: ++this.seqCounter
+      })
+    })
+    await this.tryDispatch()
+  }
+
+  /**
+   * Drop slot reservations for tasks that are no longer actually executing.
+   *
+   * @param isLive Return true when `taskId` still owns a real run.
+   */
+  async sweepDeadSlots(isLive: (taskId: string) => boolean): Promise<void> {
+    await this.mutex.runExclusive(() => {
+      for (const id of [...this.running]) {
+        if (isLive(id)) {
+          continue
+        }
+        this.running.delete(id)
+        const task = this.opts.getTask(id)
+        if (task?.groupKey) {
+          this.decGroup(task.groupKey)
+        }
+      }
+    })
+    await this.tryDispatch()
+  }
+
+  /**
+   * Attempt to fill free slots from the ready heap.
+   */
+  kick(): Promise<void> {
+    return this.tryDispatch()
+  }
+
+  /**
    * Marker that a previously-dispatched task has reached a terminal/yielding
    * status (completed/failed/cancelled/paused/retry-scheduled). Releases its
    * slot and bumps dispatch.
@@ -123,8 +175,7 @@ export class Scheduler {
       try {
         await this.opts.demote(id)
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[task-queue] demote callback threw', err)
+        logCaughtError('task_queue_demote_threw', err)
       }
     }
     void this.tryDispatch()
@@ -189,8 +240,7 @@ export class Scheduler {
       try {
         ok = await this.opts.dispatch(id)
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[task-queue] dispatch callback threw', err)
+        logCaughtError('task_queue_dispatch_threw', err)
       }
       if (!ok) {
         // Roll back the slot reservation; the orchestrator may have failed

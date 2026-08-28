@@ -7,7 +7,7 @@ VidBee desktop now uses the Sentry-compatible GlitchTip stack in two layers:
 
 ## Environment variables
 
-Create `apps/desktop/.env` from [`apps/desktop/.env.example`](/Users/air15/Documents/GitHub/VidBee/apps/desktop/.env.example).
+Create `apps/desktop/.env` from [`apps/desktop/.env.example`](../.env.example).
 
 Required variables:
 

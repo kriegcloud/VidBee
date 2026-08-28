@@ -1,7 +1,17 @@
+import type { FilenameStyle } from '@vidbee/downloader-core/filename-style'
 import type { OneClickContainerOption } from '@vidbee/downloader-core/format-preferences'
+import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
 import { defaultLanguageCode, type LanguageCode } from '@vidbee/i18n/languages'
+import type { AsrTierId } from '@vidbee/transcription/asr'
+import type { DownloadMirror } from '@vidbee/transcription/download-mirrors'
 
-export type { OneClickContainerOption }
+export type {
+  YtDlpKernelPreparationStep,
+  YtDlpKernelState,
+  YtDlpKernelStatus
+} from './ytdlp-kernel'
+
+export type { DownloadMirror, FilenameStyle, OneClickContainerOption }
 
 // Download related types
 export interface VideoFormat {
@@ -280,6 +290,8 @@ export interface SubscriptionRule {
   keywords: string[]
   tags: string[]
   onlyDownloadLatest: boolean
+  /** When false, feed items are listed but not queued automatically. */
+  autoDownload: boolean
   enabled: boolean
   coverUrl?: string
   latestVideoTitle?: string
@@ -308,6 +320,7 @@ export interface SubscriptionCreatePayload {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
@@ -321,6 +334,7 @@ export interface SubscriptionUpdatePayload {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   enabled?: boolean
   downloadDirectory?: string
   namingTemplate?: string
@@ -354,16 +368,24 @@ export interface AppSettings {
   enableDownloadNotifications: boolean
   rememberLastAudioLanguage: boolean
   preferredAudioLanguage: string
+  downloadSubtitles: boolean
+  subtitleLanguages: string[]
   embedSubs: boolean
+  writeAutoSubs: boolean
   embedThumbnail: boolean
   embedMetadata: boolean
   embedChapters: boolean
+  filenameStyle: FilenameStyle
+  filenameViaVidBee: boolean
   shareWatermark: boolean
-  // Local patch: when true, name each download `<N>.<ext>` where N is the
-  // next free integer in the destination directory (max existing prefix + 1,
-  // or 0 if empty). Extension-agnostic so videos/audio/subs/etc. all share
-  // one counter and never collide on titles like "Instagram".
+  /** Assign the next free numeric filename in the destination directory. */
   sequentialFilenames: boolean
+  autoTranscribeAfterDownload: boolean
+  maxConcurrentTranscriptions: number
+  asrTier: AsrTierId
+  /** Prefer ModelScope / GitHub proxies when GitHub is blocked or auto-detected as China. */
+  downloadMirror: DownloadMirror
+  lastSeenWhatsNew: string
 }
 
 export const DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE = '%(uploader)s/%(title)s.%(ext)s'
@@ -392,10 +414,20 @@ export const defaultSettings: AppSettings = {
   enableDownloadNotifications: true,
   rememberLastAudioLanguage: true,
   preferredAudioLanguage: '',
+  downloadSubtitles: true,
+  subtitleLanguages: [...DEFAULT_SUBTITLE_LANGUAGES],
   embedSubs: true,
+  writeAutoSubs: true,
   embedThumbnail: false,
   embedMetadata: true,
   embedChapters: true,
+  filenameStyle: 'pretty',
+  filenameViaVidBee: true,
   shareWatermark: false,
-  sequentialFilenames: true
+  sequentialFilenames: true,
+  autoTranscribeAfterDownload: true,
+  maxConcurrentTranscriptions: 1,
+  asrTier: 'minimal',
+  downloadMirror: 'auto',
+  lastSeenWhatsNew: ''
 }

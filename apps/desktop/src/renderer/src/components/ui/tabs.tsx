@@ -1,3 +1,3 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@vidbee/ui/components/ui/tabs'
+import { TabItem, TabPanel, Tabs, TabsList } from '@vidbee/ui/components/ui/tabs'
 
-export { Tabs, TabsContent, TabsList, TabsTrigger }
+export { TabItem, TabPanel, Tabs, TabsList }

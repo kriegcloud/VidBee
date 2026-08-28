@@ -14,6 +14,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
+import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
 import {
   GalleryDlExecutor,
   HostRoutingExecutor,
@@ -22,19 +23,40 @@ import {
   YtDlpExecutor
 } from '@vidbee/downloader-core'
 import {
-  type Executor,
+  ExecutorRouter,
   MemoryPersistAdapter,
   SqlitePersistAdapter,
   TaskQueueAPI
 } from '@vidbee/task-queue'
-import { app } from 'electron'
+import {
+  applyTranscriptionConcurrency,
+  mergeLegacyTaskQueueDb,
+  nodeBinaryName,
+  resolveBundledNodePath,
+  TranscriptionExecutor
+} from '@vidbee/transcription'
+import { app, powerSaveBlocker } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
+import { resolveBundledResourcesPath } from './bundled-resources-path'
+import { getDatabaseConnection } from './database'
+import { startDownloadPowerSaveGuard } from './download-power-save'
 import { ffmpegManager } from './ffmpeg-manager'
 import { galleryDlManager } from './gallery-dl-manager'
+import { setDesktopTaskQueueRef } from './queue-ref'
+import {
+  broadcastTranscript,
+  broadcastTranscriptPartials,
+  getModelManager,
+  getTranscriptSnapshot,
+  getTranscriptStore,
+  resolveTranscriptionBackend,
+  resolveTranscriptionWorkerScript,
+  stopAutoTranscription
+} from './transcript-host'
 import { ytdlpManager } from './ytdlp-manager'
 
-const TASK_QUEUE_DB_NAME = 'task-queue.db'
+const LEGACY_TASK_QUEUE_DB_NAME = 'task-queue.db'
 
 export const resolveDesktopDownloadDir = (): string => {
   const fromSettings = settingsManager.get('downloadPath') as string | undefined
@@ -44,9 +66,9 @@ export const resolveDesktopDownloadDir = (): string => {
   return path.join(app.getPath('downloads'), 'VidBee')
 }
 
-const resolveTaskQueueDbPath = (): string => {
+const resolveLegacyTaskQueueDbPath = (): string => {
   const userData = app.getPath('userData')
-  return path.join(userData, '.vidbee', TASK_QUEUE_DB_NAME)
+  return path.join(userData, '.vidbee', LEGACY_TASK_QUEUE_DB_NAME)
 }
 
 const resolveYtDlpPath = (): string => ytdlpManager.getPath()
@@ -67,8 +89,9 @@ let taskQueueInstance: TaskQueueAPI | null = null
 let started = false
 let dbPath: string | null = null
 let persistent = false
+let stopPowerSaveGuard: (() => void) | null = null
 
-const buildExecutor = (): Executor => {
+const buildDownloadExecutor = (): HostRoutingExecutor => {
   const ytDlp = new YtDlpExecutor({
     resolveYtDlpPath,
     resolveFfmpegLocation,
@@ -77,8 +100,8 @@ const buildExecutor = (): Executor => {
   })
   const galleryDl = new GalleryDlExecutor({
     resolveBinaryPath: () => galleryDlManager.getPath(),
-    defaultDownloadDir: resolveDesktopDownloadDir(),
-    resolveFfmpegLocation
+    resolveFfmpegLocation,
+    defaultDownloadDir: resolveDesktopDownloadDir()
   })
   return new HostRoutingExecutor(ytDlp, galleryDl)
 }
@@ -95,55 +118,99 @@ export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector
 }
 
 const buildPersistAdapter = (
-  desiredDbPath: string,
   preferPersistent: boolean
-): { adapter: MemoryPersistAdapter | SqlitePersistAdapter; persistent: boolean } => {
+): {
+  adapter: MemoryPersistAdapter | SqlitePersistAdapter
+  persistent: boolean
+  dbPath: string | null
+} => {
   if (!preferPersistent) {
-    return { adapter: new MemoryPersistAdapter(), persistent: false }
+    return { adapter: new MemoryPersistAdapter(), persistent: false, dbPath: null }
   }
   try {
-    fs.mkdirSync(path.dirname(desiredDbPath), { recursive: true })
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { sqlite, path: unifiedPath } = getDatabaseConnection()
+    sqlite.exec(TASK_QUEUE_DDL_V1)
+    sqlite.exec(TRANSCRIPT_DDL_V1)
     const Database = require('better-sqlite3') as typeof import('better-sqlite3')
-    const db = new Database(desiredDbPath, { timeout: 5000 }) as unknown as {
-      exec: (sql: string) => void
-      prepare: (sql: string) => unknown
-      pragma: (sql: string, opts?: { simple?: boolean }) => unknown
-      transaction: (fn: (...args: unknown[]) => unknown) => unknown
-      close: () => void
+    const merged = mergeLegacyTaskQueueDb({
+      target: sqlite,
+      legacyPath: resolveLegacyTaskQueueDbPath(),
+      openLegacy: (legacyPath) => new Database(legacyPath, { timeout: 5000, fileMustExist: true })
+    })
+    if (merged.merged) {
+      scopedLoggers.engine.info(
+        `task-queue-host: merged ${merged.tasksCopied} tasks from task-queue.db into vidbee.db`
+      )
     }
-    db.exec(TASK_QUEUE_DDL_V1)
     return {
       adapter: new SqlitePersistAdapter({
-        db: db as unknown as ConstructorParameters<typeof SqlitePersistAdapter>[0]['db']
+        db: sqlite as unknown as ConstructorParameters<typeof SqlitePersistAdapter>[0]['db'],
+        ownsConnection: false
       }),
-      persistent: true
+      persistent: true,
+      dbPath: unifiedPath
     }
   } catch (err) {
     scopedLoggers.engine.warn(
       'task-queue-host: SQLite adapter unavailable, falling back to memory:',
       err
     )
-    return { adapter: new MemoryPersistAdapter(), persistent: false }
+    return { adapter: new MemoryPersistAdapter(), persistent: false, dbPath: null }
   }
+}
+
+const buildTranscriptionExecutor = (): TranscriptionExecutor => {
+  const nodeName = nodeBinaryName()
+  const resourcesDir = resolveBundledResourcesPath([`node/${nodeName}`])
+  return new TranscriptionExecutor({
+    store: getTranscriptStore(),
+    workerScript: resolveTranscriptionWorkerScript(),
+    modelsDir: getModelManager().modelsDir,
+    resolveFfmpegPath: () => ffmpegManager.getPath(),
+    backend: resolveTranscriptionBackend(),
+    execPath: process.execPath,
+    bundledNodePath: resolveBundledNodePath([resourcesDir]),
+    workDir: path.join(app.getPath('userData'), 'transcript-work'),
+    onPartial: ({ downloadTaskId, segments }) => {
+      broadcastTranscriptPartials(downloadTaskId, segments)
+    },
+    onStage: ({ downloadTaskId }) => {
+      broadcastTranscript(getTranscriptSnapshot(downloadTaskId))
+    }
+  })
 }
 
 export const getDesktopTaskQueue = (): TaskQueueAPI => {
   if (taskQueueInstance) {
     return taskQueueInstance
   }
-  const desiredDbPath = resolveTaskQueueDbPath()
-  const { adapter, persistent: isPersistent } = buildPersistAdapter(desiredDbPath, true)
-  dbPath = isPersistent ? desiredDbPath : null
+  const { adapter, persistent: isPersistent, dbPath: unifiedPath } = buildPersistAdapter(true)
+  dbPath = unifiedPath
   persistent = isPersistent
-  const executor = buildExecutor()
+  const executor = new ExecutorRouter({
+    defaultExecutor: buildDownloadExecutor(),
+    byKind: { transcription: buildTranscriptionExecutor() }
+  })
   const maxConcurrent = settingsManager.get('maxConcurrentDownloads')
   taskQueueInstance = new TaskQueueAPI({
     persist: adapter,
     executor,
     maxConcurrency: typeof maxConcurrent === 'number' && maxConcurrent > 0 ? maxConcurrent : 4
   })
+  applyDesktopQueueConcurrency()
+  setDesktopTaskQueueRef(taskQueueInstance)
   return taskQueueInstance
+}
+
+/**
+ * Push the current download and transcription concurrency settings into the scheduler.
+ */
+export const applyDesktopQueueConcurrency = (): void => {
+  applyTranscriptionConcurrency({
+    queue: getDesktopTaskQueue(),
+    maxConcurrentDownloads: settingsManager.get('maxConcurrentDownloads'),
+    maxConcurrentTranscriptions: settingsManager.get('maxConcurrentTranscriptions')
+  })
 }
 
 export const startDesktopTaskQueue = async (): Promise<void> => {
@@ -153,6 +220,22 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   const queue = getDesktopTaskQueue()
   await queue.start()
   await restoreInstagramProfileGroupCaps(queue)
+  try {
+    const { sqlite, path: persistPath } = getDatabaseConnection()
+    const taskCount = Number(
+      (
+        sqlite.prepare('SELECT COUNT(*) AS n FROM tasks').get() as
+          | { n: number | bigint }
+          | undefined
+      )?.n ?? 0
+    )
+    scopedLoggers.engine.info(
+      `task-queue-host: started with ${taskCount} persisted tasks at ${persistPath}`
+    )
+  } catch {
+    scopedLoggers.engine.info('task-queue-host: started and recovered in-flight tasks')
+  }
+  stopPowerSaveGuard = startDownloadPowerSaveGuard(queue, powerSaveBlocker)
   started = true
 }
 
@@ -160,6 +243,9 @@ export const stopDesktopTaskQueue = async (): Promise<void> => {
   if (!started) {
     return
   }
+  stopPowerSaveGuard?.()
+  stopPowerSaveGuard = null
+  stopAutoTranscription()
   await taskQueueInstance?.stop()
   started = false
 }

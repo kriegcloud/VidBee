@@ -1,6 +1,7 @@
-import type { AppSidebarIcon } from './app-sidebar'
 import MingcuteCheckCircleFill from '~icons/mingcute/check-circle-fill'
 import MingcuteCheckCircleLine from '~icons/mingcute/check-circle-line'
+import MingcuteDocumentsFill from '~icons/mingcute/documents-fill'
+import MingcuteDocumentsLine from '~icons/mingcute/documents-line'
 import MingcuteDownload3Fill from '~icons/mingcute/download-3-fill'
 import MingcuteDownload3Line from '~icons/mingcute/download-3-line'
 import MingcuteInformationFill from '~icons/mingcute/information-fill'
@@ -11,9 +12,11 @@ import MingcuteSettingsFill from '~icons/mingcute/settings-3-fill'
 import MingcuteSettingsLine from '~icons/mingcute/settings-3-line'
 import MingcuteToolFill from '~icons/mingcute/tool-fill'
 import MingcuteToolLine from '~icons/mingcute/tool-line'
+import type { AppSidebarIcon } from './app-sidebar'
 
 interface AppSidebarIcons {
   home: AppSidebarIcon
+  transcripts: AppSidebarIcon
   subscriptions: AppSidebarIcon
   supportedSites: AppSidebarIcon
   tools: AppSidebarIcon
@@ -25,6 +28,10 @@ const appSidebarIcons: AppSidebarIcons = {
   home: {
     active: MingcuteDownload3Fill,
     inactive: MingcuteDownload3Line
+  },
+  transcripts: {
+    active: MingcuteDocumentsFill,
+    inactive: MingcuteDocumentsLine
   },
   subscriptions: {
     active: MingcuteRssFill,
@@ -48,5 +55,5 @@ const appSidebarIcons: AppSidebarIcons = {
   }
 }
 
-export { appSidebarIcons }
 export type { AppSidebarIcons }
+export { appSidebarIcons }

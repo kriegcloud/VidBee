@@ -13,12 +13,15 @@ import https from 'node:https'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log as evlog } from '@vidbee/logger/script'
 import {
   buildVendoredYtDlp,
   isVendoredBuildCurrent,
   vendorMetadataPath
 } from './build-vendored-ytdlp.js'
 import { GALLERY_DL_PLATFORM_ASSETS, GALLERY_DL_RELEASE } from './gallerydl-assets.js'
+import { expandGithubMirrors } from './github-mirrors.js'
+import { downloadNodeRuntime } from './setup-node-runtime.js'
 import { YTDLP_PLATFORM_ASSETS } from './ytdlp-assets.js'
 
 // Configuration
@@ -28,7 +31,6 @@ const RESOURCES_DIR = path.join(currentDirPath, '..', 'resources')
 const FFMPEG_DIR = path.join(RESOURCES_DIR, 'ffmpeg')
 const YTDLP_BASE_URL = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
 const GALLERY_DL_BASE_URL = `https://github.com/gdl-org/builds/releases/download/${GALLERY_DL_RELEASE}`
-const DENO_BASE_URL = 'https://github.com/denoland/deno/releases/latest/download'
 const MAC_FFMPEG_MODE = (process.env.VIDBEE_MAC_FFMPEG_MODE || 'native').trim().toLowerCase()
 const GITHUB_TOKEN =
   process.env.GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_API_TOKEN
@@ -112,7 +114,16 @@ function log(message, type = 'info') {
     warn: '⚠️',
     download: '⬇️'
   }
-  console.log(`${icons[type] || 'ℹ️'} ${message}`)
+  const line = `${icons[type] || 'ℹ️'} ${message}`
+  if (type === 'error') {
+    evlog.error(line)
+    return
+  }
+  if (type === 'warn') {
+    evlog.warn(line)
+    return
+  }
+  evlog.info(line)
 }
 
 function ensureDir(dir) {
@@ -204,7 +215,7 @@ function downloadFile(url, dest) {
       })
     })
 
-    request.setTimeout(30_000, () => {
+    request.setTimeout(600_000, () => {
       if (isSettled) {
         return
       }
@@ -226,40 +237,44 @@ function downloadFile(url, dest) {
 }
 
 async function downloadFileWithRetry(url, dest, retries = 3, delayMs = 2000) {
+  const candidates = expandGithubMirrors(url)
   let lastError
   for (let attempt = 1; attempt <= retries; attempt += 1) {
-    try {
-      log(`Downloading ${url} (attempt ${attempt}/${retries})...`, 'download')
-      await downloadFile(url, dest)
-      return
-    } catch (error) {
-      lastError = error
-      safeUnlink(dest)
-      if (attempt < retries) {
-        const backoff = delayMs * attempt
-        log(`Download failed for ${url} (attempt ${attempt}/${retries}): ${error.message}`, 'warn')
-        await new Promise((resolve) => setTimeout(resolve, backoff))
+    for (const candidate of candidates) {
+      try {
+        log(`Downloading ${candidate} (attempt ${attempt}/${retries})...`, 'download')
+        await downloadFile(candidate, dest)
+        return
+      } catch (error) {
+        lastError = error
+        safeUnlink(dest)
+        log(`Download failed for ${candidate}: ${error.message}`, 'warn')
       }
+    }
+    if (attempt < retries) {
+      const backoff = delayMs * attempt
+      log(`Retrying download after ${backoff}ms...`, 'warn')
+      await new Promise((resolve) => setTimeout(resolve, backoff))
     }
   }
   throw lastError
 }
 
-function fetchJson(url) {
+function fetchJsonFrom(url) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http
     const headers = {
       'User-Agent': 'vidbee-setup',
       Accept: 'application/vnd.github+json'
     }
-    if (GITHUB_TOKEN) {
+    if (GITHUB_TOKEN && /github\.com|githubusercontent\.com/.test(url)) {
       headers.Authorization = `Bearer ${GITHUB_TOKEN}`
     }
 
     protocol
       .get(url, { headers }, (response) => {
         if (response.statusCode === 302 || response.statusCode === 301) {
-          return fetchJson(response.headers.location).then(resolve).catch(reject)
+          return fetchJsonFrom(response.headers.location).then(resolve).catch(reject)
         }
         if (response.statusCode !== 200) {
           return reject(new Error(`Failed to fetch ${url}: ${response.statusCode}`))
@@ -281,6 +296,20 @@ function fetchJson(url) {
         reject(err)
       })
   })
+}
+
+async function fetchJson(url) {
+  const candidates = expandGithubMirrors(url)
+  let lastError
+  for (const candidate of candidates) {
+    try {
+      return await fetchJsonFrom(candidate)
+    } catch (error) {
+      lastError = error
+      log(`JSON fetch failed for ${candidate}: ${error.message}`, 'warn')
+    }
+  }
+  throw lastError
 }
 
 function inferFfmpegInnerPath(assetName, binaryName) {
@@ -443,32 +472,6 @@ function logBinaryVersion(label, validation) {
   log(`${label} version: ${validation.message}`, 'info')
 }
 
-function getDenoAssetName(platform, arch) {
-  if (platform === 'win32') {
-    if (arch === 'arm64') {
-      return 'deno-aarch64-pc-windows-msvc.zip'
-    }
-    return 'deno-x86_64-pc-windows-msvc.zip'
-  }
-  if (platform === 'darwin') {
-    if (arch === 'arm64') {
-      return 'deno-aarch64-apple-darwin.zip'
-    }
-    return 'deno-x86_64-apple-darwin.zip'
-  }
-  if (platform === 'linux') {
-    if (arch === 'arm64') {
-      return 'deno-aarch64-unknown-linux-gnu.zip'
-    }
-    return 'deno-x86_64-unknown-linux-gnu.zip'
-  }
-  return null
-}
-
-function getDenoOutputName(platform) {
-  return platform === 'win32' ? 'deno.exe' : 'deno'
-}
-
 function getMacFfmpegMode() {
   if (MAC_FFMPEG_MODE === 'native' || MAC_FFMPEG_MODE === 'universal') {
     return MAC_FFMPEG_MODE
@@ -556,8 +559,8 @@ async function downloadYtDlp(config) {
   const { asset, output } = config.ytdlp
   const outputPath = path.join(RESOURCES_DIR, output)
 
-  // The tracked source snapshot is authoritative. Rebuild automatically after
-  // a source change, and never replace it with an upstream release download.
+  // A tracked vendored-source marker makes that snapshot authoritative.
+  // Rebuild it after source changes and never replace it with latest upstream.
   if (fileExists(vendorMetadataPath)) {
     if (isVendoredBuildCurrent()) {
       const validation = checkYtDlpBinary(outputPath)
@@ -1039,68 +1042,6 @@ async function downloadFfmpegLinux(config) {
   }
 }
 
-async function downloadDenoRuntime() {
-  const platform = os.platform()
-  const arch = os.arch()
-  const assetName = getDenoAssetName(platform, arch)
-
-  if (!assetName) {
-    log(`Skipping Deno runtime: unsupported platform/arch ${platform}/${arch}`, 'warn')
-    return
-  }
-
-  const outputName = getDenoOutputName(platform)
-  const outputPath = path.join(RESOURCES_DIR, outputName)
-
-  if (fileExists(outputPath)) {
-    const validation = checkBinary(outputPath, ['--version'], 'deno')
-    if (validation.ok) {
-      logBinaryVersion('deno', validation)
-    } else {
-      log(`Existing ${outputName} failed version check: ${validation.message}`, 'warn')
-    }
-    log(`${outputName} already exists, skipping download`, 'info')
-    return
-  }
-
-  log(`Downloading Deno runtime (${platform}/${arch})...`, 'download')
-  const tempZip = path.join(RESOURCES_DIR, 'deno-temp.zip')
-  const extractDir = path.join(RESOURCES_DIR, 'deno-temp')
-  const downloadUrl = `${DENO_BASE_URL}/${assetName}`
-
-  try {
-    await downloadFileWithRetry(downloadUrl, tempZip)
-    log('Extracting Deno runtime...', 'info')
-    extractZip(tempZip, extractDir)
-
-    const sourcePath = path.join(extractDir, outputName)
-    if (!fileExists(sourcePath)) {
-      throw new Error(`Deno binary not found at ${sourcePath}`)
-    }
-
-    fs.copyFileSync(sourcePath, outputPath)
-    setExecutable(outputPath)
-    const validation = checkBinary(outputPath, ['--version'], 'deno')
-    if (!validation.ok) {
-      safeUnlink(outputPath)
-      throw new Error(`Downloaded ${outputName} failed version check: ${validation.message}`)
-    }
-    logBinaryVersion('deno', validation)
-    log(`Downloaded ${outputName} successfully`, 'success')
-
-    fs.unlinkSync(tempZip)
-    fs.rmSync(extractDir, { recursive: true, force: true })
-  } catch (error) {
-    if (fs.existsSync(tempZip)) {
-      fs.unlinkSync(tempZip)
-    }
-    if (fs.existsSync(extractDir)) {
-      fs.rmSync(extractDir, { recursive: true, force: true })
-    }
-    throw error
-  }
-}
-
 // Main setup function
 async function setup() {
   const platform = os.platform()
@@ -1118,11 +1059,11 @@ async function setup() {
     // Download yt-dlp
     await downloadYtDlp(config)
 
-    // Download gallery-dl for Instagram collections
+    // Download the pinned gallery-dl build used by Instagram profile batches.
     await downloadGalleryDl(config)
 
-    // Download JS runtime (Deno)
-    await downloadDenoRuntime()
+    // Bundled Node for transcription worker and yt-dlp EJS (§11.1)
+    await downloadNodeRuntime()
 
     // Download ffmpeg
     if (platform === 'win32') {

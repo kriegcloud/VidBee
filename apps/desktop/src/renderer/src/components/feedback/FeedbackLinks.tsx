@@ -1,5 +1,6 @@
 import { ipcServices } from '@renderer/lib/ipc'
 import { useEffect, useState } from 'react'
+import { logger } from '../../lib/logger'
 
 interface AppInfo {
   appVersion: string
@@ -26,7 +27,7 @@ const loadAppInfo = async (): Promise<AppInfo> => {
       ])
       cachedAppInfo = { appVersion: version, osVersion: osRelease }
     } catch (error) {
-      console.error('Failed to load app info for feedback links:', error)
+      logger.error('Failed to load app info for feedback links:', error)
       cachedAppInfo = DEFAULT_APP_INFO
     }
     return cachedAppInfo

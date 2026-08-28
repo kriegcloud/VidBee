@@ -1,7 +1,7 @@
 /**
  * PersistAdapter — single writer to the durable store. The contract here is
  * what the orchestrator and ProcessRegistry use; concrete implementations
- * (memory for tests, SQLite for production) live alongside.
+ * (memory for `--vidbee-local`, SQLite for production) live alongside.
  *
  * Design rules (§9):
  *   - One writer. The orchestrator is the only caller.
@@ -11,13 +11,7 @@
  *   - pid + pidStartedAt are written synchronously inside `recordSpawn`; no
  *     throttling allowed.
  */
-import type {
-  AttemptRow,
-  ProcessJournalOp,
-  ProcessJournalRow,
-  Task,
-  TaskProgress
-} from '../types'
+import type { AttemptRow, ProcessJournalOp, ProcessJournalRow, Task, TaskProgress } from '../types'
 
 export interface PersistTransitionInput {
   task: Task
@@ -62,7 +56,11 @@ export interface PersistAdapter {
   upsertTask(input: PersistTransitionInput): Promise<void>
   /** Downsampled progress write (the orchestrator calls at most every 1s). */
   upsertProgress(taskId: string, progress: TaskProgress): Promise<void>
-  /** Remove a task (cancelFromHistory). */
+  /**
+   * Remove a task and its descendants (transcription children, playlist
+   * entries). Required because `tasks.parent_id` references `tasks(id)`
+   * without ON DELETE CASCADE.
+   */
   deleteTask(taskId: string): Promise<void>
   /** Insert a new attempt row at spawn time. */
   insertAttempt(input: RecordSpawnInput): Promise<void>

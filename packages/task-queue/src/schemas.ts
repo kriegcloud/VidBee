@@ -6,7 +6,8 @@ export const TaskKindSchema = z.enum([
   'playlist',
   'instagram-profile-category',
   'subscription-item',
-  'yt-dlp-forward'
+  'yt-dlp-forward',
+  'transcription'
 ])
 
 export const TaskStatusSchema = z.enum([
@@ -50,6 +51,11 @@ export const TaskInputSchema = z.object({
   options: z.record(z.string(), z.unknown()).optional()
 })
 
+export const TranscriptTaskResultSchema = z.object({
+  resultKind: z.enum(['transcript', 'no-speech']),
+  transcriptId: z.string().min(1)
+})
+
 export const TaskOutputSchema = z.object({
   filePath: z.string(),
   size: z.number().int().nonnegative(),
@@ -61,7 +67,8 @@ export const TaskOutputSchema = z.object({
   downloadedCount: z.number().int().nonnegative().optional(),
   skippedCount: z.number().int().nonnegative().optional(),
   failedCount: z.number().int().nonnegative().optional(),
-  totalSize: z.number().int().nonnegative().optional()
+  totalSize: z.number().int().nonnegative().optional(),
+  transcript: TranscriptTaskResultSchema.optional()
 })
 
 export const TaskProgressSchema = z.object({

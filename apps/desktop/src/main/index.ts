@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { isAbsolute, join, relative, resolve } from 'node:path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { APP_PROTOCOL, APP_PROTOCOL_SCHEME } from '@shared/constants'
+import type { YtDlpKernelStatus } from '@shared/types'
 import {
   app,
   BrowserWindow,
@@ -18,10 +19,6 @@ import {
   buildAudioFormatPreference,
   buildVideoFormatPreference
 } from '../shared/utils/format-preferences'
-import {
-  buildVideoInfoDownloadMetadata,
-  pickOneClickSelectedFormat
-} from '../shared/utils/video-info-metadata'
 import { configureLogger } from './config/logger-config'
 import { services } from './ipc'
 import { downloadEngine } from './lib/download-facade'
@@ -32,6 +29,9 @@ import {
   captureMainMessage,
   initGlitchTipMain
 } from './lib/glitchtip'
+import { localMediaKind } from './lib/import-local-media'
+import { stopPlayerHost } from './lib/player-host'
+import { deferAppQuitIfNeeded } from './lib/quit-confirmation-host'
 import { initializeOptionalTool } from './lib/startup-dependencies'
 import {
   getDesktopSubscriptions,
@@ -39,9 +39,16 @@ import {
   startDesktopSubscriptions,
   stopDesktopSubscriptions
 } from './lib/subscriptions-host'
+import { startDesktopTaskQueue } from './lib/task-queue-host'
 import { runDesktopTaskQueueMigration } from './lib/task-queue-migrate'
+import {
+  importLocalMediaForTranscription,
+  startAutoTranscription,
+  startIdleMinimalModelFill,
+  subscribeTranscriptBroadcasts
+} from './lib/transcript-host'
 import { applyUpdateChannel } from './lib/update-channel'
-import { ytdlpManager } from './lib/ytdlp-manager'
+import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdlp-kernel-host'
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
 import { isPortableMode } from './portable'
 import { settingsManager } from './settings'
@@ -55,6 +62,8 @@ const isBackgroundLaunch = (argv: string[]): boolean =>
   argv.some((arg) => arg === '--background' || arg === '--from-cli')
 
 const BACKGROUND_MODE = isBackgroundLaunch(process.argv)
+const KERNEL_PREPARATION_PREVIEW =
+  !app.isPackaged && process.argv.includes('--kernel-preparation-preview')
 
 // Initialize electron-log for main process
 log.initialize()
@@ -87,14 +96,25 @@ if (process.platform === 'linux') {
   app.commandLine.appendSwitch('xdg-portal-required-version', '4')
 }
 
+if (process.platform === 'win32') {
+  // Keep GPU compositing enabled while avoiding driver crashes during local video decoding.
+  app.commandLine.appendSwitch('disable-accelerated-video-decode')
+}
+
+if (!app.isPackaged && process.env.VIDBEE_E2E !== '1') {
+  app.commandLine.appendSwitch('remote-debugging-port', '9229')
+}
+
 const RENDERER_DIST_PATH = join(import.meta.dirname, '../renderer')
 
 protocol.registerSchemesAsPrivileged([
   {
     scheme: APP_PROTOCOL,
     privileges: {
+      corsEnabled: true,
       secure: true,
       standard: true,
+      stream: true,
       supportFetchAPI: true
     }
   }
@@ -103,21 +123,72 @@ protocol.registerSchemesAsPrivileged([
 let mainWindow: BrowserWindow | null = null
 let isQuitting = false
 let isYtdlpReady = false
+let kernelBackgroundUpdatesStarted = false
 interface DeepLinkData {
   url: string
   type: 'single' | 'playlist'
 }
 const pendingDeepLinkUrls: DeepLinkData[] = []
 const pendingOneClickDownloads: DeepLinkData[] = []
+const pendingMediaPaths: string[] = []
+let isTaskQueueReady = false
 let isRendererReady = false
+let isRendererUnresponsive = false
 let isMainWindowReadyToShow = false
 let shouldKeepMainWindowHiddenAtStartup = false
+let rendererRecoveryPromise: Promise<void> | null = null
 
-const getActiveMainWindow = (): BrowserWindow | null => {
-  if (!mainWindow || mainWindow.isDestroyed()) {
-    return null
+/**
+ * Return the renderer entry URL without preserving a crashed hash route.
+ */
+const rendererEntryUrl = (): string =>
+  process.env.ELECTRON_RENDERER_URL || `${APP_PROTOCOL_SCHEME}renderer/index.html`
+
+/**
+ * Load a fresh renderer at the home route.
+ */
+const loadRendererEntry = (window: BrowserWindow): Promise<void> =>
+  window.loadURL(rendererEntryUrl())
+
+/**
+ * True when a window can no longer receive renderer work.
+ */
+const isRendererUnavailable = (window: BrowserWindow): boolean =>
+  window.isDestroyed() || window.webContents.isDestroyed() || window.webContents.isCrashed()
+
+/**
+ * Replace a failed renderer process with a fresh home route in the same native window.
+ */
+const recoverRendererToHome = (window: BrowserWindow, trigger: string): void => {
+  if (isQuitting || window.isDestroyed() || window.webContents.isDestroyed()) {
+    return
   }
-  if (mainWindow.webContents.isDestroyed()) {
+  if (rendererRecoveryPromise) {
+    return
+  }
+
+  isRendererReady = false
+  isRendererUnresponsive = false
+  shouldKeepMainWindowHiddenAtStartup = !window.isVisible()
+  log.warn(`Recovering renderer at home after ${trigger}`)
+  rendererRecoveryPromise = loadRendererEntry(window)
+    .then(() => {
+      log.info(`Renderer recovered at home after ${trigger}`)
+    })
+    .catch((error: unknown) => {
+      log.error(`Failed to recover renderer after ${trigger}:`, error)
+      captureMainException(error, { tags: { source: 'renderer.recovery', trigger } })
+    })
+    .finally(() => {
+      rendererRecoveryPromise = null
+    })
+}
+
+/**
+ * Return the healthy main window, if one is available.
+ */
+const getActiveMainWindow = (): BrowserWindow | null => {
+  if (!mainWindow || isRendererUnavailable(mainWindow)) {
     return null
   }
   return mainWindow
@@ -160,6 +231,7 @@ ipcMain.on('app:renderer-ready', (event) => {
   isRendererReady = true
   showMainWindowWhenReady()
   flushPendingDeepLinks()
+  void flushPendingMediaImports()
 })
 
 const parseDownloadDeepLink = (rawUrl: string): DeepLinkData | null => {
@@ -196,7 +268,7 @@ const parseDownloadDeepLink = (rawUrl: string): DeepLinkData | null => {
 
 const deliverDeepLink = (data: DeepLinkData): void => {
   const window = getActiveMainWindow()
-  if (!(window && isRendererReady)) {
+  if (!(window && isRendererReady && isYtdlpReady)) {
     pendingDeepLinkUrls.push(data)
     return
   }
@@ -212,7 +284,10 @@ const deliverDeepLink = (data: DeepLinkData): void => {
 }
 
 const flushPendingDeepLinks = (): void => {
-  if (!(getActiveMainWindow() && isRendererReady) || pendingDeepLinkUrls.length === 0) {
+  if (
+    !(getActiveMainWindow() && isRendererReady && isYtdlpReady) ||
+    pendingDeepLinkUrls.length === 0
+  ) {
     return
   }
 
@@ -250,6 +325,68 @@ const handleDeepLinkArgv = (argv: string[]): void => {
   }
 }
 
+/**
+ * Return whether an argv token looks like a local media file we can import.
+ */
+const isLaunchMediaArg = (arg: string): boolean => {
+  if (!arg || arg.startsWith('-')) {
+    return false
+  }
+  if (arg.startsWith(`${APP_PROTOCOL}://`)) {
+    return false
+  }
+  return localMediaKind(arg) !== null && existsSync(arg)
+}
+
+/**
+ * Queue local media paths dropped on the app icon or passed as launch args.
+ */
+const queueMediaImport = (filePath: string): void => {
+  if (!isLaunchMediaArg(filePath) && localMediaKind(filePath) === null) {
+    return
+  }
+  pendingMediaPaths.push(filePath)
+  void flushPendingMediaImports()
+}
+
+/**
+ * Import queued local media files once the renderer and task queue are ready.
+ */
+const flushPendingMediaImports = async (): Promise<void> => {
+  if (!(isRendererReady && isTaskQueueReady && pendingMediaPaths.length > 0)) {
+    return
+  }
+  const paths = pendingMediaPaths.splice(0, pendingMediaPaths.length)
+  const window = getActiveMainWindow()
+  if (window) {
+    if (window.isMinimized()) {
+      window.restore()
+    }
+    if (!window.isVisible()) {
+      window.show()
+    }
+    window.focus()
+  }
+  try {
+    await startDesktopTaskQueue()
+    const result = await importLocalMediaForTranscription(paths)
+    sendToRenderer('media:imported', result)
+  } catch (error) {
+    log.warn('Failed to import dropped local media:', error)
+  }
+}
+
+/**
+ * Collect media file paths from process arguments.
+ */
+const handleMediaArgv = (argv: string[]): void => {
+  for (const arg of argv) {
+    if (isLaunchMediaArg(arg)) {
+      queueMediaImport(arg)
+    }
+  }
+}
+
 // NEX-132 Phase B: bridge `SubscriptionsApi.on('changed')` → renderer's
 // legacy `subscriptions:updated` IPC event so the existing UI keeps working
 // while it migrates to task-queue-derived subscription item state.
@@ -259,6 +396,9 @@ getDesktopSubscriptions().on('changed', () => {
     .catch((err) => log.warn('Failed to broadcast subscriptions:updated:', err))
 })
 
+/**
+ * Create and load the main desktop window.
+ */
 export function createWindow(): void {
   const isMac = process.platform === 'darwin'
   const isWindows = process.platform === 'win32'
@@ -297,10 +437,27 @@ export function createWindow(): void {
   mainWindow = new BrowserWindow(windowOptions)
 
   mainWindow.on('close', (event) => {
+    if (isQuitting) {
+      return
+    }
+
+    if (mainWindow && (isRendererUnavailable(mainWindow) || isRendererUnresponsive)) {
+      event.preventDefault()
+      log.warn('Quitting instead of hiding a failed renderer window')
+      app.quit()
+      return
+    }
+
     const closeToTray = settingsManager.get('closeToTray')
-    if (closeToTray && !isQuitting) {
+    if (closeToTray) {
       event.preventDefault()
       mainWindow?.hide()
+      return
+    }
+
+    // On Windows/Linux, closing the last window quits the app.
+    if (process.platform !== 'darwin' && deferAppQuitIfNeeded()) {
+      event.preventDefault()
     }
   })
 
@@ -328,15 +485,22 @@ export function createWindow(): void {
     return { action: 'deny' }
   })
 
+  mainWindow.webContents.on('console-message', (event) => {
+    if (event.level !== 'warning' && event.level !== 'error') {
+      return
+    }
+    log.warn(`renderer console: ${event.message} (${event.sourceId}:${event.lineNumber})`)
+  })
+
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
-  if (process.env.ELECTRON_RENDERER_URL) {
-    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
-  } else {
-    mainWindow.loadURL(`${APP_PROTOCOL_SCHEME}renderer/index.html`)
-  }
+  void loadRendererEntry(mainWindow).catch((error: unknown) => {
+    log.error('Failed to load renderer entry:', error)
+    captureMainException(error, { tags: { source: 'renderer.load' } })
+  })
 
   mainWindow.webContents.on('did-finish-load', () => {
+    isRendererUnresponsive = false
     void listDesktopSubscriptionsSnapshot()
       .then((snapshot) => sendToRenderer('subscriptions:updated', snapshot))
       .catch((err) => log.warn('Failed to send initial subscriptions snapshot:', err))
@@ -354,34 +518,73 @@ export function createWindow(): void {
   })
 
   // Setup error handling for renderer process
-  setupRendererErrorHandling()
+  setupRendererErrorHandling(mainWindow)
 
   // Setup download engine event forwarding to renderer
   setupDownloadEvents()
 }
 
-function setupRendererErrorHandling(): void {
-  if (!mainWindow) {
-    return
-  }
-
+/**
+ * Capture renderer failures and recover a native window that can no longer draw.
+ */
+function setupRendererErrorHandling(window: BrowserWindow): void {
   // Sentry issue VIDBEE-H8: Electron emits `unresponsive` for transient hangs
   // too. Only capture freezes that actually exceed the 5s threshold so the
   // signal isn't drowned out by short main-thread blips, and report the
   // measured duration so we can tell a 6s blip apart from a 60s lockup.
   const RENDERER_UNRESPONSIVE_REPORT_MS = 5000
+  const RENDERER_UNRESPONSIVE_RECOVERY_MS = 15_000
   let unresponsiveSince: number | null = null
   let unresponsiveTimer: NodeJS.Timeout | null = null
+  let unresponsiveRecoveryTimer: NodeJS.Timeout | null = null
   let unresponsiveReported = false
 
-  mainWindow.webContents.on('unresponsive', () => {
-    log.error('Renderer process became unresponsive')
-    addMainBreadcrumb('renderer', 'Renderer process became unresponsive', undefined, 'warning')
-    unresponsiveSince = Date.now()
-    unresponsiveReported = false
+  /**
+   * Cancel pending renderer-hang work after recovery or process exit.
+   */
+  const clearUnresponsiveTimers = (): void => {
     if (unresponsiveTimer) {
       clearTimeout(unresponsiveTimer)
+      unresponsiveTimer = null
     }
+    if (unresponsiveRecoveryTimer) {
+      clearTimeout(unresponsiveRecoveryTimer)
+      unresponsiveRecoveryTimer = null
+    }
+  }
+
+  window.webContents.on('render-process-gone', (_event, details) => {
+    if (isQuitting) {
+      return
+    }
+    const rendererUrl = window.webContents.getURL()
+    log.error(
+      `Renderer process gone: reason=${details.reason} exitCode=${details.exitCode} url=${rendererUrl}`
+    )
+    captureMainMessage(
+      'Renderer process gone',
+      {
+        extra: { exit_code: details.exitCode, renderer_url: rendererUrl },
+        tags: { reason: details.reason, source: 'renderer.process-gone' }
+      },
+      'error'
+    )
+    clearUnresponsiveTimers()
+    unresponsiveSince = null
+    unresponsiveReported = false
+    isRendererUnresponsive = false
+    if (details.reason !== 'clean-exit') {
+      recoverRendererToHome(window, `renderer ${details.reason}`)
+    }
+  })
+
+  window.webContents.on('unresponsive', () => {
+    log.error('Renderer process became unresponsive')
+    addMainBreadcrumb('renderer', 'Renderer process became unresponsive', undefined, 'warning')
+    isRendererUnresponsive = true
+    unresponsiveSince = Date.now()
+    unresponsiveReported = false
+    clearUnresponsiveTimers()
     unresponsiveTimer = setTimeout(() => {
       unresponsiveTimer = null
       if (unresponsiveSince === null) {
@@ -402,19 +605,29 @@ function setupRendererErrorHandling(): void {
         'warning'
       )
     }, RENDERER_UNRESPONSIVE_REPORT_MS)
+    if (process.platform === 'win32' && app.isPackaged) {
+      unresponsiveRecoveryTimer = setTimeout(() => {
+        unresponsiveRecoveryTimer = null
+        if (unresponsiveSince === null || isQuitting || isRendererUnavailable(window)) {
+          return
+        }
+        log.error(
+          `Renderer remained unresponsive for ${RENDERER_UNRESPONSIVE_RECOVERY_MS}ms; forcing recovery`
+        )
+        window.webContents.forcefullyCrashRenderer()
+      }, RENDERER_UNRESPONSIVE_RECOVERY_MS)
+    }
   })
 
-  mainWindow.webContents.on('responsive', () => {
+  window.webContents.on('responsive', () => {
     const duration = unresponsiveSince === null ? null : Date.now() - unresponsiveSince
     log.info('Renderer process became responsive again')
+    isRendererUnresponsive = false
     addMainBreadcrumb('renderer', 'Renderer process became responsive again', {
       unresponsive_ms: duration ?? undefined,
       reported_to_sentry: unresponsiveReported
     })
-    if (unresponsiveTimer) {
-      clearTimeout(unresponsiveTimer)
-      unresponsiveTimer = null
-    }
+    clearUnresponsiveTimers()
     if (unresponsiveReported && duration !== null) {
       captureMainMessage(
         'Renderer process recovered from sustained unresponsiveness',
@@ -549,6 +762,23 @@ const flushPendingOneClickDownloads = (): void => {
   }
 }
 
+/**
+ * Broadcast kernel state and unlock downloads exactly once after local readiness.
+ */
+const handleYtDlpKernelStatus = (status: YtDlpKernelStatus): void => {
+  sendToRenderer('ytdlp-kernel:status', status)
+  if (status.ready && !isYtdlpReady) {
+    isYtdlpReady = true
+    downloadEngine.restoreActiveDownloads()
+    flushPendingOneClickDownloads()
+    flushPendingDeepLinks()
+  }
+  if (status.ready && app.isPackaged && !kernelBackgroundUpdatesStarted) {
+    kernelBackgroundUpdatesStarted = true
+    initializeYtDlpKernelService().startBackgroundUpdates()
+  }
+}
+
 const startOneClickDownload = async (data: DeepLinkData): Promise<void> => {
   try {
     const settings = settingsManager.getAll()
@@ -581,42 +811,24 @@ const startOneClickDownload = async (data: DeepLinkData): Promise<void> => {
     }
 
     const downloadId = createDownloadId()
-    let downloadUrl = data.url
-    let metadata = {}
-
-    try {
-      const info = await downloadEngine.getVideoInfo(data.url)
-      downloadUrl = info.webpage_url?.trim() || data.url
-      metadata = {
-        ...buildVideoInfoDownloadMetadata(info),
-        selectedFormat: pickOneClickSelectedFormat(info, {
-          oneClickDownloadType: downloadType,
-          oneClickQuality: settings.oneClickQuality
-        })
-      }
-    } catch (error) {
-      log.warn('Failed to fetch one-click video info before queueing:', error)
-    }
-
     const started = downloadEngine.startDownload(downloadId, {
-      url: downloadUrl,
+      url: data.url,
       type: downloadType,
       format,
-      containerFormat,
-      ...metadata
+      containerFormat
     })
     if (started) {
-      log.info('One-click download queued:', { id: downloadId, url: downloadUrl })
+      log.info('One-click download queued:', { id: downloadId, url: data.url })
       addMainBreadcrumb('download', 'One-click download queued', {
         downloadId,
         type: data.type,
-        url: downloadUrl
+        url: data.url
       })
     } else {
-      log.info('One-click download already queued:', { id: downloadId, url: downloadUrl })
+      log.info('One-click download already queued:', { id: downloadId, url: data.url })
       addMainBreadcrumb('download', 'One-click download was already queued', {
         downloadId,
-        url: downloadUrl
+        url: data.url
       })
     }
   } catch (error) {
@@ -765,21 +977,72 @@ const gotSingleInstanceLock = app.requestSingleInstanceLock()
 if (gotSingleInstanceLock) {
   app.on('second-instance', (_event, argv) => {
     handleDeepLinkArgv(argv)
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) {
-        mainWindow.restore()
+    handleMediaArgv(argv)
+    const window = mainWindow
+    if (window && !window.isDestroyed()) {
+      if (window.isMinimized()) {
+        window.restore()
       }
-      mainWindow.show()
-      mainWindow.focus()
+      window.show()
+      window.focus()
+      if (!window.webContents.isDestroyed() && window.webContents.isCrashed()) {
+        recoverRendererToHome(window, 'second-instance activation')
+      } else if (isRendererUnresponsive) {
+        log.warn('Second-instance activation found an unresponsive renderer; forcing recovery')
+        window.webContents.forcefullyCrashRenderer()
+      }
     }
   })
 } else {
   app.quit()
 }
 
+app.on('child-process-gone', (_event, details) => {
+  if (isQuitting || details.reason === 'clean-exit') {
+    return
+  }
+
+  log.error(
+    `Electron child process gone: type=${details.type} reason=${details.reason} exitCode=${details.exitCode} service=${details.serviceName ?? details.name ?? 'unknown'}`
+  )
+  captureMainMessage(
+    'Electron child process gone',
+    {
+      extra: {
+        exit_code: details.exitCode,
+        name: details.name,
+        service_name: details.serviceName
+      },
+      tags: {
+        process_type: details.type,
+        reason: details.reason,
+        source: 'electron.child-process-gone'
+      }
+    },
+    'error'
+  )
+
+  const window = mainWindow
+  if (
+    process.platform === 'win32' &&
+    details.type === 'GPU' &&
+    window &&
+    !window.isDestroyed() &&
+    !window.webContents.isDestroyed() &&
+    window.webContents.getURL().includes('/transcript')
+  ) {
+    recoverRendererToHome(window, `GPU ${details.reason}`)
+  }
+})
+
 app.on('open-url', (event, url) => {
   event.preventDefault()
   handleDeepLinkUrl(url)
+})
+
+app.on('open-file', (event, filePath) => {
+  event.preventDefault()
+  queueMediaImport(filePath)
 })
 
 // This method will be called when Electron has finished
@@ -788,6 +1051,7 @@ app.on('open-url', (event, url) => {
 app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.vidbee')
+  settingsManager.applyFreshInstallLocale()
 
   registerVidbeeProtocol()
 
@@ -805,46 +1069,43 @@ app.whenReady().then(async () => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
 
-    // Enable F12 to toggle DevTools in both development and production
-    window.webContents.on('before-input-event', (_, input) => {
-      if (input.key === 'F12') {
-        if (window.webContents.isDevToolsOpened()) {
-          window.webContents.closeDevTools()
-        } else {
-          window.webContents.openDevTools()
+    // Electron Toolkit already handles F12 in development.
+    if (app.isPackaged) {
+      window.webContents.on('before-input-event', (event, input) => {
+        if (input.type !== 'keyDown' || input.code !== 'F12' || input.isAutoRepeat) {
+          return
         }
-      }
-    })
+
+        event.preventDefault()
+        window.webContents.toggleDevTools()
+      })
+    }
   })
 
   // IPC services are automatically registered by electron-ipc-decorator when imported
   log.info('IPC services available:', Object.keys(services))
 
-  await initializeOptionalTool({
+  const ffmpegInitialization = initializeOptionalTool({
     initialize: () => ffmpegManager.initialize(),
     label: 'ffmpeg',
     logger: log
   })
+  const kernelService = initializeYtDlpKernelService()
+  kernelService.on('status', handleYtDlpKernelStatus)
+  const kernelPreparation = KERNEL_PREPARATION_PREVIEW
+    ? Promise.resolve(false)
+    : kernelService.prepare()
 
-  // Initialize yt-dlp
-  try {
-    log.info('Initializing yt-dlp...')
-    await ytdlpManager.initialize()
-    isYtdlpReady = true
-    log.info('yt-dlp initialized successfully')
-  } catch (error) {
-    log.error('Failed to initialize yt-dlp:', error)
-    captureMainException(error, {
-      tags: {
-        source: 'ytdlp.initialize'
-      }
-    })
+  if (KERNEL_PREPARATION_PREVIEW) {
+    log.info('Kernel preparation preview is active')
   }
 
-  if (isYtdlpReady) {
-    downloadEngine.restoreActiveDownloads()
-    flushPendingOneClickDownloads()
-  }
+  // Create the renderer immediately so first-time preparation has visible feedback.
+  createWindow()
+  // Transcription models download in the background so yt-dlp can finish first.
+  startIdleMinimalModelFill()
+
+  await Promise.all([ffmpegInitialization, kernelPreparation])
 
   // NEX-131 A段: copy any pre-existing download-session.json + legacy
   // download_history rows into the new task-queue tasks table. Idempotent;
@@ -855,6 +1116,18 @@ app.whenReady().then(async () => {
     log.warn('Desktop task-queue migration failed:', err)
   }
 
+  try {
+    await startDesktopTaskQueue()
+    startAutoTranscription()
+    subscribeTranscriptBroadcasts()
+    startIdleMinimalModelFill()
+    isTaskQueueReady = true
+    handleMediaArgv(process.argv)
+    void flushPendingMediaImports()
+  } catch (err) {
+    log.warn('Desktop task-queue / transcription failed to start:', err)
+  }
+
   await startExtensionApiServer()
 
   if (BACKGROUND_MODE) {
@@ -863,8 +1136,6 @@ app.whenReady().then(async () => {
   }
 
   applyAutoLaunchSetting(settingsManager.get('launchAtLogin'))
-
-  createWindow()
 
   initAutoUpdater()
 
@@ -878,6 +1149,8 @@ app.whenReady().then(async () => {
   }
 
   handleDeepLinkArgv(process.argv)
+  handleMediaArgv(process.argv)
+  void flushPendingMediaImports()
 
   app.on('activate', () => {
     const existingWindow = BrowserWindow.getAllWindows().find((window) => !window.isDestroyed())
@@ -898,9 +1171,22 @@ app.whenReady().then(async () => {
   })
 })
 
-app.on('before-quit', () => {
+app.on('before-quit', (event) => {
+  const rendererFailed =
+    isRendererUnresponsive || (mainWindow ? isRendererUnavailable(mainWindow) : false)
+  if (!rendererFailed && deferAppQuitIfNeeded()) {
+    event.preventDefault()
+    return
+  }
+
+  if (rendererFailed) {
+    log.warn('Skipping quit confirmation because the renderer is unavailable')
+  }
+
   isQuitting = true
+  stopYtDlpKernelService()
   downloadEngine.flushDownloadSession()
+  void stopPlayerHost()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

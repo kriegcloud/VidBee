@@ -9,6 +9,7 @@ export const subscriptionsTable = sqliteTable('subscriptions', {
   keywords: text('keywords').notNull(),
   tags: text('tags').notNull(),
   onlyDownloadLatest: integer('only_latest', { mode: 'number' }).notNull(),
+  autoDownload: integer('auto_download', { mode: 'number' }).notNull(),
   enabled: integer('enabled', { mode: 'number' }).notNull(),
   coverUrl: text('cover_url'),
   latestVideoTitle: text('latest_video_title'),

@@ -2,10 +2,11 @@ import { execFile, execSync } from 'node:child_process'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
-import { clipboard, dialog, Notification, shell } from 'electron'
+import { BrowserWindow, clipboard, dialog, Notification, ShareMenu, shell } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
+import { mediaFileDialogFilters } from '../../lib/import-local-media'
 import { getPortableDownloadsPath, isPortableMode } from '../../portable'
 import { scopedLoggers } from '../../utils/logger'
 
@@ -13,6 +14,38 @@ const execFileAsync = promisify(execFile)
 
 class FileSystemService extends IpcService {
   static readonly groupName = 'fs'
+
+  /**
+   * Read file paths currently on the system clipboard (Finder / Explorer copy).
+   */
+  @IpcMethod()
+  readClipboardFilePaths(_context: IpcContext): string[] {
+    try {
+      if (process.platform === 'darwin') {
+        const raw = clipboard.read('public.file-url')
+        if (!raw.trim()) {
+          return []
+        }
+        return raw
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            if (!line.toLowerCase().startsWith('file:')) {
+              return line
+            }
+            try {
+              return fileURLToPath(line)
+            } catch {
+              return line
+            }
+          })
+      }
+    } catch {
+      return []
+    }
+    return []
+  }
 
   @IpcMethod()
   async selectDirectory(_context: IpcContext): Promise<string | null> {
@@ -38,6 +71,130 @@ class FileSystemService extends IpcService {
     }
 
     return result.filePaths[0]
+  }
+
+  /**
+   * Open a multi-select dialog filtered to local audio and video files.
+   */
+  @IpcMethod()
+  async selectMediaFiles(_context: IpcContext): Promise<string[]> {
+    const options = {
+      filters: mediaFileDialogFilters(),
+      properties: ['openFile', 'multiSelections'] as Array<'openFile' | 'multiSelections'>
+    }
+    const window = BrowserWindow.getFocusedWindow()
+    const result = window
+      ? await dialog.showOpenDialog(window, options)
+      : await dialog.showOpenDialog(options)
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return []
+    }
+
+    return result.filePaths
+  }
+
+  /**
+   * Ask the user where to save a UTF-8 text file and write it.
+   */
+  @IpcMethod()
+  async saveTextFile(
+    _context: IpcContext,
+    options: { content: string; defaultFileName: string }
+  ): Promise<{ path: string } | null> {
+    const fileName = path.basename(options.defaultFileName || 'transcript.txt')
+    const defaultPath = path.join(this.getDefaultDownloadPath(_context), fileName)
+    const extension = path.extname(fileName).replace('.', '') || 'txt'
+    const filterName = extension === 'md' ? 'Markdown' : 'Text'
+    const saveOptions = {
+      defaultPath,
+      filters: [{ extensions: [extension], name: filterName }]
+    }
+    const window = BrowserWindow.getFocusedWindow()
+    const result = window
+      ? await dialog.showSaveDialog(window, saveOptions)
+      : await dialog.showSaveDialog(saveOptions)
+
+    if (result.canceled || !result.filePath) {
+      return null
+    }
+
+    const normalizedPath = path.normalize(this.sanitizePath(result.filePath))
+    await fs.writeFile(normalizedPath, options.content, 'utf8')
+    return { path: normalizedPath }
+  }
+
+  /**
+   * Ask the user where to save a PNG (or other binary) and write it.
+   *
+   * @param _context IPC call context.
+   * @param options File bytes and the suggested download name.
+   */
+  @IpcMethod()
+  async saveBinaryFile(
+    _context: IpcContext,
+    options: { data: ArrayBuffer; defaultFileName: string }
+  ): Promise<{ path: string } | null> {
+    let fileName = path.basename(options.defaultFileName || 'VidBee.png')
+    if (!fileName.toLowerCase().endsWith('.png')) {
+      fileName = `${fileName}.png`
+    }
+    const defaultPath = path.join(this.getDefaultDownloadPath(_context), fileName)
+    const saveOptions = {
+      defaultPath,
+      filters: [{ extensions: ['png'], name: 'PNG' }]
+    }
+    const window = BrowserWindow.getFocusedWindow()
+    const result = window
+      ? await dialog.showSaveDialog(window, saveOptions)
+      : await dialog.showSaveDialog(saveOptions)
+
+    if (result.canceled || !result.filePath) {
+      return null
+    }
+
+    const normalizedPath = path.normalize(this.sanitizePath(result.filePath))
+    await fs.writeFile(normalizedPath, Buffer.from(new Uint8Array(options.data)))
+    return { path: normalizedPath }
+  }
+
+  /**
+   * Write a temp PNG and open the macOS share sheet.
+   *
+   * @param _context IPC call context.
+   * @param options File bytes and the suggested share name.
+   */
+  @IpcMethod()
+  async shareFile(
+    _context: IpcContext,
+    options: { data: ArrayBuffer; fileName: string }
+  ): Promise<boolean> {
+    if (process.platform !== 'darwin') {
+      return false
+    }
+
+    const fileName = path.basename(options.fileName || 'VidBee.png').replace(/[<>:"/\\|?*]+/g, '_')
+    const tempPath = path.join(os.tmpdir(), `vidbee-share-${process.pid}-${Date.now()}-${fileName}`)
+
+    try {
+      await fs.writeFile(tempPath, Buffer.from(new Uint8Array(options.data)))
+      const window = BrowserWindow.getFocusedWindow()
+      return await new Promise<boolean>((resolve) => {
+        try {
+          const shareMenu = new ShareMenu({ filePaths: [tempPath] })
+          shareMenu.popup({
+            ...(window ? { window } : {}),
+            callback: () => resolve(true)
+          })
+        } catch (error) {
+          scopedLoggers.system.error('Failed to open share sheet:', error)
+          resolve(false)
+        }
+      })
+    } catch (error) {
+      scopedLoggers.system.error('Failed to prepare share file:', error)
+      return false
+    }
   }
 
   /**
@@ -249,6 +406,28 @@ class FileSystemService extends IpcService {
       scopedLoggers.system.error('Failed to open external URL:', error)
       return false
     }
+  }
+
+  /**
+   * Open macOS System Settings to Privacy → Files & Folders.
+   */
+  @IpcMethod()
+  async openMacFilesAndFoldersSettings(_context: IpcContext): Promise<boolean> {
+    if (process.platform !== 'darwin') {
+      return false
+    }
+    const urls = [
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders',
+      'x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+    ]
+    for (const url of urls) {
+      try {
+        await shell.openExternal(url)
+        return true
+      } catch {}
+    }
+    scopedLoggers.system.error('Failed to open Files & Folders settings')
+    return false
   }
 
   /**

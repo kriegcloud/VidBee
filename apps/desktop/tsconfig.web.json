@@ -11,13 +11,12 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "types": ["unplugin-icons/types/react"],
+    "types": ["vite/client", "unplugin-icons/types/react"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "paths": {
-      "@renderer/*": ["src/renderer/src/*"],
-      "@shared/*": ["src/shared/*"]
+      "@renderer/*": ["./src/renderer/src/*"],
+      "@shared/*": ["./src/shared/*"]
     },
     "strictNullChecks": true
   }

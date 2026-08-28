@@ -5,28 +5,28 @@ import { DownloadDialogLayout } from '@renderer/components/ui/download-dialog-la
 import { Input } from '@renderer/components/ui/input'
 import { Label } from '@renderer/components/ui/label'
 import { RemoteImage } from '@renderer/components/ui/remote-image'
-import type { PlaylistInfo, VideoFormat, VideoInfo } from '@shared/types'
+import type { PlaylistInfo, VideoFormat } from '@shared/types'
 import {
   buildAudioFormatPreference,
   buildVideoFormatPreference
 } from '@shared/utils/format-preferences'
-import {
-  buildVideoInfoDownloadMetadata,
-  pickOneClickSelectedFormat
-} from '@shared/utils/video-info-metadata'
+import { buildVideoInfoDownloadMetadata } from '@shared/utils/video-info-metadata'
 import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidbee/downloader-core'
+import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
 import { useAddUrlInteraction } from '@vidbee/ui/lib/use-add-url-interaction'
-import { useAddUrlShortcut } from '@vidbee/ui/lib/use-add-url-shortcut'
+import { useHomeIngest } from '@vidbee/ui/lib/use-home-ingest'
 import { useAtom, useSetAtom } from 'jotai'
 import { FolderOpen, Loader2 } from 'lucide-react'
-import { useCallback, useEffect, useId, useMemo, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { useImportLocalMedia } from '../../hooks/use-import-local-media'
 import { resolveDownloadTargetUrl } from '../../lib/download-url'
 import { ipcEvents, ipcServices } from '../../lib/ipc'
-import { addDownloadAtom } from '../../store/downloads'
+import { logger } from '../../lib/logger'
+import { addDownloadAtom, removeDownloadAtom } from '../../store/downloads'
 import { loadSettingsAtom, saveSettingAtom, settingsAtom } from '../../store/settings'
 import {
   clearVideoInfoAtom,
@@ -87,7 +87,7 @@ interface DownloadDialogProps {
 }
 
 export function DownloadDialog({
-  onOpenSupportedSites: _onOpenSupportedSites,
+  onOpenSupportedSites,
   onOpenSettings: _onOpenSettings
 }: DownloadDialogProps) {
   const { t } = useTranslation()
@@ -102,7 +102,9 @@ export function DownloadDialog({
   const clearVideoInfo = useSetAtom(clearVideoInfoAtom)
   const loadSettings = useSetAtom(loadSettingsAtom)
   const addDownload = useSetAtom(addDownloadAtom)
+  const removeDownload = useSetAtom(removeDownloadAtom)
   const saveSetting = useSetAtom(saveSettingAtom)
+  const { importMediaPaths } = useImportLocalMedia()
 
   const [url, setUrl] = useState('')
   const [activeTab, setActiveTab] = useState<'single' | 'playlist' | 'profile'>('single')
@@ -114,6 +116,8 @@ export function DownloadDialog({
     selectedVideoFormat: '',
     selectedAudioFormat: '',
     customDownloadPath: '',
+    startTime: '',
+    endTime: '',
     selectedContainer: undefined,
     selectedCodec: undefined,
     selectedFps: undefined
@@ -231,7 +235,7 @@ export function DownloadDialog({
             }
             toast.success(t('playlist.foundVideos', { count: info.entryCount }))
           } catch (error) {
-            console.error('Failed to fetch playlist info:', error)
+            logger.error('Failed to fetch playlist info:', error)
             const message =
               error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
             setPlaylistPreviewError(message)
@@ -251,6 +255,8 @@ export function DownloadDialog({
             ...prev,
             selectedVideoFormat: '',
             selectedAudioFormat: '',
+            startTime: '',
+            endTime: '',
             selectedContainer: undefined,
             selectedCodec: undefined,
             selectedFps: undefined
@@ -273,6 +279,10 @@ export function DownloadDialog({
     loadSettings()
   }, [open, loadSettings])
 
+  /**
+   * Queue a one-click download immediately so the row appears before metadata
+   * hydration. The facade fills title/thumbnail in the background.
+   */
   const startOneClickDownload = useCallback(
     async (targetUrl: string, options?: { clearInput?: boolean; setInputValue?: boolean }) => {
       const trimmedUrl = targetUrl.trim()
@@ -286,39 +296,6 @@ export function DownloadDialog({
       }
 
       const id = `download_${Date.now()}_${Math.random().toString(36).slice(7)}`
-      let oneClickVideoInfo: VideoInfo | null = null
-
-      try {
-        oneClickVideoInfo = await ipcServices.download.getVideoInfo(trimmedUrl)
-      } catch (error) {
-        console.warn('Failed to fetch one-click video info before queueing:', error)
-      }
-
-      const downloadTargetUrl =
-        resolveDownloadTargetUrl({
-          fallbackUrl: trimmedUrl,
-          webpageUrl: oneClickVideoInfo?.webpage_url
-        }) ?? trimmedUrl
-      const metadata = buildVideoInfoDownloadMetadata(oneClickVideoInfo)
-      const selectedFormat = pickOneClickSelectedFormat(oneClickVideoInfo, settings)
-
-      const downloadItem = {
-        id,
-        url: downloadTargetUrl,
-        title: metadata.title || t('download.fetchingVideoInfo'),
-        thumbnail: metadata.thumbnail,
-        type: settings.oneClickDownloadType,
-        status: 'pending' as const,
-        progress: { percent: 0 },
-        duration: metadata.duration,
-        description: metadata.description,
-        channel: metadata.channel,
-        uploader: metadata.uploader,
-        viewCount: metadata.viewCount,
-        selectedFormat,
-        createdAt: Date.now()
-      }
-
       const format =
         settings.oneClickDownloadType === 'video'
           ? buildVideoFormatPreference(settings)
@@ -326,31 +303,43 @@ export function DownloadDialog({
       const containerFormat =
         settings.oneClickDownloadType === 'video' ? settings.oneClickContainer : undefined
 
+      // Insert the pending row first. Metadata hydration used to run here and
+      // kept Bilibili (and similar) URLs out of the list for a long time.
+      const downloadItem = {
+        id,
+        url: trimmedUrl,
+        title: t('download.fetchingVideoInfo'),
+        type: settings.oneClickDownloadType,
+        status: 'pending' as const,
+        progress: { percent: 0 },
+        createdAt: Date.now()
+      }
+      addDownload(downloadItem)
+
       try {
         const started = await ipcServices.download.startDownload(id, {
-          url: downloadTargetUrl,
+          url: trimmedUrl,
           type: settings.oneClickDownloadType,
           format,
-          containerFormat,
-          ...metadata,
-          selectedFormat
+          containerFormat
         })
         if (!started) {
+          removeDownload(id)
           toast.info(t('notifications.downloadAlreadyQueued'))
           return
         }
-        addDownload(downloadItem)
 
         toast.success(t('download.oneClickDownloadStarted'))
         if (options?.clearInput) {
           setUrl('')
         }
       } catch (error) {
-        console.error('Failed to start one-click download:', error)
+        removeDownload(id)
+        logger.error('Failed to start one-click download:', error)
         toast.error(t('notifications.downloadFailed'))
       }
     },
-    [settings, addDownload, t]
+    [settings, addDownload, removeDownload, t]
   )
 
   const handleParsePlaylistUrl = useCallback(
@@ -376,7 +365,7 @@ export function DownloadDialog({
         }
         toast.success(t('playlist.foundVideos', { count: info.entryCount }))
       } catch (error) {
-        console.error('Failed to fetch playlist info:', error)
+        logger.error('Failed to fetch playlist info:', error)
         const message =
           error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
         setPlaylistPreviewError(message)
@@ -405,6 +394,8 @@ export function DownloadDialog({
       ...prev,
       selectedVideoFormat: '',
       selectedAudioFormat: '',
+      startTime: '',
+      endTime: '',
       selectedContainer: undefined,
       selectedCodec: undefined,
       selectedFps: undefined
@@ -423,6 +414,8 @@ export function DownloadDialog({
         ...prev,
         selectedVideoFormat: '',
         selectedAudioFormat: '',
+        startTime: '',
+        endTime: '',
         selectedContainer: undefined,
         selectedCodec: undefined,
         selectedFps: undefined
@@ -456,7 +449,7 @@ export function DownloadDialog({
           )
         )
       } catch (inspectionError) {
-        console.error('Failed to inspect Instagram profile:', inspectionError)
+        logger.error('Failed to inspect Instagram profile:', inspectionError)
         const message =
           inspectionError instanceof Error && inspectionError.message
             ? inspectionError.message
@@ -495,7 +488,8 @@ export function DownloadDialog({
     handleOpenAddUrlPopover,
     hasAddUrlValue,
     setAddUrlPopoverOpen,
-    setAddUrlValue
+    setAddUrlValue,
+    submitUrl
   } = useAddUrlInteraction({
     activeTab,
     isOneClickDownloadEnabled: settings.oneClickDownload,
@@ -533,18 +527,34 @@ export function DownloadDialog({
       )
       setOpen(false)
     } catch (downloadError) {
-      console.error('Failed to start Instagram profile download:', downloadError)
+      logger.error('Failed to start Instagram profile download:', downloadError)
       toast.error(t('instagramProfile.downloadFailed'))
     } finally {
       setProfileDownloadLoading(false)
     }
   }, [profileCustomDownloadPath, profileInspection, selectedProfileCategories, t])
 
-  // The Add URL trigger button is always rendered in the toolbar, so the
-  // shortcut should fire even when the dialog itself is closed.
-  useAddUrlShortcut({
+  /**
+   * Send pasted or dropped URLs through the existing download flow.
+   */
+  const ingestUrls = useCallback(
+    async (urls: string[]) => {
+      for (const nextUrl of urls) {
+        await submitUrl(nextUrl)
+      }
+    },
+    [submitUrl]
+  )
+
+  const { dropKind, isDragging } = useHomeIngest({
     enabled: true,
-    onTrigger: handleOpenAddUrlPopover
+    resolveFilePath: (file) => ipcEvents.getPathForFile(file),
+    readClipboardPaths: () => ipcServices.fs.readClipboardFilePaths(),
+    onUrls: ingestUrls,
+    onMediaPaths: importMediaPaths,
+    onUnsupported: () => {
+      toast.error(t('notifications.unsupportedDrop'))
+    }
   })
 
   const handleOneClickDownload = useCallback(async () => {
@@ -563,7 +573,7 @@ export function DownloadDialog({
         setPlaylistCustomDownloadPath(path)
       }
     } catch (error) {
-      console.error('Failed to select directory:', error)
+      logger.error('Failed to select directory:', error)
       toast.error(t('settings.directorySelectError'))
     }
   }, [playlistBusy, t])
@@ -586,7 +596,7 @@ export function DownloadDialog({
       }
       toast.success(t('playlist.foundVideos', { count: info.entryCount }))
     } catch (error) {
-      console.error('Failed to fetch playlist info:', error)
+      logger.error('Failed to fetch playlist info:', error)
       const message =
         error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
       setPlaylistPreviewError(message)
@@ -695,7 +705,7 @@ export function DownloadDialog({
 
       setOpen(false) // Close dialog after download starts
     } catch (error) {
-      console.error('Failed to start playlist download:', error)
+      logger.error('Failed to start playlist download:', error)
       toast.error(t('playlist.downloadFailed'))
     } finally {
       setPlaylistDownloadLoading(false)
@@ -787,6 +797,8 @@ export function DownloadDialog({
       type,
       format: resolvedFormat || undefined,
       audioFormat: type === 'video' && isMuxedVideoFormat(selectedVideoFormat) ? '' : undefined,
+      startTime: singleVideoState.startTime.trim() || undefined,
+      endTime: singleVideoState.endTime.trim() || undefined,
       customDownloadPath: singleVideoState.customDownloadPath.trim() || undefined,
       // Pass renderer-fetched videoInfo through so the kernel's projection
       // round-trips it back instead of clobbering the optimistic row.
@@ -805,45 +817,53 @@ export function DownloadDialog({
 
       setOpen(false) // Close dialog after download starts
     } catch (error) {
-      console.error('Failed to start download:', error)
+      logger.error('Failed to start download:', error)
       toast.error(t('notifications.downloadFailed'))
     }
   }, [videoInfo, videoInfoSourceUrl, singleVideoState, addDownload, t, url])
 
-  // Reset form when dialog closes
-  useEffect(() => {
-    if (!open) {
-      // Reset single video states
-      clearVideoInfo()
-      setUrl('')
-      setActiveTab('single')
-      setSingleVideoState({
-        title: '',
-        activeTab: 'video',
-        selectedVideoFormat: '',
-        selectedAudioFormat: '',
-        customDownloadPath: '',
-        selectedContainer: undefined,
-        selectedCodec: undefined,
-        selectedFps: undefined
-      })
+  const wasDialogOpenRef = useRef(open)
 
-      // Reset playlist states
-      setPlaylistUrl('')
-      setPlaylistInfo(null)
-      setPlaylistPreviewError(null)
-      setPlaylistCustomDownloadPath('')
-      setStartIndex('1')
-      setEndIndex('')
-      setSelectedEntryIds(new Set())
-      setProfileUrl('')
-      setProfileCustomDownloadPath('')
-      setProfileInspection(null)
-      setProfileInspectionLoading(false)
-      setProfileDownloadLoading(false)
-      setProfileError(null)
-      setSelectedProfileCategories(new Set())
+  // Reset form only when the dialog actually closes. `if (!open)` also ran
+  // on the closed idle state and invalidated in-flight fetches started in
+  // the same click as setOpen(true).
+  useEffect(() => {
+    const wasOpen = wasDialogOpenRef.current
+    wasDialogOpenRef.current = open
+    if (!(wasOpen && !open)) {
+      return
     }
+
+    clearVideoInfo()
+    setUrl('')
+    setActiveTab('single')
+    setSingleVideoState({
+      title: '',
+      activeTab: 'video',
+      selectedVideoFormat: '',
+      selectedAudioFormat: '',
+      customDownloadPath: '',
+      startTime: '',
+      endTime: '',
+      selectedContainer: undefined,
+      selectedCodec: undefined,
+      selectedFps: undefined
+    })
+
+    setPlaylistUrl('')
+    setPlaylistInfo(null)
+    setPlaylistPreviewError(null)
+    setPlaylistCustomDownloadPath('')
+    setStartIndex('1')
+    setEndIndex('')
+    setSelectedEntryIds(new Set())
+    setProfileUrl('')
+    setProfileCustomDownloadPath('')
+    setProfileInspection(null)
+    setProfileInspectionLoading(false)
+    setProfileDownloadLoading(false)
+    setProfileError(null)
+    setSelectedProfileCategories(new Set())
   }, [open, clearVideoInfo])
 
   const handleSingleVideoStateChange = useCallback(
@@ -879,319 +899,324 @@ export function DownloadDialog({
       : singleVideoState.selectedAudioFormat
 
   return (
-    <DownloadDialogLayout
-      activeTab={activeTab}
-      addUrlPopover={
-        <AddUrlPopover
-          cancelLabel={t('download.cancel')}
-          confirmDisabled={!canConfirmAddUrl}
-          confirmLabel={t('download.fetch')}
-          invalidMessage={hasAddUrlValue && !canConfirmAddUrl ? t('errors.invalidUrl') : undefined}
-          onCancel={() => {
-            setAddUrlPopoverOpen(false)
-          }}
-          onConfirm={() => {
-            void handleConfirmAddUrl()
-          }}
-          onOpenChange={setAddUrlPopoverOpen}
-          onTriggerClick={() => {
-            void handleOpenAddUrlPopover()
-          }}
-          onValueChange={setAddUrlValue}
-          open={addUrlPopoverOpen}
-          placeholder={t('download.urlPlaceholder')}
-          title={t('download.enterUrl')}
-          triggerLabel={t('download.pasteUrlButton')}
-          value={addUrlValue}
-        />
-      }
-      footer={
-        <div className="flex w-full items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {/* Download Location - Single Video */}
-            {activeTab === 'single' && videoInfo && !loading && (
-              <div className="flex items-center gap-2">
-                <div className="relative w-[240px]">
-                  <Input
-                    className="pr-7"
-                    placeholder={t('download.autoFolderPlaceholder')}
-                    readOnly
-                    value={singleVideoState.customDownloadPath || settings.downloadPath}
-                  />
-                  <div className="absolute top-1/2 right-0 -translate-y-1/2">
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const path = await ipcServices.fs.selectDirectory()
-                          if (path) {
-                            setSingleVideoState((prev) => ({
-                              ...prev,
-                              customDownloadPath: path
-                            }))
-                          }
-                        } catch (error) {
-                          console.error('Failed to select directory:', error)
-                          toast.error(t('settings.directorySelectError'))
+    <>
+      <DownloadDialogLayout
+        activeTab={activeTab}
+        addUrlPopover={
+          <AddUrlPopover
+            cancelLabel={t('download.cancel')}
+            confirmDisabled={!canConfirmAddUrl}
+            confirmLabel={t('download.fetch')}
+            invalidMessage={
+              hasAddUrlValue && !canConfirmAddUrl ? t('errors.invalidUrl') : undefined
+            }
+            onCancel={() => {
+              setAddUrlPopoverOpen(false)
+            }}
+            onConfirm={() => {
+              void handleConfirmAddUrl()
+            }}
+            onOpenChange={setAddUrlPopoverOpen}
+            onOpenSupportedSites={onOpenSupportedSites}
+            onTriggerClick={() => {
+              void handleOpenAddUrlPopover()
+            }}
+            onValueChange={setAddUrlValue}
+            open={addUrlPopoverOpen}
+            placeholder={t('download.urlPlaceholder')}
+            supportedSitesLabel={t('menu.supportedSites')}
+            title={t('download.enterUrl')}
+            triggerLabel={t('download.pasteUrlButton')}
+            value={addUrlValue}
+          />
+        }
+        dialogSubtitle={t('download.dialogSubtitle')}
+        dialogTitle={t('download.dialogTitle')}
+        footer={
+          <div className="flex w-full items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              {/* Download Location - Single Video */}
+              {activeTab === 'single' && videoInfo && !loading && (
+                <div className="flex min-w-0 items-center gap-2">
+                  <Button
+                    className="h-9 max-w-[240px] justify-start gap-2 px-0 font-normal text-muted-foreground text-sm hover:bg-transparent hover:text-foreground"
+                    onClick={async () => {
+                      try {
+                        const path = await ipcServices.fs.selectDirectory()
+                        if (path) {
+                          setSingleVideoState((prev) => ({
+                            ...prev,
+                            customDownloadPath: path
+                          }))
                         }
-                      }}
-                      size="icon"
+                      } catch (error) {
+                        logger.error('Failed to select directory:', error)
+                        toast.error(t('settings.directorySelectError'))
+                      }
+                    }}
+                    title={singleVideoState.customDownloadPath || settings.downloadPath}
+                    variant="ghost"
+                  >
+                    <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      {singleVideoState.customDownloadPath ||
+                        settings.downloadPath ||
+                        t('download.autoFolderPlaceholder')}
+                    </span>
+                  </Button>
+
+                  {singleVideoState.customDownloadPath && (
+                    <Button
+                      className="h-8 shrink-0 text-xs"
+                      onClick={() =>
+                        setSingleVideoState((prev) => ({
+                          ...prev,
+                          customDownloadPath: ''
+                        }))
+                      }
+                      size="sm"
                       variant="ghost"
                     >
-                      <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                      {t('download.useAutoFolder')}
                     </Button>
-                  </div>
+                  )}
                 </div>
+              )}
 
-                {singleVideoState.customDownloadPath && (
+              {activeTab === 'playlist' && playlistInfo && !playlistPreviewLoading && (
+                <div className="flex min-w-0 items-center gap-2">
                   <Button
-                    className="h-8 text-xs"
-                    onClick={() =>
-                      setSingleVideoState((prev) => ({
-                        ...prev,
-                        customDownloadPath: ''
-                      }))
-                    }
-                    size="sm"
-                    variant="ghost"
-                  >
-                    {t('download.useAutoFolder')}
-                  </Button>
-                )}
-              </div>
-            )}
-
-            {/* Download Location - Playlist */}
-            {activeTab === 'playlist' && playlistInfo && !playlistPreviewLoading && (
-              <div className="flex items-center gap-2">
-                <div className="relative w-[200px]">
-                  <Input
-                    className="h-8 bg-muted/30 pr-7 text-xs"
-                    placeholder={t('download.autoFolderPlaceholder')}
-                    readOnly
-                    value={playlistCustomDownloadPath || settings.downloadPath}
-                  />
-                  <div className="absolute top-1/2 right-2 -translate-y-1/2">
-                    <FolderOpen className="h-3 w-3 text-muted-foreground" />
-                  </div>
-                </div>
-                <Button
-                  className="h-8"
-                  disabled={playlistBusy}
-                  onClick={handleSelectPlaylistDirectory}
-                  size="sm"
-                  variant="outline"
-                >
-                  {t('settings.selectPath')}
-                </Button>
-                {playlistCustomDownloadPath && (
-                  <Button
-                    className="h-8 text-xs"
+                    className="h-9 min-w-0 max-w-[220px] justify-start gap-2 px-0 font-normal text-muted-foreground text-sm hover:bg-transparent hover:text-foreground"
                     disabled={playlistBusy}
-                    onClick={() => setPlaylistCustomDownloadPath('')}
-                    size="sm"
+                    onClick={() => {
+                      void handleSelectPlaylistDirectory()
+                    }}
+                    title={playlistCustomDownloadPath || settings.downloadPath}
                     variant="ghost"
                   >
-                    {t('download.useAutoFolder')}
+                    <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      {playlistCustomDownloadPath ||
+                        settings.downloadPath ||
+                        t('download.autoFolderPlaceholder')}
+                    </span>
                   </Button>
-                )}
-              </div>
-            )}
+                  {playlistCustomDownloadPath && (
+                    <Button
+                      className="h-8 shrink-0 text-xs"
+                      disabled={playlistBusy}
+                      onClick={() => setPlaylistCustomDownloadPath('')}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      {t('download.useAutoFolder')}
+                    </Button>
+                  )}
+                </div>
+              )}
 
-            {/* Advanced Options - Playlist (when no playlist info) */}
-            {activeTab === 'playlist' && !playlistInfo && !playlistPreviewLoading && (
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={advancedOptionsOpen}
-                  id={advancedOptionsId}
-                  onCheckedChange={(checked) => {
-                    setAdvancedOptionsOpen(checked === true)
-                  }}
+              {/* Advanced Options - Playlist (when no playlist info) */}
+              {activeTab === 'playlist' && !playlistInfo && !playlistPreviewLoading && (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={advancedOptionsOpen}
+                    id={advancedOptionsId}
+                    onCheckedChange={(checked) => {
+                      setAdvancedOptionsOpen(checked === true)
+                    }}
+                  />
+                  <Label className="cursor-pointer text-xs" htmlFor={advancedOptionsId}>
+                    {t('advancedOptions.title')}
+                  </Label>
+                </div>
+              )}
+
+              {activeTab === 'profile' && !profileInspection && !profileInspectionLoading && (
+                <Input
+                  className="h-9 w-[320px] text-sm"
+                  onChange={(event) => setProfileUrl(event.target.value)}
+                  placeholder={t('instagramProfile.urlPlaceholder')}
+                  value={profileUrl}
                 />
-                <Label className="cursor-pointer text-xs" htmlFor={advancedOptionsId}>
-                  {t('advancedOptions.title')}
-                </Label>
-              </div>
-            )}
+              )}
 
-            {activeTab === 'profile' && !profileInspection && !profileInspectionLoading && (
-              <Input
-                className="h-8 w-[320px] text-xs"
-                onChange={(event) => setProfileUrl(event.target.value)}
-                placeholder={t('instagramProfile.urlPlaceholder')}
-                value={profileUrl}
+              {activeTab === 'profile' && profileInspection && !profileInspectionLoading && (
+                <div className="flex min-w-0 items-center gap-2">
+                  <Button
+                    className="h-9 min-w-0 max-w-[220px] justify-start gap-2 px-0 font-normal text-muted-foreground text-sm hover:bg-transparent hover:text-foreground"
+                    disabled={profileBusy}
+                    onClick={async () => {
+                      try {
+                        const selectedPath = await ipcServices.fs.selectDirectory()
+                        if (selectedPath) {
+                          setProfileCustomDownloadPath(selectedPath)
+                        }
+                      } catch (selectError) {
+                        logger.error('Failed to select directory:', selectError)
+                        toast.error(t('settings.directorySelectError'))
+                      }
+                    }}
+                    title={profileCustomDownloadPath || settings.downloadPath}
+                    variant="ghost"
+                  >
+                    <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      {profileCustomDownloadPath ||
+                        settings.downloadPath ||
+                        t('download.autoFolderPlaceholder')}
+                    </span>
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="ml-auto flex gap-2">
+              {activeTab === 'single' ? (
+                videoInfo || loading ? (
+                  !loading && videoInfo ? (
+                    <Button
+                      disabled={loading || !selectedSingleFormat}
+                      onClick={handleSingleVideoDownload}
+                    >
+                      {singleVideoState.activeTab === 'video'
+                        ? t('download.downloadVideo')
+                        : t('download.downloadAudio')}
+                    </Button>
+                  ) : null
+                ) : (
+                  <Button
+                    disabled={loading || !url.trim()}
+                    onClick={settings.oneClickDownload ? handleOneClickDownload : handleFetchVideo}
+                  >
+                    {settings.oneClickDownload
+                      ? t('download.oneClickDownloadNow')
+                      : t('download.startDownload')}
+                  </Button>
+                )
+              ) : activeTab === 'profile' ? (
+                profileInspection ? (
+                  <Button
+                    disabled={profileDownloadLoading || selectedProfileCategories.size === 0}
+                    onClick={handleDownloadProfile}
+                  >
+                    {profileDownloadLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t('instagramProfile.downloadSelected')}
+                  </Button>
+                ) : profileInspectionLoading ? null : (
+                  <Button
+                    disabled={profileBusy || !profileUrl.trim()}
+                    onClick={() => {
+                      void inspectInstagramProfile(profileUrl)
+                    }}
+                  >
+                    {t('instagramProfile.scan')}
+                  </Button>
+                )
+              ) : playlistInfo && !playlistPreviewLoading ? (
+                <Button
+                  className="shrink-0 whitespace-nowrap"
+                  disabled={playlistDownloadLoading || selectedPlaylistEntries.length === 0}
+                  onClick={handleDownloadPlaylist}
+                >
+                  {playlistDownloadLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    t('playlist.downloadCurrentRange')
+                  )}
+                </Button>
+              ) : playlistPreviewLoading ? null : (
+                <Button
+                  disabled={playlistBusy || !playlistUrl.trim()}
+                  onClick={handlePreviewPlaylist}
+                >
+                  {playlistPreviewLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    t('download.startDownload')
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+        }
+        lockDialogHeight={lockDialogHeight}
+        onActiveTabChange={setActiveTab}
+        oneClickDownloadEnabled={settings.oneClickDownload}
+        oneClickTooltip={t('download.oneClickDownloadTooltip')}
+        onOpenChange={setOpen}
+        onToggleOneClickDownload={() => {
+          saveSetting({ key: 'oneClickDownload', value: !settings.oneClickDownload })
+        }}
+        open={open}
+        playlistTabContent={
+          <PlaylistDownload
+            advancedOptionsOpen={advancedOptionsOpen}
+            downloadType={downloadType}
+            downloadTypeId={downloadTypeId}
+            endIndex={endIndex}
+            onAdvancedOpenChange={setAdvancedOptionsOpen}
+            playlistBusy={playlistBusy}
+            playlistInfo={playlistInfo}
+            playlistPreviewError={playlistPreviewError}
+            playlistPreviewLoading={playlistPreviewLoading}
+            selectedEntryIds={selectedEntryIds}
+            selectedPlaylistEntries={selectedPlaylistEntries}
+            setDownloadType={setDownloadType}
+            setEndIndex={setEndIndex}
+            setSelectedEntryIds={setSelectedEntryIds}
+            setStartIndex={setStartIndex}
+            startIndex={startIndex}
+          />
+        }
+        playlistTabLabel={t('download.metadata.playlist')}
+        profileTabContent={
+          <InstagramProfilePreview
+            error={profileError}
+            inspection={profileInspection}
+            loading={profileInspectionLoading}
+            onToggleCategory={(category, selected) => {
+              setSelectedProfileCategories((current) => {
+                const next = new Set(current)
+                if (selected) {
+                  next.add(category)
+                } else {
+                  next.delete(category)
+                }
+                return next
+              })
+            }}
+            renderAvatar={(avatarUrl) => (
+              <RemoteImage
+                alt=""
+                className="h-full w-full object-cover"
+                placeholderClassName="h-full w-full"
+                src={avatarUrl}
               />
             )}
-
-            {activeTab === 'profile' && profileInspection && !profileInspectionLoading && (
-              <div className="flex items-center gap-2">
-                <div className="relative w-[200px]">
-                  <Input
-                    className="h-8 bg-muted/30 pr-7 text-xs"
-                    placeholder={t('download.autoFolderPlaceholder')}
-                    readOnly
-                    value={profileCustomDownloadPath || settings.downloadPath}
-                  />
-                  <FolderOpen className="absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                </div>
-                <Button
-                  className="h-8"
-                  disabled={profileBusy}
-                  onClick={async () => {
-                    try {
-                      const path = await ipcServices.fs.selectDirectory()
-                      if (path) {
-                        setProfileCustomDownloadPath(path)
-                      }
-                    } catch (selectError) {
-                      console.error('Failed to select directory:', selectError)
-                      toast.error(t('settings.directorySelectError'))
-                    }
-                  }}
-                  size="sm"
-                  variant="outline"
-                >
-                  {t('settings.selectPath')}
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="ml-auto flex gap-2">
-            {activeTab === 'single' ? (
-              videoInfo || loading ? (
-                !loading && videoInfo ? (
-                  <Button
-                    disabled={loading || !selectedSingleFormat}
-                    onClick={handleSingleVideoDownload}
-                  >
-                    {singleVideoState.activeTab === 'video'
-                      ? t('download.downloadVideo')
-                      : t('download.downloadAudio')}
-                  </Button>
-                ) : null
-              ) : (
-                <Button
-                  disabled={loading || !url.trim()}
-                  onClick={settings.oneClickDownload ? handleOneClickDownload : handleFetchVideo}
-                >
-                  {settings.oneClickDownload
-                    ? t('download.oneClickDownloadNow')
-                    : t('download.startDownload')}
-                </Button>
-              )
-            ) : activeTab === 'profile' ? (
-              profileInspection ? (
-                <Button
-                  disabled={profileDownloadLoading || selectedProfileCategories.size === 0}
-                  onClick={handleDownloadProfile}
-                >
-                  {profileDownloadLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('instagramProfile.downloadSelected')}
-                </Button>
-              ) : profileInspectionLoading ? null : (
-                <Button
-                  disabled={profileBusy || !profileUrl.trim()}
-                  onClick={() => {
-                    void inspectInstagramProfile(profileUrl)
-                  }}
-                >
-                  {t('instagramProfile.scan')}
-                </Button>
-              )
-            ) : playlistInfo && !playlistPreviewLoading ? (
-              <Button
-                disabled={playlistDownloadLoading || selectedPlaylistEntries.length === 0}
-                onClick={handleDownloadPlaylist}
-              >
-                {playlistDownloadLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  t('playlist.downloadCurrentRange')
-                )}
-              </Button>
-            ) : playlistPreviewLoading ? null : (
-              <Button
-                disabled={playlistBusy || !playlistUrl.trim()}
-                onClick={handlePreviewPlaylist}
-              >
-                {playlistPreviewLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  t('download.startDownload')
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      }
-      lockDialogHeight={lockDialogHeight}
-      onActiveTabChange={setActiveTab}
-      oneClickDownloadEnabled={settings.oneClickDownload}
-      oneClickTooltip={t('download.oneClickDownloadTooltip')}
-      onOpenChange={setOpen}
-      onToggleOneClickDownload={() => {
-        saveSetting({ key: 'oneClickDownload', value: !settings.oneClickDownload })
-      }}
-      open={open}
-      playlistTabContent={
-        <PlaylistDownload
-          advancedOptionsOpen={advancedOptionsOpen}
-          downloadType={downloadType}
-          downloadTypeId={downloadTypeId}
-          endIndex={endIndex}
-          playlistBusy={playlistBusy}
-          playlistInfo={playlistInfo}
-          playlistPreviewError={playlistPreviewError}
-          playlistPreviewLoading={playlistPreviewLoading}
-          selectedEntryIds={selectedEntryIds}
-          selectedPlaylistEntries={selectedPlaylistEntries}
-          setDownloadType={setDownloadType}
-          setEndIndex={setEndIndex}
-          setSelectedEntryIds={setSelectedEntryIds}
-          setStartIndex={setStartIndex}
-          startIndex={startIndex}
-        />
-      }
-      playlistTabLabel={t('download.metadata.playlist')}
-      profileTabContent={
-        <InstagramProfilePreview
-          error={profileError}
-          inspection={profileInspection}
-          loading={profileInspectionLoading}
-          onToggleCategory={(category, selected) => {
-            setSelectedProfileCategories((current) => {
-              const next = new Set(current)
-              if (selected) {
-                next.add(category)
-              } else {
-                next.delete(category)
-              }
-              return next
-            })
-          }}
-          renderAvatar={(avatarUrl) => (
-            <RemoteImage
-              alt=""
-              className="h-full w-full object-cover"
-              placeholderClassName="h-full w-full"
-              src={avatarUrl}
-            />
-          )}
-          selectedCategories={selectedProfileCategories}
-        />
-      }
-      profileTabLabel={t('instagramProfile.tab')}
-      singleTabContent={
-        <SingleVideoDownload
-          error={error}
-          feedbackSourceUrl={url}
-          loading={loading}
-          onStateChange={handleSingleVideoStateChange}
-          state={singleVideoState}
-          videoInfo={videoInfo}
-          ytDlpCommand={videoInfoCommand ?? undefined}
-        />
-      }
-      singleTabLabel={t('download.singleVideo')}
-    />
+            selectedCategories={selectedProfileCategories}
+          />
+        }
+        profileTabLabel={t('instagramProfile.tab')}
+        singleTabContent={
+          <SingleVideoDownload
+            error={error}
+            feedbackSourceUrl={url}
+            loading={loading}
+            onStateChange={handleSingleVideoStateChange}
+            state={singleVideoState}
+            videoInfo={videoInfo}
+            ytDlpCommand={videoInfoCommand ?? undefined}
+          />
+        }
+        singleTabLabel={t('download.singleVideo')}
+      />
+      <IngestDropOverlay
+        description={t('download.ingestDropDescription')}
+        kind={dropKind}
+        mediaTitle={t('download.ingestDropMedia')}
+        mixedTitle={t('download.ingestDropMixed')}
+        urlTitle={t('download.ingestDropUrl')}
+        visible={isDragging}
+      />
+    </>
   )
 }

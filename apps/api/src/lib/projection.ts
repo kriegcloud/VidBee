@@ -5,6 +5,7 @@
  * projection — Desktop carries some of the same fields but renders them
  * differently.
  */
+
 import type { DownloadTask } from '@vidbee/downloader-core'
 import type { Task } from '@vidbee/task-queue'
 import { projectTaskToLegacy } from '@vidbee/task-queue'

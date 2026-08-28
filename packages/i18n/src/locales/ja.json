@@ -16,8 +16,21 @@
     "betaProgramDescription": "他の人より先に早期ビルドと今後の機能を受け取ります。",
     "betaProgramTitle": "プレビューチャンネル",
     "description": "VidBeeはElectronで構築され、yt-dlpによって動力を得る無料のオープンソースダウンローダーです。",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "同梱版に切り替え済み",
+        "checking": "確認中",
+        "installing": "インストール中",
+        "preparing": "準備中",
+        "retry-scheduled": "再試行予定",
+        "unavailable": "利用できません",
+        "up-to-date": "最新"
+      },
+      "title": "ダウンロードエンジン",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "@nexmoexをフォロー"
+      "follow": "@nexmoeをフォロー"
     },
     "followAuthorDescription": "VidBeeの最新ニュースとアップデートを入手してください。",
     "followAuthorSupport": "X (Twitter)で開発者をフォローして、VidBeeの最新アップデートとニュースを入手してください。",
@@ -40,8 +53,6 @@
       "updateError": "アップデートの確認に失敗：{{error}}",
       "unknownErrorFallback": "不明なエラー"
     },
-    "preferencesDescription": "このページを離れることなくアップデート設定を調整します。",
-    "preferencesTitle": "クイックトグル",
     "resources": {
       "changelog": "リリースノート",
       "changelogDescription": "各バージョンで何が変更されたかを追跡します。",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "GitHub でバグ報告や機能要望を送ってください。",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "X で @nexmoex に言及してフィードバックや提案を共有してください。",
+      "xFeedbackDescription": "X で @nexmoe に言及してフィードバックや提案を共有してください。",
       "discord": "Discord",
       "discordDescription": "Discord コミュニティに参加して、議論やサポートを受けてください。",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "数百のサイトからビデオとオーディオをダウンロード",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "VidBee を終了しますか？",
+      "message": "{{count}} 件のタスクが進行中です。終了すると中断されます。",
+      "messagePlural": "{{count}} 件のタスクが進行中です。終了すると中断されます。",
+      "quit": "終了",
+      "cancel": "キャンセル"
+    }
   },
   "download": {
     "active": "アクティブ",
@@ -117,10 +135,15 @@
     "back": "戻る",
     "cancel": "キャンセル",
     "cancelled": "キャンセル済み",
+    "pause": "一時停止",
+    "paused": "一時停止中",
+    "resume": "再開",
     "clearCompleted": "完了をクリア",
     "clearDownloads": "ダウンロードをクリア",
     "completed": "完了",
     "downloadAudio": "オーディオをダウンロード",
+    "dialogSubtitle": "形式を選んで保存先を指定してください",
+    "dialogTitle": "ダウンロード",
     "downloadBtn": "ダウンロード",
     "downloadPending": "保留中",
     "downloadQueue": "ダウンロードキュー",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "クリップボードからプレイリストリンクを貼り付け [Ctrl + V]",
     "pasteUrl": "ビデオURLまたはIDを貼り付け [Ctrl + V]",
     "pasteUrlButton": "URL を貼り付け",
+    "ingestDropUrl": "ドロップしてダウンロード",
+    "ingestDropMedia": "ドロップして文字起こし",
+    "ingestDropMixed": "ドロップしてダウンロードと文字起こし",
+    "ingestDropDescription": "リンクはダウンロード、音声・動画ファイルは文字起こしを開始します。",
+    "ingestEmptyHint": "リンクを貼り付けてダウンロードするか、音声・動画をドロップして文字起こしします。",
     "preparing": "準備中...",
     "processing": "処理中",
     "progress": "進行状況",
@@ -192,6 +220,9 @@
     "video": "ビデオ",
     "videoInfo": "ビデオ情報",
     "videoInfoUpdated": "ビデオ情報が更新されました",
+    "frameRate": "フレームレート",
+    "codecAuto": "自動",
+    "fpsHighest": "最高",
     "metadata": {
       "source": "ソース",
       "playlist": "プレイリスト",
@@ -219,7 +250,22 @@
       "subscription": "サブスクリプション"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "Cookie を設定",
+    "cookiesSetupDialogTitle": "Cookie を設定",
+    "cookiesSetupNeeded": "このダウンロードにはログイン中のセッションが必要です。Cookie を設定してから再試行してください。",
+    "cookiesSetupLocked": "Chrome が Cookie データベースをロックしています。Firefox を使うか、Cookie ファイルを読み込むか、Chrome を完全に終了して再試行してください。",
+    "cookiesSetupMacFiles": "macOS がこのブラウザの Cookie 読み取りをブロックしています。「システム設定 → プライバシーとセキュリティ → ファイルとフォルダ」で VidBee にこのブラウザへのアクセスを許可してから再試行してください。すでに許可している場合は、VidBee を完全に終了して開き直してください。",
+    "cookiesSetupOpenFilesSettings": "「ファイルとフォルダ」設定を開く",
+    "cookiesSetupDecrypt": "Windows では Chrome の Cookie を復号できません。Firefox を使うか、Cookie ファイルを読み込んでください。",
+    "cookiesSetupFileInvalid": "選択した Cookie ファイルは有効なエクスポートではありません。cookies.txt を書き出して再試行してください。",
+    "cookiesSetupKeyring": "この Linux ビルドでは Chrome の Cookie を読めません。Firefox を使うか、Cookie ファイルを読み込んでください。",
+    "cookiesSetupStale": "現在の Cookie は期限切れかブロックされています。ログインし直して再試行してください。",
+    "cookiesSetupRetry": "ダウンロードを再試行",
+    "cookiesSetupDone": "完了",
+    "pause": "一時停止",
+    "paused": "一時停止中",
+    "resume": "再開"
   },
   "error": {
     "title": "問題が発生しました",
@@ -319,6 +365,7 @@
     "download": "ダウンロード",
     "playlist": "プレイリストをダウンロード",
     "rss": "RSS",
+    "transcripts": "文字起こし",
     "subscriptions": "定期購入",
     "preferences": "設定",
     "supportedSites": "サポートされているサイト",
@@ -342,7 +389,12 @@
     "removeFailed": "アイテムの削除に失敗",
     "settingsSaved": "設定が保存されました",
     "urlCopied": "URLがクリップボードにコピーされました",
-    "videoCopied": "ビデオがクリップボードにコピーされました"
+    "videoCopied": "ビデオがクリップボードにコピーされました",
+    "transcriptionStarted": "文字起こしを開始しました",
+    "transcriptionStartedMany": "{{count}} 件のファイルの文字起こしを開始しました",
+    "transcriptionStartFailed": "文字起こしを開始できませんでした",
+    "unsupportedDrop": "リンクを貼り付けるか、音声・動画ファイルをドロップしてください",
+    "localMediaDesktopOnly": "ローカルファイルの文字起こしはデスクトップアプリで利用できます"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} ファイル",
@@ -429,9 +481,9 @@
     "audio": "オーディオ設定",
     "browserForCookies": "Cookieに使用するブラウザを選択",
     "browserForCookiesDescription": "認証用のCookieを抽出するブラウザ",
-    "browserForCookiesWindowsNote": "Windows では Firefox の Cookie のみ対応しています。他のブラウザは Cookie ファイルを手動で設定してください。",
+    "browserForCookiesWindowsNote": "Windows では Firefox の Cookie のみ対応しています。他のブラウザは Cookie ファイルを手動で設定してください",
     "browserForCookiesProfile": "プロファイル名またはパス",
-    "browserForCookiesProfileDescription": "上で選択したブラウザのプロファイルパス。可能な場合は自動入力されます。",
+    "browserForCookiesProfileDescription": "上で選択したブラウザのプロファイルパス。可能な場合は自動入力されます",
     "browserForCookiesProfilePlaceholder": "プロファイル名または完全なパス（任意）",
     "browserForCookiesProfileInvalid": "プロファイルパスが無効です。選択したブラウザのプロファイルフォルダーを選んでください。",
     "browserForCookiesProfileInvalidPath": "そのフォルダーは存在しません。既存のプロファイルフォルダーを選んでください。",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "サインイン セッションを自動的に再利用するには、上記のブラウザーを選択してください。",
     "cookiesHelpFile": "Netscape Cookie ファイルをエクスポートし (yt-dlp FAQ を参照)、必要に応じてここで選択します。",
     "cookiesGuideTitle": "使い方の案内が必要ですか？",
-    "cookiesGuideDescription": "VidBeeでクッキーを使う手順を確認できます。",
+    "cookiesGuideDescription": "VidBeeでクッキーを使う手順を確認できます",
     "cookiesGuideLink": "Cookies ガイドを開く",
     "openLinkError": "リンクを開けませんでした",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "アプリのインターフェースに使用する言語を選択してください",
     "light": "ライト",
     "hideDockIcon": "ウィンドウを閉じたら Dock アイコンを隠す",
-    "hideDockIconDescription": "ウィンドウを閉じると自動的に Dock アイコンを非表示にします。メニューバーまたはトレイアイコンから再度開けます。",
+    "hideDockIconDescription": "ウィンドウを閉じると自動的に Dock アイコンを非表示にします。メニューバーまたはトレイアイコンから再度開けます",
     "launchAtLogin": "起動時に起動する",
-    "launchAtLoginDescription": "コンピューターにサインインした後、VidBee を自動的に開きます。",
-    "launchAtLoginUnsupported": "自動起動は macOS と Windows でのみ利用できます。",
+    "launchAtLoginDescription": "コンピューターにサインインした後、VidBee を自動的に開きます",
+    "launchAtLoginUnsupported": "自動起動は macOS と Windows でのみ利用できます",
     "enableAnalytics": "VidBee の改善にご協力ください",
-    "enableAnalyticsDescription": "匿名の使用状況データを共有することで、アプリの使用状況を把握し、改善の優先順位を付けることができます。",
+    "enableAnalyticsDescription": "匿名の使用状況データを共有することで、アプリの使用状況を把握し、改善の優先順位を付けることができます",
     "enableDownloadNotifications": "ダウンロード通知",
-    "enableDownloadNotificationsDescription": "ダウンロードが完了したときにシステム通知を表示します。",
+    "enableDownloadNotificationsDescription": "ダウンロードが完了したときにシステム通知を表示します",
     "downloadWithoutChannelSubfolders": "チャンネルのサブフォルダーを作らずに動画を保存",
-    "downloadWithoutChannelSubfoldersDescription": "単一動画のダウンロードをチャンネル用サブフォルダーではなく Videos フォルダーに直接保存します。",
+    "downloadWithoutChannelSubfoldersDescription": "単一動画のダウンロードをチャンネル用サブフォルダーではなく Videos フォルダーに直接保存します",
+    "downloadSubtitles": "字幕をダウンロード",
+    "downloadSubtitlesDescription": "利用可能な場合、選択した言語の字幕のみをダウンロードします",
+    "subtitleLanguages": "字幕の言語",
+    "subtitleLanguagesDescription": "動画ごとに VidBee が取得する字幕の言語を選択します",
+    "subtitleLanguageSearch": "字幕の言語を検索",
+    "subtitleLanguageEmpty": "一致する言語がありません",
+    "subtitleLanguageLimit": "プラットフォームのレート制限を避けるため、{{count}} 言語まで選択できます",
+    "followInterfaceLanguage": "インターフェース言語に従う（{{language}}）",
     "embedChapters": "チャプターを埋め込む",
     "embedChaptersDescription": "利用可能な場合はファイルにチャプターマーカーを追加",
     "embedMetadata": "メタデータを埋め込む",
     "embedMetadataDescription": "利用可能な場合はタイトルやアーティストなどのメタデータを書き込む",
     "embedSubs": "字幕を埋め込む",
-    "embedSubsDescription": "字幕を動画ファイルに埋め込む（mp4、webm、mkv）",
+    "embedSubsDescription": "選択した字幕を動画ファイルに埋め込みます（mp4、webm、mkv）",
+    "writeAutoSubs": "自動生成字幕を使用",
+    "writeAutoSubsDescription": "選択した言語の投稿者字幕がない場合に自動字幕を使用します",
     "embedThumbnail": "サムネイルを埋め込む",
     "embedThumbnailDescription": "サムネイルをカバーアートとして追加",
+    "filenameStyle": "ファイル名スタイル",
+    "filenameStyleDescription": "保存する動画・音声ファイルの名前の付け方を選びます",
+    "filenameStyleNote": "VidBee が保存するファイルに使われます。登録フィードや再生リストのカスタムテンプレートが優先されます",
+    "filenameStyleOptions": {
+      "basic": "ベーシック",
+      "classic": "クラシック",
+      "nerdy": "ナーディ",
+      "pretty": "プリティ"
+    },
+    "filenameStylePreviewAudio": "音声ファイルのプレビュー",
+    "filenameStylePreviewVideo": "動画ファイルのプレビュー",
+    "filenameViaVidBee": "ファイル名に via VidBee を付ける",
+    "filenameViaVidBeeDescription": "保存する動画・音声ファイル名に via VidBee を自動で追加します",
+    "metadataTab": "メタデータ",
+    "navGroup": {
+      "app": "アプリ",
+      "download": "ダウンロード",
+      "system": "システム",
+      "ai": "AI"
+    },
     "shareWatermark": "共有用ウォーターマーク",
     "shareWatermarkDescription": "元のタイトル、作者、VidBee のブランド名を含むウォーターマークを追加します",
     "maxConcurrentDownloads": "最大アクティブダウンロード数",
@@ -502,7 +584,7 @@
     "oneClickDownload": "ワンクリックダウンロード",
     "oneClickDownloadDescription": "デフォルト設定でワンクリックダウンロードを有効化",
     "oneClickDownloadType": "デフォルトダウンロードタイプ",
-    "oneClickDownloadTypeDescription": "ワンクリックダウンロードのデフォルトダウンロードタイプを選択。品質は下のプリセットを使用。",
+    "oneClickDownloadTypeDescription": "ワンクリックダウンロードのデフォルトダウンロードタイプを選択。品質は下のプリセットを使用",
     "oneClickQuality": "優先品質",
     "oneClickQualityDescription": "ワンクリックダウンロードに使用される品質プリセットを選択",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "プロキシ",
     "proxyDescription": "ネットワークリクエスト用のプロキシサーバー",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "ダウンロード元",
+    "downloadMirrorDescription": "GitHubが遅い、またはブロックされている場合、yt-dlp、ffmpeg、Node、文字起こしモデルを中国向けミラー（ModelScope、GitHubプロキシ）から取得します",
+    "downloadMirrorAuto": "自動",
+    "downloadMirrorChina": "中国（ModelScope）",
+    "downloadMirrorGlobal": "公式",
     "rememberLastAudioLanguage": "前回の音声言語を記憶する",
-    "rememberLastAudioLanguageDescription": "次回以降の音声ダウンロードで、前回選択した音声言語をデフォルトとして使います。",
+    "rememberLastAudioLanguageDescription": "次回以降の音声ダウンロードで、前回選択した音声言語をデフォルトとして使います",
     "selectConfigFile": "設定ファイルを選択",
     "selectPath": "選択",
     "showMoreFormats": "より多くのフォーマットオプションを表示",
     "showMoreFormatsDescription": "インターフェースに追加のフォーマットオプションを表示",
     "subscriptionDefaults": {
-      "filenameDescription": "サブスクリプションがそのファイル名をオーバーライドしない場合に使用されるパターン。"
+      "filenameDescription": "サブスクリプションがそのファイル名をオーバーライドしない場合に使用されるパターン"
     },
     "system": "システム",
     "theme": "テーマ",
@@ -535,13 +622,243 @@
     },
     "video": "ビデオ設定",
     "oneClickContainer": "コンテナ形式",
-    "oneClickContainerDescription": "ワンクリックダウンロードの出力コンテナを選びます。Auto は MP4 を優先し、コーデックが非対応の場合は MKV にフォールバックします。",
+    "oneClickContainerDescription": "ワンクリックダウンロードの出力コンテナを選びます。Auto は MP4 を優先し、コーデックが非対応の場合は MKV にフォールバックします",
     "oneClickContainerOptions": {
       "auto": "自動 (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "オリジナル (yt-dlp 既定)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "同時文字起こし数",
+    "maxConcurrentTranscriptionsDescription": "同時に実行できる文字起こしの数です。各ジョブはこのパソコンのCPUとメモリを使います。値を下げても実行中のジョブは止まりません",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "{{count}} 個のモデルをダウンロード中",
+    "asrDelete": "削除",
+    "asrDeleteError": "この AI モデルを削除できませんでした。",
+    "asrCancel": "キャンセル",
+    "asrCancelError": "このダウンロードをキャンセルできませんでした。",
+    "asrDownloadError": "この AI モデルをダウンロードできませんでした。",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "最速の多言語スタート。低スペック向け",
+        "size": "約 75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Tiny より少し正確で、メモリはまだ軽い",
+        "size": "約 150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "一般的なPC向け。多言語の精度が高い",
+        "size": "約 250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "日中韓英が速く、広東語にも対応",
+        "size": "約 230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "中国語の精度が最も高い。高性能PC向け",
+        "size": "約 840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "多言語でより正確。メモリを多めに使います",
+        "size": "約 770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "large-v3 に近い精度で、より速い",
+        "size": "約 810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "新しい日中韓英モデル。軽量のまま",
+        "size": "約 230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "英語に強い。一般的なPCでも速い",
+        "size": "約 650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "新しい英語 Parakeet。英語なら最適",
+        "size": "約 650 MB"
+      }
+    },
+    "asrDownload": "ダウンロード",
+    "asrDownloadAndUse": "ダウンロードして使う",
+    "asrDownloaded": "ダウンロード済み",
+    "asrRecommended": "おすすめ",
+    "asrRecommendedFor": "{{os}} · {{gpu}} · {{ram}} · {{cores}} コア · {{language}} 向け",
+    "asrAllModels": "すべてのモデル",
+    "asrBestMatch": "最適",
+    "asrMachine": {
+      "low": "低スペックPC",
+      "mid": "一般的なPC",
+      "high": "高性能PC"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — 多言語",
+      "sense-voice": "SenseVoice — 中国語・日本語・韓国語・英語",
+      "qwen3": "Qwen3-ASR — 中国語の精度が最も高い",
+      "parakeet": "Parakeet — 英語"
+    },
+    "asrLanguages": {
+      "multi": "多言語"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "このOS"
+    },
+    "asrGpu": {
+      "apple": "Apple GPU",
+      "nvidia": "NVIDIA GPU",
+      "amd": "AMD GPU",
+      "intel": "Intel GPU",
+      "unknown": "不明なGPU"
+    },
+    "providersTab": "プロバイダー",
+    "promptsTab": "プロンプト",
+    "transcriptionTab": "文字起こし",
+    "ai": {
+      "allServices": "すべてのサービス",
+      "configured": "設定済み",
+      "useProvider": "使用する",
+      "inUse": "使用中",
+      "addProvider": "{{name}} を追加",
+      "editProvider": "プロバイダーを編集",
+      "deleteProvider": "プロバイダーを削除",
+      "edit": "編集",
+      "apiKey": "APIキー",
+      "apiKeyKept": "空欄のままにすると保存済みのキーを維持します",
+      "baseUrl": "Base URL",
+      "modelId": "モデル ID",
+      "modelIdPlaceholder": "model-id",
+      "name": "名前",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "saveError": "AI設定を保存できませんでした。",
+      "providerDialogDescription": "APIキーはこのパソコンにのみ保存されます。プリセットのプロバイダーは Base URL 済みです",
+      "testConnection": "接続をテスト",
+      "testingConnection": "テスト中…",
+      "testSuccess": "接続できました。応答: {{reply}}",
+      "testFailed": "このモデルに接続できませんでした。",
+      "addPrompt": "プロンプトを追加",
+      "editPrompt": "プロンプトを編集",
+      "deletePrompt": "プロンプトを削除",
+      "promptTitle": "タイトル",
+      "promptIcon": "アイコン",
+      "promptBody": "プロンプト",
+      "promptDialogDescription": "有効なプロバイダーを使って文字起こしにこのプロンプトを実行します",
+      "restorePresets": "デフォルトに戻す",
+      "testTitle": "サンプル文字起こしでテスト",
+      "testRun": "実行",
+      "testStop": "停止",
+      "testOutput": "出力",
+      "testPlaceholder": "プロンプトの結果がここに表示されます",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "箇条書き"
+        },
+        "improve-grammar": {
+          "title": "文法と句読点を修正"
+        },
+        "generate-faq": {
+          "title": "FAQを生成"
+        },
+        "extract-statistics": {
+          "title": "統計を抽出"
+        },
+        "paraphrase-content": {
+          "title": "言い換え"
+        },
+        "create-mindmap": {
+          "title": "マインドマップを作成"
+        },
+        "translate": {
+          "title": "翻訳"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "未設定",
+      "statusNotConfiguredHint": "ログインが必要なダウンロードは、設定が終わるまで失敗します",
+      "statusUsingBrowser": "{{browser}} のログインを使用中",
+      "statusUsingFile": "Cookie ファイルを使用中",
+      "statusOk": "準備完了",
+      "statusExpired": "期限切れ",
+      "statusEmpty": "ログインが見つかりません",
+      "statusInvalid": "要確認",
+      "healthOkBrowser": "VidBee は {{browser}} から Cookie を読めます。そのブラウザでサイトにログインしたままにしてください",
+      "healthOkFile": "{{sites}} のログイン Cookie が見つかりました",
+      "healthOkFileGeneric": "この Cookie ファイルは有効に見えます",
+      "healthExpired": "これらの Cookie は期限切れです。再ログインして新しいファイルを読み込んでください",
+      "healthEmpty": "このファイルには対応サイトのログイン Cookie がありません。ログインした状態で書き出してください",
+      "healthInvalidFile": "Cookie ファイルがないか、有効なエクスポートではありません",
+      "healthInvalidBrowser": "このブラウザプロファイルの Cookie を読めません",
+      "healthMacosFilesPermission": "macOS が Cookie へのアクセスをブロックしています。「システム設定 → プライバシーとセキュリティ → ファイルとフォルダ」で VidBee にこのブラウザへのアクセスを許可してから、もう一度確認してください。",
+      "healthUnsupportedBrowser": "このシステムではそのブラウザから Cookie を使えません",
+      "sitesLabel": "サイト: {{sites}}",
+      "recommendedTitle": "おすすめ",
+      "recommendedUseBrowser": "{{browser}} を使う",
+      "recommendedUseBrowserHint": "{{browser}} ですでにログインしているアカウントを再利用します",
+      "recommendedImportFile": "Cookie ファイルを読み込む",
+      "recommendedImportFileWindowsHint": "Windows では Chrome と Edge は VidBee と Cookie を共有できません。ブラウザから Cookie ファイルを書き出してください",
+      "recommendedImportFileHint": "ブラウザから Cookie を書き出し、ここでそのファイルを選びます",
+      "recommendedFirefoxHint": "Windows では、VidBee が直接読めるブラウザは Firefox だけです",
+      "useThisBrowser": "{{browser}} を使う",
+      "importFile": "Cookie ファイルを選ぶ",
+      "clearSetup": "Cookie をクリア",
+      "checkStatus": "再チェック",
+      "otherOptions": "その他のオプション",
+      "hideOtherOptions": "その他のオプションを隠す",
+      "chooseBrowser": "別のブラウザを選ぶ",
+      "advancedProfile": "プロファイルパス",
+      "windowsUnsupportedCurrent": "Windows では {{browser}} から Cookie を使えません。Firefox を使うか、Cookie ファイルを読み込んでください。",
+      "fileExportStep1": "Get cookies.txt LOCALLY などの Cookie 書き出し拡張機能をインストールします",
+      "fileExportStep2": "サイトにログインしてから Cookie ファイルを書き出します",
+      "fileExportStep3": "ここでそのファイルを選びます",
+      "fileExportExtension": "Chrome / Edge 拡張機能",
+      "checking": "Cookie を確認しています…",
+      "applied": "Cookie を更新しました",
+      "profileMissingDb": "この Firefox プロファイルに Cookie データベースがありません。Firefox を一度開いてから再試行してください。"
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "自動タグ",
       "customDirectory": "カスタムディレクトリ",
       "namingTemplate": "カスタム ファイル名テンプレート (ファイルのみ)",
+      "autoDownload": "自動ダウンロード",
       "onlyLatest": "最新のビデオのみをダウンロードする",
       "onlyLatestDescription": "バックログ項目を無視し、このフィードから最新のアップロードのみを取得します。",
       "enabled": "有効",
@@ -655,6 +973,18 @@
       "hint": "RSS フィード URL をお持ちでない場合は、 \nRSSHub を使用して、YouTube、Twitter、その他数千のプラットフォーム用の RSS フィードを生成します。"
     }
   },
+  "kernelPreparation": {
+    "copying": "ダウンロードエンジンをコピーしています…",
+    "description": "VidBee のダウンロードエンジンを準備しています。しばらくお待ちください。",
+    "errorDescription": "VidBee は使用可能なダウンロードエンジンを準備できませんでした。ローカルストレージへのアクセスを確認して、もう一度お試しください。",
+    "errorTitle": "ダウンロードエンジンを利用できません",
+    "finalizing": "セットアップを完了しています…",
+    "progressLabel": "ダウンロードエンジンの準備状況",
+    "retry": "もう一度試す",
+    "retrying": "再試行しています…",
+    "title": "VidBee を準備しています",
+    "validating": "ダウンロードエンジンを検証しています…"
+  },
   "sites": {
     "homeInlineDescription": "{{sites}}およびその他のサイトをサポートしています。",
     "moreDescription": "完全なyt-dlpリストはコミュニティによって継続的に更新されています。",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "主要プラットフォーム",
     "viewAll": "サポートされているすべてのサイトを表示"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "文字起こしモデルを準備しています…",
+    "preparingSpeakerModels": "話者モデルを準備中…",
+    "modelsProgressLabel": "文字起こしモデルのダウンロード進行状況",
+    "view": "View transcript",
+    "sourceCaptions": "動画の字幕",
+    "sourceAi": "AI文字起こし",
+    "sourceSwitch": "文字起こしのソース",
+    "sourceCaptionNamed": "{{language}}の字幕",
+    "sourceCaptionAutoNamed": "{{language}}の自動字幕",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "文字起こしが完了前に停止しました。再試行できます。",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "停止",
+    "stopFailed": "文字起こしを停止できませんでした。",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "音声を準備中",
+    "identifyingSpeakers": "話者を識別中",
+    "back": "文字起こし一覧に戻る",
+    "library": {
+      "empty": "文字起こしはまだありません",
+      "emptyHint": "ローカルの音声・動画を選ぶか、ダウンロード済みのファイルを文字起こしできます。",
+      "addMedia": "音声・動画を追加",
+      "goToDownloads": "ダウンロードへ",
+      "untitled": "無題のメディア",
+      "previewPending": "文字起こしが生成されるとここに表示されます。",
+      "queued": "待機中",
+      "processing": "処理中",
+      "retrySoon": "まもなく再試行",
+      "cancelled": "キャンセル済み",
+      "open": "「{{title}}」の文字起こしを開く",
+      "dropDescription": "音声・動画をドロップまたは貼り付けると文字起こしを開始します。",
+      "experimentalBadge": "実験的",
+      "experimentalHint": "将来ダウンロード画面に統合される可能性があります。"
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "文字起こしをコピー",
+    "copied": "文字起こしをコピーしました",
+    "copyFailed": "文字起こしをコピーできませんでした。",
+    "captionSelect": "選択した文字起こし",
+    "captionSelectClear": "選択を解除",
+    "export": {
+      "action": "書き出し",
+      "preview": "書き出しプレビュー",
+      "description": "文字起こしをプレビューし、テキストファイルとしてコピーまたは保存します。",
+      "styleLabel": "スタイル",
+      "style": {
+        "transcript": "文字起こし",
+        "subtitles": "字幕",
+        "segments": "セグメント",
+        "whisper": "Whisper",
+        "video": "動画＋字幕"
+      },
+      "formatLabel": "形式",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "エンコード",
+      "encode": {
+        "soft": "ソフト",
+        "hard": "ハード"
+      },
+      "softHint": "字幕を独立トラックとして映像に多重化します。プレーヤーで字幕のオン／オフが可能で、画質は変わりません。",
+      "hardHint": "字幕を映像に焼き込みます。再エンコードが必要で、字幕はオフにできません。",
+      "noMedia": "元の動画が見つからないため、動画を書き出せません。",
+      "audioOnly": "このファイルは音声のみです。テキストの文字起こしを書き出してください。",
+      "videoSaved": "動画を書き出しました",
+      "videoSaveFailed": "動画を書き出せませんでした。",
+      "exporting": "書き出し中…",
+      "cancelExport": "書き出しをキャンセル",
+      "cancelled": "書き出しをキャンセルしました",
+      "progress": "{{percent}}%",
+      "options": "オプション",
+      "grouping": "グループ化",
+      "groupingValue": {
+        "none": "なし",
+        "words": "単語",
+        "sentences": "文"
+      },
+      "showTimestamp": "タイムスタンプを表示",
+      "close": "閉じる",
+      "copy": "コピー",
+      "copied": "クリップボードにコピーしました",
+      "copyFailed": "書き出しプレビューをコピーできませんでした。",
+      "saved": "文字起こしを書き出しました",
+      "saveFailed": "文字起こしを書き出せませんでした。",
+      "empty": "書き出す内容がありません。"
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "字幕パネルのサイズを変更",
+    "unknownSpeaker": "不明な話者",
+    "speakers": "話者 ({{count}})",
+    "info": {
+      "tab": "情報",
+      "channel": "チャンネル",
+      "duration": "再生時間",
+      "file": "ファイル",
+      "fileSize": "ファイルサイズ",
+      "url": "元のURL",
+      "source": "ソース",
+      "model": "モデル",
+      "language": "言語",
+      "speakers": "話者",
+      "segments": "セグメント",
+      "createdAt": "文字起こし日時",
+      "empty": "詳細はまだありません。",
+      "openUrl": "元のURLを開く"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "{{name}} へ移動",
+    "seekAt": "{{time}} へ移動",
+    "searchPlaceholder": "文字起こしを検索",
+    "searchMatches": "{{count}} 件",
+    "searchNoMatches": "一致なし",
+    "searchNext": "次へ",
+    "searchPrevious": "前へ",
+    "searchJumpTo": "この字幕へ移動",
+    "collapsePanel": "文字起こしを折りたたむ",
+    "expandPanel": "文字起こしを展開",
+    "player": {
+      "play": "再生",
+      "pause": "一時停止",
+      "seek": "シーク",
+      "volume": "音量",
+      "mute": "ミュート",
+      "unmute": "ミュート解除",
+      "playbackRate": "再生速度",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "再生できる形式に変換しています…",
+      "unavailable": "このファイルをページ内で再生できる形式にできませんでした。",
+      "failedTitle": "この動画はここでは再生できません",
+      "failedAudioTitle": "この音声はここでは再生できません",
+      "failedDetail": "文字起こしは引き続き読めます。",
+      "retry": "再試行",
+      "error": "再生に失敗しました: {{message}}",
+      "captionsShow": "字幕を表示",
+      "captionsHide": "字幕を隠す",
+      "skipBack": "15秒戻る",
+      "skipForward": "15秒進む",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "全画面表示",
+      "fullscreenExit": "全画面を終了",
+      "resumed": "{{time}} から再開しました",
+      "startOver": "最初から再生",
+      "nowPlaying": "再生中",
+      "closeBar": "プレーヤーを閉じる",
+      "openTranscript": "文字起こしに戻る"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "すでに最高品質のモデルです。話者ラベルが混ざる場合は人数を調整してください。BGM や同時発話は話者分離を乱すことがあります。",
+    "speakerCount": {
+      "adjust": "話者を調整",
+      "auto": "自動検出",
+      "one": "話者 1 人",
+      "count": "話者 {{count}} 人",
+      "apply": "もう一度文字起こし",
+      "detail": "この人数で再文字起こしします。既定は自動検出です。このページを離れても構いません。現在の文字起こしは履歴として残ります。"
+    },
+    "promptMenu": "すべてのプロンプト",
+    "promptStop": "停止",
+    "promptRerun": "再実行",
+    "promptCopy": "コピー",
+    "promptShare": "画像で共有",
+    "promptShareTitle": "画像をシェア",
+    "promptShareDownload": "ダウンロード",
+    "promptShareNative": "共有",
+    "promptSharing": "画像を準備中…",
+    "promptShared": "共有画像をコピーしました",
+    "promptShareSaved": "共有画像を保存しました",
+    "promptShareFailed": "共有画像を作成できませんでした。",
+    "promptShareSaveFailed": "共有画像を保存できませんでした。",
+    "promptShareNativeFailed": "共有シートを開けませんでした。",
+    "promptShareFooter": "VidBee で作成",
+    "promptShareTagline": "オープンソース。動画を保存して、AI に聞く",
+    "captionShareSaid": "『{{name}}』より",
+    "promptOutput": "プロンプト結果",
+    "promptScrollToEnd": "最新までスクロール",
+    "promptCopied": "コピーしました",
+    "promptNoProvider": "このプロンプトを実行するには、設定でAIプロバイダーを追加してください。",
+    "promptOpenSettings": "プロバイダー設定を開く",
+    "promptEmpty": "結果がここに表示されます。",
+    "promptRunning": "生成中…",
+    "promptThinking": "思考中",
+    "promptThinkingFor": "{{seconds}} 秒間思考中",
+    "promptThoughtFor": "{{seconds}} 秒間考えました",
+    "promptAborted": "停止しました",
+    "promptNoTranscript": "このプロンプトを実行するには文字起こしが必要です。",
+    "promptTryAgain": "再試行",
+    "promptLoading": "AI設定を読み込み中…",
+    "promptGuide": {
+      "noProvider": "AIプロバイダーが有効ではないため、このプロンプトを実行できません。",
+      "missingApiKey": "有効なプロバイダーにAPIキーがありません。",
+      "missingModel": "有効なプロバイダーにモデルIDがありません。",
+      "unknownPrompt": "このプロンプトは利用できません。",
+      "emptyTranscript": "このプロンプトには完成した文字起こしが必要です。",
+      "auth": "プロバイダーがリクエストを拒否しました。APIキーまたはアカウントが無効の可能性があります。",
+      "network": "プロバイダーに接続できませんでした。",
+      "emptyOutput": "プロバイダーは完了しましたが、テキストを返しませんでした。",
+      "unknown": "プロンプトを実行できませんでした。"
+    },
+    "promptErrorDetails": "エラー詳細",
+    "promptWhatToDo": "次に試すこと",
+    "promptUsingProvider": "使用中: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "設定 → プロバイダーを開きます。",
+        "s2": "サービスを追加し、APIキーとモデルIDを保存して「使用する」を押します。",
+        "s3": "ここに戻ってプロンプトを再実行します。"
+      },
+      "missingApiKey": {
+        "s1": "設定 → プロバイダーで、使用中のプロバイダーを編集します。",
+        "s2": "有効なAPIキーを貼り付けて保存します。",
+        "s3": "プロンプトを再実行します。"
+      },
+      "missingModel": {
+        "s1": "設定 → プロバイダーで、使用中のプロバイダーを編集します。",
+        "s2": "このサービスが実際に扱うモデルIDを入力します。",
+        "s3": "プロンプトを再実行します。"
+      },
+      "unknownPrompt": {
+        "s1": "設定 → プロンプトを開きます。",
+        "s2": "デフォルトを復元するか、このプロンプトを追加し直します。"
+      },
+      "emptyTranscript": {
+        "s1": "文字起こしが終わるまで待ちます。",
+        "s2": "無音の場合は「それでも転稿」するか、別のファイルを選びます。"
+      },
+      "auth": {
+        "s1": "プロバイダー設定を開き、APIキーを差し替えます。",
+        "s2": "残高と、このモデルへの権限があるか確認します。",
+        "s3": "カスタムエンドポイントなら、このキーを受け付けるか確認します。"
+      },
+      "network": {
+        "s1": "ネット接続とプロキシを確認します。",
+        "s2": "カスタムの場合、Base URL に到達できるか、必要なら /v1 を含めます。",
+        "s3": "ホストが落ちている場合は別のプロバイダーを使います。"
+      },
+      "emptyOutput": {
+        "s1": "設定 → プロバイダーで、モデルIDが正しいか確認します。",
+        "s2": "カスタムなら Base URL、APIキー、モデルのデプロイを確認します。",
+        "s3": "下のエラー詳細を見て、再試行するかプロバイダーを切り替えます。"
+      },
+      "unknown": {
+        "s1": "下のエラー詳細を確認します。",
+        "s2": "設定 → プロバイダーで APIキー、モデルID、Base URL を確認します。",
+        "s3": "再試行するか、別のプロバイダーに切り替えます。"
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "新機能",
+    "description": "このパソコンで文字起こしと AI 要約ができます。",
+    "tryIt": "試してみる",
+    "features": {
+      "transcript": {
+        "title": "動画の自動文字起こし",
+        "description": "ダウンロードが終わると、VidBee がその動画の文字起こしをこのパソコン上で自動作成します。アップロードはしません。"
+      },
+      "speakers": {
+        "title": "話者ラベル",
+        "description": "誰が何を話したかを確認し、その場面へジャンプできます。"
+      },
+      "summary": {
+        "title": "AI 要約",
+        "description": "文字起こしを箇条書き、FAQ、マインドマップ、言い換えにできます。設定で独自プロンプトも追加できます。"
+      },
+      "localFiles": {
+        "title": "任意のファイルを文字起こし",
+        "description": "ローカルの音声や動画を文字起こしにドロップ。テキスト、字幕、焼き込み動画として書き出せます。"
+      }
+    }
   }
 }

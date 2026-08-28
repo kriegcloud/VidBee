@@ -1,0 +1,128 @@
+/* Same-document View Transitions for the Desktop transcript page.
+   Named types come from `transcript-view-transition.ts`. The sidebar stays
+   in `root` (no animation); `[data-vt="main"]` is the sliding column. */
+
+[data-vt="main"] {
+  view-transition-name: vidbee-main;
+}
+
+::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  opacity: 0;
+}
+
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(vidbee-main),
+::view-transition-new(vidbee-main),
+::view-transition-old(transcript-tab-panel),
+::view-transition-new(transcript-tab-panel) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(vidbee-main),
+::view-transition-group(transcript-tab-panel) {
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html:active-view-transition-type(transcript-tab) [data-vt="main"] {
+  view-transition-name: none;
+}
+
+html:active-view-transition-type(transcript-tab) [data-vt="transcript-tab"] {
+  view-transition-name: transcript-tab-panel;
+}
+
+html:active-view-transition-type(transcript-open)::view-transition-old(
+  vidbee-main
+) {
+  animation: transcript-vt-exit-left 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:active-view-transition-type(transcript-open)::view-transition-new(
+  vidbee-main
+) {
+  animation: transcript-vt-enter-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:active-view-transition-type(transcript-close)::view-transition-old(
+  vidbee-main
+) {
+  animation: transcript-vt-exit-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:active-view-transition-type(transcript-close)::view-transition-new(
+  vidbee-main
+) {
+  animation: transcript-vt-enter-left 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:active-view-transition-type(transcript-swap)::view-transition-old(
+  vidbee-main
+),
+html:active-view-transition-type(transcript-tab)::view-transition-old(
+  transcript-tab-panel
+) {
+  animation: transcript-vt-fade-out 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:active-view-transition-type(transcript-swap)::view-transition-new(
+  vidbee-main
+),
+html:active-view-transition-type(transcript-tab)::view-transition-new(
+  transcript-tab-panel
+) {
+  animation: transcript-vt-fade-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes transcript-vt-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(1.25rem);
+  }
+}
+
+@keyframes transcript-vt-exit-left {
+  to {
+    opacity: 0;
+    transform: translateX(-0.75rem);
+  }
+}
+
+@keyframes transcript-vt-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-1.25rem);
+  }
+}
+
+@keyframes transcript-vt-exit-right {
+  to {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+}
+
+@keyframes transcript-vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes transcript-vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

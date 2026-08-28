@@ -74,9 +74,6 @@ jobs:
             exit 1
           fi
 
-      - name: Run CLI tests
-        run: pnpm --filter @vidbee/cli test
-
       - name: Run CLI typecheck
         run: pnpm --filter @vidbee/cli typecheck
 

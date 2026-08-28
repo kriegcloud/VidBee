@@ -1,3 +1,4 @@
+import type { FilenameStyle } from './filename-style'
 import type { OneClickContainerOption } from './format-preferences'
 
 export type DownloadType = 'video' | 'audio'
@@ -110,10 +111,17 @@ export interface DownloadRuntimeSettings {
   cookiesPath?: string
   proxy?: string
   configPath?: string
+  downloadSubtitles?: boolean
+  subtitleLanguages?: string[]
+  interfaceLanguage?: string
   embedSubs?: boolean
+  writeAutoSubs?: boolean
   embedThumbnail?: boolean
   embedMetadata?: boolean
   embedChapters?: boolean
+  filenameStyle?: FilenameStyle
+  filenameViaVidBee?: boolean
+  shareWatermark?: boolean
 }
 
 export interface VideoInfoInput {

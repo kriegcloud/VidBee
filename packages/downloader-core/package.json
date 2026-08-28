@@ -6,11 +6,16 @@
   "exports": {
     ".": "./src/index.ts",
     "./browser-cookies-setting": "./src/browser-cookies-setting.ts",
+    "./cookie-setup": "./src/cookie-setup.ts",
+    "./cookie-browser-paths": "./src/cookie-browser-paths.ts",
     "./download-file": "./src/download-file.ts",
+    "./filename-style": "./src/filename-style.ts",
     "./format-preferences": "./src/format-preferences.ts",
     "./gallery-dl-executor": "./src/gallery-dl-executor.ts",
     "./instagram-profile": "./src/instagram-profile.ts",
-    "./yt-dlp-args": "./src/yt-dlp-args.ts"
+    "./subtitle-languages": "./src/subtitle-languages.ts",
+    "./yt-dlp-args": "./src/yt-dlp-args.ts",
+    "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
@@ -18,14 +23,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orpc/contract": "^1.13.5",
+    "@orpc/contract": "^1.15.0",
     "@vidbee/task-queue": "workspace:*",
     "yt-dlp-wrap-plus": "^2.3.20",
-    "zod": "^4.1.11"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
-    "typescript": "^5.9.2",
+    "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }
 }

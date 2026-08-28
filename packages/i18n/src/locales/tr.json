@@ -16,8 +16,21 @@
     "betaProgramDescription": "Herkesten önce erken sürümleri ve gelecek özellikleri alın.",
     "betaProgramTitle": "Kanal önizlemesi",
     "description": "VidBee - RSS otomatik indirme, toplu işleme ve 1000'den fazla platform desteği sunan ücretsiz ve açık kaynaklı otomatik video indirici.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "Paketlenmiş yedek",
+        "checking": "Kontrol ediliyor",
+        "installing": "Kuruluyor",
+        "preparing": "Hazırlanıyor",
+        "retry-scheduled": "Yeniden deneme planlandı",
+        "unavailable": "Kullanılamıyor",
+        "up-to-date": "Güncel"
+      },
+      "title": "İndirme motoru",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "@nexmoex'i takip edin"
+      "follow": "@nexmoe'i takip edin"
     },
     "followAuthorDescription": "VidBee ile ilgili en son haberleri ve güncellemeleri takip edin.",
     "followAuthorSupport": "VidBee ile ilgili en son güncellemeleri ve haberleri almak için geliştiriciyi X (Twitter) üzerinden takip edin.",
@@ -40,8 +53,6 @@
       "updateError": "Güncellemeleri kontrol edemedi: {{error}}",
       "unknownErrorFallback": "Bilinmeyen hata"
     },
-    "preferencesDescription": "Bu sayfadan ayrılmadan güncelleme ayarlarını düzenleyin.",
-    "preferencesTitle": "Hızlı Geçişler",
     "resources": {
       "changelog": "Sürüm notları",
       "changelogDescription": "Her sürümde nelerin değiştiğini öğrenin.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "GitHub'da hataları bildirin veya özellikler talep edin.",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "@nexmoex'i etiketleyerek X hakkında geri bildirim veya önerilerinizi paylaşın.",
+      "xFeedbackDescription": "@nexmoe'i etiketleyerek X hakkında geri bildirim veya önerilerinizi paylaşın.",
       "discord": "Discord",
       "discordDescription": "Tartışmalar ve destek için Discord topluluğumuza katılın.",
       "faq": "SSS",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "Yüzlerce siteden video ve ses dosyalarını indirin",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "VidBee'den çıkılsın mı?",
+      "message": "{{count}} görev hâlâ devam ediyor. Çıkmak bunu yarıda keser.",
+      "messagePlural": "{{count}} görev hâlâ devam ediyor. Çıkmak bunları yarıda keser.",
+      "quit": "Çık",
+      "cancel": "İptal"
+    }
   },
   "download": {
     "active": "Aktif",
@@ -117,10 +135,15 @@
     "back": "Geri",
     "cancel": "İptal Et",
     "cancelled": "İptal edildi",
+    "pause": "Duraklat",
+    "paused": "Duraklatıldı",
+    "resume": "Devam et",
     "clearCompleted": "Tamamlananları Temizle",
     "clearDownloads": "İndirmeleri Temizle",
     "completed": "Tamamlandı",
     "downloadAudio": "Sesi İndir",
+    "dialogSubtitle": "Biçim seçin ve kayıt yerini belirleyin",
+    "dialogTitle": "İndir",
     "downloadBtn": "İndir",
     "downloadPending": "Beklemede",
     "downloadQueue": "İndirme Kuyruğu",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "Panodan oynatma listesi bağlantısını yapıştırmak için tıklayın [Ctrl + V]",
     "pasteUrl": "Video URL'ini veya kimliğini yapıştırmak için tıklayın [Ctrl + V]",
     "pasteUrlButton": "URL'i yapıştır",
+    "ingestDropUrl": "İndirmek için bırakın",
+    "ingestDropMedia": "Yazıya dökmek için bırakın",
+    "ingestDropMixed": "İndirmek ve yazıya dökmek için bırakın",
+    "ingestDropDescription": "Bağlantılar indirmeyi başlatır. Ses ve video dosyaları yazıya dökmeyi başlatır.",
+    "ingestEmptyHint": "İndirmek için bir bağlantı yapıştırın veya yazıya dökmek için ses/video bırakın.",
     "preparing": "Hazırlanıyor...",
     "processing": "İşleniyor",
     "progress": "İlerleme",
@@ -192,6 +220,9 @@
     "video": "Video",
     "videoInfo": "Video Bilgisi",
     "videoInfoUpdated": "Video bilgisi güncellendi",
+    "frameRate": "Kare hızı",
+    "codecAuto": "Otomatik",
+    "fpsHighest": "En yüksek",
     "metadata": {
       "source": "Kaynak",
       "playlist": "Oynatma listesi",
@@ -219,7 +250,22 @@
       "subscription": "Abonelik"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "Çerezleri ayarla",
+    "cookiesSetupDialogTitle": "Çerezleri ayarla",
+    "cookiesSetupNeeded": "Bu indirme oturum açmış bir oturum gerektirir. Çerezleri ayarlayın, sonra yeniden deneyin.",
+    "cookiesSetupLocked": "Chrome çerez veritabanını kilitliyor. Firefox kullanın, bir çerez dosyası içe aktarın veya Chrome’u tamamen kapatın.",
+    "cookiesSetupMacFiles": "macOS, VidBee’nin bu tarayıcının çerezlerini okumasını engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBee’ye bu tarayıcıya erişim verin, ardından yeniden deneyin. Zaten izin verdiyseniz VidBee’yi tamamen kapatıp yeniden açın.",
+    "cookiesSetupOpenFilesSettings": "Dosyalar ve Klasörler ayarlarını aç",
+    "cookiesSetupDecrypt": "Windows, Chrome çerezlerini çözemez. Firefox kullanın veya bir çerez dosyası içe aktarın.",
+    "cookiesSetupFileInvalid": "Seçilen çerez dosyası geçerli bir dışa aktarma değil. Bir cookies.txt dışa aktarıp yeniden deneyin.",
+    "cookiesSetupKeyring": "Bu Linux sürümü Chrome çerezlerini okuyamaz. Firefox kullanın veya bir çerez dosyası içe aktarın.",
+    "cookiesSetupStale": "Geçerli çerezler süresi dolmuş veya engellenmiş görünüyor. Girişi yenileyip yeniden deneyin.",
+    "cookiesSetupRetry": "İndirmeyi yeniden dene",
+    "cookiesSetupDone": "Bitti",
+    "pause": "Duraklat",
+    "paused": "Duraklatıldı",
+    "resume": "Devam et"
   },
   "error": {
     "title": "Bir sorun oluştu",
@@ -319,6 +365,7 @@
     "download": "İndir",
     "playlist": "Oynatma listesini indir",
     "rss": "RSS",
+    "transcripts": "Deşifreler",
     "subscriptions": "Abonelikler",
     "preferences": "Tercihler",
     "supportedSites": "Desteklenen Siteler",
@@ -342,7 +389,12 @@
     "removeFailed": "Öğe silinemedi",
     "settingsSaved": "Ayarlar kaydedildi",
     "urlCopied": "URL panoya kopyalandı",
-    "videoCopied": "Video panoya kopyalandı"
+    "videoCopied": "Video panoya kopyalandı",
+    "transcriptionStarted": "Yazıya dökme başladı",
+    "transcriptionStartedMany": "{{count}} dosyanın yazıya dökülmesi başladı",
+    "transcriptionStartFailed": "Yazıya dökme başlatılamadı",
+    "unsupportedDrop": "Bir bağlantı yapıştırın veya ses/video dosyası bırakın",
+    "localMediaDesktopOnly": "Yerel dosyalar masaüstü uygulamasında yazıya dökülür"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} dosya",
@@ -428,10 +480,10 @@
     "app": "Uygulama Ayarları",
     "audio": "Ses Tercihleri",
     "browserForCookies": "Çerezleri kullanmak için tarayıcı seçin",
-    "browserForCookiesDescription": "Kimlik doğrulama için çerezleri çıkarılacak tarayıcı. Profili otomatik olarak algılamaya çalışacağız.",
-    "browserForCookiesWindowsNote": "Windows yalnızca Firefox çerezlerini destekler. Diğer tarayıcılar için lütfen çerez dosyasını manuel olarak yapılandırın.",
+    "browserForCookiesDescription": "Kimlik doğrulama için çerezleri çıkarılacak tarayıcı. Profili otomatik olarak algılamaya çalışacağız",
+    "browserForCookiesWindowsNote": "Windows yalnızca Firefox çerezlerini destekler. Diğer tarayıcılar için lütfen çerez dosyasını manuel olarak yapılandırın",
     "browserForCookiesProfile": "Profil adı veya yolu",
-    "browserForCookiesProfileDescription": "Yukarıda seçilen tarayıcı için profil yolu. Mümkün olduğunda otomatik olarak doldurulur.",
+    "browserForCookiesProfileDescription": "Yukarıda seçilen tarayıcı için profil yolu. Mümkün olduğunda otomatik olarak doldurulur",
     "browserForCookiesProfilePlaceholder": "Profil adı veya tam yol (isteğe bağlı)",
     "browserForCookiesProfileInvalid": "Profil yolu geçerli değil. Seçilen tarayıcı için profil klasörünü seçin.",
     "browserForCookiesProfileInvalidPath": "Bu klasör mevcut değil. Mevcut bir profil klasörü seçin.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "Yukarıdan tarayıcınızı seçin, oturum bilgilerinizi otomatik yeniden kullanın.",
     "cookiesHelpFile": "Netscape çerez dosyasını dışa aktarın (yt-dlp SSS bölümüne bakın) ve gerektiğinde buradan seçin.",
     "cookiesGuideTitle": "Bir rehbere mi ihtiyacınız var?",
-    "cookiesGuideDescription": "VidBee'de çerezleri kullanmak için adım adım kılavuzu inceleyin.",
+    "cookiesGuideDescription": "VidBee'de çerezleri kullanmak için adım adım kılavuzu inceleyin",
     "cookiesGuideLink": "Çerez kılavuzunu aç",
     "openLinkError": "Bağlantı açılamadı",
     "browserOptions": {
@@ -476,33 +528,63 @@
     "languageDescription": "Uygulama arayüzü için tercih ettiğiniz dili seçin",
     "light": "Açık",
     "hideDockIcon": "Kapatıldığında Dock simgesini gizle",
-    "hideDockIconDescription": "Pencere kapatıldığında Dock simgesini otomatik olarak gizler. Yeniden açmak için menü çubuğu veya tepsi simgesini kullanın.",
+    "hideDockIconDescription": "Pencere kapatıldığında Dock simgesini otomatik olarak gizler. Yeniden açmak için menü çubuğu veya tepsi simgesini kullanın",
     "launchAtLogin": "Başlangıçta başlat",
-    "launchAtLoginDescription": "Oturumunuza giriş yaptıktan sonra VidBee'yi otomatik olarak açın.",
-    "launchAtLoginUnsupported": "Otomatik başlatma yalnızca macOS ve Windows'ta kullanılabilir.",
+    "launchAtLoginDescription": "Oturumunuza giriş yaptıktan sonra VidBee'yi otomatik olarak açın",
+    "launchAtLoginUnsupported": "Otomatik başlatma yalnızca macOS ve Windows'ta kullanılabilir",
     "enableAnalytics": "VidBee'yi geliştirmeye yardımcı olun",
-    "enableAnalyticsDescription": "Uygulamanın nasıl kullanıldığını anlamamıza ve iyileştirmelere öncelik vermemize yardımcı olmak için anonim kullanım verilerini paylaşın.",
+    "enableAnalyticsDescription": "Uygulamanın nasıl kullanıldığını anlamamıza ve iyileştirmelere öncelik vermemize yardımcı olmak için anonim kullanım verilerini paylaşın",
     "enableDownloadNotifications": "İndirme bildirimleri",
-    "enableDownloadNotificationsDescription": "Bir indirme tamamlandığında sistem bildirimi göster.",
+    "enableDownloadNotificationsDescription": "Bir indirme tamamlandığında sistem bildirimi göster",
     "downloadWithoutChannelSubfolders": "Videoları kanal alt klasörleri olmadan kaydet",
-    "downloadWithoutChannelSubfoldersDescription": "Tekli video indirmelerini kanal alt klasörü oluşturmadan doğrudan Videos klasörüne kaydet.",
+    "downloadWithoutChannelSubfoldersDescription": "Tekli video indirmelerini kanal alt klasörü oluşturmadan doğrudan Videos klasörüne kaydet",
+    "downloadSubtitles": "Altyazıları indir",
+    "downloadSubtitlesDescription": "Kullanılabilir olduğunda yalnızca seçilen dillerdeki altyazıları indir",
+    "subtitleLanguages": "Altyazı dilleri",
+    "subtitleLanguagesDescription": "VidBee'nin her video için isteyeceği altyazı dillerini seçin",
+    "subtitleLanguageSearch": "Altyazı dillerinde ara",
+    "subtitleLanguageEmpty": "Eşleşen dil yok",
+    "subtitleLanguageLimit": "Platform istek sınırlarını azaltmak için en fazla {{count}} dil seçin",
+    "followInterfaceLanguage": "Arayüz dilini takip et ({{language}})",
     "embedChapters": "Bölümleri gömün",
     "embedChaptersDescription": "Mümkün olduğunda dosyaya bölüm işaretçileri ekleyin",
     "embedMetadata": "Meta verileri gömün",
-    "embedMetadataDescription": "Mümkünse başlık, sanatçı ve diğer meta verileri yazın.",
+    "embedMetadataDescription": "Mümkünse başlık, sanatçı ve diğer meta verileri yazın",
     "embedSubs": "Altyazıları gömün",
-    "embedSubsDescription": "Altyazıları video dosyasına (mp4, webm, mkv) gömün",
+    "embedSubsDescription": "Seçilen altyazıları video dosyasına (mp4, webm, mkv) gömün",
+    "writeAutoSubs": "Otomatik oluşturulan altyazıları kullan",
+    "writeAutoSubsDescription": "Seçilen dillerde içerik üreticisi altyazısı yoksa otomatik altyazıları kullan",
     "embedThumbnail": "Küçük resmi gömün",
     "embedThumbnailDescription": "Küçük resmi, kapak resmi olarak ekle",
+    "filenameStyle": "Dosya adı stili",
+    "filenameStyleDescription": "VidBee'nin kaydedilen video ve ses dosyalarını nasıl adlandıracağını seçin",
+    "filenameStyleNote": "VidBee tarafından kaydedilen dosyalar için kullanılır. Abonelik veya oynatma listesi özel şablonları önceliklidir",
+    "filenameStyleOptions": {
+      "basic": "temel",
+      "classic": "klasik",
+      "nerdy": "nerd",
+      "pretty": "şık"
+    },
+    "filenameStylePreviewAudio": "ses dosyası önizlemesi",
+    "filenameStylePreviewVideo": "video dosyası önizlemesi",
+    "filenameViaVidBee": "via VidBee ekle",
+    "filenameViaVidBeeDescription": "Kaydedilen video ve ses dosyası adlarına otomatik olarak via VidBee ekler",
+    "metadataTab": "Meta veri",
+    "navGroup": {
+      "app": "Uygulama",
+      "download": "İndirme",
+      "system": "Sistem",
+      "ai": "Yapay zeka"
+    },
     "shareWatermark": "Filigranı paylaş",
-    "shareWatermarkDescription": "Orijinal başlık, yazar ve VidBee markasını içeren bir filigran ekleyin.",
+    "shareWatermarkDescription": "Orijinal başlık, yazar ve VidBee markasını içeren bir filigran ekleyin",
     "maxConcurrentDownloads": "Aktif indirme sayısı sınırı",
     "maxConcurrentDownloadsDescription": "Eşzamanlı indirme sayısı sınırı",
     "none": "Hiçbiri",
     "oneClickDownload": "Tek Tıkla İndir",
     "oneClickDownloadDescription": "Varsayılan ayarlarla tek tıklamayla indirmeyi etkinleştir",
     "oneClickDownloadType": "Varsayılan indirme türü",
-    "oneClickDownloadTypeDescription": "Tek tıklamayla indirme için varsayılan indirme türünü seçin. Kalite, aşağıdaki ön ayarı kullanır.",
+    "oneClickDownloadTypeDescription": "Tek tıklamayla indirme için varsayılan indirme türünü seçin. Kalite, aşağıdaki ön ayarı kullanır",
     "oneClickQuality": "Tercih edilen kalite",
     "oneClickQualityDescription": "Tek tıklamayla indirme için kullanılan kalite ön ayarını seçin",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "Vekil",
     "proxyDescription": "Ağ istekleri için vekil sunucusu",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "İndirme kaynağı",
+    "downloadMirrorDescription": "GitHub yavaş veya engelli olduğunda yt-dlp, ffmpeg, Node ve transkript modelleri için Çin yansımalarını (ModelScope, GitHub vekilleri) kullanır",
+    "downloadMirrorAuto": "Otomatik",
+    "downloadMirrorChina": "Çin (ModelScope)",
+    "downloadMirrorGlobal": "Resmi",
     "rememberLastAudioLanguage": "Son ses dilini hatırla",
-    "rememberLastAudioLanguageDescription": "Gelecekteki ses indirmelerinde son seçtiğiniz ses dilini varsayılan olarak yeniden kullan.",
+    "rememberLastAudioLanguageDescription": "Gelecekteki ses indirmelerinde son seçtiğiniz ses dilini varsayılan olarak yeniden kullan",
     "selectConfigFile": "Ayar dosyasını seçin",
     "selectPath": "Seç",
     "showMoreFormats": "Daha fazla format seçeneği göster",
     "showMoreFormatsDescription": "Arayüzde ek format seçeneklerini göster",
     "subscriptionDefaults": {
-      "filenameDescription": "Abonelik dosya adını geçersiz kılmadığında kullanılan desen."
+      "filenameDescription": "Abonelik dosya adını geçersiz kılmadığında kullanılan desen"
     },
     "system": "Sistem",
     "theme": "Tema",
@@ -535,13 +622,243 @@
     },
     "video": "Video Tercihleri",
     "oneClickContainer": "Kapsayıcı",
-    "oneClickContainerDescription": "Tek tıkla indirmeler için çıkış kapsayıcısını seçin. Auto önce MP4'ü dener, codec uyumsuzsa MKV'ye düşer.",
+    "oneClickContainerDescription": "Tek tıkla indirmeler için çıkış kapsayıcısını seçin. Auto önce MP4'ü dener, codec uyumsuzsa MKV'ye düşer",
     "oneClickContainerOptions": {
       "auto": "Auto (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "Orijinal (yt-dlp varsayılanı)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "En fazla eşzamanlı transkript",
+    "maxConcurrentTranscriptionsDescription": "Aynı anda kaç transkriptin çalışabileceğini belirler. Her iş bu bilgisayarı kullanır. Değeri düşürmek çalışan işleri durdurmaz",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "{{count}} model indiriliyor",
+    "asrDelete": "Sil",
+    "asrDeleteError": "Bu yapay zeka modeli silinemedi.",
+    "asrCancel": "İptal",
+    "asrCancelError": "Bu indirme iptal edilemedi.",
+    "asrDownloadError": "Bu yapay zeka modeli indirilemedi.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "En hızlı çok dilli başlangıç. Düşük özellikli PC’ler için",
+        "size": "~75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Tiny’den biraz daha doğru, hâlâ hafif",
+        "size": "~150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "Tipik PC’ler. İyi çok dilli doğruluk",
+        "size": "~250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "CJK + İngilizce için hızlı, Kantonca dahil",
+        "size": "~230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "En iyi Çince doğruluk. Güçlü bir PC ister",
+        "size": "~840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "Daha iyi çok dilli doğruluk. Daha fazla RAM ister",
+        "size": "~770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "large-v3’e yakın, çok daha hızlı",
+        "size": "~810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "Daha yeni CJK+İngilizce paketi. Hâlâ hafif",
+        "size": "~230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "Güçlü İngilizce. Tipik PC’lerde hızlı",
+        "size": "~650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "Daha yeni İngilizce Parakeet. En iyi İngilizce seçim",
+        "size": "~650 MB"
+      }
+    },
+    "asrDownload": "İndir",
+    "asrDownloadAndUse": "İndir ve kullan",
+    "asrDownloaded": "İndirilenler",
+    "asrRecommended": "Önerilenler",
+    "asrRecommendedFor": "{{os}} · {{gpu}} · {{ram}} · {{cores}} çekirdek · {{language}} için önerilir",
+    "asrAllModels": "Tüm modeller",
+    "asrBestMatch": "En uygun",
+    "asrMachine": {
+      "low": "düşük özellikli PC",
+      "mid": "tipik PC",
+      "high": "güçlü PC"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — çok dilli",
+      "sense-voice": "SenseVoice — Çince, Japonca, Korece, İngilizce",
+      "qwen3": "Qwen3-ASR — en yüksek Çince doğruluk",
+      "parakeet": "Parakeet — İngilizce"
+    },
+    "asrLanguages": {
+      "multi": "çok dilli"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "bu sistem"
+    },
+    "asrGpu": {
+      "apple": "Apple GPU",
+      "nvidia": "NVIDIA GPU",
+      "amd": "AMD GPU",
+      "intel": "Intel GPU",
+      "unknown": "bilinmeyen GPU"
+    },
+    "providersTab": "Sağlayıcılar",
+    "promptsTab": "Komutlar",
+    "transcriptionTab": "Transkripsiyon",
+    "ai": {
+      "allServices": "Tüm hizmetler",
+      "configured": "Yapılandırılmış",
+      "useProvider": "Kullan",
+      "inUse": "Kullanımda",
+      "addProvider": "{{name}} ekle",
+      "editProvider": "Sağlayıcıyı düzenle",
+      "deleteProvider": "Sağlayıcıyı kaldır",
+      "edit": "Düzenle",
+      "apiKey": "API anahtarı",
+      "apiKeyKept": "Kayıtlı anahtarı korumak için boş bırakın",
+      "baseUrl": "Base URL",
+      "modelId": "Model kimliği",
+      "modelIdPlaceholder": "model-id",
+      "name": "Ad",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "saveError": "Yapay zeka ayarları kaydedilemedi.",
+      "providerDialogDescription": "API anahtarları bu bilgisayarda kalır. Hazır sağlayıcıların base URL’si zaten vardır",
+      "testConnection": "Bağlantıyı dene",
+      "testingConnection": "Deneniyor…",
+      "testSuccess": "Bağlandı. Yanıt: {{reply}}",
+      "testFailed": "Bu modele ulaşılamadı.",
+      "addPrompt": "Komut ekle",
+      "editPrompt": "Komutu düzenle",
+      "deletePrompt": "Komutu sil",
+      "promptTitle": "Başlık",
+      "promptIcon": "Simge",
+      "promptBody": "Komut",
+      "promptDialogDescription": "Bu komut, etkin sağlayıcıyla bir transkript üzerinde çalışır",
+      "restorePresets": "Varsayılanları geri yükle",
+      "testTitle": "Örnek transkriptle dene",
+      "testRun": "Çalıştır",
+      "testStop": "Durdur",
+      "testOutput": "Çıktı",
+      "testPlaceholder": "Komut çıktısı burada görünür",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "Madde işaretleri"
+        },
+        "improve-grammar": {
+          "title": "Dil bilgisi ve noktalama"
+        },
+        "generate-faq": {
+          "title": "SSS oluştur"
+        },
+        "extract-statistics": {
+          "title": "İstatistikleri çıkar"
+        },
+        "paraphrase-content": {
+          "title": "İçeriği yeniden yaz"
+        },
+        "create-mindmap": {
+          "title": "Zihin haritası oluştur"
+        },
+        "translate": {
+          "title": "Çevir"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "Ayarlanmadı",
+      "statusNotConfiguredHint": "Hesap gerektiren indirmeler bunu ayarlayana kadar başarısız olur",
+      "statusUsingBrowser": "{{browser}} oturumu kullanılıyor",
+      "statusUsingFile": "Bir çerez dosyası kullanılıyor",
+      "statusOk": "Hazır",
+      "statusExpired": "Süresi doldu",
+      "statusEmpty": "Oturum bulunamadı",
+      "statusInvalid": "Dikkat gerekli",
+      "healthOkBrowser": "VidBee, {{browser}} uygulamasından çerez okuyabilir. Sitede orada oturum açık tutun",
+      "healthOkFile": "{{sites}} için oturum çerezleri bulundu",
+      "healthOkFileGeneric": "Bu çerez dosyası geçerli görünüyor",
+      "healthExpired": "Bu çerezlerin süresi doldu. Yeniden oturum açın ve yeni bir dosya içe aktarın",
+      "healthEmpty": "Bu dosyada desteklenen siteler için oturum çerezi yok. Oturum açıkken dışa aktarıp yeniden deneyin",
+      "healthInvalidFile": "Çerez dosyası eksik veya geçerli bir dışa aktarma değil",
+      "healthInvalidBrowser": "VidBee bu tarayıcı profilindeki çerezleri okuyamıyor",
+      "healthMacosFilesPermission": "macOS çerez erişimini engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBee’ye bu tarayıcıya erişim verin, sonra yeniden kontrol edin.",
+      "healthUnsupportedBrowser": "Bu tarayıcı sisteminizde çerez için kullanılamaz",
+      "sitesLabel": "Siteler: {{sites}}",
+      "recommendedTitle": "Önerilen",
+      "recommendedUseBrowser": "{{browser}} kullan",
+      "recommendedUseBrowserHint": "{{browser}} içinde zaten oturum açtığınız hesabı yeniden kullanın",
+      "recommendedImportFile": "Bir çerez dosyası içe aktar",
+      "recommendedImportFileWindowsHint": "Windows’ta Chrome ve Edge, çerezleri VidBee ile paylaşamaz. Bunun yerine tarayıcıdan bir çerez dosyası dışa aktarın",
+      "recommendedImportFileHint": "Tarayıcınızdan çerezleri dışa aktarın, sonra dosyayı burada seçin",
+      "recommendedFirefoxHint": "Windows’ta VidBee’nin doğrudan okuyabildiği tek tarayıcı Firefox’tur",
+      "useThisBrowser": "{{browser}} kullan",
+      "importFile": "Çerez dosyası seç",
+      "clearSetup": "Çerezleri temizle",
+      "checkStatus": "Yeniden kontrol et",
+      "otherOptions": "Diğer seçenekler",
+      "hideOtherOptions": "Diğer seçenekleri gizle",
+      "chooseBrowser": "Farklı bir tarayıcı seç",
+      "advancedProfile": "Profil yolu",
+      "windowsUnsupportedCurrent": "{{browser}} Windows’ta çerez için kullanılamaz. Firefox kullanın veya bir çerez dosyası içe aktarın.",
+      "fileExportStep1": "Get cookies.txt LOCALLY gibi bir çerez dışa aktarma uzantısı yükleyin",
+      "fileExportStep2": "Siteye giriş yapın, sonra çerez dosyasını dışa aktarın",
+      "fileExportStep3": "Dosyayı burada seçin",
+      "fileExportExtension": "Chrome / Edge uzantısı",
+      "checking": "Çerezler kontrol ediliyor…",
+      "applied": "Çerezler güncellendi",
+      "profileMissingDb": "Bu Firefox profilinde çerez veritabanı yok. Firefox’u bir kez açın, sonra yeniden deneyin."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "Otomatik etiketler",
       "customDirectory": "Özel dizin",
       "namingTemplate": "Özel dosya adı şablonu",
+      "autoDownload": "Otomatik indir",
       "onlyLatest": "Yalnızca en son videoyu indirin",
       "onlyLatestDescription": "Birikmiş öğeleri yok say ve bu beslemeden sadece en yeni yüklemeleri al.",
       "enabled": "Etkinleştirildi",
@@ -655,6 +973,18 @@
       "hint": "RSS besleme URL'iniz yok mu? RSSHub'ı kullanarak YouTube, Twitter ve binlerce diğer platform için RSS beslemeleri oluşturun."
     }
   },
+  "kernelPreparation": {
+    "copying": "İndirme motoru kopyalanıyor…",
+    "description": "VidBee indirme motorunu hazırlıyor. Bu işlem yalnızca kısa bir süre alır.",
+    "errorDescription": "VidBee çalışan bir indirme motoru hazırlayamadı. Yerel depolama erişimini kontrol edip yeniden deneyin.",
+    "errorTitle": "İndirme motoru kullanılamıyor",
+    "finalizing": "Kurulum tamamlanıyor…",
+    "progressLabel": "İndirme motoru hazırlama ilerlemesi",
+    "retry": "Yeniden dene",
+    "retrying": "Yeniden deneniyor…",
+    "title": "VidBee hazırlanıyor",
+    "validating": "İndirme motoru doğrulanıyor…"
+  },
   "sites": {
     "homeInlineDescription": "{{sites}} ve daha fazlasını destekler.",
     "moreDescription": "yt-dlp listesinin tamamı topluluk tarafından sürekli güncellenmektedir.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "Ana platformlar",
     "viewAll": "Desteklenen tüm siteleri görüntüle"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "Transkripsiyon modelleri hazırlanıyor…",
+    "preparingSpeakerModels": "Konuşmacı modelleri hazırlanıyor…",
+    "modelsProgressLabel": "Transkripsiyon modeli indirme ilerlemesi",
+    "view": "View transcript",
+    "sourceCaptions": "Video altyazıları",
+    "sourceAi": "AI dökümü",
+    "sourceSwitch": "Döküm kaynağı",
+    "sourceCaptionNamed": "{{language}} altyazıları",
+    "sourceCaptionAutoNamed": "{{language}} otomatik altyazıları",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "Transkripsiyon bitmeden durdu. Yeniden deneyebilirsiniz.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "Durdur",
+    "stopFailed": "Yazıya dökme durdurulamadı.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "Ses hazırlanıyor",
+    "identifyingSpeakers": "Konuşmacılar ayırt ediliyor",
+    "back": "Deşifrelere dön",
+    "library": {
+      "empty": "Henüz deşifre yok",
+      "emptyHint": "Yerel bir ses veya video dosyası seçin ya da bitmiş bir indirmeyi deşifre edin.",
+      "addMedia": "Ses veya video ekle",
+      "goToDownloads": "İndirmelere git",
+      "untitled": "Adsız medya",
+      "previewPending": "Deşifre oluşturuldukça burada görünecek.",
+      "queued": "Sırada",
+      "processing": "İşleniyor",
+      "retrySoon": "Yakında yeniden denenecek",
+      "cancelled": "İptal edildi",
+      "open": "{{title}} deşifresini aç",
+      "dropDescription": "Deşifre için ses veya video dosyalarını bırakın ya da yapıştırın.",
+      "experimentalBadge": "Deneysel",
+      "experimentalHint": "İleride İndirmeler ile birleştirilebilir."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "Transkripti kopyala",
+    "copied": "Transkript kopyalandı",
+    "copyFailed": "Transkript kopyalanamadı.",
+    "captionSelect": "Seçilen transkript",
+    "captionSelectClear": "Seçimi temizle",
+    "export": {
+      "action": "Dışa aktar",
+      "preview": "Dışa aktarma önizlemesi",
+      "description": "Transkripti önizleyin, ardından kopyalayın veya metin dosyası olarak kaydedin.",
+      "styleLabel": "Stil",
+      "style": {
+        "transcript": "Transkript",
+        "subtitles": "Altyazı",
+        "segments": "Bölümler",
+        "whisper": "Whisper",
+        "video": "Video + altyazı"
+      },
+      "formatLabel": "Biçim",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "Kodlama",
+      "encode": {
+        "soft": "Softsub",
+        "hard": "Hardsub"
+      },
+      "softHint": "Altyazıyı ayrı bir iz olarak mux’lar. Oynatıcıda açılıp kapatılabilir. Hızlı, kalite kaybı yok.",
+      "hardHint": "Altyazıyı görüntüye gömer. Video yeniden kodlanır ve altyazı kapatılamaz.",
+      "noMedia": "Kaynak video yok, video dışa aktarma kullanılamaz.",
+      "audioOnly": "Bu dosya yalnızca ses. Bunun yerine metin transkripti dışa aktarın.",
+      "videoSaved": "Video dışa aktarıldı",
+      "videoSaveFailed": "Video dışa aktarılamadı.",
+      "exporting": "Dışa aktarılıyor…",
+      "cancelExport": "Dışa aktarmayı iptal et",
+      "cancelled": "Dışa aktarma iptal edildi",
+      "progress": "{{percent}}%",
+      "options": "Seçenekler",
+      "grouping": "Gruplama",
+      "groupingValue": {
+        "none": "Yok",
+        "words": "Sözcükler",
+        "sentences": "Cümleler"
+      },
+      "showTimestamp": "Zaman damgasını göster",
+      "close": "Kapat",
+      "copy": "Kopyala",
+      "copied": "Panoya kopyalandı",
+      "copyFailed": "Dışa aktarma önizlemesi kopyalanamadı.",
+      "saved": "Transkript dışa aktarıldı",
+      "saveFailed": "Transkript dışa aktarılamadı.",
+      "empty": "Henüz dışa aktarılacak bir şey yok."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "Transkript panelini yeniden boyutlandır",
+    "unknownSpeaker": "Bilinmeyen konuşmacı",
+    "speakers": "Konuşmacılar ({{count}})",
+    "info": {
+      "tab": "Bilgi",
+      "channel": "Kanal",
+      "duration": "Süre",
+      "file": "Dosya",
+      "fileSize": "Dosya boyutu",
+      "url": "Kaynak URL",
+      "source": "Kaynak",
+      "model": "Model",
+      "language": "Dil",
+      "speakers": "Konuşmacılar",
+      "segments": "Bölümler",
+      "createdAt": "Yazıya döküldü",
+      "empty": "Henüz ayrıntı yok.",
+      "openUrl": "Kaynak URL'yi aç"
+    },
+    "speakingShare": "%{{percent}}",
+    "seekSpeaker": "{{name}} konumuna git",
+    "seekAt": "{{time}} konumuna git",
+    "searchPlaceholder": "Transkriptte ara",
+    "searchMatches": "{{count}} eşleşme",
+    "searchNoMatches": "Eşleşme yok",
+    "searchNext": "Sonraki",
+    "searchPrevious": "Önceki",
+    "searchJumpTo": "Bu altyazıya git",
+    "collapsePanel": "Transkripti daralt",
+    "expandPanel": "Transkripti genişlet",
+    "player": {
+      "play": "Oynat",
+      "pause": "Duraklat",
+      "seek": "Atla",
+      "volume": "Ses",
+      "mute": "Sesi kapat",
+      "unmute": "Sesi aç",
+      "playbackRate": "Oynatma hızı",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "Dosya oynatma için hazırlanıyor…",
+      "unavailable": "Bu dosya sayfa içinde oynatılacak forma getirilemedi.",
+      "failedTitle": "Bu video burada oynatılamıyor",
+      "failedAudioTitle": "Bu ses burada oynatılamıyor",
+      "failedDetail": "Metni hâlâ okuyabilirsin.",
+      "retry": "Yeniden dene",
+      "error": "Oynatma başarısız: {{message}}",
+      "captionsShow": "Altyazıları göster",
+      "captionsHide": "Altyazıları gizle",
+      "skipBack": "15 saniye geri",
+      "skipForward": "15 saniye ileri",
+      "volumePercent": "%{{percent}}",
+      "fullscreen": "Tam ekran",
+      "fullscreenExit": "Tam ekrandan çık",
+      "resumed": "{{time}} konumundan devam edildi",
+      "startOver": "Baştan başla",
+      "nowPlaying": "Çalıyor",
+      "closeBar": "Oynatıcıyı kapat",
+      "openTranscript": "Transkripte dön"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "Zaten en yüksek kaliteli model kullanıldı. Etiketler karıştıysa konuşmacı sayısını ayarlayın. Arka plan müziği ve örtüşen konuşmalar konuşmacıları hâlâ karıştırabilir.",
+    "speakerCount": {
+      "adjust": "Konuşmacıları ayarla",
+      "auto": "Otomatik (algıla)",
+      "one": "1 konuşmacı",
+      "count": "{{count}} konuşmacı",
+      "apply": "Yeniden yazıya dök",
+      "detail": "Bu konuşmacı sayısıyla yeniden yazıya dökeceğiz. Varsayılan otomatiktir. Bu sayfadan ayrılabilirsiniz. Mevcut döküm geçmiş olarak kalır."
+    },
+    "promptMenu": "Tüm istemler",
+    "promptStop": "Durdur",
+    "promptRerun": "Yeniden çalıştır",
+    "promptCopy": "Kopyala",
+    "promptShare": "Görseli paylaş",
+    "promptShareTitle": "Görseli paylaş",
+    "promptShareDownload": "İndir",
+    "promptShareNative": "Paylaş",
+    "promptSharing": "Görsel hazırlanıyor…",
+    "promptShared": "Paylaşım görseli kopyalandı",
+    "promptShareSaved": "Paylaşım görseli kaydedildi",
+    "promptShareFailed": "Paylaşım görseli hazırlanamadı.",
+    "promptShareSaveFailed": "Paylaşım görseli kaydedilemedi.",
+    "promptShareNativeFailed": "Paylaşım menüsü açılamadı.",
+    "promptShareFooter": "VidBee ile oluşturuldu",
+    "promptShareTagline": "Açık kaynak. Video indir. Yapay zekaya sor.",
+    "captionShareSaid": "{{name}} dedi",
+    "promptOutput": "İstem sonucu",
+    "promptScrollToEnd": "En sona git",
+    "promptCopied": "Kopyalandı",
+    "promptNoProvider": "Bu komutu çalıştırmak için Ayarlar’da bir yapay zeka sağlayıcısı kurun.",
+    "promptOpenSettings": "Sağlayıcı ayarlarını aç",
+    "promptEmpty": "Sonuç burada görünecek.",
+    "promptRunning": "Yazılıyor…",
+    "promptThinking": "Düşünüyor",
+    "promptThinkingFor": "{{seconds}} sn düşünüyor",
+    "promptThoughtFor": "{{seconds}} sn düşündü",
+    "promptAborted": "Durduruldu",
+    "promptNoTranscript": "Bu komutu çalıştırmadan önce bir transkript gerekir.",
+    "promptTryAgain": "Yeniden dene",
+    "promptLoading": "Yapay zeka ayarları yükleniyor…",
+    "promptGuide": {
+      "noProvider": "Etkin bir yapay zeka sağlayıcısı yok, bu komut çalıştırılamaz.",
+      "missingApiKey": "Etkin sağlayıcıda API anahtarı yok.",
+      "missingModel": "Etkin sağlayıcıda model kimliği yok.",
+      "unknownPrompt": "Bu komut artık yok.",
+      "emptyTranscript": "Bu komut bitmiş bir transkript ister.",
+      "auth": "Sağlayıcı isteği reddetti. API anahtarı veya hesap geçersiz olabilir.",
+      "network": "Sağlayıcıya ulaşılamadı.",
+      "emptyOutput": "Sağlayıcı bitti ama metin döndürmedi.",
+      "unknown": "Komut çalıştırılamadı."
+    },
+    "promptErrorDetails": "Hata ayrıntıları",
+    "promptWhatToDo": "Denenecekler",
+    "promptUsingProvider": "Kullanılan: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "Ayarlar → Sağlayıcılar’ı açın.",
+        "s2": "Bir hizmet ekleyin, API anahtarı ve model kimliğini kaydedin, sonra Kullan’a tıklayın.",
+        "s3": "Buraya dönüp komutu yeniden çalıştırın."
+      },
+      "missingApiKey": {
+        "s1": "Ayarlar → Sağlayıcılar’da etkin sağlayıcıyı düzenleyin.",
+        "s2": "Geçerli bir API anahtarı yapıştırıp kaydedin.",
+        "s3": "Komutu yeniden çalıştırın."
+      },
+      "missingModel": {
+        "s1": "Ayarlar → Sağlayıcılar’da etkin sağlayıcıyı düzenleyin.",
+        "s2": "Bu hizmetin gerçekten sunduğu bir model kimliği girin.",
+        "s3": "Komutu yeniden çalıştırın."
+      },
+      "unknownPrompt": {
+        "s1": "Ayarlar → Komutlar’ı açın.",
+        "s2": "Varsayılanları geri yükleyin veya bu komutu yeniden ekleyin."
+      },
+      "emptyTranscript": {
+        "s1": "Transkripsiyon bitsin.",
+        "s2": "Konuşma yoksa yine de transkribe edin veya başka dosya seçin."
+      },
+      "auth": {
+        "s1": "Sağlayıcı ayarlarını açıp API anahtarını değiştirin.",
+        "s2": "Krediyi ve bu model için yetkiyi kontrol edin.",
+        "s3": "Özel uç noktaysa bu anahtarı kabul ettiğini doğrulayın."
+      },
+      "network": {
+        "s1": "İnterneti ve vekil sunucuyu kontrol edin.",
+        "s2": "Özel sağlayıcıda Base URL’ye ulaşılabildiğini, gerekirse /v1 içerdiğini kontrol edin.",
+        "s3": "Ana makine düştüyse başka sağlayıcıya geçin."
+      },
+      "emptyOutput": {
+        "s1": "Ayarlar → Sağlayıcılar’da model kimliğinin bu hizmet için doğru olduğunu kontrol edin.",
+        "s2": "Özel uç noktaysa Base URL, API anahtarı ve modelin yayında olduğunu kontrol edin.",
+        "s3": "Aşağıdaki hata ayrıntısına bakın, sonra yeniden deneyin veya sağlayıcıyı değiştirin."
+      },
+      "unknown": {
+        "s1": "Önce aşağıdaki hata ayrıntısını okuyun.",
+        "s2": "Ayarlar → Sağlayıcılar’da API anahtarı, model kimliği ve Base URL’yi kontrol edin.",
+        "s3": "Yeniden deneyin veya başka sağlayıcıya geçin."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Yenilikler",
+    "description": "Transkript ve yapay zekâ, bu bilgisayarda.",
+    "tryIt": "Dene",
+    "features": {
+      "transcript": {
+        "title": "Otomatik video transkripti",
+        "description": "İndirme bitince VidBee bu videonun transkriptini bu bilgisayarda otomatik oluşturur. Hiçbir şey yüklenmez."
+      },
+      "speakers": {
+        "title": "Konuşmacı etiketleri",
+        "description": "Kimin ne söylediğini görün, o ana atlayın."
+      },
+      "summary": {
+        "title": "Yapay zekâ özetleri",
+        "description": "Transkripti madde madde, SSS, zihin haritası veya yeniden yazıma çevirin. Ayarlar’dan kendi istemlerinizi ekleyin."
+      },
+      "localFiles": {
+        "title": "Her dosyayı yazıya dökün",
+        "description": "Yerel ses veya videoyu Transkriptler’e bırakın. Metin, altyazı veya gömülü altyazılı video dışa aktarın."
+      }
+    }
   }
 }

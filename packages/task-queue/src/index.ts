@@ -74,9 +74,14 @@ export type {
   ExecutorFinishEvent,
   ExecutorProgressEvent,
   ExecutorRun,
+  ExecutorRouterOptions,
   ExecutorSpawnEvent,
   ExecutorStdEvent
 } from './executor'
+export { ExecutorRouter } from './executor'
+
+export { isOutputComplete } from './complete'
+export type { OutputCompleteCheck } from './complete'
 
 export {
   MemoryPersistAdapter,
@@ -94,6 +99,7 @@ export type {
 export { TaskQueueAPI } from './api'
 export type {
   AddTaskRequest,
+  ImportCompletedRequest,
   ListOptions,
   TaskQueueAPIOptions
 } from './api'

@@ -1,41 +1,35 @@
 /**
- * The CLI's `main(argv)`. Exported so unit tests can drive it without
- * spawning a subprocess. Reference:
+ * The CLI's `main(argv)`. Reference:
  *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §4
  *
  * The runtime is split into the cold path (parse argv, choose transport,
  * connect) and the hot paths (subcommand dispatch, yt-dlp probe, yt-dlp
- * download enqueue). Each hot path is a separate function so tests can
- * drive them in isolation.
+ * download enqueue).
  */
 
-import { ParseError, parseArgv } from './parser'
+import { buildForwardedInput } from './download/build-input'
+import { enqueueDownload } from './download/enqueue'
+import { type ProbeOptions, runProbe } from './download/probe'
 import {
+  type Envelope,
+  type ErrorEnvelope,
   ExitCode,
   errorEnvelope,
   exitCodeForError,
-  renderEnvelope,
-  type Envelope,
-  type ErrorEnvelope
+  renderEnvelope
 } from './envelope'
 import {
-  dispatchSubcommand,
-  type ContractClient,
-  type SubcommandContext
-} from './subcommands'
-import { selectTransport, validateApiUrl } from './transport'
-import { connect, type ConnectOptions, type ConnectResult } from './transport/connect'
-import { buildForwardedInput } from './download/build-input'
-import { enqueueDownload } from './download/enqueue'
-import { runProbe, type ProbeOptions } from './download/probe'
-import { redactArgs, redactText } from './parser/redact'
-import {
+  type CliVersionInfo,
   checkUpgrade,
   readCliVersion,
-  type CliVersionInfo,
   type UpgradeCheckInput,
   type UpgradeCheckResult
 } from './local-info'
+import { ParseError, parseArgv } from './parser'
+import { redactArgs, redactText } from './parser/redact'
+import { type ContractClient, dispatchSubcommand, type SubcommandContext } from './subcommands'
+import { validateApiUrl } from './transport'
+import { type ConnectOptions, type ConnectResult, connect } from './transport/connect'
 
 export interface RunIO {
   stdout: (line: string) => void
@@ -78,7 +72,9 @@ export async function run(argv: readonly string[], io: RunIO): Promise<RunResult
 
   if (parsed.flags.api !== undefined) {
     const bad = validateApiUrl(parsed.flags.api)
-    if (bad) return emit(io, bad, pretty, ExitCode.HOST_UNREACHABLE)
+    if (bad) {
+      return emit(io, bad, pretty, ExitCode.HOST_UNREACHABLE)
+    }
   }
 
   const connectImpl = io.connect ?? connect
@@ -117,10 +113,7 @@ export async function run(argv: readonly string[], io: RunIO): Promise<RunResult
     }
     return emit(io, env, pretty, ExitCode.OK)
   } catch (err) {
-    const env = errorEnvelope(
-      'UNKNOWN_ERROR',
-      err instanceof Error ? err.message : String(err)
-    )
+    const env = errorEnvelope('UNKNOWN_ERROR', err instanceof Error ? err.message : String(err))
     return emit(io, env, pretty, ExitCode.ARG_ERROR)
   } finally {
     await safeTeardown(conn)
@@ -148,12 +141,14 @@ async function runLocalSubcommand(
   // :upgrade
   const upgradeImpl = io.checkUpgrade ?? checkUpgrade
   const opts = parseUpgradeArgs(subArgs)
-  if (opts.kind === 'error') return emit(io, opts.envelope, pretty, ExitCode.ARG_ERROR)
+  if (opts.kind === 'error') {
+    return emit(io, opts.envelope, pretty, ExitCode.ARG_ERROR)
+  }
   try {
     const result = await upgradeImpl({
       current: versionInfo.cli,
       ...(opts.force ? { force: true } : {}),
-      ...(opts.cachePath !== undefined ? { cachePath: opts.cachePath } : {})
+      ...(opts.cachePath === undefined ? {} : { cachePath: opts.cachePath })
     })
     const env: Envelope = {
       ok: true,
@@ -163,11 +158,9 @@ async function runLocalSubcommand(
     }
     return emit(io, env, pretty, ExitCode.OK)
   } catch (err) {
-    const env = errorEnvelope(
-      'API_UNREACHABLE',
-      err instanceof Error ? err.message : String(err),
-      { registry: 'https://registry.npmjs.org/@vidbee/cli/latest' }
-    )
+    const env = errorEnvelope('API_UNREACHABLE', err instanceof Error ? err.message : String(err), {
+      registry: 'https://registry.npmjs.org/@vidbee/cli/latest'
+    })
     return emit(io, env, pretty, ExitCode.HOST_UNREACHABLE)
   }
 }
@@ -183,7 +176,9 @@ function parseUpgradeArgs(
   const out: UpgradeArgs = { kind: 'ok', force: false }
   for (let i = 0; i < subArgs.length; i++) {
     const tok = subArgs[i]
-    if (tok === undefined) continue
+    if (tok === undefined) {
+      continue
+    }
     if (tok === '--force') {
       out.force = true
       continue
@@ -212,20 +207,11 @@ function parseUpgradeArgs(
   return out
 }
 
-async function runProbeMode(
-  parsed: YtdlpParsed,
-  io: RunIO,
-  pretty: boolean
-): Promise<RunResult> {
+async function runProbeMode(parsed: YtdlpParsed, io: RunIO, pretty: boolean): Promise<RunResult> {
   const probeImpl = io.probe ?? runProbe
   const result = await probeImpl({ argv: parsed.ytArgs })
   if (result.kind === 'error') {
-    return emit(
-      io,
-      result.envelope,
-      pretty,
-      exitCodeForError(result.envelope.code)
-    )
+    return emit(io, result.envelope, pretty, exitCodeForError(result.envelope.code))
   }
   const { args: sanitized } = redactArgs(parsed.ytArgs)
   const env: Envelope = {
@@ -259,8 +245,12 @@ async function runDownloadMode(
     if (parsed.flags.priority) {
       request.priority = priorityToCode(parsed.flags.priority)
     }
-    if (parsed.flags.groupKey !== undefined) request.groupKey = parsed.flags.groupKey
-    if (parsed.flags.maxAttempts !== undefined) request.maxAttempts = parsed.flags.maxAttempts
+    if (parsed.flags.groupKey !== undefined) {
+      request.groupKey = parsed.flags.groupKey
+    }
+    if (parsed.flags.maxAttempts !== undefined) {
+      request.maxAttempts = parsed.flags.maxAttempts
+    }
 
     const result = await enqueueDownload({
       client: conn.client,
@@ -310,10 +300,7 @@ async function runDownloadMode(
     }
     return emit(io, env, pretty, ExitCode.WAIT_NON_SUCCESS)
   } catch (err) {
-    const env = errorEnvelope(
-      'UNKNOWN_ERROR',
-      err instanceof Error ? err.message : String(err)
-    )
+    const env = errorEnvelope('UNKNOWN_ERROR', err instanceof Error ? err.message : String(err))
     return emit(io, env, pretty, ExitCode.ARG_ERROR)
   } finally {
     await safeTeardown(conn)
@@ -321,14 +308,22 @@ async function runDownloadMode(
 }
 
 function priorityToCode(p: 'user' | 'subscription' | 'background'): 0 | 10 | 20 {
-  if (p === 'user') return 0
-  if (p === 'subscription') return 10
+  if (p === 'user') {
+    return 0
+  }
+  if (p === 'subscription') {
+    return 10
+  }
   return 20
 }
 
 async function safeTeardown(conn: ConnectResult): Promise<void> {
-  if (conn.kind !== 'connected') return
-  if (!conn.teardown) return
+  if (conn.kind !== 'connected') {
+    return
+  }
+  if (!conn.teardown) {
+    return
+  }
   try {
     await conn.teardown()
   } catch {
@@ -336,12 +331,7 @@ async function safeTeardown(conn: ConnectResult): Promise<void> {
   }
 }
 
-function emit(
-  io: RunIO,
-  env: Envelope,
-  pretty: boolean,
-  exitCode: number
-): RunResult {
+function emit(io: RunIO, env: Envelope, pretty: boolean, exitCode: number): RunResult {
   io.stdout(renderEnvelope(env, { pretty }))
   return { exitCode, envelope: env }
 }
@@ -361,4 +351,3 @@ function coerceErrorCode(code: string): ErrorEnvelope['code'] {
       return 'PARSE_ERROR'
   }
 }
-

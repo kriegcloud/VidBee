@@ -76,19 +76,36 @@ const rowToSubscription = (row: SubscriptionRow): SubscriptionRule => {
     keywords: parseStringArray(row.keywords),
     tags: parseStringArray(row.tags),
     onlyDownloadLatest: intToBool(row.onlyDownloadLatest),
+    autoDownload: intToBool(row.autoDownload),
     enabled: intToBool(row.enabled),
     status: row.status as SubscriptionRule['status'],
     createdAt: row.createdAt,
     updatedAt: row.updatedAt
   }
-  if (row.coverUrl) rule.coverUrl = row.coverUrl
-  if (row.latestVideoTitle) rule.latestVideoTitle = row.latestVideoTitle
-  if (row.latestVideoPublishedAt !== null) rule.latestVideoPublishedAt = row.latestVideoPublishedAt
-  if (row.lastCheckedAt !== null) rule.lastCheckedAt = row.lastCheckedAt
-  if (row.lastSuccessAt !== null) rule.lastSuccessAt = row.lastSuccessAt
-  if (row.lastError) rule.lastError = row.lastError
-  if (row.downloadDirectory) rule.downloadDirectory = row.downloadDirectory
-  if (row.namingTemplate) rule.namingTemplate = row.namingTemplate
+  if (row.coverUrl) {
+    rule.coverUrl = row.coverUrl
+  }
+  if (row.latestVideoTitle) {
+    rule.latestVideoTitle = row.latestVideoTitle
+  }
+  if (row.latestVideoPublishedAt !== null) {
+    rule.latestVideoPublishedAt = row.latestVideoPublishedAt
+  }
+  if (row.lastCheckedAt !== null) {
+    rule.lastCheckedAt = row.lastCheckedAt
+  }
+  if (row.lastSuccessAt !== null) {
+    rule.lastSuccessAt = row.lastSuccessAt
+  }
+  if (row.lastError) {
+    rule.lastError = row.lastError
+  }
+  if (row.downloadDirectory) {
+    rule.downloadDirectory = row.downloadDirectory
+  }
+  if (row.namingTemplate) {
+    rule.namingTemplate = row.namingTemplate
+  }
   return rule
 }
 
@@ -100,15 +117,16 @@ const rowToFeedItem = (row: SubscriptionItemRow): SubscriptionFeedItem => {
     publishedAt: row.publishedAt,
     addedToQueue: intToBool(row.added)
   }
-  if (row.thumbnail) item.thumbnail = row.thumbnail
-  if (row.taskId) item.taskId = row.taskId
+  if (row.thumbnail) {
+    item.thumbnail = row.thumbnail
+  }
+  if (row.taskId) {
+    item.taskId = row.taskId
+  }
   return item
 }
 
-const subscriptionToInsert = (
-  rule: SubscriptionRule,
-  now: number
-): SubscriptionInsert => {
+const subscriptionToInsert = (rule: SubscriptionRule, now: number): SubscriptionInsert => {
   const payload: SubscriptionInsert = {
     id: rule.id,
     title: rule.title,
@@ -118,20 +136,36 @@ const subscriptionToInsert = (
     keywords: stringifyArray(rule.keywords),
     tags: stringifyArray(rule.tags),
     onlyDownloadLatest: boolToInt(rule.onlyDownloadLatest),
+    autoDownload: boolToInt(rule.autoDownload),
     enabled: boolToInt(rule.enabled),
     status: rule.status,
     createdAt: rule.createdAt,
     updatedAt: rule.updatedAt ?? now
   }
-  if (rule.coverUrl !== undefined) payload.coverUrl = rule.coverUrl
-  if (rule.latestVideoTitle !== undefined) payload.latestVideoTitle = rule.latestVideoTitle
-  if (rule.latestVideoPublishedAt !== undefined)
+  if (rule.coverUrl !== undefined) {
+    payload.coverUrl = rule.coverUrl
+  }
+  if (rule.latestVideoTitle !== undefined) {
+    payload.latestVideoTitle = rule.latestVideoTitle
+  }
+  if (rule.latestVideoPublishedAt !== undefined) {
     payload.latestVideoPublishedAt = rule.latestVideoPublishedAt
-  if (rule.lastCheckedAt !== undefined) payload.lastCheckedAt = rule.lastCheckedAt
-  if (rule.lastSuccessAt !== undefined) payload.lastSuccessAt = rule.lastSuccessAt
-  if (rule.lastError !== undefined) payload.lastError = rule.lastError
-  if (rule.downloadDirectory !== undefined) payload.downloadDirectory = rule.downloadDirectory
-  if (rule.namingTemplate !== undefined) payload.namingTemplate = rule.namingTemplate
+  }
+  if (rule.lastCheckedAt !== undefined) {
+    payload.lastCheckedAt = rule.lastCheckedAt
+  }
+  if (rule.lastSuccessAt !== undefined) {
+    payload.lastSuccessAt = rule.lastSuccessAt
+  }
+  if (rule.lastError !== undefined) {
+    payload.lastError = rule.lastError
+  }
+  if (rule.downloadDirectory !== undefined) {
+    payload.downloadDirectory = rule.downloadDirectory
+  }
+  if (rule.namingTemplate !== undefined) {
+    payload.namingTemplate = rule.namingTemplate
+  }
   return payload
 }
 
@@ -141,7 +175,10 @@ export interface SubscriptionsStore {
   /** Returns the matched id when `feedUrl` collides, ignoring `ignoreId`. */
   findDuplicateFeed(feedUrl: string, ignoreId?: string): Promise<string | null>
   add(input: SubscriptionCreateInput): Promise<SubscriptionWithItems>
-  update(id: string, patch: SubscriptionUpdateInput & Partial<SubscriptionRule>): Promise<SubscriptionWithItems | null>
+  update(
+    id: string,
+    patch: SubscriptionUpdateInput & Partial<SubscriptionRule>
+  ): Promise<SubscriptionWithItems | null>
   remove(id: string): Promise<boolean>
   /** Replace the entire `subscription_items` snapshot for one subscription. */
   replaceItems(subscriptionId: string, items: NormalizedFeedItem[]): Promise<void>
@@ -149,11 +186,7 @@ export interface SubscriptionsStore {
    * Mark an item as `added` and link the spawned task id. Idempotent — if
    * the row already records the same taskId nothing changes.
    */
-  markItemQueued(
-    subscriptionId: string,
-    itemId: string,
-    taskId: string | null
-  ): Promise<void>
+  markItemQueued(subscriptionId: string, itemId: string, taskId: string | null): Promise<void>
 }
 
 export interface CreateSqliteStoresOptions {
@@ -204,11 +237,7 @@ export const createSqliteSubscriptionsStore = ({
     },
 
     async get(id) {
-      const row = db
-        .select()
-        .from(subscriptionsTable)
-        .where(eq(subscriptionsTable.id, id))
-        .get()
+      const row = db.select().from(subscriptionsTable).where(eq(subscriptionsTable.id, id)).get()
       if (!row) {
         return null
       }
@@ -224,9 +253,7 @@ export const createSqliteSubscriptionsStore = ({
         .select({ id: subscriptionsTable.id, feedUrl: subscriptionsTable.feedUrl })
         .from(subscriptionsTable)
         .all()
-      const hit = rows.find(
-        (row) => row.id !== ignoreId && buildFeedKey(row.feedUrl) === target
-      )
+      const hit = rows.find((row) => row.id !== ignoreId && buildFeedKey(row.feedUrl) === target)
       return hit?.id ?? null
     },
 
@@ -241,13 +268,18 @@ export const createSqliteSubscriptionsStore = ({
         keywords: sanitizeList(input.keywords),
         tags: sanitizeList(input.tags),
         onlyDownloadLatest: input.onlyDownloadLatest ?? true,
+        autoDownload: input.autoDownload ?? true,
         enabled: input.enabled ?? true,
         status: 'idle',
         createdAt: ts,
         updatedAt: ts
       }
-      if (input.downloadDirectory) rule.downloadDirectory = input.downloadDirectory
-      if (input.namingTemplate) rule.namingTemplate = input.namingTemplate
+      if (input.downloadDirectory) {
+        rule.downloadDirectory = input.downloadDirectory
+      }
+      if (input.namingTemplate) {
+        rule.namingTemplate = input.namingTemplate
+      }
       db.insert(subscriptionsTable).values(subscriptionToInsert(rule, ts)).run()
       return { ...rule, items: [] }
     },
@@ -281,16 +313,11 @@ export const createSqliteSubscriptionsStore = ({
     },
 
     async remove(id) {
-      const result = db
-        .delete(subscriptionsTable)
-        .where(eq(subscriptionsTable.id, id))
-        .run()
+      const result = db.delete(subscriptionsTable).where(eq(subscriptionsTable.id, id)).run()
       if ((result.changes ?? 0) === 0) {
         return false
       }
-      db.delete(subscriptionItemsTable)
-        .where(eq(subscriptionItemsTable.subscriptionId, id))
-        .run()
+      db.delete(subscriptionItemsTable).where(eq(subscriptionItemsTable.subscriptionId, id)).run()
       return true
     },
 
@@ -311,7 +338,9 @@ export const createSqliteSubscriptionsStore = ({
             createdAt: item.publishedAt,
             updatedAt: ts
           }
-          if (item.thumbnail) insert.thumbnail = item.thumbnail
+          if (item.thumbnail) {
+            insert.thumbnail = item.thumbnail
+          }
           tx.insert(subscriptionItemsTable).values(insert).run()
         }
       })
@@ -380,7 +409,9 @@ const readMetaMap = (db: BetterSQLite3Database): Map<string, string> => {
 }
 
 const numOrNull = (raw: string | undefined): number | null => {
-  if (raw === undefined) return null
+  if (raw === undefined) {
+    return null
+  }
   const n = Number(raw)
   return Number.isFinite(n) ? n : null
 }
@@ -388,7 +419,9 @@ const numOrNull = (raw: string | undefined): number | null => {
 const strOrNull = (raw: string | undefined): string | null => raw ?? null
 
 const leaderKindOrNull = (raw: string | undefined): LeaderKind | null => {
-  if (raw === 'desktop' || raw === 'api') return raw
+  if (raw === 'desktop' || raw === 'api') {
+    return raw
+  }
   return null
 }
 
@@ -398,9 +431,7 @@ export const createSqliteMetaStore = ({
 }: CreateSqliteStoresOptions): MetaStore => {
   const writeKey = (key: string, value: string | number | null, at: number): void => {
     if (value === null) {
-      db.delete(subscriptionsMetaTable)
-        .where(eq(subscriptionsMetaTable.key, key))
-        .run()
+      db.delete(subscriptionsMetaTable).where(eq(subscriptionsMetaTable.key, key)).run()
       return
     }
     db.insert(subscriptionsMetaTable)
@@ -445,9 +476,7 @@ export const createSqliteMetaStore = ({
 
         const writeKeyTx = (key: string, value: string | number | null): void => {
           if (value === null) {
-            tx.delete(subscriptionsMetaTable)
-              .where(eq(subscriptionsMetaTable.key, key))
-              .run()
+            tx.delete(subscriptionsMetaTable).where(eq(subscriptionsMetaTable.key, key)).run()
             return
           }
           tx.insert(subscriptionsMetaTable)
@@ -482,7 +511,7 @@ export const createSqliteMetaStore = ({
 }
 
 /**
- * In-memory MetaStore for tests and CLI's `--vidbee-local` mode (where
+ * In-memory MetaStore for CLI's `--vidbee-local` mode (where
  * leader election is a no-op since no other process can compete).
  */
 export class InMemoryMetaStore implements MetaStore {
@@ -507,7 +536,10 @@ export class InMemoryMetaStore implements MetaStore {
   }: {
     expectedLeaseId: string | null
     now: number
-    next: Pick<LeaderState, 'kind' | 'pid' | 'startedAt' | 'heartbeatAt' | 'lockExpiresAt' | 'leaseId'>
+    next: Pick<
+      LeaderState,
+      'kind' | 'pid' | 'startedAt' | 'heartbeatAt' | 'lockExpiresAt' | 'leaseId'
+    >
   }): Promise<boolean> {
     const okToWrite =
       expectedLeaseId === null

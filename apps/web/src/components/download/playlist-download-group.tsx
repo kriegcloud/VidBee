@@ -3,6 +3,7 @@ import { Progress } from "@vidbee/ui/components/ui/progress";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { logger } from "../../lib/logger";
 import { DownloadItem } from "./download-item";
 import type { DownloadRecord } from "./types";
 
@@ -16,6 +17,8 @@ interface PlaylistDownloadGroupProps {
 	onToggleSelect?: (id: string) => void;
 	onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void;
 	onCancel?: (id: string) => void;
+	onPause?: (id: string) => void;
+	onResume?: (id: string) => void;
 	onRetry?: (download: DownloadRecord) => void;
 	onRemove?: (id: string) => void;
 	onCopyUrl?: (url: string) => void;
@@ -32,7 +35,7 @@ const loadExpandedState = (groupId: string): boolean => {
 		const stored = localStorage.getItem(getStorageKey(groupId));
 		return stored === "true";
 	} catch (error) {
-		console.error("Failed to load playlist expanded state:", error);
+		logger.error("Failed to load playlist expanded state:", error);
 		return false;
 	}
 };
@@ -41,7 +44,7 @@ const saveExpandedState = (groupId: string, isExpanded: boolean): void => {
 	try {
 		localStorage.setItem(getStorageKey(groupId), String(isExpanded));
 	} catch (error) {
-		console.error("Failed to save playlist expanded state:", error);
+		logger.error("Failed to save playlist expanded state:", error);
 	}
 };
 
@@ -55,6 +58,8 @@ export function PlaylistDownloadGroup({
 	onToggleSelect,
 	onDeletePlaylist,
 	onCancel,
+	onPause,
+	onResume,
 	onRetry,
 	onRemove,
 	onCopyUrl,
@@ -194,7 +199,9 @@ export function PlaylistDownloadGroup({
 								isSelected={selectedIds?.has(record.id) ?? false}
 								onCancel={onCancel}
 								onCopyUrl={onCopyUrl}
+								onPause={onPause}
 								onRemove={onRemove}
+								onResume={onResume}
 								onRetry={onRetry}
 								onToggleSelect={onToggleSelect}
 							/>

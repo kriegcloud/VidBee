@@ -1,4 +1,8 @@
 import type { DownloadItem } from '@shared/types'
+import {
+  getCookieSetupFailureKind,
+  hasConfiguredCookieSettings
+} from '@vidbee/downloader-core/cookie-setup'
 import { useAtomValue, useSetAtom, useStore } from 'jotai'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +10,8 @@ import { toast } from 'sonner'
 import { buildFilePathCandidates } from '../../../shared/utils/download-file'
 import { getDownloadErrorGuidance } from '../lib/download-error-guidance'
 import { ipcEvents, ipcServices } from '../lib/ipc'
+import { logger } from '../lib/logger'
+import { cookieSetupAutoPromptedAtom, cookieSetupRequestAtom } from '../store/cookie-setup'
 import {
   addDownloadAtom,
   addHistoryRecordAtom,
@@ -14,7 +20,7 @@ import {
   removeHistoryRecordAtom,
   updateDownloadAtom
 } from '../store/downloads'
-import { enableDownloadNotificationsAtom } from '../store/settings'
+import { enableDownloadNotificationsAtom, settingsAtom } from '../store/settings'
 
 const isFinalStatus = (status?: string): boolean =>
   status === 'completed' || status === 'error' || status === 'cancelled'
@@ -42,7 +48,7 @@ export function useDownloadEvents() {
         }
         return historyItem
       } catch (error) {
-        console.error('Failed to sync history item:', error)
+        logger.error('Failed to sync history item:', error)
         return undefined
       }
     },
@@ -57,7 +63,7 @@ export function useDownloadEvents() {
           addDownload(item)
         })
       } catch (error) {
-        console.error('Failed to load active downloads:', error)
+        logger.error('Failed to load active downloads:', error)
       }
     }
 
@@ -151,6 +157,11 @@ export function useDownloadEvents() {
       })()
     }
 
+    /**
+     * Mark a download as failed, and open cookie setup when the error is auth-related.
+     *
+     * @param rawData Download error event payload.
+     */
     const handleError = (rawData: unknown) => {
       const data = rawData as { id?: string; error?: string }
       const id = typeof data?.id === 'string' ? data.id : ''
@@ -159,7 +170,37 @@ export function useDownloadEvents() {
       }
       const errorMessage = typeof data?.error === 'string' ? data.error : ''
       updateDownload({ id, changes: { status: 'error', error: errorMessage } })
-      toast.error(getDownloadErrorGuidance(errorMessage) ?? t('notifications.downloadFailed'))
+      const cookieFailureKind = getCookieSetupFailureKind(errorMessage)
+      const guidance = getDownloadErrorGuidance(errorMessage) ?? t('notifications.downloadFailed')
+      if (cookieFailureKind) {
+        toast.error(guidance, {
+          action: {
+            label: t('download.cookiesSetupAction'),
+            onClick: () => {
+              store.set(cookieSetupRequestAtom, {
+                downloadId: id,
+                failureKind: cookieFailureKind
+              })
+            }
+          }
+        })
+        const settings = store.get(settingsAtom)
+        const alreadyPrompted = store.get(cookieSetupAutoPromptedAtom)
+        if (
+          !(
+            alreadyPrompted ||
+            hasConfiguredCookieSettings(settings.browserForCookies, settings.cookiesPath)
+          )
+        ) {
+          store.set(cookieSetupAutoPromptedAtom, true)
+          store.set(cookieSetupRequestAtom, {
+            downloadId: id,
+            failureKind: cookieFailureKind
+          })
+        }
+      } else {
+        toast.error(guidance)
+      }
       void syncHistoryItem(id)
     }
 

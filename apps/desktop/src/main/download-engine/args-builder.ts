@@ -27,10 +27,17 @@ const toSharedSettings = (settings: AppSettings): YtDlpDownloadSettings => ({
   cookiesPath: settings.cookiesPath,
   proxy: settings.proxy,
   configPath: settings.configPath,
+  downloadSubtitles: settings.downloadSubtitles,
+  subtitleLanguages: settings.subtitleLanguages,
+  interfaceLanguage: settings.language,
   embedSubs: settings.embedSubs,
+  writeAutoSubs: settings.writeAutoSubs,
   embedThumbnail: settings.embedThumbnail,
   embedMetadata: settings.embedMetadata,
-  embedChapters: settings.embedChapters
+  embedChapters: settings.embedChapters,
+  filenameStyle: settings.filenameStyle,
+  filenameViaVidBee: settings.filenameViaVidBee,
+  shareWatermark: settings.shareWatermark
 })
 
 export const sanitizeFilenameTemplate = (template: string): string =>

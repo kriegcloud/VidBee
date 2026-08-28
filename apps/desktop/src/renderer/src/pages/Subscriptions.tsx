@@ -21,7 +21,7 @@ import {
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@renderer/components/ui/hover-card'
 import { RemoteImage } from '@renderer/components/ui/remote-image'
 import { ScrollArea, ScrollBar } from '@renderer/components/ui/scroll-area'
-import { Tabs, TabsList, TabsTrigger } from '@renderer/components/ui/tabs'
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 import { ipcServices } from '@renderer/lib/ipc'
 import { getSubscriptionStatusMeta } from '@renderer/lib/subscription-status'
@@ -44,6 +44,7 @@ import { Download, Edit, ExternalLink, Plus, Power, RefreshCw, Trash2 } from 'lu
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { logger } from '../lib/logger'
 
 type SubscriptionItemStatus = DownloadStatus | 'queued' | 'notQueued'
 
@@ -97,6 +98,7 @@ function SubscriptionTab({
   subscription,
   onRefresh,
   onRemove,
+  onSelect,
   onUpdate,
   isActive
 }: SubscriptionTabProps) {
@@ -137,12 +139,13 @@ function SubscriptionTab({
         <HoverCard closeDelay={0} openDelay={0}>
           <ContextMenuTrigger asChild>
             <HoverCardTrigger asChild>
-              <TabsTrigger
+              <button
                 className={cn(
                   'flex h-auto w-20 shrink-0 grow-0 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all hover:opacity-80',
                   isActive && 'bg-muted/45'
                 )}
-                value={subscription.id}
+                onClick={onSelect}
+                type="button"
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden transition-colors">
                   <RemoteImage
@@ -162,7 +165,7 @@ function SubscriptionTab({
                     {subscription.title || t('subscriptions.labels.unknown')}
                   </span>
                 </div>
-              </TabsTrigger>
+              </button>
             </HoverCardTrigger>
           </ContextMenuTrigger>
           <HoverCardContent className="max-w-xs space-y-1">
@@ -238,6 +241,7 @@ export function Subscriptions() {
         keywords: data.keywords,
         tags: data.tags,
         onlyDownloadLatest: data.onlyDownloadLatest,
+        autoDownload: data.autoDownload,
         downloadDirectory: data.downloadDirectory,
         namingTemplate: data.namingTemplate,
         enabled: data.enabled
@@ -251,7 +255,7 @@ export function Subscriptions() {
           updatePayload.feedUrl = resolved.feedUrl
           updatePayload.platform = resolved.platform
         } catch (error) {
-          console.error('Failed to resolve feed URL:', error)
+          logger.error('Failed to resolve feed URL:', error)
           toast.error(t('subscriptions.notifications.resolveError'))
           return
         }
@@ -261,7 +265,7 @@ export function Subscriptions() {
         await updateSubscription({ id, data: updatePayload })
         await refreshSubscription(id)
       } catch (error) {
-        console.error('Failed to update subscription:', error)
+        logger.error('Failed to update subscription:', error)
         toast.error(
           isDuplicateFeedError(error)
             ? t('subscriptions.notifications.duplicateUrl')
@@ -287,6 +291,7 @@ export function Subscriptions() {
           keywords: data.keywords?.join(', '),
           tags: data.tags?.join(', '),
           onlyDownloadLatest: data.onlyDownloadLatest,
+          autoDownload: data.autoDownload,
           downloadDirectory: data.downloadDirectory,
           namingTemplate: data.namingTemplate,
           enabled: data.enabled
@@ -294,7 +299,7 @@ export function Subscriptions() {
         toast.success(t('subscriptions.notifications.created'))
         setAddDialogOpen(false)
       } catch (error) {
-        console.error('Failed to create subscription:', error)
+        logger.error('Failed to create subscription:', error)
         toast.error(
           isDuplicateFeedError(error)
             ? t('subscriptions.notifications.duplicateUrl')
@@ -307,9 +312,9 @@ export function Subscriptions() {
 
   const handleOpenRSSHubDocs = useCallback(async () => {
     try {
-      await ipcServices.fs.openExternal(withDesktopUtm('https://docs.vidbee.org/rss'))
+      await ipcServices.fs.openExternal(withDesktopUtm('https://vidbee.org/docs/rss/'))
     } catch (error) {
-      console.error('Failed to open RSS documentation:', error)
+      logger.error('Failed to open RSS documentation:', error)
       toast.error(t('subscriptions.notifications.openLinkError'))
     }
   }, [t])
@@ -342,21 +347,19 @@ export function Subscriptions() {
       {/* Channel Tabs Header */}
       <div className="flex flex-row pr-6 pb-6 pl-6">
         <ScrollArea className="w-auto overflow-y-auto">
-          <Tabs className="w-auto" onValueChange={setSelectedTab} value={selectedTab}>
-            <TabsList className="h-auto w-auto justify-start rounded-none border-none bg-transparent p-0">
-              {/* Subscription Channel Tabs */}
-              {sortedSubscriptions.map((subscription) => (
-                <SubscriptionTab
-                  isActive={subscription.id === selectedTab}
-                  key={subscription.id}
-                  onRefresh={() => refreshSubscription(subscription.id)}
-                  onRemove={() => removeSubscription(subscription.id)}
-                  onUpdate={(data) => handleUpdateSubscription(subscription.id, data)}
-                  subscription={subscription}
-                />
-              ))}
-            </TabsList>
-          </Tabs>
+          <div className="flex h-auto w-auto justify-start">
+            {sortedSubscriptions.map((subscription) => (
+              <SubscriptionTab
+                isActive={subscription.id === selectedTab}
+                key={subscription.id}
+                onRefresh={() => refreshSubscription(subscription.id)}
+                onRemove={() => removeSubscription(subscription.id)}
+                onSelect={() => setSelectedTab(subscription.id)}
+                onUpdate={(data) => handleUpdateSubscription(subscription.id, data)}
+                subscription={subscription}
+              />
+            ))}
+          </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
@@ -435,6 +438,7 @@ interface SubscriptionTabProps {
   isActive: boolean
   onRefresh: () => Promise<void>
   onRemove: () => Promise<void>
+  onSelect: () => void
   onUpdate: (data: SubscriptionRuleUpdateForm) => Promise<void>
 }
 
@@ -482,7 +486,7 @@ function SubscriptionCard({ subscription }: { subscription: SubscriptionRule }) 
               const historyItem = await ipcServices.history.getHistoryById(downloadId)
               return { downloadId, status: historyItem?.status ?? null }
             } catch (error) {
-              console.error('Failed to fetch download history entry:', error)
+              logger.error('Failed to fetch download history entry:', error)
               return { downloadId, status: null }
             }
           })
@@ -507,7 +511,7 @@ function SubscriptionCard({ subscription }: { subscription: SubscriptionRule }) 
           return changed ? next : prev
         })
       } catch (error) {
-        console.error('Failed to resolve download history statuses:', error)
+        logger.error('Failed to resolve download history statuses:', error)
       }
     }
 
@@ -540,7 +544,7 @@ function SubscriptionCard({ subscription }: { subscription: SubscriptionRule }) 
     try {
       await ipcServices.fs.openExternal(url)
     } catch (error) {
-      console.error('Failed to open subscription item link:', error)
+      logger.error('Failed to open subscription item link:', error)
       toast.error(t('subscriptions.notifications.openLinkError'))
     }
   }
@@ -559,7 +563,7 @@ function SubscriptionCard({ subscription }: { subscription: SubscriptionRule }) 
         }
         toast.info(t('subscriptions.notifications.itemAlreadyQueued'))
       } catch (error) {
-        console.error('Failed to queue subscription item:', error)
+        logger.error('Failed to queue subscription item:', error)
         toast.error(t('subscriptions.notifications.queueError'))
       }
     },

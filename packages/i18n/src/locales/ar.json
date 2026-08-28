@@ -16,8 +16,21 @@
     "betaProgramDescription": "تلقي البناءات المبكرة والميزات القادمة قبل أي شخص آخر.",
     "betaProgramTitle": "قناة المعاينة",
     "description": "VidBee هو برنامج تنزيل مجاني ومفتوح المصدر مبني باستخدام Electron ويعمل بواسطة yt-dlp.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "النسخة المضمّنة الاحتياطية",
+        "checking": "جارٍ التحقق",
+        "installing": "جارٍ التثبيت",
+        "preparing": "جارٍ التحضير",
+        "retry-scheduled": "تمت جدولة إعادة المحاولة",
+        "unavailable": "غير متاح",
+        "up-to-date": "محدّث"
+      },
+      "title": "محرك التنزيل",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "متابعة @nexmoex"
+      "follow": "متابعة @nexmoe"
     },
     "followAuthorDescription": "ابق على اطلاع بآخر أخبار وتحديثات VidBee.",
     "followAuthorSupport": "تابع المطور على X (Twitter) للحصول على آخر التحديثات والأخبار حول VidBee.",
@@ -40,8 +53,6 @@
       "updateError": "فشل في التحقق من التحديثات: {{error}}",
       "unknownErrorFallback": "خطأ غير معروف"
     },
-    "preferencesDescription": "ضبط إعدادات التحديث دون مغادرة هذه الصفحة.",
-    "preferencesTitle": "التبديلات السريعة",
     "resources": {
       "changelog": "ملاحظات الإصدار",
       "changelogDescription": "اطلع على ما تغير في كل إصدار.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "الإبلاغ عن الأخطاء أو طلب الميزات على GitHub.",
       "xFeedback": "تويتر",
-      "xFeedbackDescription": "شارك الملاحظات أو الاقتراحات على X بذكر @nexmoex.",
+      "xFeedbackDescription": "شارك الملاحظات أو الاقتراحات على X بذكر @nexmoe.",
       "discord": "Discord",
       "discordDescription": "انضم إلى مجتمع Discord للنقاش والدعم.",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "تحميل الفيديوهات والصوتيات من مئات المواقع",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "هل تريد إنهاء VidBee؟",
+      "message": "هناك {{count}} مهمة قيد التنفيذ. سيؤدي الإنهاء إلى مقاطعتها.",
+      "messagePlural": "هناك {{count}} مهام قيد التنفيذ. سيؤدي الإنهاء إلى مقاطعتها.",
+      "quit": "إنهاء",
+      "cancel": "إلغاء"
+    }
   },
   "download": {
     "active": "نشط",
@@ -117,10 +135,15 @@
     "back": "رجوع",
     "cancel": "إلغاء",
     "cancelled": "ملغي",
+    "pause": "إيقاف مؤقت",
+    "paused": "متوقف مؤقتًا",
+    "resume": "استئناف",
     "clearCompleted": "مسح المكتملة",
     "clearDownloads": "مسح التحميلات",
     "completed": "مكتمل",
     "downloadAudio": "تحميل الصوت",
+    "dialogSubtitle": "اختر التنسيق ومجلد الحفظ",
+    "dialogTitle": "تنزيل",
     "downloadBtn": "تحميل",
     "downloadPending": "قيد الانتظار",
     "downloadQueue": "قائمة انتظار التحميل",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "انقر للصق رابط قائمة التشغيل من الحافظة [Ctrl + V]",
     "pasteUrl": "انقر للصق رابط أو معرف الفيديو [Ctrl + V]",
     "pasteUrlButton": "لصق الرابط",
+    "ingestDropUrl": "أفلت للتنزيل",
+    "ingestDropMedia": "أفلت للتدوين",
+    "ingestDropMixed": "أفلت للتنزيل والتدوين",
+    "ingestDropDescription": "الروابط تبدأ التنزيل. ملفات الصوت والفيديو تبدأ التدوين.",
+    "ingestEmptyHint": "الصق رابطًا للتنزيل، أو أفلت صوتًا أو فيديو للتدوين.",
     "preparing": "جاري التحضير...",
     "processing": "جاري المعالجة",
     "progress": "التقدم",
@@ -192,6 +220,9 @@
     "video": "فيديو",
     "videoInfo": "معلومات الفيديو",
     "videoInfoUpdated": "تم تحديث معلومات الفيديو",
+    "frameRate": "معدل الإطارات",
+    "codecAuto": "تلقائي",
+    "fpsHighest": "الأعلى",
     "metadata": {
       "source": "المصدر",
       "playlist": "قائمة التشغيل",
@@ -219,7 +250,22 @@
       "subscription": "الاشتراك"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "إعداد ملفات تعريف الارتباط",
+    "cookiesSetupDialogTitle": "إعداد ملفات تعريف الارتباط",
+    "cookiesSetupNeeded": "يحتاج هذا التنزيل إلى جلسة مسجّل الدخول. أعد ملفات تعريف الارتباط ثم أعد المحاولة.",
+    "cookiesSetupLocked": "Chrome يقفل قاعدة ملفات تعريف الارتباط. استخدم Firefox أو استورد ملفًا أو أغلق Chrome بالكامل ثم أعد المحاولة.",
+    "cookiesSetupMacFiles": "نظام macOS يمنع VidBee من قراءة ملفات تعريف الارتباط لهذا المتصفح. افتح إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات، واسمح لـ VidBee بالوصول إلى هذا المتصفح ثم أعد المحاولة. إذا كنت قد سمحت بذلك بالفعل، أغلق VidBee بالكامل ثم افتحه مرة أخرى.",
+    "cookiesSetupOpenFilesSettings": "فتح إعدادات الملفات والمجلدات",
+    "cookiesSetupDecrypt": "يتعذر على Windows فك تشفير ملفات تعريف ارتباط Chrome. استخدم Firefox أو استورد ملفًا.",
+    "cookiesSetupFileInvalid": "ملف ملفات تعريف الارتباط المحدد ليس تصديرًا صالحًا. صدّر cookies.txt ثم أعد المحاولة.",
+    "cookiesSetupKeyring": "لا يستطيع هذا الإصدار من Linux قراءة ملفات تعريف ارتباط Chrome. استخدم Firefox أو استورد ملفًا.",
+    "cookiesSetupStale": "يبدو أن ملفات تعريف الارتباط الحالية منتهية أو محظورة. حدّث تسجيل الدخول ثم أعد المحاولة.",
+    "cookiesSetupRetry": "إعادة التنزيل",
+    "cookiesSetupDone": "تم",
+    "pause": "إيقاف مؤقت",
+    "paused": "متوقف مؤقتاً",
+    "resume": "استئناف"
   },
   "error": {
     "title": "حدث خطأ ما",
@@ -319,6 +365,7 @@
     "download": "تحميل",
     "playlist": "تحميل قائمة التشغيل",
     "rss": "RSS",
+    "transcripts": "النصوص",
     "subscriptions": "الاشتراكات",
     "preferences": "التفضيلات",
     "supportedSites": "المواقع المدعومة",
@@ -342,7 +389,12 @@
     "removeFailed": "فشل في إزالة العنصر",
     "settingsSaved": "تم حفظ الإعدادات",
     "urlCopied": "تم نسخ الرابط إلى الحافظة",
-    "videoCopied": "تم نسخ الفيديو إلى الحافظة"
+    "videoCopied": "تم نسخ الفيديو إلى الحافظة",
+    "transcriptionStarted": "بدأ التدوين",
+    "transcriptionStartedMany": "بدأ تدوين {{count}} ملفات",
+    "transcriptionStartFailed": "تعذر بدء التدوين",
+    "unsupportedDrop": "الصق رابطًا، أو أفلت ملف صوت أو فيديو",
+    "localMediaDesktopOnly": "يمكن تدوين الملفات المحلية في تطبيق سطح المكتب"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} ملفات",
@@ -429,9 +481,9 @@
     "audio": "تفضيلات الصوت",
     "browserForCookies": "اختر المتصفح لاستخدام ملفات تعريف الارتباط منه",
     "browserForCookiesDescription": "المتصفح لاستخراج ملفات تعريف الارتباط منه للمصادقة",
-    "browserForCookiesWindowsNote": "في Windows، يتم دعم ملفات تعريف الارتباط من Firefox فقط. للمتصفحات الأخرى، يرجى إعداد ملف ملفات تعريف الارتباط يدويًا.",
+    "browserForCookiesWindowsNote": "في Windows، يتم دعم ملفات تعريف الارتباط من Firefox فقط. للمتصفحات الأخرى، يرجى إعداد ملف ملفات تعريف الارتباط يدويًا",
     "browserForCookiesProfile": "اسم الملف الشخصي أو المسار",
-    "browserForCookiesProfileDescription": "مسار الملف الشخصي للمتصفح المحدد أعلاه. يُملأ تلقائيًا عند الإمكان.",
+    "browserForCookiesProfileDescription": "مسار الملف الشخصي للمتصفح المحدد أعلاه. يُملأ تلقائيًا عند الإمكان",
     "browserForCookiesProfilePlaceholder": "اسم الملف الشخصي أو المسار الكامل (اختياري)",
     "browserForCookiesProfileInvalid": "مسار الملف الشخصي غير صالح. اختر مجلد الملف الشخصي للمتصفح المحدد.",
     "browserForCookiesProfileInvalidPath": "هذا المجلد غير موجود. اختر مجلد ملف شخصي موجود.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "اختر متصفحك أعلاه لإعادة استخدام جلسته الموقعة تلقائياً.",
     "cookiesHelpFile": "قم بتصدير ملف ملفات تعريف الارتباط Netscape (راجع الأسئلة الشائعة لـ yt-dlp) واختره هنا عند الحاجة.",
     "cookiesGuideTitle": "هل تحتاج إلى شرح؟",
-    "cookiesGuideDescription": "اطّلع على دليل خطوة بخطوة لاستخدام ملفات تعريف الارتباط في VidBee.",
+    "cookiesGuideDescription": "اطّلع على دليل خطوة بخطوة لاستخدام ملفات تعريف الارتباط في VidBee",
     "cookiesGuideLink": "فتح دليل Cookies",
     "openLinkError": "فشل في فتح الرابط",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "اختر لغتك المفضلة لواجهة التطبيق",
     "light": "فاتح",
     "hideDockIcon": "إخفاء أيقونة Dock عند الإغلاق",
-    "hideDockIconDescription": "إخفاء أيقونة Dock تلقائيًا عند إغلاق النافذة. استخدم شريط القائمة أو أيقونة الدرج لإعادة الفتح.",
+    "hideDockIconDescription": "إخفاء أيقونة Dock تلقائيًا عند إغلاق النافذة. استخدم شريط القائمة أو أيقونة الدرج لإعادة الفتح",
     "launchAtLogin": "بدء التشغيل عند تسجيل الدخول",
-    "launchAtLoginDescription": "فتح VidBee تلقائياً بعد تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك.",
-    "launchAtLoginUnsupported": "البدء التلقائي متاح فقط على macOS و Windows.",
+    "launchAtLoginDescription": "فتح VidBee تلقائياً بعد تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك",
+    "launchAtLoginUnsupported": "البدء التلقائي متاح فقط على macOS و Windows",
     "enableAnalytics": "مساعدة في تحسين VidBee",
-    "enableAnalyticsDescription": "مشاركة بيانات الاستخدام المجهولة لمساعدتنا في فهم كيفية استخدام التطبيق وأولويات التحسينات.",
+    "enableAnalyticsDescription": "مشاركة بيانات الاستخدام المجهولة لمساعدتنا في فهم كيفية استخدام التطبيق وأولويات التحسينات",
     "enableDownloadNotifications": "إشعارات التنزيل",
-    "enableDownloadNotificationsDescription": "اعرض إشعار نظام عند اكتمال التنزيل.",
+    "enableDownloadNotificationsDescription": "اعرض إشعار نظام عند اكتمال التنزيل",
     "downloadWithoutChannelSubfolders": "احفظ الفيديوهات بدون مجلدات القنوات الفرعية",
-    "downloadWithoutChannelSubfoldersDescription": "احفظ تنزيلات الفيديو الفردية مباشرة داخل مجلد Videos بدلاً من إنشاء مجلد فرعي باسم القناة.",
+    "downloadWithoutChannelSubfoldersDescription": "احفظ تنزيلات الفيديو الفردية مباشرة داخل مجلد Videos بدلاً من إنشاء مجلد فرعي باسم القناة",
+    "downloadSubtitles": "تنزيل الترجمة",
+    "downloadSubtitlesDescription": "نزّل الترجمة باللغات المحددة فقط عند توفرها",
+    "subtitleLanguages": "لغات الترجمة",
+    "subtitleLanguagesDescription": "اختر لغات الترجمة التي ينبغي أن يطلبها VidBee لكل فيديو",
+    "subtitleLanguageSearch": "البحث في لغات الترجمة",
+    "subtitleLanguageEmpty": "لا توجد لغات مطابقة",
+    "subtitleLanguageLimit": "اختر ما يصل إلى {{count}} لغات لتقليل قيود معدل الطلبات على المنصة",
+    "followInterfaceLanguage": "اتباع لغة الواجهة ({{language}})",
     "embedChapters": "تضمين الفصول",
     "embedChaptersDescription": "إضافة علامات الفصول إلى الملف عند توفرها",
     "embedMetadata": "تضمين البيانات الوصفية",
     "embedMetadataDescription": "كتابة العنوان والفنان وبيانات وصفية أخرى عند توفرها",
     "embedSubs": "تضمين الترجمات",
-    "embedSubsDescription": "تضمين الترجمات داخل ملف الفيديو (mp4، webm، mkv)",
+    "embedSubsDescription": "تضمين الترجمات المحددة داخل ملف الفيديو (mp4، webm، mkv)",
+    "writeAutoSubs": "استخدام الترجمة التي تم إنشاؤها تلقائيًا",
+    "writeAutoSubsDescription": "استخدم الترجمة التلقائية عندما لا تتوفر ترجمة المنشئ باللغات المحددة",
     "embedThumbnail": "تضمين الصورة المصغرة",
     "embedThumbnailDescription": "إضافة الصورة المصغرة كغلاف",
+    "filenameStyle": "نمط اسم الملف",
+    "filenameStyleDescription": "اختر كيف يسمّي VidBee ملفات الفيديو والصوت المحفوظة",
+    "filenameStyleNote": "يُستخدم للملفات التي يحفظها VidBee. قوالب الاشتراكات أو قوائم التشغيل المخصصة تبقى لها الأولوية",
+    "filenameStyleOptions": {
+      "basic": "أساسي",
+      "classic": "كلاسيكي",
+      "nerdy": "تقني",
+      "pretty": "جميل"
+    },
+    "filenameStylePreviewAudio": "معاينة ملف الصوت",
+    "filenameStylePreviewVideo": "معاينة ملف الفيديو",
+    "filenameViaVidBee": "إضافة via VidBee",
+    "filenameViaVidBeeDescription": "يُضيف via VidBee تلقائيًا إلى أسماء ملفات الفيديو والصوت المحفوظة",
+    "metadataTab": "البيانات الوصفية",
+    "navGroup": {
+      "app": "التطبيق",
+      "download": "التنزيل",
+      "system": "النظام",
+      "ai": "الذكاء الاصطناعي"
+    },
     "shareWatermark": "علامة مائية للمشاركة",
     "shareWatermarkDescription": "أضف علامة مائية تتضمن العنوان الأصلي والمؤلف وعلامة VidBee التجارية",
     "maxConcurrentDownloads": "العدد الأقصى للتحميلات النشطة",
@@ -502,7 +584,7 @@
     "oneClickDownload": "تحميل بنقرة واحدة",
     "oneClickDownloadDescription": "تفعيل التحميل بنقرة واحدة بالإعدادات الافتراضية",
     "oneClickDownloadType": "نوع التحميل الافتراضي",
-    "oneClickDownloadTypeDescription": "اختر نوع التحميل الافتراضي للتحميلات بنقرة واحدة. تستخدم الجودة الإعداد المسبق أدناه.",
+    "oneClickDownloadTypeDescription": "اختر نوع التحميل الافتراضي للتحميلات بنقرة واحدة. تستخدم الجودة الإعداد المسبق أدناه",
     "oneClickQuality": "الجودة المفضلة",
     "oneClickQualityDescription": "اختر الإعداد المسبق للجودة المستخدم للتحميلات بنقرة واحدة",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "الوكيل",
     "proxyDescription": "خادم الوكيل لطلبات الشبكة",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "مصدر التنزيل",
+    "downloadMirrorDescription": "استخدم مرايا الصين (ModelScope ووكلاء GitHub) لتنزيل yt-dlp وffmpeg وNode ونماذج النسخ عندما يكون GitHub بطيئًا أو محظورًا",
+    "downloadMirrorAuto": "تلقائي",
+    "downloadMirrorChina": "الصين (ModelScope)",
+    "downloadMirrorGlobal": "رسمي",
     "rememberLastAudioLanguage": "تذكر آخر لغة صوت",
-    "rememberLastAudioLanguageDescription": "استخدم آخر لغة صوت اخترتها كافتراضي لتنزيلات الصوت القادمة.",
+    "rememberLastAudioLanguageDescription": "استخدم آخر لغة صوت اخترتها كافتراضي لتنزيلات الصوت القادمة",
     "selectConfigFile": "اختر ملف التكوين",
     "selectPath": "اختر",
     "showMoreFormats": "إظهار المزيد من خيارات التنسيق",
     "showMoreFormatsDescription": "عرض خيارات التنسيق الإضافية في الواجهة",
     "subscriptionDefaults": {
-      "filenameDescription": "النمط المستخدم عندما لا يتجاوز الاشتراك اسم ملفه."
+      "filenameDescription": "النمط المستخدم عندما لا يتجاوز الاشتراك اسم ملفه"
     },
     "system": "النظام",
     "theme": "المظهر",
@@ -535,13 +622,243 @@
     },
     "video": "تفضيلات الفيديو",
     "oneClickContainer": "تنسيق الحاوية",
-    "oneClickContainerDescription": "اختر تنسيق الحاوية لتنزيلات النقرة الواحدة. يفضل الوضع التلقائي MP4 ويعود إلى MKV عند عدم توافق الترميز.",
+    "oneClickContainerDescription": "اختر تنسيق الحاوية لتنزيلات النقرة الواحدة. يفضل الوضع التلقائي MP4 ويعود إلى MKV عند عدم توافق الترميز",
     "oneClickContainerOptions": {
       "auto": "تلقائي (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "أصلي (افتراضي yt-dlp)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "الحد الأقصى لعمليات التفريغ النشطة",
+    "maxConcurrentTranscriptionsDescription": "عدد عمليات التفريغ التي يمكن تشغيلها في الوقت نفسه. كل مهمة تستخدم هذا الجهاز. خفض القيمة لا يوقف المهام الجارية",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "جارٍ تنزيل {{count}} من النماذج",
+    "asrDelete": "حذف",
+    "asrDeleteError": "تعذر حذف نموذج الذكاء الاصطناعي.",
+    "asrCancel": "إلغاء",
+    "asrCancelError": "تعذر إلغاء هذا التنزيل.",
+    "asrDownloadError": "تعذر تنزيل نموذج الذكاء الاصطناعي.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "أسرع بداية متعددة اللغات. مناسبة للحواسيب الضعيفة",
+        "size": "~75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "أفضل قليلًا من Tiny وما زالت خفيفة",
+        "size": "~150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "للحواسيب العادية. دقة جيدة متعددة اللغات",
+        "size": "~250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "سريعة للصينية واليابانية والكورية والإنجليزية بما فيها الكانتونية",
+        "size": "~230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "أفضل دقة للصينية. يحتاج حاسوبًا قويًا",
+        "size": "~840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "دقة أفضل متعددة اللغات. يحتاج ذاكرة أكبر",
+        "size": "~770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "قريب من large-v3 وأسرع بكثير",
+        "size": "~810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "حزمة أحدث للصينية واليابانية والكورية والإنجليزية. ما زالت خفيفة",
+        "size": "~230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "إنجليزي قوي. سريع على الحواسيب العادية",
+        "size": "~650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "Parakeet إنجليزي أحدث. أفضل خيار للإنجليزية",
+        "size": "~650 MB"
+      }
+    },
+    "asrDownload": "تنزيل",
+    "asrDownloadAndUse": "تنزيل واستخدام",
+    "asrDownloaded": "تم التنزيل",
+    "asrRecommended": "موصى بها",
+    "asrRecommendedFor": "موصى به لـ {{os}} · {{gpu}} · {{ram}} · {{cores}} أنوية · {{language}}",
+    "asrAllModels": "كل النماذج",
+    "asrBestMatch": "الأنسب",
+    "asrMachine": {
+      "low": "حاسوب ضعيف",
+      "mid": "حاسوب عادي",
+      "high": "حاسوب قوي"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — متعدد اللغات",
+      "sense-voice": "SenseVoice — الصينية واليابانية والكورية والإنجليزية",
+      "qwen3": "Qwen3-ASR — أعلى دقة للصينية",
+      "parakeet": "Parakeet — الإنجليزية"
+    },
+    "asrLanguages": {
+      "multi": "متعدد اللغات"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "هذا النظام"
+    },
+    "asrGpu": {
+      "apple": "معالج Apple",
+      "nvidia": "بطاقة NVIDIA",
+      "amd": "بطاقة AMD",
+      "intel": "رسوميات Intel",
+      "unknown": "بطاقة غير معروفة"
+    },
+    "providersTab": "المزوّدون",
+    "promptsTab": "الأوامر",
+    "transcriptionTab": "التفريغ",
+    "ai": {
+      "allServices": "كل الخدمات",
+      "configured": "المُعدّة",
+      "useProvider": "استخدام",
+      "inUse": "قيد الاستخدام",
+      "addProvider": "إضافة {{name}}",
+      "editProvider": "تعديل المزوّد",
+      "deleteProvider": "إزالة المزوّد",
+      "edit": "تعديل",
+      "apiKey": "مفتاح API",
+      "apiKeyKept": "اتركه فارغًا للإبقاء على المفتاح المحفوظ",
+      "baseUrl": "Base URL",
+      "modelId": "معرّف النموذج",
+      "modelIdPlaceholder": "model-id",
+      "name": "الاسم",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "saveError": "تعذر حفظ إعدادات الذكاء الاصطناعي.",
+      "providerDialogDescription": "تبقى مفاتيح API على هذا الجهاز. المزوّدون الجاهزون لديهم عنوان أساسي مسبقًا",
+      "testConnection": "اختبار الاتصال",
+      "testingConnection": "جارٍ الاختبار…",
+      "testSuccess": "تم الاتصال. الرد: {{reply}}",
+      "testFailed": "تعذر الوصول إلى هذا النموذج.",
+      "addPrompt": "إضافة أمر",
+      "editPrompt": "تعديل الأمر",
+      "deletePrompt": "حذف الأمر",
+      "promptTitle": "العنوان",
+      "promptIcon": "الأيقونة",
+      "promptBody": "الأمر",
+      "promptDialogDescription": "يُشغَّل هذا الأمر على النص المفرَّغ باستخدام المزوّد المفعّل",
+      "restorePresets": "استعادة الافتراضي",
+      "testTitle": "اختبار بنص تفريغ عيّنة",
+      "testRun": "تشغيل",
+      "testStop": "إيقاف",
+      "testOutput": "الناتج",
+      "testPlaceholder": "سيظهر ناتج الأمر هنا",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "نقاط"
+        },
+        "improve-grammar": {
+          "title": "تحسين النحو وعلامات الترقيم"
+        },
+        "generate-faq": {
+          "title": "إنشاء أسئلة شائعة"
+        },
+        "extract-statistics": {
+          "title": "استخراج الإحصاءات"
+        },
+        "paraphrase-content": {
+          "title": "إعادة صياغة المحتوى"
+        },
+        "create-mindmap": {
+          "title": "إنشاء خريطة ذهنية"
+        },
+        "translate": {
+          "title": "ترجمة"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "غير معدّ",
+      "statusNotConfiguredHint": "ستفشل التنزيلات التي تحتاج حسابًا حتى تكمل هذا الإعداد",
+      "statusUsingBrowser": "يستخدم تسجيل دخول {{browser}}",
+      "statusUsingFile": "يستخدم ملف ملفات تعريف الارتباط",
+      "statusOk": "جاهز",
+      "statusExpired": "منتهٍ",
+      "statusEmpty": "لا يوجد تسجيل دخول",
+      "statusInvalid": "يحتاج إلى انتباه",
+      "healthOkBrowser": "يستطيع VidBee قراءة ملفات تعريف الارتباط من {{browser}}. ابقَ مسجّل الدخول إلى الموقع هناك",
+      "healthOkFile": "تم العثور على ملفات تعريف ارتباط تسجيل الدخول لـ {{sites}}",
+      "healthOkFileGeneric": "يبدو ملف ملفات تعريف الارتباط هذا صالحًا",
+      "healthExpired": "انتهت صلاحية ملفات تعريف الارتباط هذه. سجّل الدخول مجددًا واستورد ملفًا جديدًا",
+      "healthEmpty": "لا يحتوي هذا الملف على ملفات تعريف ارتباط تسجيل الدخول للمواقع المدعومة. صدّره أثناء تسجيل الدخول ثم أعد المحاولة",
+      "healthInvalidFile": "ملف ملفات تعريف الارتباط مفقود أو ليس تصديرًا صالحًا",
+      "healthInvalidBrowser": "لا يستطيع VidBee قراءة ملفات تعريف الارتباط من ملف تعريف هذا المتصفح",
+      "healthMacosFilesPermission": "نظام macOS يمنع الوصول إلى ملفات تعريف الارتباط. اسمح لـ VidBee بالوصول إلى هذا المتصفح من إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات ثم تحقق مرة أخرى.",
+      "healthUnsupportedBrowser": "لا يمكن استخدام هذا المتصفح لملفات تعريف الارتباط على نظامك",
+      "sitesLabel": "المواقع: {{sites}}",
+      "recommendedTitle": "موصى به",
+      "recommendedUseBrowser": "استخدم {{browser}}",
+      "recommendedUseBrowserHint": "أعد استخدام الحساب الذي سجّلت الدخول إليه بالفعل في {{browser}}",
+      "recommendedImportFile": "استيراد ملف ملفات تعريف الارتباط",
+      "recommendedImportFileWindowsHint": "على Windows لا يستطيع Chrome وEdge مشاركة ملفات تعريف الارتباط مع VidBee. صدّر ملفًا من المتصفح بدلًا من ذلك",
+      "recommendedImportFileHint": "صدّر ملفات تعريف الارتباط من متصفحك ثم اختر الملف هنا",
+      "recommendedFirefoxHint": "على Windows، Firefox هو المتصفح الوحيد الذي يستطيع VidBee قراءته مباشرة",
+      "useThisBrowser": "استخدم {{browser}}",
+      "importFile": "اختر ملف ملفات تعريف الارتباط",
+      "clearSetup": "مسح ملفات تعريف الارتباط",
+      "checkStatus": "تحقق مرة أخرى",
+      "otherOptions": "خيارات أخرى",
+      "hideOtherOptions": "إخفاء الخيارات الأخرى",
+      "chooseBrowser": "اختر متصفحًا آخر",
+      "advancedProfile": "مسار ملف التعريف",
+      "windowsUnsupportedCurrent": "لا يمكن استخدام {{browser}} لملفات تعريف الارتباط على Windows. استخدم Firefox أو استورد ملفًا.",
+      "fileExportStep1": "ثبّت إضافة لتصدير ملفات تعريف الارتباط مثل Get cookies.txt LOCALLY",
+      "fileExportStep2": "سجّل الدخول إلى الموقع ثم صدّر ملف ملفات تعريف الارتباط",
+      "fileExportStep3": "اختر ذلك الملف هنا",
+      "fileExportExtension": "إضافة Chrome / Edge",
+      "checking": "جارٍ التحقق من ملفات تعريف الارتباط…",
+      "applied": "تم تحديث ملفات تعريف الارتباط",
+      "profileMissingDb": "لا يحتوي ملف تعريف Firefox هذا على قاعدة ملفات تعريف الارتباط. افتح Firefox مرة ثم أعد المحاولة."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "علامات تلقائية",
       "customDirectory": "مجلد مخصص",
       "namingTemplate": "قالب اسم ملف مخصص (الملف فقط)",
+      "autoDownload": "تنزيل تلقائي",
       "onlyLatest": "تحميل أحدث فيديو فقط",
       "onlyLatestDescription": "تجاهل عناصر المتراكمة وجلب أحدث تحميل من هذه التغذية فقط.",
       "enabled": "مفعل",
@@ -655,6 +973,18 @@
       "hint": "ليس لديك رابط تغذية RSS؟ استخدم RSSHub لإنشاء تغذيات RSS لـ YouTube و Twitter والآلاف من المنصات الأخرى."
     }
   },
+  "kernelPreparation": {
+    "copying": "جارٍ نسخ محرك التنزيل…",
+    "description": "يقوم VidBee بإعداد محرك التنزيل. لن يستغرق ذلك سوى لحظات.",
+    "errorDescription": "تعذّر على VidBee إعداد محرك تنزيل يعمل. تحقق من إمكانية الوصول إلى التخزين المحلي، ثم حاول مجددًا.",
+    "errorTitle": "محرك التنزيل غير متاح",
+    "finalizing": "جارٍ إنهاء الإعداد…",
+    "progressLabel": "تقدّم إعداد محرك التنزيل",
+    "retry": "حاول مجددًا",
+    "retrying": "جارٍ المحاولة مجددًا…",
+    "title": "جارٍ إعداد VidBee",
+    "validating": "جارٍ التحقق من محرك التنزيل…"
+  },
   "sites": {
     "homeInlineDescription": "يدعم {{sites}} والمزيد.",
     "moreDescription": "يتم تحديث قائمة yt-dlp الكاملة باستمرار من قبل المجتمع.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "المنصات الرئيسية",
     "viewAll": "عرض جميع المواقع المدعومة"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "جارٍ تجهيز نماذج التفريغ النصي…",
+    "preparingSpeakerModels": "جارٍ تجهيز نماذج المتحدثين…",
+    "modelsProgressLabel": "تقدم تنزيل نماذج التفريغ النصي",
+    "view": "View transcript",
+    "sourceCaptions": "ترجمات الفيديو",
+    "sourceAi": "نص بالذكاء الاصطناعي",
+    "sourceSwitch": "مصدر النص",
+    "sourceCaptionNamed": "ترجمات {{language}}",
+    "sourceCaptionAutoNamed": "ترجمات تلقائية {{language}}",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "توقفت عملية التفريغ قبل اكتمالها. يمكنك إعادة المحاولة.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "إيقاف",
+    "stopFailed": "تعذر إيقاف التفريغ.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "جارٍ تجهيز الصوت",
+    "identifyingSpeakers": "جارٍ تحديد المتحدثين",
+    "back": "العودة إلى النصوص",
+    "library": {
+      "empty": "لا توجد نصوص بعد",
+      "emptyHint": "اختر ملف صوت أو فيديو محليًا، أو حوّل تنزيلًا مكتملًا إلى نص.",
+      "addMedia": "إضافة صوت أو فيديو",
+      "goToDownloads": "الذهاب إلى التنزيلات",
+      "untitled": "وسائط بلا عنوان",
+      "previewPending": "سيظهر النص هنا أثناء إنشائه.",
+      "queued": "في الانتظار",
+      "processing": "قيد المعالجة",
+      "retrySoon": "ستُعاد المحاولة قريبًا",
+      "cancelled": "أُلغي",
+      "open": "فتح نص {{title}}",
+      "dropDescription": "أفلت أو الصق ملفات صوت أو فيديو لتحويلها إلى نص.",
+      "experimentalBadge": "تجريبي",
+      "experimentalHint": "قد تُدمج في التنزيلات لاحقًا."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "نسخ النص",
+    "copied": "تم نسخ النص",
+    "copyFailed": "تعذر نسخ النص.",
+    "captionSelect": "النص المحدد",
+    "captionSelectClear": "مسح التحديد",
+    "export": {
+      "action": "تصدير",
+      "preview": "معاينة التصدير",
+      "description": "عاين النص ثم انسخه أو احفظه كملف نصي.",
+      "styleLabel": "النمط",
+      "style": {
+        "transcript": "نص",
+        "subtitles": "ترجمة",
+        "segments": "مقاطع",
+        "whisper": "Whisper",
+        "video": "فيديو + ترجمة"
+      },
+      "formatLabel": "التنسيق",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "الترميز",
+      "encode": {
+        "soft": "دمج",
+        "hard": "حرق"
+      },
+      "softHint": "دمج مسار ترجمة منفصل. يمكن تشغيل الترجمة أو إيقافها في المشغّل. سريع دون فقدان الجودة.",
+      "hardHint": "حرق الترجمة في الصورة. يُعاد ترميز الفيديو ولا يمكن إيقاف الترجمة.",
+      "noMedia": "ملف الفيديو المصدر غير موجود، لذا لا يمكن تصدير فيديو.",
+      "audioOnly": "هذا الملف صوتي فقط. صدّر نصًا بدلًا من ذلك.",
+      "videoSaved": "تم تصدير الفيديو",
+      "videoSaveFailed": "تعذّر تصدير الفيديو.",
+      "exporting": "جارٍ التصدير…",
+      "cancelExport": "إلغاء التصدير",
+      "cancelled": "أُلغي التصدير",
+      "progress": "{{percent}}%",
+      "options": "خيارات",
+      "grouping": "التجميع",
+      "groupingValue": {
+        "none": "بدون",
+        "words": "كلمات",
+        "sentences": "جمل"
+      },
+      "showTimestamp": "إظهار الطابع الزمني",
+      "close": "إغلاق",
+      "copy": "نسخ",
+      "copied": "تم النسخ إلى الحافظة",
+      "copyFailed": "تعذر نسخ معاينة التصدير.",
+      "saved": "تم تصدير النص",
+      "saveFailed": "تعذر تصدير النص.",
+      "empty": "لا يوجد محتوى للتصدير بعد."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "تغيير حجم لوحة النص",
+    "unknownSpeaker": "متحدث غير معروف",
+    "speakers": "المتحدثون ({{count}})",
+    "info": {
+      "tab": "معلومات",
+      "channel": "القناة",
+      "duration": "المدة",
+      "file": "الملف",
+      "fileSize": "حجم الملف",
+      "url": "رابط المصدر",
+      "source": "المصدر",
+      "model": "النموذج",
+      "language": "اللغة",
+      "speakers": "المتحدثون",
+      "segments": "المقاطع",
+      "createdAt": "تاريخ التحويل",
+      "empty": "لا توجد تفاصيل بعد.",
+      "openUrl": "فتح رابط المصدر"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "الانتقال إلى {{name}}",
+    "seekAt": "الانتقال إلى {{time}}",
+    "searchPlaceholder": "ابحث في النص",
+    "searchMatches": "{{count}} نتيجة",
+    "searchNoMatches": "لا توجد نتائج",
+    "searchNext": "التالي",
+    "searchPrevious": "السابق",
+    "searchJumpTo": "الانتقال إلى هذا التعليق",
+    "collapsePanel": "طي النص",
+    "expandPanel": "توسيع النص",
+    "player": {
+      "play": "تشغيل",
+      "pause": "إيقاف مؤقت",
+      "seek": "التنقل",
+      "volume": "الصوت",
+      "mute": "كتم الصوت",
+      "unmute": "إلغاء الكتم",
+      "playbackRate": "سرعة التشغيل",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "جارٍ تجهيز الملف للتشغيل…",
+      "unavailable": "تعذر تجهيز هذا الملف للتشغيل داخل الصفحة.",
+      "failedTitle": "لا يمكن تشغيل هذا الفيديو هنا",
+      "failedAudioTitle": "لا يمكن تشغيل هذا الصوت هنا",
+      "failedDetail": "ما زال بإمكانك قراءة النص.",
+      "retry": "حاول مرة أخرى",
+      "error": "فشل التشغيل: {{message}}",
+      "captionsShow": "إظهار الترجمة",
+      "captionsHide": "إخفاء الترجمة",
+      "skipBack": "رجوع 15 ثانية",
+      "skipForward": "تقديم 15 ثانية",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "ملء الشاشة",
+      "fullscreenExit": "الخروج من ملء الشاشة",
+      "resumed": "استُؤنف من {{time}}",
+      "startOver": "البدء من جديد",
+      "nowPlaying": "قيد التشغيل",
+      "closeBar": "إغلاق المشغّل",
+      "openTranscript": "العودة إلى النص"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "استُخدم بالفعل أعلى نموذج جودة. جرّب ضبط عدد المتحدثين إذا اختلطت التسميات. قد تربك الموسيقى الخلفية والكلام المتداخل المتحدثين.",
+    "speakerCount": {
+      "adjust": "ضبط المتحدثين",
+      "auto": "تلقائي (اكتشاف)",
+      "one": "متحدث واحد",
+      "count": "{{count}} متحدثين",
+      "apply": "أعد التفريغ",
+      "detail": "سنعيد التفريغ بهذا العدد من المتحدثين. التلقائي هو الافتراضي. يمكنك مغادرة الصفحة. يُحفظ التفريغ الحالي في السجل."
+    },
+    "promptMenu": "كل المطالبات",
+    "promptStop": "إيقاف",
+    "promptRerun": "تشغيل مجددًا",
+    "promptCopy": "نسخ",
+    "promptShare": "مشاركة صورة",
+    "promptShareTitle": "مشاركة صورة",
+    "promptShareDownload": "تنزيل",
+    "promptShareNative": "مشاركة",
+    "promptSharing": "جارٍ تجهيز الصورة…",
+    "promptShared": "تم نسخ صورة المشاركة",
+    "promptShareSaved": "تم حفظ صورة المشاركة",
+    "promptShareFailed": "تعذر تجهيز صورة المشاركة.",
+    "promptShareSaveFailed": "تعذر حفظ صورة المشاركة.",
+    "promptShareNativeFailed": "تعذر فتح قائمة المشاركة.",
+    "promptShareFooter": "صنع باستخدام VidBee",
+    "promptShareTagline": "مفتوح المصدر. حمّل فيديو. اسأل الذكاء الاصطناعي.",
+    "captionShareSaid": "{{name}} قال",
+    "promptOutput": "نتيجة المطالبة",
+    "promptScrollToEnd": "الانتقال إلى الأحدث",
+    "promptCopied": "تم النسخ",
+    "promptNoProvider": "اضبط مزوّد ذكاء اصطناعي في الإعدادات لتشغيل هذا الأمر.",
+    "promptOpenSettings": "فتح إعدادات المزوّد",
+    "promptEmpty": "سيظهر الناتج هنا.",
+    "promptRunning": "جارٍ الكتابة…",
+    "promptThinking": "التفكير",
+    "promptThinkingFor": "يفكّر منذ {{seconds}} ثانية",
+    "promptThoughtFor": "فكّر لمدة {{seconds}} ثانية",
+    "promptAborted": "تم الإيقاف",
+    "promptNoTranscript": "يلزم وجود نص مفرَّغ قبل تشغيل هذا الأمر.",
+    "promptTryAgain": "حاول مرة أخرى",
+    "promptLoading": "جارٍ تحميل إعدادات الذكاء الاصطناعي…",
+    "promptGuide": {
+      "noProvider": "لا يوجد مزوّد ذكاء اصطناعي مفعّل، لذلك لا يمكن تشغيل هذا الأمر.",
+      "missingApiKey": "المزوّد المفعّل بلا مفتاح API.",
+      "missingModel": "المزوّد المفعّل بلا معرّف نموذج.",
+      "unknownPrompt": "هذا الأمر لم يعد متاحًا.",
+      "emptyTranscript": "يحتاج هذا الأمر إلى نص مفرَّغ جاهز.",
+      "auth": "رفض المزوّد الطلب. مفتاح API أو الحساب غير صالح على الأرجح.",
+      "network": "تعذر الوصول إلى المزوّد.",
+      "emptyOutput": "أنهى المزوّد الطلب دون إرجاع أي نص.",
+      "unknown": "تعذر تشغيل الأمر."
+    },
+    "promptErrorDetails": "تفاصيل الخطأ",
+    "promptWhatToDo": "ما يمكن تجربته",
+    "promptUsingProvider": "المزوّد الحالي: {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "افتح الإعدادات ← المزوّدون.",
+        "s2": "أضف خدمة واحفظ مفتاح API ومعرّف النموذج ثم اضغط استخدام.",
+        "s3": "ارجع إلى هنا وشغّل الأمر مرة أخرى."
+      },
+      "missingApiKey": {
+        "s1": "افتح الإعدادات ← المزوّدون وعدّل المزوّد المفعّل.",
+        "s2": "الصق مفتاح API صالحًا ثم احفظ.",
+        "s3": "شغّل الأمر مرة أخرى."
+      },
+      "missingModel": {
+        "s1": "افتح الإعدادات ← المزوّدون وعدّل المزوّد المفعّل.",
+        "s2": "أدخل معرّف نموذج يدعمه هذا الخدمة فعليًا.",
+        "s3": "شغّل الأمر مرة أخرى."
+      },
+      "unknownPrompt": {
+        "s1": "افتح الإعدادات ← الأوامر.",
+        "s2": "استعد الافتراضي أو أعد إضافة هذا الأمر."
+      },
+      "emptyTranscript": {
+        "s1": "انتظر حتى ينتهي التفريغ.",
+        "s2": "إن لم يكن هناك كلام، فرّغ على أي حال أو اختر ملفًا آخر."
+      },
+      "auth": {
+        "s1": "افتح إعدادات المزوّد واستبدل مفتاح API.",
+        "s2": "تأكد من الرصيد وصلاحية استدعاء هذا النموذج.",
+        "s3": "إن كان عنوانًا مخصصًا، تأكد أنه يقبل هذا المفتاح."
+      },
+      "network": {
+        "s1": "تحقق من الإنترنت والوكيل.",
+        "s2": "للمزوّد المخصص، تأكد أن Base URL يصل ويتضمن /v1 عند الحاجة.",
+        "s3": "إن كان المضيف متوقفًا، بدّل المزوّد."
+      },
+      "emptyOutput": {
+        "s1": "في الإعدادات ← المزوّدون، تأكد أن معرّف النموذج صحيح لهذه الخدمة.",
+        "s2": "للعنوان المخصص، تحقق من Base URL ومفتاح API وأن النموذج منشور.",
+        "s3": "اقرأ تفاصيل الخطأ أدناه ثم أعد المحاولة أو بدّل المزوّد."
+      },
+      "unknown": {
+        "s1": "اقرأ تفاصيل الخطأ أدناه أولًا.",
+        "s2": "في الإعدادات ← المزوّدون، راجع المفتاح ومعرّف النموذج وBase URL.",
+        "s3": "أعد المحاولة أو بدّل المزوّد."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "ما الجديد",
+    "description": "النصوص والذكاء الاصطناعي على هذا الجهاز.",
+    "tryIt": "جرّب",
+    "features": {
+      "transcript": {
+        "title": "تفريغ تلقائي للفيديو",
+        "description": "بعد انتهاء التنزيل، يُنشئ VidBee تلقائيًا نصًا للفيديو على هذا الجهاز. لا يُرفع أي شيء."
+      },
+      "speakers": {
+        "title": "تسميات المتحدثين",
+        "description": "اعرف من قال ماذا، ثم انتقل إلى تلك اللحظة في الفيديو."
+      },
+      "summary": {
+        "title": "ملخصات الذكاء الاصطناعي",
+        "description": "حوّل النص إلى نقاط أو أسئلة شائعة أو خريطة ذهنية أو إعادة صياغة. أضف أوامرك في الإعدادات."
+      },
+      "localFiles": {
+        "title": "فرّغ أي ملف",
+        "description": "أسقط ملف صوت أو فيديو محلي في النصوص. صدّر نصًا أو ترجمات أو فيديو بعناوين محفورة."
+      }
+    }
   }
 }

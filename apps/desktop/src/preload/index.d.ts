@@ -8,6 +8,7 @@ declare global {
       on: (channel: string, callback: (...args: unknown[]) => void) => (...args: unknown[]) => void
       removeListener: (channel: string, callback: (...args: unknown[]) => void) => void
       send: (channel: string, ...args: unknown[]) => void
+      getPathForFile: (file: File) => string | null
     }
   }
 }

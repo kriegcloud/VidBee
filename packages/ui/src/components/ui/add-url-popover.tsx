@@ -15,6 +15,8 @@ interface AddUrlPopoverProps {
   confirmLabel: string
   confirmDisabled?: boolean
   invalidMessage?: string
+  supportedSitesLabel?: string
+  onOpenSupportedSites?: () => void
   onOpenChange: (open: boolean) => void
   onTriggerClick: () => void
   onValueChange: (value: string) => void
@@ -22,6 +24,9 @@ interface AddUrlPopoverProps {
   onConfirm: () => void
 }
 
+/**
+ * Popover for pasting a video URL and opening the supported-sites list.
+ */
 export const AddUrlPopover = ({
   open,
   value,
@@ -32,6 +37,8 @@ export const AddUrlPopover = ({
   confirmLabel,
   confirmDisabled = false,
   invalidMessage,
+  supportedSitesLabel,
+  onOpenSupportedSites,
   onOpenChange,
   onTriggerClick,
   onValueChange,
@@ -63,7 +70,17 @@ export const AddUrlPopover = ({
           />
         </div>
         {invalidMessage ? <p className="text-destructive text-xs">{invalidMessage}</p> : null}
-        <div className="flex justify-end gap-2">
+        <div className="flex items-center justify-end gap-2">
+          {onOpenSupportedSites && supportedSitesLabel ? (
+            <Button
+              className="mr-auto h-auto px-0 text-xs"
+              onClick={onOpenSupportedSites}
+              type="button"
+              variant="link"
+            >
+              {supportedSitesLabel}
+            </Button>
+          ) : null}
           <Button onClick={onCancel} variant="outline">
             {cancelLabel}
           </Button>

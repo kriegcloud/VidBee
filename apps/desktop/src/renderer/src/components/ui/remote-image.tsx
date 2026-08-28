@@ -8,7 +8,7 @@ import { ipcServices } from '../../lib/ipc'
 
 type RemoteImageProps = Omit<SharedRemoteImageProps, 'cacheResolver' | 'localUrlPrefixes'>
 
-const desktopLocalPrefixes = [APP_PROTOCOL_SCHEME, 'file://', 'data:', 'blob:']
+const desktopLocalPrefixes = [APP_PROTOCOL_SCHEME, 'file://', 'data:']
 
 export function RemoteImage(props: RemoteImageProps) {
   const cacheResolver = useCallback(async (url: string): Promise<string | undefined> => {

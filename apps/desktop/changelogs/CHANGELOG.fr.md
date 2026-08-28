@@ -3,6 +3,68 @@
 Cette page ne présente que les évolutions visibles par les utilisateurs, sans détails techniques.
 Pour les notes de version complètes, consultez [GitHub Releases](https://github.com/nexmoe/VidBee/releases).
 
+## [v2.0.2](https://github.com/nexmoe/VidBee/releases/tag/v2.0.2) - 2026-08-23
+
+### Améliorations
+- Sous Windows, l’ouverture d’une transcription terminée n’affiche plus une page blanche : la vidéo et le texte s’ouvrent et se lisent normalement. (by @Autsunset)
+
+## [v2.0.1](https://github.com/nexmoe/VidBee/releases/tag/v2.0.1) - 2026-08-23
+
+### Nouveautés
+- Choisissez jusqu'à cinq langues de sous-titres dans les réglages, ou laissez VidBee suivre la langue de l'interface.
+- Mettez en pause et reprenez un téléchargement en cours sans repartir de zéro. (by @Gani-SMA)
+
+### Améliorations
+- Si les sous-titres sont indisponibles, VidBee poursuit la vidéo au lieu de faire échouer tout le téléchargement.
+- Les téléchargements annulés le restent après un redémarrage et ne disparaissent qu'une fois l'annulation enregistrée.
+- Les liens de téléchargement sont mieux reconnus, avec des conseils plus clairs quand un site exige les cookies du navigateur.
+- Téléchargez depuis davantage de sites sans installer d'outil supplémentaire.
+- Sous Windows, la lecture vidéo et la fenêtre de l'application se rétablissent mieux après un problème graphique ou de page.
+- L'icône de la zone de notification ouvre l'application plus sûrement.
+
+## [v2.0.0](https://github.com/nexmoe/VidBee/releases/tag/v2.0.0) - 2026-08-22
+
+En 1.x, VidBee enregistrait le fichier et s'arrêtait là. 2.0 continue : transcription sur cet ordinateur, noms des locuteurs, recherche d'une citation, puis résumé avec l'IA.
+
+![Avant v1.x et après v2.0](https://github.com/nexmoe/VidBee/releases/download/v2.0.0/v2-before-after.webp)
+
+![Télécharger, transcrire en local, chercher un mot, demander à l'IA](https://github.com/nexmoe/VidBee/releases/download/v2.0.0/v2-workflow-grid.webp)
+
+### Nouveautés
+- Nouveau parcours : télécharger → transcrire en local → chercher un mot-clé → demander un résumé à l'IA, dans la même application.
+
+### Transcription locale
+- Choisissez Whisper, SenseVoice, Parakeet ou Qwen3-ASR. VidBee peut recommander un modèle selon votre ordinateur et votre langue.
+- La reconnaissance vocale s'exécute sur cet ordinateur et peut fonctionner hors ligne une fois le modèle téléchargé. L'audio n'est jamais envoyé à un service de transcription.
+- Importez un fichier audio ou vidéo local, ou déposez-le sur Transcripts, pour le transcrire dans l'application.
+
+### Locuteurs
+- Détectez automatiquement qui parle et voyez le temps de parole sous le lecteur.
+- Fixez le nombre de locuteurs et relabellisez la conversation sans changer les mots reconnus.
+- Cliquez sur un locuteur pour aller à sa prochaine réplique.
+
+### Recherche et horodatage
+- Cherchez un mot prononcé ou le nom d'un locuteur. Les correspondances sont surlignées.
+- Chaque ligne a un horodatage. Cliquez une ligne (ou un mot) pour lire à cet instant.
+- Copiez un passage, ou exportez en texte, Markdown ou sous-titres.
+
+### Ask AI
+- Invites intégrées : résumé à puces, traduction, FAQ, carte mentale, correction grammaticale, et plus. Vous pouvez aussi écrire les vôtres.
+- Connectez OpenAI, Anthropic, Google, DeepSeek, xAI, Ollama, LM Studio, ou un autre fournisseur. Les clés API restent sur cet ordinateur.
+
+### Confidentialité
+- Confidentialité d'abord : la voix et les fichiers restent sur cet ordinateur.
+- Si vous lancez Ask AI, seul le texte de la transcription va vers le fournisseur choisi. Utilisez Ollama ou LM Studio pour garder aussi cette étape en local.
+
+### Aussi dans cette version
+- Le mini lecteur reste disponible quand vous changez d'écran.
+- Le moteur de téléchargement peut se mettre à jour en arrière-plan pour continuer à prendre en charge plus de sites.
+
+### Améliorations
+- En mode portable, un dossier de téléchargement choisi hors du répertoire portable n'est plus réinitialisé.
+- La transcription fonctionne aussi sur les Mac Intel.
+- Téléchargements et installations auto-hébergées plus fiables.
+
 ## [v1.3.10](https://github.com/nexmoe/VidBee/releases/tag/v1.3.10) - 2026-04-11
 ### Ameliorations
 - Telechargement en un clic active par defaut pour demarrer plus vite des la premiere utilisation.

@@ -1,0 +1,31 @@
+{
+  "name": "@vidbee/transcription",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./asr": "./src/asr-tiers.ts",
+    "./concurrency": "./src/concurrency.ts",
+    "./download-mirrors": "./src/download-mirrors.ts",
+    "./worker": "./src/worker/entry.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vidbee/db": "workspace:*",
+    "@vidbee/i18n": "workspace:*",
+    "@vidbee/logger": "workspace:*",
+    "@vidbee/task-queue": "workspace:*",
+    "opencc-js": "^1.4.1",
+    "sherpa-onnx-node": "1.13.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.18.6",
+    "better-sqlite3": "^13.0.3",
+    "typescript": "^7.0.2"
+  }
+}

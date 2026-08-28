@@ -18,9 +18,9 @@
  *     a non-preferred host will refuse to steal a fresh lease from the
  *     preferred host but will steal an *expired* one regardless.
  *
- * The election is implemented over a `MetaStore` interface so unit tests can
- * exercise the CAS path without spinning up SQLite. `createSqliteMetaStore`
- * (in ./store.ts) wraps the real `subscriptions_meta` table.
+ * The election is implemented over a `MetaStore` interface so hosts can
+ * swap the backing store. `createSqliteMetaStore` (in ./store.ts) wraps
+ * the real `subscriptions_meta` table.
  */
 import { ulid } from 'ulid'
 import {
@@ -52,7 +52,10 @@ export interface MetaStore {
   casLeader(args: {
     expectedLeaseId: string | null
     now: number
-    next: Pick<LeaderState, 'kind' | 'pid' | 'startedAt' | 'heartbeatAt' | 'lockExpiresAt' | 'leaseId'>
+    next: Pick<
+      LeaderState,
+      'kind' | 'pid' | 'startedAt' | 'heartbeatAt' | 'lockExpiresAt' | 'leaseId'
+    >
   }): Promise<boolean>
   /** Read the operator-set preference; nullable. */
   readPreferred(): Promise<LeaderKind | null>
@@ -107,9 +110,7 @@ export class LeaderElection {
     if (options.onStateChange) {
       this.onStateChange = options.onStateChange
     }
-    this.scheduleInterval =
-      options.scheduleInterval ??
-      ((cb, ms) => setInterval(cb, ms))
+    this.scheduleInterval = options.scheduleInterval ?? ((cb, ms) => setInterval(cb, ms))
     this.clearIntervalImpl =
       options.clearInterval ?? ((handle) => clearInterval(handle as ReturnType<typeof setInterval>))
   }

@@ -1,5 +1,5 @@
-// Public exports for in-process consumers (tests, host adapters, the
-// three-host equivalence test). The CLI binary lives in ./bin.ts.
+// Public exports for in-process consumers and host adapters.
+// The CLI binary lives in ./bin.ts.
 
 export * from './parser'
 export * from './envelope'

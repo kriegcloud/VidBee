@@ -16,8 +16,21 @@
     "betaProgramDescription": "抢先获得预览版和即将发布的新功能。",
     "betaProgramTitle": "预览通道",
     "description": "这是一个基于 Node.js 和 Electron 构建的自由开源应用，使用 yt-dlp 来完成下载。",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "使用内置备用版本",
+        "checking": "正在检查",
+        "installing": "正在安装",
+        "preparing": "正在准备",
+        "retry-scheduled": "已安排重试",
+        "unavailable": "不可用",
+        "up-to-date": "已是最新版本"
+      },
+      "title": "下载引擎",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "关注 @nexmoex"
+      "follow": "关注 @nexmoe"
     },
     "followAuthorDescription": "获取 VidBee 的最新消息和更新。",
     "followAuthorSupport": "在 X (Twitter) 上关注开发者，获取 VidBee 的最新更新和消息。",
@@ -40,8 +53,6 @@
       "updateError": "检查更新失败: {{error}}",
       "unknownErrorFallback": "未知错误"
     },
-    "preferencesDescription": "无需离开此页即可调整更新设置。",
-    "preferencesTitle": "快速切换",
     "resources": {
       "changelog": "发行说明",
       "changelogDescription": "了解每个版本的变更内容。",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "在 GitHub 上报告问题或请求功能。",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "在 X 上提及 @nexmoex 分享反馈或建议。",
+      "xFeedbackDescription": "在 X 上提及 @nexmoe 分享反馈或建议。",
       "discord": "Discord",
       "discordDescription": "加入我们的 Discord 社区进行讨论和支持。",
       "faq": "常见问题",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "从数百个网站下载视频和音频",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "确定退出 VidBee？",
+      "message": "还有 {{count}} 个任务正在进行。退出会中断该任务。",
+      "messagePlural": "还有 {{count}} 个任务正在进行。退出会中断这些任务。",
+      "quit": "退出",
+      "cancel": "取消"
+    }
   },
   "download": {
     "active": "进行中",
@@ -117,10 +135,15 @@
     "back": "返回",
     "cancel": "取消",
     "cancelled": "已取消",
+    "pause": "暂停",
+    "paused": "已暂停",
+    "resume": "继续",
     "clearCompleted": "清除已完成",
     "clearDownloads": "清除下载",
     "completed": "已完成",
     "downloadAudio": "下载音频",
+    "dialogSubtitle": "选择格式并指定保存位置",
+    "dialogTitle": "下载",
     "downloadBtn": "下载",
     "downloadPending": "待处理",
     "downloadQueue": "下载队列",
@@ -162,12 +185,29 @@
     "pastePlaylistUrl": "点击从剪贴板粘贴播放列表链接 [Ctrl + V]",
     "pasteUrl": "点击粘贴视频链接或 ID [Ctrl + V]",
     "pasteUrlButton": "粘贴链接",
+    "ingestDropUrl": "松开即可下载",
+    "ingestDropMedia": "松开即可转写",
+    "ingestDropMixed": "松开即可下载并转写",
+    "ingestDropDescription": "链接会进入下载流程，音视频文件会进入转写流程。",
+    "ingestEmptyHint": "粘贴链接开始下载，或拖入音视频开始转写。",
     "preparing": "正在准备...",
     "processing": "处理中",
     "progress": "进度",
     "showDetails": "显示详情",
     "hideDetails": "隐藏详细信息",
     "viewLogs": "查看日志",
+    "cookiesSetupAction": "设置 Cookies",
+    "cookiesSetupDialogTitle": "设置 Cookies",
+    "cookiesSetupNeeded": "这次下载需要登录会话。请先设置 Cookies，然后再试。",
+    "cookiesSetupLocked": "Chrome 正在占用 Cookies 数据库。请改用 Firefox、导入 Cookies 文件，或完全退出 Chrome 后再试。",
+    "cookiesSetupMacFiles": "macOS 正在阻止 VidBee 读取此浏览器的 Cookies。请打开“系统设置 → 隐私与安全性 → 文件和文件夹”，允许 VidBee 访问该浏览器，然后重试。如果已经允许，请完全退出并重新打开 VidBee。",
+    "cookiesSetupOpenFilesSettings": "打开“文件和文件夹”设置",
+    "cookiesSetupDecrypt": "Windows 无法解密 Chrome 的 Cookies。请改用 Firefox，或导入 Cookies 文件。",
+    "cookiesSetupFileInvalid": "所选 Cookies 文件不是有效导出。请导出 cookies.txt 后再试。",
+    "cookiesSetupKeyring": "此 Linux 版本无法读取 Chrome Cookies。请改用 Firefox，或导入 Cookies 文件。",
+    "cookiesSetupStale": "当前 Cookies 可能已过期或被拦截。请刷新登录后再试。",
+    "cookiesSetupRetry": "重试下载",
+    "cookiesSetupDone": "完成",
     "detailsTab": "详情",
     "logsTab": "日志",
     "logs": {
@@ -192,6 +232,9 @@
     "video": "视频",
     "videoInfo": "视频信息",
     "videoInfoUpdated": "视频信息已更新",
+    "frameRate": "帧率",
+    "codecAuto": "自动",
+    "fpsHighest": "最高",
     "metadata": {
       "source": "来源",
       "playlist": "播放列表",
@@ -219,7 +262,10 @@
       "subscription": "订阅"
     },
     "formatFallbackTitle": "所选格式不可用",
-    "formatFallbackHint": "所选格式拿不到流，已自动回退到 {{resolved}}。如需强制使用所选画质，请检查浏览器 cookies 或挑选非大会员档位。"
+    "formatFallbackHint": "所选格式拿不到流，已自动回退到 {{resolved}}。如需强制使用所选画质，请检查浏览器 cookies 或挑选非大会员档位。",
+    "pause": "暂停",
+    "paused": "已暂停",
+    "resume": "继续"
   },
   "error": {
     "title": "出了点问题",
@@ -319,6 +365,7 @@
     "download": "下载",
     "playlist": "下载播放列表",
     "rss": "RSS",
+    "transcripts": "文稿",
     "subscriptions": "订阅",
     "preferences": "偏好设置",
     "supportedSites": "支持的网站",
@@ -342,7 +389,12 @@
     "removeFailed": "移除项目失败",
     "settingsSaved": "设置已保存",
     "urlCopied": "链接已复制到剪贴板",
-    "videoCopied": "视频已复制到剪贴板"
+    "videoCopied": "视频已复制到剪贴板",
+    "transcriptionStarted": "已开始转写",
+    "transcriptionStartedMany": "已开始转写 {{count}} 个文件",
+    "transcriptionStartFailed": "无法开始转写",
+    "unsupportedDrop": "请粘贴链接，或拖入音视频文件",
+    "localMediaDesktopOnly": "本地文件转写请使用桌面版 VidBee"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} 个文件",
@@ -429,9 +481,9 @@
     "audio": "音频偏好",
     "browserForCookies": "选择用于读取 Cookies 的浏览器",
     "browserForCookiesDescription": "用于身份验证的浏览器 Cookies 提取",
-    "browserForCookiesWindowsNote": "Windows 仅支持 Firefox 的 Cookies，其他浏览器请手动配置 Cookies 文件。",
+    "browserForCookiesWindowsNote": "Windows 仅支持 Firefox 的 Cookies，其他浏览器请手动配置 Cookies 文件",
     "browserForCookiesProfile": "配置文件名称或路径",
-    "browserForCookiesProfileDescription": "上方所选浏览器的配置文件路径。如可用会自动填写。",
+    "browserForCookiesProfileDescription": "上方所选浏览器的配置文件路径。如可用会自动填写",
     "browserForCookiesProfilePlaceholder": "配置文件名称或完整路径（可选）",
     "browserForCookiesProfileInvalid": "配置文件路径无效。请选择所选浏览器的配置文件文件夹。",
     "browserForCookiesProfileInvalidPath": "该文件夹不存在。请选择现有的配置文件文件夹。",
@@ -448,8 +500,51 @@
     "cookiesHelpBrowser": "选择上面的浏览器以自动重用其登录会话。",
     "cookiesHelpFile": "导出 Netscape Cookies 文件（请参阅 yt-dlp FAQ）并在需要时在此处选择它。",
     "cookiesGuideTitle": "需要指引吗？",
-    "cookiesGuideDescription": "查看在 VidBee 中使用 Cookies 的分步指南。",
+    "cookiesGuideDescription": "查看在 VidBee 中使用 Cookies 的分步指南",
     "cookiesGuideLink": "打开 Cookies 指南",
+    "cookiesSetup": {
+      "statusNotConfigured": "尚未设置",
+      "statusNotConfiguredHint": "需要登录的下载在完成设置前会失败",
+      "statusUsingBrowser": "正在使用 {{browser}} 登录状态",
+      "statusUsingFile": "正在使用 Cookies 文件",
+      "statusOk": "可用",
+      "statusExpired": "已过期",
+      "statusEmpty": "未找到登录",
+      "statusInvalid": "需要处理",
+      "healthOkBrowser": "VidBee 可以从 {{browser}} 读取 Cookies。请保持在该浏览器中已登录网站",
+      "healthOkFile": "已找到这些站点的登录 Cookies：{{sites}}",
+      "healthOkFileGeneric": "这个 Cookies 文件看起来有效",
+      "healthExpired": "这些 Cookies 已过期。请重新登录并导入新文件",
+      "healthEmpty": "该文件没有受支持站点的登录 Cookies。请在已登录时导出后再试",
+      "healthInvalidFile": "Cookies 文件缺失，或不是有效的导出文件",
+      "healthInvalidBrowser": "VidBee 无法读取此浏览器配置文件中的 Cookies",
+      "healthMacosFilesPermission": "macOS 正在阻止读取 Cookies。请在“系统设置 → 隐私与安全性 → 文件和文件夹”中允许 VidBee 访问该浏览器，然后重新检查。",
+      "healthUnsupportedBrowser": "当前系统无法使用这个浏览器读取 Cookies",
+      "sitesLabel": "站点：{{sites}}",
+      "recommendedTitle": "推荐",
+      "recommendedUseBrowser": "使用 {{browser}}",
+      "recommendedUseBrowserHint": "复用你已经在 {{browser}} 中登录的账号",
+      "recommendedImportFile": "导入 Cookies 文件",
+      "recommendedImportFileWindowsHint": "在 Windows 上，Chrome 和 Edge 无法把 Cookies 分享给 VidBee。请改为从浏览器导出 Cookies 文件",
+      "recommendedImportFileHint": "从浏览器导出 Cookies，然后在这里选择该文件",
+      "recommendedFirefoxHint": "在 Windows 上，Firefox 是 VidBee 能直接读取的唯一浏览器",
+      "useThisBrowser": "使用 {{browser}}",
+      "importFile": "选择 Cookies 文件",
+      "clearSetup": "清除 Cookies",
+      "checkStatus": "重新检查",
+      "otherOptions": "其他选项",
+      "hideOtherOptions": "收起其他选项",
+      "chooseBrowser": "选择其他浏览器",
+      "advancedProfile": "配置文件路径",
+      "windowsUnsupportedCurrent": "Windows 上无法使用 {{browser}} 读取 Cookies。请改用 Firefox，或导入 Cookies 文件。",
+      "fileExportStep1": "安装 Cookies 导出扩展，例如 Get cookies.txt LOCALLY",
+      "fileExportStep2": "先登录网站，再导出 Cookies 文件",
+      "fileExportStep3": "在这里选择该文件",
+      "fileExportExtension": "Chrome / Edge 扩展",
+      "checking": "正在检查 Cookies…",
+      "applied": "Cookies 已更新",
+      "profileMissingDb": "这个 Firefox 配置文件没有 Cookies 数据库。请先打开一次 Firefox，然后再试。"
+    },
     "openLinkError": "无法打开链接",
     "browserOptions": {
       "brave": "Brave",
@@ -476,24 +571,54 @@
     "languageDescription": "选择应用界面的首选语言",
     "light": "浅色",
     "hideDockIcon": "关闭窗口后隐藏 Dock 图标",
-    "hideDockIconDescription": "当窗口关闭时自动隐藏 Dock 图标。使用菜单栏或托盘图标重新打开。",
+    "hideDockIconDescription": "当窗口关闭时自动隐藏 Dock 图标。使用菜单栏或托盘图标重新打开",
     "launchAtLogin": "启动时启动",
-    "launchAtLoginDescription": "登录计算机后自动打开 VidBee。",
-    "launchAtLoginUnsupported": "自动启动仅适用于 macOS 和 Windows。",
+    "launchAtLoginDescription": "登录计算机后自动打开 VidBee",
+    "launchAtLoginUnsupported": "自动启动仅适用于 macOS 和 Windows",
     "enableAnalytics": "帮助改进 VidBee",
-    "enableAnalyticsDescription": "共享匿名使用数据，帮助我们了解应用程序的使用情况并确定改进的优先顺序。",
+    "enableAnalyticsDescription": "共享匿名使用数据，帮助我们了解应用程序的使用情况并确定改进的优先顺序",
     "enableDownloadNotifications": "下载通知",
-    "enableDownloadNotificationsDescription": "下载完成时显示系统通知。",
+    "enableDownloadNotificationsDescription": "下载完成时显示系统通知",
     "downloadWithoutChannelSubfolders": "保存视频时不创建频道子文件夹",
-    "downloadWithoutChannelSubfoldersDescription": "将单个视频下载直接保存到 Videos 文件夹，而不是创建频道子文件夹。",
+    "downloadWithoutChannelSubfoldersDescription": "将单个视频下载直接保存到 Videos 文件夹，而不是创建频道子文件夹",
+    "downloadSubtitles": "下载字幕",
+    "downloadSubtitlesDescription": "可用时仅下载所选语言的字幕",
+    "subtitleLanguages": "字幕语言",
+    "subtitleLanguagesDescription": "选择 VidBee 为每个视频请求的字幕语言",
+    "subtitleLanguageSearch": "搜索字幕语言",
+    "subtitleLanguageEmpty": "没有匹配的语言",
+    "subtitleLanguageLimit": "最多选择 {{count}} 种语言，以降低平台限流风险",
+    "followInterfaceLanguage": "跟随界面语言（{{language}}）",
     "embedChapters": "嵌入章节",
     "embedChaptersDescription": "可用时在文件中添加章节标记",
     "embedMetadata": "嵌入元数据",
     "embedMetadataDescription": "可用时写入标题、艺术家和其他元数据",
     "embedSubs": "嵌入字幕",
-    "embedSubsDescription": "将字幕嵌入视频文件（mp4、webm、mkv）",
+    "embedSubsDescription": "将所选字幕嵌入视频文件（mp4、webm、mkv）",
+    "writeAutoSubs": "使用自动生成字幕",
+    "writeAutoSubsDescription": "所选语言没有创作者字幕时使用自动字幕",
     "embedThumbnail": "嵌入缩略图",
     "embedThumbnailDescription": "将缩略图作为封面图",
+    "filenameStyle": "文件名样式",
+    "filenameStyleDescription": "选择 VidBee 如何命名保存的视频和音频文件",
+    "filenameStyleNote": "仅用于 VidBee 保存的文件。订阅或播放列表的自定义模板仍优先",
+    "filenameStyleOptions": {
+      "basic": "简洁",
+      "classic": "经典",
+      "nerdy": "极客",
+      "pretty": "美观"
+    },
+    "filenameStylePreviewAudio": "音频文件预览",
+    "filenameStylePreviewVideo": "视频文件预览",
+    "filenameViaVidBee": "文件名加上 via VidBee",
+    "filenameViaVidBeeDescription": "自动在保存的视频和音频文件名中加入 via VidBee",
+    "metadataTab": "元数据",
+    "navGroup": {
+      "app": "应用",
+      "download": "下载",
+      "system": "系统",
+      "ai": "AI"
+    },
     "shareWatermark": "分享水印",
     "shareWatermarkDescription": "添加包含原视频标题、作者和 VidBee 品牌的水印",
     "maxConcurrentDownloads": "最大活动下载数",
@@ -502,7 +627,7 @@
     "oneClickDownload": "一键下载",
     "oneClickDownloadDescription": "启用使用默认设置的一键下载",
     "oneClickDownloadType": "默认下载类型",
-    "oneClickDownloadTypeDescription": "选择一键下载的默认下载类型。质量使用下面的预设。",
+    "oneClickDownloadTypeDescription": "选择一键下载的默认下载类型。质量使用下面的预设",
     "oneClickQuality": "首选质量",
     "oneClickQualityDescription": "选择用于一键下载的质量预设",
     "oneClickQualityOptions": {
@@ -514,7 +639,7 @@
       "worst": "最差 (≤360p)"
     },
     "oneClickContainer": "容器格式",
-    "oneClickContainerDescription": "选择一键下载的输出容器格式。自动模式优先 MP4，编码不兼容时回落到 MKV。",
+    "oneClickContainerDescription": "选择一键下载的输出容器格式。自动模式优先 MP4，编码不兼容时回落到 MKV",
     "oneClickContainerOptions": {
       "auto": "自动 (MP4/MKV)",
       "mkv": "MKV",
@@ -525,14 +650,19 @@
     "proxy": "代理",
     "proxyDescription": "网络请求的代理服务器",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "下载源",
+    "downloadMirrorDescription": "GitHub 较慢或无法访问时，使用国内镜像（ModelScope、GitHub 代理）下载 yt-dlp、ffmpeg、Node 和转写模型",
+    "downloadMirrorAuto": "自动",
+    "downloadMirrorChina": "中国（ModelScope）",
+    "downloadMirrorGlobal": "官方源",
     "rememberLastAudioLanguage": "记住上次音频语言",
-    "rememberLastAudioLanguageDescription": "在后续音频下载中，默认使用你上次选择的音频语言。",
+    "rememberLastAudioLanguageDescription": "在后续音频下载中，默认使用你上次选择的音频语言",
     "selectConfigFile": "选择配置文件",
     "selectPath": "选择",
     "showMoreFormats": "显示更多格式选项",
     "showMoreFormatsDescription": "在界面中显示额外的格式选项",
     "subscriptionDefaults": {
-      "filenameDescription": "当订阅不覆盖其文件名时使用的模式。"
+      "filenameDescription": "当订阅不覆盖其文件名时使用的模式"
     },
     "system": "系统",
     "theme": "主题",
@@ -542,7 +672,194 @@
       "quit": "退出",
       "showHome": "显示首页"
     },
-    "video": "视频偏好"
+    "video": "视频偏好",
+    "autoTranscribeAfterDownload": "下载完成后自动转稿",
+    "autoTranscribeAfterDownloadDescription": "下载成功后在本地后台转写。处理会占用本机计算资源，无语音内容会自动跳过。关闭开关不会取消已经排队或正在运行的任务",
+    "maxConcurrentTranscriptions": "转稿并发数",
+    "maxConcurrentTranscriptionsDescription": "同时进行的转稿任务数量。每个任务会占用本机计算资源。调低不会中断已经在运行的任务",
+    "transcriptModelsTitle": "转稿模型",
+    "transcriptModelsReady": "模型已就绪（{{size}}）",
+    "transcriptModelsMissing": "模型尚未下载，首次转稿时会自动获取",
+    "transcriptModelsRedownload": "重新下载",
+    "transcriptModelsRedownloadError": "重新下载转稿模型失败。",
+    "aiTab": "AI",
+    "asrUse": "使用",
+    "asrUseCurrent": "使用中",
+    "asrDownload": "下载",
+    "asrDownloadAndUse": "下载并使用",
+    "asrStatusReady": "已就绪",
+    "asrStatusActive": "使用中",
+    "asrStatusMissing": "未下载",
+    "asrStatusDownloading": "下载中",
+    "asrDownloading": "正在下载 {{received}} / {{total}}",
+    "asrDownloadingMany": "正在下载 {{count}} 个模型",
+    "asrDelete": "删除",
+    "asrDeleteError": "无法删除该 AI 模型。",
+    "asrCancel": "取消",
+    "asrCancelError": "无法取消此次下载。",
+    "asrDownloadError": "无法下载该 AI 模型。",
+    "asrTierActivateError": "无法切换 AI 模型。",
+    "asrDownloaded": "已下载",
+    "asrRecommended": "推荐",
+    "asrRecommendedFor": "根据 {{os}} · {{gpu}} · {{ram}} · {{cores}} 核 · {{language}} 推荐",
+    "asrAllModels": "全部模型",
+    "asrBestMatch": "最适合",
+    "asrMachine": {
+      "low": "低配电脑",
+      "mid": "主流电脑",
+      "high": "高性能电脑"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "当前系统"
+    },
+    "asrGpu": {
+      "apple": "Apple 芯片",
+      "nvidia": "NVIDIA 显卡",
+      "amd": "AMD 显卡",
+      "intel": "Intel 核显",
+      "unknown": "未知显卡"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — 多语种",
+      "parakeet": "Parakeet — 英语",
+      "sense-voice": "SenseVoice — 中日韩英",
+      "qwen3": "Qwen3-ASR — 中文精度最高"
+    },
+    "asrLanguages": {
+      "multi": "多语种"
+    },
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "最快的多语种入门，适合低配电脑",
+        "size": "约 75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "比 Tiny 更准，内存占用仍然较低",
+        "size": "约 150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "主流配置，多语种效果更好",
+        "size": "约 250 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "多语种更准，需要更多内存",
+        "size": "约 770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "接近 large-v3 的效果，速度更快",
+        "size": "约 810 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "中日韩英快且准，含粤语",
+        "size": "约 230 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "更新的中日韩英包，仍然轻量",
+        "size": "约 230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "英语效果好，主流电脑也够用",
+        "size": "约 650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "更新的英语 Parakeet，英语首选",
+        "size": "约 650 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "中文精度最高，需要高性能电脑",
+        "size": "约 840 MB"
+      }
+    },
+    "providersTab": "服务商",
+    "promptsTab": "提示词",
+    "transcriptionTab": "转写",
+    "ai": {
+      "allServices": "全部服务",
+      "configured": "已配置",
+      "useProvider": "使用",
+      "inUse": "使用中",
+      "addProvider": "添加 {{name}}",
+      "editProvider": "编辑服务商",
+      "deleteProvider": "移除服务商",
+      "edit": "编辑",
+      "apiKey": "API 密钥",
+      "apiKeyKept": "留空以保留已保存的密钥",
+      "baseUrl": "Base URL",
+      "modelId": "模型 ID",
+      "modelIdPlaceholder": "model-id",
+      "name": "名称",
+      "save": "保存",
+      "cancel": "取消",
+      "saveError": "无法保存 AI 设置。",
+      "providerDialogDescription": "API 密钥只保存在这台电脑上。预设服务商已包含 Base URL",
+      "testConnection": "测试连通性",
+      "testingConnection": "测试中…",
+      "testSuccess": "已连通。回复：{{reply}}",
+      "testFailed": "无法连通此模型。",
+      "addPrompt": "添加提示词",
+      "editPrompt": "编辑提示词",
+      "deletePrompt": "删除提示词",
+      "promptTitle": "标题",
+      "promptIcon": "图标",
+      "promptBody": "提示词",
+      "promptDialogDescription": "此提示词会使用已启用的服务商对文稿运行",
+      "restorePresets": "恢复默认",
+      "testTitle": "用示例文稿测试",
+      "testRun": "运行",
+      "testStop": "停止",
+      "testOutput": "输出",
+      "testPlaceholder": "提示词结果会显示在这里",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "要点列表"
+        },
+        "improve-grammar": {
+          "title": "修正语法和标点"
+        },
+        "generate-faq": {
+          "title": "生成 FAQ"
+        },
+        "extract-statistics": {
+          "title": "提取统计数据"
+        },
+        "paraphrase-content": {
+          "title": "改写内容"
+        },
+        "create-mindmap": {
+          "title": "生成思维导图"
+        },
+        "translate": {
+          "title": "翻译"
+        }
+      }
+    }
   },
   "subscriptions": {
     "title": "订阅",
@@ -566,6 +883,7 @@
       "tags": "自动标签",
       "customDirectory": "自定义目录",
       "namingTemplate": "自定义文件名模板（仅限文件）",
+      "autoDownload": "自动下载",
       "onlyLatest": "仅下载最新视频",
       "onlyLatestDescription": "忽略积压的项目并仅从此源中获取最新上传的内容。",
       "enabled": "启用",
@@ -655,6 +973,18 @@
       "hint": "没有 RSS 源 URL？\n使用 RSSHub 为 YouTube、Twitter 和数千个其他平台生成 RSS 源。"
     }
   },
+  "kernelPreparation": {
+    "copying": "正在复制下载引擎…",
+    "description": "VidBee 正在准备下载引擎，这只需要一点时间。",
+    "errorDescription": "VidBee 无法准备可用的下载引擎。请检查本地存储访问权限，然后重试。",
+    "errorTitle": "下载引擎不可用",
+    "finalizing": "正在完成设置…",
+    "progressLabel": "下载引擎准备进度",
+    "retry": "重试",
+    "retrying": "正在重试…",
+    "title": "正在准备 VidBee",
+    "validating": "正在验证下载引擎…"
+  },
   "sites": {
     "homeInlineDescription": "支持 {{sites}} 等更多网站。",
     "moreDescription": "完整的 yt-dlp 列表由社区持续更新。",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "主流平台",
     "viewAll": "查看全部支持的网站"
+  },
+  "transcript": {
+    "transcribe": "转文稿",
+    "transcribing": "正在转稿",
+    "modelsPreparing": "正在准备转写模型…",
+    "preparingSpeakerModels": "正在准备说话人模型…",
+    "modelsProgressLabel": "转写模型下载进度",
+    "view": "查看文稿",
+    "sourceCaptions": "视频字幕",
+    "sourceAi": "AI 文稿",
+    "sourceSwitch": "文稿来源",
+    "sourceCaptionNamed": "{{language}}字幕",
+    "sourceCaptionAutoNamed": "{{language}}智能字幕",
+    "noSpeech": "无语音",
+    "noSpeechDetail": "未在该文件中检测到语音。你仍可以强制完整转写。",
+    "error": "转稿异常",
+    "errorHint": "转写在完成前中断了。可以重试。",
+    "retry": "重试",
+    "retryFailed": "无法重试转稿。",
+    "stop": "停止",
+    "stopFailed": "无法停止转稿。",
+    "stillTranscribe": "仍然转稿",
+    "qualityHint": "效果不佳？",
+    "qualityHintDetail": "将切换到该模型（如需会自动下载）并重新转写。可以离开此页。当前文稿会保留为历史。",
+    "qualityHintMax": "已经是最高档。可在详情页调整说话人数后重新划分。背景音乐和多人重叠仍可能影响说话人划分。",
+    "speakerCount": {
+      "adjust": "调整说话人",
+      "auto": "自动识别",
+      "one": "1 位说话人",
+      "count": "{{count}} 位说话人",
+      "apply": "重新划分",
+      "detail": "将按这个人数重新划分说话人，文稿内容保持不变。默认是自动识别。你可以离开此页，当前文稿会保留为历史。"
+    },
+    "detectingSpeech": "正在检测语音",
+    "preparingAudio": "正在准备音频",
+    "identifyingSpeakers": "正在识别说话人",
+    "back": "返回文稿列表",
+    "library": {
+      "empty": "还没有文稿",
+      "emptyHint": "选择本地音视频文件，也可以给已下载的内容转文稿。",
+      "addMedia": "添加音视频",
+      "goToDownloads": "前往下载列表",
+      "untitled": "未命名媒体",
+      "previewPending": "文稿生成后会显示在这里。",
+      "queued": "排队中",
+      "processing": "处理中",
+      "retrySoon": "即将重试",
+      "cancelled": "已取消",
+      "open": "打开「{{title}}」的文稿",
+      "dropDescription": "拖放或粘贴音频、视频文件即可转写。",
+      "experimentalBadge": "实验性",
+      "experimentalHint": "此页面未来可能合并到下载页。"
+    },
+    "followResume": "回到正在播放的位置",
+    "title": "文稿",
+    "ready": "文稿已完成",
+    "copy": "复制文稿",
+    "copied": "文稿已复制",
+    "copyFailed": "无法复制文稿。",
+    "captionSelect": "已选文稿",
+    "captionSelectClear": "清除选中",
+    "export": {
+      "action": "导出",
+      "preview": "导出预览",
+      "description": "预览文稿，然后复制或保存为文本文件。",
+      "styleLabel": "样式",
+      "style": {
+        "transcript": "文稿",
+        "subtitles": "字幕",
+        "segments": "分段",
+        "whisper": "Whisper",
+        "video": "视频 + 字幕"
+      },
+      "formatLabel": "格式",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "编码",
+      "encode": {
+        "soft": "软编码",
+        "hard": "硬编码"
+      },
+      "softHint": "将字幕作为独立轨道封装进视频，播放器可开关字幕。速度快，画质无损。",
+      "hardHint": "将字幕烧录到画面中。需要重新编码，字幕无法关闭。",
+      "noMedia": "找不到源视频，无法导出视频。",
+      "audioOnly": "当前是音频文件，请改为导出文本文稿。",
+      "videoSaved": "视频已导出",
+      "videoSaveFailed": "无法导出视频。",
+      "exporting": "正在导出…",
+      "cancelExport": "取消导出",
+      "cancelled": "已取消导出",
+      "progress": "{{percent}}%",
+      "options": "选项",
+      "grouping": "分组",
+      "groupingValue": {
+        "none": "无",
+        "words": "词",
+        "sentences": "句子"
+      },
+      "showTimestamp": "显示时间戳",
+      "close": "关闭",
+      "copy": "复制",
+      "copied": "已复制到剪贴板",
+      "copyFailed": "无法复制导出预览。",
+      "saved": "文稿已导出",
+      "saveFailed": "无法导出文稿。",
+      "empty": "暂无可导出的内容。"
+    },
+    "mediaMissing": "找不到本地媒体文件。",
+    "currentTime": "当前时间 {{time}}",
+    "resizeHandle": "拖动调整字幕区域大小",
+    "unknownSpeaker": "未知发言人",
+    "speakers": "发言人 ({{count}})",
+    "info": {
+      "tab": "信息",
+      "channel": "频道",
+      "duration": "时长",
+      "file": "文件",
+      "fileSize": "文件大小",
+      "url": "来源链接",
+      "source": "来源",
+      "model": "模型",
+      "language": "语言",
+      "speakers": "发言人",
+      "segments": "片段",
+      "createdAt": "转写时间",
+      "empty": "暂无详细信息。",
+      "openUrl": "打开来源链接"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "跳转到 {{name}}",
+    "seekAt": "跳转到 {{time}}",
+    "searchPlaceholder": "搜索文稿",
+    "searchMatches": "{{count}} 条匹配",
+    "searchNoMatches": "无匹配",
+    "searchNext": "下一条",
+    "searchPrevious": "上一条",
+    "searchJumpTo": "跳转到这句文稿",
+    "collapsePanel": "折叠文稿",
+    "expandPanel": "展开文稿",
+    "player": {
+      "play": "播放",
+      "pause": "暂停",
+      "seek": "进度",
+      "volume": "音量",
+      "mute": "静音",
+      "unmute": "取消静音",
+      "playbackRate": "播放速度",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "正在准备可播放文件…",
+      "unavailable": "无法把该文件转成可在页面内播放的格式。",
+      "failedTitle": "这里播不了这个视频",
+      "failedAudioTitle": "这里播不了这段音频",
+      "failedDetail": "文稿仍然可以阅读。",
+      "retry": "再试一次",
+      "error": "播放失败：{{message}}",
+      "captionsShow": "显示字幕",
+      "captionsHide": "隐藏字幕",
+      "skipBack": "后退 15 秒",
+      "skipForward": "前进 15 秒",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "全屏播放",
+      "fullscreenExit": "退出全屏",
+      "resumed": "已从 {{time}} 继续播放",
+      "startOver": "从头播放",
+      "nowPlaying": "正在播放",
+      "closeBar": "关闭播放器",
+      "openTranscript": "返回文稿"
+    },
+    "promptMenu": "全部提示词",
+    "promptStop": "停止",
+    "promptRerun": "再次运行",
+    "promptCopy": "复制",
+    "promptShare": "分享图片",
+    "promptShareTitle": "分享图片",
+    "promptShareDownload": "下载",
+    "promptShareNative": "分享",
+    "promptSharing": "正在生成图片…",
+    "promptShared": "分享图已复制",
+    "promptShareSaved": "分享图已保存",
+    "promptShareFailed": "无法生成分享图。",
+    "promptShareSaveFailed": "无法保存分享图。",
+    "promptShareNativeFailed": "无法打开系统分享。",
+    "promptShareFooter": "由 VidBee 生成",
+    "promptShareTagline": "开源软件。下载视频，再问 AI",
+    "captionShareSaid": "{{name}} 说到",
+    "promptOutput": "提示词结果",
+    "promptScrollToEnd": "跳到最新",
+    "promptCopied": "已复制",
+    "promptNoProvider": "请先在设置中配置 AI 服务商，才能运行此提示词。",
+    "promptOpenSettings": "打开服务商设置",
+    "promptEmpty": "结果会显示在这里。",
+    "promptRunning": "正在生成…",
+    "promptThinking": "思考过程",
+    "promptThinkingFor": "已思考 {{seconds}} 秒",
+    "promptThoughtFor": "思考了 {{seconds}} 秒",
+    "promptAborted": "已停止",
+    "promptNoTranscript": "需要先有文稿才能运行此提示词。",
+    "promptTryAgain": "再试一次",
+    "promptLoading": "正在加载 AI 设置…",
+    "promptGuide": {
+      "noProvider": "还没有启用 AI 服务商，所以无法运行这个提示词。",
+      "missingApiKey": "当前服务商还没有填写 API 密钥。",
+      "missingModel": "当前服务商还没有填写模型 ID。",
+      "unknownPrompt": "这个提示词已经不可用。",
+      "emptyTranscript": "需要先有完整文稿才能运行这个提示词。",
+      "auth": "服务商拒绝了请求。API 密钥或账号很可能无效。",
+      "network": "无法连接到服务商。",
+      "emptyOutput": "服务商结束了请求，但没有返回任何文本。",
+      "unknown": "提示词未能运行。"
+    },
+    "promptErrorDetails": "错误详情",
+    "promptWhatToDo": "可以这样处理",
+    "promptUsingProvider": "当前服务商：{{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "打开设置 → 服务商。",
+        "s2": "添加一个服务，保存 API 密钥和模型 ID，然后点「使用」。",
+        "s3": "回到这里再运行一次提示词。"
+      },
+      "missingApiKey": {
+        "s1": "打开设置 → 服务商，编辑当前启用的服务。",
+        "s2": "粘贴有效的 API 密钥并保存。",
+        "s3": "再运行一次提示词。"
+      },
+      "missingModel": {
+        "s1": "打开设置 → 服务商，编辑当前启用的服务。",
+        "s2": "填写这个服务实际支持的模型 ID。",
+        "s3": "再运行一次提示词。"
+      },
+      "unknownPrompt": {
+        "s1": "打开设置 → 提示词。",
+        "s2": "点「恢复默认」，或重新添加这个提示词。"
+      },
+      "emptyTranscript": {
+        "s1": "等转写完成后再试。",
+        "s2": "如果这个文件没有语音，可以仍然转稿，或换一个文件。"
+      },
+      "auth": {
+        "s1": "打开服务商设置，更换 API 密钥。",
+        "s2": "确认这个密钥有额度，并且有权限调用该模型。",
+        "s3": "如果是自定义接口，确认它接受这把密钥。"
+      },
+      "network": {
+        "s1": "检查网络连接，以及是否设置了代理。",
+        "s2": "自定义服务商请确认 Base URL 可访问，必要时包含 /v1。",
+        "s3": "如果这个主机不可用，换一个服务商。"
+      },
+      "emptyOutput": {
+        "s1": "打开设置 → 服务商，确认模型 ID 对该服务有效。",
+        "s2": "如果是自定义接口，检查 Base URL、API 密钥，以及模型是否已部署。",
+        "s3": "查看下面的错误详情，然后重试或换服务商。"
+      },
+      "unknown": {
+        "s1": "先看下面的错误详情。",
+        "s2": "打开设置 → 服务商，核对 API 密钥、模型 ID 和 Base URL。",
+        "s3": "再试一次，或换一个服务商。"
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "新功能",
+    "description": "在这台电脑上完成转写和 AI 总结。",
+    "tryIt": "尝试一下",
+    "features": {
+      "transcript": {
+        "title": "自动生成文稿",
+        "description": "下载完成后，VidBee 会自动为视频生成文稿。全程在这台电脑上完成，内容不会上传。"
+      },
+      "speakers": {
+        "title": "说话人标记",
+        "description": "看清谁说了什么，并跳转到对应画面。"
+      },
+      "summary": {
+        "title": "AI 总结",
+        "description": "把文稿变成要点、FAQ、思维导图或改写。也可以在设置里添加自己的提示词。"
+      },
+      "localFiles": {
+        "title": "转写本地文件",
+        "description": "把本地音视频拖进文稿。可导出文本、字幕，或烧录到视频。"
+      }
+    }
   }
 }

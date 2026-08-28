@@ -21,6 +21,7 @@ interface CreateSubscriptionOptions {
   keywords?: string[]
   tags?: string[]
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
@@ -56,6 +57,7 @@ class SubscriptionService extends IpcService {
         tags: options.tags,
         onlyDownloadLatest:
           options.onlyDownloadLatest ?? settings.subscriptionOnlyLatestDefault ?? true,
+        autoDownload: options.autoDownload ?? true,
         downloadDirectory: options.downloadDirectory || defaultDownloadDirectory,
         namingTemplate: sanitizeFilenameTemplate(
           options.namingTemplate || DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE

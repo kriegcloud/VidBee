@@ -19,8 +19,9 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import os from 'node:os'
 import path from 'node:path'
-
+import { fileURLToPath } from 'node:url'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
+import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
 import {
   GalleryDlExecutor,
   HostRoutingExecutor,
@@ -28,7 +29,24 @@ import {
   restoreInstagramProfileGroupCaps,
   YtDlpExecutor
 } from '@vidbee/downloader-core'
-import { MemoryPersistAdapter, SqlitePersistAdapter, TaskQueueAPI } from '@vidbee/task-queue'
+import {
+  ExecutorRouter,
+  MemoryPersistAdapter,
+  SqlitePersistAdapter,
+  TaskQueueAPI,
+  TRANSCRIPTION_GROUP_KEY
+} from '@vidbee/task-queue'
+import {
+  AutoTranscriptionCoordinator,
+  clampMaxConcurrentTranscriptions,
+  extractEmbeddedCaptionTracks,
+  importCaptionsForDownload,
+  ModelManager,
+  mergeLegacyTaskQueueDb,
+  preferredCaptionLanguages,
+  TranscriptionExecutor,
+  TranscriptStore
+} from '@vidbee/transcription'
 
 const require = createRequire(import.meta.url)
 
@@ -48,14 +66,18 @@ export const apiMaxConcurrent =
 
 const persistEnabled = trimEnv('VIDBEE_PERSIST_QUEUE') === '1'
 
-const taskQueueDbPath =
-  trimEnv('VIDBEE_TASK_QUEUE_DB') ?? path.join(apiDefaultDownloadDir, '.vidbee', 'task-queue.db')
+const unifiedDbDir = path.join(apiDefaultDownloadDir, '.vidbee')
+const legacyTaskQueueDbPath =
+  trimEnv('VIDBEE_TASK_QUEUE_DB') ?? path.join(unifiedDbDir, 'task-queue.db')
+const taskQueueDbPath = trimEnv('VIDBEE_DB') ?? path.join(unifiedDbDir, 'vidbee.db')
 
 fs.mkdirSync(apiDefaultDownloadDir, { recursive: true })
 
 let cachedYtDlpPath: string | null = null
 const resolveYtDlpPath = (): string => {
-  if (cachedYtDlpPath && fs.existsSync(cachedYtDlpPath)) return cachedYtDlpPath
+  if (cachedYtDlpPath && fs.existsSync(cachedYtDlpPath)) {
+    return cachedYtDlpPath
+  }
   const envPath = trimEnv('YTDLP_PATH')
   if (envPath && fs.existsSync(envPath)) {
     cachedYtDlpPath = envPath
@@ -83,7 +105,9 @@ const resolveYtDlpPath = (): string => {
 
 let cachedFfmpegLocation: string | null | undefined
 const resolveFfmpegLocation = (): string | undefined => {
-  if (cachedFfmpegLocation !== undefined) return cachedFfmpegLocation ?? undefined
+  if (cachedFfmpegLocation !== undefined) {
+    return cachedFfmpegLocation ?? undefined
+  }
   const envPath = trimEnv('FFMPEG_PATH')
   if (envPath) {
     try {
@@ -148,50 +172,147 @@ const galleryDlExecutor = new GalleryDlExecutor({
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
 })
-const executor = new HostRoutingExecutor(ytDlpExecutor, galleryDlExecutor)
+const downloadExecutor = new HostRoutingExecutor(ytDlpExecutor, galleryDlExecutor)
 
 export const instagramProfileInspector = new InstagramProfileInspector({
   resolveBinaryPath: resolveGalleryDlPath
 })
 
-const buildPersistAdapter = () => {
-  if (!persistEnabled) return new MemoryPersistAdapter()
-  fs.mkdirSync(path.dirname(taskQueueDbPath), { recursive: true })
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Database = require('better-sqlite3') as typeof import('better-sqlite3')
-  const db = new Database(taskQueueDbPath, { timeout: 5000 }) as unknown as {
-    exec: (sql: string) => void
-    prepare: (sql: string) => unknown
-    pragma: (sql: string, opts?: { simple?: boolean }) => unknown
-    transaction: (fn: (...args: unknown[]) => unknown) => unknown
-    close: () => void
-  }
-  db.exec(TASK_QUEUE_DDL_V1)
-  return new SqlitePersistAdapter({
-    // SqlitePersistAdapter accepts a structurally-typed db; better-sqlite3
-    // matches the shape.
-    db: db as unknown as ConstructorParameters<typeof SqlitePersistAdapter>[0]['db']
+const apiModelsDir = path.join(unifiedDbDir, 'models', 'transcription')
+const apiHere = path.dirname(fileURLToPath(import.meta.url))
+const apiWorkerCandidates = [
+  path.join(apiHere, 'transcription-worker.js'),
+  path.join(apiHere, '../../../../packages/transcription/src/worker/entry.ts')
+]
+const apiWorkerScript =
+  apiWorkerCandidates.find((candidate) => fs.existsSync(candidate)) ?? apiWorkerCandidates[0]
+
+const Database = require('better-sqlite3') as typeof import('better-sqlite3')
+fs.mkdirSync(path.dirname(taskQueueDbPath), { recursive: true })
+const sharedSqlite = persistEnabled
+  ? new Database(taskQueueDbPath, { timeout: 5000 })
+  : new Database(':memory:')
+sharedSqlite.exec(TASK_QUEUE_DDL_V1)
+sharedSqlite.exec(TRANSCRIPT_DDL_V1)
+if (
+  persistEnabled &&
+  legacyTaskQueueDbPath !== taskQueueDbPath &&
+  fs.existsSync(legacyTaskQueueDbPath)
+) {
+  mergeLegacyTaskQueueDb({
+    target: sharedSqlite,
+    legacyPath: legacyTaskQueueDbPath,
+    openLegacy: (legacyPath) => new Database(legacyPath, { timeout: 5000, fileMustExist: true })
   })
 }
 
+const persist = persistEnabled
+  ? new SqlitePersistAdapter({
+      db: sharedSqlite as unknown as ConstructorParameters<typeof SqlitePersistAdapter>[0]['db'],
+      ownsConnection: false
+    })
+  : new MemoryPersistAdapter()
+
+export const transcriptStore = new TranscriptStore({ db: sharedSqlite })
+
+export const modelManager = new ModelManager({ modelsDir: apiModelsDir })
+
+const transcriptionExecutor = new TranscriptionExecutor({
+  store: transcriptStore,
+  workerScript: apiWorkerScript,
+  modelsDir: apiModelsDir,
+  execArgv: apiWorkerScript.endsWith('.ts') ? ['--import', 'tsx'] : undefined,
+  resolveFfmpegPath: () => {
+    const loc = resolveFfmpegLocation()
+    if (!loc) {
+      throw new Error('ffmpeg not found')
+    }
+    return fs.existsSync(path.join(loc, 'ffmpeg')) ? path.join(loc, 'ffmpeg') : loc
+  },
+  backend: process.env.VIDBEE_TRANSCRIPTION_BACKEND === 'fake' ? 'fake' : 'sherpa'
+})
+
+const executor = new ExecutorRouter({
+  defaultExecutor: downloadExecutor,
+  byKind: { transcription: transcriptionExecutor }
+})
+
 export const taskQueue = new TaskQueueAPI({
-  persist: buildPersistAdapter(),
+  persist,
   executor,
   maxConcurrency: apiMaxConcurrent
 })
 
-export const taskQueueExecutor = executor
+/**
+ * Apply the transcription group cap without changing the env-based global slot budget.
+ *
+ * @param value Stored transcription concurrency setting.
+ */
+export const applyApiTranscriptionConcurrency = (value: unknown): void => {
+  void taskQueue.setMaxPerGroup(TRANSCRIPTION_GROUP_KEY, clampMaxConcurrentTranscriptions(value))
+}
+
+void applyApiTranscriptionConcurrency(1)
+
+export const taskQueueExecutor = downloadExecutor
+
+let autoEnabled = false
+
+const coordinator = new AutoTranscriptionCoordinator({
+  queue: taskQueue,
+  store: transcriptStore,
+  isEnabled: () => autoEnabled,
+  resolveSourceFile: (task) => task.output?.filePath ?? null,
+  tryImportCaptions: async ({ downloadTaskId, sourceFilePath }) => {
+    const loc = resolveFfmpegLocation()
+    const binary = loc && fs.existsSync(path.join(loc, 'ffmpeg')) ? path.join(loc, 'ffmpeg') : loc
+    const settings = await (await import('./web-settings-store')).webSettingsStore.get()
+    const preferredLanguages = preferredCaptionLanguages(settings.language)
+    const record = await importCaptionsForDownload({
+      downloadTaskId,
+      extractEmbedded: binary
+        ? () =>
+            extractEmbeddedCaptionTracks({
+              ffmpegPath: binary,
+              filePath: sourceFilePath,
+              preferredLanguages
+            })
+        : undefined,
+      preferredLanguages,
+      sourceFilePath,
+      store: transcriptStore
+    })
+    return record?.sourceKind === 'captions'
+  }
+})
 
 let started = false
 export const startTaskQueue = async (): Promise<void> => {
-  if (started) return
+  if (started) {
+    return
+  }
   await taskQueue.start()
   await restoreInstagramProfileGroupCaps(taskQueue)
+  try {
+    const settings = await (await import('./web-settings-store')).webSettingsStore.get()
+    autoEnabled = settings.autoTranscribeAfterDownload === true
+    applyApiTranscriptionConcurrency(settings.maxConcurrentTranscriptions)
+  } catch {
+    autoEnabled = false
+  }
+  coordinator.start()
   started = true
 }
 
+export const setApiAutoTranscribe = (enabled: boolean): void => {
+  autoEnabled = enabled
+}
+
 export const stopTaskQueue = async (): Promise<void> => {
-  if (!started) return
+  if (!started) {
+    return
+  }
+  coordinator.stop()
   await taskQueue.stop()
   started = false
 }

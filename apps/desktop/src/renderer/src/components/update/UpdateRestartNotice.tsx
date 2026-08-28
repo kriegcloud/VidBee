@@ -25,7 +25,7 @@ export function UpdateRestartNotice() {
   }
 
   return (
-    <div className="pointer-events-none fixed right-4 bottom-4 z-50 w-[calc(100%-2rem)] max-w-sm sm:right-6 sm:bottom-6">
+    <div className="pointer-events-none fixed right-4 bottom-[calc(1rem+var(--playback-bar-height,0px))] z-50 w-[calc(100%-2rem)] max-w-sm sm:right-6 sm:bottom-[calc(1.5rem+var(--playback-bar-height,0px))]">
       <Card className="pointer-events-auto border-primary/30 bg-background/95 shadow-xl backdrop-blur">
         <CardContent className="flex flex-col gap-3 p-4">
           <p className="font-medium text-sm">{message}</p>

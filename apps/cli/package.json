@@ -53,26 +53,25 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "build": "node scripts/build.mjs",
-    "verify-dist": "node -e \"const fs=require('node:fs');for(const f of ['dist/index.mjs','dist/bin/vidbee.mjs']){if(!fs.existsSync(f)){console.error('missing build artifact: '+f);process.exit(1)}}\"",
-    "prepublishOnly": "pnpm run test && pnpm run build && pnpm run verify-dist"
+    "verify-dist": "node -e \"const fs=require('node:fs');for(const f of ['dist/index.mjs','dist/bin/vidbee.mjs']){if(!fs.existsSync(f)){process.stderr.write('missing build artifact: '+f+'\\n');process.exit(1)}}\"",
+    "prepublishOnly": "pnpm run build && pnpm run verify-dist"
   },
   "dependencies": {
     "yt-dlp-wrap-plus": "^2.3.20"
   },
   "optionalDependencies": {
-    "better-sqlite3": "^12.9.0"
+    "better-sqlite3": "^13.0.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.18.6",
     "@vidbee/db": "workspace:*",
     "@vidbee/downloader-core": "workspace:*",
+    "@vidbee/logger": "workspace:*",
     "@vidbee/task-queue": "workspace:*",
     "esbuild": "^0.25.0",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=20"

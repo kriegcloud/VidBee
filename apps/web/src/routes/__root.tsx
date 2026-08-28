@@ -1,6 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { ShapeProvider } from "@vidbee/ui/lib/shape-context";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { i18n } from "../lib/i18n";
@@ -40,8 +41,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="bg-background text-foreground" suppressHydrationWarning>
 				<RootHydrationEffects />
-				{children}
-				<Toaster richColors={true} />
+				<ShapeProvider defaultShape="rounded">{children}</ShapeProvider>
+				<Toaster closeButton={true} richColors={true} />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

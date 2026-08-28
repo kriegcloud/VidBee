@@ -25,6 +25,7 @@ import {
 } from '../../../../shared/utils/download-file'
 import { useHistorySync } from '../../hooks/use-history-sync'
 import { ipcServices } from '../../lib/ipc'
+import { logger } from '../../lib/logger'
 import type { DownloadRecord } from '../../store/downloads'
 import {
   downloadStatsAtom,
@@ -316,7 +317,7 @@ export function UnifiedDownloadHistory({
       }
     }
     if (failedIds.length > 0) {
-      console.warn('Failed to delete some playlist files:', failedIds)
+      logger.warn('Failed to delete some playlist files:', failedIds)
     }
   }
 
@@ -352,11 +353,11 @@ export function UnifiedDownloadHistory({
       setAlsoDeleteFiles(false)
     } catch (error) {
       if (confirmAction.type === 'delete-selected') {
-        console.error('Failed to remove selected history items:', error)
+        logger.error('Failed to remove selected history items:', error)
         toast.error(t('notifications.itemsRemoveFailed'))
       }
       if (confirmAction.type === 'delete-playlist') {
-        console.error('Failed to remove playlist history:', error)
+        logger.error('Failed to remove playlist history:', error)
         toast.error(t('notifications.playlistHistoryRemoveFailed'))
       }
     } finally {
@@ -512,7 +513,10 @@ export function UnifiedDownloadHistory({
             </div>
           )}
           {filteredRecords.length === 0 ? (
-            <DownloadEmptyState message={t('download.noItems')} />
+            <DownloadEmptyState
+              hint={t('download.ingestEmptyHint')}
+              message={t('download.noItems')}
+            />
           ) : (
             <div className="w-full pb-4">
               {groupedView.order.map((item) => {
@@ -551,7 +555,7 @@ export function UnifiedDownloadHistory({
         </CardContent>
       </ScrollArea>
       {selectedCount > 0 && (
-        <div className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-2rem)] -translate-x-1/2 sm:right-6 sm:left-auto sm:w-auto sm:translate-x-0">
+        <div className="fixed bottom-[calc(1rem+var(--playback-bar-height,0px))] left-1/2 z-40 w-[calc(100%-2rem)] -translate-x-1/2 sm:right-6 sm:left-auto sm:w-auto sm:translate-x-0">
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-full border border-border/50 bg-background/80 py-2 pr-2 pl-5 shadow-lg backdrop-blur">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground text-xs">{selectionSummary}</span>

@@ -1,7 +1,15 @@
+import { looksLikeNetscapeCookies } from "@vidbee/downloader-core/cookie-setup";
 import {
-	buildBrowserCookiesSetting,
-	parseBrowserCookiesSetting,
-} from "@vidbee/downloader-core/browser-cookies-setting";
+	applyViaVidBeeFilename,
+	FILENAME_STYLE_PREVIEWS,
+	FILENAME_STYLES,
+	type FilenameStyle,
+	isFilenameStyle,
+} from "@vidbee/downloader-core/filename-style";
+import {
+	FOLLOW_INTERFACE_SUBTITLE_LANGUAGE,
+	MAX_SUBTITLE_LANGUAGES,
+} from "@vidbee/downloader-core/subtitle-languages";
 import {
 	type LanguageCode,
 	languageList,
@@ -23,6 +31,7 @@ import {
 	ItemContent,
 	ItemDescription,
 	ItemGroup,
+	ItemMedia,
 	ItemSeparator,
 	ItemTitle,
 } from "@vidbee/ui/components/ui/item";
@@ -33,20 +42,16 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@vidbee/ui/components/ui/select";
+import { SubtitleLanguagePicker } from "@vidbee/ui/components/ui/subtitle-language-picker";
 import { Switch } from "@vidbee/ui/components/ui/switch";
 import {
+	TabItem,
+	TabPanel,
 	Tabs,
-	TabsContent,
 	TabsList,
-	TabsTrigger,
 } from "@vidbee/ui/components/ui/tabs";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@vidbee/ui/components/ui/tooltip";
-import { AlertTriangle, Folder, RefreshCw } from "lucide-react";
-import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Film, Folder, Music, RefreshCw } from "lucide-react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useWebSettings } from "../../hooks/use-web-settings";
@@ -57,19 +62,9 @@ import type {
 import { orpcClient } from "../../lib/orpc-client";
 import type { ThemeValue, WebAppSettings } from "../../lib/web-settings";
 import { AppShell } from "../layout/app-shell";
+import { CookiesSetupSection } from "../settings/cookies-setup-section";
 
-type SettingsTab = "advanced" | "cookies" | "general";
-
-type BrowserProfileValidationReason =
-	| "browserUnsupported"
-	| "empty"
-	| "pathNotFound"
-	| "profileNotFound";
-
-interface BrowserProfileValidation {
-	valid: boolean;
-	reason?: BrowserProfileValidationReason;
-}
+type SettingsTab = "advanced" | "cookies" | "general" | "metadata";
 
 interface ServerDirectoryEntry {
 	name: string;
@@ -94,59 +89,7 @@ const parsePlatform = (userAgent: string): string => {
 	return "web";
 };
 
-const ABSOLUTE_WINDOWS_PATH_REGEX = /^[A-Za-z]:\\/;
-
-const validateBrowserProfile = (
-	browser: string,
-	profile: string,
-	platform: string,
-): BrowserProfileValidation => {
-	const trimmedProfile = profile.trim();
-	if (!trimmedProfile) {
-		return { valid: false, reason: "empty" };
-	}
-
-	if (browser === "safari" && platform !== MAC_PLATFORM) {
-		return { valid: false, reason: "browserUnsupported" };
-	}
-
-	const hasPathSeparator =
-		trimmedProfile.includes("/") || trimmedProfile.includes("\\");
-	if (hasPathSeparator) {
-		const isAbsolutePath =
-			trimmedProfile.startsWith("/") ||
-			ABSOLUTE_WINDOWS_PATH_REGEX.test(trimmedProfile);
-		if (!isAbsolutePath) {
-			return { valid: false, reason: "pathNotFound" };
-		}
-	}
-
-	if (trimmedProfile.length < 2) {
-		return { valid: false, reason: "profileNotFound" };
-	}
-
-	return { valid: true };
-};
-
 const toSelectString = (value: number): string => value.toString();
-
-const getBrowserProfileWarningMessage = (
-	reason: BrowserProfileValidationReason | undefined,
-	t: (key: string) => string,
-): string => {
-	switch (reason) {
-		case "pathNotFound":
-			return t("settings.browserForCookiesProfileInvalidPath");
-		case "profileNotFound":
-			return t("settings.browserForCookiesProfileInvalidProfile");
-		case "browserUnsupported":
-			return t("settings.browserForCookiesProfileInvalidUnsupported");
-		case "empty":
-			return t("settings.browserForCookiesProfileInvalidEmpty");
-		default:
-			return t("settings.browserForCookiesProfileInvalid");
-	}
-};
 
 const updateSingleSetting = <K extends keyof WebAppSettings>(
 	key: K,
@@ -175,33 +118,6 @@ export const SettingsPage = () => {
 	const [configFileUploading, setConfigFileUploading] = useState(false);
 	const [cookiesFileUploading, setCookiesFileUploading] = useState(false);
 
-	const parsedBrowserCookies = parseBrowserCookiesSetting(
-		settings.browserForCookies,
-	);
-	const browserForCookiesValue = parsedBrowserCookies.browser;
-	const browserCookiesProfileValue = parsedBrowserCookies.profile;
-
-	const normalizedBrowserCookiesSetting = buildBrowserCookiesSetting(
-		browserForCookiesValue,
-		browserCookiesProfileValue,
-	);
-
-	const browserProfileValidation = useMemo(
-		() =>
-			validateBrowserProfile(
-				browserForCookiesValue,
-				browserCookiesProfileValue,
-				platform,
-			),
-		[browserForCookiesValue, browserCookiesProfileValue, platform],
-	);
-
-	const hasBrowserProfileValue = browserCookiesProfileValue.trim().length > 0;
-	const showBrowserProfileWarning =
-		hasBrowserProfileValue &&
-		!browserProfileValidation.valid &&
-		browserProfileValidation.reason !== "empty";
-
 	useEffect(() => {
 		if (typeof window === "undefined") {
 			return;
@@ -222,27 +138,25 @@ export const SettingsPage = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (settings.browserForCookies === normalizedBrowserCookiesSetting) {
-			return;
-		}
-
-		updateSingleSetting(
-			"browserForCookies",
-			normalizedBrowserCookiesSetting,
-			updateSettings,
-		);
-	}, [
-		normalizedBrowserCookiesSetting,
-		settings.browserForCookies,
-		updateSettings,
-	]);
-
 	const languageOptions = languageList;
 	const activeLanguageCode = normalizeLanguageCode(settings.language);
 	const currentLanguage =
 		languageOptions.find((option) => option.value === activeLanguageCode) ??
 		languageOptions[0];
+	const subtitleLanguageOptions = [
+		{
+			label: t("settings.followInterfaceLanguage", {
+				language: currentLanguage.name,
+			}),
+			languageTag: currentLanguage.hreflang,
+			value: FOLLOW_INTERFACE_SUBTITLE_LANGUAGE,
+		},
+		...languageOptions.map((option) => ({
+			label: option.name,
+			languageTag: option.hreflang,
+			value: option.value,
+		})),
+	];
 
 	const handleThemeChange = (value: ThemeValue) => {
 		if (settings.theme === value) {
@@ -357,6 +271,11 @@ export const SettingsPage = () => {
 			});
 	};
 
+	/**
+	 * Upload a Netscape cookies file after rejecting non-text exports.
+	 *
+	 * @param event File input change event.
+	 */
 	const handleCookiesFileInputChange = (
 		event: ChangeEvent<HTMLInputElement>,
 	) => {
@@ -367,9 +286,17 @@ export const SettingsPage = () => {
 		}
 
 		setCookiesFileUploading(true);
-		void uploadSelectedSettingsFile("cookies", selectedFile)
-			.then((serverPath) => {
-				updateSingleSetting("cookiesPath", serverPath, updateSettings);
+		void selectedFile
+			.text()
+			.then(async (text) => {
+				if (!looksLikeNetscapeCookies(text)) {
+					throw new Error(t("settings.cookiesFileInvalidFormat"));
+				}
+				const serverPath = await uploadSelectedSettingsFile(
+					"cookies",
+					selectedFile,
+				);
+				updateSettings({ browserForCookies: "none", cookiesPath: serverPath });
 			})
 			.catch((error: unknown) => {
 				const message =
@@ -381,17 +308,6 @@ export const SettingsPage = () => {
 			.finally(() => {
 				setCookiesFileUploading(false);
 			});
-	};
-
-	const handleOpenCookiesGuide = () => {
-		if (typeof window === "undefined") {
-			return;
-		}
-		window.open(
-			"https://docs.vidbee.org/cookies",
-			"_blank",
-			"noopener,noreferrer",
-		);
 	};
 
 	return (
@@ -409,17 +325,14 @@ export const SettingsPage = () => {
 						onValueChange={(value) => setActiveTab(value as SettingsTab)}
 						value={activeTab}
 					>
-						<TabsList className="grid w-full grid-cols-3">
-							<TabsTrigger value="general">{t("settings.general")}</TabsTrigger>
-							<TabsTrigger value="cookies">
-								{t("settings.cookiesTab")}
-							</TabsTrigger>
-							<TabsTrigger value="advanced">
-								{t("settings.advanced")}
-							</TabsTrigger>
+						<TabsList>
+							<TabItem label={t("settings.general")} value="general" />
+							<TabItem label={t("settings.metadataTab")} value="metadata" />
+							<TabItem label={t("settings.cookiesTab")} value="cookies" />
+							<TabItem label={t("settings.advanced")} value="advanced" />
 						</TabsList>
 
-						<TabsContent className="mt-2 space-y-4" value="general">
+						<TabPanel className="mt-2 space-y-4" value="general">
 							<ItemGroup>
 								<Item variant="muted">
 									<ItemContent>
@@ -494,15 +407,9 @@ export const SettingsPage = () => {
 										>
 											<SelectTrigger className="w-52">
 												<SelectValue placeholder={currentLanguage.name}>
-													<div className="flex items-center gap-2">
-														<span
-															aria-hidden="true"
-															className={`${currentLanguage.flag} rounded-xs text-base`}
-														/>
-														<span lang={currentLanguage.hreflang}>
-															{currentLanguage.name}
-														</span>
-													</div>
+													<span lang={currentLanguage.hreflang}>
+														{currentLanguage.name}
+													</span>
 												</SelectValue>
 											</SelectTrigger>
 											<SelectContent>
@@ -516,13 +423,7 @@ export const SettingsPage = () => {
 														key={option.value}
 														value={option.value}
 													>
-														<div className="flex items-center gap-2">
-															<span
-																aria-hidden="true"
-																className={`${option.flag} rounded-xs text-base`}
-															/>
-															<span lang={option.hreflang}>{option.name}</span>
-														</div>
+														<span lang={option.hreflang}>{option.name}</span>
 													</SelectItem>
 												))}
 											</SelectContent>
@@ -542,10 +443,11 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.oneClickDownload}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"oneClickDownload",
-													value,
+													!settings.oneClickDownload,
 													updateSettings,
 												)
 											}
@@ -678,26 +580,131 @@ export const SettingsPage = () => {
 									</>
 								)}
 							</ItemGroup>
-						</TabsContent>
+						</TabPanel>
 
-						<TabsContent className="mt-2 space-y-4" value="advanced">
+						<TabPanel className="mt-2 space-y-4" value="metadata">
+							<FilenameStylePicker
+								filenameViaVidBee={settings.filenameViaVidBee ?? true}
+								onChange={(style) =>
+									updateSingleSetting("filenameStyle", style, updateSettings)
+								}
+								onFilenameViaVidBeeChange={(enabled) =>
+									updateSingleSetting(
+										"filenameViaVidBee",
+										enabled,
+										updateSettings,
+									)
+								}
+								value={settings.filenameStyle}
+							/>
+
 							<ItemGroup>
 								<Item variant="muted">
 									<ItemContent>
-										<ItemTitle>{t("settings.embedSubs")}</ItemTitle>
+										<ItemTitle>{t("settings.downloadSubtitles")}</ItemTitle>
 										<ItemDescription>
-											{t("settings.embedSubsDescription")}
+											{t("settings.downloadSubtitlesDescription")}
 										</ItemDescription>
 									</ItemContent>
 									<ItemActions>
 										<Switch
-											checked={settings.embedSubs}
-											onCheckedChange={(value) =>
-												updateSingleSetting("embedSubs", value, updateSettings)
+											checked={settings.downloadSubtitles}
+											label=""
+											onToggle={() =>
+												updateSingleSetting(
+													"downloadSubtitles",
+													!settings.downloadSubtitles,
+													updateSettings,
+												)
 											}
 										/>
 									</ItemActions>
 								</Item>
+
+								{settings.downloadSubtitles && (
+									<>
+										<ItemSeparator />
+
+										<Item variant="muted">
+											<ItemContent>
+												<ItemTitle>{t("settings.subtitleLanguages")}</ItemTitle>
+												<ItemDescription>
+													{t("settings.subtitleLanguagesDescription")}
+												</ItemDescription>
+											</ItemContent>
+											<ItemActions>
+												<SubtitleLanguagePicker
+													ariaLabel={t("settings.subtitleLanguages")}
+													emptyLabel={t("settings.subtitleLanguageEmpty")}
+													limitLabel={t("settings.subtitleLanguageLimit", {
+														count: MAX_SUBTITLE_LANGUAGES,
+													})}
+													maxSelections={MAX_SUBTITLE_LANGUAGES}
+													onValueChange={(values) =>
+														updateSingleSetting(
+															"subtitleLanguages",
+															values,
+															updateSettings,
+														)
+													}
+													options={subtitleLanguageOptions}
+													searchPlaceholder={t(
+														"settings.subtitleLanguageSearch",
+													)}
+													values={settings.subtitleLanguages}
+												/>
+											</ItemActions>
+										</Item>
+
+										<ItemSeparator />
+
+										<Item variant="muted">
+											<ItemContent>
+												<ItemTitle>{t("settings.writeAutoSubs")}</ItemTitle>
+												<ItemDescription>
+													{t("settings.writeAutoSubsDescription")}
+												</ItemDescription>
+											</ItemContent>
+											<ItemActions>
+												<Switch
+													checked={settings.writeAutoSubs}
+													label=""
+													onToggle={() =>
+														updateSingleSetting(
+															"writeAutoSubs",
+															!settings.writeAutoSubs,
+															updateSettings,
+														)
+													}
+												/>
+											</ItemActions>
+										</Item>
+
+										<ItemSeparator />
+
+										<Item variant="muted">
+											<ItemContent>
+												<ItemTitle>{t("settings.embedSubs")}</ItemTitle>
+												<ItemDescription>
+													{t("settings.embedSubsDescription")}
+												</ItemDescription>
+											</ItemContent>
+											<ItemActions>
+												<Switch
+													checked={settings.embedSubs}
+													label=""
+													onToggle={() =>
+														updateSingleSetting(
+															"embedSubs",
+															!settings.embedSubs,
+															updateSettings,
+														)
+													}
+												/>
+											</ItemActions>
+										</Item>
+									</>
+								)}
 
 								<ItemSeparator />
 
@@ -711,10 +718,11 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.embedThumbnail}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"embedThumbnail",
-													value,
+													!settings.embedThumbnail,
 													updateSettings,
 												)
 											}
@@ -734,10 +742,11 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.embedMetadata}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"embedMetadata",
-													value,
+													!settings.embedMetadata,
 													updateSettings,
 												)
 											}
@@ -757,19 +766,22 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.embedChapters}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"embedChapters",
-													value,
+													!settings.embedChapters,
 													updateSettings,
 												)
 											}
 										/>
 									</ItemActions>
 								</Item>
+							</ItemGroup>
+						</TabPanel>
 
-								<ItemSeparator />
-
+						<TabPanel className="mt-2 space-y-4" value="advanced">
+							<ItemGroup>
 								<Item variant="muted">
 									<ItemContent>
 										<ItemTitle>{t("settings.shareWatermark")}</ItemTitle>
@@ -780,10 +792,11 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.shareWatermark}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"shareWatermark",
-													value,
+													!settings.shareWatermark,
 													updateSettings,
 												)
 											}
@@ -901,10 +914,11 @@ export const SettingsPage = () => {
 									<ItemActions>
 										<Switch
 											checked={settings.enableAnalytics}
-											onCheckedChange={(value) =>
+											label=""
+											onToggle={() =>
 												updateSingleSetting(
 													"enableAnalytics",
-													value,
+													!settings.enableAnalytics,
 													updateSettings,
 												)
 											}
@@ -912,192 +926,17 @@ export const SettingsPage = () => {
 									</ItemActions>
 								</Item>
 							</ItemGroup>
-						</TabsContent>
+						</TabPanel>
 
-						<TabsContent className="mt-2 space-y-4" value="cookies">
-							<ItemGroup>
-								<Item variant="muted">
-									<ItemContent>
-										<ItemTitle>{t("settings.browserForCookies")}</ItemTitle>
-										<ItemDescription>
-											{t("settings.browserForCookiesDescription")}
-										</ItemDescription>
-										{platform === WINDOWS_PLATFORM && (
-											<ItemDescription className="text-red-500">
-												{t("settings.browserForCookiesWindowsNote")}
-											</ItemDescription>
-										)}
-									</ItemContent>
-									<ItemActions>
-										<Select
-											onValueChange={(value) =>
-												updateSingleSetting(
-													"browserForCookies",
-													buildBrowserCookiesSetting(value, ""),
-													updateSettings,
-												)
-											}
-											value={browserForCookiesValue}
-										>
-											<SelectTrigger className="w-32">
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="none">
-													{t("settings.none")}
-												</SelectItem>
-												<SelectItem value="chrome">
-													{t("settings.browserOptions.chrome")}
-												</SelectItem>
-												<SelectItem value="chromium">
-													{t("settings.browserOptions.chromium")}
-												</SelectItem>
-												<SelectItem value="firefox">
-													{t("settings.browserOptions.firefox")}
-												</SelectItem>
-												<SelectItem value="edge">
-													{t("settings.browserOptions.edge")}
-												</SelectItem>
-												<SelectItem value="safari">
-													{t("settings.browserOptions.safari")}
-												</SelectItem>
-												<SelectItem value="brave">
-													{t("settings.browserOptions.brave")}
-												</SelectItem>
-												<SelectItem value="opera">
-													{t("settings.browserOptions.opera")}
-												</SelectItem>
-												<SelectItem value="vivaldi">
-													{t("settings.browserOptions.vivaldi")}
-												</SelectItem>
-												<SelectItem value="whale">
-													{t("settings.browserOptions.whale")}
-												</SelectItem>
-											</SelectContent>
-										</Select>
-									</ItemActions>
-								</Item>
-
-								<ItemSeparator />
-
-								<Item variant="muted">
-									<ItemContent className="basis-full">
-										<ItemTitle>
-											{t("settings.browserForCookiesProfile")}
-										</ItemTitle>
-										<ItemDescription>
-											{t("settings.browserForCookiesProfileDescription")}
-										</ItemDescription>
-									</ItemContent>
-									<ItemActions className="basis-full">
-										<div className="relative w-full">
-											<Input
-												className="w-full pr-10"
-												disabled={browserForCookiesValue === "none"}
-												onChange={(event) =>
-													updateSingleSetting(
-														"browserForCookies",
-														buildBrowserCookiesSetting(
-															browserForCookiesValue,
-															event.target.value,
-														),
-														updateSettings,
-													)
-												}
-												placeholder={t(
-													"settings.browserForCookiesProfilePlaceholder",
-												)}
-												value={browserCookiesProfileValue}
-											/>
-											{showBrowserProfileWarning ? (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<span className="absolute top-1/2 right-3 inline-flex h-4 w-4 -translate-y-1/2 items-center justify-center text-amber-500">
-															<AlertTriangle aria-hidden className="h-4 w-4" />
-														</span>
-													</TooltipTrigger>
-													<TooltipContent>
-														{getBrowserProfileWarningMessage(
-															browserProfileValidation.reason,
-															t,
-														)}
-													</TooltipContent>
-												</Tooltip>
-											) : null}
-										</div>
-									</ItemActions>
-								</Item>
-							</ItemGroup>
-
-							<ItemGroup>
-								<Item variant="muted">
-									<ItemContent>
-										<ItemTitle>{t("settings.cookiesFile")}</ItemTitle>
-										<ItemDescription>
-											{t("settings.cookiesFileDescription")}
-										</ItemDescription>
-									</ItemContent>
-									<ItemActions>
-										<div className="flex w-full max-w-md gap-2">
-											<Input
-												className="flex-1"
-												readOnly
-												value={settings.cookiesPath}
-											/>
-											<Button
-												disabled={cookiesFileUploading}
-												onClick={handleSelectCookiesFile}
-											>
-												{cookiesFileUploading
-													? t("download.loading")
-													: t("settings.selectPath")}
-											</Button>
-											<Button
-												disabled={cookiesFileUploading || !settings.cookiesPath}
-												onClick={() =>
-													updateSingleSetting("cookiesPath", "", updateSettings)
-												}
-												variant="secondary"
-											>
-												{t("settings.clearCookiesFile")}
-											</Button>
-										</div>
-									</ItemActions>
-								</Item>
-							</ItemGroup>
-
-							<ItemGroup>
-								<Item variant="muted">
-									<ItemContent>
-										<ItemTitle>{t("settings.cookiesHelpTitle")}</ItemTitle>
-										<ul className="list-inside list-disc space-y-1 text-muted-foreground text-sm leading-normal">
-											<li>{t("settings.cookiesHelpBrowser")}</li>
-											<li>{t("settings.cookiesHelpFile")}</li>
-										</ul>
-									</ItemContent>
-								</Item>
-
-								<ItemSeparator />
-
-								<Item variant="muted">
-									<ItemContent>
-										<ItemTitle>{t("settings.cookiesGuideTitle")}</ItemTitle>
-										<ItemDescription>
-											{t("settings.cookiesGuideDescription")}
-										</ItemDescription>
-									</ItemContent>
-									<ItemActions>
-										<Button
-											className="px-0"
-											onClick={handleOpenCookiesGuide}
-											variant="link"
-										>
-											{t("settings.cookiesGuideLink")}
-										</Button>
-									</ItemActions>
-								</Item>
-							</ItemGroup>
-						</TabsContent>
+						<TabPanel className="mt-2 space-y-4" value="cookies">
+							<CookiesSetupSection
+								cookiesFileUploading={cookiesFileUploading}
+								onSelectCookiesFile={handleSelectCookiesFile}
+								platform={platform}
+								settings={settings}
+								updateSettings={updateSettings}
+							/>
+						</TabPanel>
 					</Tabs>
 
 					<input
@@ -1218,5 +1057,122 @@ export const SettingsPage = () => {
 				</div>
 			</div>
 		</AppShell>
+	);
+};
+
+/**
+ * Segmented filename-style control with video and audio previews.
+ *
+ * @param props.value Current filename style from settings.
+ * @param props.onChange Persist the selected style.
+ * @param props.filenameViaVidBee Whether via VidBee is appended to filenames.
+ * @param props.onFilenameViaVidBeeChange Persist the via VidBee toggle.
+ */
+const FilenameStylePicker = ({
+	filenameViaVidBee,
+	onChange,
+	onFilenameViaVidBeeChange,
+	value,
+}: {
+	filenameViaVidBee: boolean;
+	onChange: (style: FilenameStyle) => void;
+	onFilenameViaVidBeeChange: (enabled: boolean) => void;
+	value?: FilenameStyle;
+}) => {
+	const { t } = useTranslation();
+	const selectedStyle = isFilenameStyle(value) ? value : "pretty";
+	const preview = FILENAME_STYLE_PREVIEWS[selectedStyle];
+
+	return (
+		<ItemGroup>
+			<Item className="flex-col items-stretch gap-3" variant="muted">
+				<ItemContent>
+					<ItemTitle>{t("settings.filenameStyle")}</ItemTitle>
+					<ItemDescription>
+						{t("settings.filenameStyleDescription")}
+					</ItemDescription>
+				</ItemContent>
+				<Tabs
+					className="w-full"
+					onValueChange={(style) => {
+						if (isFilenameStyle(style)) {
+							onChange(style);
+						}
+					}}
+					value={selectedStyle}
+				>
+					<TabsList className="flex w-full">
+						{FILENAME_STYLES.map((style) => (
+							<TabItem
+								className="flex-1 justify-center"
+								key={style}
+								label={t(`settings.filenameStyleOptions.${style}`)}
+								value={style}
+							/>
+						))}
+					</TabsList>
+				</Tabs>
+			</Item>
+
+			<ItemSeparator />
+
+			<Item variant="muted">
+				<ItemMedia variant="icon">
+					<Film />
+				</ItemMedia>
+				<ItemContent>
+					<ItemTitle className="w-full min-w-0 max-w-full break-all font-medium">
+						{applyViaVidBeeFilename(preview.video, filenameViaVidBee)}
+					</ItemTitle>
+					<ItemDescription>
+						{t("settings.filenameStylePreviewVideo")}
+					</ItemDescription>
+				</ItemContent>
+			</Item>
+
+			<ItemSeparator />
+
+			<Item variant="muted">
+				<ItemMedia variant="icon">
+					<Music />
+				</ItemMedia>
+				<ItemContent>
+					<ItemTitle className="w-full min-w-0 max-w-full break-all font-medium">
+						{applyViaVidBeeFilename(preview.audio, filenameViaVidBee)}
+					</ItemTitle>
+					<ItemDescription>
+						{t("settings.filenameStylePreviewAudio")}
+					</ItemDescription>
+				</ItemContent>
+			</Item>
+
+			<ItemSeparator />
+
+			<Item variant="muted">
+				<ItemContent>
+					<ItemTitle>{t("settings.filenameViaVidBee")}</ItemTitle>
+					<ItemDescription>
+						{t("settings.filenameViaVidBeeDescription")}
+					</ItemDescription>
+				</ItemContent>
+				<ItemActions>
+					<Switch
+						checked={filenameViaVidBee}
+						label=""
+						onToggle={() => onFilenameViaVidBeeChange(!filenameViaVidBee)}
+					/>
+				</ItemActions>
+			</Item>
+
+			<ItemSeparator />
+
+			<Item variant="muted">
+				<ItemContent>
+					<ItemDescription className="line-clamp-none">
+						{t("settings.filenameStyleNote")}
+					</ItemDescription>
+				</ItemContent>
+			</Item>
+		</ItemGroup>
 	);
 };

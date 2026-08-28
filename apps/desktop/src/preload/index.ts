@@ -1,5 +1,6 @@
 import { electronAPI } from '@electron-toolkit/preload'
-import { contextBridge, ipcRenderer } from 'electron'
+import { logger } from '@vidbee/logger/client'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createIpcProxy } from 'electron-ipc-decorator/client'
 import type { IpcServices } from '../main/ipc'
 
@@ -24,6 +25,17 @@ const api = {
   // Send message to main process
   send: (channel: string, ...args: unknown[]) => {
     ipcRenderer.send(channel, ...args)
+  },
+  /**
+   * Resolve a dropped or pasted File to a local filesystem path.
+   */
+  getPathForFile: (file: File): string | null => {
+    try {
+      const filePath = webUtils.getPathForFile(file)
+      return filePath?.trim() ? filePath : null
+    } catch {
+      return null
+    }
   }
 }
 
@@ -35,7 +47,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
-    console.error('Failed to expose APIs in context bridge:', error)
+    logger.error('Failed to expose APIs in context bridge:', error)
   }
 } else {
   // @ts-expect-error (define in dts)

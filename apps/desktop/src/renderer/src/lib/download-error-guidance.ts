@@ -26,6 +26,13 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
     patterns: ['secretstorage not available']
   },
   {
+    // macOS TCC Files & Folders: yt-dlp reports "could not find" when it
+    // cannot stat another app's Cookies DB. The file is often present.
+    message:
+      "macOS is blocking VidBee from reading this browser's cookies. Open System Settings → Privacy & Security → Files & Folders, enable VidBee for this browser, then retry. If you already allowed it, quit VidBee fully and open it again.",
+    patterns: ['macos files & folders permission is required']
+  },
+  {
     // GitHub issues #362, #364, #363, #361, #360 (and the older long tail of
     // #107 / #210 / #349 / #353) all surface as Chrome holding the cookies
     // database open on Windows.
@@ -92,6 +99,20 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
     patterns: ['more expected. giving up after', 'giving up after']
   },
   {
+    // Bilibili (and similar) metadata probes can truncate the HTTP body.
+    // `--retries` does not cover extractor webpage reads, so the UI should
+    // tell the user to parse again instead of dumping the raw urllib error.
+    message:
+      'The site closed the connection before video info finished loading. Wait a moment and try again.',
+    patterns: [
+      'incompleteread',
+      'error reading response',
+      'read timed out',
+      'connection reset',
+      'connection aborted'
+    ]
+  },
+  {
     // GitHub issue #352 is DRM protected and should be explained directly.
     message:
       'This source is DRM protected, so VidBee cannot download it with the current yt-dlp workflow.',
@@ -119,6 +140,20 @@ export const getDownloadErrorGuidance = (rawError: string | undefined | null): s
   const normalizedError = normalizeDownloadError(rawError)
   if (!normalizedError) {
     return null
+  }
+
+  const macosCookieDbMissing =
+    normalizedError.includes('could not find') &&
+    normalizedError.includes('cookies database') &&
+    (normalizedError.includes('/library/application support/') ||
+      normalizedError.includes('/library/safari') ||
+      normalizedError.includes('/library/cookies'))
+  if (macosCookieDbMissing) {
+    return (
+      DOWNLOAD_ERROR_GUIDANCE_RULES.find((rule) =>
+        rule.patterns.includes('macos files & folders permission is required')
+      )?.message ?? null
+    )
   }
 
   for (const rule of DOWNLOAD_ERROR_GUIDANCE_RULES) {

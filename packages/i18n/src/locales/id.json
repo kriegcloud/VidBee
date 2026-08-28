@@ -16,8 +16,21 @@
     "betaProgramDescription": "Terima build awal dan fitur yang akan datang sebelum orang lain.",
     "betaProgramTitle": "Saluran pratinjau",
     "description": "VidBee adalah pengunduh gratis dan open-source yang dibangun dengan Electron dan didukung oleh yt-dlp.",
+    "downloadEngine": {
+      "status": {
+        "bundled-fallback": "Cadangan bawaan",
+        "checking": "Memeriksa",
+        "installing": "Memasang",
+        "preparing": "Menyiapkan",
+        "retry-scheduled": "Coba lagi dijadwalkan",
+        "unavailable": "Tidak tersedia",
+        "up-to-date": "Terbaru"
+      },
+      "title": "Mesin unduhan",
+      "versions": "yt-dlp {{ytDlpVersion}} · Node {{nodeVersion}}"
+    },
     "followAuthorActions": {
-      "follow": "Ikuti @nexmoex"
+      "follow": "Ikuti @nexmoe"
     },
     "followAuthorDescription": "Tetap update dengan berita dan pembaruan VidBee terbaru.",
     "followAuthorSupport": "Ikuti pengembang di X (Twitter) untuk mendapatkan pembaruan dan berita terbaru tentang VidBee.",
@@ -40,8 +53,6 @@
       "updateError": "Gagal memeriksa pembaruan: {{error}}",
       "unknownErrorFallback": "Kesalahan tidak diketahui"
     },
-    "preferencesDescription": "Sesuaikan pengaturan pembaruan tanpa meninggalkan halaman ini.",
-    "preferencesTitle": "Toggle Cepat",
     "resources": {
       "changelog": "Catatan rilis",
       "changelogDescription": "Ikuti apa yang berubah di setiap versi.",
@@ -54,7 +65,7 @@
       "githubIssues": "GitHub",
       "githubIssuesDescription": "Laporkan bug atau minta fitur di GitHub.",
       "xFeedback": "Twitter",
-      "xFeedbackDescription": "Bagikan masukan atau saran di X dengan menyebut @nexmoex.",
+      "xFeedbackDescription": "Bagikan masukan atau saran di X dengan menyebut @nexmoe.",
       "discord": "Discord",
       "discordDescription": "Bergabunglah dengan komunitas Discord kami untuk diskusi dan dukungan.",
       "faq": "FAQ",
@@ -108,7 +119,14 @@
   },
   "app": {
     "description": "Unduh video dan audio dari ratusan situs",
-    "title": "VidBee"
+    "title": "VidBee",
+    "quitConfirm": {
+      "title": "Keluar dari VidBee?",
+      "message": "{{count}} tugas masih berjalan. Keluar akan menghentikannya.",
+      "messagePlural": "{{count}} tugas masih berjalan. Keluar akan menghentikannya.",
+      "quit": "Keluar",
+      "cancel": "Batal"
+    }
   },
   "download": {
     "active": "Aktif",
@@ -117,10 +135,15 @@
     "back": "Kembali",
     "cancel": "Batal",
     "cancelled": "Dibatalkan",
+    "pause": "Jeda",
+    "paused": "Dijeda",
+    "resume": "Lanjutkan",
     "clearCompleted": "Hapus Selesai",
     "clearDownloads": "Hapus Unduhan",
     "completed": "Selesai",
     "downloadAudio": "Unduh Audio",
+    "dialogSubtitle": "Pilih format dan lokasi penyimpanan",
+    "dialogTitle": "Unduh",
     "downloadBtn": "Unduh",
     "downloadPending": "Menunggu",
     "downloadQueue": "Antrian Unduhan",
@@ -162,6 +185,11 @@
     "pastePlaylistUrl": "Klik untuk menempelkan tautan playlist dari clipboard [Ctrl + V]",
     "pasteUrl": "Klik untuk menempelkan URL video atau ID [Ctrl + V]",
     "pasteUrlButton": "Tempel URL",
+    "ingestDropUrl": "Lepaskan untuk mengunduh",
+    "ingestDropMedia": "Lepaskan untuk mentranskripsi",
+    "ingestDropMixed": "Lepaskan untuk mengunduh dan mentranskripsi",
+    "ingestDropDescription": "Tautan memulai unduhan. File audio dan video memulai transkripsi.",
+    "ingestEmptyHint": "Tempel tautan untuk mengunduh, atau lepas audio/video untuk mentranskripsi.",
     "preparing": "Mempersiapkan...",
     "processing": "Memproses",
     "progress": "Kemajuan",
@@ -192,6 +220,9 @@
     "video": "Video",
     "videoInfo": "Informasi Video",
     "videoInfoUpdated": "Informasi video diperbarui",
+    "frameRate": "Laju bingkai",
+    "codecAuto": "Otomatis",
+    "fpsHighest": "Tertinggi",
     "metadata": {
       "source": "Sumber",
       "playlist": "Playlist",
@@ -219,7 +250,22 @@
       "subscription": "Berlangganan"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}})."
+    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "cookiesSetupAction": "Atur cookie",
+    "cookiesSetupDialogTitle": "Atur cookie",
+    "cookiesSetupNeeded": "Unduhan ini memerlukan sesi yang sudah masuk. Atur cookie, lalu coba lagi.",
+    "cookiesSetupLocked": "Chrome mengunci basis data cookie-nya. Gunakan Firefox, impor file cookie, atau tutup Chrome sepenuhnya.",
+    "cookiesSetupMacFiles": "macOS memblokir VidBee agar tidak membaca cookie browser ini. Buka Pengaturan Sistem → Privasi & Keamanan → File dan Folder, izinkan VidBee mengakses browser ini, lalu coba lagi. Jika sudah diizinkan, keluar sepenuhnya dari VidBee lalu buka lagi.",
+    "cookiesSetupOpenFilesSettings": "Buka pengaturan File dan Folder",
+    "cookiesSetupDecrypt": "Windows tidak dapat mendekripsi cookie Chrome. Gunakan Firefox atau impor file cookie.",
+    "cookiesSetupFileInvalid": "File cookie yang dipilih bukan ekspor yang valid. Ekspor cookies.txt lalu coba lagi.",
+    "cookiesSetupKeyring": "Build Linux ini tidak dapat membaca cookie Chrome. Gunakan Firefox atau impor file cookie.",
+    "cookiesSetupStale": "Cookie saat ini tampak kedaluwarsa atau diblokir. Segarkan login, lalu coba lagi.",
+    "cookiesSetupRetry": "Coba unduh lagi",
+    "cookiesSetupDone": "Selesai",
+    "pause": "Jeda",
+    "paused": "Dijeda",
+    "resume": "Lanjutkan"
   },
   "error": {
     "title": "Terjadi kesalahan",
@@ -319,6 +365,7 @@
     "download": "Unduh",
     "playlist": "Unduh Playlist",
     "rss": "RSS",
+    "transcripts": "Transkrip",
     "subscriptions": "Berlangganan",
     "preferences": "Preferensi",
     "supportedSites": "Situs yang Didukung",
@@ -342,7 +389,12 @@
     "removeFailed": "Gagal menghapus item",
     "settingsSaved": "Pengaturan disimpan",
     "urlCopied": "URL disalin ke clipboard",
-    "videoCopied": "Video disalin ke clipboard"
+    "videoCopied": "Video disalin ke clipboard",
+    "transcriptionStarted": "Transkripsi dimulai",
+    "transcriptionStartedMany": "Mulai mentranskripsi {{count}} file",
+    "transcriptionStartFailed": "Tidak dapat memulai transkripsi",
+    "unsupportedDrop": "Tempel tautan, atau lepas file audio atau video",
+    "localMediaDesktopOnly": "File lokal dapat ditranskripsi di aplikasi desktop"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} berkas",
@@ -429,9 +481,9 @@
     "audio": "Preferensi Audio",
     "browserForCookies": "Pilih browser untuk menggunakan cookie",
     "browserForCookiesDescription": "Browser untuk mengekstrak cookie untuk autentikasi",
-    "browserForCookiesWindowsNote": "Di Windows, hanya cookie Firefox yang didukung. Untuk browser lain, silakan konfigurasi file cookie secara manual.",
+    "browserForCookiesWindowsNote": "Di Windows, hanya cookie Firefox yang didukung. Untuk browser lain, silakan konfigurasi file cookie secara manual",
     "browserForCookiesProfile": "Nama profil atau path",
-    "browserForCookiesProfileDescription": "Path profil untuk browser yang dipilih di atas. Diisi otomatis bila memungkinkan.",
+    "browserForCookiesProfileDescription": "Path profil untuk browser yang dipilih di atas. Diisi otomatis bila memungkinkan",
     "browserForCookiesProfilePlaceholder": "Nama profil atau path lengkap (opsional)",
     "browserForCookiesProfileInvalid": "Path profil tidak valid. Pilih folder profil untuk browser yang dipilih.",
     "browserForCookiesProfileInvalidPath": "Folder itu tidak ada. Pilih folder profil yang ada.",
@@ -448,7 +500,7 @@
     "cookiesHelpBrowser": "Pilih browser Anda di atas untuk menggunakan kembali sesi masuk secara otomatis.",
     "cookiesHelpFile": "Ekspor file cookie Netscape (lihat FAQ yt-dlp) dan pilih di sini saat diperlukan.",
     "cookiesGuideTitle": "Butuh panduan?",
-    "cookiesGuideDescription": "Lihat panduan langkah demi langkah untuk menggunakan cookie di VidBee.",
+    "cookiesGuideDescription": "Lihat panduan langkah demi langkah untuk menggunakan cookie di VidBee",
     "cookiesGuideLink": "Buka panduan cookie",
     "openLinkError": "Gagal membuka tautan",
     "browserOptions": {
@@ -476,24 +528,54 @@
     "languageDescription": "Pilih bahasa pilihan Anda untuk antarmuka aplikasi",
     "light": "Terang",
     "hideDockIcon": "Sembunyikan ikon Dock saat ditutup",
-    "hideDockIconDescription": "Secara otomatis menyembunyikan ikon Dock saat jendela ditutup. Gunakan menu bar atau ikon tray untuk membuka kembali.",
+    "hideDockIconDescription": "Secara otomatis menyembunyikan ikon Dock saat jendela ditutup. Gunakan menu bar atau ikon tray untuk membuka kembali",
     "launchAtLogin": "Luncurkan saat startup",
-    "launchAtLoginDescription": "Buka VidBee secara otomatis setelah Anda masuk ke komputer Anda.",
-    "launchAtLoginUnsupported": "Peluncuran otomatis hanya tersedia di macOS dan Windows.",
+    "launchAtLoginDescription": "Buka VidBee secara otomatis setelah Anda masuk ke komputer Anda",
+    "launchAtLoginUnsupported": "Peluncuran otomatis hanya tersedia di macOS dan Windows",
     "enableAnalytics": "Bantu tingkatkan VidBee",
-    "enableAnalyticsDescription": "Bagikan data penggunaan anonim untuk membantu kami memahami bagaimana aplikasi digunakan dan memprioritaskan peningkatan.",
+    "enableAnalyticsDescription": "Bagikan data penggunaan anonim untuk membantu kami memahami bagaimana aplikasi digunakan dan memprioritaskan peningkatan",
     "enableDownloadNotifications": "Notifikasi unduhan",
-    "enableDownloadNotificationsDescription": "Tampilkan notifikasi sistem saat unduhan selesai.",
+    "enableDownloadNotificationsDescription": "Tampilkan notifikasi sistem saat unduhan selesai",
     "downloadWithoutChannelSubfolders": "Simpan video tanpa subfolder kanal",
-    "downloadWithoutChannelSubfoldersDescription": "Simpan unduhan video tunggal langsung ke folder Videos tanpa membuat subfolder kanal.",
+    "downloadWithoutChannelSubfoldersDescription": "Simpan unduhan video tunggal langsung ke folder Videos tanpa membuat subfolder kanal",
+    "downloadSubtitles": "Unduh subtitle",
+    "downloadSubtitlesDescription": "Hanya unduh subtitle dalam bahasa yang dipilih jika tersedia",
+    "subtitleLanguages": "Bahasa subtitle",
+    "subtitleLanguagesDescription": "Pilih bahasa subtitle yang harus diminta VidBee untuk setiap video",
+    "subtitleLanguageSearch": "Cari bahasa subtitle",
+    "subtitleLanguageEmpty": "Tidak ada bahasa yang cocok",
+    "subtitleLanguageLimit": "Pilih hingga {{count}} bahasa untuk mengurangi pembatasan permintaan platform",
+    "followInterfaceLanguage": "Ikuti bahasa antarmuka ({{language}})",
     "embedChapters": "Sematkan bab",
     "embedChaptersDescription": "Tambahkan penanda bab ke file saat tersedia",
     "embedMetadata": "Sematkan metadata",
     "embedMetadataDescription": "Tulis judul, artis, dan metadata lain saat tersedia",
     "embedSubs": "Sematkan subtitle",
-    "embedSubsDescription": "Sematkan subtitle ke file video (mp4, webm, mkv)",
+    "embedSubsDescription": "Sematkan subtitle yang dipilih ke file video (mp4, webm, mkv)",
+    "writeAutoSubs": "Gunakan subtitle yang dibuat otomatis",
+    "writeAutoSubsDescription": "Gunakan subtitle otomatis saat subtitle dari kreator tidak tersedia dalam bahasa yang dipilih",
     "embedThumbnail": "Sematkan thumbnail",
     "embedThumbnailDescription": "Tambahkan thumbnail sebagai sampul",
+    "filenameStyle": "Gaya nama file",
+    "filenameStyleDescription": "Pilih cara VidBee menamai file video dan audio yang disimpan",
+    "filenameStyleNote": "Digunakan untuk file yang disimpan VidBee. Template kustom dari langganan atau playlist tetap diutamakan",
+    "filenameStyleOptions": {
+      "basic": "dasar",
+      "classic": "klasik",
+      "nerdy": "nerd",
+      "pretty": "cantik"
+    },
+    "filenameStylePreviewAudio": "pratinjau file audio",
+    "filenameStylePreviewVideo": "pratinjau file video",
+    "filenameViaVidBee": "Tambahkan via VidBee",
+    "filenameViaVidBeeDescription": "Secara otomatis menambahkan via VidBee ke nama file video dan audio yang disimpan",
+    "metadataTab": "Metadata",
+    "navGroup": {
+      "app": "Aplikasi",
+      "download": "Unduhan",
+      "system": "Sistem",
+      "ai": "AI"
+    },
     "shareWatermark": "Tanda air berbagi",
     "shareWatermarkDescription": "Tambahkan tanda air dengan judul asli, pembuat, dan merek VidBee",
     "maxConcurrentDownloads": "Jumlah maksimum unduhan aktif",
@@ -502,7 +584,7 @@
     "oneClickDownload": "Unduh Satu Klik",
     "oneClickDownloadDescription": "Aktifkan unduh satu klik dengan pengaturan default",
     "oneClickDownloadType": "Jenis unduhan default",
-    "oneClickDownloadTypeDescription": "Pilih jenis unduhan default untuk unduhan satu klik. Kualitas menggunakan preset di bawah ini.",
+    "oneClickDownloadTypeDescription": "Pilih jenis unduhan default untuk unduhan satu klik. Kualitas menggunakan preset di bawah ini",
     "oneClickQuality": "Kualitas yang disukai",
     "oneClickQualityDescription": "Pilih preset kualitas yang digunakan untuk unduhan satu klik",
     "oneClickQualityOptions": {
@@ -516,14 +598,19 @@
     "proxy": "Proxy",
     "proxyDescription": "Server proxy untuk permintaan jaringan",
     "proxyPlaceholder": "http://proxy:port",
+    "downloadMirror": "Sumber unduhan",
+    "downloadMirrorDescription": "Gunakan mirror Tiongkok (ModelScope, proksi GitHub) untuk yt-dlp, ffmpeg, Node, dan model transkrip saat GitHub lambat atau diblokir",
+    "downloadMirrorAuto": "Otomatis",
+    "downloadMirrorChina": "Tiongkok (ModelScope)",
+    "downloadMirrorGlobal": "Resmi",
     "rememberLastAudioLanguage": "Ingat bahasa audio terakhir",
-    "rememberLastAudioLanguageDescription": "Gunakan kembali bahasa audio terakhir yang Anda pilih sebagai bawaan untuk unduhan audio berikutnya.",
+    "rememberLastAudioLanguageDescription": "Gunakan kembali bahasa audio terakhir yang Anda pilih sebagai bawaan untuk unduhan audio berikutnya",
     "selectConfigFile": "Pilih file konfigurasi",
     "selectPath": "Pilih",
     "showMoreFormats": "Tampilkan lebih banyak opsi format",
     "showMoreFormatsDescription": "Tampilkan opsi format tambahan di antarmuka",
     "subscriptionDefaults": {
-      "filenameDescription": "Pola yang digunakan ketika berlangganan tidak menimpa nama filenya."
+      "filenameDescription": "Pola yang digunakan ketika berlangganan tidak menimpa nama filenya"
     },
     "system": "Sistem",
     "theme": "Tema",
@@ -535,13 +622,243 @@
     },
     "video": "Preferensi Video",
     "oneClickContainer": "Wadah",
-    "oneClickContainerDescription": "Pilih wadah keluaran untuk unduhan satu klik. Auto memilih MP4 dan beralih ke MKV jika codec tidak kompatibel.",
+    "oneClickContainerDescription": "Pilih wadah keluaran untuk unduhan satu klik. Auto memilih MP4 dan beralih ke MKV jika codec tidak kompatibel",
     "oneClickContainerOptions": {
       "auto": "Auto (MP4/MKV)",
       "mkv": "MKV",
       "mp4": "MP4",
       "original": "Asli (bawaan yt-dlp)",
       "webm": "WebM"
+    },
+    "autoTranscribeAfterDownload": "Transcribe after download",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "maxConcurrentTranscriptions": "Jumlah transkripsi aktif maksimum",
+    "maxConcurrentTranscriptionsDescription": "Berapa banyak transkripsi yang dapat berjalan bersamaan. Setiap tugas memakai komputer ini. Menurunkan nilai tidak menghentikan tugas yang sedang berjalan",
+    "transcriptModelsTitle": "Transcript models",
+    "transcriptModelsReady": "Models ready on disk ({{size}})",
+    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsRedownload": "Redownload",
+    "transcriptModelsRedownloadError": "Could not redownload transcript models.",
+    "aiTab": "AI",
+    "asrUse": "Use",
+    "asrUseCurrent": "In use",
+    "asrStatusReady": "Ready",
+    "asrStatusActive": "In use",
+    "asrStatusMissing": "Not downloaded",
+    "asrStatusDownloading": "Downloading",
+    "asrDownloading": "Downloading {{received}} / {{total}}",
+    "asrDownloadingMany": "Mengunduh {{count}} model",
+    "asrDelete": "Hapus",
+    "asrDeleteError": "Model AI ini tidak dapat dihapus.",
+    "asrCancel": "Batal",
+    "asrCancelError": "Unduhan ini tidak dapat dibatalkan.",
+    "asrDownloadError": "Model AI ini tidak dapat diunduh.",
+    "asrTierActivateError": "Could not switch the AI model.",
+    "asrTier": {
+      "minimal": {
+        "title": "Whisper Tiny",
+        "tag": "Mulai multibahasa paling cepat. Cocok untuk PC spek rendah",
+        "size": "~75 MB"
+      },
+      "whisper-base": {
+        "title": "Whisper Base",
+        "tag": "Sedikit lebih akurat dari Tiny, tetap ringan",
+        "size": "~150 MB"
+      },
+      "balanced": {
+        "title": "Whisper Small",
+        "tag": "PC biasa. Akurasi multibahasa yang baik",
+        "size": "~250 MB"
+      },
+      "sense-voice": {
+        "title": "SenseVoice",
+        "tag": "Cepat untuk CJK + Inggris, termasuk Kanton",
+        "size": "~230 MB"
+      },
+      "quality": {
+        "title": "Qwen3-ASR",
+        "tag": "Akurasi Tionghoa terbaik. Butuh PC bertenaga",
+        "size": "~840 MB"
+      },
+      "whisper-medium": {
+        "title": "Whisper Medium",
+        "tag": "Akurasi multibahasa lebih baik. Butuh RAM lebih besar",
+        "size": "~770 MB"
+      },
+      "whisper-turbo": {
+        "title": "Whisper Turbo",
+        "tag": "Mendekati large-v3, jauh lebih cepat",
+        "size": "~810 MB"
+      },
+      "sense-voice-2025": {
+        "title": "SenseVoice 2025",
+        "tag": "Paket CJK+Inggris yang lebih baru. Tetap ringan",
+        "size": "~230 MB"
+      },
+      "parakeet-v2": {
+        "title": "Parakeet TDT v2",
+        "tag": "Bahasa Inggris kuat. Cepat di PC biasa",
+        "size": "~650 MB"
+      },
+      "parakeet-v3": {
+        "title": "Parakeet TDT v3",
+        "tag": "Parakeet Inggris yang lebih baru. Pilihan terbaik untuk Inggris",
+        "size": "~650 MB"
+      }
+    },
+    "asrDownload": "Unduh",
+    "asrDownloadAndUse": "Unduh dan pakai",
+    "asrDownloaded": "Terunduh",
+    "asrRecommended": "Direkomendasikan",
+    "asrRecommendedFor": "Direkomendasikan untuk {{os}} · {{gpu}} · {{ram}} · {{cores}} inti · {{language}}",
+    "asrAllModels": "Semua model",
+    "asrBestMatch": "Paling cocok",
+    "asrMachine": {
+      "low": "PC spek rendah",
+      "mid": "PC biasa",
+      "high": "PC bertenaga"
+    },
+    "asrFamily": {
+      "whisper": "Whisper — multibahasa",
+      "sense-voice": "SenseVoice — Tionghoa, Jepang, Korea, Inggris",
+      "qwen3": "Qwen3-ASR — akurasi Tionghoa tertinggi",
+      "parakeet": "Parakeet — Inggris"
+    },
+    "asrLanguages": {
+      "multi": "multibahasa"
+    },
+    "asrOs": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "other": "OS ini"
+    },
+    "asrGpu": {
+      "apple": "GPU Apple",
+      "nvidia": "GPU NVIDIA",
+      "amd": "GPU AMD",
+      "intel": "GPU Intel",
+      "unknown": "GPU tidak diketahui"
+    },
+    "providersTab": "Penyedia",
+    "promptsTab": "Prompt",
+    "transcriptionTab": "Transkripsi",
+    "ai": {
+      "allServices": "Semua layanan",
+      "configured": "Terkonfigurasi",
+      "useProvider": "Gunakan",
+      "inUse": "Sedang digunakan",
+      "addProvider": "Tambah {{name}}",
+      "editProvider": "Edit penyedia",
+      "deleteProvider": "Hapus penyedia",
+      "edit": "Edit",
+      "apiKey": "Kunci API",
+      "apiKeyKept": "Kosongkan untuk menyimpan kunci yang ada",
+      "baseUrl": "Base URL",
+      "modelId": "ID model",
+      "modelIdPlaceholder": "model-id",
+      "name": "Nama",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "saveError": "Tidak dapat menyimpan pengaturan AI.",
+      "providerDialogDescription": "Kunci API tetap di komputer ini. Penyedia bawaan sudah punya base URL",
+      "testConnection": "Uji koneksi",
+      "testingConnection": "Menguji…",
+      "testSuccess": "Terhubung. Balasan: {{reply}}",
+      "testFailed": "Tidak dapat menjangkau model ini.",
+      "addPrompt": "Tambah prompt",
+      "editPrompt": "Edit prompt",
+      "deletePrompt": "Hapus prompt",
+      "promptTitle": "Judul",
+      "promptIcon": "Ikon",
+      "promptBody": "Prompt",
+      "promptDialogDescription": "Prompt ini dijalankan pada transkrip dengan penyedia yang diaktifkan",
+      "restorePresets": "Pulihkan bawaan",
+      "testTitle": "Uji dengan contoh transkrip",
+      "testRun": "Jalankan",
+      "testStop": "Hentikan",
+      "testOutput": "Hasil",
+      "testPlaceholder": "Hasil prompt akan muncul di sini",
+      "presets": {
+        "anthropic": "Anthropic",
+        "azure": "Azure",
+        "custom": "Custom",
+        "deepseek": "Deepseek",
+        "google": "Google",
+        "groq": "Groq",
+        "huggingface": "Hugging Face",
+        "lmstudio": "LMStudio",
+        "ollama": "Ollama",
+        "openai": "OpenAI",
+        "openrouter": "OpenRouter",
+        "xai": "xAI"
+      },
+      "presetPrompts": {
+        "bullet-points": {
+          "title": "Poin-poin"
+        },
+        "improve-grammar": {
+          "title": "Perbaiki tata bahasa dan tanda baca"
+        },
+        "generate-faq": {
+          "title": "Buat FAQ"
+        },
+        "extract-statistics": {
+          "title": "Ekstrak statistik"
+        },
+        "paraphrase-content": {
+          "title": "Parafrase konten"
+        },
+        "create-mindmap": {
+          "title": "Buat peta pikiran"
+        },
+        "translate": {
+          "title": "Terjemahkan"
+        }
+      }
+    },
+    "cookiesSetup": {
+      "statusNotConfigured": "Belum diatur",
+      "statusNotConfiguredHint": "Unduhan yang membutuhkan akun akan gagal sampai ini diatur",
+      "statusUsingBrowser": "Menggunakan login {{browser}}",
+      "statusUsingFile": "Menggunakan file cookie",
+      "statusOk": "Siap",
+      "statusExpired": "Kedaluwarsa",
+      "statusEmpty": "Login tidak ditemukan",
+      "statusInvalid": "Perlu perhatian",
+      "healthOkBrowser": "VidBee dapat membaca cookie dari {{browser}}. Tetap masuk ke situs di sana",
+      "healthOkFile": "Cookie login ditemukan untuk {{sites}}",
+      "healthOkFileGeneric": "File cookie ini tampak valid",
+      "healthExpired": "Cookie ini sudah kedaluwarsa. Masuk lagi dan impor file baru",
+      "healthEmpty": "File ini tidak memiliki cookie login untuk situs yang didukung. Ekspor saat sudah masuk, lalu coba lagi",
+      "healthInvalidFile": "File cookie hilang atau bukan ekspor yang valid",
+      "healthInvalidBrowser": "VidBee tidak dapat membaca cookie dari profil browser ini",
+      "healthMacosFilesPermission": "macOS memblokir akses cookie. Izinkan VidBee mengakses browser ini di Pengaturan Sistem → Privasi & Keamanan → File dan Folder, lalu periksa lagi.",
+      "healthUnsupportedBrowser": "Browser ini tidak dapat digunakan untuk cookie di sistem Anda",
+      "sitesLabel": "Situs: {{sites}}",
+      "recommendedTitle": "Disarankan",
+      "recommendedUseBrowser": "Gunakan {{browser}}",
+      "recommendedUseBrowserHint": "Gunakan ulang akun yang sudah Anda masuki di {{browser}}",
+      "recommendedImportFile": "Impor file cookie",
+      "recommendedImportFileWindowsHint": "Di Windows, Chrome dan Edge tidak dapat berbagi cookie dengan VidBee. Ekspor file cookie dari browser",
+      "recommendedImportFileHint": "Ekspor cookie dari browser, lalu pilih file itu di sini",
+      "recommendedFirefoxHint": "Di Windows, Firefox adalah satu-satunya browser yang dapat dibaca VidBee secara langsung",
+      "useThisBrowser": "Gunakan {{browser}}",
+      "importFile": "Pilih file cookie",
+      "clearSetup": "Hapus cookie",
+      "checkStatus": "Periksa lagi",
+      "otherOptions": "Opsi lain",
+      "hideOtherOptions": "Sembunyikan opsi lain",
+      "chooseBrowser": "Pilih browser lain",
+      "advancedProfile": "Path profil",
+      "windowsUnsupportedCurrent": "{{browser}} tidak dapat digunakan untuk cookie di Windows. Gunakan Firefox atau impor file cookie.",
+      "fileExportStep1": "Pasang ekstensi ekspor cookie seperti Get cookies.txt LOCALLY",
+      "fileExportStep2": "Masuk ke situs, lalu ekspor file cookie",
+      "fileExportStep3": "Pilih file itu di sini",
+      "fileExportExtension": "Ekstensi Chrome / Edge",
+      "checking": "Memeriksa cookie…",
+      "applied": "Cookie diperbarui",
+      "profileMissingDb": "Profil Firefox ini tidak memiliki basis data cookie. Buka Firefox sekali, lalu coba lagi."
     }
   },
   "subscriptions": {
@@ -566,6 +883,7 @@
       "tags": "Tag otomatis",
       "customDirectory": "Direktori khusus",
       "namingTemplate": "Template nama file khusus (hanya file)",
+      "autoDownload": "Unduh otomatis",
       "onlyLatest": "Unduh hanya video terbaru",
       "onlyLatestDescription": "Abaikan item backlog dan ambil hanya unggahan terbaru dari feed ini.",
       "enabled": "Diaktifkan",
@@ -655,6 +973,18 @@
       "hint": "Tidak punya URL feed RSS? Gunakan RSSHub untuk menghasilkan feed RSS untuk YouTube, Twitter, dan ribuan platform lainnya."
     }
   },
+  "kernelPreparation": {
+    "copying": "Menyalin mesin unduhan…",
+    "description": "VidBee sedang menyiapkan mesin unduhannya. Proses ini hanya memerlukan waktu sebentar.",
+    "errorDescription": "VidBee tidak dapat menyiapkan mesin unduhan yang berfungsi. Periksa akses penyimpanan lokal, lalu coba lagi.",
+    "errorTitle": "Mesin unduhan tidak tersedia",
+    "finalizing": "Menyelesaikan penyiapan…",
+    "progressLabel": "Progres penyiapan mesin unduhan",
+    "retry": "Coba lagi",
+    "retrying": "Mencoba lagi…",
+    "title": "Menyiapkan VidBee",
+    "validating": "Memverifikasi mesin unduhan…"
+  },
   "sites": {
     "homeInlineDescription": "Mendukung {{sites}} dan lainnya.",
     "moreDescription": "Daftar lengkap yt-dlp terus diperbarui oleh komunitas.",
@@ -739,5 +1069,289 @@
     },
     "popularSection": "Platform utama",
     "viewAll": "Lihat semua situs yang didukung"
+  },
+  "transcript": {
+    "transcribe": "Transcribe",
+    "transcribing": "Transcribing",
+    "modelsPreparing": "Menyiapkan model transkrip…",
+    "preparingSpeakerModels": "Menyiapkan model pembicara…",
+    "modelsProgressLabel": "Progres unduhan model transkrip",
+    "view": "View transcript",
+    "sourceCaptions": "Teks video",
+    "sourceAi": "Transkrip AI",
+    "sourceSwitch": "Sumber transkrip",
+    "sourceCaptionNamed": "Teks {{language}}",
+    "sourceCaptionAutoNamed": "Teks otomatis {{language}}",
+    "noSpeech": "No speech",
+    "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
+    "error": "Transcript error",
+    "errorHint": "Transkripsi berhenti sebelum selesai. Coba lagi.",
+    "retry": "Retry",
+    "retryFailed": "Could not retry transcription.",
+    "stop": "Berhenti",
+    "stopFailed": "Tidak dapat menghentikan transkripsi.",
+    "stillTranscribe": "Transcribe anyway",
+    "detectingSpeech": "Detecting speech",
+    "preparingAudio": "Menyiapkan audio",
+    "identifyingSpeakers": "Mengidentifikasi pembicara",
+    "back": "Kembali ke transkrip",
+    "library": {
+      "empty": "Belum ada transkrip",
+      "emptyHint": "Pilih file audio atau video lokal, atau transkripsikan unduhan yang selesai.",
+      "addMedia": "Tambah audio atau video",
+      "goToDownloads": "Ke unduhan",
+      "untitled": "Media tanpa judul",
+      "previewPending": "Transkrip akan muncul di sini saat dibuat.",
+      "queued": "Dalam antrean",
+      "processing": "Diproses",
+      "retrySoon": "Akan dicoba lagi segera",
+      "cancelled": "Dibatalkan",
+      "open": "Buka transkrip {{title}}",
+      "dropDescription": "Jatuhkan atau tempel file audio atau video untuk mentranskripsi.",
+      "experimentalBadge": "Eksperimental",
+      "experimentalHint": "Mungkin digabung ke Unduhan nanti."
+    },
+    "followResume": "Jump to current line",
+    "title": "Transcript",
+    "ready": "Transcript ready",
+    "copy": "Salin transkrip",
+    "copied": "Transkrip disalin",
+    "copyFailed": "Tidak dapat menyalin transkrip.",
+    "captionSelect": "Transkrip terpilih",
+    "captionSelectClear": "Hapus pilihan",
+    "export": {
+      "action": "Ekspor",
+      "preview": "Pratinjau ekspor",
+      "description": "Pratinjau transkrip, lalu salin atau simpan sebagai file teks.",
+      "styleLabel": "Gaya",
+      "style": {
+        "transcript": "Transkrip",
+        "subtitles": "Subtitle",
+        "segments": "Segmen",
+        "whisper": "Whisper",
+        "video": "Video + subtitle"
+      },
+      "formatLabel": "Format",
+      "format": {
+        "txt": ".txt",
+        "md": ".md"
+      },
+      "encodeLabel": "Encode",
+      "encode": {
+        "soft": "Softsub",
+        "hard": "Hardsub"
+      },
+      "softHint": "Mux trek subtitle. Pemutar bisa menyalakan atau mematikan caption. Cepat, tanpa kehilangan kualitas.",
+      "hardHint": "Bakar subtitle ke dalam gambar. Video di-encode ulang dan subtitle tidak bisa dimatikan.",
+      "noMedia": "Video sumber tidak ada, jadi ekspor video tidak tersedia.",
+      "audioOnly": "File ini hanya audio. Ekspor transkrip teks sebagai gantinya.",
+      "videoSaved": "Video diekspor",
+      "videoSaveFailed": "Tidak dapat mengekspor video.",
+      "exporting": "Mengekspor…",
+      "cancelExport": "Batalkan ekspor",
+      "cancelled": "Ekspor dibatalkan",
+      "progress": "{{percent}}%",
+      "options": "Opsi",
+      "grouping": "Pengelompokan",
+      "groupingValue": {
+        "none": "Tidak ada",
+        "words": "Kata",
+        "sentences": "Kalimat"
+      },
+      "showTimestamp": "Tampilkan stempel waktu",
+      "close": "Tutup",
+      "copy": "Salin",
+      "copied": "Disalin ke papan klip",
+      "copyFailed": "Tidak dapat menyalin pratinjau ekspor.",
+      "saved": "Transkrip diekspor",
+      "saveFailed": "Tidak dapat mengekspor transkrip.",
+      "empty": "Belum ada yang bisa diekspor."
+    },
+    "mediaMissing": "The media file is not available on disk.",
+    "currentTime": "Current time {{time}}",
+    "resizeHandle": "Ubah ukuran panel transkrip",
+    "unknownSpeaker": "Pembicara tidak dikenal",
+    "speakers": "Pembicara ({{count}})",
+    "info": {
+      "tab": "Info",
+      "channel": "Saluran",
+      "duration": "Durasi",
+      "file": "Berkas",
+      "fileSize": "Ukuran berkas",
+      "url": "URL sumber",
+      "source": "Sumber",
+      "model": "Model",
+      "language": "Bahasa",
+      "speakers": "Pembicara",
+      "segments": "Segmen",
+      "createdAt": "Ditranskripsi",
+      "empty": "Belum ada detail.",
+      "openUrl": "Buka URL sumber"
+    },
+    "speakingShare": "{{percent}}%",
+    "seekSpeaker": "Lompat ke {{name}}",
+    "seekAt": "Lompat ke {{time}}",
+    "searchPlaceholder": "Cari transkrip",
+    "searchMatches": "{{count}} kecocokan",
+    "searchNoMatches": "Tidak ada kecocokan",
+    "searchNext": "Berikutnya",
+    "searchPrevious": "Sebelumnya",
+    "searchJumpTo": "Loncat ke teks ini",
+    "collapsePanel": "Ciutkan transkrip",
+    "expandPanel": "Bentangkan transkrip",
+    "player": {
+      "play": "Putar",
+      "pause": "Jeda",
+      "seek": "Geser",
+      "volume": "Volume",
+      "mute": "Bisukan",
+      "unmute": "Suarakan",
+      "playbackRate": "Kecepatan pemutaran",
+      "playbackRateValue": "{{rate}}×",
+      "time": "{{current}} / {{duration}}",
+      "preparing": "Menyiapkan file agar bisa diputar…",
+      "unavailable": "File ini tidak bisa disiapkan untuk diputar di halaman.",
+      "failedTitle": "Video ini tidak bisa diputar di sini",
+      "failedAudioTitle": "Audio ini tidak bisa diputar di sini",
+      "failedDetail": "Transkrip tetap bisa dibaca.",
+      "retry": "Coba lagi",
+      "error": "Pemutaran gagal: {{message}}",
+      "captionsShow": "Tampilkan subtitle",
+      "captionsHide": "Sembunyikan subtitle",
+      "skipBack": "Mundur 15 detik",
+      "skipForward": "Maju 15 detik",
+      "volumePercent": "{{percent}}%",
+      "fullscreen": "Layar penuh",
+      "fullscreenExit": "Keluar dari layar penuh",
+      "resumed": "Dilanjutkan dari {{time}}",
+      "startOver": "Mulai dari awal",
+      "nowPlaying": "Sedang diputar",
+      "closeBar": "Tutup pemutar",
+      "openTranscript": "Kembali ke transkrip"
+    },
+    "qualityHint": "Not happy with this transcript?",
+    "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
+    "qualityHintMax": "Model kualitas tertinggi sudah digunakan. Coba sesuaikan jumlah pembicara jika label tercampur. Musik latar dan suara yang tumpang tindih masih bisa membingungkan pembicara.",
+    "speakerCount": {
+      "adjust": "Sesuaikan pembicara",
+      "auto": "Otomatis (deteksi)",
+      "one": "1 pembicara",
+      "count": "{{count}} pembicara",
+      "apply": "Transkrip ulang",
+      "detail": "Kami akan mentranskrip ulang dengan jumlah pembicara ini. Otomatis adalah default. Anda boleh meninggalkan halaman ini. Transkrip saat ini disimpan sebagai riwayat."
+    },
+    "promptMenu": "Semua prompt",
+    "promptStop": "Hentikan",
+    "promptRerun": "Jalankan lagi",
+    "promptCopy": "Salin",
+    "promptShare": "Bagikan gambar",
+    "promptShareTitle": "Bagikan gambar",
+    "promptShareDownload": "Unduh",
+    "promptShareNative": "Bagikan",
+    "promptSharing": "Menyiapkan gambar…",
+    "promptShared": "Gambar berbagi disalin",
+    "promptShareSaved": "Gambar berbagi disimpan",
+    "promptShareFailed": "Tidak dapat menyiapkan gambar berbagi.",
+    "promptShareSaveFailed": "Tidak dapat menyimpan gambar berbagi.",
+    "promptShareNativeFailed": "Tidak dapat membuka menu berbagi.",
+    "promptShareFooter": "Dibuat dengan VidBee",
+    "promptShareTagline": "Open source. Unduh video. Tanya AI.",
+    "captionShareSaid": "{{name}} berkata",
+    "promptOutput": "Hasil prompt",
+    "promptScrollToEnd": "Gulir ke terbaru",
+    "promptCopied": "Disalin",
+    "promptNoProvider": "Siapkan penyedia AI di Pengaturan untuk menjalankan prompt ini.",
+    "promptOpenSettings": "Buka pengaturan penyedia",
+    "promptEmpty": "Hasil akan muncul di sini.",
+    "promptRunning": "Menulis…",
+    "promptThinking": "Berpikir",
+    "promptThinkingFor": "Sedang berpikir {{seconds}} dtk",
+    "promptThoughtFor": "Berpikir selama {{seconds}} dtk",
+    "promptAborted": "Dihentikan",
+    "promptNoTranscript": "Transkrip diperlukan sebelum prompt ini dapat dijalankan.",
+    "promptTryAgain": "Coba lagi",
+    "promptLoading": "Memuat pengaturan AI…",
+    "promptGuide": {
+      "noProvider": "Belum ada penyedia AI yang diaktifkan, jadi prompt ini tidak bisa dijalankan.",
+      "missingApiKey": "Penyedia yang aktif belum punya kunci API.",
+      "missingModel": "Penyedia yang aktif belum punya ID model.",
+      "unknownPrompt": "Prompt ini sudah tidak tersedia.",
+      "emptyTranscript": "Prompt ini memerlukan transkrip yang sudah selesai.",
+      "auth": "Penyedia menolak permintaan. Kunci API atau akun kemungkinan tidak valid.",
+      "network": "Tidak dapat menjangkau penyedia.",
+      "emptyOutput": "Penyedia selesai tanpa mengembalikan teks.",
+      "unknown": "Prompt tidak dapat dijalankan."
+    },
+    "promptErrorDetails": "Detail kesalahan",
+    "promptWhatToDo": "Yang bisa dicoba",
+    "promptUsingProvider": "Menggunakan {{name}}",
+    "promptSolutions": {
+      "noProvider": {
+        "s1": "Buka Pengaturan → Penyedia.",
+        "s2": "Tambah layanan, simpan kunci API dan ID model, lalu klik Gunakan.",
+        "s3": "Kembali ke sini dan jalankan prompt lagi."
+      },
+      "missingApiKey": {
+        "s1": "Buka Pengaturan → Penyedia dan sunting penyedia yang aktif.",
+        "s2": "Tempel kunci API yang valid lalu simpan.",
+        "s3": "Jalankan prompt lagi."
+      },
+      "missingModel": {
+        "s1": "Buka Pengaturan → Penyedia dan sunting penyedia yang aktif.",
+        "s2": "Masukkan ID model yang benar-benar didukung layanan ini.",
+        "s3": "Jalankan prompt lagi."
+      },
+      "unknownPrompt": {
+        "s1": "Buka Pengaturan → Prompt.",
+        "s2": "Pulihkan bawaan, atau buat ulang prompt ini."
+      },
+      "emptyTranscript": {
+        "s1": "Tunggu transkripsi selesai.",
+        "s2": "Jika tidak ada suara, tetap transkripsi atau pilih file lain."
+      },
+      "auth": {
+        "s1": "Buka pengaturan penyedia dan ganti kunci API.",
+        "s2": "Pastikan ada kredit dan izin untuk model ini.",
+        "s3": "Jika endpoint kustom, pastikan menerima kunci ini."
+      },
+      "network": {
+        "s1": "Periksa internet dan proxy.",
+        "s2": "Untuk penyedia kustom, pastikan Base URL bisa diakses dan sertakan /v1 jika perlu.",
+        "s3": "Jika host down, ganti penyedia."
+      },
+      "emptyOutput": {
+        "s1": "Di Pengaturan → Penyedia, pastikan ID model benar untuk layanan ini.",
+        "s2": "Jika endpoint kustom, periksa Base URL, kunci API, dan apakah model sudah di-deploy.",
+        "s3": "Baca detail kesalahan di bawah, lalu coba lagi atau ganti penyedia."
+      },
+      "unknown": {
+        "s1": "Baca dulu detail kesalahan di bawah.",
+        "s2": "Di Pengaturan → Penyedia, periksa kunci API, ID model, dan Base URL.",
+        "s3": "Coba lagi, atau ganti penyedia."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Yang Baru",
+    "description": "Transkrip dan AI, di komputer ini.",
+    "tryIt": "Coba",
+    "features": {
+      "transcript": {
+        "title": "Transkrip video otomatis",
+        "description": "Setelah unduhan selesai, VidBee secara otomatis membuat transkrip untuk video di komputer ini. Tidak ada yang diunggah."
+      },
+      "speakers": {
+        "title": "Label pembicara",
+        "description": "Lihat siapa mengatakan apa, lalu lompat ke momen itu di video."
+      },
+      "summary": {
+        "title": "Ringkasan AI",
+        "description": "Ubah transkrip menjadi poin, FAQ, peta pikiran, atau parafrase. Tambahkan prompt sendiri di Pengaturan."
+      },
+      "localFiles": {
+        "title": "Transkrip file apa pun",
+        "description": "Letakkan audio atau video lokal ke Transkrip. Ekspor teks, subtitle, atau video dengan subtitle tertanam."
+      }
+    }
   }
 }

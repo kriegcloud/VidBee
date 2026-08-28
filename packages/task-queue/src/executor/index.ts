@@ -100,3 +100,6 @@ export interface Executor {
    */
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun
 }
+
+export { ExecutorRouter } from './router'
+export type { ExecutorRouterOptions } from './router'

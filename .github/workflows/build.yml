@@ -34,6 +34,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - platform: windows
@@ -140,6 +141,9 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: ${{ matrix.build_script }}
+
+      - name: Verify packaged sherpa natives
+        run: node apps/desktop/scripts/check-packaged-sherpa.cjs ${{ matrix.platform }}
 
       - name: Verify Windows release artifacts
         if: matrix.platform == 'windows'

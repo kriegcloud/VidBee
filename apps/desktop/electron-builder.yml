@@ -1,7 +1,10 @@
 appId: com.vidbee
 productName: VidBee
+compression: maximum
 directories:
   buildResources: build
+beforeBuild: build/before-build.cjs
+beforePack: build/before-pack.cjs
 afterPack: build/after-pack.cjs
 protocols:
   - name: VidBee
@@ -13,19 +16,90 @@ files:
   - '!**/.github/**'
   - '!node_modules/@vidbee/downloader-core{,/**}'
   - '!node_modules/.pnpm/@vidbee+downloader-core@*/**'
-  - '!src/*'
+  - '!src{,/**}'
+  - '!dist/*'
+  - '!out/**/*.map'
+  - '!**/*.tsbuildinfo'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintcache,eslint.config.mjs,dev-app-update.yml}'
-  - '!changelogs/**'
+  - '!changelogs{,/**}'
+  - '!build{,/**}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!electron-builder.yml'
+  - '!drizzle.config.ts'
+  - '!components.json'
+  - '!renderer-react-resolve.ts'
   # Issue #103: keep desktop binaries out of app.asar to avoid duplicated resource packaging.
   - '!resources{,/**}'
+  - '!docs{,/**}'
+  - '!scripts{,/**}'
+  # Sourcemaps stay in `out/` for GlitchTip upload; do not ship them in the DMG.
+  - '!**/*.map'
+  # Build-only tooling that electron-builder would otherwise unpack as natives.
+  - '!node_modules/@sentry/cli{,/**}'
+  - '!node_modules/@sentry/cli-*{,/**}'
+  - '!node_modules/lightningcss{,/**}'
+  - '!node_modules/lightningcss-*{,/**}'
+  - '!node_modules/@tailwindcss{,/**}'
+  - '!node_modules/tailwindcss{,/**}'
+  - '!node_modules/@svgr{,/**}'
+  - '!node_modules/caniuse-lite{,/**}'
+  # Renderer-only packages are already bundled into out/renderer.
+  - '!node_modules/lucide-react{,/**}'
+  - '!node_modules/mermaid{,/**}'
+  - '!node_modules/@mermaid-js{,/**}'
+  - '!node_modules/dashjs{,/**}'
+  - '!node_modules/hls.js{,/**}'
+  - '!node_modules/cytoscape{,/**}'
+  - '!node_modules/cytoscape-*{,/**}'
+  - '!node_modules/elkjs{,/**}'
+  - '!node_modules/@videojs{,/**}'
+  - '!node_modules/video.js{,/**}'
+  - '!node_modules/katex{,/**}'
+  - '!node_modules/streamdown{,/**}'
+  - '!node_modules/@streamdown{,/**}'
+  - '!node_modules/beautiful-mermaid{,/**}'
+  - '!node_modules/@shikijs{,/**}'
+  - '!node_modules/shiki{,/**}'
+  - '!node_modules/@radix-ui{,/**}'
+  - '!node_modules/jotai{,/**}'
+  - '!node_modules/@tanstack{,/**}'
+  - '!node_modules/@lobehub{,/**}'
+  - '!node_modules/sonner{,/**}'
+  - '!node_modules/@hookform{,/**}'
+  - '!node_modules/react-hook-form{,/**}'
+  - '!node_modules/next-themes{,/**}'
+  - '!node_modules/cmdk{,/**}'
+  - '!node_modules/tailwind-merge{,/**}'
+  - '!node_modules/class-variance-authority{,/**}'
+  - '!node_modules/clsx{,/**}'
+  - '!node_modules/@shadcn{,/**}'
+  - '!node_modules/tw-animate-css{,/**}'
+  - '!node_modules/@zumer{,/**}'
+  - '!node_modules/react-resizable-panels{,/**}'
+  - '!node_modules/dayjs{,/**}'
+  # Main/renderer already bundle these; keep them out of app.asar.
+  - '!node_modules/opencc-js{,/**}'
+  - '!node_modules/openai{,/**}'
+  - '!node_modules/@google{,/**}'
+  - '!node_modules/@anthropic-ai{,/**}'
+  - '!node_modules/zod{,/**}'
+  - '!node_modules/drizzle-orm{,/**}'
+  - '!node_modules/es-toolkit{,/**}'
+  - '!node_modules/jiti{,/**}'
+  # better-sqlite3 ships its C sources and every platform prebuild.
+  - '!node_modules/better-sqlite3/deps{,/**}'
+  - '!node_modules/better-sqlite3/src{,/**}'
 extraResources:
   - from: resources
     to: resources
     filter:
       - '**/*'
+      - '!mpv{,/**}'
+      - '!deno'
+      - '!deno.exe'
+  # §11: official Node LTS binary (resources/node) also serves yt-dlp EJS.
   # NOTE: VidBee CLI is now distributed standalone via npm / brew / shell
   # installer (NEX-148). Desktop no longer bundles `@vidbee/cli` and no
   # longer ships a `vidbee` shim. Users install the CLI explicitly with
@@ -55,17 +129,17 @@ linux:
   target:
     - AppImage
     - deb
-  maintainer: nexmoex@gmail.com
+  maintainer: team@vidbee.org
   category: Utility
 deb:
   # Issue #378: fix chrome-sandbox SUID perms so the .deb launches.
   afterInstall: build/after-install.sh
 appImage:
   artifactName: ${name}-${version}.${ext}
+asarUnpack:
+  - node_modules/sherpa-onnx-*/**
 npmRebuild: true
 publish:
   provider: github
   owner: nexmoe
   repo: vidbee
-electronLanguages:
-  - en

@@ -2,10 +2,10 @@ import { execSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
-import { createRequire } from 'node:module'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type {
   CreateDownloadInput,
   DownloadRuntimeSettings,
@@ -20,11 +20,10 @@ import {
   buildDownloadArgs,
   buildPlaylistInfoArgs,
   buildVideoInfoArgs,
-  formatYtDlpCommand
+  formatYtDlpCommand,
+  retryTransientYtDlpNetworkError
 } from './yt-dlp-args'
-
-const require = createRequire(import.meta.url)
-const YTDlpWrapModule = require('yt-dlp-wrap-plus')
+import { resolveYtDlpWrapCtor } from './yt-dlp-wrap'
 
 interface YtDlpExecProcess {
   ytDlpProcess?: {
@@ -43,7 +42,7 @@ interface YtDlpWrapInstance {
 }
 
 type YtDlpWrapConstructor = new (binaryPath: string) => YtDlpWrapInstance
-const YTDlpWrapCtor = (YTDlpWrapModule.default ?? YTDlpWrapModule) as YtDlpWrapConstructor
+const YTDlpWrapCtor = resolveYtDlpWrapCtor<YtDlpWrapConstructor>(YTDlpWrap)
 
 interface ActiveTask {
   controller: AbortController
@@ -182,7 +181,7 @@ const resolveBundledFfmpegLocation = (): string | undefined => {
     const candidateDir = path.join(resourcesDir, 'ffmpeg')
     const ffmpegPath = path.join(candidateDir, ffmpegBinaryName)
     const ffprobePath = path.join(candidateDir, ffprobeBinaryName)
-    if (!fs.existsSync(ffmpegPath) || !fs.existsSync(ffprobePath)) {
+    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
       continue
     }
     ensureExecutable(ffmpegPath)
@@ -229,7 +228,7 @@ const resolveFfmpegLocation = (ytDlpPath?: string): string | undefined => {
   const resolveFromDirectory = (directory: string): string | undefined => {
     const ffmpegPath = path.join(directory, ffmpegBinaryName)
     const ffprobePath = path.join(directory, ffprobeBinaryName)
-    if (!fs.existsSync(ffmpegPath) || !fs.existsSync(ffprobePath)) {
+    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
       return undefined
     }
     ensureExecutable(ffmpegPath)
@@ -293,10 +292,11 @@ const resolveJsRuntimePath = (runtime: string): string | undefined => {
   }
 
   const runtimeCandidates: string[] = []
-  if (runtime === 'deno') {
+  if (runtime === 'node') {
+    const nodeName = process.platform === 'win32' ? 'node.exe' : 'node'
+    runtimeCandidates.push(path.join('node', nodeName), nodeName)
+  } else if (runtime === 'deno') {
     runtimeCandidates.push(process.platform === 'win32' ? 'deno.exe' : 'deno')
-  } else if (runtime === 'node') {
-    runtimeCandidates.push(process.platform === 'win32' ? 'node.exe' : 'node')
   } else if (runtime === 'bun') {
     runtimeCandidates.push(process.platform === 'win32' ? 'bun.exe' : 'bun')
   } else if (runtime === 'quickjs') {
@@ -324,7 +324,7 @@ const resolveJsRuntimePath = (runtime: string): string | undefined => {
 }
 
 const resolveJsRuntimeArgs = (): string[] => {
-  const runtime = (process.env.YTDLP_JS_RUNTIME || 'deno').trim()
+  const runtime = (process.env.YTDLP_JS_RUNTIME || 'node').trim()
   if (!runtime || runtime === 'none') {
     return []
   }
@@ -601,8 +601,10 @@ export class DownloaderCore extends EventEmitter {
       throw new Error('URL is required.')
     }
 
-    const raw = await this.runJsonCommand<RawVideoInfo>(
-      buildVideoInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
+    const raw = await retryTransientYtDlpNetworkError(() =>
+      this.runJsonCommand<RawVideoInfo>(
+        buildVideoInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
+      )
     )
     const formats: VideoFormat[] = (raw.formats ?? []).map((format) => ({
       formatId: format.format_id ?? 'unknown',
@@ -648,15 +650,21 @@ export class DownloaderCore extends EventEmitter {
       throw new Error('URL is required.')
     }
 
-    const raw = await this.runJsonCommand<RawPlaylistInfo>(
-      buildPlaylistInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
+    const raw = await retryTransientYtDlpNetworkError(() =>
+      this.runJsonCommand<RawPlaylistInfo>(
+        buildPlaylistInfoArgs(
+          target,
+          this.resolveRuntimeSettings(runtimeSettings),
+          this.jsRuntimeArgs
+        )
+      )
     )
 
     const rawEntries = Array.isArray(raw.entries) ? raw.entries : []
     const entries = rawEntries
       .map((entry, index) => {
         const resolvedUrl = resolvePlaylistEntryUrl(entry)
-        if (!resolvedUrl || !isHttpUrl(resolvedUrl)) {
+        if (!(resolvedUrl && isHttpUrl(resolvedUrl))) {
           return null
         }
 
@@ -989,7 +997,7 @@ export class DownloaderCore extends EventEmitter {
       return true
     }
 
-    const pendingIndex = this.pending.findIndex((value) => value === id)
+    const pendingIndex = this.pending.indexOf(id)
     if (pendingIndex >= 0) {
       this.pending.splice(pendingIndex, 1)
       this.updateTask(id, {

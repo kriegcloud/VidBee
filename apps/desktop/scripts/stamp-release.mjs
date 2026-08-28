@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from '@vidbee/logger/script'
 
 /**
  * Stamps a release tag into the desktop build inputs for CI.
@@ -38,4 +39,4 @@ if (channel !== 'latest') {
   }
 }
 
-console.log(`stamp-release: version=${version} channel=${channel}`)
+log.log(`stamp-release: version=${version} channel=${channel}`)

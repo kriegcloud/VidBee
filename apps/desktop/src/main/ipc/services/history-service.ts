@@ -21,23 +21,23 @@ class HistoryService extends IpcService {
   }
 
   @IpcMethod()
-  removeHistoryItem(_context: IpcContext, id: string): boolean {
+  removeHistoryItem(_context: IpcContext, id: string): Promise<boolean> {
     return historyManager.removeHistoryItem(id)
   }
 
   @IpcMethod()
-  removeHistoryItems(_context: IpcContext, ids: string[]): number {
+  removeHistoryItems(_context: IpcContext, ids: string[]): Promise<number> {
     return historyManager.removeHistoryItems(ids)
   }
 
   @IpcMethod()
-  removeHistoryByPlaylistId(_context: IpcContext, playlistId: string): number {
+  removeHistoryByPlaylistId(_context: IpcContext, playlistId: string): Promise<number> {
     return historyManager.removeHistoryByPlaylistId(playlistId)
   }
 
   @IpcMethod()
-  clearHistory(_context: IpcContext): void {
-    historyManager.clearHistory()
+  clearHistory(_context: IpcContext): Promise<void> {
+    return historyManager.clearHistory()
   }
 
   @IpcMethod()

@@ -5,6 +5,7 @@ import type {
 } from '@shared/types'
 import { atom } from 'jotai'
 import { ipcServices } from '../lib/ipc'
+import { logger } from '../lib/logger'
 
 const normalizeCommaList = (value?: string): string[] => {
   if (!value) {
@@ -27,7 +28,7 @@ export const loadSubscriptionsAtom = atom(null, async (_get, set) => {
     const subscriptions = await ipcServices.subscriptions.list()
     set(subscriptionsAtom, subscriptions)
   } catch (error) {
-    console.error('Failed to load subscriptions:', error)
+    logger.error('Failed to load subscriptions:', error)
   }
 })
 
@@ -36,6 +37,7 @@ export interface CreateSubscriptionForm {
   keywords?: string
   tags?: string
   onlyDownloadLatest?: boolean
+  autoDownload?: boolean
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
@@ -49,6 +51,7 @@ export const createSubscriptionAtom = atom(
       keywords: normalizeCommaList(payload.keywords),
       tags: normalizeCommaList(payload.tags),
       onlyDownloadLatest: payload.onlyDownloadLatest,
+      autoDownload: payload.autoDownload,
       downloadDirectory: payload.downloadDirectory,
       namingTemplate: payload.namingTemplate,
       enabled: payload.enabled

@@ -5,20 +5,23 @@ import { useTranslation } from 'react-i18next'
 import '../../assets/title-bar.css'
 import { updateAvailableAtom } from '@renderer/store/update'
 
-type Page = 'home' | 'subscriptions' | 'settings' | 'about'
+type Page = 'about' | 'home' | 'settings' | 'subscriptions' | 'transcripts'
 
 interface SidebarProps {
   currentPage: Page
   onPageChange: (page: Page) => void
-  onOpenSupportedSites: () => void
   onOpenTools: () => void
+  transcriptsActive?: boolean
 }
 
+/**
+ * Render the desktop navigation sidebar.
+ */
 export function Sidebar({
   currentPage,
   onPageChange,
-  onOpenSupportedSites,
-  onOpenTools
+  onOpenTools,
+  transcriptsActive = false
 }: SidebarProps) {
   const { t } = useTranslation()
   const updateAvailable = useAtomValue(updateAvailableAtom)
@@ -32,17 +35,19 @@ export function Sidebar({
       onClick: () => onPageChange('home')
     },
     {
+      id: 'transcripts',
+      active: currentPage === 'transcripts',
+      icon: appSidebarIcons.transcripts,
+      indicator: transcriptsActive,
+      label: t('menu.transcripts'),
+      onClick: () => onPageChange('transcripts')
+    },
+    {
       id: 'subscriptions',
       active: currentPage === 'subscriptions',
       icon: appSidebarIcons.subscriptions,
       label: t('menu.rss'),
       onClick: () => onPageChange('subscriptions')
-    },
-    {
-      id: 'supported-sites',
-      icon: appSidebarIcons.supportedSites,
-      label: t('menu.supportedSites'),
-      onClick: onOpenSupportedSites
     },
     {
       id: 'tools',

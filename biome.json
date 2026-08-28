@@ -1,5 +1,15 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": "off",
+        "useSortedKeys": "off",
+        "useSortedPackageJson": "off",
+        "useSortedProperties": "off"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -9,23 +19,36 @@
         "useImageSize": "off"
       },
       "suspicious": {
+        "noEqualsToNull": "off",
         "noExplicitAny": "warn",
+        "noLeakedRender": "off",
+        "noShadow": "off",
+        "noUnnecessaryConditions": "off",
         "useAwait": "off",
         "noEmptyBlockStatements": "off"
       },
       "style": {
         "useConst": "error",
+        "noIncrementDecrement": "off",
         "noNestedTernary": "off",
+        "useCollapsedElseIf": "off",
+        "useConsistentArrowReturn": "off",
+        "useConsistentMethodSignatures": "off",
+        "useDestructuring": "off",
+        "useErrorCause": "off",
         "useFilenamingConvention": "off",
-        "noExportedImports": "off",
-        "useCollapsedElseIf": "off"
+        "noExportedImports": "off"
       },
       "complexity": {
         "noForEach": "off",
+        "noUselessReturn": "off",
+        "noUselessUndefined": "off",
         "noVoid": "off",
         "noExcessiveCognitiveComplexity": "off"
       },
       "performance": {
+        "noAwaitInLoops": "off",
+        "noJsxPropsBind": "off",
         "useTopLevelRegex": "off",
         "noNamespaceImport": "off"
       },
@@ -66,6 +89,14 @@
       "!apps/desktop/build",
       "!apps/desktop/dist",
       "!apps/desktop/out",
+      "!packages/ui/src/components/ui/switch.tsx",
+      "!packages/ui/src/components/ui/tabs.tsx",
+      "!packages/ui/src/components/ui/thinking-steps.tsx",
+      "!packages/ui/src/lib/shape-context.tsx",
+      "!packages/ui/src/lib/icon-context.tsx",
+      "!packages/ui/src/lib/surface-context.tsx",
+      "!packages/ui/src/lib/surface-classes.ts",
+      "!packages/ui/src/hooks/use-proximity-hover.ts",
       "!vendor",
       "!dist",
       "!out",

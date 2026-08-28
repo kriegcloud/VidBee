@@ -2,9 +2,10 @@
  * Desktop one-shot data migration: legacy `download-session.json` and the
  * legacy `download_history` table → new `tasks` table (NEX-131 A段).
  *
- * Idempotent: every INSERT uses ON CONFLICT(id) DO NOTHING so re-running
- * is safe. Rolls back the migration marker on failure; leaves the legacy
- * data untouched so the app continues to read from it.
+ * History import is one-shot (`desktop_history_migrated` in schema_meta).
+ * Re-importing after a user deleted a task would resurrect it via
+ * INSERT OR IGNORE. Session import still uses ON CONFLICT(id) DO NOTHING.
+ * Rolls back the in-progress marker on failure.
  *
  * State map (per NEX-131 issue body §A · 数据迁移):
  *   pending                  → queued
@@ -16,6 +17,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
+import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
 import {
   PRIORITY_BACKGROUND,
   PRIORITY_USER,
@@ -26,8 +28,9 @@ import {
 import { app } from 'electron'
 import { scopedLoggers } from '../utils/logger'
 import { getDatabaseFilePath } from './database-path'
+import { HISTORY_MIGRATED_META_KEY, shouldImportLegacyHistory } from './task-queue-migrate-policy'
 
-const TASK_QUEUE_DB_NAME = 'task-queue.db'
+const LEGACY_TASK_QUEUE_DB_NAME = 'task-queue.db'
 const SESSION_FILE = 'download-session.json'
 
 const logger = scopedLoggers.engine
@@ -378,9 +381,9 @@ export const runDesktopTaskQueueMigration = (): MigrateResult => {
     rolledBack: false
   }
   const userData = app.getPath('userData')
-  const taskQueueDbPath = path.join(userData, '.vidbee', TASK_QUEUE_DB_NAME)
+  const taskQueueDbPath = getDatabaseFilePath()
   const sessionFile = path.join(userData, SESSION_FILE)
-  const legacyHistoryDb = getDatabaseFilePath()
+  const standaloneQueueDb = path.join(userData, '.vidbee', LEGACY_TASK_QUEUE_DB_NAME)
 
   fs.mkdirSync(path.dirname(taskQueueDbPath), { recursive: true })
 
@@ -390,15 +393,38 @@ export const runDesktopTaskQueueMigration = (): MigrateResult => {
   queueDb.pragma('journal_mode = WAL')
   queueDb.pragma('foreign_keys = ON')
   queueDb.exec(TASK_QUEUE_DDL_V1)
+  queueDb.exec(TRANSCRIPT_DDL_V1)
+  if (fs.existsSync(standaloneQueueDb) && standaloneQueueDb !== taskQueueDbPath) {
+    try {
+      const escaped = standaloneQueueDb.replace(/'/g, "''")
+      queueDb.exec(`ATTACH DATABASE '${escaped}' AS legacy_tq`)
+      queueDb.exec(`
+        INSERT OR IGNORE INTO tasks SELECT * FROM legacy_tq.tasks;
+        INSERT OR IGNORE INTO attempts SELECT * FROM legacy_tq.attempts;
+      `)
+      queueDb.exec('DETACH DATABASE legacy_tq')
+      const migratedPath = `${standaloneQueueDb}.migrated`
+      if (!fs.existsSync(migratedPath)) {
+        fs.renameSync(standaloneQueueDb, migratedPath)
+      }
+      logger.info('task-queue-migrate: merged standalone task-queue.db into vidbee.db')
+    } catch (err) {
+      logger.warn('task-queue-migrate: could not merge standalone task-queue.db:', err)
+    }
+  }
 
-  // Skip if there's already non-legacy data in tasks AND no legacy artifacts.
+  // Skip if there's already non-legacy data in tasks AND no leftover artifacts.
   const tasksCountRow = queueDb.prepare('SELECT COUNT(*) AS n FROM tasks').get() as
     | { n: number | bigint }
     | undefined
   const tasksCount = Number(tasksCountRow?.n ?? 0)
   const hasSessionFile = fs.existsSync(sessionFile)
-  const hasLegacyDb = fs.existsSync(legacyHistoryDb)
-  if (tasksCount > 0 && !hasSessionFile && !hasLegacyDb) {
+  const historyMigratedRow = queueDb
+    .prepare('SELECT value FROM schema_meta WHERE key = ?')
+    .get(HISTORY_MIGRATED_META_KEY) as { value?: string } | undefined
+  const historyMigrated = historyMigratedRow?.value === '1'
+  const importLegacyHistory = shouldImportLegacyHistory({ historyMigrated, tasksCount })
+  if (tasksCount > 0 && !hasSessionFile && historyMigrated) {
     queueDb.close()
     return result
   }
@@ -436,37 +462,38 @@ export const runDesktopTaskQueueMigration = (): MigrateResult => {
     })
     result.sessionImported = sessionTx(sessionItems) as number
 
-    if (hasLegacyDb) {
-      let legacyDb: import('better-sqlite3').Database | null = null
-      try {
-        legacyDb = new Database(legacyHistoryDb, { readonly: true, fileMustExist: true })
-        const tableCheck = legacyDb
-          .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='download_history'")
-          .get() as { name?: string } | undefined
-        if (tableCheck?.name) {
-          const rows = legacyDb
-            .prepare('SELECT * FROM download_history ORDER BY sort_key ASC')
-            .all() as LegacyHistoryRow[]
-          const historyTx = queueDb.transaction((source: LegacyHistoryRow[]) => {
-            let imported = 0
-            for (const row of source) {
-              const task = historyRowToTask(row)
-              if (!task) {
-                continue
-              }
-              const r = insertOrSkip.run(...bindTask(task))
-              if (r.changes > 0) {
-                imported += 1
-              }
+    if (importLegacyHistory) {
+      const tableCheck = queueDb
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='download_history'")
+        .get() as { name?: string } | undefined
+      if (tableCheck?.name) {
+        const rows = queueDb
+          .prepare('SELECT * FROM download_history ORDER BY sort_key ASC')
+          .all() as LegacyHistoryRow[]
+        const historyTx = queueDb.transaction((source: LegacyHistoryRow[]) => {
+          let imported = 0
+          for (const row of source) {
+            const task = historyRowToTask(row)
+            if (!task) {
+              continue
             }
-            return imported
-          })
-          result.historyImported = historyTx(rows) as number
-        }
-      } finally {
-        legacyDb?.close()
+            const r = insertOrSkip.run(...bindTask(task))
+            if (r.changes > 0) {
+              imported += 1
+            }
+          }
+          return imported
+        })
+        result.historyImported = historyTx(rows) as number
       }
     }
+
+    queueDb
+      .prepare(
+        `INSERT INTO schema_meta (key, value) VALUES (?, '1')
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value`
+      )
+      .run(HISTORY_MIGRATED_META_KEY)
 
     queueDb.prepare("DELETE FROM schema_meta WHERE key = 'migration_in_progress'").run()
 
