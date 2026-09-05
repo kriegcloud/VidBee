@@ -3,6 +3,18 @@
 Cette page ne présente que les évolutions visibles par les utilisateurs, sans détails techniques.
 Pour les notes de version complètes, consultez [GitHub Releases](https://github.com/nexmoe/VidBee/releases).
 
+## [v2.1.0](https://github.com/nexmoe/VidBee/releases/tag/v2.1.0) - 2026-08-30
+
+### Nouveautés
+- Modifiez les sous-titres d’une transcription : ajoutez une ligne, changez le texte, ou supprimez une ou plusieurs lignes.
+- Les transcriptions apparaissent désormais dans la liste des téléchargements : vidéos et textes se gèrent au même endroit.
+- Sélectionnez plusieurs téléchargements à la fois pour les supprimer.
+
+### Améliorations
+- Filtrez la liste par site, avec des icônes de plateforme pour reconnaître plus facilement la source.
+- Les titres trop longs défilent pour que le nom complet reste lisible.
+- Un fichier sans piste audio affiche un message clair au lieu d’échouer sans explication.
+
 ## [v2.0.2](https://github.com/nexmoe/VidBee/releases/tag/v2.0.2) - 2026-08-23
 
 ### Améliorations

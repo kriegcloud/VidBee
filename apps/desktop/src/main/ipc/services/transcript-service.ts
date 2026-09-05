@@ -19,6 +19,7 @@ import {
   cancelAsrTier,
   cancelTranscription,
   deleteAsrTier,
+  deleteTranscriptSegments,
   ensureAsrTier,
   getTranscriptionModelStatus,
   getTranscriptPartials,
@@ -26,6 +27,7 @@ import {
   getTranscriptStatusMap,
   importCaptionsForFinishedDownload,
   importLocalMediaForTranscription,
+  insertTranscriptSegment,
   overlayCaptionSpeakersIfNeeded,
   readMinimalModelPrep,
   rediarizeTranscription,
@@ -35,6 +37,7 @@ import {
   setActiveAsrTier,
   startTranscriptionForDownload,
   type TranscriptSnapshot,
+  updateTranscriptSegment,
   upgradeAndRetranscribe
 } from '../../lib/transcript-host'
 
@@ -178,6 +181,64 @@ class TranscriptService extends IpcService {
   ): Promise<TranscriptSnapshot> {
     await startDesktopTaskQueue()
     return upgradeAndRetranscribe(input.downloadId, input.tier)
+  }
+
+  /**
+   * Patch one caption on the transcript the user is viewing.
+   */
+  @IpcMethod()
+  updateSegment(
+    _context: IpcContext,
+    input: {
+      downloadId: string
+      endMs?: number
+      segmentId: string
+      speakerId?: string | null
+      startMs?: number
+      text?: string
+    }
+  ): TranscriptSnapshot {
+    return updateTranscriptSegment(input.downloadId, input.segmentId, {
+      endMs: input.endMs,
+      speakerId: input.speakerId,
+      startMs: input.startMs,
+      text: input.text
+    })
+  }
+
+  /**
+   * Delete one or more captions on the transcript the user is viewing.
+   */
+  @IpcMethod()
+  deleteSegments(
+    _context: IpcContext,
+    input: { downloadId: string; segmentIds: string[] }
+  ): TranscriptSnapshot {
+    return deleteTranscriptSegments(input.downloadId, input.segmentIds)
+  }
+
+  /**
+   * Insert a caption on the transcript the user is viewing.
+   */
+  @IpcMethod()
+  insertSegment(
+    _context: IpcContext,
+    input: {
+      afterId?: string | null
+      atMs?: number
+      beforeId?: string | null
+      downloadId: string
+      speakerId?: string | null
+      text?: string
+    }
+  ): { segmentId: string; snapshot: TranscriptSnapshot } {
+    return insertTranscriptSegment(input.downloadId, {
+      afterId: input.afterId,
+      atMs: input.atMs,
+      beforeId: input.beforeId,
+      speakerId: input.speakerId,
+      text: input.text
+    })
   }
 
   /**

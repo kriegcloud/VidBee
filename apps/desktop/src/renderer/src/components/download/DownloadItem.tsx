@@ -1,4 +1,3 @@
-import { Badge } from '@renderer/components/ui/badge'
 import { Button } from '@renderer/components/ui/button'
 import { Checkbox } from '@renderer/components/ui/checkbox'
 import {
@@ -17,21 +16,29 @@ import {
   SheetHeader,
   SheetTitle
 } from '@renderer/components/ui/sheet'
-import { TabItem, TabPanel, Tabs, TabsList } from '@renderer/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 import { useNavigate } from '@tanstack/react-router'
 import { getCookieSetupFailureKind } from '@vidbee/downloader-core/cookie-setup'
+import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import {
   DOWNLOAD_FEEDBACK_ISSUE_TITLE,
   FeedbackLinkButtons
 } from '@vidbee/ui/components/ui/feedback-link-buttons'
+import {
+  downloadPlatformDisplayLabel,
+  LOCAL_DOWNLOAD_PLATFORM_KEY,
+  resolveDownloadPlatform
+} from '@vidbee/ui/lib/download-platform'
+import { isListIgnoreTarget } from '@vidbee/ui/lib/list-marquee'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
   AlertCircle,
+  AudioLines,
   Captions,
   CheckCircle2,
   Copy,
   File,
+  FileAudio,
   FolderOpen,
   Loader2,
   Pause,
@@ -52,7 +59,8 @@ import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
 import { sendGlitchTipFeedback } from '../../lib/glitchtip-feedback'
 import { ipcServices } from '../../lib/ipc'
 import { logger } from '../../lib/logger'
-import { isInProgressTranscript } from '../../lib/transcript-library'
+import { isListedTranscript, transcriptLibraryStatusKey } from '../../lib/transcript-library'
+import { isNowPlayingLibraryItem } from '../../lib/transcript-playback'
 import { cookieSetupRequestAtom } from '../../store/cookie-setup'
 import {
   addDownloadAtom,
@@ -61,13 +69,11 @@ import {
   removeHistoryRecordAtom
 } from '../../store/downloads'
 import { settingsAtom } from '../../store/settings'
+import { playbackPlayingAtom, playbackSessionAtom } from '../../store/transcript-playback'
 import { type TranscriptListState, transcriptMapAtom } from '../../store/transcripts'
 import { useAppInfo } from '../feedback/FeedbackLinks'
-import {
-  canRetryDownload,
-  canViewTranscriptFromMenu,
-  shouldOpenHistoryItemOnDoubleClick
-} from './download-item-utils'
+import { TranscriptAudioEqualizer } from '../transcript/TranscriptAudioEqualizer'
+import { canRetryDownload, getQualityLabel } from './download-item-utils'
 
 const tryFileOperation = async (
   paths: string[],
@@ -106,14 +112,6 @@ const resolveDownloadExtension = (download: DownloadRecord): string => {
   return download.type === 'audio' ? 'mp3' : 'mp4'
 }
 
-const getFormatLabel = (download: DownloadRecord): string | undefined => {
-  if (download.selectedFormat?.ext) {
-    return download.selectedFormat.ext.toUpperCase()
-  }
-  const savedExt = getSavedFileExtension(download.savedFileName)
-  return savedExt ? savedExt.toUpperCase() : undefined
-}
-
 /**
  * True when yt-dlp's resolved format id does not include the user-picked
  * format id as a `+`-separated component. Used to surface the fallback
@@ -133,50 +131,11 @@ const didFallbackFromPick = (download: DownloadRecord): boolean => {
   return !parts.includes(picked)
 }
 
-const getQualityLabel = (download: DownloadRecord): string | undefined => {
-  const format = download.selectedFormat
-  if (!format) {
-    return undefined
-  }
-  if (format.height) {
-    return `${format.height}p${format.fps === 60 ? '60' : ''}`
-  }
-  if (format.format_note) {
-    return format.format_note
-  }
-  if (typeof format.quality === 'number') {
-    return format.quality.toString()
-  }
-  return undefined
-}
-
-const sanitizeCodec = (codec?: string | null): string | undefined => {
-  if (!codec || codec === 'none') {
-    return undefined
-  }
-  return codec
-}
-
-const getCodecLabel = (download: DownloadRecord): string | undefined => {
-  const format = download.selectedFormat
-  if (!format) {
-    return undefined
-  }
-  if (download.type === 'audio') {
-    return sanitizeCodec(format.acodec)
-  }
-  return sanitizeCodec(format.vcodec) ?? sanitizeCodec(format.acodec)
-}
-
 interface DownloadItemProps {
   download: DownloadRecord
   isSelected?: boolean
+  selectionActive?: boolean
   onToggleSelect?: (id: string) => void
-}
-
-interface MetadataDetail {
-  label: string
-  value: ReactNode
 }
 
 const formatFileSize = (bytes?: number) => {
@@ -186,26 +145,6 @@ const formatFileSize = (bytes?: number) => {
   const sizes = ['B', 'KB', 'MB', 'GB']
   const order = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), sizes.length - 1)
   return `${(bytes / 1024 ** order).toFixed(1)} ${sizes[order]}`
-}
-
-const formatDuration = (seconds?: number) => {
-  if (!seconds) {
-    return ''
-  }
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  const s = Math.floor(seconds % 60)
-  if (h > 0) {
-    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-  }
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-const formatDate = (timestamp?: number) => {
-  if (!timestamp) {
-    return ''
-  }
-  return new Date(timestamp).toLocaleString()
 }
 
 const formatDateShort = (timestamp?: number) => {
@@ -221,7 +160,12 @@ const formatDateShort = (timestamp?: number) => {
   })
 }
 
-export function DownloadItem({ download, isSelected = false, onToggleSelect }: DownloadItemProps) {
+export function DownloadItem({
+  download,
+  isSelected = false,
+  selectionActive = false,
+  onToggleSelect
+}: DownloadItemProps) {
   const { t } = useTranslation()
   const appInfo = useAppInfo()
   const settings = useAtomValue(settingsAtom)
@@ -229,22 +173,20 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
   const navigate = useNavigate()
   const transcriptMap = useAtomValue(transcriptMapAtom)
   const transcript = transcriptMap[download.id]
+  const playbackSession = useAtomValue(playbackSessionAtom)
+  const playbackPlaying = useAtomValue(playbackPlayingAtom)
+  const isNowPlaying = isNowPlayingLibraryItem(playbackSession, download.id)
   const addDownload = useSetAtom(addDownloadAtom)
   const removeDownload = useSetAtom(removeDownloadAtom)
   const removeHistory = useSetAtom(removeHistoryRecordAtom)
   const isHistory = download.entryType === 'history'
-  const isSubscriptionDownload = download.origin === 'subscription'
-  const subscriptionLabel = download.subscriptionId ?? t('subscriptions.labels.unknown')
   const timestamp = download.completedAt ?? download.downloadedAt ?? download.createdAt
   const resolvedExtension = resolveDownloadExtension(download)
-  const normalizedSavedFileName = normalizeSavedFileName(download.savedFileName)
   const selectionEnabled = isHistory && Boolean(onToggleSelect)
 
   // Track if the file exists
   const [fileExists, setFileExists] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'details' | 'logs'>('details')
-  const [pendingTab, setPendingTab] = useState<'details' | 'logs' | null>(null)
   const [logAutoScroll, setLogAutoScroll] = useState(true)
   // Saved yt-dlp log fetched on demand for terminal items (live stream is gone).
   const [savedLog, setSavedLog] = useState<string | null>(null)
@@ -533,7 +475,7 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
   const getStatusIcon = () => {
     switch (download.status) {
       case 'completed':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />
+        return null
       case 'error':
         return <AlertCircle className="h-4 w-4 text-destructive" />
       case 'downloading':
@@ -589,9 +531,19 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
     download.status === 'completed' ||
     download.status === 'error' ||
     download.status === 'cancelled'
-  const canRetry = canRetryDownload(download.status)
-  const actionsContainerClass = `relative z-20 flex shrink-0 flex-wrap items-center justify-end gap-1 text-muted-foreground transition-opacity ${
-    canRetry ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+  const platform = resolveDownloadPlatform(download.url)
+  const isLocalMedia = platform.key === LOCAL_DOWNLOAD_PLATFORM_KEY
+  const transcriptListState = transcript?.listState ?? 'none'
+  const hasTranscriptStatus = isListedTranscript(transcriptListState)
+  const transcriptStatusLabel = hasTranscriptStatus
+    ? t(transcriptLibraryStatusKey(transcriptListState, transcript?.sourceKind))
+    : ''
+  const canRetry = !isLocalMedia && canRetryDownload(download.status)
+  const showTranscriptMeta =
+    isNowPlaying || (hasTranscriptStatus && transcriptListState !== 'completed')
+  const actionsAlwaysVisible = canRetry || transcriptListState === 'failed' || isInProgressStatus
+  const actionsContainerClass = `relative z-20 flex shrink-0 items-center justify-end gap-0.5 text-muted-foreground transition-opacity ${
+    actionsAlwaysVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
   }`
   const showCopyAction = download.status === 'completed' && fileExists
   const showOpenFolderAction = Boolean(
@@ -600,255 +552,25 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
   const showInlineProgress = Boolean(
     progressInfo && download.status !== 'completed' && download.status !== 'error'
   )
-  const canCopyLink = Boolean(download.url)
+  const canCopyLink = Boolean(download.url) && !isLocalMedia
   const canOpenFile = isCompletedStatus && fileExists
-  const canDeleteFile = isCompletedStatus && fileExists
-  const canViewTranscript = canViewTranscriptFromMenu({ fileExists })
-  const sourceDisplay =
-    download.uploader && download.channel && download.uploader !== download.channel
-      ? `${download.uploader} • ${download.channel}`
-      : download.uploader || download.channel || ''
-  const metadataDetails: MetadataDetail[] = []
-  if (timestamp) {
-    metadataDetails.push({
-      label: t('history.date'),
-      value: formatDate(timestamp)
-    })
-  }
-
-  if (sourceDisplay) {
-    metadataDetails.push({
-      label: t('download.metadata.source'),
-      value: sourceDisplay
-    })
-  }
-
-  if (download.playlistId) {
-    metadataDetails.push({
-      label: t('download.metadata.playlist'),
-      value: (
-        <span>
-          {download.playlistTitle || t('playlist.untitled')}
-          {download.playlistIndex !== undefined && download.playlistSize !== undefined ? (
-            <span className="text-muted-foreground/80">
-              {` ${t('playlist.positionLabel', {
-                index: download.playlistIndex,
-                total: download.playlistSize
-              })}`}
-            </span>
-          ) : null}
-        </span>
-      )
-    })
-  }
-
-  if (download.duration) {
-    metadataDetails.push({
-      label: t('history.duration'),
-      value: formatDuration(download.duration)
-    })
-  }
-
+  const canDeleteFile = !isLocalMedia && isCompletedStatus && fileExists
+  const platformLabel = downloadPlatformDisplayLabel(platform, {
+    local: t('download.localSource'),
+    other: t('download.otherSource')
+  })
   const selectedFormatSize =
     download.selectedFormat?.filesize || download.selectedFormat?.filesize_approx
   const inlineFileSize = selectedFormatSize ? formatFileSize(selectedFormatSize) : undefined
   const displayErrorMessage = getDownloadErrorGuidance(download.error) ?? download.error
   const cookieFailureKind = getCookieSetupFailureKind(download.error)
-  const formatLabelValue = getFormatLabel(download)
-  if (formatLabelValue) {
-    metadataDetails.push({
-      label: t('download.metadata.format'),
-      value: formatLabelValue
-    })
-  }
-
   const qualityLabel = getQualityLabel(download)
-  if (qualityLabel) {
-    metadataDetails.push({
-      label: t('download.metadata.quality'),
-      value: qualityLabel
-    })
-  }
-
-  if (inlineFileSize) {
-    metadataDetails.push({
-      label: t('history.fileSize'),
-      value: inlineFileSize
-    })
-  }
-
-  const codecValue = getCodecLabel(download)
-  if (codecValue) {
-    metadataDetails.push({
-      label: t('download.metadata.codec'),
-      value: codecValue
-    })
-  }
-
-  if (normalizedSavedFileName || download.savedFileName) {
-    metadataDetails.push({
-      label: t('download.metadata.savedFile'),
-      value: normalizedSavedFileName ?? download.savedFileName
-    })
-  }
-
-  if (download.url) {
-    metadataDetails.push({
-      label: t('download.metadata.url'),
-      value: (
-        <a
-          className="wrap-break-word relative z-20 text-primary hover:underline"
-          href={download.url}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {download.url}
-        </a>
-      )
-    })
-  }
-
-  // Additional metadata fields
-  if (download.description) {
-    metadataDetails.push({
-      label: t('download.metadata.description'),
-      value: <span className="wrap-break-word">{download.description}</span>
-    })
-  }
-
-  if (download.viewCount !== undefined && download.viewCount !== null) {
-    metadataDetails.push({
-      label: t('download.metadata.views'),
-      value: download.viewCount.toLocaleString()
-    })
-  }
-
-  if (download.tags && download.tags.length > 0) {
-    metadataDetails.push({
-      label: t('download.metadata.tags'),
-      value: (
-        <div className="flex flex-wrap gap-1">
-          {download.tags.map((tag) => (
-            <Badge className="px-1.5 py-0.5 text-[10px]" key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      )
-    })
-  }
-
-  if (download.downloadPath) {
-    metadataDetails.push({
-      label: t('download.metadata.downloadPath'),
-      value: <span className="wrap-break-word font-mono text-xs">{download.downloadPath}</span>
-    })
-  }
-
-  // Timestamps
-  if (download.createdAt && download.createdAt !== timestamp) {
-    metadataDetails.push({
-      label: t('download.metadata.createdAt'),
-      value: formatDate(download.createdAt)
-    })
-  }
-
-  if (download.startedAt) {
-    metadataDetails.push({
-      label: t('download.metadata.startedAt'),
-      value: formatDate(download.startedAt)
-    })
-  }
-
-  if (download.completedAt && download.completedAt !== timestamp) {
-    metadataDetails.push({
-      label: t('download.metadata.completedAt'),
-      value: formatDate(download.completedAt)
-    })
-  }
-
-  // Speed
-  if (download.speed) {
-    metadataDetails.push({
-      label: t('download.metadata.speed'),
-      value: download.speed
-    })
-  }
-
-  // File size (if different from inlineFileSize)
-  if (download.fileSize && download.fileSize !== selectedFormatSize) {
-    metadataDetails.push({
-      label: t('download.metadata.fileSize'),
-      value: formatFileSize(download.fileSize)
-    })
-  }
-
-  // Selected format details
-  if (download.selectedFormat) {
-    if (download.selectedFormat.width) {
-      metadataDetails.push({
-        label: t('download.metadata.width'),
-        value: `${download.selectedFormat.width}px`
-      })
-    }
-
-    if (download.selectedFormat.height && !qualityLabel) {
-      metadataDetails.push({
-        label: t('download.metadata.height'),
-        value: `${download.selectedFormat.height}px`
-      })
-    }
-
-    if (download.selectedFormat.fps) {
-      metadataDetails.push({
-        label: t('download.metadata.fps'),
-        value: `${download.selectedFormat.fps}`
-      })
-    }
-
-    if (download.selectedFormat.vcodec) {
-      metadataDetails.push({
-        label: t('download.metadata.videoCodec'),
-        value: download.selectedFormat.vcodec
-      })
-    }
-
-    if (download.selectedFormat.acodec) {
-      metadataDetails.push({
-        label: t('download.metadata.audioCodec'),
-        value: download.selectedFormat.acodec
-      })
-    }
-
-    if (download.selectedFormat.format_note) {
-      metadataDetails.push({
-        label: t('download.metadata.formatNote'),
-        value: download.selectedFormat.format_note
-      })
-    }
-
-    if (download.selectedFormat.protocol) {
-      metadataDetails.push({
-        label: t('download.metadata.protocol'),
-        value: download.selectedFormat.protocol.toUpperCase()
-      })
-    }
-  }
-
-  if (isSubscriptionDownload) {
-    metadataDetails.push({
-      label: t('download.metadata.subscription'),
-      value: subscriptionLabel
-    })
-  }
-
-  const hasMetadataDetails = metadataDetails.length > 0
   const liveLog = download.ytDlpLog ?? ''
   const logContent = liveLog.trim().length > 0 ? liveLog : (savedLog ?? '')
   const hasLogContent = logContent.trim().length > 0
   const ytDlpCommand = download.ytDlpCommand?.trim()
   const hasYtDlpCommand = Boolean(ytDlpCommand)
-  const canShowSheet = hasMetadataDetails || isInProgressStatus || hasLogContent || isTerminalStatus
+  const canShowSheet = isInProgressStatus || hasLogContent || isTerminalStatus
   const isSelectedHistory = selectionEnabled && isSelected
   useEffect(() => {
     const wasOpen = lastSheetOpenRef.current
@@ -856,11 +578,8 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
     if (!sheetOpen || wasOpen) {
       return
     }
-    const defaultTab = hasMetadataDetails ? 'details' : 'logs'
-    setActiveTab(pendingTab ?? defaultTab)
-    setPendingTab(null)
     setLogAutoScroll(true)
-  }, [hasMetadataDetails, pendingTab, sheetOpen])
+  }, [sheetOpen])
 
   useEffect(() => {
     if (!(sheetOpen && logAutoScroll && logContent)) {
@@ -910,71 +629,101 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
     if (!canShowSheet) {
       return
     }
-    setPendingTab(sheetOpen ? null : 'logs')
-    setActiveTab('logs')
     setLogAutoScroll(true)
     setSheetOpen(true)
+  }
+
+  const metaItems: { key: string; node: ReactNode }[] = []
+  if (showInlineProgress) {
+    metaItems.push({
+      key: 'progress',
+      node: (
+        <span className="inline-flex items-center gap-1 font-medium text-foreground">
+          {statusIcon}
+          {(progressInfo?.percent ?? 0).toFixed(0)}%
+        </span>
+      )
+    })
+    if (progressInfo?.currentSpeed) {
+      metaItems.push({ key: 'speed', node: progressInfo.currentSpeed })
+    }
+  } else if (download.status !== 'completed' && statusText) {
+    metaItems.push({
+      key: 'status',
+      node: (
+        <span
+          className={`inline-flex items-center gap-1 ${
+            download.status === 'error' ? 'text-destructive' : ''
+          }`}
+        >
+          {statusIcon}
+          {statusText}
+        </span>
+      )
+    })
+  }
+  if (isNowPlaying) {
+    metaItems.push({
+      key: 'now-playing',
+      node: (
+        <span className="inline-flex items-center gap-1 font-medium text-primary">
+          <AudioLines className="h-3.5 w-3.5" />
+          {t('transcript.player.nowPlaying')}
+        </span>
+      )
+    })
+  } else if (showTranscriptMeta) {
+    metaItems.push({
+      key: 'transcript',
+      node: (
+        <span
+          className={`inline-flex items-center gap-1 ${
+            transcriptListState === 'failed' ? 'text-destructive' : ''
+          }`}
+        >
+          {transcriptStatusIcon(transcriptListState, transcript?.sourceKind)}
+          {transcriptStatusLabel}
+        </span>
+      )
+    })
+  }
+  if (timestamp && !showInlineProgress) {
+    metaItems.push({ key: 'date', node: formatDateShort(timestamp) })
+  }
+  if (qualityLabel && !showInlineProgress) {
+    metaItems.push({ key: 'quality', node: qualityLabel })
+  }
+  if (inlineFileSize && !showInlineProgress) {
+    metaItems.push({ key: 'size', node: inlineFileSize })
   }
 
   return (
     <ContextMenu onOpenChange={setIsContextMenuOpen}>
       <ContextMenuTrigger asChild>
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: history row is a composite widget with nested controls; double-click opens the file */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: composite row with nested controls; click opens transcript */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: nested buttons and checkbox own keyboard focus */}
         <div
-          className={`group relative w-full max-w-full overflow-hidden px-6 py-2 text-left transition-colors ${
+          aria-current={isNowPlaying ? 'true' : undefined}
+          className={`group relative w-full max-w-full cursor-pointer overflow-hidden px-6 py-2 text-left transition-colors ${
             isSelectedHistory || isContextMenuOpen ? 'bg-primary/10' : ''
           }`}
-          onDoubleClick={() => {
-            if (
-              shouldOpenHistoryItemOnDoubleClick({
-                entryType: download.entryType,
-                fileExists,
-                status: download.status
-              })
-            ) {
-              void handleOpenFile()
+          data-download-id={download.id}
+          data-download-selectable={selectionEnabled ? 'true' : undefined}
+          data-now-playing={isNowPlaying ? 'true' : undefined}
+          onClick={(event) => {
+            if (isListIgnoreTarget(event.target)) {
+              return
             }
-          }}
-          onKeyDown={(e: React.KeyboardEvent) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              if (
-                shouldOpenHistoryItemOnDoubleClick({
-                  entryType: download.entryType,
-                  fileExists,
-                  status: download.status
-                })
-              ) {
-                void handleOpenFile()
-              }
-            }
+            handleOpenTranscript()
           }}
         >
-          <div
-            className={`flex w-full flex-col gap-2 sm:flex-row sm:gap-3 ${
-              selectionEnabled ? 'cursor-pointer' : ''
-            }`}
-            {...(selectionEnabled
-              ? {
-                  onClick: () => onToggleSelect?.(download.id),
-                  onKeyDown: (e: React.KeyboardEvent) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      onToggleSelect?.(download.id)
-                    }
-                  },
-                  role: 'button',
-                  tabIndex: 0,
-                  'aria-label': t('history.selectItem')
-                }
-              : {})}
-          >
+          <div className="flex w-full items-start gap-3">
             {/* Thumbnail */}
             <div className="pointer-events-none relative z-20 aspect-video h-14 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-background/60">
               {selectionEnabled && (
                 <div
                   className={`pointer-events-auto absolute top-1 left-1 z-30 rounded-md transition ${
-                    isSelected
+                    isSelected || selectionActive
                       ? 'opacity-100'
                       : 'opacity-0 group-focus-within:opacity-100 group-hover:opacity-100'
                   }`}
@@ -984,102 +733,75 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
                     checked={Boolean(isSelected)}
                     onCheckedChange={() => onToggleSelect?.(download.id)}
                     onClick={(event) => event.stopPropagation()}
+                    onPointerDown={(event) => event.stopPropagation()}
                   />
                 </div>
               )}
               <RemoteImage
                 alt={download.title}
                 className="h-full w-full object-cover"
-                fallbackIcon={<Play className="h-4 w-4" />}
+                fallbackIcon={
+                  download.type === 'audio' ? (
+                    <FileAudio className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )
+                }
                 src={download.thumbnail}
               />
+              {isNowPlaying ? (
+                <span
+                  aria-hidden="true"
+                  className="transcript-library-now-playing"
+                  data-testid="transcript-library-now-playing"
+                >
+                  <TranscriptAudioEqualizer playing={playbackPlaying} />
+                </span>
+              ) : null}
             </div>
 
             {/* Content */}
-            <div className="pointer-events-none min-w-0 max-w-full flex-1 overflow-hidden">
-              <div className="flex h-14 w-full flex-col justify-center gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-                <div className="min-w-0 max-w-full flex-1 space-y-1.5 overflow-hidden">
-                  <div className="flex w-full min-w-0 flex-wrap items-center gap-1.5 overflow-hidden">
-                    <p className="wrap-break-word line-clamp-1 flex-1 font-medium text-sm">
+            <div className="pointer-events-none min-w-0 flex-1 overflow-hidden">
+              <div className="flex min-h-14 items-center gap-2">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span
+                      aria-label={platformLabel}
+                      className="inline-flex size-4 shrink-0 items-center justify-center"
+                      role="img"
+                      title={platformLabel}
+                    >
+                      <DownloadPlatformIcon className="block size-4" domain={platform.domain} />
+                    </span>
+                    <p
+                      className={`min-w-0 truncate font-medium text-sm ${isNowPlaying ? 'text-primary' : ''}`}
+                    >
                       {download.title}
                     </p>
-                    {download.type === 'audio' && (
-                      <Badge className="shrink-0 px-1.5 py-0.5 text-[10px]" variant="secondary">
-                        {t('download.audio')}
-                      </Badge>
-                    )}
-                    {isSubscriptionDownload && (
-                      <Badge className="shrink-0 px-1.5 py-0.5 text-[10px]" variant="secondary">
-                        {t('subscriptions.labels.subscription')}
-                      </Badge>
-                    )}
                   </div>
-                  <div className="flex w-full flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                    {/* Status */}
-                    {statusIcon && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex shrink-0 items-center">{statusIcon}</div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{statusText}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                    {showInlineProgress && (
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="shrink-0 font-medium">
-                          {(progressInfo?.percent ?? 0).toFixed(1)}%
-                        </span>
-                        {progressInfo?.downloaded && progressInfo?.total && (
-                          <span className="max-w-[120px] truncate">
-                            {progressInfo.downloaded} / {progressInfo.total}
-                          </span>
-                        )}
-                        {progressInfo?.currentSpeed && (
-                          <span className="max-w-[80px] truncate">{progressInfo.currentSpeed}</span>
-                        )}
-                        {progressInfo?.eta && (
-                          <span className="max-w-[80px] truncate">ETA: {progressInfo.eta}</span>
-                        )}
-                      </div>
-                    )}
-                    {/* Timestamp */}
-                    {timestamp && (
-                      <span className="shrink-0 truncate">{formatDateShort(timestamp)}</span>
-                    )}
-                    {/* Quality */}
-                    {qualityLabel && (
-                      <>
-                        {(statusIcon || timestamp) && (
-                          <span className="shrink-0 text-muted-foreground/60">•</span>
-                        )}
-                        <span className="shrink-0">{qualityLabel}</span>
-                      </>
-                    )}
-                    {/* File size */}
-                    {inlineFileSize && (
-                      <>
-                        {(statusIcon || timestamp || qualityLabel) && (
-                          <span className="shrink-0 text-muted-foreground/60">•</span>
-                        )}
-                        <span className="shrink-0">{inlineFileSize}</span>
-                      </>
-                    )}
-                  </div>
+                  <DownloadItemMeta items={metaItems} />
                 </div>
                 <div className={`${actionsContainerClass} pointer-events-auto`}>
-                  {isCompletedStatus && fileExists ? (
-                    <div className="opacity-100">
-                      <TranscriptEntryButton
-                        listState={transcript?.listState ?? 'none'}
-                        onOpen={handleOpenTranscript}
-                        onRetry={() => {
-                          void ipcServices.transcript.retry(download.id)
-                        }}
-                        sourceKind={transcript?.sourceKind}
-                      />
-                    </div>
+                  {transcriptListState === 'failed' ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          aria-label={t('transcript.retry')}
+                          className="h-8 w-8 shrink-0 rounded-full"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            void ipcServices.transcript.retry(download.id)
+                          }}
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <RotateCw className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('transcript.retry')}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   ) : null}
                   {canRetry && (
                     <Tooltip>
@@ -1255,7 +977,7 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
               {download.progress &&
                 download.status !== 'completed' &&
                 download.status !== 'error' && (
-                  <div className="w-full overflow-hidden bg-background/60">
+                  <div className="mt-1.5 w-full overflow-hidden rounded-full bg-background/60">
                     <Progress className="h-1 w-full" value={download.progress.percent} />
                   </div>
                 )}
@@ -1348,7 +1070,6 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
             </div>
           </div>
 
-          {/* Video Details Sheet */}
           {canShowSheet && (
             <Sheet onOpenChange={setSheetOpen} open={sheetOpen}>
               <SheetContent
@@ -1358,75 +1079,39 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
                 <div className="flex h-full min-h-0 flex-col overflow-hidden">
                   <SheetHeader className="shrink-0 border-b px-6 pt-6 pb-4">
                     <SheetTitle className="line-clamp-2">{download.title}</SheetTitle>
-                    <SheetDescription>{t('download.videoInfo')}</SheetDescription>
+                    <SheetDescription>{t('download.logsTab')}</SheetDescription>
                   </SheetHeader>
-                  <Tabs
-                    className="flex min-h-0 flex-1 flex-col overflow-hidden"
-                    onValueChange={(value) => setActiveTab(value as 'details' | 'logs')}
-                    value={activeTab}
-                  >
-                    <div className="shrink-0 px-6 pt-4">
-                      <TabsList>
-                        <TabItem
-                          disabled={!hasMetadataDetails}
-                          label={t('download.detailsTab')}
-                          value="details"
-                        />
-                        <TabItem label={t('download.logsTab')} value="logs" />
-                      </TabsList>
-                    </div>
-                    <TabPanel
-                      className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-4"
-                      value="details"
-                    >
-                      <div className="space-y-4">
-                        {metadataDetails.map((item) => (
-                          <div className="flex flex-col gap-1" key={item.label}>
-                            <span className="font-medium text-muted-foreground text-sm">
-                              {item.label}
-                            </span>
-                            <div className="break-words text-foreground text-sm">{item.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </TabPanel>
-                    <TabPanel
-                      className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-6 py-4"
-                      value="logs"
-                    >
-                      <div className="flex items-center justify-between text-muted-foreground text-xs">
-                        <span>
-                          {isInProgressStatus
-                            ? t('download.logs.live')
-                            : t('download.logs.history')}
+                  <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-6 py-4">
+                    <div className="flex items-center justify-between text-muted-foreground text-xs">
+                      <span>
+                        {isInProgressStatus ? t('download.logs.live') : t('download.logs.history')}
+                      </span>
+                      {logAutoScroll ? null : (
+                        <span className="text-muted-foreground/70">
+                          {t('download.logs.scrollPaused')}
                         </span>
-                        {logAutoScroll ? null : (
-                          <span className="text-muted-foreground/70">
-                            {t('download.logs.scrollPaused')}
-                          </span>
-                        )}
-                      </div>
-                      {hasYtDlpCommand && (
-                        <div className="rounded-md border border-border/60 bg-muted/20 p-2">
-                          <div className="font-medium text-[11px] text-muted-foreground">
-                            {t('download.logs.command')}
-                          </div>
-                          <div className="mt-1 whitespace-pre-wrap break-words font-mono text-xs">
-                            {ytDlpCommand}
-                          </div>
-                        </div>
                       )}
-                      <div className="min-h-0 flex-1 rounded-md border border-border/60 bg-muted/30">
-                        <div
-                          className="h-full overflow-y-auto whitespace-pre-wrap break-words p-3 font-mono text-xs leading-relaxed"
-                          onScroll={handleLogScroll}
-                          ref={logContainerRef}
-                        >
-                          {hasLogContent ? logContent : t('download.logs.empty')}
+                    </div>
+                    {hasYtDlpCommand && (
+                      <div className="rounded-md border border-border/60 bg-muted/20 p-2">
+                        <div className="font-medium text-[11px] text-muted-foreground">
+                          {t('download.logs.command')}
+                        </div>
+                        <div className="mt-1 whitespace-pre-wrap break-words font-mono text-xs">
+                          {ytDlpCommand}
                         </div>
                       </div>
-                    </TabPanel>
-                  </Tabs>
+                    )}
+                    <div className="min-h-0 flex-1 rounded-md border border-border/60 bg-muted/30">
+                      <div
+                        className="h-full overflow-y-auto whitespace-pre-wrap break-words p-3 font-mono text-xs leading-relaxed"
+                        onScroll={handleLogScroll}
+                        ref={logContainerRef}
+                      >
+                        {hasLogContent ? logContent : t('download.logs.empty')}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -1434,202 +1119,131 @@ export function DownloadItem({ download, isSelected = false, onToggleSelect }: D
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        {isInProgressStatus ? (
+        <ContextMenuItem disabled={!canOpenFile} onClick={handleOpenFile}>
+          <File className="h-4 w-4" />
+          {t('history.openFile')}
+        </ContextMenuItem>
+        {transcriptListState === 'failed' ? (
+          <ContextMenuItem
+            onClick={() => {
+              void ipcServices.transcript.retry(download.id)
+            }}
+          >
+            <RotateCw className="h-4 w-4" />
+            {t('transcript.retry')}
+          </ContextMenuItem>
+        ) : null}
+        <ContextMenuSeparator />
+        <ContextMenuItem disabled={!showOpenFolderAction} onClick={handleOpenFolder}>
+          <FolderOpen className="h-4 w-4" />
+          {t('history.openFileLocation')}
+        </ContextMenuItem>
+        <ContextMenuItem disabled={!canCopyToClipboard()} onClick={handleCopyToClipboard}>
+          <Copy className="h-4 w-4" />
+          {t('history.copyToClipboard')}
+        </ContextMenuItem>
+        <ContextMenuItem disabled={!canCopyLink} onClick={handleCopyLink}>
+          <span aria-hidden className="h-4 w-4 shrink-0" />
+          {t('history.copyUrl')}
+        </ContextMenuItem>
+        {canRetry || canResumeDownload || canPauseDownload || isInProgressStatus ? (
           <>
-            {canRetry && (
+            <ContextMenuSeparator />
+            {canRetry ? (
               <ContextMenuItem onClick={handleRetryDownload}>
                 <RotateCw className="h-4 w-4" />
                 {t('download.retry')}
               </ContextMenuItem>
-            )}
-            <ContextMenuItem disabled={!showOpenFolderAction} onClick={handleOpenFolder}>
-              <FolderOpen className="h-4 w-4" />
-              {t('history.openFileLocation')}
-            </ContextMenuItem>
-            <ContextMenuItem disabled={!canCopyLink} onClick={handleCopyLink}>
-              <span aria-hidden="true" className="h-4 w-4 shrink-0" />
-              {t('history.copyUrl')}
-            </ContextMenuItem>
-            {canShowSheet && (
-              <ContextMenuItem onClick={() => setSheetOpen(true)}>
-                <span aria-hidden="true" className="h-4 w-4 shrink-0" />
-                {t('download.showDetails')}
-              </ContextMenuItem>
-            )}
-            <ContextMenuSeparator />
-            {canResumeDownload && (
+            ) : null}
+            {canResumeDownload ? (
               <ContextMenuItem onClick={() => void handleResume()}>
                 <Play className="h-4 w-4" />
                 {t('download.resume')}
               </ContextMenuItem>
-            )}
-            {canPauseDownload && (
+            ) : null}
+            {canPauseDownload ? (
               <ContextMenuItem onClick={() => void handlePause()}>
                 <Pause className="h-4 w-4" />
                 {t('download.pause')}
               </ContextMenuItem>
-            )}
-            <ContextMenuItem onClick={() => void handleCancel()}>
-              <X className="h-4 w-4" />
-              {t('download.cancel')}
-            </ContextMenuItem>
+            ) : null}
+            {isInProgressStatus ? (
+              <ContextMenuItem onClick={() => void handleCancel()}>
+                <X className="h-4 w-4" />
+                {t('download.cancel')}
+              </ContextMenuItem>
+            ) : null}
           </>
-        ) : (
-          <>
-            {isCompletedStatus && (
-              <ContextMenuItem disabled={!showCopyAction} onClick={handleCopyToClipboard}>
-                <Copy className="h-4 w-4" />
-                {t('history.copyToClipboard')}
-              </ContextMenuItem>
-            )}
-            {canRetry && (
-              <ContextMenuItem onClick={handleRetryDownload}>
-                <RotateCw className="h-4 w-4" />
-                {t('download.retry')}
-              </ContextMenuItem>
-            )}
-            <ContextMenuItem disabled={!canOpenFile} onClick={handleOpenFile}>
-              <File className="h-4 w-4" />
-              {t('history.openFile')}
-            </ContextMenuItem>
-            {isCompletedStatus && canViewTranscript && (
-              <ContextMenuItem onClick={handleOpenTranscript}>
-                {transcript?.sourceKind === 'captions' ? (
-                  <Captions className="h-4 w-4" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                {t('transcript.view')}
-              </ContextMenuItem>
-            )}
-            <ContextMenuSeparator />
-            <ContextMenuItem disabled={!showOpenFolderAction} onClick={handleOpenFolder}>
-              <FolderOpen className="h-4 w-4" />
-              {t('history.openFileLocation')}
-            </ContextMenuItem>
-            <ContextMenuItem disabled={!canCopyLink} onClick={handleCopyLink}>
-              <span aria-hidden="true" className="h-4 w-4 shrink-0" />
-              {t('history.copyUrl')}
-            </ContextMenuItem>
-            {canShowSheet && (
-              <ContextMenuItem onClick={() => setSheetOpen(true)}>
-                <span aria-hidden="true" className="h-4 w-4 shrink-0" />
-                {t('download.showDetails')}
-              </ContextMenuItem>
-            )}
-            <ContextMenuSeparator />
-            <ContextMenuItem disabled={!canDeleteFile} onClick={handleDeleteFile}>
-              <Trash2 className="h-4 w-4" />
-              {t('history.deleteFile')}
-            </ContextMenuItem>
-            <ContextMenuItem onClick={handleDeleteRecord}>
-              <span aria-hidden="true" className="h-4 w-4 shrink-0" />
-              {t('history.deleteRecord')}
-            </ContextMenuItem>
-          </>
-        )}
+        ) : null}
+        <ContextMenuSeparator />
+        <ContextMenuItem disabled={!canDeleteFile} onClick={handleDeleteFile}>
+          <Trash2 className="h-4 w-4" />
+          {t('history.deleteFile')}
+        </ContextMenuItem>
+        <ContextMenuItem disabled={isInProgressStatus} onClick={handleDeleteRecord}>
+          <span aria-hidden className="h-4 w-4 shrink-0" />
+          {t('history.deleteRecord')}
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )
 }
 
-interface TranscriptEntryButtonProps {
-  listState: TranscriptListState
-  onOpen: () => void
-  onRetry: () => void
-  sourceKind?: 'asr' | 'captions' | null
+/**
+ * One muted metadata line, with dots between the parts that are present.
+ */
+function DownloadItemMeta({ items }: { items: { key: string; node: ReactNode }[] }) {
+  if (items.length === 0) {
+    return null
+  }
+  return (
+    <div className="flex h-4 min-w-0 items-center overflow-hidden text-[12px] text-muted-foreground leading-none [&_img]:block [&_svg]:block">
+      {items.map((item, index) => (
+        <span className="inline-flex h-4 min-w-0 items-center" key={item.key}>
+          {index > 0 ? (
+            <span
+              aria-hidden="true"
+              className="mx-1.5 shrink-0 text-muted-foreground/40 leading-none"
+            >
+              ·
+            </span>
+          ) : null}
+          <span className="inline-flex h-4 min-w-0 items-center truncate">{item.node}</span>
+        </span>
+      ))}
+    </div>
+  )
 }
 
-const TranscriptEntryButton = ({
-  listState,
-  onOpen,
-  onRetry,
-  sourceKind
-}: TranscriptEntryButtonProps) => {
-  const { t } = useTranslation()
-  if (isInProgressTranscript(listState)) {
-    return (
-      <Button
-        aria-label={t('transcript.transcribing')}
-        className="h-8 gap-1 px-2"
-        onClick={(event) => {
-          event.stopPropagation()
-          onOpen()
-        }}
-        size="sm"
-        variant="ghost"
-      >
-        <Sparkles className="h-4 w-4" />
-        <Loader2 className="h-3 w-3 animate-spin" />
-        <span className="text-xs">{t('transcript.transcribing')}</span>
-      </Button>
-    )
-  }
-  if (listState === 'no-speech') {
-    return (
-      <Button
-        aria-label={t('transcript.noSpeech')}
-        className="h-8 px-2 text-xs"
-        onClick={(event) => {
-          event.stopPropagation()
-          onOpen()
-        }}
-        size="sm"
-        variant="ghost"
-      >
-        {t('transcript.noSpeech')}
-      </Button>
-    )
-  }
-  if (listState === 'failed') {
-    return (
-      <div className="flex items-center gap-1">
-        <AlertCircle aria-hidden="true" className="h-4 w-4 text-destructive" />
-        <Button
-          aria-label={t('transcript.error')}
-          className="h-8 px-2 text-xs"
-          onClick={(event) => {
-            event.stopPropagation()
-            onOpen()
-          }}
-          size="sm"
-          variant="ghost"
-        >
-          {t('transcript.error')}
-        </Button>
-        <Button
-          aria-label={t('transcript.retry')}
-          className="h-8 w-8"
-          onClick={(event) => {
-            event.stopPropagation()
-            onRetry()
-          }}
-          size="icon"
-          variant="ghost"
-        >
-          <RotateCw className="h-4 w-4" />
-        </Button>
-      </div>
-    )
-  }
-  const fromCaptions = sourceKind === 'captions'
-  return (
-    <Button
-      aria-label={t('transcript.view')}
-      className="h-8 gap-1 px-2 text-xs"
-      onClick={(event) => {
-        event.stopPropagation()
-        onOpen()
-      }}
-      size="sm"
-      variant="ghost"
-    >
-      {fromCaptions ? (
-        <Captions aria-hidden="true" className="h-4 w-4" />
+/**
+ * Compact icon for a transcript's listed status on a download row.
+ *
+ * @param listState Compact transcript status.
+ * @param sourceKind Caption vs ASR origin.
+ */
+const transcriptStatusIcon = (
+  listState: TranscriptListState,
+  sourceKind?: 'asr' | 'captions' | null
+): ReactNode => {
+  switch (listState) {
+    case 'completed':
+      return sourceKind === 'captions' ? (
+        <Captions className="h-4 w-4 text-muted-foreground" />
       ) : (
-        <Sparkles aria-hidden="true" className="h-4 w-4" />
-      )}
-      {t('transcript.view')}
-    </Button>
-  )
+        <Sparkles className="h-4 w-4 text-violet-500" />
+      )
+    case 'no-speech':
+      return <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+    case 'failed':
+      return <AlertCircle className="h-4 w-4 text-destructive" />
+    case 'running':
+      return <Loader2 className="h-4 w-4 animate-spin text-primary" />
+    case 'queued':
+    case 'retry-scheduled':
+      return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+    case 'cancelled':
+      return <X className="h-4 w-4 text-muted-foreground" />
+    default:
+      return null
+  }
 }

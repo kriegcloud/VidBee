@@ -15,7 +15,7 @@
     "autoUpdateTitle": "Atualizações automáticas",
     "betaProgramDescription": "Receba builds antecipados e próximos recursos antes de todos.",
     "betaProgramTitle": "Canal de visualização",
-    "description": "VidBee é um baixador gratuito e de código aberto construído com Electron e alimentado por yt-dlp.",
+    "description": "Baixe mídias de mais de 1000 sites, crie transcrições pesquisáveis no seu computador e use o provedor de IA que você escolher para resumir, traduzir ou fazer perguntas, tudo em um app gratuito e de código aberto para desktop.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Reserva incluída",
@@ -118,7 +118,7 @@
     "title": "Opções Avançadas"
   },
   "app": {
-    "description": "Baixar vídeos e áudios de centenas de sites",
+    "description": "Baixe mídias, transcreva localmente e pergunte à IA",
     "title": "VidBee",
     "quitConfirm": {
       "title": "Sair do VidBee?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "Download de Um Clique (Info indisponível)",
     "loading": "Carregando",
     "moreOptions": "Mais opções",
+    "moreAddActions": "Mais formas de adicionar",
+    "morePlatforms": "Mais plataformas",
+    "localSource": "Local",
+    "otherSource": "Outro",
     "noActiveDownloads": "Nenhum download ativo",
     "noAudio": "Sem Áudio",
     "noHistory": "Nenhum histórico de download",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Solte para transcrever",
     "ingestDropMixed": "Solte para baixar e transcrever",
     "ingestDropDescription": "Links iniciam um download. Arquivos de áudio e vídeo iniciam uma transcrição.",
-    "ingestEmptyHint": "Cole um link para baixar, ou solte áudio ou vídeo para transcrever.",
+    "ingestEmptyHint": "Cole um link para baixar ou solte um arquivo de mídia para transcrever localmente; depois, resuma, traduza ou pergunte à IA.",
     "preparing": "Preparando...",
     "processing": "Processando",
     "progress": "Progresso",
@@ -224,6 +228,7 @@
     "codecAuto": "Auto",
     "fpsHighest": "Mais alta",
     "metadata": {
+      "platform": "Plataforma",
       "source": "Fonte",
       "playlist": "Lista de reprodução",
       "format": "Formatar",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "Sobre",
+    "home": "Início",
     "download": "Download",
     "playlist": "Baixar Playlist",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "A transcrição parou antes de terminar. Tente novamente.",
+    "errorNoAudio": "Este arquivo não tem faixa de áudio, então uma transcrição não pode ser gerada.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Parar",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Preparando o áudio",
     "identifyingSpeakers": "Identificando falantes",
-    "back": "Voltar às transcrições",
+    "back": "Voltar aos downloads",
     "library": {
       "empty": "Ainda não há transcrições",
-      "emptyHint": "Escolha um arquivo local de áudio ou vídeo, ou transcreva um download concluído.",
+      "emptyHint": "Transcreva um download ou arquivo de mídia local e depois pesquise na transcrição, exporte-a ou pergunte à IA sobre o conteúdo.",
       "addMedia": "Adicionar áudio ou vídeo",
       "goToDownloads": "Ir para downloads",
       "untitled": "Mídia sem título",
@@ -1119,6 +1126,17 @@
     "copyFailed": "Não foi possível copiar a transcrição.",
     "captionSelect": "Transcrição selecionada",
     "captionSelectClear": "Limpar seleção",
+    "captionAdd": "Adicionar linha",
+    "captionEdit": "Editar",
+    "captionInsertBefore": "Inserir antes",
+    "captionInsertAfter": "Inserir depois",
+    "captionDelete": "Excluir",
+    "captionDeleteSelected": "Excluir seleção",
+    "captionDeleted": "{{count}} legendas excluídas",
+    "captionSaveFailed": "Não foi possível salvar a legenda.",
+    "captionPlaceholder": "Digite a legenda",
+    "captionSpeaker": "Falante",
+    "captionEmpty": "Ainda não há legendas. Adicione uma linha para começar.",
     "export": {
       "action": "Exportar",
       "preview": "Pré-visualização da exportação",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "Não foi possível salvar a imagem.",
     "promptShareNativeFailed": "Não foi possível abrir o menu de compartilhamento.",
     "promptShareFooter": "Feito com VidBee",
-    "promptShareTagline": "Open source. Baixe um vídeo. Pergunte à IA.",
+    "promptShareTagline": "Baixe. Transcreva localmente. Pergunte à IA.",
     "captionShareSaid": "{{name}} disse",
     "promptOutput": "Resultado do prompt",
     "promptScrollToEnd": "Ir para o mais recente",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "Novidades",
-    "description": "Transcrições e IA, neste computador.",
-    "tryIt": "Experimentar",
+    "description": "Baixe, transcreva localmente e pergunte à IA, tudo em um único app.",
+    "tryIt": "Abrir transcrições",
     "features": {
       "transcript": {
         "title": "Transcrições automáticas de vídeo",
@@ -1345,8 +1363,8 @@
         "description": "Veja quem disse o quê e pule para aquele momento no vídeo."
       },
       "summary": {
-        "title": "Resumos com IA",
-        "description": "Transforme uma transcrição em tópicos, FAQ, mapa mental ou reescrita. Adicione seus prompts em Ajustes."
+        "title": "Pergunte à IA sobre qualquer transcrição",
+        "description": "Resuma, traduza, gere perguntas frequentes ou mapas mentais e execute seus próprios prompts com o provedor de IA que você escolher."
       },
       "localFiles": {
         "title": "Transcreva qualquer arquivo",

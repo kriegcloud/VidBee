@@ -18,7 +18,7 @@
     "autoUpdateTitle": "Auto updates",
     "betaProgramDescription": "Receive early builds and upcoming features before everyone else.",
     "betaProgramTitle": "Preview channel",
-    "description": "VidBee - Free and open-source automated video downloader with RSS auto-download, batch processing, and support for 1000+ platforms.",
+    "description": "Download media from 1000+ sites, create searchable transcripts on your computer, and summarize, translate, or ask questions with the AI provider you choose—all in one free, open-source desktop app.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Bundled fallback",
@@ -118,7 +118,7 @@
     "title": "Advanced Options"
   },
   "app": {
-    "description": "Download videos and audios from hundreds of sites",
+    "description": "Download media, transcribe it locally, and ask AI",
     "title": "VidBee",
     "quitConfirm": {
       "title": "Quit VidBee?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "One-Click Download (Info unavailable)",
     "loading": "Loading",
     "moreOptions": "More options",
+    "moreAddActions": "More ways to add",
+    "morePlatforms": "More platforms",
+    "localSource": "Local",
+    "otherSource": "Other",
     "noActiveDownloads": "No active downloads",
     "noAudio": "No Audio",
     "noHistory": "No download history",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Drop to transcribe",
     "ingestDropMixed": "Drop to download and transcribe",
     "ingestDropDescription": "Links start a download. Audio and video files start a transcript.",
-    "ingestEmptyHint": "Paste a link to download, or drop audio or video to transcribe.",
+    "ingestEmptyHint": "Paste a link to download, or drop a media file to transcribe locally—then summarize, translate, or ask AI.",
     "preparing": "Preparing...",
     "processing": "Processing",
     "progress": "Progress",
@@ -236,6 +240,7 @@
     "codecAuto": "Auto",
     "fpsHighest": "Highest",
     "metadata": {
+      "platform": "Platform",
       "source": "Source",
       "playlist": "Playlist",
       "format": "Format",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "About",
+    "home": "Home",
     "download": "Download",
     "playlist": "Download Playlist",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "Transcription stopped before it finished. Retry to try again.",
+    "errorNoAudio": "This file has no audio track, so a transcript cannot be generated.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Stop",
@@ -1105,10 +1112,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Preparing audio",
     "identifyingSpeakers": "Identifying speakers",
-    "back": "Back to transcripts",
+    "back": "Back to downloads",
     "library": {
       "empty": "No transcripts yet",
-      "emptyHint": "Choose a local audio or video file, or transcribe a finished download.",
+      "emptyHint": "Transcribe a download or local media file, then search, export, or ask AI about it.",
       "addMedia": "Add audio or video",
       "goToDownloads": "Go to downloads",
       "untitled": "Untitled media",
@@ -1130,6 +1137,17 @@
     "copyFailed": "Could not copy the transcript.",
     "captionSelect": "Selected transcript",
     "captionSelectClear": "Clear selection",
+    "captionAdd": "Add line",
+    "captionEdit": "Edit",
+    "captionInsertBefore": "Insert before",
+    "captionInsertAfter": "Insert after",
+    "captionDelete": "Delete",
+    "captionDeleteSelected": "Delete selected",
+    "captionDeleted": "Deleted {{count}} captions",
+    "captionSaveFailed": "Could not save the caption.",
+    "captionPlaceholder": "Type the caption",
+    "captionSpeaker": "Speaker",
+    "captionEmpty": "No captions yet. Add a line to start editing.",
     "promptMenu": "All prompts",
     "promptStop": "Stop",
     "promptRerun": "Run again",
@@ -1145,7 +1163,7 @@
     "promptShareSaveFailed": "Could not save the share image.",
     "promptShareNativeFailed": "Could not open the share sheet.",
     "promptShareFooter": "Made with VidBee",
-    "promptShareTagline": "Open source. Download a video. Ask AI.",
+    "promptShareTagline": "Download. Transcribe locally. Ask AI.",
     "captionShareSaid": "{{name}} said",
     "promptOutput": "Prompt result",
     "promptScrollToEnd": "Scroll to latest",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "What's New",
-    "description": "Transcripts and AI, on this computer.",
-    "tryIt": "Try it",
+    "description": "Download, transcribe locally, and ask AI—all in one app.",
+    "tryIt": "Open Transcripts",
     "features": {
       "transcript": {
         "title": "Automatic video transcripts",
@@ -1345,8 +1363,8 @@
         "description": "See who said what, then jump to that moment in the video."
       },
       "summary": {
-        "title": "AI summaries",
-        "description": "Turn a transcript into bullets, a FAQ, a mind map, or a rewrite. Add your own prompts in Settings."
+        "title": "Ask AI about any transcript",
+        "description": "Summarize, translate, generate FAQs or mind maps, and run your own prompts with the AI provider you choose."
       },
       "localFiles": {
         "title": "Transcribe any file",

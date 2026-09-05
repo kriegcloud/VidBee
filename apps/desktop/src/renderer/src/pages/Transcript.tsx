@@ -1,7 +1,10 @@
 import { AsrUpgradeDialog } from '@renderer/components/transcript/AsrUpgradeDialog'
 import { SpeakerCountDialog } from '@renderer/components/transcript/SpeakerCountDialog'
 import { TranscriptExportDialog } from '@renderer/components/transcript/TranscriptExportDialog'
-import { fileNameFromPath } from '@renderer/components/transcript/TranscriptInfoPane'
+import {
+  fileNameFromPath,
+  type TranscriptInfoFields
+} from '@renderer/components/transcript/TranscriptInfoPane'
 import { TranscriptPlaybackSlot } from '@renderer/components/transcript/TranscriptPlaybackSlot'
 import { TranscriptPlaybackStandby } from '@renderer/components/transcript/TranscriptPlaybackStandby'
 import { TranscriptSidePanel } from '@renderer/components/transcript/TranscriptSidePanel'
@@ -50,6 +53,10 @@ import {
 import { buildPromptTranscriptText } from '@shared/ai-prompt-text'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { DragRegion, NoDrag } from '@vidbee/ui/components/ui/drag-region'
+import {
+  downloadPlatformDisplayLabel,
+  resolveDownloadPlatform
+} from '@vidbee/ui/lib/download-platform'
 import { mediaKindFromName } from '@vidbee/ui/lib/ingest'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
@@ -73,11 +80,70 @@ import {
 import { useTranslation } from 'react-i18next'
 import { type PanelImperativeHandle, useDefaultLayout, usePanelRef } from 'react-resizable-panels'
 import { toast } from 'sonner'
-import { downloadRecordsAtom } from '../store/downloads'
+import {
+  getCodecLabel,
+  getFormatLabel,
+  getQualityLabel
+} from '../components/download/download-item-utils'
+import { type DownloadRecord, downloadRecordsAtom } from '../store/downloads'
 
 const EMPTY_SEGMENTS: TranscriptSegmentView[] = []
 const EMPTY_SPEAKERS: TranscriptSpeakerView[] = []
 const WIDE_LAYOUT_QUERY = '(min-width: 1024px)'
+
+/**
+ * Map a download record onto Info tab fields that used to live in the details drawer.
+ */
+const downloadFieldsForInfo = (
+  download: DownloadRecord | null,
+  t: (key: string, options?: Record<string, unknown>) => string
+): Partial<TranscriptInfoFields> => {
+  if (!download) {
+    return {}
+  }
+  const platform = resolveDownloadPlatform(download.url)
+  const format = download.selectedFormat
+  const quality = getQualityLabel(download)
+  const playlistTitle = download.playlistTitle || download.playlistId
+  const playlist = playlistTitle
+    ? `${download.playlistTitle || t('playlist.untitled')}${
+        download.playlistIndex !== undefined && download.playlistSize !== undefined
+          ? ` ${t('playlist.positionLabel', {
+              index: download.playlistIndex,
+              total: download.playlistSize
+            })}`
+          : ''
+      }`
+    : null
+  return {
+    audioCodec: format?.acodec && format.acodec !== 'none' ? format.acodec : null,
+    codec: getCodecLabel(download) ?? null,
+    completedAt: download.completedAt ?? null,
+    description: download.description ?? null,
+    downloadPath: download.downloadPath ?? null,
+    downloadedAt: download.completedAt ?? download.downloadedAt ?? download.createdAt ?? null,
+    format: getFormatLabel(download) ?? null,
+    formatNote: format?.format_note ?? null,
+    fps: format?.fps ? String(format.fps) : null,
+    platformDomain: platform.domain,
+    platformLabel: downloadPlatformDisplayLabel(platform, {
+      local: t('download.localSource'),
+      other: t('download.otherSource')
+    }),
+    playlist,
+    protocol: format?.protocol ? format.protocol.toUpperCase() : null,
+    quality: quality ?? null,
+    startedAt: download.startedAt ?? null,
+    subscription:
+      download.origin === 'subscription'
+        ? (download.subscriptionId ?? t('subscriptions.labels.unknown'))
+        : null,
+    tags: download.tags && download.tags.length > 0 ? download.tags.join(', ') : null,
+    videoCodec: format?.vcodec && format.vcodec !== 'none' ? format.vcodec : null,
+    views: download.viewCount == null ? null : download.viewCount.toLocaleString(),
+    width: format?.width && !quality ? `${format.width}px` : null
+  }
+}
 
 /**
  * Track whether the transcript workspace has room for a side-by-side layout.
@@ -394,7 +460,7 @@ export function TranscriptPage() {
       setSnapshot(next)
       upsert(next)
       if (hadListedTranscript.current && next.listState === 'none') {
-        void navigate({ to: '/transcripts' })
+        void navigate({ to: '/' })
       }
     })
     const offPartial = ipcEvents.on('transcript:partial', (...args: unknown[]) => {
@@ -586,7 +652,7 @@ export function TranscriptPage() {
   }, [downloadId, t, upsert])
 
   const handleBack = useCallback(() => {
-    void navigate({ to: '/transcripts' })
+    void navigate({ to: '/' })
   }, [navigate])
 
   const handleExport = useCallback(() => {
@@ -705,12 +771,17 @@ export function TranscriptPage() {
         currentTimeMs={currentTimeMs}
         durationMs={durationMs}
         info={{
+          ...downloadFieldsForInfo(download, t),
           asrTier: snapshot?.asrTier ?? snapshot?.record?.asrTier,
           channel: download?.channel || download?.uploader || null,
           createdAt: snapshot?.record?.createdAt ?? snapshot?.updatedAt ?? null,
           durationMs: durationMs > 0 ? durationMs : (download?.duration ?? 0) * 1000,
           fileName: download?.savedFileName ?? fileNameFromPath(snapshot?.sourceFilePath),
-          fileSize: download?.fileSize ?? null,
+          fileSize:
+            download?.fileSize ??
+            download?.selectedFormat?.filesize ??
+            download?.selectedFormat?.filesize_approx ??
+            null,
           language: snapshot?.record?.language ?? null,
           segmentCount: segments.length,
           sourceKind: snapshot?.sourceKind ?? null,
@@ -763,6 +834,7 @@ export function TranscriptPage() {
             sourceCover={thumbnail}
             sourceDurationMs={durationMs}
             sourceTitle={download?.title ?? title}
+            speakers={speakers}
             stage={
               snapshot?.listState === 'queued'
                 ? 'queued'

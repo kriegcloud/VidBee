@@ -185,11 +185,15 @@ export function TranscriptShareImageDialog({
       <DialogContent
         aria-describedby={undefined}
         className="flex max-h-[90vh] w-auto max-w-none flex-col items-center gap-5 border-0 bg-transparent p-0 shadow-none outline-none sm:max-w-none"
+        data-testid="transcript-share-image-dialog"
         showCloseButton={false}
         style={{ width: `min(${SHARE_CARD_WIDTH}px, calc(100% - 2rem))` }}
       >
         <DialogTitle className="sr-only">{t('transcript.promptShareTitle')}</DialogTitle>
-        <div className="min-h-0 w-full overflow-auto rounded-md shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+        <div
+          className="min-h-0 w-full overflow-auto rounded-md shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+          data-testid="transcript-share-image-preview"
+        >
           {children(cardRef)}
         </div>
         <div
@@ -197,9 +201,11 @@ export function TranscriptShareImageDialog({
             'grid w-full shrink-0 gap-2',
             canNativeShare ? 'grid-cols-3' : 'grid-cols-2'
           )}
+          data-testid="transcript-share-image-actions"
         >
           <Button
             className={shareActionClassName}
+            data-testid="transcript-share-image-copy"
             disabled={Boolean(busy)}
             onClick={handleCopy}
             type="button"
@@ -210,6 +216,7 @@ export function TranscriptShareImageDialog({
           </Button>
           <Button
             className={shareActionClassName}
+            data-testid="transcript-share-image-download"
             disabled={Boolean(busy)}
             onClick={handleDownload}
             type="button"
@@ -221,6 +228,7 @@ export function TranscriptShareImageDialog({
           {canNativeShare ? (
             <Button
               className={shareActionClassName}
+              data-testid="transcript-share-image-native"
               disabled={Boolean(busy)}
               onClick={handleNativeShare}
               type="button"

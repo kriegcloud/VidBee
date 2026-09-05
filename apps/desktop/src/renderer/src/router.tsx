@@ -14,7 +14,6 @@ import { Home } from './pages/Home'
 import { Settings } from './pages/Settings'
 import { Subscriptions } from './pages/Subscriptions'
 import { TranscriptPage } from './pages/Transcript'
-import { TranscriptsPage } from './pages/Transcripts'
 
 export type SettingsTab =
   | 'advanced'
@@ -102,7 +101,9 @@ const aboutRoute = createRoute({
 const transcriptsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/transcripts',
-  component: TranscriptsPage
+  beforeLoad: () => {
+    throw redirect({ to: '/' })
+  }
 })
 
 const transcriptRoute = createRoute({

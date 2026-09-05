@@ -1,3 +1,5 @@
+import type { DownloadRecord } from '@renderer/store/downloads'
+
 interface DoubleClickHistoryTarget {
   entryType: 'active' | 'history'
   fileExists: boolean
@@ -34,3 +36,62 @@ export const canRetryDownload = (status?: string): boolean =>
  */
 export const canViewTranscriptFromMenu = ({ fileExists }: TranscriptMenuTarget): boolean =>
   fileExists
+
+/**
+ * Drop empty or placeholder codec names from format metadata.
+ */
+const sanitizeCodec = (codec?: string | null): string | undefined => {
+  if (!codec || codec === 'none') {
+    return undefined
+  }
+  return codec
+}
+
+/**
+ * Container label for a saved download, from the selected format or file name.
+ */
+export const getFormatLabel = (download: DownloadRecord): string | undefined => {
+  if (download.selectedFormat?.ext) {
+    return download.selectedFormat.ext.toUpperCase()
+  }
+  const savedName = download.savedFileName
+  if (!savedName?.includes('.')) {
+    return undefined
+  }
+  const ext = savedName.split('.').pop()?.toLowerCase()
+  return ext ? ext.toUpperCase() : undefined
+}
+
+/**
+ * Short quality label for a download row or Info tab (e.g. 1080p, 1080p60).
+ */
+export const getQualityLabel = (download: DownloadRecord): string | undefined => {
+  const format = download.selectedFormat
+  if (!format) {
+    return undefined
+  }
+  if (format.height) {
+    return `${format.height}p${format.fps === 60 ? '60' : ''}`
+  }
+  if (format.format_note) {
+    return format.format_note
+  }
+  if (typeof format.quality === 'number') {
+    return format.quality.toString()
+  }
+  return undefined
+}
+
+/**
+ * Primary codec shown for a download's selected format.
+ */
+export const getCodecLabel = (download: DownloadRecord): string | undefined => {
+  const format = download.selectedFormat
+  if (!format) {
+    return undefined
+  }
+  if (download.type === 'audio') {
+    return sanitizeCodec(format.acodec)
+  }
+  return sanitizeCodec(format.vcodec) ?? sanitizeCodec(format.acodec)
+}

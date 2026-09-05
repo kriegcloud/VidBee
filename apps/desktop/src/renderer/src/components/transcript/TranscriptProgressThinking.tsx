@@ -76,11 +76,14 @@ export function TranscriptProgressThinking({
   return (
     <ThinkingSteps
       className="w-full px-4 pt-4 font-sans"
+      data-testid="transcript-streaming-status"
       defaultOpen
       size="compact"
       storageKey={downloadId ? transcriptProgressThinkingStorageKey(downloadId) : undefined}
     >
-      <ThinkingStepsHeader icon="loader">{totalLabel}</ThinkingStepsHeader>
+      <ThinkingStepsHeader data-testid="transcript-streaming-toggle" icon="loader">
+        {totalLabel}
+      </ThinkingStepsHeader>
       <ThinkingStepsContent>
         {rows.map((row, index) => (
           <ThinkingStep

@@ -31,7 +31,7 @@ export const AppShell = ({ children, page }: AppShellProps) => {
 			id: "home",
 			active: page === "download",
 			icon: appSidebarIcons.home,
-			label: t("menu.download"),
+			label: t("menu.home"),
 			onClick: () => {
 				void navigate({ to: "/" });
 			},

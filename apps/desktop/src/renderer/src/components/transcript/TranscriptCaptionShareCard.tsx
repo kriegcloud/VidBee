@@ -46,6 +46,7 @@ export function TranscriptCaptionShareCard({
       sourceTitle={sourceTitle}
       startLabel={formatShareClock(quote.startMs / 1000)}
       tagline={tagline}
+      testId="transcript-caption-share-card"
     >
       <div className="space-y-4">
         {quote.before ? (

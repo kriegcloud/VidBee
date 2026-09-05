@@ -79,7 +79,10 @@ export function TranscriptSpeakersPane({
   }
 
   return (
-    <section className="min-h-48 flex-1 overflow-y-auto border-border/60 border-t bg-background">
+    <section
+      className="min-h-48 flex-1 overflow-y-auto border-border/60 border-t bg-background"
+      data-testid="transcript-speakers"
+    >
       <div className="sticky top-0 z-10 border-border/60 border-b bg-background px-4">
         <div className="flex items-center gap-4" role="tablist">
           {showSpeakerTab ? (
@@ -101,6 +104,7 @@ export function TranscriptSpeakersPane({
           {canAdjustSpeakers ? (
             <Button
               className="ml-auto h-6 px-2"
+              data-testid="transcript-adjust-speakers"
               onClick={onAdjustSpeakers}
               size="sm"
               type="button"
@@ -147,6 +151,7 @@ function TabButton({ active, label, onSelect, value }: TabButtonProps) {
           ? 'border-primary text-foreground'
           : 'border-transparent text-muted-foreground hover:text-foreground'
       )}
+      data-testid={`transcript-tab-${value}`}
       onClick={onSelect}
       role="tab"
       type="button"
@@ -185,6 +190,7 @@ function CompactSpeakerStrip({
           <Button
             aria-label={t('transcript.speakerCount.adjust')}
             className="size-7 shrink-0"
+            data-testid="transcript-adjust-speakers"
             onClick={onAdjustSpeakers}
             size="icon"
             type="button"
@@ -204,6 +210,7 @@ function CompactSpeakerStrip({
                   ? 'border-border bg-muted'
                   : 'border-transparent hover:border-border hover:bg-muted/70'
               )}
+              data-testid={`transcript-speaker-${row.speakerId}`}
               key={row.speakerId}
               onClick={() => onSeek(row.ranges[0] ? row.ranges[0].startMs / 1000 : 0)}
               type="button"

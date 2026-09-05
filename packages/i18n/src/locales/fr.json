@@ -15,7 +15,7 @@
     "autoUpdateTitle": "Mises à jour automatiques",
     "betaProgramDescription": "Recevez les versions préliminaires et les prochaines fonctionnalités avant tout le monde.",
     "betaProgramTitle": "Canal de prévisualisation",
-    "description": "VidBee est un téléchargeur gratuit et open-source construit avec Electron et alimenté par yt-dlp.",
+    "description": "Téléchargez des médias depuis plus de 1 000 sites, créez des transcriptions consultables sur votre ordinateur, puis utilisez le fournisseur d’IA de votre choix pour les résumer, les traduire ou poser vos questions, le tout dans une application de bureau gratuite et open source.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Secours intégré",
@@ -118,7 +118,7 @@
     "title": "Options Avancées"
   },
   "app": {
-    "description": "Télécharger des vidéos et audios depuis des centaines de sites",
+    "description": "Téléchargez des médias, transcrivez-les localement et interrogez l’IA",
     "title": "VidBee",
     "quitConfirm": {
       "title": "Quitter VidBee ?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "Téléchargement en Un Clic (Info indisponible)",
     "loading": "Chargement",
     "moreOptions": "Plus d'options",
+    "moreAddActions": "Autres façons d'ajouter",
+    "morePlatforms": "Plus de plateformes",
+    "localSource": "Local",
+    "otherSource": "Autre",
     "noActiveDownloads": "Aucun téléchargement actif",
     "noAudio": "Pas d'Audio",
     "noHistory": "Aucun historique de téléchargement",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Déposer pour transcrire",
     "ingestDropMixed": "Déposer pour télécharger et transcrire",
     "ingestDropDescription": "Les liens lancent un téléchargement. Les fichiers audio et vidéo lancent une transcription.",
-    "ingestEmptyHint": "Collez un lien pour télécharger, ou déposez un fichier audio/vidéo pour transcrire.",
+    "ingestEmptyHint": "Collez un lien à télécharger ou déposez un fichier multimédia pour le transcrire localement, puis résumez-le, traduisez-le ou interrogez l’IA.",
     "preparing": "Préparation...",
     "processing": "Traitement",
     "progress": "Progrès",
@@ -224,6 +228,7 @@
     "codecAuto": "Auto",
     "fpsHighest": "La plus élevée",
     "metadata": {
+      "platform": "Plateforme",
       "source": "Source",
       "playlist": "Liste de lecture",
       "format": "Format",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "À propos",
+    "home": "Accueil",
     "download": "Télécharger",
     "playlist": "Télécharger la Playlist",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "La transcription s’est arrêtée avant la fin. Réessayez.",
+    "errorNoAudio": "Ce fichier n’a pas de piste audio, une transcription ne peut pas être générée.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Arrêter",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Préparation de l’audio",
     "identifyingSpeakers": "Identification des locuteurs",
-    "back": "Retour aux transcriptions",
+    "back": "Retour aux téléchargements",
     "library": {
       "empty": "Aucune transcription",
-      "emptyHint": "Choisissez un fichier audio ou vidéo local, ou transcrivez un téléchargement terminé.",
+      "emptyHint": "Transcrivez un téléchargement ou un fichier multimédia local, puis recherchez dans la transcription, exportez-la ou interrogez l’IA à son sujet.",
       "addMedia": "Ajouter audio ou vidéo",
       "goToDownloads": "Aller aux téléchargements",
       "untitled": "Média sans titre",
@@ -1119,6 +1126,17 @@
     "copyFailed": "Impossible de copier la transcription.",
     "captionSelect": "Transcription sélectionnée",
     "captionSelectClear": "Effacer la sélection",
+    "captionAdd": "Ajouter une ligne",
+    "captionEdit": "Modifier",
+    "captionInsertBefore": "Insérer avant",
+    "captionInsertAfter": "Insérer après",
+    "captionDelete": "Supprimer",
+    "captionDeleteSelected": "Supprimer la sélection",
+    "captionDeleted": "{{count}} légendes supprimées",
+    "captionSaveFailed": "Impossible d’enregistrer la légende.",
+    "captionPlaceholder": "Saisir la légende",
+    "captionSpeaker": "Intervenant",
+    "captionEmpty": "Aucune légende. Ajoutez une ligne pour commencer.",
     "export": {
       "action": "Exporter",
       "preview": "Aperçu de l’export",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "Impossible d'enregistrer l'image.",
     "promptShareNativeFailed": "Impossible d'ouvrir le menu de partage.",
     "promptShareFooter": "Créé avec VidBee",
-    "promptShareTagline": "Open source. Téléchargez une vidéo. Demandez à l'IA.",
+    "promptShareTagline": "Téléchargez. Transcrivez localement. Interrogez l’IA.",
     "captionShareSaid": "{{name}} a dit",
     "promptOutput": "Résultat du prompt",
     "promptScrollToEnd": "Aller au plus récent",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "Nouveautés",
-    "description": "Transcriptions et IA, sur cet ordinateur.",
-    "tryIt": "Essayer",
+    "description": "Téléchargez, transcrivez localement et interrogez l’IA, le tout dans une seule application.",
+    "tryIt": "Ouvrir les transcriptions",
     "features": {
       "transcript": {
         "title": "Transcriptions vidéo automatiques",
@@ -1345,8 +1363,8 @@
         "description": "Voyez qui a dit quoi, puis allez à ce moment dans la vidéo."
       },
       "summary": {
-        "title": "Résumés IA",
-        "description": "Transformez une transcription en puces, FAQ, carte mentale ou reformulation. Ajoutez vos prompts dans Réglages."
+        "title": "Interrogez l’IA sur chaque transcription",
+        "description": "Résumez, traduisez, générez des FAQ ou des cartes mentales et exécutez vos propres prompts avec le fournisseur d’IA de votre choix."
       },
       "localFiles": {
         "title": "Transcrire n’importe quel fichier",

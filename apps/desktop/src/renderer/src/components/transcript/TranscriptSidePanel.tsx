@@ -9,7 +9,7 @@ import {
   TRANSCRIPT_VT_TAB
 } from '@renderer/lib/transcript-view-transition'
 import { cn } from '@renderer/lib/utils'
-import type { TranscriptSegmentView } from '@renderer/store/transcripts'
+import type { TranscriptSegmentView, TranscriptSpeakerView } from '@renderer/store/transcripts'
 import type { AiPrompt, AiSettingsSnapshot } from '@shared/ai-types'
 import { AlignLeft, Check, ChevronDown } from 'lucide-react'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
@@ -41,6 +41,8 @@ interface TranscriptSidePanelProps {
   /** Persisted stage timings so the clock survives navigation and restarts. */
   stageHistory?: Array<{ stage: string; startedAt: number }>
   segments: TranscriptSegmentView[]
+  /** Speakers used when relabeling a caption. */
+  speakers?: TranscriptSpeakerView[]
   /** Cached local cover URL printed on the share card. */
   sourceCover?: string | null
   /** Media duration for the share-card progress bar. */
@@ -115,6 +117,7 @@ export function TranscriptSidePanel({
   stage = null,
   stageHistory = [],
   segments,
+  speakers,
   sourceCover,
   sourceDurationMs,
   sourceTitle,
@@ -254,6 +257,7 @@ export function TranscriptSidePanel({
               aria-haspopup="menu"
               aria-label={t('transcript.promptMenu')}
               className="pointer-events-auto inline-flex h-full w-9 cursor-pointer items-center justify-center text-muted-foreground transition-colors duration-200 hover:bg-muted/70 hover:text-foreground"
+              data-testid="transcript-prompt-menu"
               onClick={() => setMenuOpen((open) => !open)}
               type="button"
             >
@@ -264,6 +268,7 @@ export function TranscriptSidePanel({
             {menuOpen ? (
               <div
                 className="pointer-events-auto absolute top-full right-1 z-20 mt-1 max-h-72 min-w-52 overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                data-testid="transcript-prompt-menu-list"
                 role="menu"
               >
                 <PromptMenuItem
@@ -338,6 +343,7 @@ export function TranscriptSidePanel({
             sourceCover={sourceCover}
             sourceDurationMs={sourceDurationMs}
             sourceTitle={sourceTitle}
+            speakers={speakers}
             stage={stage}
             stageHistory={stageHistory}
             streamLive={streamLive}

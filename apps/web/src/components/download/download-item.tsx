@@ -12,6 +12,7 @@ import {
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from "@vidbee/ui/components/ui/context-menu";
+import { DownloadPlatformIcon } from "@vidbee/ui/components/ui/download-platform-icon";
 import {
 	DOWNLOAD_FEEDBACK_ISSUE_TITLE,
 	FeedbackLinkButtons,
@@ -37,11 +38,15 @@ import {
 	TooltipTrigger,
 } from "@vidbee/ui/components/ui/tooltip";
 import {
+	downloadPlatformDisplayLabel,
+	resolveDownloadPlatform,
+} from "@vidbee/ui/lib/download-platform";
+import {
 	AlertCircle,
-	CheckCircle2,
 	Copy,
 	File,
 	FolderOpen,
+	Info,
 	Loader2,
 	Pause,
 	Play,
@@ -49,13 +54,7 @@ import {
 	Trash2,
 	X,
 } from "lucide-react";
-import {
-	type KeyboardEvent,
-	type ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { orpcClient } from "../../lib/orpc-client";
@@ -66,6 +65,7 @@ import type { DownloadRecord } from "./types";
 interface DownloadItemProps {
 	download: DownloadRecord;
 	isSelected?: boolean;
+	selectionActive?: boolean;
 	onToggleSelect?: (id: string) => void;
 	onCancel?: (id: string) => void;
 	onPause?: (id: string) => void;
@@ -207,7 +207,7 @@ const getStatusIcon = (download: DownloadRecord) => {
 	}
 	switch (download.status) {
 		case "completed":
-			return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+			return null;
 		case "error":
 			return <AlertCircle className="h-4 w-4 text-destructive" />;
 		case "downloading":
@@ -242,6 +242,7 @@ const resolveDownloadExtension = (download: DownloadRecord): string => {
 export function DownloadItem({
 	download,
 	isSelected = false,
+	selectionActive = false,
 	onToggleSelect,
 	onCancel,
 	onPause,
@@ -550,6 +551,20 @@ export function DownloadItem({
 			value: formatDate(timestamp),
 		});
 	}
+	const platform = resolveDownloadPlatform(download.url);
+	const platformLabel = downloadPlatformDisplayLabel(platform, {
+		local: t("download.localSource"),
+		other: t("download.otherSource"),
+	});
+	metadataDetails.push({
+		label: t("download.metadata.platform"),
+		value: (
+			<span className="inline-flex items-center gap-1.5">
+				<DownloadPlatformIcon domain={platform.domain} />
+				{platformLabel}
+			</span>
+		),
+	});
 	if (sourceDisplay) {
 		metadataDetails.push({
 			label: t("download.metadata.source"),
@@ -800,15 +815,56 @@ export function DownloadItem({
 		setSheetOpen(true);
 	};
 
-	const handleSelectKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (!onToggleSelect) {
-			return;
+	const metaItems: { key: string; node: ReactNode }[] = [];
+	if (isInProgressStatus && download.progress) {
+		metaItems.push({
+			key: "progress",
+			node: (
+				<span className="inline-flex items-center gap-1 font-medium text-foreground">
+					{statusIcon}
+					{(download.progress.percent ?? 0).toFixed(0)}%
+				</span>
+			),
+		});
+		if (download.progress.currentSpeed) {
+			metaItems.push({
+				key: "speed",
+				node: download.progress.currentSpeed,
+			});
 		}
-		if (event.key === "Enter" || event.key === " ") {
-			event.preventDefault();
-			onToggleSelect(download.id);
-		}
-	};
+	} else if (download.status !== "completed" && statusText) {
+		metaItems.push({
+			key: "status",
+			node: (
+				<span
+					className={`inline-flex items-center gap-1 ${
+						download.status === "error" ? "text-destructive" : ""
+					}`}
+				>
+					{statusIcon}
+					{statusText}
+				</span>
+			),
+		});
+	}
+	if (timestamp && !isInProgressStatus) {
+		metaItems.push({
+			key: "date",
+			node: formatDateShort(timestamp),
+		});
+	}
+	if (qualityLabel && !isInProgressStatus) {
+		metaItems.push({
+			key: "quality",
+			node: qualityLabel,
+		});
+	}
+	if (inlineFileSize && !isInProgressStatus) {
+		metaItems.push({
+			key: "size",
+			node: inlineFileSize,
+		});
+	}
 
 	return (
 		<ContextMenu onOpenChange={setIsContextMenuOpen}>
@@ -817,26 +873,17 @@ export function DownloadItem({
 					className={`group relative w-full max-w-full overflow-hidden px-6 py-2 transition-colors ${
 						isSelectedHistory || isContextMenuOpen ? "bg-primary/10" : ""
 					}`}
+					data-download-id={download.id}
+					data-download-selectable={
+						isHistory && onToggleSelect ? "true" : undefined
+					}
 				>
-					<div
-						className={`flex w-full flex-col gap-2 sm:flex-row sm:gap-3 ${
-							isHistory && onToggleSelect ? "cursor-pointer" : ""
-						}`}
-						{...(isHistory && onToggleSelect
-							? {
-									onClick: () => onToggleSelect(download.id),
-									onKeyDown: handleSelectKeyDown,
-									role: "button",
-									tabIndex: 0,
-									"aria-label": t("history.selectItem"),
-								}
-							: {})}
-					>
+					<div className="flex w-full items-start gap-3">
 						<div className="relative z-20 flex h-14 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-background/60">
 							{isHistory && onToggleSelect && (
 								<div
 									className={`absolute top-1 left-1 z-30 rounded-md transition ${
-										isSelected
+										isSelected || selectionActive
 											? "opacity-100"
 											: "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
 									}`}
@@ -846,6 +893,7 @@ export function DownloadItem({
 										checked={Boolean(isSelected)}
 										onCheckedChange={() => onToggleSelect(download.id)}
 										onClick={(event) => event.stopPropagation()}
+										onPointerDown={(event) => event.stopPropagation()}
 									/>
 								</div>
 							)}
@@ -857,85 +905,49 @@ export function DownloadItem({
 							/>
 						</div>
 
-						<div className="min-w-0 max-w-full flex-1 overflow-hidden">
-							<div className="flex h-14 w-full flex-col justify-center gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-								<div className="min-w-0 max-w-full flex-1 space-y-1.5 overflow-hidden">
-									<div className="flex w-full min-w-0 flex-wrap items-center gap-1.5 overflow-hidden">
-										<p className="line-clamp-1 flex-1 font-medium text-sm">
+						<div className="min-w-0 flex-1 overflow-hidden">
+							<div className="flex min-h-14 items-center gap-2">
+								<div className="min-w-0 flex-1 space-y-1.5">
+									<div className="flex min-w-0 items-center gap-1.5">
+										<span
+											aria-label={platformLabel}
+											className="inline-flex size-4 shrink-0 items-center justify-center"
+											role="img"
+											title={platformLabel}
+										>
+											<DownloadPlatformIcon
+												className="block size-4"
+												domain={platform.domain}
+											/>
+										</span>
+										<p className="min-w-0 truncate font-medium text-sm">
 											{download.title || download.url}
 										</p>
-										{download.type === "audio" && (
-											<Badge
-												className="shrink-0 px-1.5 py-0.5 text-[10px]"
-												variant="secondary"
-											>
-												{t("download.audio")}
-											</Badge>
-										)}
 									</div>
-									<div className="flex w-full flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-										{statusIcon && (
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<div className="flex shrink-0 items-center">
-														{statusIcon}
-													</div>
-												</TooltipTrigger>
-												<TooltipContent>
-													<p>{statusText}</p>
-												</TooltipContent>
-											</Tooltip>
-										)}
-										{isInProgressStatus && (
-											<div className="flex min-w-0 items-center gap-2">
-												<span className="shrink-0 font-medium">
-													{(download.progress?.percent ?? 0).toFixed(1)}%
+									<div className="flex h-4 min-w-0 items-center overflow-hidden text-[12px] leading-none text-muted-foreground [&_img]:block [&_svg]:block">
+										{metaItems.map((item, index) => (
+											<span
+												className="inline-flex h-4 min-w-0 items-center"
+												key={item.key}
+											>
+												{index > 0 ? (
+													<span
+														aria-hidden="true"
+														className="mx-1.5 shrink-0 leading-none text-muted-foreground/40"
+													>
+														·
+													</span>
+												) : null}
+												<span className="inline-flex h-4 min-w-0 items-center truncate">
+													{item.node}
 												</span>
-												{download.progress?.downloaded &&
-													download.progress?.total && (
-														<span className="max-w-[120px] truncate">
-															{download.progress.downloaded} /{" "}
-															{download.progress.total}
-														</span>
-													)}
-												{download.progress?.currentSpeed && (
-													<span className="max-w-[80px] truncate">
-														{download.progress.currentSpeed}
-													</span>
-												)}
-												{download.progress?.eta && (
-													<span className="max-w-[80px] truncate">
-														ETA: {download.progress.eta}
-													</span>
-												)}
-											</div>
-										)}
-										{timestamp && (
-											<span className="shrink-0 truncate">
-												{formatDateShort(timestamp)}
 											</span>
-										)}
-										{qualityLabel && (
-											<>
-												<span className="shrink-0 text-muted-foreground/60">
-													•
-												</span>
-												<span className="shrink-0">{qualityLabel}</span>
-											</>
-										)}
-										{inlineFileSize && (
-											<>
-												<span className="shrink-0 text-muted-foreground/60">
-													•
-												</span>
-												<span className="shrink-0">{inlineFileSize}</span>
-											</>
-										)}
+										))}
 									</div>
 								</div>
 								<div
-									className={`relative z-20 flex shrink-0 flex-wrap items-center justify-end gap-1 text-muted-foreground transition-opacity ${
-										canRetry
+									className={`relative z-20 flex shrink-0 items-center justify-end gap-0.5 text-muted-foreground transition-opacity ${
+										canRetry || isInProgressStatus
 											? "opacity-100"
 											: "opacity-0 group-hover:opacity-100"
 									}`}
@@ -1042,7 +1054,7 @@ export function DownloadItem({
 
 							{download.progress &&
 								!["completed", "error"].includes(download.status) && (
-									<div className="w-full overflow-hidden bg-background/60">
+									<div className="mt-1.5 w-full overflow-hidden rounded-full bg-background/60">
 										<Progress
 											className="h-1 w-full"
 											value={download.progress.percent}
@@ -1187,124 +1199,97 @@ export function DownloadItem({
 			</ContextMenuTrigger>
 
 			<ContextMenuContent>
-				{isInProgressStatus ? (
+				<ContextMenuItem
+					disabled={!canOpenFile}
+					onClick={() => {
+						void handleOpenFile();
+					}}
+				>
+					<File className="h-4 w-4" />
+					{t("history.openFile")}
+				</ContextMenuItem>
+				<ContextMenuSeparator />
+				<ContextMenuItem
+					disabled={!showOpenFolderAction}
+					onClick={() => {
+						void handleOpenFolder();
+					}}
+				>
+					<FolderOpen className="h-4 w-4" />
+					{t("history.openFileLocation")}
+				</ContextMenuItem>
+				<ContextMenuItem
+					disabled={!showCopyAction}
+					onClick={() => {
+						void handleCopyToClipboard();
+					}}
+				>
+					<Copy className="h-4 w-4" />
+					{t("history.copyToClipboard")}
+				</ContextMenuItem>
+				<ContextMenuItem
+					disabled={!canCopyLink}
+					onClick={() => void handleCopyLink()}
+				>
+					<span aria-hidden className="h-4 w-4 shrink-0" />
+					{t("history.copyUrl")}
+				</ContextMenuItem>
+				<ContextMenuItem
+					disabled={!canShowSheet}
+					onClick={() => setSheetOpen(true)}
+				>
+					<Info className="h-4 w-4" />
+					{t("download.showDetails")}
+				</ContextMenuItem>
+				{canRetry ||
+				canResumeDownload ||
+				canPauseDownload ||
+				isInProgressStatus ? (
 					<>
-						{canRetry && (
+						<ContextMenuSeparator />
+						{canRetry ? (
 							<ContextMenuItem onClick={handleRetryDownload}>
 								<RotateCw className="h-4 w-4" />
 								{t("download.retry")}
 							</ContextMenuItem>
-						)}
-						<ContextMenuItem
-							disabled={!showOpenFolderAction}
-							onClick={() => {
-								void handleOpenFolder();
-							}}
-						>
-							<FolderOpen className="h-4 w-4" />
-							{t("history.openFileLocation")}
-						</ContextMenuItem>
-						<ContextMenuItem
-							disabled={!canCopyLink}
-							onClick={() => void handleCopyLink()}
-						>
-							<span aria-hidden="true" className="h-4 w-4 shrink-0" />
-							{t("history.copyUrl")}
-						</ContextMenuItem>
-						{canShowSheet && (
-							<ContextMenuItem onClick={() => setSheetOpen(true)}>
-								<span aria-hidden="true" className="h-4 w-4 shrink-0" />
-								{t("download.showDetails")}
-							</ContextMenuItem>
-						)}
-						<ContextMenuSeparator />
-						{canResumeDownload && (
+						) : null}
+						{canResumeDownload ? (
 							<ContextMenuItem onClick={handleResume}>
 								<Play className="h-4 w-4" />
 								{t("download.resume")}
 							</ContextMenuItem>
-						)}
-						{canPauseDownload && (
+						) : null}
+						{canPauseDownload ? (
 							<ContextMenuItem onClick={handlePause}>
 								<Pause className="h-4 w-4" />
 								{t("download.pause")}
 							</ContextMenuItem>
-						)}
-						<ContextMenuItem onClick={handleCancel}>
-							<X className="h-4 w-4" />
-							{t("download.cancel")}
-						</ContextMenuItem>
+						) : null}
+						{isInProgressStatus ? (
+							<ContextMenuItem onClick={handleCancel}>
+								<X className="h-4 w-4" />
+								{t("download.cancel")}
+							</ContextMenuItem>
+						) : null}
 					</>
-				) : (
-					<>
-						{isCompletedStatus && (
-							<ContextMenuItem
-								disabled={!showCopyAction}
-								onClick={() => {
-									void handleCopyToClipboard();
-								}}
-							>
-								<Copy className="h-4 w-4" />
-								{t("history.copyToClipboard")}
-							</ContextMenuItem>
-						)}
-						{canRetry && (
-							<ContextMenuItem onClick={handleRetryDownload}>
-								<RotateCw className="h-4 w-4" />
-								{t("download.retry")}
-							</ContextMenuItem>
-						)}
-						<ContextMenuItem
-							disabled={!canOpenFile}
-							onClick={() => {
-								void handleOpenFile();
-							}}
-						>
-							<File className="h-4 w-4" />
-							{t("history.openFile")}
-						</ContextMenuItem>
-						<ContextMenuSeparator />
-						<ContextMenuItem
-							disabled={!showOpenFolderAction}
-							onClick={() => {
-								void handleOpenFolder();
-							}}
-						>
-							<FolderOpen className="h-4 w-4" />
-							{t("history.openFileLocation")}
-						</ContextMenuItem>
-						<ContextMenuItem
-							disabled={!canCopyLink}
-							onClick={() => void handleCopyLink()}
-						>
-							<span aria-hidden="true" className="h-4 w-4 shrink-0" />
-							{t("history.copyUrl")}
-						</ContextMenuItem>
-						{canShowSheet && (
-							<ContextMenuItem onClick={() => setSheetOpen(true)}>
-								<span aria-hidden="true" className="h-4 w-4 shrink-0" />
-								{t("download.showDetails")}
-							</ContextMenuItem>
-						)}
-						<ContextMenuSeparator />
-						<ContextMenuItem
-							disabled={!canDeleteFile}
-							onClick={() => {
-								void handleDeleteFile();
-							}}
-						>
-							<Trash2 className="h-4 w-4" />
-							{t("history.deleteFile")}
-						</ContextMenuItem>
-						<ContextMenuItem
-							disabled={!canDeleteRecord}
-							onClick={handleDeleteRecord}
-						>
-							<span aria-hidden="true" className="h-4 w-4 shrink-0" />
-							{t("history.deleteRecord")}
-						</ContextMenuItem>
-					</>
-				)}
+				) : null}
+				<ContextMenuSeparator />
+				<ContextMenuItem
+					disabled={!canDeleteFile}
+					onClick={() => {
+						void handleDeleteFile();
+					}}
+				>
+					<Trash2 className="h-4 w-4" />
+					{t("history.deleteFile")}
+				</ContextMenuItem>
+				<ContextMenuItem
+					disabled={!canDeleteRecord || isInProgressStatus}
+					onClick={handleDeleteRecord}
+				>
+					<span aria-hidden className="h-4 w-4 shrink-0" />
+					{t("history.deleteRecord")}
+				</ContextMenuItem>
 			</ContextMenuContent>
 		</ContextMenu>
 	);

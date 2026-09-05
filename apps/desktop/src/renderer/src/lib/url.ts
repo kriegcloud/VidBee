@@ -1,5 +1,39 @@
+import { type LanguageCode, normalizeLanguageCode } from '@vidbee/i18n/languages'
+
+const VIDBEE_ORIGIN = 'https://vidbee.org'
 const UTM_SOURCE = 'vidbee-desktop'
 const UTM_MEDIUM = 'app'
+
+const WEBSITE_LOCALE_PREFIXES: Record<LanguageCode, string> = {
+  ar: 'ar',
+  de: 'de',
+  en: '',
+  es: 'es',
+  fr: 'fr',
+  id: 'id',
+  it: 'it',
+  ja: 'ja',
+  ko: 'ko',
+  pt: 'pt',
+  ru: 'ru',
+  tr: '',
+  zh: 'zh',
+  'zh-TW': 'zh-tw'
+}
+
+/**
+ * Build a vidbee.org URL that follows the current desktop language.
+ * Languages unavailable on the website fall back to the unprefixed English route.
+ * @param pathname - Website pathname, with or without a leading slash
+ * @param language - Current desktop language code
+ * @returns Localized absolute vidbee.org URL
+ */
+export function buildLocalizedVidBeeUrl(pathname: string, language: string): string {
+  const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`
+  const localePrefix = WEBSITE_LOCALE_PREFIXES[normalizeLanguageCode(language)]
+  const localizedPath = localePrefix ? `/${localePrefix}${normalizedPath}` : normalizedPath
+  return new URL(localizedPath, VIDBEE_ORIGIN).toString()
+}
 
 /**
  * Append UTM parameters to vidbee.org URLs opened from the desktop app.

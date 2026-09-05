@@ -205,7 +205,7 @@ export function TranscriptPromptPane({
       <MessageScrollerProvider autoScroll>
         <MessageScroller className="min-h-0 flex-1">
           <MessageScrollerViewport aria-label={t('transcript.promptOutput')}>
-            <MessageScrollerContent className="gap-4 p-4 text-sm leading-relaxed">
+            <MessageScrollerContent className="gap-4 p-5 text-sm leading-relaxed">
               {showThinking ? (
                 <PromptOutputItem messageId="thinking" scrollAnchor={!run.text}>
                   <TranscriptPromptThinking
@@ -221,7 +221,9 @@ export function TranscriptPromptPane({
                     <MessageContent>
                       <Bubble className="max-w-full" variant="ghost">
                         <BubbleContent className="w-full max-w-none">
-                          <Response isAnimating={running}>{run.text}</Response>
+                          <Response className="transcript-prompt-markdown" isAnimating={running}>
+                            {run.text}
+                          </Response>
                         </BubbleContent>
                       </Bubble>
                     </MessageContent>

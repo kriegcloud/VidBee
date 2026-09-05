@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { isNoAudioStreamError, NO_AUDIO_STREAM_ERROR } from './errors'
+import { ffprobePathFromFfmpeg } from './extract-captions'
 
 export const TARGET_SAMPLE_RATE = 16_000
 
@@ -46,9 +48,22 @@ export async function extractMonoWav(input: {
       return { wavPath, durationMs: cachedMs }
     }
   }
+  if (!(await probeHasAudioStream(input.ffmpegPath, input.sourceFilePath))) {
+    throw new Error(NO_AUDIO_STREAM_ERROR)
+  }
   await runFfmpeg(
     input.ffmpegPath,
-    ['-y', '-i', input.sourceFilePath, '-ac', '1', '-ar', String(TARGET_SAMPLE_RATE), '-vn', wavPath],
+    [
+      '-y',
+      '-i',
+      input.sourceFilePath,
+      '-ac',
+      '1',
+      '-ar',
+      String(TARGET_SAMPLE_RATE),
+      '-vn',
+      wavPath
+    ],
     input.signal
   )
   if (!existsSync(wavPath) || statSync(wavPath).size <= 0) {
@@ -85,7 +100,19 @@ const remuxThenDecode = async (input: {
   try {
     await runFfmpeg(
       input.ffmpegPath,
-      ['-y', '-i', input.sourceFilePath, '-map', '0:a:0', '-vn', '-sn', '-dn', '-c', 'copy', copyPath],
+      [
+        '-y',
+        '-i',
+        input.sourceFilePath,
+        '-map',
+        '0:a:0',
+        '-vn',
+        '-sn',
+        '-dn',
+        '-c',
+        'copy',
+        copyPath
+      ],
       input.signal
     )
     await runFfmpeg(
@@ -102,6 +129,13 @@ const remuxThenDecode = async (input: {
   return probeDurationMs(input.ffmpegPath, input.wavPath)
 }
 
+/**
+ * Spawn ffmpeg and reject with a short no-audio error when the output has no streams.
+ *
+ * @param bin ffmpeg binary path.
+ * @param args ffmpeg arguments.
+ * @param signal Optional abort signal to kill the child.
+ */
 const runFfmpeg = (bin: string, args: string[], signal?: AbortSignal): Promise<void> =>
   new Promise((resolve, reject) => {
     const child = spawn(bin, args, { stdio: ['ignore', 'pipe', 'pipe'] })
@@ -123,14 +157,57 @@ const runFfmpeg = (bin: string, args: string[], signal?: AbortSignal): Promise<v
         resolve()
         return
       }
+      if (isNoAudioStreamError(stderr)) {
+        reject(new Error(NO_AUDIO_STREAM_ERROR))
+        return
+      }
       reject(new Error(`ffmpeg conversion failed (exit ${code}): ${stderr.slice(-2000)}`))
     })
   })
 
+/**
+ * Return true when ffprobe reports at least one audio stream.
+ * Missing ffprobe is treated as unknown (true) so conversion can still run.
+ *
+ * @param ffmpegPath Bundled ffmpeg binary.
+ * @param filePath Source media path.
+ */
+const probeHasAudioStream = async (ffmpegPath: string, filePath: string): Promise<boolean> => {
+  const ffprobe = ffprobePathFromFfmpeg(ffmpegPath)
+  if (!existsSync(ffprobe)) {
+    return true
+  }
+  return new Promise((resolve) => {
+    const child = spawn(ffprobe, [
+      '-v',
+      'error',
+      '-select_streams',
+      'a',
+      '-show_entries',
+      'stream=codec_type',
+      '-of',
+      'csv=p=0',
+      filePath
+    ])
+    let out = ''
+    child.stdout.on('data', (chunk: Buffer) => {
+      out += chunk.toString()
+    })
+    child.on('close', () => {
+      resolve(out.trim().length > 0)
+    })
+    child.on('error', () => resolve(true))
+  })
+}
+
+/**
+ * Read container duration in milliseconds via ffprobe, or 0 when probing fails.
+ *
+ * @param ffmpegPath Bundled ffmpeg binary.
+ * @param wavPath Media path to probe.
+ */
 const probeDurationMs = async (ffmpegPath: string, wavPath: string): Promise<number> => {
-  const ffprobe = ffmpegPath.endsWith('ffmpeg.exe')
-    ? ffmpegPath.replace(/ffmpeg\.exe$/i, 'ffprobe.exe')
-    : join(dirname(ffmpegPath), 'ffprobe')
+  const ffprobe = ffprobePathFromFfmpeg(ffmpegPath)
   if (!existsSync(ffprobe)) {
     return 0
   }

@@ -31,6 +31,7 @@ interface TranscriptShareCardChromeProps {
   sourceTitle?: string | null
   startLabel?: string
   tagline: string
+  testId?: string
 }
 
 /**
@@ -46,6 +47,7 @@ interface TranscriptShareCardChromeProps {
  * @param props.sourceTitle Media title in the header.
  * @param props.startLabel Quote start time on the progress bar.
  * @param props.tagline One-line VidBee intro in the footer.
+ * @param props.testId Optional test id on the captured root.
  */
 export function TranscriptShareCardChrome({
   cardRef,
@@ -55,7 +57,8 @@ export function TranscriptShareCardChrome({
   progressRatio,
   sourceTitle,
   startLabel,
-  tagline
+  tagline,
+  testId
 }: TranscriptShareCardChromeProps) {
   const title = sourceTitle?.trim() || ''
   const cover = coverSrc?.trim() || COVER_FALLBACK
@@ -64,6 +67,7 @@ export function TranscriptShareCardChrome({
   return (
     <div
       className="relative box-border overflow-hidden text-white"
+      data-testid={testId}
       ref={cardRef}
       style={{ ...SHARE_CARD_THEME, width: SHARE_CARD_WIDTH }}
     >
@@ -79,7 +83,10 @@ export function TranscriptShareCardChrome({
       </div>
       <div className="relative flex flex-col gap-8 px-8 py-9">
         <header className="flex items-center gap-5">
-          <div className="size-[72px] shrink-0 overflow-hidden rounded-[3px] bg-black/20 shadow-[0_1px_3px_rgba(0,0,0,0.12)]">
+          <div
+            className="size-[72px] shrink-0 overflow-hidden rounded-[3px] bg-black/20 shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+            data-testid="transcript-share-card-cover"
+          >
             <RemoteImage
               alt={title || 'VidBee'}
               className="h-full w-full object-cover"
@@ -107,7 +114,7 @@ export function TranscriptShareCardChrome({
             </div>
           </div>
         ) : null}
-        <footer className="flex items-center gap-4">
+        <footer className="flex items-center gap-4" data-testid="transcript-share-card-footer">
           <img
             alt="VidBee"
             className="size-14 rounded-xl"

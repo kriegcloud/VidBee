@@ -18,6 +18,7 @@ import {
   findActiveTranscription,
   findSidecarCaptionTracks,
   type GpuKind,
+  type InsertTranscriptSegmentInput,
   importCaptionsForDownload,
   importSidecarCaptionsIfPresent,
   isAsrTierId,
@@ -39,6 +40,7 @@ import {
   switchToCaptionLanguage,
   type TranscriptionStage,
   type TranscriptRecord,
+  type TranscriptSegmentPatch,
   type TranscriptSourceKind,
   type TranscriptSourceOption,
   type TranscriptStageTiming,
@@ -936,6 +938,87 @@ export const startIdleMinimalModelFill = (): void => {
     logger,
     onReady: flushDeferredAutoTranscriptions
   })
+}
+
+/**
+ * Transcript id currently shown on the detail page.
+ *
+ * @param downloadTaskId Parent download id.
+ */
+const viewedTranscriptId = (downloadTaskId: string): string | null => {
+  const snapshot = getTranscriptSnapshot(downloadTaskId)
+  return snapshot.record?.id ?? snapshot.transcriptId
+}
+
+/**
+ * Persist an edit on the transcript the user is viewing and broadcast it.
+ *
+ * @param downloadTaskId Parent download id.
+ * @param segmentId Caption to change.
+ * @param patch Text, speaker, or times.
+ */
+export const updateTranscriptSegment = (
+  downloadTaskId: string,
+  segmentId: string,
+  patch: TranscriptSegmentPatch
+): TranscriptSnapshot => {
+  const transcriptId = viewedTranscriptId(downloadTaskId)
+  if (!transcriptId) {
+    throw new Error('Transcript is not ready to edit')
+  }
+  const record = getTranscriptStore().updateSegment(transcriptId, segmentId, patch)
+  if (!record) {
+    throw new Error('Caption could not be updated')
+  }
+  const next = getTranscriptSnapshot(downloadTaskId)
+  broadcastTranscript(next)
+  return next
+}
+
+/**
+ * Delete captions on the transcript the user is viewing and broadcast it.
+ *
+ * @param downloadTaskId Parent download id.
+ * @param segmentIds Caption ids to drop.
+ */
+export const deleteTranscriptSegments = (
+  downloadTaskId: string,
+  segmentIds: string[]
+): TranscriptSnapshot => {
+  const transcriptId = viewedTranscriptId(downloadTaskId)
+  if (!transcriptId) {
+    throw new Error('Transcript is not ready to edit')
+  }
+  const record = getTranscriptStore().deleteSegments(transcriptId, segmentIds)
+  if (!record) {
+    throw new Error('Captions could not be deleted')
+  }
+  const next = getTranscriptSnapshot(downloadTaskId)
+  broadcastTranscript(next)
+  return next
+}
+
+/**
+ * Insert a caption on the transcript the user is viewing and broadcast it.
+ *
+ * @param downloadTaskId Parent download id.
+ * @param input Neighbor, playhead, or explicit times.
+ */
+export const insertTranscriptSegment = (
+  downloadTaskId: string,
+  input: InsertTranscriptSegmentInput
+): { segmentId: string; snapshot: TranscriptSnapshot } => {
+  const transcriptId = viewedTranscriptId(downloadTaskId)
+  if (!transcriptId) {
+    throw new Error('Transcript is not ready to edit')
+  }
+  const inserted = getTranscriptStore().insertSegment(transcriptId, input)
+  if (!inserted) {
+    throw new Error('Caption could not be added')
+  }
+  const snapshot = getTranscriptSnapshot(downloadTaskId)
+  broadcastTranscript(snapshot)
+  return { segmentId: inserted.segmentId, snapshot }
 }
 
 export const broadcastTranscriptPartials = (

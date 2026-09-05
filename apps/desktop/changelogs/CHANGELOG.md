@@ -3,6 +3,18 @@
 This page only includes user-visible updates and avoids implementation details.
 For full release notes, see [GitHub Releases](https://github.com/nexmoe/VidBee/releases).
 
+## [v2.1.0](https://github.com/nexmoe/VidBee/releases/tag/v2.1.0) - 2026-08-30
+
+### What's New
+- Edit transcript captions: add a line, change the text, or delete one or more lines.
+- Transcripts now appear in the Downloads list, so videos and transcripts can be managed in one place.
+- Select several downloads at once to delete them.
+
+### Improvements
+- Filter the download list by site, with platform icons so each source is easier to recognize.
+- Long titles scroll so the full name stays readable.
+- Files with no audio track show a clear message instead of failing quietly.
+
 ## [v2.0.2](https://github.com/nexmoe/VidBee/releases/tag/v2.0.2) - 2026-08-23
 
 ### Improvements

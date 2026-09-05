@@ -1,28 +1,51 @@
 import { formatBytes } from '@renderer/components/settings/asr-model-shared'
 import { formatClock } from '@renderer/lib/format-clock'
 import { isAsrTierId } from '@vidbee/transcription/asr'
+import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface TranscriptInfoFields {
   asrTier?: string | null
+  audioCodec?: string | null
   channel?: string | null
+  codec?: string | null
+  completedAt?: number | null
   createdAt?: number | null
+  description?: string | null
+  downloadPath?: string | null
+  downloadedAt?: number | null
   durationMs?: number
   fileName?: string | null
   fileSize?: number | null
+  format?: string | null
+  formatNote?: string | null
+  fps?: string | null
   language?: string | null
+  platformDomain?: string | null
+  platformLabel?: string | null
+  playlist?: string | null
+  protocol?: string | null
+  quality?: string | null
   segmentCount: number
   sourceKind?: 'asr' | 'captions' | null
   speakerCount: number
+  startedAt?: number | null
+  subscription?: string | null
+  tags?: string | null
   url?: string | null
+  videoCodec?: string | null
+  views?: string | null
+  width?: string | null
 }
 
 interface InfoRow {
+  href?: string
   key: string
   label: string
+  platformDomain?: string | null
+  showPlatformIcon?: boolean
   value: string
-  href?: string
 }
 
 /**
@@ -59,6 +82,16 @@ export const languageDisplayName = (code: string, locale: string): string => {
 export const hasTranscriptInfo = (info: TranscriptInfoFields): boolean =>
   Boolean(
     info.channel ||
+      info.platformLabel ||
+      info.playlist ||
+      info.quality ||
+      info.format ||
+      info.codec ||
+      info.description ||
+      info.views ||
+      info.tags ||
+      info.downloadPath ||
+      info.subscription ||
       (info.durationMs && info.durationMs > 0) ||
       info.fileName ||
       (info.fileSize && info.fileSize > 0) ||
@@ -67,6 +100,9 @@ export const hasTranscriptInfo = (info: TranscriptInfoFields): boolean =>
       info.asrTier ||
       info.language ||
       info.createdAt ||
+      info.downloadedAt ||
+      info.startedAt ||
+      info.completedAt ||
       info.segmentCount > 0 ||
       info.speakerCount > 0
   )
@@ -82,10 +118,10 @@ export function TranscriptInfoPane(info: TranscriptInfoFields) {
   }
 
   return (
-    <dl className="divide-y divide-border/50">
+    <dl className="divide-y divide-border/50" data-testid="transcript-info">
       {rows.map((row) => (
         <div className="flex gap-3 px-4 py-2.5" key={row.key}>
-          <dt className="w-24 shrink-0 pt-0.5 text-muted-foreground text-xs">{row.label}</dt>
+          <dt className="w-28 shrink-0 pt-0.5 text-muted-foreground text-xs">{row.label}</dt>
           <dd className="min-w-0 flex-1 text-sm">
             {row.href ? (
               <a
@@ -98,7 +134,12 @@ export function TranscriptInfoPane(info: TranscriptInfoFields) {
                 {row.value}
               </a>
             ) : (
-              <span className="wrap-break-word">{row.value}</span>
+              <span className="inline-flex min-w-0 items-center gap-1.5">
+                {row.showPlatformIcon ? (
+                  <DownloadPlatformIcon className="block size-3.5" domain={row.platformDomain} />
+                ) : null}
+                <span className="wrap-break-word">{row.value}</span>
+              </span>
             )}
           </dd>
         </div>
@@ -116,8 +157,20 @@ const buildInfoRows = (
   locale: string
 ): InfoRow[] => {
   const rows: InfoRow[] = []
+  if (info.platformLabel) {
+    rows.push({
+      key: 'platform',
+      label: t('download.metadata.platform'),
+      platformDomain: info.platformDomain,
+      showPlatformIcon: true,
+      value: info.platformLabel
+    })
+  }
   if (info.channel) {
     rows.push({ key: 'channel', label: t('transcript.info.channel'), value: info.channel })
+  }
+  if (info.playlist) {
+    rows.push({ key: 'playlist', label: t('download.metadata.playlist'), value: info.playlist })
   }
   if (info.durationMs && info.durationMs > 0) {
     rows.push({
@@ -125,6 +178,45 @@ const buildInfoRows = (
       label: t('transcript.info.duration'),
       value: formatClock(info.durationMs / 1000)
     })
+  }
+  if (info.quality) {
+    rows.push({ key: 'quality', label: t('download.metadata.quality'), value: info.quality })
+  }
+  if (info.format) {
+    rows.push({ key: 'format', label: t('download.metadata.format'), value: info.format })
+  }
+  if (info.codec) {
+    rows.push({ key: 'codec', label: t('download.metadata.codec'), value: info.codec })
+  }
+  if (info.width) {
+    rows.push({ key: 'width', label: t('download.metadata.width'), value: info.width })
+  }
+  if (info.fps) {
+    rows.push({ key: 'fps', label: t('download.metadata.fps'), value: info.fps })
+  }
+  if (info.videoCodec) {
+    rows.push({
+      key: 'videoCodec',
+      label: t('download.metadata.videoCodec'),
+      value: info.videoCodec
+    })
+  }
+  if (info.audioCodec) {
+    rows.push({
+      key: 'audioCodec',
+      label: t('download.metadata.audioCodec'),
+      value: info.audioCodec
+    })
+  }
+  if (info.formatNote) {
+    rows.push({
+      key: 'formatNote',
+      label: t('download.metadata.formatNote'),
+      value: info.formatNote
+    })
+  }
+  if (info.protocol) {
+    rows.push({ key: 'protocol', label: t('download.metadata.protocol'), value: info.protocol })
   }
   if (info.sourceKind === 'captions' || info.sourceKind === 'asr') {
     rows.push({
@@ -172,12 +264,60 @@ const buildInfoRows = (
       value: formatBytes(info.fileSize)
     })
   }
+  if (info.downloadPath) {
+    rows.push({
+      key: 'downloadPath',
+      label: t('download.metadata.downloadPath'),
+      value: info.downloadPath
+    })
+  }
   if (isRemoteHttpUrl(info.url)) {
     rows.push({
       href: info.url,
       key: 'url',
       label: t('transcript.info.url'),
       value: info.url
+    })
+  }
+  if (info.description) {
+    rows.push({
+      key: 'description',
+      label: t('download.metadata.description'),
+      value: info.description
+    })
+  }
+  if (info.views) {
+    rows.push({ key: 'views', label: t('download.metadata.views'), value: info.views })
+  }
+  if (info.tags) {
+    rows.push({ key: 'tags', label: t('download.metadata.tags'), value: info.tags })
+  }
+  if (info.subscription) {
+    rows.push({
+      key: 'subscription',
+      label: t('download.metadata.subscription'),
+      value: info.subscription
+    })
+  }
+  if (info.downloadedAt && info.downloadedAt > 0) {
+    rows.push({
+      key: 'downloadedAt',
+      label: t('history.date'),
+      value: new Date(info.downloadedAt).toLocaleString()
+    })
+  }
+  if (info.startedAt && info.startedAt > 0) {
+    rows.push({
+      key: 'startedAt',
+      label: t('download.metadata.startedAt'),
+      value: new Date(info.startedAt).toLocaleString()
+    })
+  }
+  if (info.completedAt && info.completedAt > 0) {
+    rows.push({
+      key: 'completedAt',
+      label: t('download.metadata.completedAt'),
+      value: new Date(info.completedAt).toLocaleString()
     })
   }
   if (info.createdAt && info.createdAt > 0) {

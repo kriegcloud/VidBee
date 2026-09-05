@@ -3,11 +3,24 @@ import { TranscriptCaptionShareCard } from '@renderer/components/transcript/Tran
 import { TranscriptProgressThinking } from '@renderer/components/transcript/TranscriptProgressThinking'
 import { TranscriptShareImageDialog } from '@renderer/components/transcript/TranscriptShareImageDialog'
 import { Button } from '@renderer/components/ui/button'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger
+} from '@renderer/components/ui/context-menu'
 import { Input } from '@renderer/components/ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 import { useStreamingTranscript } from '@renderer/hooks/use-streaming-transcript'
 import { shareImageFileName } from '@renderer/lib/capture-prompt-share'
 import { formatClock } from '@renderer/lib/format-clock'
+import { ipcServices } from '@renderer/lib/ipc'
 import {
   buildCaptionQuoteBlocks,
   buildCaptionShareQuote,
@@ -56,17 +69,20 @@ import {
   observeCaptionListRect
 } from '@renderer/lib/transcript-virtual'
 import { cn } from '@renderer/lib/utils'
-import type { TranscriptSegmentView } from '@renderer/store/transcripts'
+import type { TranscriptSegmentView, TranscriptSpeakerView } from '@renderer/store/transcripts'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   ChevronDown,
   ChevronUp,
   Copy,
   Loader2,
+  Pencil,
+  Plus,
   RotateCw,
   Search,
   Share2,
   Square,
+  Trash2,
   X
 } from 'lucide-react'
 import {
@@ -83,6 +99,16 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+
+const EMPTY_SPEAKERS: TranscriptSpeakerView[] = []
+
+/**
+ * True when local ASR failed because the media has no audio track.
+ *
+ * @param error Worker/task error text from the transcript host.
+ */
+const isNoAudioTranscriptError = (error: string): boolean =>
+  /no audio stream|does not contain any stream/i.test(error)
 
 /**
  * Caption row id under a pointer target, if any.
@@ -174,6 +200,8 @@ interface TranscriptCaptionsPaneProps {
   sourceDurationMs?: number
   /** Media title printed on the share card header. */
   sourceTitle?: string
+  /** Speakers used in the speaker-change context menu. */
+  speakers?: TranscriptSpeakerView[]
   /** Typewriter incoming ASR lines. Off when viewing a finished caption track. */
   streamLive?: boolean
 }
@@ -205,6 +233,7 @@ export function TranscriptCaptionsPane({
   sourceCover,
   sourceDurationMs = 0,
   sourceTitle,
+  speakers = EMPTY_SPEAKERS,
   streamLive = running
 }: TranscriptCaptionsPaneProps) {
   const { t } = useTranslation()
@@ -225,6 +254,9 @@ export function TranscriptCaptionsPane({
   const [marquee, setMarquee] = useState<CaptionMarquee | null>(null)
   const [shareDraft, setShareDraft] = useState<CaptionShareQuote | null>(null)
   const [shareOpen, setShareOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const editingIdRef = useRef<string | null>(null)
+  editingIdRef.current = editingId
   const lastScrollTopRef = useRef(0)
   const followSettledRef = useRef(false)
   const followWindowReadyRef = useRef(false)
@@ -673,7 +705,8 @@ export function TranscriptCaptionsPane({
     setQuery('')
   }, [])
 
-  const canSelectCaptions = showLines && !hasQuery && !streamLive
+  const canSelectCaptions = showLines && !hasQuery && !streamLive && !editingId
+  const canEditCaptions = Boolean(downloadId) && ready && !running && !streamLive && !hasQuery
   const quoteBlocks = useMemo(
     () => (selection ? buildCaptionQuoteBlocks(displaySegments, selection, resolveSpeaker) : []),
     [displaySegments, resolveSpeaker, selection]
@@ -801,6 +834,143 @@ export function TranscriptCaptionsPane({
   }, [])
 
   /**
+   * Persist a caption mutation and toast on failure.
+   *
+   * @param work IPC call that writes the current transcript.
+   */
+  const persistCaptionEdit = async (work: () => Promise<unknown>): Promise<boolean> => {
+    try {
+      await work()
+      return true
+    } catch {
+      toast.error(t('transcript.captionSaveFailed'))
+      return false
+    }
+  }
+
+  /**
+   * Open the inline editor for one caption line.
+   *
+   * @param segmentId Line to edit.
+   */
+  const beginEditCaption = useCallback(
+    (segmentId: string): void => {
+      if (!canEditCaptions) {
+        return
+      }
+      setSelection(null)
+      setFollowPaused(true)
+      setEditingId(segmentId)
+    },
+    [canEditCaptions]
+  )
+
+  /**
+   * Save caption text, deleting the line when the draft is empty.
+   *
+   * @param segmentId Line being edited.
+   * @param text Draft text.
+   */
+  const commitEditCaption = async (segmentId: string, text: string): Promise<void> => {
+    if (!downloadId) {
+      return
+    }
+    const trimmed = text.trim()
+    const current = displaySegments.find((segment) => segment.id === segmentId)
+    setEditingId(null)
+    if (!current) {
+      return
+    }
+    if (trimmed === current.text.trim()) {
+      if (trimmed === '') {
+        await persistCaptionEdit(() =>
+          ipcServices.transcript.deleteSegments({ downloadId, segmentIds: [segmentId] })
+        )
+      }
+      return
+    }
+    if (trimmed === '') {
+      await persistCaptionEdit(() =>
+        ipcServices.transcript.deleteSegments({ downloadId, segmentIds: [segmentId] })
+      )
+      return
+    }
+    await persistCaptionEdit(() =>
+      ipcServices.transcript.updateSegment({ downloadId, segmentId, text: trimmed })
+    )
+  }
+
+  /**
+   * Insert a caption next to a neighbor or at the playhead, then edit it.
+   *
+   * @param input Neighbor or playhead placement.
+   */
+  const insertCaption = async (input: {
+    afterId?: string | null
+    beforeId?: string | null
+  }): Promise<void> => {
+    if (!(downloadId && canEditCaptions)) {
+      return
+    }
+    const result = await persistCaptionEdit(async () => {
+      const next = await ipcServices.transcript.insertSegment({
+        afterId: input.afterId,
+        atMs: input.afterId || input.beforeId ? undefined : currentTimeMs,
+        beforeId: input.beforeId,
+        downloadId
+      })
+      beginEditCaption(next.segmentId)
+      return next
+    })
+    if (result) {
+      setSelection(null)
+    }
+  }
+
+  /**
+   * Delete one caption or the current selection.
+   *
+   * @param segmentIds Lines to drop.
+   */
+  const deleteCaptions = async (segmentIds: string[]): Promise<void> => {
+    if (!(downloadId && canEditCaptions) || segmentIds.length === 0) {
+      return
+    }
+    if (editingId && segmentIds.includes(editingId)) {
+      setEditingId(null)
+    }
+    const ok = await persistCaptionEdit(() =>
+      ipcServices.transcript.deleteSegments({ downloadId, segmentIds })
+    )
+    if (!ok) {
+      return
+    }
+    setSelection(null)
+    toast.success(t('transcript.captionDeleted', { count: segmentIds.length }))
+  }
+  const deleteCaptionsRef = useRef(deleteCaptions)
+  deleteCaptionsRef.current = deleteCaptions
+
+  /**
+   * Change the speaker on one caption.
+   *
+   * @param segmentId Line to relabel.
+   * @param speakerId Stored speaker id, or empty to clear.
+   */
+  const changeCaptionSpeaker = async (segmentId: string, speakerId: string): Promise<void> => {
+    if (!downloadId) {
+      return
+    }
+    await persistCaptionEdit(() =>
+      ipcServices.transcript.updateSegment({
+        downloadId,
+        segmentId,
+        speakerId: speakerId === '' ? null : speakerId
+      })
+    )
+  }
+
+  /**
    * Copy the selected caption quotes as plain text.
    */
   const handleCopySelection = async (): Promise<void> => {
@@ -853,18 +1023,42 @@ export function TranscriptCaptionsPane({
 
   useEffect(() => {
     /**
-     * Escape clears an in-progress caption selection.
+     * Escape clears an in-progress caption selection; Delete removes it.
      */
     const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape' && selection) {
-        setSelection(null)
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.closest('input, textarea, [contenteditable="true"]') ||
+          target.closest('[data-caption-editor]'))
+      ) {
+        return
+      }
+      if (event.key === 'Escape') {
+        if (editingIdRef.current) {
+          setEditingId(null)
+          return
+        }
+        if (selection) {
+          setSelection(null)
+        }
+        return
+      }
+      if (
+        (event.key === 'Delete' || event.key === 'Backspace') &&
+        selection &&
+        canEditCaptions &&
+        !editingIdRef.current
+      ) {
+        event.preventDefault()
+        void deleteCaptionsRef.current(selection.ids)
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [selection])
+  }, [canEditCaptions, selection])
 
   /**
    * Start a potential Finder-style marquee on the caption list.
@@ -899,7 +1093,10 @@ export function TranscriptCaptionsPane({
       y: event.clientY
     }
     const onCaptionControl =
-      event.target instanceof Element && Boolean(event.target.closest('button'))
+      event.target instanceof Element &&
+      Boolean(
+        event.target.closest('button, textarea, input, [data-caption-editor], [data-caption-menu]')
+      )
     if (onCaptionControl) {
       return
     }
@@ -985,6 +1182,7 @@ export function TranscriptCaptionsPane({
             <div
               aria-live="polite"
               className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border bg-background px-3 text-sm"
+              data-testid="transcript-header-status"
             >
               <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-primary" />
               <span className="truncate">{runningLabel}</span>
@@ -993,6 +1191,7 @@ export function TranscriptCaptionsPane({
               <Button
                 aria-label={t('transcript.stop')}
                 className="h-9 shrink-0"
+                data-testid="transcript-cancel"
                 onClick={onCancel}
                 size="sm"
                 type="button"
@@ -1010,6 +1209,7 @@ export function TranscriptCaptionsPane({
               <Input
                 aria-label={t('transcript.searchPlaceholder')}
                 className="h-9 pl-8"
+                data-testid="transcript-search"
                 onChange={(event) => {
                   setQuery(event.currentTarget.value)
                   setActiveMatch(0)
@@ -1019,6 +1219,19 @@ export function TranscriptCaptionsPane({
                 value={query}
               />
             </div>
+            {canEditCaptions && !hasQuery ? (
+              <Button
+                aria-label={t('transcript.captionAdd')}
+                className="h-9 w-9 shrink-0"
+                data-testid="transcript-caption-add"
+                onClick={() => void insertCaption({ afterId: displaySegments.at(-1)?.id ?? null })}
+                size="icon"
+                type="button"
+                variant="outline"
+              >
+                <Plus />
+              </Button>
+            ) : null}
             {hasQuery ? (
               <>
                 <p className="shrink-0 text-muted-foreground text-xs">
@@ -1056,6 +1269,7 @@ export function TranscriptCaptionsPane({
       <div className="relative min-h-0 flex-1">
         <div
           className="h-full select-none overflow-y-auto contain-strict"
+          data-testid="transcript-captions-list"
           onPointerDown={onListPointerDown}
           onPointerMove={onListPointerMove}
           onPointerUp={finishSelectPointer}
@@ -1076,14 +1290,24 @@ export function TranscriptCaptionsPane({
             <p className="px-4 pt-4 text-muted-foreground text-sm">{noSpeechDetail}</p>
           ) : null}
           {failed && !running ? (
-            <div className="flex flex-col items-start gap-3 px-4 pt-4 pb-4">
+            <div
+              className="flex flex-col items-start gap-3 px-4 pt-4 pb-4"
+              data-testid="transcript-error"
+            >
               <p className="font-medium text-destructive text-sm">{t('transcript.error')}</p>
-              {error?.trim() ? (
+              {isNoAudioTranscriptError(error ?? '') ? (
+                <p className="text-muted-foreground text-sm" data-testid="transcript-error-detail">
+                  {t('transcript.errorNoAudio')}
+                </p>
+              ) : error?.trim() ? (
                 <div className="w-full min-w-0">
                   <p className="mb-1 font-medium text-muted-foreground text-xs">
                     {t('transcript.promptErrorDetails')}
                   </p>
-                  <pre className="max-h-60 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-muted-foreground text-xs">
+                  <pre
+                    className="max-h-60 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-muted-foreground text-xs"
+                    data-testid="transcript-error-detail"
+                  >
                     {error.trim()}
                   </pre>
                 </div>
@@ -1091,16 +1315,39 @@ export function TranscriptCaptionsPane({
                 <p className="text-muted-foreground text-sm">{t('transcript.errorHint')}</p>
               )}
               {onRetry ? (
-                <Button onClick={onRetry} size="sm" type="button">
+                <Button
+                  data-testid="transcript-error-retry"
+                  onClick={onRetry}
+                  size="sm"
+                  type="button"
+                >
                   <RotateCw />
                   {t('transcript.retry')}
                 </Button>
               ) : null}
             </div>
           ) : null}
+          {showLines && displaySegments.length === 0 && canEditCaptions && !failed && !noSpeech ? (
+            <div
+              className="flex flex-col items-start gap-3 px-4 pt-4"
+              data-testid="transcript-caption-empty"
+            >
+              <p className="text-muted-foreground text-sm">{t('transcript.captionEmpty')}</p>
+              <Button
+                onClick={() => void insertCaption({})}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <Plus />
+                {t('transcript.captionAdd')}
+              </Button>
+            </div>
+          ) : null}
           {showLines ? (
             <div
               className="relative w-full"
+              data-testid="transcript-captions-virtual"
               style={{
                 height: `${rowVirtualizer.getTotalSize()}px`,
                 visibility: followWindowReadyRef.current ? 'visible' : 'hidden'
@@ -1130,13 +1377,25 @@ export function TranscriptCaptionsPane({
                   >
                     <CaptionRow
                       active={active}
+                      canEdit={canEditCaptions}
                       currentTimeMs={active ? currentTimeMs : 0}
+                      editing={editingId === segment.id}
                       hasQuery={hasQuery}
                       isSearchHit={
                         hasQuery
                           ? matches[activeMatch]?.id === segment.id
                           : focusedSegmentId === segment.id
                       }
+                      onChangeSpeaker={(speakerId) =>
+                        void changeCaptionSpeaker(segment.id, speakerId)
+                      }
+                      onCommitEdit={(text) => void commitEditCaption(segment.id, text)}
+                      onDelete={() =>
+                        void deleteCaptions(selected && selection ? selection.ids : [segment.id])
+                      }
+                      onEdit={() => beginEditCaption(segment.id)}
+                      onInsertAfter={() => void insertCaption({ afterId: segment.id })}
+                      onInsertBefore={() => void insertCaption({ beforeId: segment.id })}
                       onSeek={(seconds) => onSeekToken(seconds, segment.id)}
                       onSelectMatch={jumpToSearchMatch}
                       query={query}
@@ -1144,6 +1403,7 @@ export function TranscriptCaptionsPane({
                       resolveSpeaker={resolveSpeaker}
                       segment={segment}
                       selected={selected}
+                      speakers={speakers}
                       streaming={streamed.streaming}
                       streamingLine={streamingLine}
                     />
@@ -1162,6 +1422,7 @@ export function TranscriptCaptionsPane({
                   aria-label={t('transcript.followResume')}
                   className="h-10 w-10 rounded-full bg-background shadow-md"
                   data-direction={resumeDirection}
+                  data-testid="transcript-follow-resume"
                   onClick={resumeFollow}
                   size="icon"
                   type="button"
@@ -1181,10 +1442,12 @@ export function TranscriptCaptionsPane({
         ) : null}
         <div className="pointer-events-none absolute inset-x-3 bottom-4 z-20 flex justify-center">
           <CaptionSelectToolbar
+            canDelete={canEditCaptions}
             onClear={clearSelection}
             onCopy={() => void handleCopySelection()}
+            onDelete={() => selection && void deleteCaptions(selection.ids)}
             onShare={handleShareSelection}
-            open={Boolean(selection && quoteBlocks.length > 0)}
+            open={Boolean(selection)}
           />
         </div>
       </div>
@@ -1225,14 +1488,17 @@ function CaptionMarqueeBox({ marquee }: CaptionMarqueeBoxProps) {
     <div
       aria-hidden
       className="pointer-events-none absolute z-20 rounded-sm border border-primary/70 bg-primary/15"
+      data-testid="transcript-caption-marquee"
       style={{ height: box.height, left: box.left, top: box.top, width: box.width }}
     />
   )
 }
 
 interface CaptionSelectToolbarProps {
+  canDelete: boolean
   onClear: () => void
   onCopy: () => void
+  onDelete: () => void
   onShare: () => void
   open: boolean
 }
@@ -1240,12 +1506,21 @@ interface CaptionSelectToolbarProps {
 /**
  * Floating actions for the current caption selection.
  *
+ * @param props.canDelete Whether selected lines can be removed.
  * @param props.onClear Drop the selection.
  * @param props.onCopy Copy selected quotes as text.
+ * @param props.onDelete Remove the selected lines.
  * @param props.onShare Open the branded share-image preview.
  * @param props.open Whether the selection toolbar is expanded.
  */
-function CaptionSelectToolbar({ onClear, onCopy, onShare, open }: CaptionSelectToolbarProps) {
+function CaptionSelectToolbar({
+  canDelete,
+  onClear,
+  onCopy,
+  onDelete,
+  onShare,
+  open
+}: CaptionSelectToolbarProps) {
   const { t } = useTranslation()
   return (
     <div
@@ -1261,20 +1536,49 @@ function CaptionSelectToolbar({ onClear, onCopy, onShare, open }: CaptionSelectT
       )}
       data-caption-select-toolbar="true"
       data-state={open ? 'open' : 'closed'}
+      data-testid="transcript-caption-select-toolbar"
       inert={!open || undefined}
       role="toolbar"
     >
-      <Button className="rounded-full" onClick={onCopy} size="sm" type="button" variant="ghost">
+      <Button
+        className="rounded-full"
+        data-testid="transcript-caption-select-copy"
+        onClick={onCopy}
+        size="sm"
+        type="button"
+        variant="ghost"
+      >
         <Copy />
         {t('transcript.promptCopy')}
       </Button>
-      <Button className="rounded-full" onClick={onShare} size="sm" type="button" variant="ghost">
+      <Button
+        className="rounded-full"
+        data-testid="transcript-caption-select-share"
+        onClick={onShare}
+        size="sm"
+        type="button"
+        variant="ghost"
+      >
         <Share2 />
         {t('transcript.promptShare')}
       </Button>
+      {canDelete ? (
+        <Button
+          className="rounded-full text-destructive hover:text-destructive"
+          data-testid="transcript-caption-select-delete"
+          onClick={onDelete}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <Trash2 />
+          {t('transcript.captionDeleteSelected')}
+        </Button>
+      ) : null}
       <Button
         aria-label={t('transcript.captionSelectClear')}
         className="h-8 w-8 rounded-full"
+        data-testid="transcript-caption-select-clear"
         onClick={onClear}
         size="icon"
         type="button"
@@ -1288,9 +1592,17 @@ function CaptionSelectToolbar({ onClear, onCopy, onShare, open }: CaptionSelectT
 
 interface CaptionRowProps {
   active: boolean
+  canEdit: boolean
   currentTimeMs: number
+  editing: boolean
   hasQuery: boolean
   isSearchHit: boolean
+  onChangeSpeaker: (speakerId: string) => void
+  onCommitEdit: (text: string) => void
+  onDelete: () => void
+  onEdit: () => void
+  onInsertAfter: () => void
+  onInsertBefore: () => void
   onSeek: (seconds: number) => void
   onSelectMatch: (segmentId: string) => void
   query: string
@@ -1298,6 +1610,7 @@ interface CaptionRowProps {
   resolveSpeaker: (speakerId: string | null) => string
   segment: TranscriptSegmentView
   selected: boolean
+  speakers: TranscriptSpeakerView[]
   streaming: boolean
   streamingLine: boolean
 }
@@ -1307,9 +1620,17 @@ interface CaptionRowProps {
  */
 const CaptionRow = memo(function CaptionRow({
   active,
+  canEdit,
   currentTimeMs,
+  editing,
   hasQuery,
   isSearchHit,
+  onChangeSpeaker,
+  onCommitEdit,
+  onDelete,
+  onEdit,
+  onInsertAfter,
+  onInsertBefore,
   onSeek,
   onSelectMatch,
   query,
@@ -1317,6 +1638,7 @@ const CaptionRow = memo(function CaptionRow({
   resolveSpeaker,
   segment,
   selected,
+  speakers,
   streaming,
   streamingLine
 }: CaptionRowProps) {
@@ -1333,7 +1655,7 @@ const CaptionRow = memo(function CaptionRow({
     }
     onSeek(segment.startMs / 1000)
   }
-  return (
+  const body = (
     <article
       aria-current={active ? 'true' : undefined}
       aria-live={streamingLine ? 'polite' : undefined}
@@ -1379,16 +1701,26 @@ const CaptionRow = memo(function CaptionRow({
         </button>
       </div>
       <p className="col-start-2 text-left text-sm leading-relaxed [overflow-wrap:anywhere]">
-        {streamingLine ? (
+        {editing ? (
+          <CaptionTextEditor
+            initialText={segment.text}
+            onCancel={() => onCommitEdit(segment.text)}
+            onCommit={onCommitEdit}
+          />
+        ) : streamingLine ? (
           <>
             {segment.text}
             {streaming ? (
-              <span className="ml-0.5 inline-block h-[0.9em] w-px translate-y-[0.1em] animate-pulse bg-primary align-middle" />
+              <span
+                className="ml-0.5 inline-block h-[0.9em] w-px translate-y-[0.1em] animate-pulse bg-primary align-middle"
+                data-testid="transcript-stream-caret"
+              />
             ) : null}
           </>
         ) : hasQuery ? (
           <button
             className="w-full cursor-pointer text-left"
+            data-testid="transcript-search-jump"
             onClick={openCaption}
             title={t('transcript.searchJumpTo')}
             type="button"
@@ -1399,6 +1731,7 @@ const CaptionRow = memo(function CaptionRow({
           <FollowText
             active={active}
             currentTimeMs={currentTimeMs}
+            onDoubleClick={canEdit ? onEdit : undefined}
             onSeek={onSeek}
             segment={segment}
             words={words}
@@ -1407,11 +1740,116 @@ const CaptionRow = memo(function CaptionRow({
       </p>
     </article>
   )
+  if (!canEdit) {
+    return body
+  }
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{body}</ContextMenuTrigger>
+      <ContextMenuContent data-caption-menu="true">
+        <ContextMenuItem onClick={onEdit}>
+          <Pencil />
+          {t('transcript.captionEdit')}
+        </ContextMenuItem>
+        <ContextMenuItem onClick={onInsertBefore}>
+          {t('transcript.captionInsertBefore')}
+        </ContextMenuItem>
+        <ContextMenuItem onClick={onInsertAfter}>
+          {t('transcript.captionInsertAfter')}
+        </ContextMenuItem>
+        {speakers.length > 0 ? (
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>{t('transcript.captionSpeaker')}</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextMenuRadioGroup
+                onValueChange={onChangeSpeaker}
+                value={segment.speakerId ?? ''}
+              >
+                <ContextMenuRadioItem value="">
+                  {t('transcript.unknownSpeaker')}
+                </ContextMenuRadioItem>
+                {speakers.map((speaker) => (
+                  <ContextMenuRadioItem key={speaker.id} value={speaker.id}>
+                    {speaker.displayName}
+                  </ContextMenuRadioItem>
+                ))}
+              </ContextMenuRadioGroup>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        ) : null}
+        <ContextMenuSeparator />
+        <ContextMenuItem onClick={onDelete} variant="destructive">
+          <Trash2 />
+          {t('transcript.captionDelete')}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  )
 })
+
+interface CaptionTextEditorProps {
+  initialText: string
+  onCancel: () => void
+  onCommit: (text: string) => void
+}
+
+/**
+ * Inline caption editor. Enter saves, Shift+Enter inserts a newline, Escape cancels.
+ *
+ * @param props.initialText Text shown when editing starts.
+ * @param props.onCancel Leave without changing the stored text.
+ * @param props.onCommit Persist the draft.
+ */
+function CaptionTextEditor({ initialText, onCancel, onCommit }: CaptionTextEditorProps) {
+  const { t } = useTranslation()
+  const [value, setValue] = useState(initialText)
+  const committedRef = useRef(false)
+  /**
+   * Save once, ignoring later blur after Enter already committed.
+   *
+   * @param text Draft to persist.
+   */
+  const finish = (text: string): void => {
+    if (committedRef.current) {
+      return
+    }
+    committedRef.current = true
+    onCommit(text)
+  }
+  return (
+    <textarea
+      aria-label={t('transcript.captionEdit')}
+      autoFocus
+      className="field-sizing-content w-full resize-none rounded-sm bg-background/80 p-1 text-sm leading-relaxed outline-none ring-1 ring-primary/40"
+      data-caption-editor="true"
+      data-testid="transcript-caption-editor"
+      onBlur={() => finish(value)}
+      onChange={(event) => setValue(event.currentTarget.value)}
+      onKeyDown={(event) => {
+        event.stopPropagation()
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          committedRef.current = true
+          onCancel()
+          return
+        }
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault()
+          finish(value)
+        }
+      }}
+      onPointerDown={(event) => event.stopPropagation()}
+      placeholder={t('transcript.captionPlaceholder')}
+      rows={2}
+      value={value}
+    />
+  )
+}
 
 interface FollowTextProps {
   active: boolean
   currentTimeMs: number
+  onDoubleClick?: () => void
   onSeek: (seconds: number) => void
   segment: TranscriptSegmentView
   words: ReturnType<typeof wordsForSegment>
@@ -1431,11 +1869,29 @@ const splitKaraokeGap = (text: string): { gap: boolean; label: string } => {
 /**
  * Highlight the spoken token and seek when a word is clicked.
  */
-function FollowText({ active, currentTimeMs, onSeek, segment, words }: FollowTextProps) {
+function FollowText({
+  active,
+  currentTimeMs,
+  onDoubleClick,
+  onSeek,
+  segment,
+  words
+}: FollowTextProps) {
   const { t } = useTranslation()
   const currentIndex = active ? activeWordIndex(words, currentTimeMs) : null
   if (words.length === 0) {
-    return segment.text
+    return (
+      <button
+        className="w-full cursor-text border-0 bg-transparent p-0 text-left font-[inherit] text-[length:inherit] leading-[inherit]"
+        data-follow-token={active ? 'true' : undefined}
+        data-testid={active ? 'transcript-follow-token' : undefined}
+        onClick={() => onSeek(segment.startMs / 1000)}
+        onDoubleClick={onDoubleClick}
+        type="button"
+      >
+        {segment.text}
+      </button>
+    )
   }
 
   return words.map((word, index) => {
@@ -1454,7 +1910,9 @@ function FollowText({ active, currentTimeMs, onSeek, segment, words }: FollowTex
           )}
           data-caption-token="true"
           data-follow-token={current ? 'true' : undefined}
+          data-testid={current ? 'transcript-follow-token' : undefined}
           onClick={() => onSeek(seekSecondsForWord(word))}
+          onDoubleClick={onDoubleClick}
           title={t('transcript.seekAt', { time: formatClock(word.startMs / 1000) })}
           type="button"
         >

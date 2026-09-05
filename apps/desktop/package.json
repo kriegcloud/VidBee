@@ -1,7 +1,7 @@
 {
   "name": "vidbee",
-  "version": "2.0.2",
-  "description": "A modern Electron application for downloading videos and audios",
+  "version": "2.1.0",
+  "description": "Free, open-source desktop app to download media, create local transcripts, and ask AI",
   "main": "./out/main/index.js",
   "author": "VidBee",
   "homepage": "https://github.com/nexmoe/vidbee",

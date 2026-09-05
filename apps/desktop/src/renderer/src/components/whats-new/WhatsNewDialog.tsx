@@ -133,7 +133,7 @@ export function WhatsNewHost() {
       })
       return
     }
-    void navigate({ to: '/transcripts' })
+    void navigate({ to: '/' })
   }
 
   /**

@@ -15,7 +15,7 @@
     "autoUpdateTitle": "自動アップデート",
     "betaProgramDescription": "他の人より先に早期ビルドと今後の機能を受け取ります。",
     "betaProgramTitle": "プレビューチャンネル",
-    "description": "VidBeeはElectronで構築され、yt-dlpによって動力を得る無料のオープンソースダウンローダーです。",
+    "description": "1000以上のサイトからメディアをダウンロードし、パソコン上で検索可能な文字起こしを作成。選んだAIプロバイダーで要約、翻訳、質問までできる、無料のオープンソース・デスクトップアプリです。",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "同梱版に切り替え済み",
@@ -118,7 +118,7 @@
     "title": "高度なオプション"
   },
   "app": {
-    "description": "数百のサイトからビデオとオーディオをダウンロード",
+    "description": "メディアをダウンロード、ローカルで文字起こし、AIに質問",
     "title": "VidBee",
     "quitConfirm": {
       "title": "VidBee を終了しますか？",
@@ -171,6 +171,10 @@
     "infoUnavailable": "ワンクリックダウンロード（情報利用不可）",
     "loading": "読み込み中",
     "moreOptions": "その他のオプション",
+    "moreAddActions": "追加方法",
+    "morePlatforms": "その他のプラットフォーム",
+    "localSource": "ローカル",
+    "otherSource": "その他",
     "noActiveDownloads": "アクティブなダウンロードなし",
     "noAudio": "オーディオなし",
     "noHistory": "ダウンロード履歴なし",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "ドロップして文字起こし",
     "ingestDropMixed": "ドロップしてダウンロードと文字起こし",
     "ingestDropDescription": "リンクはダウンロード、音声・動画ファイルは文字起こしを開始します。",
-    "ingestEmptyHint": "リンクを貼り付けてダウンロードするか、音声・動画をドロップして文字起こしします。",
+    "ingestEmptyHint": "リンクを貼り付けてダウンロードするか、メディアファイルをドロップしてローカルで文字起こし。そこから要約、翻訳、AIへの質問ができます。",
     "preparing": "準備中...",
     "processing": "処理中",
     "progress": "進行状況",
@@ -224,6 +228,7 @@
     "codecAuto": "自動",
     "fpsHighest": "最高",
     "metadata": {
+      "platform": "プラットフォーム",
       "source": "ソース",
       "playlist": "プレイリスト",
       "format": "形式",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "について",
+    "home": "ホーム",
     "download": "ダウンロード",
     "playlist": "プレイリストをダウンロード",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "文字起こしが完了前に停止しました。再試行できます。",
+    "errorNoAudio": "このファイルには音声トラックがないため、文字起こしできません。",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "停止",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "音声を準備中",
     "identifyingSpeakers": "話者を識別中",
-    "back": "文字起こし一覧に戻る",
+    "back": "ダウンロード一覧に戻る",
     "library": {
       "empty": "文字起こしはまだありません",
-      "emptyHint": "ローカルの音声・動画を選ぶか、ダウンロード済みのファイルを文字起こしできます。",
+      "emptyHint": "ダウンロード済みまたはローカルのメディアファイルを文字起こしして、検索、書き出し、AIへの質問に活用できます。",
       "addMedia": "音声・動画を追加",
       "goToDownloads": "ダウンロードへ",
       "untitled": "無題のメディア",
@@ -1119,6 +1126,17 @@
     "copyFailed": "文字起こしをコピーできませんでした。",
     "captionSelect": "選択した文字起こし",
     "captionSelectClear": "選択を解除",
+    "captionAdd": "行を追加",
+    "captionEdit": "編集",
+    "captionInsertBefore": "前に挿入",
+    "captionInsertAfter": "後に挿入",
+    "captionDelete": "削除",
+    "captionDeleteSelected": "選択を削除",
+    "captionDeleted": "{{count}} 件の字幕を削除しました",
+    "captionSaveFailed": "字幕を保存できませんでした。",
+    "captionPlaceholder": "字幕を入力",
+    "captionSpeaker": "話者",
+    "captionEmpty": "字幕はまだありません。行を追加して編集を開始します。",
     "export": {
       "action": "書き出し",
       "preview": "書き出しプレビュー",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "共有画像を保存できませんでした。",
     "promptShareNativeFailed": "共有シートを開けませんでした。",
     "promptShareFooter": "VidBee で作成",
-    "promptShareTagline": "オープンソース。動画を保存して、AI に聞く",
+    "promptShareTagline": "ダウンロード。ローカルで文字起こし。AIに質問。",
     "captionShareSaid": "『{{name}}』より",
     "promptOutput": "プロンプト結果",
     "promptScrollToEnd": "最新までスクロール",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "新機能",
-    "description": "このパソコンで文字起こしと AI 要約ができます。",
-    "tryIt": "試してみる",
+    "description": "ダウンロード、ローカル文字起こし、AIへの質問を1つのアプリで。",
+    "tryIt": "文字起こしを開く",
     "features": {
       "transcript": {
         "title": "動画の自動文字起こし",
@@ -1345,8 +1363,8 @@
         "description": "誰が何を話したかを確認し、その場面へジャンプできます。"
       },
       "summary": {
-        "title": "AI 要約",
-        "description": "文字起こしを箇条書き、FAQ、マインドマップ、言い換えにできます。設定で独自プロンプトも追加できます。"
+        "title": "どの文字起こしでもAIに質問",
+        "description": "要約、翻訳、FAQやマインドマップの作成に加え、選んだAIプロバイダーで独自のプロンプトを実行できます。"
       },
       "localFiles": {
         "title": "任意のファイルを文字起こし",

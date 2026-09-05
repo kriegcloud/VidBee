@@ -49,6 +49,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          body: |
+            View the full changelog at [vidbee.org/changelog](https://vidbee.org/changelog/).
           generate_release_notes: true
           prerelease: ${{ steps.release_meta.outputs.is_preview == 'true' }}
           files: |

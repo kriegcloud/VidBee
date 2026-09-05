@@ -15,7 +15,7 @@
     "autoUpdateTitle": "التحديثات التلقائية",
     "betaProgramDescription": "تلقي البناءات المبكرة والميزات القادمة قبل أي شخص آخر.",
     "betaProgramTitle": "قناة المعاينة",
-    "description": "VidBee هو برنامج تنزيل مجاني ومفتوح المصدر مبني باستخدام Electron ويعمل بواسطة yt-dlp.",
+    "description": "نزّل الوسائط من أكثر من 1000 موقع، وأنشئ نصوصًا قابلة للبحث على جهازك، ثم لخّصها أو ترجمها أو اطرح أسئلة باستخدام مزوّد الذكاء الاصطناعي الذي تختاره—كل ذلك في تطبيق سطح مكتب مجاني ومفتوح المصدر.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "النسخة المضمّنة الاحتياطية",
@@ -118,7 +118,7 @@
     "title": "خيارات متقدمة"
   },
   "app": {
-    "description": "تحميل الفيديوهات والصوتيات من مئات المواقع",
+    "description": "نزّل الوسائط، وفرّغها نصيًا محليًا، واسأل الذكاء الاصطناعي",
     "title": "VidBee",
     "quitConfirm": {
       "title": "هل تريد إنهاء VidBee؟",
@@ -171,6 +171,10 @@
     "infoUnavailable": "تحميل بنقرة واحدة (المعلومات غير متاحة)",
     "loading": "جاري التحميل",
     "moreOptions": "خيارات إضافية",
+    "moreAddActions": "المزيد من طرق الإضافة",
+    "morePlatforms": "المزيد من المنصات",
+    "localSource": "محلي",
+    "otherSource": "أخرى",
     "noActiveDownloads": "لا توجد تحميلات نشطة",
     "noAudio": "لا يوجد صوت",
     "noHistory": "لا يوجد سجل تحميل",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "أفلت للتدوين",
     "ingestDropMixed": "أفلت للتنزيل والتدوين",
     "ingestDropDescription": "الروابط تبدأ التنزيل. ملفات الصوت والفيديو تبدأ التدوين.",
-    "ingestEmptyHint": "الصق رابطًا للتنزيل، أو أفلت صوتًا أو فيديو للتدوين.",
+    "ingestEmptyHint": "الصق رابطًا للتنزيل، أو أفلت ملف وسائط لتفريغه محليًا، ثم لخّصه أو ترجمه أو اسأل الذكاء الاصطناعي عنه.",
     "preparing": "جاري التحضير...",
     "processing": "جاري المعالجة",
     "progress": "التقدم",
@@ -224,6 +228,7 @@
     "codecAuto": "تلقائي",
     "fpsHighest": "الأعلى",
     "metadata": {
+      "platform": "المنصة",
       "source": "المصدر",
       "playlist": "قائمة التشغيل",
       "format": "التنسيق",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "حول",
+    "home": "الرئيسية",
     "download": "تحميل",
     "playlist": "تحميل قائمة التشغيل",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "توقفت عملية التفريغ قبل اكتمالها. يمكنك إعادة المحاولة.",
+    "errorNoAudio": "لا يحتوي هذا الملف على مسار صوتي، لذا لا يمكن إنشاء نص.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "إيقاف",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "جارٍ تجهيز الصوت",
     "identifyingSpeakers": "جارٍ تحديد المتحدثين",
-    "back": "العودة إلى النصوص",
+    "back": "العودة إلى التنزيلات",
     "library": {
       "empty": "لا توجد نصوص بعد",
-      "emptyHint": "اختر ملف صوت أو فيديو محليًا، أو حوّل تنزيلًا مكتملًا إلى نص.",
+      "emptyHint": "فرّغ ملفًا منزّلًا أو ملف وسائط محليًا، ثم ابحث في النص أو صدّره أو اسأل الذكاء الاصطناعي عنه.",
       "addMedia": "إضافة صوت أو فيديو",
       "goToDownloads": "الذهاب إلى التنزيلات",
       "untitled": "وسائط بلا عنوان",
@@ -1119,6 +1126,17 @@
     "copyFailed": "تعذر نسخ النص.",
     "captionSelect": "النص المحدد",
     "captionSelectClear": "مسح التحديد",
+    "captionAdd": "إضافة سطر",
+    "captionEdit": "تحرير",
+    "captionInsertBefore": "إدراج قبل",
+    "captionInsertAfter": "إدراج بعد",
+    "captionDelete": "حذف",
+    "captionDeleteSelected": "حذف المحدد",
+    "captionDeleted": "تم حذف {{count}} من التسميات",
+    "captionSaveFailed": "تعذر حفظ التسمية.",
+    "captionPlaceholder": "اكتب التسمية",
+    "captionSpeaker": "المتحدث",
+    "captionEmpty": "لا توجد تسميات بعد. أضف سطرًا للبدء.",
     "export": {
       "action": "تصدير",
       "preview": "معاينة التصدير",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "تعذر حفظ صورة المشاركة.",
     "promptShareNativeFailed": "تعذر فتح قائمة المشاركة.",
     "promptShareFooter": "صنع باستخدام VidBee",
-    "promptShareTagline": "مفتوح المصدر. حمّل فيديو. اسأل الذكاء الاصطناعي.",
+    "promptShareTagline": "نزّل. فرّغ محليًا. اسأل الذكاء الاصطناعي.",
     "captionShareSaid": "{{name}} قال",
     "promptOutput": "نتيجة المطالبة",
     "promptScrollToEnd": "الانتقال إلى الأحدث",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "ما الجديد",
-    "description": "النصوص والذكاء الاصطناعي على هذا الجهاز.",
-    "tryIt": "جرّب",
+    "description": "نزّل، وفرّغ محليًا، واسأل الذكاء الاصطناعي—كل ذلك في تطبيق واحد.",
+    "tryIt": "فتح النصوص",
     "features": {
       "transcript": {
         "title": "تفريغ تلقائي للفيديو",
@@ -1345,8 +1363,8 @@
         "description": "اعرف من قال ماذا، ثم انتقل إلى تلك اللحظة في الفيديو."
       },
       "summary": {
-        "title": "ملخصات الذكاء الاصطناعي",
-        "description": "حوّل النص إلى نقاط أو أسئلة شائعة أو خريطة ذهنية أو إعادة صياغة. أضف أوامرك في الإعدادات."
+        "title": "اسأل الذكاء الاصطناعي عن أي نص",
+        "description": "لخّص وترجم وأنشئ أسئلة شائعة أو خرائط ذهنية، وشغّل أوامرك الخاصة باستخدام مزوّد الذكاء الاصطناعي الذي تختاره."
       },
       "localFiles": {
         "title": "فرّغ أي ملف",

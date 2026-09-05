@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import '../../assets/title-bar.css'
 import { updateAvailableAtom } from '@renderer/store/update'
 
-type Page = 'about' | 'home' | 'settings' | 'subscriptions' | 'transcripts'
+type Page = 'about' | 'home' | 'settings' | 'subscriptions'
 
 interface SidebarProps {
   currentPage: Page
@@ -31,16 +31,9 @@ export function Sidebar({
       id: 'home',
       active: currentPage === 'home',
       icon: appSidebarIcons.home,
-      label: t('menu.download'),
-      onClick: () => onPageChange('home')
-    },
-    {
-      id: 'transcripts',
-      active: currentPage === 'transcripts',
-      icon: appSidebarIcons.transcripts,
       indicator: transcriptsActive,
-      label: t('menu.transcripts'),
-      onClick: () => onPageChange('transcripts')
+      label: t('menu.home'),
+      onClick: () => onPageChange('home')
     },
     {
       id: 'subscriptions',

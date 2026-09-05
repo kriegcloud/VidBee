@@ -14,6 +14,7 @@ interface PlaylistDownloadGroupProps {
 	totalCount: number;
 	isPlaylist?: boolean;
 	selectedIds?: Set<string>;
+	selectionActive?: boolean;
 	onToggleSelect?: (id: string) => void;
 	onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void;
 	onCancel?: (id: string) => void;
@@ -55,6 +56,7 @@ export function PlaylistDownloadGroup({
 	totalCount,
 	isPlaylist = true,
 	selectedIds,
+	selectionActive = false,
 	onToggleSelect,
 	onDeletePlaylist,
 	onCancel,
@@ -197,6 +199,7 @@ export function PlaylistDownloadGroup({
 							<DownloadItem
 								download={record}
 								isSelected={selectedIds?.has(record.id) ?? false}
+								selectionActive={selectionActive}
 								onCancel={onCancel}
 								onCopyUrl={onCopyUrl}
 								onPause={onPause}

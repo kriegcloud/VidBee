@@ -15,7 +15,7 @@
     "autoUpdateTitle": "Otomatik güncellemeler",
     "betaProgramDescription": "Herkesten önce erken sürümleri ve gelecek özellikleri alın.",
     "betaProgramTitle": "Kanal önizlemesi",
-    "description": "VidBee - RSS otomatik indirme, toplu işleme ve 1000'den fazla platform desteği sunan ücretsiz ve açık kaynaklı otomatik video indirici.",
+    "description": "1000'den fazla siteden medya indirin, bilgisayarınızda aranabilir deşifreler oluşturun; seçtiğiniz yapay zekâ sağlayıcısıyla özetleyin, çevirin veya sorular sorun—hepsi ücretsiz ve açık kaynaklı tek bir masaüstü uygulamasında.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Paketlenmiş yedek",
@@ -118,7 +118,7 @@
     "title": "Gelişmiş Seçenekler"
   },
   "app": {
-    "description": "Yüzlerce siteden video ve ses dosyalarını indirin",
+    "description": "Medya indirin, yerel olarak deşifre edin ve yapay zekâya sorun",
     "title": "VidBee",
     "quitConfirm": {
       "title": "VidBee'den çıkılsın mı?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "Tek Tıkla İndir (Bilgi mevcut değil)",
     "loading": "Yükleniyor",
     "moreOptions": "Daha fazla seçenek",
+    "moreAddActions": "Eklemenin diğer yolları",
+    "morePlatforms": "Daha fazla platform",
+    "localSource": "Yerel",
+    "otherSource": "Diğer",
     "noActiveDownloads": "Aktif indirme yok",
     "noAudio": "Ses Yok",
     "noHistory": "İndirme geçmişi yok",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Yazıya dökmek için bırakın",
     "ingestDropMixed": "İndirmek ve yazıya dökmek için bırakın",
     "ingestDropDescription": "Bağlantılar indirmeyi başlatır. Ses ve video dosyaları yazıya dökmeyi başlatır.",
-    "ingestEmptyHint": "İndirmek için bir bağlantı yapıştırın veya yazıya dökmek için ses/video bırakın.",
+    "ingestEmptyHint": "İndirmek için bir bağlantı yapıştırın veya yerel olarak deşifre etmek üzere bir medya dosyası bırakın; ardından özetleyin, çevirin ya da yapay zekâya sorun.",
     "preparing": "Hazırlanıyor...",
     "processing": "İşleniyor",
     "progress": "İlerleme",
@@ -224,6 +228,7 @@
     "codecAuto": "Otomatik",
     "fpsHighest": "En yüksek",
     "metadata": {
+      "platform": "Platform",
       "source": "Kaynak",
       "playlist": "Oynatma listesi",
       "format": "Format",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "Hakkında",
+    "home": "Ana sayfa",
     "download": "İndir",
     "playlist": "Oynatma listesini indir",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "Transkripsiyon bitmeden durdu. Yeniden deneyebilirsiniz.",
+    "errorNoAudio": "Bu dosyada ses parçası yok, bu yüzden transkript oluşturulamaz.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Durdur",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Ses hazırlanıyor",
     "identifyingSpeakers": "Konuşmacılar ayırt ediliyor",
-    "back": "Deşifrelere dön",
+    "back": "İndirmelere dön",
     "library": {
       "empty": "Henüz deşifre yok",
-      "emptyHint": "Yerel bir ses veya video dosyası seçin ya da bitmiş bir indirmeyi deşifre edin.",
+      "emptyHint": "İndirilmiş veya yerel bir medya dosyasını deşifre edin; ardından metinde arama yapın, dışa aktarın ya da içerik hakkında yapay zekâya sorular sorun.",
       "addMedia": "Ses veya video ekle",
       "goToDownloads": "İndirmelere git",
       "untitled": "Adsız medya",
@@ -1119,6 +1126,17 @@
     "copyFailed": "Transkript kopyalanamadı.",
     "captionSelect": "Seçilen transkript",
     "captionSelectClear": "Seçimi temizle",
+    "captionAdd": "Satır ekle",
+    "captionEdit": "Düzenle",
+    "captionInsertBefore": "Önüne ekle",
+    "captionInsertAfter": "Arkasına ekle",
+    "captionDelete": "Sil",
+    "captionDeleteSelected": "Seçilenleri sil",
+    "captionDeleted": "{{count}} altyazı silindi",
+    "captionSaveFailed": "Altyazı kaydedilemedi.",
+    "captionPlaceholder": "Altyazıyı yazın",
+    "captionSpeaker": "Konuşmacı",
+    "captionEmpty": "Henüz altyazı yok. Düzenlemek için bir satır ekleyin.",
     "export": {
       "action": "Dışa aktar",
       "preview": "Dışa aktarma önizlemesi",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "Paylaşım görseli kaydedilemedi.",
     "promptShareNativeFailed": "Paylaşım menüsü açılamadı.",
     "promptShareFooter": "VidBee ile oluşturuldu",
-    "promptShareTagline": "Açık kaynak. Video indir. Yapay zekaya sor.",
+    "promptShareTagline": "İndir. Yerel olarak deşifre et. Yapay zekâya sor.",
     "captionShareSaid": "{{name}} dedi",
     "promptOutput": "İstem sonucu",
     "promptScrollToEnd": "En sona git",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "Yenilikler",
-    "description": "Transkript ve yapay zekâ, bu bilgisayarda.",
-    "tryIt": "Dene",
+    "description": "İndirin, yerel olarak deşifre edin ve yapay zekâya sorun—hepsi tek bir uygulamada.",
+    "tryIt": "Deşifreleri aç",
     "features": {
       "transcript": {
         "title": "Otomatik video transkripti",
@@ -1345,8 +1363,8 @@
         "description": "Kimin ne söylediğini görün, o ana atlayın."
       },
       "summary": {
-        "title": "Yapay zekâ özetleri",
-        "description": "Transkripti madde madde, SSS, zihin haritası veya yeniden yazıma çevirin. Ayarlar’dan kendi istemlerinizi ekleyin."
+        "title": "Her deşifre hakkında yapay zekâya sorun",
+        "description": "Özetleyin, çevirin, SSS veya zihin haritaları oluşturun ve seçtiğiniz yapay zekâ sağlayıcısıyla kendi komutlarınızı çalıştırın."
       },
       "localFiles": {
         "title": "Her dosyayı yazıya dökün",

@@ -15,7 +15,7 @@
     "autoUpdateTitle": "Pembaruan otomatis",
     "betaProgramDescription": "Terima build awal dan fitur yang akan datang sebelum orang lain.",
     "betaProgramTitle": "Saluran pratinjau",
-    "description": "VidBee adalah pengunduh gratis dan open-source yang dibangun dengan Electron dan didukung oleh yt-dlp.",
+    "description": "Unduh media dari 1000+ situs, buat transkrip yang dapat dicari di komputer Anda, lalu gunakan penyedia AI pilihan Anda untuk merangkum, menerjemahkan, atau mengajukan pertanyaan—semuanya dalam satu aplikasi desktop gratis dan sumber terbuka.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Cadangan bawaan",
@@ -118,7 +118,7 @@
     "title": "Opsi Lanjutan"
   },
   "app": {
-    "description": "Unduh video dan audio dari ratusan situs",
+    "description": "Unduh media, transkripsikan secara lokal, dan tanya AI",
     "title": "VidBee",
     "quitConfirm": {
       "title": "Keluar dari VidBee?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "Unduh Satu Klik (Info tidak tersedia)",
     "loading": "Memuat",
     "moreOptions": "Opsi lainnya",
+    "moreAddActions": "Cara lain untuk menambahkan",
+    "morePlatforms": "Platform lainnya",
+    "localSource": "Lokal",
+    "otherSource": "Lainnya",
     "noActiveDownloads": "Tidak ada unduhan aktif",
     "noAudio": "Tidak Ada Audio",
     "noHistory": "Tidak ada riwayat unduhan",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Lepaskan untuk mentranskripsi",
     "ingestDropMixed": "Lepaskan untuk mengunduh dan mentranskripsi",
     "ingestDropDescription": "Tautan memulai unduhan. File audio dan video memulai transkripsi.",
-    "ingestEmptyHint": "Tempel tautan untuk mengunduh, atau lepas audio/video untuk mentranskripsi.",
+    "ingestEmptyHint": "Tempel tautan untuk mengunduh atau lepas file media untuk ditranskripsikan secara lokal, lalu rangkum, terjemahkan, atau tanyakan kepada AI.",
     "preparing": "Mempersiapkan...",
     "processing": "Memproses",
     "progress": "Kemajuan",
@@ -224,6 +228,7 @@
     "codecAuto": "Otomatis",
     "fpsHighest": "Tertinggi",
     "metadata": {
+      "platform": "Platform",
       "source": "Sumber",
       "playlist": "Playlist",
       "format": "Format",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "Tentang",
+    "home": "Beranda",
     "download": "Unduh",
     "playlist": "Unduh Playlist",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "Transkripsi berhenti sebelum selesai. Coba lagi.",
+    "errorNoAudio": "Berkas ini tidak memiliki trek audio, jadi transkrip tidak dapat dibuat.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Berhenti",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Menyiapkan audio",
     "identifyingSpeakers": "Mengidentifikasi pembicara",
-    "back": "Kembali ke transkrip",
+    "back": "Kembali ke unduhan",
     "library": {
       "empty": "Belum ada transkrip",
-      "emptyHint": "Pilih file audio atau video lokal, atau transkripsikan unduhan yang selesai.",
+      "emptyHint": "Transkripsikan unduhan atau file media lokal, lalu telusuri atau ekspor transkripnya, atau tanyakan isinya kepada AI.",
       "addMedia": "Tambah audio atau video",
       "goToDownloads": "Ke unduhan",
       "untitled": "Media tanpa judul",
@@ -1119,6 +1126,17 @@
     "copyFailed": "Tidak dapat menyalin transkrip.",
     "captionSelect": "Transkrip terpilih",
     "captionSelectClear": "Hapus pilihan",
+    "captionAdd": "Tambah baris",
+    "captionEdit": "Edit",
+    "captionInsertBefore": "Sisipkan sebelum",
+    "captionInsertAfter": "Sisipkan sesudah",
+    "captionDelete": "Hapus",
+    "captionDeleteSelected": "Hapus pilihan",
+    "captionDeleted": "{{count}} teks dihapus",
+    "captionSaveFailed": "Tidak dapat menyimpan teks.",
+    "captionPlaceholder": "Ketik teks",
+    "captionSpeaker": "Pembicara",
+    "captionEmpty": "Belum ada teks. Tambah baris untuk mulai mengedit.",
     "export": {
       "action": "Ekspor",
       "preview": "Pratinjau ekspor",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "Tidak dapat menyimpan gambar berbagi.",
     "promptShareNativeFailed": "Tidak dapat membuka menu berbagi.",
     "promptShareFooter": "Dibuat dengan VidBee",
-    "promptShareTagline": "Open source. Unduh video. Tanya AI.",
+    "promptShareTagline": "Unduh. Transkripsikan secara lokal. Tanya AI.",
     "captionShareSaid": "{{name}} berkata",
     "promptOutput": "Hasil prompt",
     "promptScrollToEnd": "Gulir ke terbaru",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "Yang Baru",
-    "description": "Transkrip dan AI, di komputer ini.",
-    "tryIt": "Coba",
+    "description": "Unduh, transkripsikan secara lokal, dan tanya AI—semuanya dalam satu aplikasi.",
+    "tryIt": "Buka Transkrip",
     "features": {
       "transcript": {
         "title": "Transkrip video otomatis",
@@ -1345,8 +1363,8 @@
         "description": "Lihat siapa mengatakan apa, lalu lompat ke momen itu di video."
       },
       "summary": {
-        "title": "Ringkasan AI",
-        "description": "Ubah transkrip menjadi poin, FAQ, peta pikiran, atau parafrase. Tambahkan prompt sendiri di Pengaturan."
+        "title": "Tanya AI tentang transkrip apa pun",
+        "description": "Rangkum, terjemahkan, buat FAQ atau peta pikiran, dan jalankan prompt Anda sendiri dengan penyedia AI pilihan Anda."
       },
       "localFiles": {
         "title": "Transkrip file apa pun",

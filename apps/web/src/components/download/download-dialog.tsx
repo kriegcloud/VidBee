@@ -767,7 +767,15 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 						onConfirm={() => {
 							void handleConfirmAddUrl();
 						}}
+						oneClickDownloadDescription={t("download.oneClickDownloadTooltip")}
+						oneClickDownloadEnabled={settings.oneClickDownload}
+						oneClickDownloadLabel={t("download.oneClickDownload")}
 						onOpenChange={setAddUrlPopoverOpen}
+						onToggleOneClickDownload={() => {
+							updateSettings({
+								oneClickDownload: !settings.oneClickDownload,
+							});
+						}}
 						onTriggerClick={() => {
 							void handleOpenAddUrlPopover();
 						}}
@@ -928,15 +936,8 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					</div>
 				}
 				lockDialogHeight={lockDialogHeight}
-				oneClickDownloadEnabled={settings.oneClickDownload}
-				oneClickTooltip={t("download.oneClickDownloadTooltip")}
 				onActiveTabChange={setActiveTab}
 				onOpenChange={setOpen}
-				onToggleOneClickDownload={() => {
-					updateSettings({
-						oneClickDownload: !settings.oneClickDownload,
-					});
-				}}
 				open={open}
 				playlistTabContent={
 					<PlaylistDownload

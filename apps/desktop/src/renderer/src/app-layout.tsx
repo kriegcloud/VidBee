@@ -47,14 +47,13 @@ import {
 } from './store/transcripts'
 import { updateAvailableAtom, updateReadyAtom } from './store/update'
 
-type Page = 'about' | 'home' | 'settings' | 'subscriptions' | 'transcripts'
+type Page = 'about' | 'home' | 'settings' | 'subscriptions'
 
 const pageToPath: Record<Page, string> = {
   about: '/about',
   home: '/',
   settings: '/settings',
-  subscriptions: '/subscriptions',
-  transcripts: '/transcripts'
+  subscriptions: '/subscriptions'
 }
 
 /**
@@ -77,7 +76,7 @@ const normalizePathname = (pathname: string): string => {
 const pathToPage = (pathname: string): Page => {
   const normalized = normalizePathname(pathname)
   if (normalized === '/transcripts' || isTranscriptDetailPathname(normalized)) {
-    return 'transcripts'
+    return 'home'
   }
   switch (normalized) {
     case '/about':

@@ -2,8 +2,8 @@ import MingcuteCheckCircleFill from '~icons/mingcute/check-circle-fill'
 import MingcuteCheckCircleLine from '~icons/mingcute/check-circle-line'
 import MingcuteDocumentsFill from '~icons/mingcute/documents-fill'
 import MingcuteDocumentsLine from '~icons/mingcute/documents-line'
-import MingcuteDownload3Fill from '~icons/mingcute/download-3-fill'
-import MingcuteDownload3Line from '~icons/mingcute/download-3-line'
+import MingcuteHome4Fill from '~icons/mingcute/home-4-fill'
+import MingcuteHome4Line from '~icons/mingcute/home-4-line'
 import MingcuteInformationFill from '~icons/mingcute/information-fill'
 import MingcuteInformationLine from '~icons/mingcute/information-line'
 import MingcuteRssFill from '~icons/mingcute/rss-fill'
@@ -26,8 +26,8 @@ interface AppSidebarIcons {
 
 const appSidebarIcons: AppSidebarIcons = {
   home: {
-    active: MingcuteDownload3Fill,
-    inactive: MingcuteDownload3Line
+    active: MingcuteHome4Fill,
+    inactive: MingcuteHome4Line
   },
   transcripts: {
     active: MingcuteDocumentsFill,

@@ -15,7 +15,7 @@
     "autoUpdateTitle": "自动更新",
     "betaProgramDescription": "抢先获得预览版和即将发布的新功能。",
     "betaProgramTitle": "预览通道",
-    "description": "这是一个基于 Node.js 和 Electron 构建的自由开源应用，使用 yt-dlp 来完成下载。",
+    "description": "从 1000+ 个网站下载媒体，在本机生成可搜索的文稿，再用你选择的 AI 服务商进行总结、翻译或提问——全部集中在一个免费开源的桌面应用中。",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "使用内置备用版本",
@@ -118,7 +118,7 @@
     "title": "高级选项"
   },
   "app": {
-    "description": "从数百个网站下载视频和音频",
+    "description": "下载媒体、本地转写，再问 AI",
     "title": "VidBee",
     "quitConfirm": {
       "title": "确定退出 VidBee？",
@@ -171,6 +171,10 @@
     "infoUnavailable": "一键下载（信息不可用）",
     "loading": "加载中",
     "moreOptions": "更多选项",
+    "moreAddActions": "更多添加方式",
+    "morePlatforms": "更多平台",
+    "localSource": "本地",
+    "otherSource": "其他",
     "noActiveDownloads": "暂无进行中的下载",
     "noAudio": "无音频",
     "noHistory": "暂无下载历史",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "松开即可转写",
     "ingestDropMixed": "松开即可下载并转写",
     "ingestDropDescription": "链接会进入下载流程，音视频文件会进入转写流程。",
-    "ingestEmptyHint": "粘贴链接开始下载，或拖入音视频开始转写。",
+    "ingestEmptyHint": "粘贴链接即可下载，或拖入媒体文件在本地转写，再进行总结、翻译或问 AI。",
     "preparing": "正在准备...",
     "processing": "处理中",
     "progress": "进度",
@@ -236,6 +240,7 @@
     "codecAuto": "自动",
     "fpsHighest": "最高",
     "metadata": {
+      "platform": "平台",
       "source": "来源",
       "playlist": "播放列表",
       "format": "格式",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "关于",
+    "home": "首页",
     "download": "下载",
     "playlist": "下载播放列表",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "未在该文件中检测到语音。你仍可以强制完整转写。",
     "error": "转稿异常",
     "errorHint": "转写在完成前中断了。可以重试。",
+    "errorNoAudio": "该文件没有音轨，无法生成转写。",
     "retry": "重试",
     "retryFailed": "无法重试转稿。",
     "stop": "停止",
@@ -1105,10 +1112,10 @@
     "detectingSpeech": "正在检测语音",
     "preparingAudio": "正在准备音频",
     "identifyingSpeakers": "正在识别说话人",
-    "back": "返回文稿列表",
+    "back": "返回下载列表",
     "library": {
       "empty": "还没有文稿",
-      "emptyHint": "选择本地音视频文件，也可以给已下载的内容转文稿。",
+      "emptyHint": "转写已下载或本地的媒体文件，然后搜索、导出内容，或向 AI 提问。",
       "addMedia": "添加音视频",
       "goToDownloads": "前往下载列表",
       "untitled": "未命名媒体",
@@ -1130,6 +1137,17 @@
     "copyFailed": "无法复制文稿。",
     "captionSelect": "已选文稿",
     "captionSelectClear": "清除选中",
+    "captionAdd": "添加一行",
+    "captionEdit": "编辑",
+    "captionInsertBefore": "在前方插入",
+    "captionInsertAfter": "在后方插入",
+    "captionDelete": "删除",
+    "captionDeleteSelected": "删除所选",
+    "captionDeleted": "已删除 {{count}} 条文稿",
+    "captionSaveFailed": "无法保存文稿。",
+    "captionPlaceholder": "输入文稿内容",
+    "captionSpeaker": "说话人",
+    "captionEmpty": "暂无文稿。添加一行开始编辑。",
     "export": {
       "action": "导出",
       "preview": "导出预览",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "无法保存分享图。",
     "promptShareNativeFailed": "无法打开系统分享。",
     "promptShareFooter": "由 VidBee 生成",
-    "promptShareTagline": "开源软件。下载视频，再问 AI",
+    "promptShareTagline": "下载。本地转写。问 AI。",
     "captionShareSaid": "{{name}} 说到",
     "promptOutput": "提示词结果",
     "promptScrollToEnd": "跳到最新",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "新功能",
-    "description": "在这台电脑上完成转写和 AI 总结。",
-    "tryIt": "尝试一下",
+    "description": "下载、本地转写、问 AI，一个应用全部完成。",
+    "tryIt": "打开文稿",
     "features": {
       "transcript": {
         "title": "自动生成文稿",
@@ -1345,8 +1363,8 @@
         "description": "看清谁说了什么，并跳转到对应画面。"
       },
       "summary": {
-        "title": "AI 总结",
-        "description": "把文稿变成要点、FAQ、思维导图或改写。也可以在设置里添加自己的提示词。"
+        "title": "针对任何文稿向 AI 提问",
+        "description": "用你选择的 AI 服务商进行总结、翻译、生成 FAQ 或思维导图，还能运行自己的提示词。"
       },
       "localFiles": {
         "title": "转写本地文件",

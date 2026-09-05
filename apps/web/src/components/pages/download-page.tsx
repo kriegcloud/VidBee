@@ -18,9 +18,26 @@ import {
 	DownloadFilterBar,
 	type DownloadFilterItem,
 } from "@vidbee/ui/components/ui/download-filter-bar";
+import { DownloadSelectionToolbar } from "@vidbee/ui/components/ui/download-selection-toolbar";
+import { ListMarqueeBox } from "@vidbee/ui/components/ui/list-marquee-box";
 import { ScrollArea } from "@vidbee/ui/components/ui/scroll-area";
 import { cn } from "@vidbee/ui/lib/cn";
-import { useCallback, useEffect, useId, useMemo, useState } from "react";
+import {
+	ALL_DOWNLOAD_PLATFORM_FILTER,
+	downloadPlatformDisplayLabel,
+	listDownloadPlatformCounts,
+	matchesDownloadPlatformFilter,
+} from "@vidbee/ui/lib/download-platform";
+import { useListMarqueeSelection } from "@vidbee/ui/lib/use-list-marquee";
+import { Layers } from "lucide-react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { logger } from "../../lib/logger";
@@ -29,7 +46,7 @@ import { readWebSettings } from "../../lib/web-settings";
 import { DownloadDialog } from "../download/download-dialog";
 import { DownloadItem } from "../download/download-item";
 import { PlaylistDownloadGroup } from "../download/playlist-download-group";
-import type { DownloadRecord, StatusFilter } from "../download/types";
+import type { DownloadRecord } from "../download/types";
 import { AppShell } from "../layout/app-shell";
 
 type ConfirmAction =
@@ -67,8 +84,19 @@ const resolveDownloadExtension = (record: DownloadRecord): string => {
 export const DownloadPage = () => {
 	const { t } = useTranslation();
 	const [allRecords, setAllRecords] = useState<DownloadRecord[]>([]);
-	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+	const [platformFilter, setPlatformFilter] = useState(
+		ALL_DOWNLOAD_PLATFORM_FILTER,
+	);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+	const listRef = useRef<HTMLDivElement>(null);
+	const { finishPointer, marquee, onPointerDown, onPointerMove } =
+		useListMarqueeSelection({
+			containerRef: listRef,
+			onSelectIds: (ids) => {
+				setSelectedIds(new Set(ids));
+			},
+			selectedIds,
+		});
 	const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
 		null,
 	);
@@ -159,48 +187,16 @@ export const DownloadPage = () => {
 		[allRecords],
 	);
 
-	const downloadStats = useMemo(() => {
-		return allRecords.reduce(
-			(acc, item) => {
-				acc.total += 1;
-				if (
-					(item.entryType === "active" && item.status === "downloading") ||
-					item.status === "processing" ||
-					item.status === "pending"
-				) {
-					acc.active += 1;
-				}
-				if (item.status === "completed") {
-					acc.completed += 1;
-				}
-				if (item.status === "error") {
-					acc.error += 1;
-				}
-				return acc;
-			},
-			{ total: 0, active: 0, completed: 0, error: 0 },
-		);
-	}, [allRecords]);
+	const platformCounts = useMemo(
+		() => listDownloadPlatformCounts(allRecords.map((record) => record.url)),
+		[allRecords],
+	);
 
 	const filteredRecords = useMemo(() => {
-		return allRecords.filter((record) => {
-			switch (statusFilter) {
-				case "all":
-					return true;
-				case "active":
-					return (
-						record.status === "downloading" ||
-						record.status === "processing" ||
-						record.status === "pending"
-					);
-				case "completed":
-				case "error":
-					return record.status === statusFilter;
-				default:
-					return true;
-			}
-		});
-	}, [allRecords, statusFilter]);
+		return allRecords.filter((record) =>
+			matchesDownloadPlatformFilter(record.url, platformFilter),
+		);
+	}, [allRecords, platformFilter]);
 
 	const visibleHistoryIds = useMemo(
 		() =>
@@ -210,16 +206,38 @@ export const DownloadPage = () => {
 		[filteredRecords],
 	);
 
-	const filters: Array<DownloadFilterItem<StatusFilter>> = [
-		{ key: "all", label: t("download.all"), count: downloadStats.total },
-		{ key: "active", label: t("download.active"), count: downloadStats.active },
-		{
-			key: "completed",
-			label: t("download.completed"),
-			count: downloadStats.completed,
-		},
-		{ key: "error", label: t("download.error"), count: downloadStats.error },
-	];
+	const filters = useMemo((): Array<DownloadFilterItem<string>> => {
+		const items: Array<DownloadFilterItem<string>> = [
+			{
+				key: ALL_DOWNLOAD_PLATFORM_FILTER,
+				label: t("download.all"),
+				count: allRecords.length,
+				icon: <Layers className="size-3.5" />,
+			},
+		];
+		for (const platform of platformCounts) {
+			items.push({
+				key: platform.key,
+				label: downloadPlatformDisplayLabel(platform, {
+					local: t("download.localSource"),
+					other: t("download.otherSource"),
+				}),
+				count: platform.count,
+				domain: platform.domain,
+			});
+		}
+		return items;
+	}, [allRecords.length, platformCounts, t]);
+
+	useEffect(() => {
+		if (platformFilter === ALL_DOWNLOAD_PLATFORM_FILTER) {
+			return;
+		}
+		if (platformCounts.some((platform) => platform.key === platformFilter)) {
+			return;
+		}
+		setPlatformFilter(ALL_DOWNLOAD_PLATFORM_FILTER);
+	}, [platformCounts, platformFilter]);
 
 	const selectableIds = useMemo(() => {
 		if (visibleHistoryIds.length === 0) {
@@ -242,18 +260,11 @@ export const DownloadPage = () => {
 		return Array.from(ids);
 	}, [filteredRecords, historyRecords, visibleHistoryIds]);
 
-	const selectableCount = selectableIds.length;
 	const selectedCount = selectedIds.size;
-	const visibleSelectableCount = visibleHistoryIds.length;
-	const selectionSummary =
-		selectableCount === 0
-			? t("history.selectedCount", { count: selectedCount })
-			: selectableCount > visibleSelectableCount
-				? t("history.selectedCount", { count: selectedCount })
-				: t("history.selectionSummary", {
-						selected: selectedCount,
-						total: selectableCount,
-					});
+	const allSelected =
+		selectableIds.length > 0 &&
+		selectableIds.every((id) => selectedIds.has(id));
+	const selectionSummary = t("history.selectedCount", { count: selectedCount });
 
 	useEffect(() => {
 		if (selectedIds.size === 0) {
@@ -286,8 +297,18 @@ export const DownloadPage = () => {
 		});
 	};
 
-	const handleClearSelection = () => {
-		setSelectedIds(new Set());
+	/**
+	 * Select every selectable row, or clear the selection when already complete.
+	 */
+	const handleToggleSelectAll = () => {
+		if (allSelected) {
+			setSelectedIds(new Set());
+			return;
+		}
+		if (selectableIds.length === 0) {
+			return;
+		}
+		setSelectedIds(new Set(selectableIds));
 	};
 
 	const handleRequestDeleteSelected = () => {
@@ -621,9 +642,10 @@ export const DownloadPage = () => {
 				<CardHeader className="z-50 gap-4 bg-background p-0 px-6 py-4 backdrop-blur">
 					<DownloadFilterBar
 						actions={<DownloadDialog onDownloadsChanged={refreshData} />}
-						activeFilter={statusFilter}
+						activeFilter={platformFilter}
 						filters={filters}
-						onFilterChange={setStatusFilter}
+						onFilterChange={setPlatformFilter}
+						overflowLabel={t("download.morePlatforms")}
 					/>
 					{!isApiReachable && apiConnectionMessage ? (
 						<p className="font-medium text-destructive text-sm">
@@ -641,7 +663,15 @@ export const DownloadPage = () => {
 								message={t("download.noItems")}
 							/>
 						) : (
-							<div className="w-full pb-4">
+							<div
+								className={cn("relative w-full pb-4", marquee && "select-none")}
+								onPointerCancel={finishPointer}
+								onPointerDown={onPointerDown}
+								onPointerMove={onPointerMove}
+								onPointerUp={finishPointer}
+								ref={listRef}
+							>
+								{marquee ? <ListMarqueeBox marquee={marquee} /> : null}
 								{groupedView.order.map((item) => {
 									if (item.type === "single") {
 										return (
@@ -656,6 +686,7 @@ export const DownloadPage = () => {
 												onResume={handleResumeDownload}
 												onRetry={handleRetryDownload}
 												onToggleSelect={handleToggleSelect}
+												selectionActive={selectedCount > 0}
 											/>
 										);
 									}
@@ -684,6 +715,7 @@ export const DownloadPage = () => {
 											onToggleSelect={handleToggleSelect}
 											records={group.records}
 											selectedIds={selectedIds}
+											selectionActive={selectedCount > 0}
 											title={group.title}
 											totalCount={group.totalCount}
 										/>
@@ -695,32 +727,16 @@ export const DownloadPage = () => {
 				</ScrollArea>
 
 				{selectedCount > 0 && (
-					<div className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-2rem)] -translate-x-1/2 sm:right-6 sm:left-auto sm:w-auto sm:translate-x-0">
-						<div className="flex flex-wrap items-center justify-between gap-3 rounded-full border border-border/50 bg-background/80 py-2 pr-2 pl-5 shadow-lg backdrop-blur">
-							<div className="flex flex-wrap items-center gap-2">
-								<span className="text-muted-foreground text-xs">
-									{selectionSummary}
-								</span>
-							</div>
-							<div className="flex flex-wrap items-center gap-2">
-								<Button
-									className="h-8 rounded-full px-3"
-									onClick={handleClearSelection}
-									size="sm"
-									variant="ghost"
-								>
-									{t("history.clearSelection")}
-								</Button>
-								<Button
-									className="h-8 rounded-full px-3"
-									onClick={handleRequestDeleteSelected}
-									size="sm"
-									variant="destructive"
-								>
-									{t("history.deleteSelected")}
-								</Button>
-							</div>
-						</div>
+					<div className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 sm:right-6 sm:left-auto sm:translate-x-0">
+						<DownloadSelectionToolbar
+							allSelected={allSelected}
+							clearLabel={t("history.clearSelection")}
+							countLabel={selectionSummary}
+							deleteLabel={t("history.deleteSelected")}
+							onDelete={handleRequestDeleteSelected}
+							onToggleSelectAll={handleToggleSelectAll}
+							selectAllLabel={t("history.selectAll")}
+						/>
 					</div>
 				)}
 

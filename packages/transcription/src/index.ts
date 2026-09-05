@@ -117,7 +117,12 @@ export {
   findActiveTranscription,
   listTranscriptionChildren
 } from './enqueue'
-export { classifyTranscriptionFailure, transcriptionError } from './errors'
+export {
+  classifyTranscriptionFailure,
+  isNoAudioStreamError,
+  NO_AUDIO_STREAM_ERROR,
+  transcriptionError
+} from './errors'
 export type { TranscriptionBackend, TranscriptionExecutorOptions } from './executor'
 export { TranscriptionExecutor } from './executor'
 export type { ExtractedCaptionTrack } from './extract-captions'
@@ -271,6 +276,16 @@ export {
   shouldTrustSpeechIntervals,
   turnsForAsr
 } from './speaker-refine'
+export {
+  applyTranscriptSegmentPatch,
+  DEFAULT_CAPTION_DURATION_MS,
+  deleteTranscriptSegmentsFromList,
+  insertTranscriptSegmentInList,
+  reindexTranscriptSegments,
+  resolveInsertSegmentPlacement,
+  updateTranscriptSegmentList
+} from './transcript-edit'
+export type { InsertTranscriptSegmentInput, TranscriptSegmentPatch } from './transcript-edit'
 export { buildTranscriptSources, recordForTranscriptSource } from './transcript-sources'
 export type { TranscriptStoreOptions } from './transcript-store'
 export { TranscriptStore } from './transcript-store'

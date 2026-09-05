@@ -1,4 +1,3 @@
-import { Changelog } from '@renderer/components/changelog/Changelog'
 import { useAppInfo } from '@renderer/components/feedback/FeedbackLinks'
 import { DownloadEngineRow } from '@renderer/components/kernel/DownloadEngineRow'
 import { Badge } from '@renderer/components/ui/badge'
@@ -24,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ipcEvents, ipcServices } from '../lib/ipc'
 import { logger } from '../lib/logger'
-import { withDesktopUtm } from '../lib/url'
+import { buildLocalizedVidBeeUrl, withDesktopUtm } from '../lib/url'
 import { saveSettingAtom, settingsAtom } from '../store/settings'
 import { updateAvailableAtom, updateReadyAtom } from '../store/update'
 import { ytdlpKernelStatusAtom } from '../store/ytdlp-kernel'
@@ -59,7 +58,10 @@ export function About() {
   const appVersionLabel = appVersion || '—'
   const [latestVersionState, setLatestVersionState] = useState<LatestVersionState>(null)
   const [updateDownloadProgress, setUpdateDownloadProgress] = useState<number | null>(null)
-  const shareTargetUrl = 'https://vidbee.org'
+  const websiteUrl = buildLocalizedVidBeeUrl('/', i18n.language)
+  const downloadUrl = buildLocalizedVidBeeUrl('/download/', i18n.language)
+  const changelogUrl = buildLocalizedVidBeeUrl('/changelog/', i18n.language)
+  const shareTargetUrl = websiteUrl
 
   useEffect(() => {
     if (!updateAvailableState.available) {
@@ -120,7 +122,7 @@ export function About() {
   }, [i18n, setUpdateAvailable])
 
   const handleGoToDownload = () => {
-    openShareUrl(withDesktopUtm('https://vidbee.org/download/'))
+    openShareUrl(withDesktopUtm(downloadUrl))
   }
 
   const handleRestartToUpdate = () => {
@@ -180,7 +182,7 @@ export function About() {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
       twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`
     }
-  }, [t])
+  }, [shareTargetUrl, t])
 
   const openShareUrl = useCallback((url: string) => {
     if (typeof window === 'undefined') {
@@ -239,11 +241,11 @@ export function About() {
         label: t('about.resources.website'),
         description: t('about.resources.websiteDescription'),
         actionLabel: t('about.actions.visit'),
-        href: withDesktopUtm('https://vidbee.org/'),
+        href: withDesktopUtm(websiteUrl),
         external: true
       }
     ],
-    [t]
+    [t, websiteUrl]
   )
 
   return (
@@ -370,6 +372,19 @@ export function About() {
                 />
               </div>
               <DownloadEngineRow status={kernelStatus} />
+              <div className="flex items-center justify-between gap-4 px-6 py-4">
+                <div className="space-y-1">
+                  <p className="font-medium leading-none">{t('about.resources.changelog')}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t('about.resources.changelogDescription')}
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline">
+                  <a href={withDesktopUtm(changelogUrl)} rel="noreferrer" target="_blank">
+                    {t('about.actions.view')}
+                  </a>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -485,8 +500,6 @@ export function About() {
             </div>
           </CardContent>
         </Card>
-
-        <Changelog appVersion={appVersion} />
       </div>
     </div>
   )

@@ -15,7 +15,7 @@
     "autoUpdateTitle": "自動更新",
     "betaProgramDescription": "搶先獲得預覽版和即將發布的新功能。",
     "betaProgramTitle": "預覽通道",
-    "description": "VidBee 是一個基於 Node.js 和 Electron 構建的自由開源應用，使用 yt-dlp 來完成下載。",
+    "description": "從 1000+ 個網站下載媒體，在本機建立可搜尋的文稿，再用你選擇的 AI 服務商進行摘要、翻譯或提問——全部集中在一個免費開源的桌面應用程式中。",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "使用內建備援版本",
@@ -118,7 +118,7 @@
     "title": "進階選項"
   },
   "app": {
-    "description": "從數百個網站下載影片和音訊",
+    "description": "下載媒體、在本機轉寫，再問 AI",
     "title": "VidBee",
     "quitConfirm": {
       "title": "確定退出 VidBee？",
@@ -171,6 +171,10 @@
     "infoUnavailable": "一鍵下載（資訊不可用）",
     "loading": "載入中",
     "moreOptions": "更多選項",
+    "moreAddActions": "更多新增方式",
+    "morePlatforms": "更多平台",
+    "localSource": "本機",
+    "otherSource": "其他",
     "noActiveDownloads": "暫無進行中的下載",
     "noAudio": "無音訊",
     "noHistory": "暫無下載歷史",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "放開即可轉寫",
     "ingestDropMixed": "放開即可下載並轉寫",
     "ingestDropDescription": "連結會進入下載流程，音訊與影片檔會進入轉寫流程。",
-    "ingestEmptyHint": "貼上連結開始下載，或拖入音訊、影片開始轉寫。",
+    "ingestEmptyHint": "貼上連結即可下載，或拖入媒體檔案在本機轉寫，再進行摘要、翻譯或問 AI。",
     "preparing": "正在準備...",
     "processing": "處理中",
     "progress": "進度",
@@ -224,6 +228,7 @@
     "codecAuto": "自動",
     "fpsHighest": "最高",
     "metadata": {
+      "platform": "平台",
       "source": "來源",
       "playlist": "播放列表",
       "format": "格式",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "關於",
+    "home": "首頁",
     "download": "下載",
     "playlist": "下載播放清單",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "未在此檔案中偵測到語音。你仍可以強制完整轉寫。",
     "error": "轉稿異常",
     "errorHint": "轉寫在完成前中斷了。可以重試。",
+    "errorNoAudio": "此檔案沒有音軌，無法產生逐字稿。",
     "retry": "重試",
     "retryFailed": "無法重試轉稿。",
     "stop": "停止",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "正在偵測語音",
     "preparingAudio": "正在準備音訊",
     "identifyingSpeakers": "正在辨識說話人",
-    "back": "返回文稿列表",
+    "back": "返回下載列表",
     "library": {
       "empty": "還沒有文稿",
-      "emptyHint": "選擇本機音訊或影片檔，也可以為已下載的內容轉文稿。",
+      "emptyHint": "轉寫已下載或本機的媒體檔案，接著搜尋、匯出內容，或向 AI 提問。",
       "addMedia": "新增音訊或影片",
       "goToDownloads": "前往下載列表",
       "untitled": "未命名媒體",
@@ -1119,6 +1126,17 @@
     "copyFailed": "無法複製文稿。",
     "captionSelect": "已選文稿",
     "captionSelectClear": "清除選取",
+    "captionAdd": "新增一行",
+    "captionEdit": "編輯",
+    "captionInsertBefore": "在前方插入",
+    "captionInsertAfter": "在後方插入",
+    "captionDelete": "刪除",
+    "captionDeleteSelected": "刪除所選",
+    "captionDeleted": "已刪除 {{count}} 條文稿",
+    "captionSaveFailed": "無法儲存文稿。",
+    "captionPlaceholder": "輸入文稿內容",
+    "captionSpeaker": "說話人",
+    "captionEmpty": "尚無文稿。新增一行開始編輯。",
     "export": {
       "action": "匯出",
       "preview": "匯出預覽",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "無法儲存分享圖。",
     "promptShareNativeFailed": "無法開啟系統分享。",
     "promptShareFooter": "由 VidBee 產生",
-    "promptShareTagline": "開源軟體。下載影片，再問 AI",
+    "promptShareTagline": "下載。在本機轉寫。問 AI。",
     "captionShareSaid": "{{name}} 說到",
     "promptOutput": "提示詞結果",
     "promptScrollToEnd": "跳到最新",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "新功能",
-    "description": "在這台電腦上完成轉寫與 AI 摘要。",
-    "tryIt": "試看看",
+    "description": "下載、在本機轉寫、問 AI，一個應用程式全部完成。",
+    "tryIt": "開啟文稿",
     "features": {
       "transcript": {
         "title": "自動產生文稿",
@@ -1345,8 +1363,8 @@
         "description": "看清誰說了什麼，並跳到對應畫面。"
       },
       "summary": {
-        "title": "AI 摘要",
-        "description": "把逐字稿變成重點、FAQ、心智圖或改寫。也可以在設定裡加入自己的提示詞。"
+        "title": "針對任何文稿向 AI 提問",
+        "description": "用你選擇的 AI 服務商進行摘要、翻譯、產生 FAQ 或心智圖，還能執行自己的提示詞。"
       },
       "localFiles": {
         "title": "轉寫本機檔案",

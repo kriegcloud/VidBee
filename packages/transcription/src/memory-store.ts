@@ -1,6 +1,13 @@
 import { randomUUID } from 'node:crypto'
-import type { PipelineResult, TranscriptRecord } from './types'
+import {
+  deleteTranscriptSegmentsFromList,
+  type InsertTranscriptSegmentInput,
+  insertTranscriptSegmentInList,
+  type TranscriptSegmentPatch,
+  updateTranscriptSegmentList
+} from './transcript-edit'
 import type { TranscriptStore } from './transcript-store'
+import type { PipelineResult, TranscriptRecord } from './types'
 
 type CommitInput = Parameters<TranscriptStore['commit']>[0]
 
@@ -94,7 +101,11 @@ export class MemoryTranscriptStore {
     }
     const now = this.clock()
     for (const row of this.rows.values()) {
-      if (row.downloadTaskId === downloadTaskId && row.supersededAt == null && row.id !== target.id) {
+      if (
+        row.downloadTaskId === downloadTaskId &&
+        row.supersededAt == null &&
+        row.id !== target.id
+      ) {
         row.supersededAt = now
         row.updatedAt = now
       }
@@ -102,6 +113,82 @@ export class MemoryTranscriptStore {
     target.supersededAt = null
     target.updatedAt = now
     return target
+  }
+
+  /**
+   * Patch one caption on a stored transcript.
+   *
+   * @param transcriptId Row that owns the caption.
+   * @param segmentId Caption to change.
+   * @param patch Text, speaker, or times.
+   */
+  updateSegment(
+    transcriptId: string,
+    segmentId: string,
+    patch: TranscriptSegmentPatch
+  ): TranscriptRecord | null {
+    const record = this.rows.get(transcriptId)
+    if (!record) {
+      return null
+    }
+    const segments = updateTranscriptSegmentList(record.segments, segmentId, patch)
+    if (!segments) {
+      return null
+    }
+    this.writeSegments(record, segments)
+    return record
+  }
+
+  /**
+   * Remove one or more captions from a stored transcript.
+   *
+   * @param transcriptId Row that owns the captions.
+   * @param segmentIds Caption ids to drop.
+   */
+  deleteSegments(transcriptId: string, segmentIds: string[]): TranscriptRecord | null {
+    const record = this.rows.get(transcriptId)
+    if (!record) {
+      return null
+    }
+    const wanted = new Set(segmentIds)
+    if (!record.segments.some((segment) => wanted.has(segment.id))) {
+      return record
+    }
+    this.writeSegments(record, deleteTranscriptSegmentsFromList(record.segments, segmentIds))
+    return record
+  }
+
+  /**
+   * Insert a caption and return the updated record plus the new row id.
+   *
+   * @param transcriptId Row that owns the captions.
+   * @param input Neighbor, playhead, or explicit times.
+   */
+  insertSegment(
+    transcriptId: string,
+    input: InsertTranscriptSegmentInput
+  ): { record: TranscriptRecord; segmentId: string } | null {
+    const record = this.rows.get(transcriptId)
+    if (!record) {
+      return null
+    }
+    const inserted = insertTranscriptSegmentInList(record.segments, input, () => randomUUID())
+    this.writeSegments(record, inserted.segments)
+    return { record, segmentId: inserted.segmentId }
+  }
+
+  /**
+   * Replace captions on an in-memory transcript row.
+   *
+   * @param record Parent row to mutate.
+   * @param segments Captions after the mutation.
+   */
+  private writeSegments(record: TranscriptRecord, segments: TranscriptRecord['segments']): void {
+    record.segments = segments
+    record.updatedAt = this.clock()
+    if (segments.length > 0) {
+      record.resultKind = 'transcript'
+    }
   }
 }
 

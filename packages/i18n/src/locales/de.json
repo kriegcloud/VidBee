@@ -15,7 +15,7 @@
     "autoUpdateTitle": "Automatische Updates",
     "betaProgramDescription": "Erhalten Sie frühe Builds und kommende Funktionen vor allen anderen.",
     "betaProgramTitle": "Vorschau-Kanal",
-    "description": "VidBee ist ein kostenloser, quelloffener Downloader, der mit Electron erstellt wurde und von yt-dlp angetrieben wird.",
+    "description": "Laden Sie Medien von mehr als 1000 Websites herunter, erstellen Sie auf Ihrem Computer durchsuchbare Transkripte und nutzen Sie den KI-Anbieter Ihrer Wahl, um sie zusammenzufassen, zu übersetzen oder Fragen dazu zu stellen – alles in einer kostenlosen Open-Source-Desktop-App.",
     "downloadEngine": {
       "status": {
         "bundled-fallback": "Mitgelieferte Reserve",
@@ -118,7 +118,7 @@
     "title": "Erweiterte Optionen"
   },
   "app": {
-    "description": "Videos und Audios von Hunderten von Websites herunterladen",
+    "description": "Medien herunterladen, lokal transkribieren und KI fragen",
     "title": "VidBee",
     "quitConfirm": {
       "title": "VidBee beenden?",
@@ -171,6 +171,10 @@
     "infoUnavailable": "Ein-Klick-Download (Info nicht verfügbar)",
     "loading": "Wird geladen",
     "moreOptions": "Weitere Optionen",
+    "moreAddActions": "Weitere Hinzufügeoptionen",
+    "morePlatforms": "Weitere Plattformen",
+    "localSource": "Lokal",
+    "otherSource": "Sonstige",
     "noActiveDownloads": "Keine aktiven Downloads",
     "noAudio": "Kein Audio",
     "noHistory": "Kein Download-Verlauf",
@@ -189,7 +193,7 @@
     "ingestDropMedia": "Ablegen zum Transkribieren",
     "ingestDropMixed": "Ablegen zum Herunterladen und Transkribieren",
     "ingestDropDescription": "Links starten einen Download. Audio- und Videodateien starten ein Transkript.",
-    "ingestEmptyHint": "Link einfügen zum Download oder Audio/Video ablegen zum Transkribieren.",
+    "ingestEmptyHint": "Fügen Sie zum Herunterladen einen Link ein oder legen Sie eine Mediendatei ab, um sie lokal zu transkribieren und anschließend zusammenzufassen, zu übersetzen oder die KI dazu zu befragen.",
     "preparing": "Wird vorbereitet...",
     "processing": "Wird verarbeitet",
     "progress": "Fortschritt",
@@ -224,6 +228,7 @@
     "codecAuto": "Auto",
     "fpsHighest": "Höchste",
     "metadata": {
+      "platform": "Plattform",
       "source": "Quelle",
       "playlist": "Playlist",
       "format": "Format",
@@ -362,6 +367,7 @@
   },
   "menu": {
     "about": "Über",
+    "home": "Startseite",
     "download": "Herunterladen",
     "playlist": "Playlist herunterladen",
     "rss": "RSS",
@@ -1086,6 +1092,7 @@
     "noSpeechDetail": "No speech was detected in this file. You can still run a full transcript.",
     "error": "Transcript error",
     "errorHint": "Die Transkription wurde vorzeitig beendet. Bitte erneut versuchen.",
+    "errorNoAudio": "Diese Datei hat keine Tonspur, daher kann kein Transkript erstellt werden.",
     "retry": "Retry",
     "retryFailed": "Could not retry transcription.",
     "stop": "Stoppen",
@@ -1094,10 +1101,10 @@
     "detectingSpeech": "Detecting speech",
     "preparingAudio": "Audio wird vorbereitet",
     "identifyingSpeakers": "Sprecher werden erkannt",
-    "back": "Zurück zu den Transkripten",
+    "back": "Zurück zu den Downloads",
     "library": {
       "empty": "Noch keine Transkripte",
-      "emptyHint": "Wähle eine lokale Audio- oder Videodatei oder transkribiere einen abgeschlossenen Download.",
+      "emptyHint": "Transkribieren Sie einen Download oder eine lokale Mediendatei. Danach können Sie das Transkript durchsuchen, exportieren oder die KI dazu befragen.",
       "addMedia": "Audio oder Video hinzufügen",
       "goToDownloads": "Zu den Downloads",
       "untitled": "Unbenanntes Medium",
@@ -1119,6 +1126,17 @@
     "copyFailed": "Transkript konnte nicht kopiert werden.",
     "captionSelect": "Ausgewähltes Transkript",
     "captionSelectClear": "Auswahl aufheben",
+    "captionAdd": "Zeile hinzufügen",
+    "captionEdit": "Bearbeiten",
+    "captionInsertBefore": "Davor einfügen",
+    "captionInsertAfter": "Danach einfügen",
+    "captionDelete": "Löschen",
+    "captionDeleteSelected": "Auswahl löschen",
+    "captionDeleted": "{{count}} Untertitel gelöscht",
+    "captionSaveFailed": "Untertitel konnte nicht gespeichert werden.",
+    "captionPlaceholder": "Untertitel eingeben",
+    "captionSpeaker": "Sprecher",
+    "captionEmpty": "Noch keine Untertitel. Fügen Sie eine Zeile hinzu.",
     "export": {
       "action": "Exportieren",
       "preview": "Exportvorschau",
@@ -1255,7 +1273,7 @@
     "promptShareSaveFailed": "Teilen-Bild konnte nicht gespeichert werden.",
     "promptShareNativeFailed": "Das Freigabemenü konnte nicht geöffnet werden.",
     "promptShareFooter": "Erstellt mit VidBee",
-    "promptShareTagline": "Open Source. Video laden. Die KI fragen.",
+    "promptShareTagline": "Herunterladen. Lokal transkribieren. KI fragen.",
     "captionShareSaid": "{{name}} sagte",
     "promptOutput": "Promptergebnis",
     "promptScrollToEnd": "Zum Neuesten scrollen",
@@ -1333,8 +1351,8 @@
   },
   "whatsNew": {
     "title": "Neuigkeiten",
-    "description": "Transkripte und KI, auf diesem Computer.",
-    "tryIt": "Ausprobieren",
+    "description": "Herunterladen, lokal transkribieren und KI fragen – alles in einer App.",
+    "tryIt": "Transkripte öffnen",
     "features": {
       "transcript": {
         "title": "Automatische Video-Transkripte",
@@ -1345,8 +1363,8 @@
         "description": "Sehen Sie, wer was gesagt hat, und springen Sie zu dieser Stelle im Video."
       },
       "summary": {
-        "title": "KI-Zusammenfassungen",
-        "description": "Machen Sie aus einem Transkript Stichpunkte, FAQ, eine Mindmap oder eine Umformulierung. Eigene Prompts gibt es in den Einstellungen."
+        "title": "KI zu jedem Transkript befragen",
+        "description": "Fassen Sie zusammen, übersetzen Sie, erstellen Sie FAQs oder Mindmaps und führen Sie eigene Prompts mit dem KI-Anbieter Ihrer Wahl aus."
       },
       "localFiles": {
         "title": "Beliebige Datei transkribieren",

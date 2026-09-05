@@ -1,5 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { applyTranscriptMigrations } from '@vidbee/db/transcripts'
+import {
+  deleteTranscriptSegmentsFromList,
+  type InsertTranscriptSegmentInput,
+  insertTranscriptSegmentInList,
+  type TranscriptSegmentPatch,
+  updateTranscriptSegmentList
+} from './transcript-edit'
 import type {
   PipelineResult,
   TranscriptRecord,
@@ -113,9 +120,9 @@ export class TranscriptStore {
   }
 
   getById(id: string): TranscriptRecord | null {
-    const row = this.db
-      .prepare('SELECT * FROM transcripts WHERE id = ?')
-      .get(id) as TranscriptDbRow | undefined
+    const row = this.db.prepare('SELECT * FROM transcripts WHERE id = ?').get(id) as
+      | TranscriptDbRow
+      | undefined
     if (!row) {
       return null
     }
@@ -235,9 +242,7 @@ export class TranscriptStore {
       })
 
       input.result.segments.forEach((segment, index) => {
-        const speakerId = segment.speakerKey
-          ? (speakerIds.get(segment.speakerKey) ?? null)
-          : null
+        const speakerId = segment.speakerKey ? (speakerIds.get(segment.speakerKey) ?? null) : null
         this.db
           .prepare(
             `INSERT INTO transcript_segments (
@@ -319,6 +324,108 @@ export class TranscriptStore {
     })
     write.immediate()
     return this.getById(transcriptId)
+  }
+
+  /**
+   * Patch one caption on a stored transcript.
+   *
+   * @param transcriptId Row that owns the caption.
+   * @param segmentId Caption to change.
+   * @param patch Text, speaker, or times.
+   */
+  updateSegment(
+    transcriptId: string,
+    segmentId: string,
+    patch: TranscriptSegmentPatch
+  ): TranscriptRecord | null {
+    const record = this.getById(transcriptId)
+    if (!record) {
+      return null
+    }
+    const segments = updateTranscriptSegmentList(record.segments, segmentId, patch)
+    if (!segments) {
+      return null
+    }
+    this.replaceSegments(record, segments)
+    return this.getById(transcriptId)
+  }
+
+  /**
+   * Remove one or more captions from a stored transcript.
+   *
+   * @param transcriptId Row that owns the captions.
+   * @param segmentIds Caption ids to drop.
+   */
+  deleteSegments(transcriptId: string, segmentIds: string[]): TranscriptRecord | null {
+    const record = this.getById(transcriptId)
+    if (!record) {
+      return null
+    }
+    const wanted = new Set(segmentIds)
+    if (!record.segments.some((segment) => wanted.has(segment.id))) {
+      return record
+    }
+    this.replaceSegments(record, deleteTranscriptSegmentsFromList(record.segments, segmentIds))
+    return this.getById(transcriptId)
+  }
+
+  /**
+   * Insert a caption and return the updated record plus the new row id.
+   *
+   * @param transcriptId Row that owns the captions.
+   * @param input Neighbor, playhead, or explicit times.
+   */
+  insertSegment(
+    transcriptId: string,
+    input: InsertTranscriptSegmentInput
+  ): { record: TranscriptRecord; segmentId: string } | null {
+    const record = this.getById(transcriptId)
+    if (!record) {
+      return null
+    }
+    const inserted = insertTranscriptSegmentInList(record.segments, input, () => randomUUID())
+    this.replaceSegments(record, inserted.segments)
+    const next = this.getById(transcriptId)
+    if (!next) {
+      return null
+    }
+    return { record: next, segmentId: inserted.segmentId }
+  }
+
+  /**
+   * Rewrite every caption for a transcript in one transaction.
+   *
+   * @param record Parent row before the write.
+   * @param segments Captions after the mutation.
+   */
+  private replaceSegments(record: TranscriptRecord, segments: TranscriptSegment[]): void {
+    const now = this.clock()
+    const resultKind = segments.length > 0 ? 'transcript' : record.resultKind
+    const write = this.db.transaction(() => {
+      this.db.prepare('DELETE FROM transcript_segments WHERE transcript_id = ?').run(record.id)
+      const insert = this.db.prepare(
+        `INSERT INTO transcript_segments (
+           id, transcript_id, speaker_id, start_ms, end_ms, text, words_json, confidence, sort_index
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      for (const segment of segments) {
+        insert.run(
+          segment.id,
+          record.id,
+          segment.speakerId,
+          segment.startMs,
+          segment.endMs,
+          segment.text,
+          JSON.stringify(segment.words ?? []),
+          segment.confidence,
+          segment.sortIndex
+        )
+      }
+      this.db
+        .prepare('UPDATE transcripts SET updated_at = ?, result_kind = ? WHERE id = ?')
+        .run(now, resultKind, record.id)
+    })
+    write.immediate()
   }
 
   private hydrate(row: TranscriptDbRow): TranscriptRecord {
