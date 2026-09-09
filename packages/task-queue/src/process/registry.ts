@@ -32,6 +32,8 @@ export interface ProcessRegistryDeps {
   /** Test seam for sleep — used between SIGTERM and SIGKILL. */
   sleep?: (ms: number) => Promise<void>
   killGracePeriodMs?: number
+  isAlive?: (pid: number) => boolean
+  readStartTime?: (pid: number) => number | null
 }
 
 export class ProcessRegistry {
@@ -41,16 +43,19 @@ export class ProcessRegistry {
   private readonly sleep: NonNullable<ProcessRegistryDeps['sleep']>
   private readonly killGracePeriodMs: number
 
-  constructor(private readonly deps: ProcessRegistryDeps) {
+  private readonly deps: ProcessRegistryDeps
+
+  constructor(deps: ProcessRegistryDeps) {
+    this.deps = deps
     this.clock = deps.clock ?? Date.now
     this.kill = deps.kill ?? ((pid, sig) => killProcessTree(pid, sig))
-    this.sleep =
-      deps.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)))
+    this.sleep = deps.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)))
     this.killGracePeriodMs = deps.killGracePeriodMs ?? 10_000
   }
 
   /** Record a spawn and append a journal row. */
-  async recordSpawn(handle: ProcessHandle): Promise<void> {
+  async recordSpawn(input: ProcessHandle): Promise<void> {
+    const handle = { ...input, pidStartedAt: input.pidStartedAt ?? this.readStartTime(input.pid) }
     this.handles.set(this.key(handle.taskId, handle.attemptId), handle)
     await this.deps.persist.appendJournal({
       ts: handle.spawnedAt,
@@ -86,18 +91,21 @@ export class ProcessRegistry {
   /** Cancel: SIGTERM → 10s → SIGKILL → journal `killed`. */
   async cancel(taskId: string, attemptId: string): Promise<void> {
     const handle = this.handles.get(this.key(taskId, attemptId))
-    if (!handle) return
-    try {
-      this.kill(handle.pid, 'SIGTERM')
-    } catch {
-      // process already gone
+    if (!handle) {
+      return
     }
-    await this.sleep(this.killGracePeriodMs)
-    if (isPidAlive(handle.pid)) {
+    let signal: 'SIGTERM' | 'SIGKILL' | null = null
+    if (this.isSameProcess(handle.pid, handle.pidStartedAt)) {
       try {
-        this.kill(handle.pid, 'SIGKILL')
+        this.kill(handle.pid, 'SIGTERM')
+        signal = 'SIGTERM'
+        await this.sleep(this.killGracePeriodMs)
+        if (this.isSameProcess(handle.pid, handle.pidStartedAt)) {
+          this.kill(handle.pid, 'SIGKILL')
+          signal = 'SIGKILL'
+        }
       } catch {
-        // race: gone between checks
+        // Process exited between identity verification and signalling.
       }
     }
     this.handles.delete(this.key(taskId, attemptId))
@@ -107,7 +115,7 @@ export class ProcessRegistry {
       pid: handle.pid,
       pidStartedAt: handle.pidStartedAt,
       exitCode: null,
-      signal: 'SIGKILL'
+      signal
     })
   }
 
@@ -130,20 +138,18 @@ export class ProcessRegistry {
       killed: boolean
     }> = []
     for (const row of open) {
-      const stillAlive = isPidAlive(row.pid)
-      const startedAtNow = stillAlive ? readPidStartTime(row.pid) : null
-      const sameProcess =
-        stillAlive &&
-        (row.pidStartedAt == null ||
-          startedAtNow == null ||
-          Math.abs((startedAtNow ?? 0) - (row.pidStartedAt ?? 0)) < 2_000)
       let killed = false
-      if (sameProcess) {
+      let signal: 'SIGTERM' | 'SIGKILL' | null = null
+      if (this.isSameProcess(row.pid, row.pidStartedAt)) {
         try {
           this.kill(row.pid, 'SIGTERM')
-          await this.sleep(this.killGracePeriodMs)
-          if (isPidAlive(row.pid)) this.kill(row.pid, 'SIGKILL')
           killed = true
+          signal = 'SIGTERM'
+          await this.sleep(this.killGracePeriodMs)
+          if (this.isSameProcess(row.pid, row.pidStartedAt)) {
+            this.kill(row.pid, 'SIGKILL')
+            signal = 'SIGKILL'
+          }
         } catch {
           // already gone
         }
@@ -154,7 +160,7 @@ export class ProcessRegistry {
         pid: row.pid,
         pidStartedAt: row.pidStartedAt,
         exitCode: null,
-        signal: killed ? 'SIGKILL' : null
+        signal
       })
       reconciled.push({
         taskId: row.taskId,
@@ -168,6 +174,22 @@ export class ProcessRegistry {
 
   size(): number {
     return this.handles.size
+  }
+
+  private readStartTime(pid: number): number | null {
+    return (this.deps.readStartTime ?? readPidStartTime)(pid)
+  }
+
+  /** Unknown identity is not permission to signal an unrelated process. */
+  private isSameProcess(pid: number, startedAt: number | null): boolean {
+    if (!Number.isInteger(pid) || pid <= 0 || startedAt == null) {
+      return false
+    }
+    if (!(this.deps.isAlive ?? isPidAlive)(pid)) {
+      return false
+    }
+    const current = this.readStartTime(pid)
+    return current != null && Number.isFinite(current) && current === startedAt
   }
 
   private key(taskId: string, attemptId: string): string {

@@ -21,6 +21,8 @@ export function isOutputComplete(
       output.outputDirectory &&
         output.fileCount &&
         output.fileCount > 0 &&
+        output.size > 0 &&
+        (output.failedCount ?? 0) === 0 &&
         check.filePresent(output.outputDirectory)
     )
   }

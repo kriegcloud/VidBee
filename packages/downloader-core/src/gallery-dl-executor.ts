@@ -1,5 +1,5 @@
 import { type ChildProcess, spawn } from 'node:child_process'
-import { existsSync, statSync } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import path from 'node:path'
 
 import {
@@ -210,12 +210,33 @@ const emitProgress = (
   })
 }
 
-const readFileSize = (filePath: string): number => {
-  try {
-    return existsSync(filePath) ? statSync(filePath).size : 0
-  } catch {
-    return 0
+const inspectFiles = async (files: string[]) => {
+  let totalSize = 0
+  let firstFileSize = 0
+  let invalidCount = 0
+  // Bound filesystem concurrency and keep large profile scans off the main thread.
+  for (let offset = 0; offset < files.length; offset += 8) {
+    const sizes = await Promise.all(
+      files.slice(offset, offset + 8).map(async (file) => {
+        try {
+          const info = await stat(file)
+          return info.isFile() ? info.size : 0
+        } catch {
+          return 0
+        }
+      })
+    )
+    if (offset === 0) {
+      firstFileSize = sizes[0] ?? 0
+    }
+    for (const size of sizes) {
+      totalSize += size
+      if (size <= 0) {
+        invalidCount++
+      }
+    }
   }
+  return { totalSize, firstFileSize, invalidCount }
 }
 
 export class GalleryDlExecutor implements Executor {
@@ -432,7 +453,10 @@ export class GalleryDlExecutor implements Executor {
       }
     })
 
-    processHandle.once('close', (exitCode) => {
+    const finalizeProcess = async (exitCode: number | null): Promise<void> => {
+      if (settled) {
+        return
+      }
       if (stdoutCarry.trim()) {
         processStdoutLine(stdoutCarry)
       }
@@ -456,11 +480,8 @@ export class GalleryDlExecutor implements Executor {
         const completedAssetCount = downloadedCount + skippedCount
         const missingAssetCount = Math.max(discoveredCount - completedAssetCount - failedCount, 0)
         const nonUniqueAssetCount = Math.max(completedAssetCount - materializedFiles.size, 0)
-        if (
-          vscoGallery &&
-          (failedCount > 0 || missingAssetCount > 0 || nonUniqueAssetCount > 0)
-        ) {
-          const message = `VSCO gallery incomplete: ${failedCount} failed, ${missingAssetCount} unfinished, and ${nonUniqueAssetCount} non-unique assets.`
+        if (failedCount > 0 || missingAssetCount > 0 || nonUniqueAssetCount > 0) {
+          const message = `Gallery incomplete: ${failedCount} failed, ${missingAssetCount} unfinished, and ${nonUniqueAssetCount} non-unique assets.`
           finishOnce({
             taskId: ctx.taskId,
             attemptId: ctx.attemptId,
@@ -477,13 +498,32 @@ export class GalleryDlExecutor implements Executor {
         }
         const files = [...materializedFiles]
         const firstFile = files[0] ?? ''
-        const firstFileSize = firstFile ? readFileSize(firstFile) : 0
-        const totalSize = files.reduce((sum, filePath) => sum + readFileSize(filePath), 0)
+        const { totalSize, firstFileSize, invalidCount } = await inspectFiles(files)
+        if (cancelRequested) {
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'cancelled' },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr
+          })
+          return
+        }
+        if (files.length === 0 || invalidCount > 0) {
+          const message = `Gallery output missing or empty: ${invalidCount} invalid files among ${files.length} reported outputs.`
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'error', error: virtualError('output-missing', message), exitCode: 0 },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr || message
+          })
+          return
+        }
         const isProfileCategory =
           ctx.input.kind === 'instagram-profile-category' || Boolean(vscoGallery)
-        const profileFileCount = vscoGallery
-          ? materializedFiles.size
-          : downloadedCount + skippedCount
         const output: TaskOutput = {
           filePath: firstFile || outputDirectory,
           size: isProfileCategory ? totalSize : firstFileSize,
@@ -491,7 +531,7 @@ export class GalleryDlExecutor implements Executor {
           sha256: null,
           formatId: null,
           outputDirectory: isProfileCategory ? outputDirectory : undefined,
-          fileCount: isProfileCategory ? profileFileCount : undefined,
+          fileCount: isProfileCategory ? files.length : undefined,
           downloadedCount: isProfileCategory ? downloadedCount : undefined,
           skippedCount: isProfileCategory ? skippedCount : undefined,
           failedCount: isProfileCategory ? failedCount : undefined,
@@ -522,6 +562,20 @@ export class GalleryDlExecutor implements Executor {
         closedAt,
         stdoutTail: stdout,
         stderrTail: stderr
+      })
+    }
+
+    processHandle.once('close', (exitCode) => {
+      void finalizeProcess(exitCode).catch((error) => {
+        const message = error instanceof Error ? error.message : String(error)
+        finishOnce({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          result: { type: 'error', error: virtualError('unknown', message), exitCode },
+          closedAt: this.options.clock(),
+          stdoutTail: stdoutTail.read(),
+          stderrTail: message
+        })
       })
     })
 

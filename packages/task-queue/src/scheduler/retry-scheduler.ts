@@ -56,6 +56,9 @@ export class RetryScheduler {
   )
   private timer: unknown = null
   private seqCounter = 0
+  private stopped = false
+  private ticking = false
+  private generation = 0
   private readonly clock: Clock
   private readonly setTimer: NonNullable<RetrySchedulerOptions['setTimer']>
   private readonly clearTimer: NonNullable<RetrySchedulerOptions['clearTimer']>
@@ -77,6 +80,7 @@ export class RetryScheduler {
    * id, since a task can only be retry-scheduled once at a time).
    */
   enqueue(taskId: string, nextRetryAt: number): void {
+    this.stopped = false
     this.heap.remove((it) => it.taskId === taskId)
     this.heap.push({ taskId, nextRetryAt, seq: ++this.seqCounter })
     this.rearm()
@@ -93,31 +97,48 @@ export class RetryScheduler {
    * A per-item handler error is logged and the handler is retried on the next tick.
    */
   async tick(): Promise<void> {
-    const now = this.clock()
-    while (true) {
-      const top = this.heap.peek()
-      if (!top || top.nextRetryAt > now) {
-        break
-      }
-      const item = this.heap.pop()!
-      try {
-        await this.onDue(item.taskId, now)
-      } catch (err) {
-        // Re-enqueue so we try again shortly. We bump the time slightly to
-        // avoid a hot loop if the orchestrator is in a bad state.
-        logCaughtError('task_queue_retry_tick_threw', err)
-        this.heap.push({
-          taskId: item.taskId,
-          nextRetryAt: now + 1000,
-          seq: ++this.seqCounter
-        })
-      }
+    if (this.stopped || this.ticking) {
+      return
     }
-    this.rearm()
+    this.ticking = true
+    const generation = this.generation
+    const now = this.clock()
+    try {
+      while (!this.stopped && generation === this.generation) {
+        const top = this.heap.peek()
+        if (!top || top.nextRetryAt > now) {
+          break
+        }
+        const item = this.heap.pop()
+        if (!item) {
+          break
+        }
+        try {
+          await this.onDue(item.taskId, now)
+        } catch (err) {
+          if (this.stopped || generation !== this.generation) {
+            break
+          }
+          // Re-enqueue so we try again shortly. We bump the time slightly to
+          // avoid a hot loop if the orchestrator is in a bad state.
+          logCaughtError('task_queue_retry_tick_threw', err)
+          this.heap.push({
+            taskId: item.taskId,
+            nextRetryAt: now + 1000,
+            seq: ++this.seqCounter
+          })
+        }
+      }
+    } finally {
+      this.ticking = false
+      this.rearm()
+    }
   }
 
   /** Cancel any pending timer; tests use this between cases. */
   stop(): void {
+    this.stopped = true
+    this.generation++
     if (this.timer != null) {
       this.clearTimer(this.timer)
       this.timer = null
@@ -128,6 +149,9 @@ export class RetryScheduler {
     if (this.timer != null) {
       this.clearTimer(this.timer)
       this.timer = null
+    }
+    if (this.stopped || this.ticking) {
+      return
     }
     const top = this.heap.peek()
     if (!top) {

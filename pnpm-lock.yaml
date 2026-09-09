@@ -85,6 +85,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      tsx:
+        specifier: 4.22.4
+        version: 4.22.4
       ultracite:
         specifier: 7.10.6
         version: 7.10.6

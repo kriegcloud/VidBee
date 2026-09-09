@@ -5,6 +5,7 @@ import path from 'node:path'
 import { APP_PROTOCOL_SCHEME } from '@shared/constants'
 import { app } from 'electron'
 import { scopedLoggers } from '../utils/logger'
+import { fetchThumbnail, writeThumbnailAtomically } from './thumbnail-download'
 
 const SUPPORTED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif'])
 
@@ -77,19 +78,11 @@ export class ThumbnailCache {
         return this.toAppProtocolUrl(existingPath)
       }
 
-      const response = await fetch(originalUrl)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch thumbnail (${response.status})`)
-      }
-
-      const arrayBuffer = await response.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-      const extension =
-        contentTypeToExtension(response.headers.get('content-type') ?? undefined) ||
-        defaultExtension
+      const { buffer, contentType } = await fetchThumbnail(originalUrl)
+      const extension = contentTypeToExtension(contentType ?? undefined) || defaultExtension
       const finalPath = `${basePath}${extension}`
 
-      await fsPromises.writeFile(finalPath, buffer)
+      await writeThumbnailAtomically(finalPath, buffer)
       return this.toAppProtocolUrl(finalPath)
     } catch (error) {
       scopedLoggers.thumbnail.error('Failed to cache thumbnail:', error)
@@ -118,8 +111,8 @@ export class ThumbnailCache {
 
   private async exists(filePath: string): Promise<boolean> {
     try {
-      await fsPromises.access(filePath)
-      return true
+      const info = await fsPromises.stat(filePath)
+      return info.isFile() && info.size > 0
     } catch {
       return false
     }

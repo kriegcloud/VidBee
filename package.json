@@ -6,6 +6,8 @@
     "check": "pnpm --filter ./apps/desktop run check",
     "check:i18n": "pnpm --filter ./apps/desktop run check:i18n",
     "typecheck": "pnpm --filter ./apps/desktop run typecheck",
+    "test:audit": "tsx --test apps/desktop/test/*.test.ts packages/task-queue/test/*.test.ts packages/downloader-core/test/*.node.ts",
+    "bench:audit": "tsx packages/task-queue/test/benchmark.ts",
     "dev": "pnpm --filter ./apps/desktop run dev",
     "dev:update-notice": "pnpm --filter ./apps/desktop run dev:update-notice",
     "start": "pnpm --filter ./apps/desktop run start",
@@ -42,6 +44,7 @@
     "@svgr/plugin-jsx": "^8.1.0",
     "electron": "^43.4.1",
     "husky": "^9.1.7",
+    "tsx": "4.22.4",
     "ultracite": "7.10.6"
   }
 }

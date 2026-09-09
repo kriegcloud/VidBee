@@ -16,10 +16,7 @@
  * concern (NEX-129), and feed parse errors are reported on the subscription
  * row (`status='failed'`, `lastError`) for the next periodic run to retry.
  */
-import {
-  DEFAULT_FEED_CHECK_INTERVAL_MS,
-  DEFAULT_REFRESH_DEDUPE_WINDOW_MS
-} from './types'
+import { DEFAULT_FEED_CHECK_INTERVAL_MS, DEFAULT_REFRESH_DEDUPE_WINDOW_MS } from './types'
 
 export interface FeedCheckSchedulerOptions {
   /**
@@ -64,6 +61,8 @@ export class FeedCheckScheduler {
   private timer: unknown = null
   private running = false
   private pending = false
+  private stopped = false
+  private generation = 0
   private readonly recentTriggers = new Map<string, number>() // subId → ts
 
   constructor(options: FeedCheckSchedulerOptions) {
@@ -72,10 +71,8 @@ export class FeedCheckScheduler {
       runOne: options.runOne,
       isLeader: options.isLeader,
       intervalMs: options.intervalMs ?? DEFAULT_FEED_CHECK_INTERVAL_MS,
-      refreshDedupeWindowMs:
-        options.refreshDedupeWindowMs ?? DEFAULT_REFRESH_DEDUPE_WINDOW_MS,
-      setTimeoutImpl:
-        options.setTimeoutImpl ?? ((cb, ms) => setTimeout(cb, ms)),
+      refreshDedupeWindowMs: options.refreshDedupeWindowMs ?? DEFAULT_REFRESH_DEDUPE_WINDOW_MS,
+      setTimeoutImpl: options.setTimeoutImpl ?? ((cb, ms) => setTimeout(cb, ms)),
       clearTimeoutImpl:
         options.clearTimeoutImpl ??
         ((handle) => clearTimeout(handle as ReturnType<typeof setTimeout>)),
@@ -89,11 +86,16 @@ export class FeedCheckScheduler {
    * the next scheduled run replaces any prior timer.
    */
   start(initialDelayMs?: number): void {
+    this.stopped = false
+    this.generation++
     this.scheduleNext(initialDelayMs ?? 0)
   }
 
   stop(): void {
-    if (this.timer) {
+    this.stopped = true
+    this.generation++
+    this.pending = false
+    if (this.timer != null) {
       this.opts.clearTimeoutImpl(this.timer)
       this.timer = null
     }
@@ -130,6 +132,10 @@ export class FeedCheckScheduler {
    * leader expires.
    */
   private async tick(): Promise<void> {
+    if (this.stopped) {
+      return
+    }
+    const generation = this.generation
     try {
       if (this.opts.isLeader()) {
         await this.runIfIdle()
@@ -137,7 +143,9 @@ export class FeedCheckScheduler {
         this.opts.log('info', 'scheduler: skipping tick (not leader)')
       }
     } finally {
-      this.scheduleNext()
+      if (!this.stopped && generation === this.generation) {
+        this.scheduleNext()
+      }
     }
   }
 
@@ -153,7 +161,7 @@ export class FeedCheckScheduler {
       this.opts.log('error', 'scheduler: runAll threw', { err })
     } finally {
       this.running = false
-      if (this.pending) {
+      if (this.pending && !this.stopped) {
         this.pending = false
         // Re-enter without awaiting so the caller doesn't block.
         void this.runIfIdle()
@@ -162,11 +170,15 @@ export class FeedCheckScheduler {
   }
 
   private scheduleNext(delayMs?: number): void {
-    if (this.timer) {
+    if (this.stopped) {
+      return
+    }
+    if (this.timer != null) {
       this.opts.clearTimeoutImpl(this.timer)
     }
     const ms = delayMs ?? this.opts.intervalMs
     this.timer = this.opts.setTimeoutImpl(() => {
+      this.timer = null
       void this.tick()
     }, ms)
   }

@@ -9,10 +9,11 @@
  *   - windows: GetProcessTimes via N-API. Not implemented in pure-JS; hosts
  *     are expected to inject a platform-specific function via
  *     `setReadPidStartTimeImpl`. The kernel ships a permissive default that
- *     returns null on Windows so recovery falls back to "treat as orphan".
+ *     returns null on Windows; recovery will not signal an unverified PID.
  */
-import { existsSync, readFileSync, statSync } from 'node:fs'
+
 import { execFileSync } from 'node:child_process'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 
 export type ReadPidStartTimeFn = (pid: number) => number | null
 
@@ -31,28 +32,40 @@ export function readPidStartTime(pid: number): number | null {
 }
 
 function defaultImpl(pid: number): number | null {
-  if (process.platform === 'linux') return readLinuxStart(pid)
-  if (process.platform === 'darwin') return readDarwinStart(pid)
-  // win32 default: null. Recovery will treat the pid as a real orphan.
+  if (process.platform === 'linux') {
+    return readLinuxStart(pid)
+  }
+  if (process.platform === 'darwin') {
+    return readDarwinStart(pid)
+  }
+  // win32 default: null. Recovery leaves unverified processes alone.
   return null
 }
 
 function readLinuxStart(pid: number): number | null {
   const path = `/proc/${pid}/stat`
-  if (!existsSync(path)) return null
+  if (!existsSync(path)) {
+    return null
+  }
   const raw = readFileSync(path, 'utf8')
   // field 22 (starttime) — careful around the comm field which may contain
   // spaces and is wrapped in parens.
   const lastParen = raw.lastIndexOf(')')
-  if (lastParen < 0) return null
+  if (lastParen < 0) {
+    return null
+  }
   const fields = raw.slice(lastParen + 2).split(' ')
   const starttimeTicks = Number.parseInt(fields[19] ?? '', 10)
-  if (!Number.isFinite(starttimeTicks)) return null
+  if (!Number.isFinite(starttimeTicks)) {
+    return null
+  }
 
   // Compute btime + (starttime / hz) → epoch seconds.
   const stat = readFileSync('/proc/stat', 'utf8')
   const btimeMatch = stat.match(/^btime\s+(\d+)/m)
-  if (!btimeMatch) return null
+  if (!btimeMatch) {
+    return null
+  }
   const btime = Number.parseInt(btimeMatch[1] ?? '', 10)
   const hz = readClockTickRate() ?? 100
   return (btime + starttimeTicks / hz) * 1000
@@ -66,7 +79,9 @@ function readDarwinStart(pid: number): number | null {
       stdio: ['ignore', 'pipe', 'ignore'],
       encoding: 'utf8'
     }).trim()
-    if (!out) return null
+    if (!out) {
+      return null
+    }
     const t = Date.parse(out)
     return Number.isNaN(t) ? null : t
   } catch {
@@ -76,7 +91,9 @@ function readDarwinStart(pid: number): number | null {
 
 let cachedHz: number | null | undefined
 function readClockTickRate(): number | null {
-  if (cachedHz !== undefined) return cachedHz
+  if (cachedHz !== undefined) {
+    return cachedHz
+  }
   try {
     const out = execFileSync('getconf', ['CLK_TCK'], {
       stdio: ['ignore', 'pipe', 'ignore'],
@@ -96,7 +113,9 @@ function readClockTickRate(): number | null {
  * ESRCH if the process no longer exists.
  */
 export function isPidAlive(pid: number): boolean {
-  if (process.platform === 'linux') return existsSync(`/proc/${pid}`)
+  if (process.platform === 'linux') {
+    return existsSync(`/proc/${pid}`)
+  }
   try {
     process.kill(pid, 0)
     return true

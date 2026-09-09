@@ -13,38 +13,29 @@
  */
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, statSync } from 'node:fs'
-
-import { defaultMaxAttempts, virtualError } from '../classifier'
-import {
-  EventBus,
-  type TaskQueueEvent,
-  type TaskQueueListener
-} from '../events'
-import {
-  IllegalTransitionError,
-  transition as fsmTransition,
-  type TransitionContext
-} from '../fsm'
-import { isOutputComplete } from '../complete'
-import type { Executor, ExecutorRun } from '../executor'
-import type { PersistAdapter } from '../persist'
-import { ProcessRegistry, Watchdog, readPidStartTime } from '../process'
-import { RetryScheduler, Scheduler, computeBackoffMs } from '../scheduler'
-import { TaskStore } from '../store'
 import { logCaughtError } from '@vidbee/logger'
+import { defaultMaxAttempts, virtualError } from '../classifier'
+import { isOutputComplete } from '../complete'
+import { EventBus, type TaskQueueEvent, type TaskQueueListener } from '../events'
+import type { Executor, ExecutorRun } from '../executor'
+import { transition as fsmTransition, IllegalTransitionError, type TransitionContext } from '../fsm'
+import type { PersistAdapter } from '../persist'
+import { ProcessRegistry, readPidStartTime, Watchdog } from '../process'
+import { computeBackoffMs, RetryScheduler, Scheduler } from '../scheduler'
+import { TaskStore } from '../store'
 import {
+  type ClassifiedError,
   EMPTY_PROGRESS,
   PRIORITY_USER,
-  TERMINAL_STATUSES,
-  TRANSCRIPTION_GROUP_KEY,
-  type ClassifiedError,
   type Task,
   type TaskInput,
   type TaskOutput,
   type TaskPriority,
   type TaskProgress,
   type TaskQueueStats,
-  type TaskStatus
+  type TaskStatus,
+  TERMINAL_STATUSES,
+  TRANSCRIPTION_GROUP_KEY
 } from '../types'
 
 export interface TaskQueueAPIOptions {
@@ -124,9 +115,10 @@ interface ActiveRun {
   taskId: string
   attemptId: string
   run: ExecutorRun
+  markStalled: (error: ClassifiedError) => void
 }
 
-const PROGRESS_DOWNSAMPLE_MS = 1_000
+const PROGRESS_DOWNSAMPLE_MS = 1000
 
 export class TaskQueueAPI {
   private readonly bus = new EventBus()
@@ -141,6 +133,7 @@ export class TaskQueueAPI {
   private readonly filePresent: (p: string) => boolean
   private readonly rng: () => number
   private readonly active = new Map<string, ActiveRun>()
+  private readonly attemptFinished = new Map<string, Promise<void>>()
   private readonly progressLastWrite = new Map<string, number>()
   private readonly progressDirty = new Map<string, TaskProgress>()
   /** Running tasks whose current cancel was requested as pause, not user-cancel. */
@@ -178,7 +171,7 @@ export class TaskQueueAPI {
       })
     this.clearTimer = opts.clearTimer ?? ((handle) => clearTimeout(handle as never))
     this.idleQueueKickMs = opts.idleQueueKickMs ?? 15_000
-    this.zombieRunningMs = opts.zombieRunningMs ?? 8_000
+    this.zombieRunningMs = opts.zombieRunningMs ?? 8000
 
     this.scheduler = new Scheduler({
       maxConcurrency: opts.maxConcurrency ?? 4,
@@ -222,15 +215,22 @@ export class TaskQueueAPI {
    *  6. retry-scheduled → re-arm RetryScheduler with original nextRetryAt
    */
   async start(): Promise<void> {
-    if (this.started) return
+    if (this.started) {
+      return
+    }
     this.started = true
 
     const tasks = await this.persist.loadAllTasks()
-    for (const t of tasks) this.store.insert(t)
+    for (const t of tasks) {
+      this.store.insert(t)
+    }
 
     // Kill orphans and journal them.
     const orphans = await this.processes.reconcile()
     for (const o of orphans) {
+      if (!o.killed) {
+        continue
+      }
       this.bus.emit({
         type: 'orphan-killed',
         taskId: o.taskId,
@@ -338,7 +338,9 @@ export class TaskQueueAPI {
   }
 
   async stop(): Promise<void> {
-    if (!this.started) return
+    if (!this.started) {
+      return
+    }
     if (this.idleKickTimer != null) {
       this.clearTimer(this.idleKickTimer)
       this.idleKickTimer = null
@@ -352,7 +354,9 @@ export class TaskQueueAPI {
         /* noop */
       }
     }
-    if (this.persist.close) await this.persist.close()
+    if (this.persist.close) {
+      await this.persist.close()
+    }
     this.started = false
   }
 
@@ -364,7 +368,9 @@ export class TaskQueueAPI {
     // task with that id already exists, return it instead of double-adding.
     if (req.id) {
       const existing = this.store.get(req.id)
-      if (existing) return { id: existing.id }
+      if (existing) {
+        return { id: existing.id }
+      }
     }
     const id = req.id ?? randomUUID()
     const task: Task = {
@@ -480,10 +486,16 @@ export class TaskQueueAPI {
    */
   async getTaskLog(id: string): Promise<string | null> {
     const attempt = await this.persist.loadLatestAttempt(id)
-    if (!attempt) return null
+    if (!attempt) {
+      return null
+    }
     const parts: string[] = []
-    if (attempt.stdoutTail?.trim()) parts.push(attempt.stdoutTail)
-    if (attempt.stderrTail?.trim()) parts.push(attempt.stderrTail)
+    if (attempt.stdoutTail?.trim()) {
+      parts.push(attempt.stdoutTail)
+    }
+    if (attempt.stderrTail?.trim()) {
+      parts.push(attempt.stderrTail)
+    }
     const combined = parts.join('\n').trim()
     return combined.length > 0 ? combined : null
   }
@@ -557,7 +569,9 @@ export class TaskQueueAPI {
    */
   async pause(id: string, reason = 'user'): Promise<void> {
     const t = this.store.get(id)
-    if (!t) return
+    if (!t) {
+      return
+    }
     if (t.status === 'queued') {
       await this.scheduler.dequeue(id)
       await this.applyTransition(id, 'paused', { trigger: 'pause', reason })
@@ -584,14 +598,18 @@ export class TaskQueueAPI {
 
   async resume(id: string): Promise<void> {
     const t = this.store.get(id)
-    if (!t || t.status !== 'paused') return
+    if (t?.status !== 'paused') {
+      return
+    }
     await this.applyTransition(id, 'queued', { trigger: 'resume', reason: 'resume' })
     await this.scheduler.enqueue(id, t.priority)
   }
 
   async retryManual(id: string): Promise<void> {
     const t = this.store.get(id)
-    if (!t || (t.status !== 'failed' && t.status !== 'cancelled')) return
+    if (!t || (t.status !== 'failed' && t.status !== 'cancelled')) {
+      return
+    }
     await this.applyTransition(id, 'queued', {
       trigger: t.status === 'failed' ? 'retry-manual' : 'requeue',
       reason: 'manual'
@@ -609,12 +627,14 @@ export class TaskQueueAPI {
 
   async removeFromHistory(id: string): Promise<void> {
     const t = this.store.get(id)
-    if (!t) return
+    if (!t) {
+      return
+    }
     if (!TERMINAL_STATUSES.has(t.status)) {
       throw new Error(`removeFromHistory: ${id} is not in a terminal state`)
     }
     const descendants = this.collectDescendantIds(id)
-    for (const childId of descendants) {
+    for (const childId of [...descendants, id]) {
       const child = this.store.get(childId)
       if (child && !TERMINAL_STATUSES.has(child.status)) {
         try {
@@ -623,10 +643,15 @@ export class TaskQueueAPI {
           // Persist cascade still removes the child even if cancel is illegal.
         }
       }
+      // Executors return from cancel after signalling, before close/finalization.
+      // Keep the task's group identity until its scheduler slot has been released.
+      await this.attemptFinished.get(childId)
+    }
+    await this.persist.deleteTask(id)
+    for (const childId of descendants) {
       this.store.remove(childId)
     }
     this.store.remove(id)
-    await this.persist.deleteTask(id)
   }
 
   /**
@@ -634,15 +659,28 @@ export class TaskQueueAPI {
    */
   private collectDescendantIds(id: string): string[] {
     const out: string[] = []
-    const walk = (parentId: string): void => {
-      const { tasks } = this.store.list({ parentId, limit: 1000, cursor: null })
-      for (const child of tasks) {
-        walk(child.id)
-        out.push(child.id)
+    const pending = [id]
+    const seen = new Set([id])
+    while (pending.length > 0) {
+      const parentId = pending.pop()
+      if (parentId === undefined) {
+        break
       }
+      let cursor: string | null = null
+      do {
+        const page = this.store.list({ parentId, limit: 1000, cursor })
+        for (const child of page.tasks) {
+          if (seen.has(child.id)) {
+            continue
+          }
+          seen.add(child.id)
+          pending.push(child.id)
+          out.push(child.id)
+        }
+        cursor = page.nextCursor
+      } while (cursor)
     }
-    walk(id)
-    return out
+    return out.reverse()
   }
 
   stats(): TaskQueueStats {
@@ -670,7 +708,9 @@ export class TaskQueueAPI {
 
   private async dispatchOne(id: string): Promise<boolean> {
     const t = this.store.get(id)
-    if (!t || t.status !== 'queued') return false
+    if (t?.status !== 'queued') {
+      return false
+    }
 
     const attemptId = randomUUID()
     let next: Task
@@ -680,7 +720,9 @@ export class TaskQueueAPI {
         reason: null
       })
     } catch (err) {
-      if (err instanceof IllegalTransitionError) return false
+      if (err instanceof IllegalTransitionError) {
+        return false
+      }
       throw err
     }
 
@@ -695,6 +737,21 @@ export class TaskQueueAPI {
       rawArgsHash: hashRawArgs(t.input.rawArgs)
     })
 
+    let acceptingEvents = true
+    let stalledError: ClassifiedError | undefined
+    let resolveFinished = () => {}
+    const finished = new Promise<void>((resolve) => {
+      resolveFinished = resolve
+    })
+    this.attemptFinished.set(id, finished)
+    const completeAttempt = () => {
+      if (this.attemptFinished.get(id) === finished) {
+        this.attemptFinished.delete(id)
+        this.progressLastWrite.delete(id)
+        this.progressDirty.delete(id)
+      }
+      resolveFinished()
+    }
     let run: ExecutorRun
     try {
       run = this.executor.run(
@@ -706,38 +763,52 @@ export class TaskQueueAPI {
         },
         {
           onSpawn: (e) => {
-            this.active.set(id, { taskId: id, attemptId, run })
+            if (!acceptingEvents) {
+              return
+            }
+            const pidStartedAt = e.pidStartedAt ?? readPidStartTime(e.pid)
             void this.processes.recordSpawn({
               taskId: id,
               attemptId,
               pid: e.pid,
-              pidStartedAt: e.pidStartedAt ?? readPidStartTime(e.pid),
+              pidStartedAt,
               kind: e.kind,
               spawnedAt: e.spawnedAt
             })
-            // Stamp pid synchronously into the task row.
+            const current = this.store.get(id)
+            if (!current || TERMINAL_STATUSES.has(current.status)) {
+              return
+            }
+            const spawned = { ...current, pid: e.pid, pidStartedAt }
+            this.store.update(spawned)
             void this.persist.upsertTask({
-              task: { ...next, pid: e.pid, pidStartedAt: e.pidStartedAt },
-              progress: next.progress
+              task: spawned,
+              progress: spawned.progress
             })
             this.watchdog.arm(id, 'running')
           },
           onProgress: (e) => {
+            if (!acceptingEvents) {
+              return
+            }
             const current = this.store.get(id)
             if (!current || TERMINAL_STATUSES.has(current.status)) {
               return
             }
             this.applyProgress(id, e.progress)
             this.watchdog.bump(id)
-            if (e.enteredProcessing) {
+            if (e.enteredProcessing && current.status === 'running') {
               void this.applyTransition(id, 'processing', {
                 trigger: 'progressing',
                 reason: null
-              })
+              }).catch((error) => logCaughtError('task_queue_processing_transition_threw', error))
               this.watchdog.promoteToProcessing(id)
             }
           },
           onStd: (e) => {
+            if (!acceptingEvents) {
+              return
+            }
             this.watchdog.bump(id)
             this.bus.emit({
               type: 'log',
@@ -749,20 +820,46 @@ export class TaskQueueAPI {
             })
           },
           onFinish: (e) => {
-            void this.handleFinish(id, attemptId, e)
+            if (!acceptingEvents) {
+              return
+            }
+            acceptingEvents = false
+            void this.handleFinish(
+              id,
+              attemptId,
+              stalledError
+                ? { ...e, result: { type: 'error', error: stalledError, exitCode: null } }
+                : e
+            )
+              .catch((error) => logCaughtError('task_queue_finish_release_threw', error))
+              .finally(completeAttempt)
           }
         }
       )
-      this.active.set(id, { taskId: id, attemptId, run })
+      if (acceptingEvents) {
+        this.active.set(id, {
+          taskId: id,
+          attemptId,
+          run,
+          markStalled: (error) => {
+            stalledError = error
+          }
+        })
+      }
     } catch (err) {
+      acceptingEvents = false
       // executor.run synchronously threw → fail the task and free the slot.
       const error = virtualError('unknown', String(err))
-      await this.applyTransition(id, 'failed', {
-        trigger: 'finalize-error',
-        reason: error.category,
-        error
-      })
-      await this.scheduler.releaseSlot(id)
+      try {
+        await this.applyTransition(id, 'failed', {
+          trigger: 'finalize-error',
+          reason: error.category,
+          error
+        })
+        await this.scheduler.releaseSlot(id)
+      } finally {
+        completeAttempt()
+      }
       return false
     }
     return true
@@ -850,10 +947,7 @@ export class TaskQueueAPI {
           output: out
         })
       } else {
-        const err = virtualError(
-          'output-missing',
-          `output ${out.filePath} missing or empty`
-        )
+        const err = virtualError('output-missing', `output ${out.filePath} missing or empty`)
         await this.persist.closeAttempt({
           taskId: id,
           attemptId,
@@ -935,17 +1029,10 @@ export class TaskQueueAPI {
     })
 
     const t = this.store.get(id)
-    const maxAttempts = Math.max(
-      t?.maxAttempts ?? 0,
-      defaultMaxAttempts(err.category)
-    )
+    const maxAttempts = Math.max(t?.maxAttempts ?? 0, defaultMaxAttempts(err.category))
     const willRetry = err.retryable && (t?.attempt ?? 0) < maxAttempts
     if (willRetry) {
-      const wait = computeBackoffMs(
-        t?.attempt ?? 0,
-        err.suggestedRetryAfterMs,
-        this.rng
-      )
+      const wait = computeBackoffMs(t?.attempt ?? 0, err.suggestedRetryAfterMs, this.rng)
       const nextRetryAt = this.clock() + wait
       await this.applyTransition(id, 'retry-scheduled', {
         trigger: 'finalize-error',
@@ -965,7 +1052,9 @@ export class TaskQueueAPI {
 
   private async handleRetryDue(id: string): Promise<void> {
     const t = this.store.get(id)
-    if (!t || t.status !== 'retry-scheduled') return
+    if (t?.status !== 'retry-scheduled') {
+      return
+    }
     const next = await this.applyTransition(id, 'queued', {
       trigger: 'retry-tick',
       reason: 'retry'
@@ -974,53 +1063,24 @@ export class TaskQueueAPI {
   }
 
   private handleStalled(id: string): void {
-    void (async () => {
-      const err = virtualError('stalled', 'Watchdog: task idle exceeded')
-      const a = this.active.get(id)
-      if (a) {
-        try {
-          await a.run.cancel(0)
-        } catch {
-          /* noop */
-        }
-      }
-      // The executor will eventually call onFinish with cancelled; convert
-      // to error path so retry/maxAttempts is honored.
-      const t = this.store.get(id)
-      if (!t) return
-      const max = Math.max(t.maxAttempts, defaultMaxAttempts('stalled'))
-      if (t.attempt < max) {
-        const wait = computeBackoffMs(
-          t.attempt,
-          err.suggestedRetryAfterMs,
-          this.rng
-        )
-        const nextRetryAt = this.clock() + wait
-        await this.applyTransition(id, 'retry-scheduled', {
-          trigger: 'finalize-error',
-          reason: 'stalled',
-          error: err,
-          nextRetryAt
-        })
-        this.retry.enqueue(id, nextRetryAt)
-      } else {
-        await this.applyTransition(id, 'failed', {
-          trigger: 'finalize-error',
-          reason: 'stalled',
-          error: err
-        })
-      }
-      await this.scheduler.releaseSlot(id)
-    })()
+    const active = this.active.get(id)
+    const task = this.store.get(id)
+    if (!(active && task) || TERMINAL_STATUSES.has(task.status)) {
+      return
+    }
+    active.markStalled(virtualError('stalled', 'Watchdog: task idle exceeded'))
+    // The close callback owns finalization and slot release. Cancelling only
+    // sends signals; its promise can resolve before the process is reaped.
+    void active.run.cancel(0).catch((error) => {
+      logCaughtError('task_queue_stalled_cancel_threw', error)
+    })
   }
 
-  private async applyTransition(
-    id: string,
-    to: TaskStatus,
-    ctx: TransitionContext
-  ): Promise<Task> {
+  private async applyTransition(id: string, to: TaskStatus, ctx: TransitionContext): Promise<Task> {
     const cur = this.store.get(id)
-    if (!cur) throw new Error(`applyTransition: missing task ${id}`)
+    if (!cur) {
+      throw new Error(`applyTransition: missing task ${id}`)
+    }
     let next: Task
     try {
       next = fsmTransition(cur, to, { ...ctx, now: this.clock() })
@@ -1088,7 +1148,9 @@ export class TaskQueueAPI {
 
   private applyProgress(id: string, progress: TaskProgress): void {
     const t = this.store.get(id)
-    if (!t) return
+    if (!t) {
+      return
+    }
     const merged: Task = { ...t, progress, updatedAt: this.clock() }
     this.store.update(merged)
     this.progressDirty.set(id, progress)
@@ -1109,8 +1171,12 @@ export class TaskQueueAPI {
 }
 
 function defaultGroupKey(input: TaskInput): string {
-  if (input.kind === 'transcription') return TRANSCRIPTION_GROUP_KEY
-  if (input.subscriptionId) return `sub:${input.subscriptionId}`
+  if (input.kind === 'transcription') {
+    return TRANSCRIPTION_GROUP_KEY
+  }
+  if (input.subscriptionId) {
+    return `sub:${input.subscriptionId}`
+  }
   try {
     return new URL(input.url).host || 'unknown'
   } catch {
@@ -1119,7 +1185,9 @@ function defaultGroupKey(input: TaskInput): string {
 }
 
 function hashRawArgs(args: readonly string[] | undefined): string {
-  if (!args || args.length === 0) return 'sha256:none'
+  if (!args || args.length === 0) {
+    return 'sha256:none'
+  }
   const h = createHash('sha256')
   h.update(args.join(' '))
   return `sha256:${h.digest('hex')}`

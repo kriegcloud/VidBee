@@ -19,10 +19,14 @@ const STATUSES: readonly TaskStatus[] = [
 export class TaskStore {
   private readonly byId = new Map<string, Task>()
   private readonly byGroup = new Map<string, Set<string>>()
+  private readonly byParent = new Map<string | null, Set<string>>()
   private readonly byStatus = new Map<TaskStatus, Set<string>>()
+  private readonly listings = new Map<string, { ids: string[]; positions: Map<string, number> }>()
 
   constructor() {
-    for (const s of STATUSES) this.byStatus.set(s, new Set())
+    for (const s of STATUSES) {
+      this.byStatus.set(s, new Set())
+    }
   }
 
   has(id: string): boolean {
@@ -40,7 +44,9 @@ export class TaskStore {
     }
     this.byId.set(task.id, task)
     this.bucket(this.byGroup, task.groupKey).add(task.id)
-    this.byStatus.get(task.status)!.add(task.id)
+    this.bucket(this.byParent, task.parentId).add(task.id)
+    this.bucket(this.byStatus, task.status).add(task.id)
+    this.listings.clear()
   }
 
   /**
@@ -49,7 +55,9 @@ export class TaskStore {
    */
   update(next: Task): void {
     const prev = this.byId.get(next.id)
-    if (!prev) throw new Error(`TaskStore: missing id ${next.id}`)
+    if (!prev) {
+      throw new Error(`TaskStore: missing id ${next.id}`)
+    }
     if (prev.status !== next.status) {
       this.byStatus.get(prev.status)?.delete(prev.id)
       this.byStatus.get(next.status)?.add(next.id)
@@ -57,8 +65,26 @@ export class TaskStore {
     if (prev.groupKey !== next.groupKey) {
       const oldBucket = this.byGroup.get(prev.groupKey)
       oldBucket?.delete(prev.id)
-      if (oldBucket && oldBucket.size === 0) this.byGroup.delete(prev.groupKey)
+      if (oldBucket && oldBucket.size === 0) {
+        this.byGroup.delete(prev.groupKey)
+      }
       this.bucket(this.byGroup, next.groupKey).add(next.id)
+    }
+    if (prev.parentId !== next.parentId) {
+      const oldBucket = this.byParent.get(prev.parentId)
+      oldBucket?.delete(prev.id)
+      if (oldBucket?.size === 0) {
+        this.byParent.delete(prev.parentId)
+      }
+      this.bucket(this.byParent, next.parentId).add(next.id)
+    }
+    if (
+      prev.status !== next.status ||
+      prev.groupKey !== next.groupKey ||
+      prev.parentId !== next.parentId ||
+      prev.createdAt !== next.createdAt
+    ) {
+      this.listings.clear()
     }
     this.byId.set(next.id, next)
   }
@@ -66,12 +92,22 @@ export class TaskStore {
   /** Remove a record (used by removeFromHistory). */
   remove(id: string): boolean {
     const prev = this.byId.get(id)
-    if (!prev) return false
+    if (!prev) {
+      return false
+    }
     this.byId.delete(id)
     this.byStatus.get(prev.status)?.delete(id)
     const groupSet = this.byGroup.get(prev.groupKey)
     groupSet?.delete(id)
-    if (groupSet && groupSet.size === 0) this.byGroup.delete(prev.groupKey)
+    if (groupSet && groupSet.size === 0) {
+      this.byGroup.delete(prev.groupKey)
+    }
+    const parentSet = this.byParent.get(prev.parentId)
+    parentSet?.delete(id)
+    if (parentSet?.size === 0) {
+      this.byParent.delete(prev.parentId)
+    }
+    this.listings.clear()
     return true
   }
 
@@ -87,38 +123,58 @@ export class TaskStore {
     limit?: number
     cursor?: string | null
   }): { tasks: Task[]; nextCursor: string | null } {
-    let candidates: Iterable<string>
-    if (opts?.status) {
-      candidates = this.byStatus.get(opts.status) ?? []
-    } else if (opts?.groupKey) {
-      candidates = this.byGroup.get(opts.groupKey) ?? []
-    } else {
-      candidates = this.byId.keys()
+    const key = JSON.stringify([opts?.status, opts?.groupKey, opts?.parentId])
+    let listing = this.listings.get(key)
+    if (!listing) {
+      const candidates = opts?.parentId
+        ? (this.byParent.get(opts.parentId) ?? [])
+        : opts?.status
+          ? (this.byStatus.get(opts.status) ?? [])
+          : opts?.groupKey
+            ? (this.byGroup.get(opts.groupKey) ?? [])
+            : this.byId.keys()
+      const all: Task[] = []
+      for (const id of candidates) {
+        const t = this.byId.get(id)
+        if (!t) {
+          continue
+        }
+        if (opts?.status && t.status !== opts.status) {
+          continue
+        }
+        if (opts?.groupKey && t.groupKey !== opts.groupKey) {
+          continue
+        }
+        if (opts?.parentId && t.parentId !== opts.parentId) {
+          continue
+        }
+        all.push(t)
+      }
+      all.sort((a, b) => a.createdAt - b.createdAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      const ids = all.map((t) => t.id)
+      listing = { ids, positions: new Map(ids.map((id, index) => [id, index])) }
+      // Bound retained query combinations, including one-off parent lookups.
+      if (this.listings.size >= 32) {
+        const oldest = this.listings.keys().next().value
+        if (oldest !== undefined) {
+          this.listings.delete(oldest)
+        }
+      }
+      this.listings.set(key, listing)
     }
-
-    const all: Task[] = []
-    for (const id of candidates) {
-      const t = this.byId.get(id)
-      if (!t) continue
-      if (opts?.groupKey && t.groupKey !== opts.groupKey) continue
-      if (opts?.parentId && t.parentId !== opts.parentId) continue
-      all.push(t)
-    }
-    all.sort((a, b) => {
-      if (a.createdAt !== b.createdAt) return a.createdAt - b.createdAt
-      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
-    })
-
-    let startIdx = 0
-    if (opts?.cursor) {
-      startIdx = all.findIndex((t) => t.id === opts.cursor)
-      startIdx = startIdx < 0 ? 0 : startIdx + 1
-    }
+    const startIdx = opts?.cursor ? (listing.positions.get(opts.cursor) ?? -1) + 1 : 0
     const limit = opts?.limit ?? 100
-    const slice = all.slice(startIdx, startIdx + limit)
+    // Cache ids rather than task objects so progress/title updates are always fresh.
+    const slice: Task[] = []
+    for (const id of listing.ids.slice(startIdx, startIdx + limit)) {
+      const task = this.byId.get(id)
+      if (task) {
+        slice.push(task)
+      }
+    }
     const nextCursor =
-      startIdx + slice.length < all.length && slice.length > 0
-        ? slice[slice.length - 1]!.id
+      startIdx + slice.length < listing.ids.length && slice.length > 0
+        ? (slice.at(-1)?.id ?? null)
         : null
     return { tasks: slice, nextCursor }
   }
@@ -134,9 +190,13 @@ export class TaskStore {
       failed: 0,
       cancelled: 0
     }
-    for (const s of STATUSES) byStatus[s] = this.byStatus.get(s)?.size ?? 0
+    for (const s of STATUSES) {
+      byStatus[s] = this.byStatus.get(s)?.size ?? 0
+    }
     const perGroup: Record<string, number> = {}
-    for (const [k, set] of this.byGroup) perGroup[k] = set.size
+    for (const [k, set] of this.byGroup) {
+      perGroup[k] = set.size
+    }
     return {
       total: this.byId.size,
       byStatus,
