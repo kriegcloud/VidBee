@@ -12,6 +12,11 @@ import {
 } from '@shared/utils/format-preferences'
 import { buildVideoInfoDownloadMetadata } from '@shared/utils/video-info-metadata'
 import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidbee/downloader-core'
+import {
+  ONE_CLICK_CONTAINER_OPTIONS,
+  type OneClickContainerOption
+} from '@vidbee/downloader-core/format-preferences'
+import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
@@ -128,6 +133,7 @@ export function DownloadDialog({
   const advancedOptionsId = useId()
   const [playlistUrl, setPlaylistUrl] = useState('')
   const [downloadType, setDownloadType] = useState<'video' | 'audio'>('video')
+  const [playlistContainer, setPlaylistContainer] = useState<OneClickContainerOption>()
   const [startIndex, setStartIndex] = useState('1')
   const [endIndex, setEndIndex] = useState('')
   const [playlistCustomDownloadPath, setPlaylistCustomDownloadPath] = useState('')
@@ -667,7 +673,8 @@ export function DownloadDialog({
         downloadType === 'video'
           ? buildVideoFormatPreference(settings)
           : buildAudioFormatPreference(settings)
-      const containerFormat = downloadType === 'video' ? settings.oneClickContainer : undefined
+      const containerFormat =
+        downloadType === 'video' ? (playlistContainer ?? settings.oneClickContainer) : undefined
 
       const result = await ipcServices.download.startPlaylistDownload({
         url: trimmedUrl,
@@ -719,6 +726,7 @@ export function DownloadDialog({
     addDownload,
     t,
     playlistCustomDownloadPath,
+    playlistContainer,
     selectedEntryIds
   ])
 
@@ -851,6 +859,7 @@ export function DownloadDialog({
     })
 
     setPlaylistUrl('')
+    setPlaylistContainer(undefined)
     setPlaylistInfo(null)
     setPlaylistPreviewError(null)
     setPlaylistCustomDownloadPath('')
@@ -1156,6 +1165,16 @@ export function DownloadDialog({
         playlistTabContent={
           <PlaylistDownload
             advancedOptionsOpen={advancedOptionsOpen}
+            containerSelect={
+              downloadType === 'video' && (
+                <DownloadContainerSelect
+                  disabled={playlistBusy}
+                  onValueChange={setPlaylistContainer}
+                  options={ONE_CLICK_CONTAINER_OPTIONS}
+                  value={playlistContainer ?? settings.oneClickContainer ?? 'auto'}
+                />
+              )
+            }
             downloadType={downloadType}
             downloadTypeId={downloadTypeId}
             endIndex={endIndex}
