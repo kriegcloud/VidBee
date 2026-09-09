@@ -2,6 +2,13 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 /**
+ * Vendored builds are updated from source so stock releases cannot replace local changes.
+ */
+export const isVendoredYtDlpBuild = (
+  resourcesPath = resolveBundledResourcesPath(['.ytdlp-vendored'])
+): boolean => existsSync(path.join(resourcesPath, '.ytdlp-vendored'))
+
+/**
  * Resolve the resources directory that actually contains the requested assets.
  *
  * Bundled binaries (yt-dlp, ffmpeg, deno) live in different places depending on

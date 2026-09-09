@@ -21,6 +21,7 @@ import {
 } from '../shared/utils/format-preferences'
 import { configureLogger } from './config/logger-config'
 import { services } from './ipc'
+import { isVendoredYtDlpBuild } from './lib/bundled-resources-path'
 import { downloadEngine } from './lib/download-facade'
 import { ffmpegManager } from './lib/ffmpeg-manager'
 import {
@@ -905,6 +906,10 @@ function registerVidbeeProtocol(): void {
 }
 
 function initAutoUpdater(): void {
+  if (isVendoredYtDlpBuild()) {
+    log.info('Vendored build is managed from source, skipping automatic app updates')
+    return
+  }
   if (isPortableMode) {
     log.info('Portable mode is active, skipping auto-updater initialization')
     return

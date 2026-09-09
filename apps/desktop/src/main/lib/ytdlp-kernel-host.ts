@@ -3,7 +3,7 @@ import { createGithubMirrorFetch, preferChinaMirrors } from '@vidbee/transcripti
 import { app } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
-import { resolveBundledResourcesPath } from './bundled-resources-path'
+import { isVendoredYtDlpBuild, resolveBundledResourcesPath } from './bundled-resources-path'
 import { readElectronLocaleHints } from './system-locale'
 import { runKernelCommand } from './ytdlp-kernel-command'
 import { YtDlpKernelService } from './ytdlp-kernel-service'
@@ -40,6 +40,7 @@ export function initializeYtDlpKernelService(): YtDlpKernelService {
   const resourcesPath = resolveBundledResourcesPath([ytDlpName, join('node', nodeName)])
   kernelService = new YtDlpKernelService({
     activate: (paths) => ytdlpManager.activate(paths),
+    bundledOnly: isVendoredYtDlpBuild(resourcesPath),
     bundledNodePath: join(resourcesPath, 'node', nodeName),
     bundledYtDlpPath: join(resourcesPath, ytDlpName),
     fetch: createGithubMirrorFetch(fetch, () =>

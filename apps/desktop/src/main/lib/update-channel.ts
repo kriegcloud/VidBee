@@ -1,5 +1,6 @@
 import { autoUpdater } from 'electron-updater'
 import { scopedLoggers } from '../utils/logger'
+import { isVendoredYtDlpBuild } from './bundled-resources-path'
 
 const log = scopedLoggers.main
 
@@ -29,6 +30,9 @@ export function applyUpdateChannel(beta: boolean): void {
  * @param beta Whether the preview channel is enabled.
  */
 export function refreshUpdateChannel(beta: boolean): void {
+  if (isVendoredYtDlpBuild()) {
+    return
+  }
   applyUpdateChannel(beta)
   void autoUpdater.checkForUpdates()
 }

@@ -80,6 +80,8 @@ interface KernelLogger {
 
 export interface YtDlpKernelServiceOptions {
   activate: (paths: KernelActivation) => void
+  /** Use the packaged custom build without consulting or updating the stock kernel cache. */
+  bundledOnly?: boolean
   bundledNodePath: string
   bundledYtDlpPath: string
   fetch: typeof fetch
@@ -251,6 +253,9 @@ export class YtDlpKernelService extends EventEmitter {
    * Start the persisted background schedule after local preparation succeeds.
    */
   startBackgroundUpdates(): void {
+    if (this.options.bundledOnly) {
+      return
+    }
     this.stopped = false
     const nextCheckAt = this.persistentState?.nextCheckAt ?? this.now()
     this.scheduleAt(nextCheckAt)
@@ -282,6 +287,9 @@ export class YtDlpKernelService extends EventEmitter {
    * Prepare a managed copy, falling back to packaged binaries when needed.
    */
   private async prepareInternal(): Promise<boolean> {
+    if (this.options.bundledOnly) {
+      return this.activateBundledFallback()
+    }
     const wasReady = this.status.ready
     if (wasReady) {
       this.setStatus({ ...this.status, preparationStep: null, progress: null, state: 'checking' })
@@ -498,7 +506,7 @@ export class YtDlpKernelService extends EventEmitter {
    * Run one atomic candidate update and convert failures into retry state.
    */
   private async checkForUpdatesInternal(): Promise<void> {
-    if (this.stopped) {
+    if (this.stopped || this.options.bundledOnly) {
       return
     }
     if (!(this.persistentState && this.activePaths)) {
@@ -807,7 +815,7 @@ export class YtDlpKernelService extends EventEmitter {
         progress: null,
         ready: true,
         source: 'bundled',
-        state: 'bundled-fallback',
+        state: this.options.bundledOnly ? 'up-to-date' : 'bundled-fallback',
         ytDlpVersion
       })
       return true
