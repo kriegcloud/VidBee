@@ -557,6 +557,7 @@ from .facebook import (
     FacebookRedirectURLIE,
     FacebookReelIE,
 )
+from .facebook_reels import FacebookReelsIE
 from .fancode import (
     FancodeLiveIE,
     FancodeVodIE,

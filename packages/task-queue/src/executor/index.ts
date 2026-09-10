@@ -4,13 +4,7 @@
  * @vidbee/downloader-core (`YtDlpExecutor`) and is owned by NEX-131. Tests
  * supply a fake.
  */
-import type {
-  ClassifiedError,
-  ProcessKind,
-  TaskInput,
-  TaskOutput,
-  TaskProgress
-} from '../types'
+import type { ClassifiedError, ProcessKind, TaskInput, TaskOutput, TaskProgress } from '../types'
 
 export interface ExecutorSpawnEvent {
   taskId: string
@@ -38,6 +32,8 @@ export interface ExecutorStdEvent {
   stream: 'stdout' | 'stderr'
   /** A complete line with no trailing newline. */
   line: string
+  /** A bounded, explicit server backoff; the watchdog allows this silence. */
+  expectedSilenceMs?: number
 }
 
 export interface ExecutorFinishEvent {
@@ -101,5 +97,5 @@ export interface Executor {
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun
 }
 
-export { ExecutorRouter } from './router'
 export type { ExecutorRouterOptions } from './router'
+export { ExecutorRouter } from './router'

@@ -1,5 +1,11 @@
 import { useCallback, useState } from 'react'
-import { isInstagramProfileUrl, isPlaylistLikeUrl, isVscoGalleryUrl } from './url-kind'
+import {
+  isFacebookGalleryUrl,
+  isFacebookReelsUrl,
+  isInstagramProfileUrl,
+  isPlaylistLikeUrl,
+  isVscoGalleryUrl
+} from './url-kind'
 
 const isLikelyUrl = (value: string): boolean => {
   try {
@@ -87,12 +93,15 @@ export const useAddUrlInteraction = ({
 
       setAddUrlPopoverOpen(false)
 
-      if (isVscoGalleryUrl(trimmedUrl)) {
+      if (isVscoGalleryUrl(trimmedUrl) || isFacebookGalleryUrl(trimmedUrl)) {
         await onOneClickDownload(trimmedUrl)
         return
       }
 
-      if (isInstagramProfileUrl(trimmedUrl) || activeTab === 'profile') {
+      if (
+        isInstagramProfileUrl(trimmedUrl) ||
+        (activeTab === 'profile' && !isFacebookReelsUrl(trimmedUrl))
+      ) {
         if (isProfileBusy) {
           return
         }

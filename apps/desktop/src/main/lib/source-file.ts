@@ -6,6 +6,10 @@ const fileOk = (path: string | null | undefined): path is string =>
   Boolean(path && existsSync(path) && statSync(path).size > 0)
 
 export const resolveTaskSourceFile = (task: Readonly<Task>): string | null => {
+  // Older photo tasks may still have kind "video" when retried after an update.
+  if (task.output?.outputDirectory) {
+    return null
+  }
   if (fileOk(task.output?.filePath)) {
     return task.output.filePath
   }

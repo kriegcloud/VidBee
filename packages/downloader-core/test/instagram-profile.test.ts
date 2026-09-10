@@ -1,8 +1,9 @@
 import path from 'node:path'
 
-import { TRANSCRIBABLE_TASK_KINDS, type TaskQueueAPI } from '@vidbee/task-queue'
+import { type TaskQueueAPI, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
 import { describe, expect, it, vi } from 'vitest'
 import {
+  galleryWaitDurationMs,
   normalizeVscoGalleryUrl,
   resolveDefaultGalleryDlFilenameTemplate,
   resolveDownloadTaskKind,
@@ -40,7 +41,7 @@ describe('Instagram profile URL routing', () => {
 
   it('builds the dedicated gallery-dl category URLs', () => {
     expect(buildInstagramCategoryUrl('vidbee', 'posts')).toBe(
-      'https://www.instagram.com/vidbee/photos/'
+      'https://www.instagram.com/vidbee/posts/'
     )
     expect(buildInstagramCategoryUrl('vidbee', 'stories')).toBe(
       'https://www.instagram.com/stories/vidbee/'
@@ -79,7 +80,6 @@ describe('VSCO gallery URL routing', () => {
   })
 
   it.each([
-    'https://vsco.co/allybari/',
     'https://vsco.co/allybari/journal/',
     'https://vsco.co/allybari/gallery/item-id',
     'https://vsco.co.example.com/allybari/gallery',
@@ -87,6 +87,13 @@ describe('VSCO gallery URL routing', () => {
     'ftp://vsco.co/allybari/gallery'
   ])('rejects a non-gallery or rehosted URL: %s', (url) => {
     expect(normalizeVscoGalleryUrl(url)).toBeNull()
+  })
+
+  it('normalizes a VSCO profile root', () => {
+    expect(normalizeVscoGalleryUrl('https://vsco.co/elizabethpaigee')).toEqual({
+      username: 'elizabethpaigee',
+      profileUrl: 'https://vsco.co/elizabethpaigee/gallery'
+    })
   })
 
   it('routes VSCO galleries and Instagram URLs through gallery-dl', () => {
@@ -146,9 +153,7 @@ describe('gallery-dl runtime settings', () => {
 
   it('preserves video-backed Instagram stories and highlights', () => {
     expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).toContain('extractor.instagram.videos=true')
-    expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).toContain(
-      'extractor.instagram.static-videos=true'
-    )
+    expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).toContain('extractor.instagram.static-videos=true')
     expect(INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS).not.toContain(
       'extractor.instagram.static-videos=false'
     )
@@ -255,7 +260,7 @@ describe('Instagram post downloads', () => {
           totalAssetCount: 5
         },
         categoryUrls: {
-          posts: 'https://www.instagram.com/vidbee/photos/'
+          posts: 'https://www.instagram.com/vidbee/posts/'
         }
       })
     } as unknown as InstagramProfileInspector
@@ -274,5 +279,18 @@ describe('Instagram post downloads', () => {
     expect(add.mock.calls[0]?.[0].input.options).toMatchObject({
       galleryDlFilter: "type == 'post'"
     })
+  })
+})
+
+describe('gallery server backoff', () => {
+  it('allows announced rate-limit waits without disabling stall detection', () => {
+    expect(
+      galleryWaitDurationMs(
+        '[vsco][info] Waiting for 1 minutes until 01:48:20 (429 Too Many Requests)'
+      )
+    ).toBe(60_000)
+    expect(galleryWaitDurationMs('[vsco][info] Waiting for 2.5 seconds until 01:48:20')).toBe(2500)
+    expect(galleryWaitDurationMs('[vsco][info] Waiting for 999 minutes until later')).toBe(600_000)
+    expect(galleryWaitDurationMs('unrelated log line')).toBeUndefined()
   })
 })

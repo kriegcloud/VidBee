@@ -3,6 +3,8 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
+import { buildGalleryDlRuntimeArgs, type DownloadRuntimeSettings } from '@vidbee/downloader-core'
+
 import { scopedLoggers } from '../utils/logger'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
 
@@ -14,6 +16,16 @@ class GalleryDlManager {
       this.binaryPath = this.resolvePath()
     }
     return this.binaryPath
+  }
+
+  getRuntimeArgs(settings?: DownloadRuntimeSettings): readonly string[] {
+    const resources = resolveBundledResourcesPath(['gallery-dl-extractors'])
+    const modules = path.join(resources, 'gallery-dl-extractors')
+    return [
+      '-o',
+      `extractor.module-sources=${JSON.stringify([modules, null])}`,
+      ...buildGalleryDlRuntimeArgs(settings)
+    ]
   }
 
   private getBundledName(): string {

@@ -54,6 +54,7 @@ export interface VideoInfoCommandResult {
 
 export interface DownloadProgress {
   percent: number
+  indeterminate?: boolean
   currentSpeed?: string
   eta?: string
   downloaded?: string

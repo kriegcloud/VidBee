@@ -57,9 +57,15 @@ const run = async (): Promise<void> => {
       if (message?.type === 'cancel') {
         abort.abort()
       } else if (message?.type === 'probe') {
-        void handleProbe(message)
+        void handleProbe(message).then(() => {
+          process.stdout.write('', () => process.exit(0))
+        }, failHard)
       } else if (message?.type === 'start') {
-        void handleStart(message, abort.signal)
+        // Workers handle one request. Exit after sending the result so native
+        // models, stdin listeners, and ONNX threads cannot outlive the task.
+        void handleStart(message, abort.signal).then(() => {
+          process.stdout.write('', () => process.exit(0))
+        }, failHard)
       }
       idx = buffer.indexOf('\n')
     }

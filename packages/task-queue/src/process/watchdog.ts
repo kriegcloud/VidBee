@@ -75,12 +75,15 @@ export class Watchdog {
     e.timer = this.scheduleNext(e)
   }
 
-  bump(taskId: string): void {
+  bump(taskId: string, expectedSilenceMs = 0): void {
     const e = this.entries.get(taskId)
     if (!e) {
       return
     }
-    e.lastBumpAt = this.clock()
+    const allowance = Number.isFinite(expectedSilenceMs)
+      ? Math.max(0, Math.min(expectedSilenceMs, 600_000))
+      : 0
+    e.lastBumpAt = this.clock() + allowance
   }
 
   disarm(taskId: string): void {

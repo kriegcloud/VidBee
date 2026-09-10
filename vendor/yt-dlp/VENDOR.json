@@ -5,5 +5,9 @@
   "ref": "2026.08.19",
   "commit": "3a08beaf031ab68f966401ead017ac81fe8486cf",
   "importedAt": "2026-09-09",
-  "license": "Unlicense"
+  "license": "Unlicense",
+  "localPatches": [
+    "Facebook profile reels enumeration with Relay pagination",
+    "Extract individual Facebook reels from their canonical page"
+  ]
 }

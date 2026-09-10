@@ -117,3 +117,24 @@ test('watchdog clears zero-valued handles and honors processing grace', () => {
   timers.fire()
   assert.equal(stalled, 1)
 })
+
+test('watchdog honors an announced server wait then resumes stall detection', () => {
+  const timers = fakeTimers()
+  let now = 0
+  let stalled = 0
+  const watchdog = new Watchdog(
+    () => {
+      stalled++
+    },
+    { ...timers, clock: () => now, runningIdleMs: 60_000 }
+  )
+  watchdog.arm('gallery', 'running')
+  watchdog.bump('gallery', 60_000)
+  now = 60_000
+  timers.fire()
+  assert.equal(stalled, 0)
+  assert.equal(timers.pending.values().next().value?.ms, 60_000)
+  now = 120_000
+  timers.fire()
+  assert.equal(stalled, 1)
+})

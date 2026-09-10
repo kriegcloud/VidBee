@@ -640,7 +640,7 @@ export function DownloadItem({
       node: (
         <span className="inline-flex items-center gap-1 font-medium text-foreground">
           {statusIcon}
-          {(progressInfo?.percent ?? 0).toFixed(0)}%
+          {progressInfo?.indeterminate ? statusText : `${(progressInfo?.percent ?? 0).toFixed(0)}%`}
         </span>
       )
     })
@@ -975,6 +975,7 @@ export function DownloadItem({
 
               {/* Progress */}
               {download.progress &&
+                !download.progress.indeterminate &&
                 download.status !== 'completed' &&
                 download.status !== 'error' && (
                   <div className="mt-1.5 w-full overflow-hidden rounded-full bg-background/60">

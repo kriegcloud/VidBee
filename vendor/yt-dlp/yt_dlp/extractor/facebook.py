@@ -880,7 +880,15 @@ class FacebookIE(InfoExtractor):
         video_id = self._match_id(url)
 
         real_url = self._VIDEO_PAGE_TEMPLATE % video_id if url.startswith('facebook:') else url
-        return self._extract_from_url(real_url, video_id)
+        try:
+            return self._extract_from_url(real_url, video_id)
+        except ExtractorError as error:
+            # Facebook also shares reels through named /videos/ permalinks.
+            # Their legacy page can lack video data while /reel/ID still works.
+            if ('Cannot parse data' not in str(error)
+                    or not re.search(r'/videos/(?:[^/?#]+/)?' + re.escape(video_id) + r'(?:[/?#]|$)', real_url)):
+                raise
+            return self._extract_from_url(f'https://www.facebook.com/reel/{video_id}', video_id)
 
 
 class FacebookPluginsVideoIE(InfoExtractor):
@@ -955,7 +963,7 @@ class FacebookRedirectURLIE(InfoExtractor):
         return self.url_result(redirect_url)
 
 
-class FacebookReelIE(InfoExtractor):
+class FacebookReelIE(FacebookIE):
     _VALID_URL = r'https?://(?:[\w-]+\.)?facebook\.com/reel/(?P<id>\d+)'
     IE_NAME = 'facebook:reel'
     _TESTS = [{
@@ -979,8 +987,7 @@ class FacebookReelIE(InfoExtractor):
 
     def _real_extract(self, url):
         video_id = self._match_id(url)
-        return self.url_result(
-            f'https://m.facebook.com/watch/?v={video_id}&_rdr', FacebookIE, video_id)
+        return self._extract_from_url(f'https://www.facebook.com/reel/{video_id}', video_id)
 
 
 class FacebookAdsIE(InfoExtractor):

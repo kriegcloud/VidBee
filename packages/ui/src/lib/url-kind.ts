@@ -1,3 +1,8 @@
+import { normalizeFacebookGalleryUrl } from '@vidbee/downloader-core/facebook-gallery'
+
+export const isFacebookGalleryUrl = (value: string): boolean =>
+  normalizeFacebookGalleryUrl(value) !== null
+
 const YOUTUBE_HOSTS = ['youtube.com', 'youtu.be', 'm.youtube.com'] as const
 // YouTube channel/handle landing pages (e.g. /@handle/videos, /channel/UC…,
 // /user/…, /c/…) list many videos; route them through the playlist flow so a
@@ -31,7 +36,33 @@ const INSTAGRAM_RESERVED_PATHS = new Set([
   'web'
 ])
 const VSCO_HOSTS = new Set(['vsco.co', 'www.vsco.co'])
-const VSCO_GALLERY_PATH = /^\/[^/?#]+\/(?:gallery|images)\/?$/i
+const VSCO_GALLERY_PATH = /^\/[A-Za-z0-9][A-Za-z0-9._-]*(?:\/(?:gallery|images))?\/?$/i
+const FACEBOOK_REELS_HOSTS = new Set([
+  'facebook.com',
+  'www.facebook.com',
+  'm.facebook.com',
+  'mbasic.facebook.com',
+  'web.facebook.com'
+])
+const FACEBOOK_REELS_PATH =
+  /^\/(?!groups\/|pages\/|share\/|reel\/|watch\/)[A-Za-z0-9][A-Za-z0-9.]*\/reels\/?$/
+
+/** Profile reels are a video playlist; /reel/ID remains an individual video. */
+export const isFacebookReelsUrl = (value: string): boolean => {
+  try {
+    const parsed = new URL(value)
+    return (
+      ['http:', 'https:'].includes(parsed.protocol) &&
+      FACEBOOK_REELS_HOSTS.has(parsed.hostname) &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.port &&
+      FACEBOOK_REELS_PATH.test(parsed.pathname)
+    )
+  } catch {
+    return false
+  }
+}
 
 /**
  * Check whether a URL points to an Instagram profile root.
@@ -83,6 +114,9 @@ export const isVscoGalleryUrl = (value: string): boolean => {
  * Issue ref: #316, #322.
  */
 export const isPlaylistLikeUrl = (value: string): boolean => {
+  if (isFacebookReelsUrl(value)) {
+    return true
+  }
   try {
     const parsed = new URL(value)
     const playlistQueryKeys = ['collection', 'list', 'playlist', 'set']

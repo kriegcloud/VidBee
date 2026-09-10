@@ -9,6 +9,7 @@
     "./cookie-setup": "./src/cookie-setup.ts",
     "./cookie-browser-paths": "./src/cookie-browser-paths.ts",
     "./download-file": "./src/download-file.ts",
+    "./facebook-gallery": "./src/facebook-gallery.ts",
     "./filename-style": "./src/filename-style.ts",
     "./format-preferences": "./src/format-preferences.ts",
     "./gallery-dl-executor": "./src/gallery-dl-executor.ts",

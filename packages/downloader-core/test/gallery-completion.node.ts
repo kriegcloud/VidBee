@@ -6,7 +6,7 @@ import { test } from 'node:test'
 import type { ExecutorFinishEvent, TaskKind } from '@vidbee/task-queue'
 import { GalleryDlExecutor } from '../src/gallery-dl-executor'
 
-for (const kind of ['instagram-profile-category', 'vsco-gallery'] as const) {
+for (const kind of ['instagram-profile-category', 'vsco-gallery', 'facebook-gallery'] as const) {
   for (const scenario of [
     'complete',
     'failed',
@@ -23,7 +23,7 @@ for (const kind of ['instagram-profile-category', 'vsco-gallery'] as const) {
         await writeFile(file, scenario === 'empty' ? '' : 'media')
       }
       const prefix = '__VIDBEE_GDL__'
-      const lines = [`${prefix}\tprepare\t${file}`]
+      const lines = [`${file} 52% (human progress fragment)`, `${prefix}\tprepare\t${file}`]
       if (scenario !== 'unfinished') {
         lines.push(`${prefix}\tafter\t${file}`)
       }
@@ -52,9 +52,11 @@ for (const kind of ['instagram-profile-category', 'vsco-gallery'] as const) {
             input: {
               kind: kind as TaskKind,
               url:
-                kind === 'vsco-gallery'
-                  ? 'https://vsco.co/fixture/gallery'
-                  : 'https://www.instagram.com/fixture/photos/'
+                kind === 'facebook-gallery'
+                  ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
+                  : kind === 'vsco-gallery'
+                    ? 'https://vsco.co/fixture/gallery'
+                    : 'https://www.instagram.com/fixture/photos/'
             }
           },
           { onSpawn() {}, onProgress() {}, onStd() {}, onFinish: resolve }
@@ -68,3 +70,57 @@ for (const kind of ['instagram-profile-category', 'vsco-gallery'] as const) {
     })
   }
 }
+
+test('cancelling a standalone gallery downloader reaps the child holding its pipes', {
+  skip: process.platform === 'win32',
+  timeout: 5000
+}, async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-gallery-tree-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const bin = path.join(root, 'fake-standalone')
+  await writeFile(
+    bin,
+    `#!${process.execPath}\nconst c=require('node:child_process').spawn(process.execPath,['-e',"process.stdout.write('child-ready\\\\n');setInterval(()=>{},1000)"],{stdio:['ignore','inherit','inherit']});setInterval(()=>{},1000)\n`,
+    { mode: 0o755 }
+  )
+  let pid: number | undefined
+  let finish!: (e: ExecutorFinishEvent) => void
+  const done = new Promise<ExecutorFinishEvent>((resolve) => {
+    finish = resolve
+  })
+  let ready!: () => void
+  const started = new Promise<void>((resolve) => {
+    ready = resolve
+  })
+  const executor = new GalleryDlExecutor({ resolveBinaryPath: () => bin, defaultDownloadDir: root })
+  const run = executor.run(
+    {
+      taskId: 'gallery',
+      attemptId: 'one',
+      attemptNumber: 1,
+      input: { kind: 'vsco-gallery', url: 'https://vsco.co/fixture/gallery' }
+    },
+    {
+      onSpawn: (e) => {
+        pid = e.pid
+      },
+      onProgress() {},
+      onStd: (e) => {
+        if (e.line === 'child-ready') {
+          ready()
+        }
+      },
+      onFinish: finish
+    }
+  )
+  t.after(() => {
+    if (pid) {
+      try {
+        process.kill(-pid, 'SIGKILL')
+      } catch {}
+    }
+  })
+  await started
+  await run.cancel(0)
+  assert.equal((await done).result.type, 'cancelled')
+})

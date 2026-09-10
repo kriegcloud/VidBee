@@ -37,8 +37,11 @@ export interface AutoTranscriptionCoordinatorOptions {
 export class AutoTranscriptionCoordinator {
   private unsubscribe: (() => void) | null = null
   private readonly pending = new Set<string>()
+  private readonly opts: AutoTranscriptionCoordinatorOptions
 
-  constructor(private readonly opts: AutoTranscriptionCoordinatorOptions) {}
+  constructor(opts: AutoTranscriptionCoordinatorOptions) {
+    this.opts = opts
+  }
 
   start(): void {
     if (this.unsubscribe) {
@@ -107,6 +110,12 @@ export class AutoTranscriptionCoordinator {
       } catch (err) {
         this.opts.logger?.warn('caption import failed', err)
       }
+    }
+    // Caption extraction is asynchronous: history may have been removed, or
+    // the coordinator stopped, before it finishes. Never recreate that work.
+    if (!this.unsubscribe || this.opts.queue.get(task.id)?.status !== 'completed') {
+      this.pending.delete(task.id)
+      return
     }
     if (this.opts.store.getLatestForDownload(task.id)) {
       this.pending.delete(task.id)

@@ -136,6 +136,7 @@ export class TaskQueueAPI {
   private readonly attemptFinished = new Map<string, Promise<void>>()
   private readonly progressLastWrite = new Map<string, number>()
   private readonly progressDirty = new Map<string, TaskProgress>()
+  private readonly removingHistory = new Set<string>()
   /** Running tasks whose current cancel was requested as pause, not user-cancel. */
   private readonly pendingPause = new Map<string, string>()
   /** Running tasks whose user-cancel should win over an in-flight pause. */
@@ -327,11 +328,13 @@ export class TaskQueueAPI {
     }
     const tick = (): void => {
       this.idleKickTimer = this.setTimer(() => {
-        void this.reconcileQueue().finally(() => {
-          if (this.started) {
-            tick()
-          }
-        })
+        void this.reconcileQueue()
+          .catch((error) => logCaughtError('task_queue_reconcile_threw', error))
+          .finally(() => {
+            if (this.started) {
+              tick()
+            }
+          })
       }, this.idleQueueKickMs)
     }
     tick()
@@ -372,6 +375,9 @@ export class TaskQueueAPI {
         return { id: existing.id }
       }
     }
+    if (req.parentId && (!this.store.has(req.parentId) || this.removingHistory.has(req.parentId))) {
+      throw new Error(`add: parent task ${req.parentId} is missing or being removed`)
+    }
     const id = req.id ?? randomUUID()
     const task: Task = {
       id,
@@ -396,7 +402,13 @@ export class TaskQueueAPI {
       updatedAt: now
     }
     this.store.insert(task)
-    await this.persist.insertTask(task)
+    try {
+      await this.persist.insertTask(task)
+    } catch (error) {
+      // A rejected insert must not leave a runnable, memory-only task behind.
+      this.store.remove(id)
+      throw error
+    }
     this.bus.emit({
       type: 'transition',
       taskId: id,
@@ -460,7 +472,12 @@ export class TaskQueueAPI {
       updatedAt: now
     }
     this.store.insert(task)
-    await this.persist.insertTask(task)
+    try {
+      await this.persist.insertTask(task)
+    } catch (error) {
+      this.store.remove(id)
+      throw error
+    }
     this.bus.emit({
       type: 'snapshot-changed',
       taskId: id,
@@ -605,15 +622,20 @@ export class TaskQueueAPI {
     await this.scheduler.enqueue(id, t.priority)
   }
 
-  async retryManual(id: string): Promise<void> {
+  async retryManual(id: string, options?: TaskInput['options']): Promise<void> {
     const t = this.store.get(id)
     if (!t || (t.status !== 'failed' && t.status !== 'cancelled')) {
       return
     }
-    await this.applyTransition(id, 'queued', {
-      trigger: t.status === 'failed' ? 'retry-manual' : 'requeue',
-      reason: 'manual'
-    })
+    await this.applyTransition(
+      id,
+      'queued',
+      {
+        trigger: t.status === 'failed' ? 'retry-manual' : 'requeue',
+        reason: 'manual'
+      },
+      options ? { ...t.input, options } : undefined
+    )
     await this.scheduler.enqueue(id, t.priority)
   }
 
@@ -634,24 +656,28 @@ export class TaskQueueAPI {
       throw new Error(`removeFromHistory: ${id} is not in a terminal state`)
     }
     const descendants = this.collectDescendantIds(id)
-    for (const childId of [...descendants, id]) {
-      const child = this.store.get(childId)
-      if (child && !TERMINAL_STATUSES.has(child.status)) {
-        try {
+    const removing = [...descendants, id]
+    for (const childId of removing) {
+      this.removingHistory.add(childId)
+    }
+    try {
+      for (const childId of removing) {
+        const child = this.store.get(childId)
+        if (child && !TERMINAL_STATUSES.has(child.status)) {
           await this.cancel(childId, 'user')
-        } catch {
-          // Persist cascade still removes the child even if cancel is illegal.
         }
+        // Keep group identity until cancellation has reaped the active attempt.
+        await this.attemptFinished.get(childId)
       }
-      // Executors return from cancel after signalling, before close/finalization.
-      // Keep the task's group identity until its scheduler slot has been released.
-      await this.attemptFinished.get(childId)
+      await this.persist.deleteTask(id)
+      for (const childId of removing) {
+        this.store.remove(childId)
+      }
+    } finally {
+      for (const childId of removing) {
+        this.removingHistory.delete(childId)
+      }
     }
-    await this.persist.deleteTask(id)
-    for (const childId of descendants) {
-      this.store.remove(childId)
-    }
-    this.store.remove(id)
   }
 
   /**
@@ -809,7 +835,7 @@ export class TaskQueueAPI {
             if (!acceptingEvents) {
               return
             }
-            this.watchdog.bump(id)
+            this.watchdog.bump(id, e.expectedSilenceMs)
             this.bus.emit({
               type: 'log',
               taskId: id,
@@ -827,9 +853,11 @@ export class TaskQueueAPI {
             void this.handleFinish(
               id,
               attemptId,
-              stalledError
-                ? { ...e, result: { type: 'error', error: stalledError, exitCode: null } }
-                : e
+              this.pendingPause.has(id) || this.pendingCancel.has(id)
+                ? { ...e, result: { type: 'cancelled' } }
+                : stalledError
+                  ? { ...e, result: { type: 'error', error: stalledError, exitCode: null } }
+                  : e
             )
               .catch((error) => logCaughtError('task_queue_finish_release_threw', error))
               .finally(completeAttempt)
@@ -1076,7 +1104,12 @@ export class TaskQueueAPI {
     })
   }
 
-  private async applyTransition(id: string, to: TaskStatus, ctx: TransitionContext): Promise<Task> {
+  private async applyTransition(
+    id: string,
+    to: TaskStatus,
+    ctx: TransitionContext,
+    input?: TaskInput
+  ): Promise<Task> {
     const cur = this.store.get(id)
     if (!cur) {
       throw new Error(`applyTransition: missing task ${id}`)
@@ -1084,6 +1117,9 @@ export class TaskQueueAPI {
     let next: Task
     try {
       next = fsmTransition(cur, to, { ...ctx, now: this.clock() })
+      if (input) {
+        next = { ...next, input }
+      }
     } catch (err) {
       if (err instanceof IllegalTransitionError) {
         // panic path (§ task body): journal panic + force this task to failed,
@@ -1127,7 +1163,14 @@ export class TaskQueueAPI {
       throw err
     }
     this.store.update(next)
-    await this.persist.upsertTask({ task: next, progress: next.progress })
+    try {
+      await this.persist.upsertTask({ task: next, progress: next.progress })
+    } catch (error) {
+      if (this.store.get(id) === next) {
+        this.store.update(cur)
+      }
+      throw error
+    }
     this.bus.emit({
       type: 'transition',
       taskId: id,

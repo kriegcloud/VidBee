@@ -100,6 +100,7 @@ const buildDownloadExecutor = (): HostRoutingExecutor => {
   })
   const galleryDl = new GalleryDlExecutor({
     resolveBinaryPath: () => galleryDlManager.getPath(),
+    resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings),
     resolveFfmpegLocation,
     defaultDownloadDir: resolveDesktopDownloadDir()
   })
@@ -111,7 +112,8 @@ let instagramProfileInspector: InstagramProfileInspector | null = null
 export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector => {
   if (!instagramProfileInspector) {
     instagramProfileInspector = new InstagramProfileInspector({
-      resolveBinaryPath: () => galleryDlManager.getPath()
+      resolveBinaryPath: () => galleryDlManager.getPath(),
+      resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings)
     })
   }
   return instagramProfileInspector

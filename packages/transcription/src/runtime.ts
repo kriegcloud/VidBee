@@ -3,6 +3,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { atomicWriteJson } from './atomic-file'
+import { terminateWorker } from './worker/terminate'
 
 export type WorkerRuntimeLayer = 'env' | 'bundled' | 'system' | 'electron'
 
@@ -90,7 +91,8 @@ export const resolveBundledNodePath = (resourceDirs: string[] = []): string | nu
     ...resourceDirs.map((dir) => join(dir, 'node', name)),
     join(process.cwd(), 'resources', 'node', name)
   ]
-  const electronResourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath
+  const electronResourcesPath = (process as NodeJS.Process & { resourcesPath?: string })
+    .resourcesPath
   if (typeof electronResourcesPath === 'string' && electronResourcesPath.length > 0) {
     extras.push(
       join(electronResourcesPath, 'resources', 'node', name),
@@ -121,8 +123,12 @@ export const resolveSystemNodePaths = (): string[] => {
     whichNode(),
     process.platform === 'darwin' ? '/opt/homebrew/bin/node' : null,
     '/usr/local/bin/node',
-    process.platform === 'win32' ? join(process.env.ProgramFiles ?? 'C:\\Program Files', 'nodejs', 'node.exe') : null
-  ].filter((value): value is string => Boolean(value && existsSync(value) && !isElectronBinary(value)))
+    process.platform === 'win32'
+      ? join(process.env.ProgramFiles ?? 'C:\\Program Files', 'nodejs', 'node.exe')
+      : null
+  ].filter((value): value is string =>
+    Boolean(value && existsSync(value) && !isElectronBinary(value))
+  )
   return [...new Set(found)]
 }
 
@@ -266,10 +272,10 @@ export const probeWorker = async (input: {
         return
       }
       settled = true
-      if (!child.killed) {
-        child.kill('SIGTERM')
-      }
-      resolve(ok)
+      void terminateWorker(child).then(
+        () => resolve(ok),
+        () => resolve(false)
+      )
     }
     const timer = setTimeout(() => finish(false), timeoutMs)
     child.stdout?.setEncoding('utf8')

@@ -253,3 +253,170 @@ test('history deletion waits for active descendants and releases their group slo
   await queue.add({ input: { kind: 'video', url: 'https://example.com/b' } })
   assert.equal(runs.length, 2)
 })
+
+test('a rejected durable insertion leaves no runnable ghost task', async (t) => {
+  const persist = new MemoryPersistAdapter()
+  persist.insertTask = async () => {
+    throw new Error('FOREIGN KEY constraint failed')
+  }
+  let runs = 0
+  const queue = new TaskQueueAPI({
+    persist,
+    ...fakeTimers(),
+    executor: {
+      run() {
+        runs++
+        throw new Error('Must not run')
+      }
+    }
+  })
+  await queue.start()
+  t.after(() => queue.stop())
+  await assert.rejects(
+    queue.add({ id: 'ghost', input: { kind: 'video', url: 'https://example.com/a' } }),
+    /FOREIGN KEY/
+  )
+  await queue.reconcileQueue()
+  assert.equal(queue.get('ghost'), undefined)
+  assert.equal(queue.stats().total, 0)
+  assert.equal(runs, 0)
+})
+
+test('child tasks cannot be added for deleted parents', async (t) => {
+  const persist = new MemoryPersistAdapter()
+  await persist.insertTask(task('parent'))
+  const queue = new TaskQueueAPI({
+    persist,
+    ...fakeTimers(),
+    executor: {
+      run() {
+        throw new Error('Must not run')
+      }
+    }
+  })
+  await queue.start()
+  t.after(() => queue.stop())
+  await queue.removeFromHistory('parent')
+  await assert.rejects(
+    queue.add({ parentId: 'parent', input: { kind: 'transcription', url: 'file:///fixture.mp4' } }),
+    /parent task.*missing/
+  )
+  assert.equal(queue.stats().total, 0)
+  assert.equal((await persist.loadAllTasks()).length, 0)
+})
+
+test('history deletion rejects children arriving while an existing child is stopping', async (t) => {
+  const persist = new MemoryPersistAdapter()
+  await persist.insertTask(task('parent'))
+  const runs: { ctx: ExecutorContext; events: ExecutorEvents }[] = []
+  const queue = new TaskQueueAPI({
+    persist,
+    ...fakeTimers(),
+    executor: {
+      run(ctx, events) {
+        runs.push({ ctx, events })
+        return { cancel: async () => {}, pause: async () => {} }
+      }
+    }
+  })
+  await queue.start()
+  t.after(() => queue.stop())
+  await queue.add({ parentId: 'parent', input: { kind: 'video', url: 'https://example.com/a' } })
+  const removal = queue.removeFromHistory('parent')
+  await turn()
+  await assert.rejects(
+    queue.add({ parentId: 'parent', input: { kind: 'transcription', url: 'file:///fixture.mp4' } }),
+    /being removed/
+  )
+  const first = runs[0]
+  assert.ok(first)
+  first.events.onFinish({ ...finish(first.ctx, 'error'), result: { type: 'cancelled' } })
+  await removal
+  assert.equal(queue.stats().total, 0)
+})
+
+test('manual retry persists replacement options while preserving task identity', async (t) => {
+  const persist = new MemoryPersistAdapter()
+  const input = {
+    kind: 'video' as const,
+    url: 'https://example.com/video',
+    options: { settings: { cookiesPath: '/old-cookies' }, customDownloadPath: '/saved-destination' }
+  }
+  await persist.insertTask(task('retry-settings', { status: 'failed', input }))
+  const queue = new TaskQueueAPI({ persist, ...fakeTimers() })
+  await queue.start()
+  t.after(() => queue.stop())
+  await queue.retryManual('retry-settings', {
+    ...input.options,
+    settings: { cookiesPath: '/current-cookies' }
+  })
+  const stored = (await persist.loadAllTasks()).find((x) => x.id === 'retry-settings')
+  assert.equal(stored?.input.url, input.url)
+  assert.deepEqual(stored?.input.options, {
+    settings: { cookiesPath: '/current-cookies' },
+    customDownloadPath: '/saved-destination'
+  })
+})
+
+test('failed retry persistence restores the terminal task and its options', async (t) => {
+  const persist = new MemoryPersistAdapter()
+  const original = task('failed-retry', {
+    status: 'failed',
+    input: {
+      kind: 'video',
+      url: 'https://example.com/video',
+      options: { settings: { cookiesPath: '/old' } }
+    }
+  })
+  await persist.insertTask(original)
+  const queue = new TaskQueueAPI({ persist, ...fakeTimers() })
+  await queue.start()
+  t.after(() => queue.stop())
+  const save = persist.upsertTask.bind(persist)
+  persist.upsertTask = async () => {
+    throw new Error('disk full')
+  }
+  await assert.rejects(
+    queue.retryManual(original.id, { settings: { cookiesPath: '/new' } }),
+    /disk full/
+  )
+  assert.equal(queue.get(original.id)?.status, 'failed')
+  assert.deepEqual(queue.get(original.id)?.input.options, original.input.options)
+  persist.upsertTask = save
+})
+
+test('a user pause takes precedence over an in-flight watchdog cancellation', async (t) => {
+  const timers = fakeTimers()
+  const runs: { ctx: ExecutorContext; events: ExecutorEvents }[] = []
+  let now = 0
+  const queue = new TaskQueueAPI({
+    persist: new MemoryPersistAdapter(),
+    ...timers,
+    clock: () => now,
+    runningIdleMs: 100,
+    executor: {
+      run(ctx, events) {
+        runs.push({ ctx, events })
+        events.onSpawn({ ...ctx, pid: 12_345, pidStartedAt: 1, kind: 'gallery-dl', spawnedAt: now })
+        return { cancel: async () => {}, pause: async () => {} }
+      }
+    }
+  })
+  await queue.start()
+  t.after(() => queue.stop())
+  const { id } = await queue.add({
+    input: { kind: 'vsco-gallery', url: 'https://vsco.co/fixture/gallery' }
+  })
+  now = 100
+  const watchdogTimer = [...timers.pending].find(([, v]) => v.ms === 100)
+  assert.ok(watchdogTimer)
+  timers.pending.delete(watchdogTimer[0])
+  watchdogTimer[1].fn()
+  await queue.pause(id, 'user')
+  const first = runs[0]
+  assert.ok(first)
+  first.events.onFinish({ ...finish(first.ctx, 'error'), result: { type: 'cancelled' } })
+  await turn()
+  assert.equal(queue.get(id)?.status, 'paused')
+  assert.equal(queue.get(id)?.statusReason, 'user')
+})

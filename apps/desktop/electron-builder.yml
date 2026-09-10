@@ -97,6 +97,7 @@ extraResources:
     filter:
       - '**/*'
       - '!mpv{,/**}'
+      - '!**/__pycache__{,/**}'
       - '!deno'
       - '!deno.exe'
   # §11: official Node LTS binary (resources/node) also serves yt-dlp EJS.

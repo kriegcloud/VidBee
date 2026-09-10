@@ -49,6 +49,7 @@ const buildProgress = (
   }
   return {
     percent: proj.progress.percent,
+    indeterminate: proj.progress.indeterminate,
     currentSpeed: proj.progress.currentSpeed,
     eta: proj.progress.eta,
     downloaded: proj.progress.downloaded,

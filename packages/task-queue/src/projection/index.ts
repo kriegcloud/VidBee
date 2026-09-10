@@ -47,6 +47,7 @@ export type LegacySubStatus = 'queued' | 'paused' | 'retry-scheduled'
 
 export interface LegacyDownloadProgress {
   percent: number
+  indeterminate?: boolean
   currentSpeed?: string
   eta?: string
   downloaded?: string
@@ -231,7 +232,9 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     maxAttempts: task.maxAttempts
   }
 
-  if (subStatus) proj.subStatus = subStatus
+  if (subStatus) {
+    proj.subStatus = subStatus
+  }
 
   // Progress is meaningful for running/processing AND for paused/retry, where
   // we want the UI to remember "you were 47% in" rather than reset to 0.
@@ -253,15 +256,21 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     proj.skippedCount = out.skippedCount
     proj.failedCount = out.failedCount
     proj.totalSize = out.totalSize
-    if (out.durationMs != null) proj.duration = Math.round(out.durationMs / 1000)
-    if (out.formatId) proj.resolvedFormatId = out.formatId
+    if (out.durationMs != null) {
+      proj.duration = Math.round(out.durationMs / 1000)
+    }
+    if (out.formatId) {
+      proj.resolvedFormatId = out.formatId
+    }
   }
 
   if (task.lastError) {
     const err = task.lastError as ClassifiedError
     proj.errorCategory = err.category
     proj.uiMessageKey = err.uiMessageKey
-    if (status === 'error') proj.error = err.rawMessage
+    if (status === 'error') {
+      proj.error = err.rawMessage
+    }
   }
 
   if (task.status === 'retry-scheduled' && task.nextRetryAt != null) {
@@ -272,18 +281,21 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
 }
 
 function projectProgress(p: Readonly<TaskProgress>): LegacyDownloadProgress {
-  const percent = p.percent != null ? Math.max(0, Math.min(100, p.percent * 100)) : 0
+  const percent = p.percent == null ? 0 : Math.max(0, Math.min(100, p.percent * 100))
   return {
     percent,
-    currentSpeed: p.speedBps != null ? formatSpeed(p.speedBps) : undefined,
-    eta: p.etaMs != null ? formatEta(p.etaMs) : undefined,
-    downloaded: p.bytesDownloaded != null ? formatBytes(p.bytesDownloaded) : undefined,
-    total: p.bytesTotal != null ? formatBytes(p.bytesTotal) : undefined
+    indeterminate: p.percent == null,
+    currentSpeed: p.speedBps == null ? undefined : formatSpeed(p.speedBps),
+    eta: p.etaMs == null ? undefined : formatEta(p.etaMs),
+    downloaded: p.bytesDownloaded == null ? undefined : formatBytes(p.bytesDownloaded),
+    total: p.bytesTotal == null ? undefined : formatBytes(p.bytesTotal)
   }
 }
 
 function formatBytes(n: number): string {
-  if (n < 1024) return `${n}B`
+  if (n < 1024) {
+    return `${n}B`
+  }
   const units = ['KB', 'MB', 'GB', 'TB']
   let value = n / 1024
   let i = 0

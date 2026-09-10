@@ -14,6 +14,9 @@ import {
   virtualError
 } from '@vidbee/task-queue'
 
+import { killProcessTree } from '@vidbee/task-queue/process'
+
+import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
 import type { DownloadRuntimeSettings } from './types'
 import type { YtDlpTaskOptions } from './yt-dlp-executor'
@@ -25,13 +28,22 @@ const EVENT_PREFIX = '__VIDBEE_GDL__'
 const CHROME_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
 const SEQUENTIAL_TEMPLATE_REGEX = /^(\d+)\.%\(ext\)s$/
-const VSCO_GALLERY_PATH = /^\/([^/?#]+)\/(?:gallery|images)\/?$/i
+const VSCO_GALLERY_PATH = /^\/([A-Za-z0-9][A-Za-z0-9._-]*)(?:\/(?:gallery|images))?\/?$/i
 
 export const VSCO_GALLERY_DL_EXTRACTOR_ARGS = [
   '-o',
   'extractor.vsco.tls12=true',
   '-o',
   'extractor.vsco.videos=true',
+  '--sleep-request',
+  '1',
+  '--sleep-429',
+  '60',
+  '--retries',
+  '8'
+] as const
+
+export const FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS = [
   '--sleep-request',
   '1',
   '--sleep-429',
@@ -93,9 +105,16 @@ export const normalizeVscoGalleryUrl = (value: string): NormalizedVscoGalleryUrl
   }
 }
 
-/** Keep multi-file VSCO galleries out of single-media and transcription flows. */
-export const resolveDownloadTaskKind = (url: string, requestedType: 'audio' | 'video'): TaskKind =>
-  normalizeVscoGalleryUrl(url) ? 'vsco-gallery' : requestedType
+/** Keep photo galleries out of single-media and transcription flows. */
+export const resolveDownloadTaskKind = (
+  url: string,
+  requestedType: 'audio' | 'video'
+): TaskKind => {
+  if (normalizeFacebookGalleryUrl(url)) {
+    return 'facebook-gallery'
+  }
+  return normalizeVscoGalleryUrl(url) ? 'vsco-gallery' : requestedType
+}
 
 const createTailBuffer = (maxBytes: number): TailBuffer => {
   let buffer = ''
@@ -113,7 +132,7 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
 }
 
 export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string =>
-  normalizeVscoGalleryUrl(url)
+  normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)
     ? '{id}.{extension}'
     : '{sidecar_media_id:?/_/}{media_id}.{extension}'
 
@@ -121,7 +140,7 @@ export const resolveGalleryDlFilenameTemplate = (
   url: string,
   options: GalleryDlTaskOptions
 ): string => {
-  if (normalizeVscoGalleryUrl(url)) {
+  if (normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)) {
     return resolveDefaultGalleryDlFilenameTemplate(url)
   }
   const galleryTemplate = options.galleryDlFilenameTemplate?.trim()
@@ -176,6 +195,17 @@ const buildArgs = (
   url
 ]
 
+/** Honor bounded waits announced by gallery-dl without hiding real stalls. */
+export const galleryWaitDurationMs = (line: string): number | undefined => {
+  const match =
+    /\[(?:info|warning)\] Waiting for (\d+(?:\.\d+)?) (seconds?|minutes?) (?:until|\()/i.exec(line)
+  if (!match) {
+    return undefined
+  }
+  const duration = Number(match[1]) * (match[2]?.toLowerCase().startsWith('minute') ? 60_000 : 1000)
+  return Number.isFinite(duration) ? Math.min(duration, 10 * 60_000) : undefined
+}
+
 const makeNoopRun = (): ExecutorRun => ({
   cancel: async () => {
     // Nothing spawned.
@@ -195,7 +225,7 @@ const emitProgress = (
 ): void => {
   const total = Math.max(expectedAssetCount, discoveredCount)
   const progress: TaskProgress = {
-    percent: total > 0 ? Math.min(processedCount / total, 0.99) : null,
+    percent: expectedAssetCount > 0 ? Math.min(processedCount / total, 0.99) : null,
     bytesDownloaded: null,
     bytesTotal: null,
     speedBps: null,
@@ -288,8 +318,12 @@ export class GalleryDlExecutor implements Executor {
       taskOptions.settings?.downloadPath?.trim() ||
       this.options.defaultDownloadDir
     const vscoGallery = normalizeVscoGalleryUrl(ctx.input.url)
-    const outputDirectory = vscoGallery
-      ? path.join(configuredOutputDirectory, 'VSCO', vscoGallery.username, 'Gallery')
+    const facebookGallery = normalizeFacebookGalleryUrl(ctx.input.url)
+    const galleryDirectorySegments =
+      facebookGallery?.directorySegments ??
+      (vscoGallery ? ['VSCO', vscoGallery.username, 'Gallery'] : null)
+    const outputDirectory = galleryDirectorySegments
+      ? path.join(configuredOutputDirectory, ...galleryDirectorySegments)
       : configuredOutputDirectory
     const directoryTemplate = taskOptions.galleryDlDirectoryTemplate?.trim() || outputDirectory
     const baseDirectory = taskOptions.galleryDlBaseDirectory?.trim()
@@ -303,11 +337,13 @@ export class GalleryDlExecutor implements Executor {
       ...(this.options.resolveExtraArgs?.(taskOptions.settings) ??
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
-    const extractorArgs = vscoGallery
-      ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
-      : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
+    const extractorArgs = facebookGallery
+      ? FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS
+      : vscoGallery
+        ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
+        : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
     const args = buildArgs(
-      vscoGallery?.profileUrl ?? ctx.input.url,
+      facebookGallery?.url ?? vscoGallery?.profileUrl ?? ctx.input.url,
       directoryTemplate,
       filenameTemplate,
       [...extractorArgs, ...extraArgs],
@@ -346,6 +382,9 @@ export class GalleryDlExecutor implements Executor {
       processHandle = spawn(binaryPath, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         windowsHide: true,
+        // A PyInstaller launcher spawns the real downloader. Keep both in one
+        // process group so cancellation cannot leave a child holding the pipes.
+        detached: process.platform !== 'win32',
         env: {
           ...process.env,
           PATH: childPath
@@ -419,10 +458,8 @@ export class GalleryDlExecutor implements Executor {
         return
       }
 
-      const candidate = line.startsWith('# ') ? line.slice(2).trim() : line.trim()
-      if (candidate.startsWith('/') || /^[A-Za-z]:[\\/]/.test(candidate)) {
-        materializedFiles.add(candidate)
-      }
+      // Only structured after/skip events identify outputs. Human progress lines
+      // may contain carriage-return fragments, ANSI codes, or partial paths.
     }
 
     processHandle.stdout?.on('data', (chunk: Buffer) => {
@@ -436,10 +473,14 @@ export class GalleryDlExecutor implements Executor {
       }
     })
 
+    let stderrCarry = ''
     processHandle.stderr?.on('data', (chunk: Buffer) => {
       const text = chunk.toString()
       stderrTail.append(text)
-      for (const rawLine of text.split(/\r?\n/)) {
+      stderrCarry += text
+      const lines = stderrCarry.split(/\r?\n/)
+      stderrCarry = lines.pop() ?? ''
+      for (const rawLine of lines) {
         const line = rawLine.trimEnd()
         if (!line) {
           continue
@@ -448,7 +489,8 @@ export class GalleryDlExecutor implements Executor {
           taskId: ctx.taskId,
           attemptId: ctx.attemptId,
           stream: 'stderr',
-          line
+          line,
+          expectedSilenceMs: galleryWaitDurationMs(line)
         })
       }
     })
@@ -478,7 +520,10 @@ export class GalleryDlExecutor implements Executor {
 
       if (exitCode === 0) {
         const completedAssetCount = downloadedCount + skippedCount
-        const missingAssetCount = Math.max(discoveredCount - completedAssetCount - failedCount, 0)
+        const missingAssetCount = Math.max(
+          Math.max(discoveredCount, expectedAssetCount) - completedAssetCount - failedCount,
+          0
+        )
         const nonUniqueAssetCount = Math.max(completedAssetCount - materializedFiles.size, 0)
         if (failedCount > 0 || missingAssetCount > 0 || nonUniqueAssetCount > 0) {
           const message = `Gallery incomplete: ${failedCount} failed, ${missingAssetCount} unfinished, and ${nonUniqueAssetCount} non-unique assets.`
@@ -523,7 +568,7 @@ export class GalleryDlExecutor implements Executor {
           return
         }
         const isProfileCategory =
-          ctx.input.kind === 'instagram-profile-category' || Boolean(vscoGallery)
+          ctx.input.kind === 'instagram-profile-category' || Boolean(galleryDirectorySegments)
         const output: TaskOutput = {
           filePath: firstFile || outputDirectory,
           size: isProfileCategory ? totalSize : firstFileSize,
@@ -606,6 +651,17 @@ export class GalleryDlExecutor implements Executor {
       })
     })
 
+    const signalProcess = (signal: 'SIGTERM' | 'SIGKILL'): void => {
+      if (!processHandle.pid) {
+        return
+      }
+      if (process.platform === 'win32') {
+        killProcessTree(processHandle.pid, signal)
+      } else {
+        process.kill(-processHandle.pid, signal)
+      }
+    }
+
     const cancel = async (timeout?: number): Promise<void> => {
       if (settled) {
         return
@@ -613,7 +669,7 @@ export class GalleryDlExecutor implements Executor {
       cancelRequested = true
       const grace = timeout ?? this.options.killGraceMs
       try {
-        processHandle.kill('SIGTERM')
+        signalProcess('SIGTERM')
       } catch {
         // Process already exited.
       }
@@ -622,7 +678,7 @@ export class GalleryDlExecutor implements Executor {
       }
       if (grace <= 0) {
         try {
-          processHandle.kill('SIGKILL')
+          signalProcess('SIGKILL')
         } catch {
           // Process already exited.
         }
@@ -630,7 +686,7 @@ export class GalleryDlExecutor implements Executor {
       }
       killTimer = setTimeout(() => {
         try {
-          processHandle.kill('SIGKILL')
+          signalProcess('SIGKILL')
         } catch {
           // Process already exited.
         }
@@ -647,7 +703,7 @@ export class GalleryDlExecutor implements Executor {
 const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
 export const shouldUseGalleryDl = (url: string): boolean => {
-  if (normalizeVscoGalleryUrl(url)) {
+  if (normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)) {
     return true
   }
   try {

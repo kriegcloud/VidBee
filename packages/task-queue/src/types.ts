@@ -12,6 +12,7 @@ export type TaskKind =
   | 'playlist'
   | 'instagram-profile-category'
   | 'vsco-gallery'
+  | 'facebook-gallery'
   | 'subscription-item'
   | 'yt-dlp-forward'
   | 'transcription'

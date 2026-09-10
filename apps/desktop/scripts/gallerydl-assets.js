@@ -3,22 +3,22 @@
  *
  * Asset digests come from the GitHub release API for gdl-org/builds.
  */
-export const GALLERY_DL_RELEASE = '2026.07.27'
+export const GALLERY_DL_RELEASE = '2026.09.10'
 
 export const GALLERY_DL_PLATFORM_ASSETS = {
   win32: {
     asset: 'gallery-dl_windows.exe',
     output: 'gallery-dl.exe',
-    sha256: '6cdab276ada6bf6ee7f3fe76a67133656f1d609469059056758998972232f4dc'
+    sha256: '1c4a7f897f6cb0d75639a5905d2a0a1f1ee2fc6d881c2af97f289d7bba367ac2'
   },
   darwin: {
     asset: 'gallery-dl_macos',
     output: 'gallery-dl_macos',
-    sha256: '2100c1f4c3a7e162fa7489e7f220e06678f3f9fb74e6b27af96222d17b871a5d'
+    sha256: '35cbadf6f5c1594d866e3e4f1b6b84dcbdce1a1ed64430c5745b54d5aa55d07b'
   },
   linux: {
     asset: 'gallery-dl_linux',
     output: 'gallery-dl_linux',
-    sha256: 'df98329055ef39002e5666e11cb9c147de35f78e5ec02aef570e71813af7b86d'
+    sha256: '527a85325e41679d414517b7bbf50f2f9ba39940b0d28c99b3b4dbfd09b48507'
   }
 }

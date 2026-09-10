@@ -130,7 +130,10 @@ const applySequentialFilename = (options: DownloadOptions): DownloadOptions => {
 
 /** Fill missing title/thumbnail metadata from yt-dlp before a task is queued. */
 const hydrateDownloadMetadata = async (options: DownloadOptions): Promise<DownloadOptions> => {
-  if (hasDisplayMetadata(options)) {
+  if (
+    hasDisplayMetadata(options) ||
+    resolveDownloadTaskKind(options.url, options.type) !== options.type
+  ) {
     return options
   }
 
@@ -418,7 +421,19 @@ class DownloadFacade extends EventEmitter {
     if (!task || (task.status !== 'failed' && task.status !== 'cancelled')) {
       return false
     }
-    await this.queue.retryManual(id)
+    // Retry with current authentication; preserve the task's format and destination.
+    const options = task.input.options ?? {}
+    const previousSettings = (options.settings ?? {}) as Record<string, unknown>
+    const current = toSharedSettings(settingsManager.getAll())
+    await this.queue.retryManual(id, {
+      ...options,
+      settings: {
+        ...previousSettings,
+        browserForCookies: current.browserForCookies,
+        cookiesPath: current.cookiesPath,
+        proxy: current.proxy
+      }
+    })
     return true
   }
 

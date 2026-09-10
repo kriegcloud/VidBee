@@ -47,6 +47,7 @@ import {
   type WorkerInbound,
   type WorkerOutbound
 } from './worker/protocol'
+import { terminateWorker } from './worker/terminate'
 
 export type TranscriptionBackend = 'sherpa' | 'fake'
 
@@ -96,7 +97,11 @@ const ACTIVE_STAGES: ReadonlySet<TranscriptionStage> = new Set([
 ])
 
 export class TranscriptionExecutor implements Executor {
-  constructor(private readonly opts: TranscriptionExecutorOptions) {}
+  private readonly opts: TranscriptionExecutorOptions
+
+  constructor(opts: TranscriptionExecutorOptions) {
+    this.opts = opts
+  }
 
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
     const parsed = readTranscriptionOptions(ctx.input)
@@ -146,19 +151,14 @@ export class TranscriptionExecutor implements Executor {
     return {
       cancel: async () => {
         abort.abort()
-        if (child && !child.killed) {
-          child.kill('SIGTERM')
-          setTimeout(() => {
-            if (child && !child.killed) {
-              child.kill('SIGKILL')
-            }
-          }, 10_000).unref?.()
+        if (child) {
+          await terminateWorker(child)
         }
       },
       pause: async () => {
         abort.abort()
-        if (child && !child.killed) {
-          child.kill('SIGTERM')
+        if (child) {
+          await terminateWorker(child)
         }
       }
     }
@@ -508,7 +508,13 @@ export class TranscriptionExecutor implements Executor {
         }
         settled = true
         clearInterval(alive)
-        fn()
+        input.abort.signal.removeEventListener('abort', onAbort)
+        void terminateWorker(child).then(fn, reject)
+      }
+
+      const onAbort = () => {
+        child.stdin?.write(encodeMessage({ type: 'cancel' }))
+        void terminateWorker(child).catch(reject)
       }
 
       let buffer = ''
@@ -582,14 +588,10 @@ export class TranscriptionExecutor implements Executor {
         })
       })
 
-      input.abort.signal.addEventListener(
-        'abort',
-        () => {
-          child.stdin?.write(encodeMessage({ type: 'cancel' }))
-          child.kill('SIGTERM')
-        },
-        { once: true }
-      )
+      input.abort.signal.addEventListener('abort', onAbort, { once: true })
+      if (input.abort.signal.aborted) {
+        onAbort()
+      }
     })
   }
 }

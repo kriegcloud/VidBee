@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 
 import { PRIORITY_USER, type TaskQueueAPI } from '@vidbee/task-queue'
+import { killProcessTree } from '@vidbee/task-queue/process'
 import type {
   DownloadRuntimeSettings,
   InstagramCategorySummary,
@@ -173,19 +174,7 @@ const resolveUserRecord = (
 const resolveSourceId = (metadata: Record<string, unknown>): string | undefined =>
   readString(metadata, 'post_id', 'post_shortcode', 'media_id', 'id', 'pk')
 
-const parseGalleryJsonLine = (rawLine: string, result: GalleryJsonResult): void => {
-  const line = rawLine.trim()
-  if (!line) {
-    return
-  }
-
-  let message: unknown
-  try {
-    message = JSON.parse(line)
-  } catch {
-    result.parseError = true
-    return
-  }
+const parseGalleryJsonMessage = (message: unknown, result: GalleryJsonResult): void => {
   if (!Array.isArray(message) || message.length < 2) {
     result.parseError = true
     return
@@ -193,6 +182,8 @@ const parseGalleryJsonLine = (rawLine: string, result: GalleryJsonResult): void 
 
   const messageType = message[0]
   if (messageType === -1) {
+    const error = asRecord(message[1])
+    result.stderr += `\n${readString(error, 'error') ?? ''}: ${readString(error, 'message') ?? ''}`
     result.parseError = true
     return
   }
@@ -202,7 +193,9 @@ const parseGalleryJsonLine = (rawLine: string, result: GalleryJsonResult): void 
     if (!metadata) {
       return
     }
-    result.directoryMetadata.push(metadata)
+    if (result.directoryMetadata.length === 0) {
+      result.directoryMetadata.push(metadata)
+    }
     const sourceId = resolveSourceId(metadata)
     if (sourceId) {
       result.sourceIds.add(sourceId)
@@ -233,7 +226,7 @@ const runGalleryJson = (
     const args = [
       '-J',
       '-o',
-      'output.jsonl=true',
+      'output.jsonl=false',
       '--no-input',
       '--no-colors',
       ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
@@ -243,7 +236,8 @@ const runGalleryJson = (
     ]
     const child = spawn(binaryPath, args, {
       stdio: ['ignore', 'pipe', 'pipe'],
-      windowsHide: true
+      windowsHide: true,
+      detached: process.platform !== 'win32'
     })
     const result: GalleryJsonResult = {
       exitCode: null,
@@ -253,15 +247,41 @@ const runGalleryJson = (
       assetCount: 0,
       parseError: false
     }
-    let stdoutCarry = ''
-
-    child.stdout?.on('data', (chunk: Buffer) => {
-      stdoutCarry += chunk.toString()
-      const lines = stdoutCarry.split(/\r?\n/)
-      stdoutCarry = lines.pop() ?? ''
-      for (const line of lines) {
-        parseGalleryJsonLine(line, result)
+    // DataJob suppresses exception records in JSONL mode while still exiting 0.
+    // Read its complete JSON document, with a hard cap and deadline.
+    const chunks: Buffer[] = []
+    let stdoutBytes = 0
+    const stopInspection = (): void => {
+      if (!child.pid) {
+        return
       }
+      try {
+        if (process.platform === 'win32') {
+          killProcessTree(child.pid, 'SIGKILL')
+        } else {
+          process.kill(-child.pid, 'SIGKILL')
+        }
+      } catch {
+        // The process group has already exited.
+      }
+    }
+    const timer = setTimeout(
+      () => {
+        result.parseError = true
+        result.stderr += '\nInstagram inspection timed out.'
+        stopInspection()
+      },
+      10 * 60 * 1000
+    )
+    child.stdout?.on('data', (chunk: Buffer) => {
+      stdoutBytes += chunk.length
+      if (stdoutBytes > 64 * 1024 * 1024) {
+        result.parseError = true
+        result.stderr += '\nInstagram inspection exceeded the response size limit.'
+        stopInspection()
+        return
+      }
+      chunks.push(chunk)
     })
     child.stderr?.on('data', (chunk: Buffer) => {
       result.stderr += chunk.toString()
@@ -269,10 +289,23 @@ const runGalleryJson = (
         result.stderr = result.stderr.slice(-16_384)
       }
     })
-    child.once('error', reject)
+    child.once('error', (error) => {
+      clearTimeout(timer)
+      reject(error)
+    })
     child.once('close', (exitCode) => {
-      if (stdoutCarry.trim()) {
-        parseGalleryJsonLine(stdoutCarry, result)
+      clearTimeout(timer)
+      try {
+        const messages: unknown = JSON.parse(Buffer.concat(chunks).toString())
+        if (Array.isArray(messages)) {
+          for (const message of messages) {
+            parseGalleryJsonMessage(message, result)
+          }
+        } else {
+          result.parseError = true
+        }
+      } catch {
+        result.parseError = true
       }
       result.exitCode = exitCode
       resolve(result)
@@ -374,7 +407,7 @@ export const buildInstagramCategoryUrl = (
   if (category === 'stories') {
     return `https://www.instagram.com/stories/${username}/`
   }
-  const extractorPath = category === 'posts' ? 'photos' : category
+  const extractorPath = category
   return `https://www.instagram.com/${username}/${extractorPath}/`
 }
 
