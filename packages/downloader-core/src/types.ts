@@ -122,6 +122,8 @@ export interface DownloadRuntimeSettings {
   filenameStyle?: FilenameStyle
   filenameViaVidBee?: boolean
   shareWatermark?: boolean
+  downloadWithoutChannelSubfolders?: boolean
+  downloadMirror?: 'auto' | 'cn' | 'global'
 }
 
 export interface VideoInfoInput {

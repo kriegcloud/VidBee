@@ -520,7 +520,10 @@ export const DownloadPage = () => {
 				group.records.push(record);
 				if (!group.title && (record.batchTitle || record.playlistTitle)) {
 					group.title =
-						record.batchTitle || record.playlistTitle || record.title;
+						record.batchTitle ||
+						record.playlistTitle ||
+						record.title ||
+						t("playlist.untitled");
 				}
 				if (!group.totalCount && record.playlistSize) {
 					group.totalCount = record.playlistSize;
