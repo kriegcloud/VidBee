@@ -19,6 +19,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  buildGalleryDlRuntimeArgs,
+  type DownloadRuntimeSettings,
   GalleryDlExecutor,
   HostRoutingExecutor,
   InstagramProfileInspector,
@@ -94,7 +96,27 @@ const ytDlpExecutor = new YtDlpExecutor({
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
 })
+const resolveGalleryDlExtraArgs = (settings?: DownloadRuntimeSettings): readonly string[] => {
+  const here = path.dirname(fileURLToPath(import.meta.url))
+  const candidates = [
+    trimEnv('VIDBEE_GALLERY_EXTRACTORS_DIR'),
+    path.resolve(here, 'resources/gallery-dl-extractors'),
+    path.resolve(here, '../resources/gallery-dl-extractors'),
+    path.resolve(here, '../../../desktop/resources/gallery-dl-extractors')
+  ]
+  const modules = candidates.find((candidate) => candidate && fs.existsSync(candidate))
+  if (!modules) {
+    throw new Error('Custom gallery extractors not found. Set VIDBEE_GALLERY_EXTRACTORS_DIR.')
+  }
+  return [
+    '-o',
+    `extractor.module-sources=${JSON.stringify([modules, null])}`,
+    ...buildGalleryDlRuntimeArgs(settings)
+  ]
+}
+
 const galleryDlExecutor = new GalleryDlExecutor({
+  resolveExtraArgs: resolveGalleryDlExtraArgs,
   resolveBinaryPath: resolveGalleryDlPath,
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
@@ -102,6 +124,7 @@ const galleryDlExecutor = new GalleryDlExecutor({
 const downloadExecutor = new HostRoutingExecutor(ytDlpExecutor, galleryDlExecutor)
 
 export const instagramProfileInspector = new InstagramProfileInspector({
+  resolveExtraArgs: resolveGalleryDlExtraArgs,
   resolveBinaryPath: resolveGalleryDlPath
 })
 

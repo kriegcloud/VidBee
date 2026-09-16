@@ -5,8 +5,8 @@
  * sherpa-onnx native addons stay external so esbuild does not try to load
  * `.node` files, matching the desktop Electron build.
  */
-import { mkdirSync, rmSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { cpSync, mkdirSync, rmSync } from 'node:fs'
+import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
@@ -40,3 +40,9 @@ await build({
   entryPoints: [join(root, '../../packages/transcription/src/worker/entry.ts')],
   outfile: join(dist, 'transcription-worker.js')
 })
+
+cpSync(
+  join(root, '../desktop/resources/gallery-dl-extractors'),
+  join(dist, 'resources/gallery-dl-extractors'),
+  { recursive: true, filter: (source) => basename(source) !== '__pycache__' }
+)

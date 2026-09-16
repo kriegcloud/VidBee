@@ -21,7 +21,7 @@ WORKDIR /app/vendor/yt-dlp
 RUN python3 devscripts/make_lazy_extractors.py \
   && python3 -m venv /opt/vidbee-media-tools \
   && /opt/vidbee-media-tools/bin/pip install --no-cache-dir \
-  ".[pin,pin-curl-cffi]" "gallery-dl==1.32.8" \
+  ".[pin,pin-curl-cffi]" "gallery-dl==1.32.11" \
   && "${YTDLP_PATH}" --version \
   && "${YTDLP_PATH}" --list-impersonate-targets | grep -Eq '^Chrome-' \
   && "${GALLERY_DL_PATH}" --version
@@ -62,6 +62,7 @@ ENV VIDBEE_API_HOST=0.0.0.0
 ENV VIDBEE_API_PORT=3100
 ENV VIDBEE_DOWNLOAD_DIR=/data/downloads
 ENV VIDBEE_DATA_DIR=/data/vidbee
+ENV VIDBEE_GALLERY_EXTRACTORS_DIR=/app/resources/gallery-dl-extractors
 ENV VIDBEE_MIGRATIONS_DIR=/app/resources/drizzle
 ENV VIDBEE_PERSIST_QUEUE=1
 
@@ -72,6 +73,7 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /prod/api/node_modules ./node_modules
 COPY --from=builder /opt/vidbee-media-tools /opt/vidbee-media-tools
 COPY --from=builder --chown=node:node /app/apps/api/dist ./dist
+COPY --chown=node:node apps/desktop/resources/gallery-dl-extractors ./resources/gallery-dl-extractors
 COPY --chown=node:node apps/desktop/resources/drizzle ./resources/drizzle
 
 RUN "${YTDLP_PATH}" --version \

@@ -6,6 +6,7 @@ import {
   isFacebookReelsUrl,
   isInstagramProfileUrl,
   isPlaylistLikeUrl,
+  isThreadsUrl,
   isTikTokPhotoUrl,
   isVscoGalleryUrl
 } from './url-kind'
@@ -121,7 +122,8 @@ export const useAddUrlInteraction = ({
       if (
         isVscoGalleryUrl(trimmedUrl) ||
         isFacebookGalleryUrl(trimmedUrl) ||
-        isTikTokPhotoUrl(trimmedUrl)
+        isTikTokPhotoUrl(trimmedUrl) ||
+        isThreadsUrl(trimmedUrl)
       ) {
         await onOneClickDownload(trimmedUrl)
         return

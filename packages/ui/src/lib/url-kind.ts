@@ -1,4 +1,5 @@
 import { normalizeFacebookGalleryUrl } from '@vidbee/downloader-core/facebook-gallery'
+import { normalizeThreadsUrl } from '@vidbee/downloader-core/threads'
 import { normalizeTikTokPhotoUrl } from '@vidbee/downloader-core/tiktok-photo'
 
 export const isFacebookGalleryUrl = (value: string): boolean =>
@@ -6,6 +7,8 @@ export const isFacebookGalleryUrl = (value: string): boolean =>
 
 /** TikTok photo-mode posts download as an image set; video posts stay on yt-dlp. */
 export const isTikTokPhotoUrl = (value: string): boolean => normalizeTikTokPhotoUrl(value) !== null
+
+export const isThreadsUrl = (value: string): boolean => normalizeThreadsUrl(value) !== null
 
 const YOUTUBE_HOSTS = ['youtube.com', 'youtu.be', 'm.youtube.com'] as const
 // YouTube channel/handle landing pages (e.g. /@handle/videos, /channel/UC…,

@@ -14,6 +14,8 @@ export type TaskKind =
   | 'vsco-gallery'
   | 'facebook-gallery'
   | 'tiktok-photo'
+  | 'threads-post'
+  | 'threads-profile'
   | 'subscription-item'
   | 'yt-dlp-forward'
   | 'transcription'

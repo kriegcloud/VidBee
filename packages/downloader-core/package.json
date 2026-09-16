@@ -18,6 +18,7 @@
     "./output-path": "./src/output-path.ts",
     "./audio-format-preferences": "./src/audio-format-preferences.ts",
     "./subtitle-languages": "./src/subtitle-languages.ts",
+    "./threads": "./src/threads.ts",
     "./tiktok-photo": "./src/tiktok-photo.ts",
     "./tiktok-short-link": "./src/tiktok-short-link.ts",
     "./yt-dlp-args": "./src/yt-dlp-args.ts",

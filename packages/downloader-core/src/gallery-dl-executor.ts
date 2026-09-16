@@ -18,6 +18,7 @@ import { killProcessTree } from '@vidbee/task-queue/process'
 
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
+import { normalizeThreadsUrl } from './threads'
 import { normalizeTikTokPhotoUrl } from './tiktok-photo'
 import type { DownloadRuntimeSettings } from './types'
 import type { YtDlpTaskOptions } from './yt-dlp-executor'
@@ -128,6 +129,10 @@ export const resolveDownloadTaskKind = (
   url: string,
   requestedType: 'audio' | 'video'
 ): TaskKind => {
+  const threads = normalizeThreadsUrl(url)
+  if (threads) {
+    return threads.kind === 'post' ? 'threads-post' : 'threads-profile'
+  }
   if (normalizeFacebookGalleryUrl(url)) {
     return 'facebook-gallery'
   }
@@ -153,6 +158,9 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
 }
 
 export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => {
+  if (normalizeThreadsUrl(url)) {
+    return '{id}_{num:>02}.{extension}'
+  }
   if (normalizeTikTokPhotoUrl(url)) {
     // Images enumerate from 1; the slideshow sound is num 0.
     return '{id}_{num:>02}.{extension}'
@@ -169,7 +177,8 @@ export const resolveGalleryDlFilenameTemplate = (
   if (
     normalizeVscoGalleryUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
-    normalizeTikTokPhotoUrl(url)
+    normalizeTikTokPhotoUrl(url) ||
+    normalizeThreadsUrl(url)
   ) {
     return resolveDefaultGalleryDlFilenameTemplate(url)
   }
@@ -350,7 +359,9 @@ export class GalleryDlExecutor implements Executor {
     const vscoGallery = normalizeVscoGalleryUrl(ctx.input.url)
     const facebookGallery = normalizeFacebookGalleryUrl(ctx.input.url)
     const tiktokPhoto = normalizeTikTokPhotoUrl(ctx.input.url)
+    const threads = normalizeThreadsUrl(ctx.input.url)
     const galleryDirectorySegments =
+      threads?.directorySegments ??
       facebookGallery?.directorySegments ??
       tiktokPhoto?.directorySegments ??
       (vscoGallery ? ['VSCO', vscoGallery.username, 'Gallery'] : null)
@@ -358,10 +369,12 @@ export class GalleryDlExecutor implements Executor {
       ? path.join(configuredOutputDirectory, ...galleryDirectorySegments)
       : configuredOutputDirectory
     const directoryTemplate = taskOptions.galleryDlDirectoryTemplate?.trim() || outputDirectory
-    const baseDirectory = taskOptions.galleryDlBaseDirectory?.trim()
-    const directorySegments = taskOptions.galleryDlDirectorySegments
-      ?.map((segment) => segment.trim())
-      .filter(Boolean)
+    const baseDirectory = threads
+      ? configuredOutputDirectory
+      : taskOptions.galleryDlBaseDirectory?.trim()
+    const directorySegments = threads
+      ? ['Threads', threads.username, '{shortcode}']
+      : taskOptions.galleryDlDirectorySegments?.map((segment) => segment.trim()).filter(Boolean)
     const filenameTemplate = resolveGalleryDlFilenameTemplate(ctx.input.url, taskOptions)
     const filter = taskOptions.galleryDlFilter?.trim()
     const expectedAssetCount = Math.max(taskOptions.expectedAssetCount ?? 0, 0)
@@ -369,9 +382,18 @@ export class GalleryDlExecutor implements Executor {
       ...(this.options.resolveExtraArgs?.(taskOptions.settings) ??
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
-    const extractorArgs = resolveExtractorArgs({ facebookGallery, tiktokPhoto, vscoGallery })
+    const extractorArgs = resolveExtractorArgs({
+      facebookGallery,
+      tiktokPhoto,
+      vscoGallery,
+      threads
+    })
     const args = buildArgs(
-      facebookGallery?.url ?? tiktokPhoto?.url ?? vscoGallery?.profileUrl ?? ctx.input.url,
+      threads?.url ??
+        facebookGallery?.url ??
+        tiktokPhoto?.url ??
+        vscoGallery?.profileUrl ??
+        ctx.input.url,
       directoryTemplate,
       filenameTemplate,
       [...extractorArgs, ...extraArgs],
@@ -731,10 +753,14 @@ export class GalleryDlExecutor implements Executor {
 const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
 const resolveExtractorArgs = (galleries: {
+  threads: unknown
   facebookGallery: unknown
   tiktokPhoto: unknown
   vscoGallery: unknown
 }): readonly string[] => {
+  if (galleries.threads) {
+    return ['--sleep-request', '1', '--sleep-429', '60', '--retries', '3']
+  }
   if (galleries.facebookGallery) {
     return FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS
   }
@@ -750,7 +776,8 @@ export const shouldUseGalleryDl = (url: string): boolean => {
   if (
     normalizeVscoGalleryUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
-    normalizeTikTokPhotoUrl(url)
+    normalizeTikTokPhotoUrl(url) ||
+    normalizeThreadsUrl(url)
   ) {
     return true
   }

@@ -10,7 +10,9 @@ for (const kind of [
   'instagram-profile-category',
   'vsco-gallery',
   'facebook-gallery',
-  'tiktok-photo'
+  'tiktok-photo',
+  'threads-post',
+  'threads-profile'
 ] as const) {
   for (const scenario of [
     'complete',
@@ -57,13 +59,17 @@ for (const kind of [
             input: {
               kind: kind as TaskKind,
               url:
-                kind === 'facebook-gallery'
-                  ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
-                  : kind === 'tiktok-photo'
-                    ? 'https://www.tiktok.com/@fixture/photo/7240568259186019630'
-                    : kind === 'vsco-gallery'
-                      ? 'https://vsco.co/fixture/gallery'
-                      : 'https://www.instagram.com/fixture/photos/'
+                kind === 'threads-post'
+                  ? 'https://www.threads.com/@fixture/post/ABCDE'
+                  : kind === 'threads-profile'
+                    ? 'https://www.threads.com/@fixture/media'
+                    : kind === 'facebook-gallery'
+                      ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
+                      : kind === 'tiktok-photo'
+                        ? 'https://www.tiktok.com/@fixture/photo/7240568259186019630'
+                        : kind === 'vsco-gallery'
+                          ? 'https://vsco.co/fixture/gallery'
+                          : 'https://www.instagram.com/fixture/photos/'
             }
           },
           { onSpawn() {}, onProgress() {}, onStd() {}, onFinish: resolve }

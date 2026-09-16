@@ -3,6 +3,7 @@ import {
 	isFacebookReelsUrl,
 	isInstagramProfileUrl,
 	isPlaylistLikeUrl,
+	isThreadsUrl,
 	isTikTokPhotoUrl,
 	isVscoGalleryUrl,
 } from "@vidbee/ui/lib/url-kind";
@@ -120,5 +121,20 @@ describe("isVscoGalleryUrl", () => {
 		"ftp://vsco.co/allybari/gallery",
 	])("rejects a non-gallery or rehosted URL: %s", (url) => {
 		expect(isVscoGalleryUrl(url)).toBe(false);
+	});
+});
+
+describe("isThreadsUrl", () => {
+	it.each([
+		"https://www.threads.com/@benoppold",
+		"https://threads.net/@benoppold/media",
+		"https://www.threads.com/@benoppold/post/DdWHZs_ljvz",
+	])("recognizes %s for the shared one-click gallery flow", (url) => {
+		expect(isThreadsUrl(url)).toBe(true);
+	});
+	it("excludes replies", () => {
+		expect(isThreadsUrl("https://www.threads.com/@benoppold/replies")).toBe(
+			false,
+		);
 	});
 });
