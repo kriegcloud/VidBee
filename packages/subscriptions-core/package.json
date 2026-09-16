@@ -8,6 +8,8 @@
     "./contract": "./src/contract.ts",
     "./types": "./src/types.ts",
     "./schemas": "./src/schemas.ts",
+    "./form": "./src/form.ts",
+    "./status": "./src/status.ts",
     "./feed-resolver": "./src/feed-resolver.ts",
     "./feed-parser": "./src/feed-parser.ts",
     "./feed-items": "./src/feed-items.ts",
@@ -32,6 +34,17 @@
     "@vidbee/db": "workspace:*",
     "@vidbee/task-queue": "workspace:*",
     "better-sqlite3": "^13.0.3"
+  },
+  "peerDependenciesMeta": {
+    "@vidbee/db": {
+      "optional": true
+    },
+    "@vidbee/task-queue": {
+      "optional": true
+    },
+    "better-sqlite3": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.18.6",

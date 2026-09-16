@@ -20,7 +20,8 @@ import {
   HostRoutingExecutor,
   InstagramProfileInspector,
   restoreInstagramProfileGroupCaps,
-  YtDlpExecutor
+  YtDlpExecutor,
+  type YtDlpTaskOptions
 } from '@vidbee/downloader-core'
 import {
   ExecutorRouter,
@@ -41,6 +42,7 @@ import { scopedLoggers } from '../utils/logger'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
 import { getDatabaseConnection } from './database'
 import { startDownloadPowerSaveGuard } from './download-power-save'
+import { applyExtensionCookieSettings } from './extension-cookies'
 import { ffmpegManager } from './ffmpeg-manager'
 import { galleryDlManager } from './gallery-dl-manager'
 import { setDesktopTaskQueueRef } from './queue-ref'
@@ -51,6 +53,7 @@ import {
   getTranscriptSnapshot,
   getTranscriptStore,
   resolveTranscriptionBackend,
+  resolveTranscriptionGpuKinds,
   resolveTranscriptionWorkerScript,
   stopAutoTranscription
 } from './transcript-host'
@@ -96,7 +99,12 @@ const buildDownloadExecutor = (): HostRoutingExecutor => {
     resolveYtDlpPath,
     resolveFfmpegLocation,
     defaultDownloadDir: resolveDesktopDownloadDir(),
-    extraArgs: () => ytdlpManager.getJsRuntimeArgs?.() ?? []
+    extraArgs: () => ytdlpManager.getJsRuntimeArgs?.() ?? [],
+    prepareSettings: (input) =>
+      applyExtensionCookieSettings(
+        input.url,
+        (input.options as YtDlpTaskOptions | undefined)?.settings
+      )
   })
   const galleryDl = new GalleryDlExecutor({
     resolveBinaryPath: () => galleryDlManager.getPath(),
@@ -173,6 +181,7 @@ const buildTranscriptionExecutor = (): TranscriptionExecutor => {
     execPath: process.execPath,
     bundledNodePath: resolveBundledNodePath([resourcesDir]),
     workDir: path.join(app.getPath('userData'), 'transcript-work'),
+    resolveGpuKinds: resolveTranscriptionGpuKinds,
     onPartial: ({ downloadTaskId, segments }) => {
       broadcastTranscriptPartials(downloadTaskId, segments)
     },

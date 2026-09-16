@@ -26,6 +26,7 @@ import type {
   TaskProgress,
   TaskStatus
 } from '../types'
+import { TERMINAL_STATUSES } from '../types'
 
 /**
  * Legacy status kept for renderer / web client back-compat.
@@ -87,6 +88,8 @@ export interface LegacyTaskProjection {
    * the user's pick to detect that the chain fell back to best-available.
    */
   resolvedFormatId?: string
+  subtitleStatus?: TaskOutput['subtitleStatus']
+  subtitleLanguages?: string[]
   description?: string
   channel?: string
   uploader?: string
@@ -144,6 +147,8 @@ export function legacyDownloadStatusOf(status: TaskStatus): LegacyDownloadStatus
       return 'error'
     case 'cancelled':
       return 'cancelled'
+    default:
+      return status
   }
 }
 
@@ -226,7 +231,8 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     batchAssetCount: opts.batchAssetCount,
     fileSize: opts.fileSize,
     startedAt: opts.startedAt,
-    completedAt: opts.completedAt,
+    completedAt:
+      opts.completedAt ?? (TERMINAL_STATUSES.has(task.status) ? task.enteredStatusAt : undefined),
     downloadPath: opts.downloadPath,
     attempt: task.attempt,
     maxAttempts: task.maxAttempts
@@ -261,6 +267,12 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     }
     if (out.formatId) {
       proj.resolvedFormatId = out.formatId
+    }
+    if (out.subtitleStatus) {
+      proj.subtitleStatus = out.subtitleStatus
+    }
+    if (out.subtitleLanguages) {
+      proj.subtitleLanguages = [...out.subtitleLanguages]
     }
   }
 

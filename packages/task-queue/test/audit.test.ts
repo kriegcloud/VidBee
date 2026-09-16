@@ -352,7 +352,10 @@ test('manual retry persists replacement options while preserving task identity',
   })
   const stored = (await persist.loadAllTasks()).find((x) => x.id === 'retry-settings')
   assert.equal(stored?.input.url, input.url)
-  assert.deepEqual(stored?.input.options, {
+  // The queue stamps `startedAt` when the retried task enters `running`.
+  const { startedAt, ...replacementOptions } = stored?.input.options ?? {}
+  assert.equal(typeof startedAt, 'number')
+  assert.deepEqual(replacementOptions, {
     settings: { cookiesPath: '/current-cookies' },
     customDownloadPath: '/saved-destination'
   })

@@ -1,3 +1,4 @@
+import { RemoteImageProvider } from '@renderer/components/ui/remote-image'
 import { TitleBar } from '@renderer/components/ui/title-bar'
 import { RouterProvider } from '@tanstack/react-router'
 import { ShapeProvider } from '@vidbee/ui/lib/shape-context'
@@ -58,7 +59,9 @@ function App() {
     <ErrorBoundary>
       <ThemeProviderWithChildren attribute="class" defaultTheme="system" enableSystem>
         <ShapeProvider defaultShape="rounded">
-          <KernelGate />
+          <RemoteImageProvider>
+            <KernelGate />
+          </RemoteImageProvider>
         </ShapeProvider>
       </ThemeProviderWithChildren>
     </ErrorBoundary>

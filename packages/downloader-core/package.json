@@ -14,6 +14,9 @@
     "./format-preferences": "./src/format-preferences.ts",
     "./gallery-dl-executor": "./src/gallery-dl-executor.ts",
     "./instagram-profile": "./src/instagram-profile.ts",
+    "./format-selector": "./src/format-selector.ts",
+    "./output-path": "./src/output-path.ts",
+    "./audio-format-preferences": "./src/audio-format-preferences.ts",
     "./subtitle-languages": "./src/subtitle-languages.ts",
     "./yt-dlp-args": "./src/yt-dlp-args.ts",
     "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts"

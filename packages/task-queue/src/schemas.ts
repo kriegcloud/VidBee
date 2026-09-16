@@ -58,6 +58,13 @@ export const TranscriptTaskResultSchema = z.object({
   transcriptId: z.string().min(1)
 })
 
+export const SubtitleDownloadStatusSchema = z.enum([
+  'downloaded',
+  'unavailable',
+  'skipped-auth',
+  'failed'
+])
+
 export const TaskOutputSchema = z.object({
   filePath: z.string(),
   size: z.number().int().nonnegative(),
@@ -70,6 +77,16 @@ export const TaskOutputSchema = z.object({
   skippedCount: z.number().int().nonnegative().optional(),
   failedCount: z.number().int().nonnegative().optional(),
   totalSize: z.number().int().nonnegative().optional(),
+  subtitleStatus: SubtitleDownloadStatusSchema.optional(),
+  subtitleLanguages: z.array(z.string()).optional(),
+  subtitleAcquisition: z
+    .object({
+      id: z.string(),
+      acquiredAt: z.number(),
+      credentialsUsed: z.boolean().optional(),
+      visibility: z.enum(['public', 'private', 'unlisted']).optional()
+    })
+    .optional(),
   transcript: TranscriptTaskResultSchema.optional()
 })
 

@@ -10,13 +10,19 @@ import type {
   ExecutorRun,
   TaskOutput
 } from '@vidbee/task-queue'
-import { DEFAULT_ASR_TIER, parseAsrTier } from './asr-tiers'
+import type { GpuKind } from './asr-recommend'
+import { type AsrTierId, DEFAULT_ASR_TIER, parseAsrTier } from './asr-tiers'
 import {
   ensureChunkManifest,
   manifestWorkKey,
   saveManifestStages,
   sourceFingerprint
 } from './chunk-manifest'
+import {
+  type SherpaExecutionProvider,
+  type SherpaProviderSelection,
+  selectSherpaProvider
+} from './compute-provider'
 import { classifyTranscriptionFailure } from './errors'
 import type { MemoryTranscriptStore } from './memory-store'
 import { modelVersion } from './model-catalog'
@@ -28,6 +34,7 @@ import {
   DEFAULT_MAX_WORKER_RESTARTS,
   formatRuntimeLog,
   probeWorker,
+  probeWorkerProvider,
   resolveWorkerRuntime,
   type WorkerRuntime,
   type WorkerRuntimeLayer
@@ -44,6 +51,7 @@ import type { PipelineResult, PipelineSegment, TranscriptionStage } from './type
 import {
   encodeMessage,
   parseMessage,
+  readWorkerResult,
   type WorkerInbound,
   type WorkerOutbound
 } from './worker/protocol'
@@ -65,6 +73,7 @@ export interface TranscriptionExecutorOptions {
   forceLayer?: WorkerRuntimeLayer
   maxWorkerRestarts?: number
   skipProbe?: boolean
+  resolveGpuKinds?: () => Promise<readonly GpuKind[]>
   /**
    * Test seam: run the pipeline in-process instead of forking a worker.
    */
@@ -96,8 +105,15 @@ const ACTIVE_STAGES: ReadonlySet<TranscriptionStage> = new Set([
   'recognizing'
 ])
 
+interface ResolvedComputeProvider {
+  cacheKey: string
+  selection: SherpaProviderSelection
+}
+
 export class TranscriptionExecutor implements Executor {
   private readonly opts: TranscriptionExecutorOptions
+  private readonly providerSelectionProbes = new Map<string, Promise<SherpaProviderSelection>>()
+  private readonly providerSelections = new Map<string, SherpaProviderSelection>()
 
   constructor(opts: TranscriptionExecutorOptions) {
     this.opts = opts
@@ -131,8 +147,10 @@ export class TranscriptionExecutor implements Executor {
     }
 
     queueMicrotask(() => {
-      void this.execute(ctx, events, parsed, abort, (proc) => {
-        child = proc
+      void this.execute(ctx, events, parsed, abort, (proc, expected) => {
+        if (!expected || child === expected) {
+          child = proc
+        }
       })
         .then((outcome) => finishOnce(outcome.result, outcome.tails))
         .catch((err) => {
@@ -169,7 +187,7 @@ export class TranscriptionExecutor implements Executor {
     events: ExecutorEvents,
     parsed: ReturnType<typeof readTranscriptionOptions>,
     abort: AbortController,
-    attach: (child: ChildProcess | null) => void
+    attach: (child: ChildProcess | null, expected?: ChildProcess) => void
   ): Promise<{
     result:
       | { type: 'success'; output: TaskOutput }
@@ -304,6 +322,7 @@ export class TranscriptionExecutor implements Executor {
         })
       }
       try {
+        const compute = await this.resolveComputeProvider(runtime, asrTier, events, ctx)
         if (existingTranscript) {
           writePipelineSeed(join(workDir, SEED_TRANSCRIPT_FILE), existingTranscript)
         }
@@ -317,6 +336,7 @@ export class TranscriptionExecutor implements Executor {
           emitProgress,
           tails,
           runtime,
+          compute,
           fingerprint,
           existingTranscriptPath: existingTranscript
             ? join(workDir, SEED_TRANSCRIPT_FILE)
@@ -395,6 +415,7 @@ export class TranscriptionExecutor implements Executor {
             })
             return probeWorker({
               execPath: runtime.execPath,
+              execArgv: this.opts.execArgv,
               workerScript: this.opts.workerScript,
               modelsDir: this.opts.modelsDir,
               env: sherpaWorkerEnv(this.opts.env, { electronAsNode: runtime.layer === 'electron' })
@@ -403,24 +424,161 @@ export class TranscriptionExecutor implements Executor {
     })
   }
 
+  /**
+   * Benchmark compatible providers in isolated workers and cache the process-local winner.
+   */
+  private async resolveComputeProvider(
+    runtime: WorkerRuntime,
+    asrTier: AsrTierId,
+    events: ExecutorEvents,
+    ctx: ExecutorContext
+  ): Promise<ResolvedComputeProvider> {
+    let gpuKinds: readonly GpuKind[] = []
+    try {
+      gpuKinds = (await this.opts.resolveGpuKinds?.()) ?? []
+    } catch (error) {
+      events.onStd({
+        taskId: ctx.taskId,
+        attemptId: ctx.attemptId,
+        stream: 'stderr',
+        line: `compute.gpu-probe=failed error=${error instanceof Error ? error.message : String(error)}`
+      })
+    }
+    const cacheKey = [
+      runtime.execPath,
+      runtime.version,
+      modelVersion,
+      asrTier,
+      [...gpuKinds].sort().join(',')
+    ].join('|')
+    const cached = this.providerSelections.get(cacheKey)
+    if (cached) {
+      events.onStd({
+        taskId: ctx.taskId,
+        attemptId: ctx.attemptId,
+        stream: 'stdout',
+        line: `compute.provider=${cached.provider} reason=process-cache`
+      })
+      return { cacheKey, selection: cached }
+    }
+
+    if (this.opts.backend === 'fake' || this.opts.skipProbe) {
+      const selection: SherpaProviderSelection = {
+        cacheable: true,
+        candidates: ['cpu'],
+        provider: 'cpu',
+        reason: this.opts.backend === 'fake' ? 'fake-backend' : 'provider-probe-disabled'
+      }
+      this.providerSelections.set(cacheKey, selection)
+      return { cacheKey, selection }
+    }
+
+    const pending = this.providerSelectionProbes.get(cacheKey)
+    if (pending) {
+      const selection = await pending
+      events.onStd({
+        taskId: ctx.taskId,
+        attemptId: ctx.attemptId,
+        stream: 'stdout',
+        line: `compute.provider=${selection.provider} reason=in-flight-probe`
+      })
+      return { cacheKey, selection }
+    }
+
+    const selectionProbe = selectSherpaProvider({
+      gpuKinds,
+      probe: async (provider) => {
+        const result = await probeWorkerProvider({
+          execPath: runtime.execPath,
+          execArgv: this.opts.execArgv,
+          workerScript: this.opts.workerScript,
+          modelsDir: this.opts.modelsDir,
+          provider,
+          asrTier,
+          benchmark: true,
+          timeoutMs: 20_000,
+          env: sherpaWorkerEnv(this.opts.env, {
+            electronAsNode: runtime.layer === 'electron'
+          })
+        })
+        const error = result.error?.replace(/\s+/g, ' ').trim() ?? 'none'
+        events.onStd({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          stream: result.ok ? 'stdout' : 'stderr',
+          line: `compute.probe=${provider} ok=${result.ok} durationMs=${result.durationMs ?? 'none'} error=${error}`
+        })
+        return result
+      }
+    })
+    this.providerSelectionProbes.set(cacheKey, selectionProbe)
+    let selection: SherpaProviderSelection
+    try {
+      selection = await selectionProbe
+    } finally {
+      if (this.providerSelectionProbes.get(cacheKey) === selectionProbe) {
+        this.providerSelectionProbes.delete(cacheKey)
+      }
+    }
+    events.onStd({
+      taskId: ctx.taskId,
+      attemptId: ctx.attemptId,
+      stream: 'stdout',
+      line: `compute.provider=${selection.provider} reason=${selection.reason} candidates=${selection.candidates.join(',')}`
+    })
+    if (selection.cacheable) {
+      this.providerSelections.set(cacheKey, selection)
+    }
+    return { cacheKey, selection }
+  }
+
   private async runWorkerWithRestart(input: {
     ctx: ExecutorContext
     events: ExecutorEvents
     parsed: NonNullable<ReturnType<typeof readTranscriptionOptions>>
     abort: AbortController
     workDir: string
-    attach: (child: ChildProcess | null) => void
+    attach: (child: ChildProcess | null, expected?: ChildProcess) => void
     emitProgress: (stage: TranscriptionStage, percent: number | null, ticks: number) => void
     tails: { stdout: string; stderr: string }
     runtime: WorkerRuntime
+    compute: ResolvedComputeProvider
     fingerprint: string
     existingTranscriptPath?: string
   }): Promise<{ result: PipelineResult; durationMs: number }> {
+    const selectedProvider = input.compute.selection.provider
+    if (selectedProvider !== 'cpu') {
+      try {
+        return await this.runWorker({ ...input, provider: selectedProvider })
+      } catch (error) {
+        if (input.abort.signal.aborted) {
+          throw error
+        }
+        const detail = (error instanceof Error ? error.message : String(error))
+          .replace(/\s+/g, ' ')
+          .trim()
+        const line = `compute.fallback=cpu from=${selectedProvider} error=${detail}`
+        input.tails.stderr += `${line}\n`
+        input.events.onStd({
+          taskId: input.ctx.taskId,
+          attemptId: input.ctx.attemptId,
+          stream: 'stderr',
+          line
+        })
+        this.providerSelections.set(input.compute.cacheKey, {
+          ...input.compute.selection,
+          cacheable: true,
+          provider: 'cpu',
+          reason: 'runtime-provider-failure'
+        })
+      }
+    }
+
     const maxRestarts = this.opts.maxWorkerRestarts ?? DEFAULT_MAX_WORKER_RESTARTS
     let restarts = 0
     while (true) {
       try {
-        return await this.runWorker(input)
+        return await this.runWorker({ ...input, provider: 'cpu' })
       } catch (err) {
         if (input.abort.signal.aborted) {
           throw err
@@ -447,10 +605,11 @@ export class TranscriptionExecutor implements Executor {
     parsed: NonNullable<ReturnType<typeof readTranscriptionOptions>>
     abort: AbortController
     workDir: string
-    attach: (child: ChildProcess | null) => void
+    attach: (child: ChildProcess | null, expected?: ChildProcess) => void
     emitProgress: (stage: TranscriptionStage, percent: number | null, ticks: number) => void
     tails: { stdout: string; stderr: string }
     runtime: WorkerRuntime
+    provider: SherpaExecutionProvider
     fingerprint: string
     existingTranscriptPath?: string
   }): Promise<{ result: PipelineResult; durationMs: number }> {
@@ -466,6 +625,9 @@ export class TranscriptionExecutor implements Executor {
         }
       )
       input.attach(child)
+      child.stdin?.on('error', () => {
+        /* process error and close events own worker failure reporting */
+      })
 
       const start: WorkerInbound = {
         type: 'start',
@@ -481,6 +643,7 @@ export class TranscriptionExecutor implements Executor {
         fingerprint: input.fingerprint,
         modelVersion: `${modelVersion}:${parseAsrTier(input.parsed.asrTier, DEFAULT_ASR_TIER)}:spk-${parseSpeakerCount(input.parsed.speakerCount, DEFAULT_SPEAKER_COUNT)}`,
         asrTier: parseAsrTier(input.parsed.asrTier, DEFAULT_ASR_TIER),
+        provider: input.provider,
         language: input.parsed.language,
         speakerCount: parseSpeakerCount(input.parsed.speakerCount, DEFAULT_SPEAKER_COUNT),
         existingTranscriptPath: input.existingTranscriptPath
@@ -488,7 +651,8 @@ export class TranscriptionExecutor implements Executor {
       child.stdin?.write(encodeMessage(start))
 
       // Native sherpa calls block the worker event loop, so in-worker
-      // heartbeats cannot keep the 60s running watchdog alive.
+      // heartbeats cannot keep the 60s running watchdog alive. Stop once
+      // committing starts — fake keepalives would hide a lost result forever.
       const alive = setInterval(() => {
         if (!child.killed) {
           input.events.onStd({
@@ -531,6 +695,9 @@ export class TranscriptionExecutor implements Executor {
             continue
           }
           if (message.type === 'progress') {
+            if (message.stage === 'committing') {
+              clearInterval(alive)
+            }
             input.emitProgress(message.stage, message.percent, Date.now())
           } else if (message.type === 'partial') {
             const next = transcriptionPartials.append(
@@ -559,9 +726,20 @@ export class TranscriptionExecutor implements Executor {
               line: message.line
             })
           } else if (message.type === 'result') {
-            settle(() => resolve({ result: message.result, durationMs: message.durationMs }))
+            settle(() => {
+              child.stdin?.end()
+              try {
+                resolve({
+                  result: readWorkerResult(message, input.workDir),
+                  durationMs: message.durationMs
+                })
+              } catch (error) {
+                reject(error instanceof Error ? error : new Error(String(error)))
+              }
+            })
           } else if (message.type === 'error') {
             settle(() => {
+              child.stdin?.end()
               if (message.message === 'cancelled' || input.abort.signal.aborted) {
                 reject(new Error('cancelled'))
               } else {
@@ -578,7 +756,7 @@ export class TranscriptionExecutor implements Executor {
       })
       child.on('error', (err) => settle(() => reject(err)))
       child.on('close', (code, signal) => {
-        input.attach(null)
+        input.attach(null, child)
         settle(() => {
           if (input.abort.signal.aborted) {
             reject(new Error('cancelled'))

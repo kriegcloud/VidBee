@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { classifyIngestText } from './ingest'
 import {
   isFacebookGalleryUrl,
   isFacebookReelsUrl,
@@ -32,6 +33,7 @@ interface UseAddUrlInteractionOptions {
 interface UseAddUrlInteractionResult {
   addUrlPopoverOpen: boolean
   addUrlValue: string
+  batchRequiresOneClick: boolean
   canConfirmAddUrl: boolean
   hasAddUrlValue: boolean
   handleConfirmAddUrl: () => Promise<void>
@@ -58,7 +60,9 @@ export const useAddUrlInteraction = ({
 
   const trimmedAddUrlValue = addUrlValue.trim()
   const hasAddUrlValue = trimmedAddUrlValue.length > 0
-  const canConfirmAddUrl = hasAddUrlValue && isLikelyUrl(trimmedAddUrlValue)
+  const addUrlValues = classifyIngestText(trimmedAddUrlValue).urls
+  const batchRequiresOneClick = addUrlValues.length > 1 && !isOneClickDownloadEnabled
+  const canConfirmAddUrl = addUrlValues.length > 0 && !batchRequiresOneClick
 
   const handleOpenAddUrlPopover = useCallback(async () => {
     setAddUrlPopoverOpen(true)
@@ -69,8 +73,8 @@ export const useAddUrlInteraction = ({
 
     try {
       const text = await navigator.clipboard.readText()
-      const trimmedUrl = text.trim()
-      setAddUrlValue(isLikelyUrl(trimmedUrl) ? trimmedUrl : '')
+      const trimmedText = text.trim()
+      setAddUrlValue(classifyIngestText(trimmedText).urls.length > 0 ? trimmedText : '')
     } catch {
       setAddUrlValue('')
     }
@@ -146,13 +150,33 @@ export const useAddUrlInteraction = ({
     ]
   )
 
+  /** Queue multiline input in one-click mode, or route a single URL through the standard flow. */
   const handleConfirmAddUrl = useCallback(async () => {
-    await submitUrl(addUrlValue)
-  }, [addUrlValue, submitUrl])
+    const urls = classifyIngestText(addUrlValue).urls
+    if (urls.length === 0) {
+      await submitUrl(addUrlValue)
+      return
+    }
+
+    if (urls.length > 1) {
+      if (!isOneClickDownloadEnabled) {
+        return
+      }
+      setAddUrlPopoverOpen(false)
+      setAddUrlValue('')
+      for (const url of urls) {
+        await onOneClickDownload(url)
+      }
+      return
+    }
+
+    await submitUrl(urls[0])
+  }, [addUrlValue, isOneClickDownloadEnabled, onOneClickDownload, submitUrl])
 
   return {
     addUrlPopoverOpen,
     addUrlValue,
+    batchRequiresOneClick,
     canConfirmAddUrl,
     hasAddUrlValue,
     handleConfirmAddUrl,
