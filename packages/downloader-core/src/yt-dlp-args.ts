@@ -509,6 +509,9 @@ export const buildDownloadArgs = (
   assertDownloadSourceUrl(options.url)
   validateDownloadTimeRange(options.startTime, options.endTime)
   const args: string[] = ['--no-playlist', '--no-mtime', '--encoding', 'utf-8']
+  // The vendored kernel enables unplayable formats by default, which disables
+  // embedding and media fixups. Downloads need playable formats and postprocessing.
+  args.push('--no-allow-unplayable-formats')
 
   if (options.type === 'video') {
     const formatSelector = resolveVideoFormatSelector(options)
