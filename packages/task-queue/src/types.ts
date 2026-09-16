@@ -13,6 +13,7 @@ export type TaskKind =
   | 'instagram-profile-category'
   | 'vsco-gallery'
   | 'facebook-gallery'
+  | 'tiktok-photo'
   | 'subscription-item'
   | 'yt-dlp-forward'
   | 'transcription'

@@ -19,7 +19,8 @@ export function isOutputComplete(
   if (
     kind === 'instagram-profile-category' ||
     kind === 'vsco-gallery' ||
-    kind === 'facebook-gallery'
+    kind === 'facebook-gallery' ||
+    kind === 'tiktok-photo'
   ) {
     return Boolean(
       output.outputDirectory &&

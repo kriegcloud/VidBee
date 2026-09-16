@@ -5,6 +5,7 @@ import {
   isFacebookReelsUrl,
   isInstagramProfileUrl,
   isPlaylistLikeUrl,
+  isTikTokPhotoUrl,
   isVscoGalleryUrl
 } from './url-kind'
 
@@ -97,7 +98,11 @@ export const useAddUrlInteraction = ({
 
       setAddUrlPopoverOpen(false)
 
-      if (isVscoGalleryUrl(trimmedUrl) || isFacebookGalleryUrl(trimmedUrl)) {
+      if (
+        isVscoGalleryUrl(trimmedUrl) ||
+        isFacebookGalleryUrl(trimmedUrl) ||
+        isTikTokPhotoUrl(trimmedUrl)
+      ) {
         await onOneClickDownload(trimmedUrl)
         return
       }

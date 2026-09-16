@@ -6,7 +6,12 @@ import { test } from 'node:test'
 import type { ExecutorFinishEvent, TaskKind } from '@vidbee/task-queue'
 import { GalleryDlExecutor } from '../src/gallery-dl-executor'
 
-for (const kind of ['instagram-profile-category', 'vsco-gallery', 'facebook-gallery'] as const) {
+for (const kind of [
+  'instagram-profile-category',
+  'vsco-gallery',
+  'facebook-gallery',
+  'tiktok-photo'
+] as const) {
   for (const scenario of [
     'complete',
     'failed',
@@ -54,9 +59,11 @@ for (const kind of ['instagram-profile-category', 'vsco-gallery', 'facebook-gall
               url:
                 kind === 'facebook-gallery'
                   ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
-                  : kind === 'vsco-gallery'
-                    ? 'https://vsco.co/fixture/gallery'
-                    : 'https://www.instagram.com/fixture/photos/'
+                  : kind === 'tiktok-photo'
+                    ? 'https://www.tiktok.com/@fixture/photo/7240568259186019630'
+                    : kind === 'vsco-gallery'
+                      ? 'https://vsco.co/fixture/gallery'
+                      : 'https://www.instagram.com/fixture/photos/'
             }
           },
           { onSpawn() {}, onProgress() {}, onStd() {}, onFinish: resolve }

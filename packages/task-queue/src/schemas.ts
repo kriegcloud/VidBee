@@ -7,6 +7,7 @@ export const TaskKindSchema = z.enum([
   'instagram-profile-category',
   'vsco-gallery',
   'facebook-gallery',
+  'tiktok-photo',
   'subscription-item',
   'yt-dlp-forward',
   'transcription'

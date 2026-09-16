@@ -3,6 +3,7 @@ import {
 	isFacebookReelsUrl,
 	isInstagramProfileUrl,
 	isPlaylistLikeUrl,
+	isTikTokPhotoUrl,
 	isVscoGalleryUrl,
 } from "@vidbee/ui/lib/url-kind";
 import { describe, expect, it } from "vitest";
@@ -73,6 +74,29 @@ describe("isInstagramProfileUrl", () => {
 		"https://example.com/vidbee/",
 	])("rejects an individual item or non-Instagram URL: %s", (url) => {
 		expect(isInstagramProfileUrl(url)).toBe(false);
+	});
+});
+
+describe("isTikTokPhotoUrl", () => {
+	it.each([
+		"https://www.tiktok.com/@chillezy/photo/7240568259186019630",
+		"https://tiktok.com/@hull.city_1904/photo/7553302113757990166/?lang=en",
+		"https://m.tiktok.com/@memezar/photo/7449708266168274208#top",
+		"https://www.tiktok.com/share/photo/7449708266168274208",
+	])("downloads a photo-mode post as an image set: %s", (url) => {
+		expect(isTikTokPhotoUrl(url)).toBe(true);
+		expect(isPlaylistLikeUrl(url)).toBe(false);
+	});
+
+	it.each([
+		"https://www.tiktok.com/@tiktok/video/7683195368279985438",
+		"https://www.tiktok.com/@tiktok",
+		"https://vm.tiktok.com/ZMabc123/",
+		"https://www.tiktok.com/@tiktok/photo/abc",
+		"https://tiktok.com.example.org/@tiktok/photo/7240568259186019630",
+		"ftp://www.tiktok.com/@tiktok/photo/7240568259186019630",
+	])("keeps %s on the single-video path", (url) => {
+		expect(isTikTokPhotoUrl(url)).toBe(false);
 	});
 });
 

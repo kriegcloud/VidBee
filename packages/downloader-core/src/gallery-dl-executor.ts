@@ -18,6 +18,7 @@ import { killProcessTree } from '@vidbee/task-queue/process'
 
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
+import { normalizeTikTokPhotoUrl } from './tiktok-photo'
 import type { DownloadRuntimeSettings } from './types'
 import type { YtDlpTaskOptions } from './yt-dlp-executor'
 
@@ -50,6 +51,23 @@ export const FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS = [
   '60',
   '--retries',
   '8'
+] as const
+
+/**
+ * Photo-mode posts carry images plus the slideshow sound. Videos stay off so
+ * gallery-dl never reaches for its optional ytdl module; yt-dlp owns TikTok video.
+ */
+export const TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS = [
+  '-o',
+  'extractor.tiktok.photos=true',
+  '-o',
+  'extractor.tiktok.audio=true',
+  '-o',
+  'extractor.tiktok.videos=false',
+  '--sleep-429',
+  '60',
+  '--retries',
+  '5'
 ] as const
 
 export interface NormalizedVscoGalleryUrl {
@@ -113,6 +131,9 @@ export const resolveDownloadTaskKind = (
   if (normalizeFacebookGalleryUrl(url)) {
     return 'facebook-gallery'
   }
+  if (normalizeTikTokPhotoUrl(url)) {
+    return 'tiktok-photo'
+  }
   return normalizeVscoGalleryUrl(url) ? 'vsco-gallery' : requestedType
 }
 
@@ -131,16 +152,25 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
   }
 }
 
-export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string =>
-  normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)
+export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => {
+  if (normalizeTikTokPhotoUrl(url)) {
+    // Images enumerate from 1; the slideshow sound is num 0.
+    return '{id}_{num:>02}.{extension}'
+  }
+  return normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)
     ? '{id}.{extension}'
     : '{sidecar_media_id:?/_/}{media_id}.{extension}'
+}
 
 export const resolveGalleryDlFilenameTemplate = (
   url: string,
   options: GalleryDlTaskOptions
 ): string => {
-  if (normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)) {
+  if (
+    normalizeVscoGalleryUrl(url) ||
+    normalizeFacebookGalleryUrl(url) ||
+    normalizeTikTokPhotoUrl(url)
+  ) {
     return resolveDefaultGalleryDlFilenameTemplate(url)
   }
   const galleryTemplate = options.galleryDlFilenameTemplate?.trim()
@@ -319,8 +349,10 @@ export class GalleryDlExecutor implements Executor {
       this.options.defaultDownloadDir
     const vscoGallery = normalizeVscoGalleryUrl(ctx.input.url)
     const facebookGallery = normalizeFacebookGalleryUrl(ctx.input.url)
+    const tiktokPhoto = normalizeTikTokPhotoUrl(ctx.input.url)
     const galleryDirectorySegments =
       facebookGallery?.directorySegments ??
+      tiktokPhoto?.directorySegments ??
       (vscoGallery ? ['VSCO', vscoGallery.username, 'Gallery'] : null)
     const outputDirectory = galleryDirectorySegments
       ? path.join(configuredOutputDirectory, ...galleryDirectorySegments)
@@ -337,13 +369,9 @@ export class GalleryDlExecutor implements Executor {
       ...(this.options.resolveExtraArgs?.(taskOptions.settings) ??
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
-    const extractorArgs = facebookGallery
-      ? FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS
-      : vscoGallery
-        ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
-        : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
+    const extractorArgs = resolveExtractorArgs({ facebookGallery, tiktokPhoto, vscoGallery })
     const args = buildArgs(
-      facebookGallery?.url ?? vscoGallery?.profileUrl ?? ctx.input.url,
+      facebookGallery?.url ?? tiktokPhoto?.url ?? vscoGallery?.profileUrl ?? ctx.input.url,
       directoryTemplate,
       filenameTemplate,
       [...extractorArgs, ...extraArgs],
@@ -702,8 +730,28 @@ export class GalleryDlExecutor implements Executor {
 
 const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
+const resolveExtractorArgs = (galleries: {
+  facebookGallery: unknown
+  tiktokPhoto: unknown
+  vscoGallery: unknown
+}): readonly string[] => {
+  if (galleries.facebookGallery) {
+    return FACEBOOK_GALLERY_DL_EXTRACTOR_ARGS
+  }
+  if (galleries.tiktokPhoto) {
+    return TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS
+  }
+  return galleries.vscoGallery
+    ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
+    : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
+}
+
 export const shouldUseGalleryDl = (url: string): boolean => {
-  if (normalizeVscoGalleryUrl(url) || normalizeFacebookGalleryUrl(url)) {
+  if (
+    normalizeVscoGalleryUrl(url) ||
+    normalizeFacebookGalleryUrl(url) ||
+    normalizeTikTokPhotoUrl(url)
+  ) {
     return true
   }
   try {

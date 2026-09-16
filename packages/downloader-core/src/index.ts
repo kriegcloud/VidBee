@@ -87,6 +87,7 @@ export {
   resolveDefaultGalleryDlFilenameTemplate,
   resolveDownloadTaskKind,
   shouldUseGalleryDl,
+  TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS,
   VSCO_GALLERY_DL_EXTRACTOR_ARGS
 } from './gallery-dl-executor'
 export type {
@@ -124,6 +125,8 @@ export {
   normalizeSubtitleLanguages,
   resolveSubtitleLanguages
 } from './subtitle-languages'
+export type { NormalizedTikTokPhotoUrl } from './tiktok-photo'
+export { normalizeTikTokPhotoUrl } from './tiktok-photo'
 export type {
   CreateDownloadInput,
   DirectoryEntry,
