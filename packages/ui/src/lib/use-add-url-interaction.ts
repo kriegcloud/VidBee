@@ -1,3 +1,4 @@
+import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
 import { useCallback, useState } from 'react'
 import { classifyIngestText } from './ingest'
 import {
@@ -18,6 +19,21 @@ const isLikelyUrl = (value: string): boolean => {
   }
 }
 
+/** Expand share-sheet links so photo posts route like their canonical URL. */
+const resolveSubmittedUrl = async (
+  url: string,
+  onResolveUrl: ((url: string) => Promise<string>) | undefined
+): Promise<string> => {
+  if (!(onResolveUrl && isTikTokShortLink(url))) {
+    return url
+  }
+  try {
+    return (await onResolveUrl(url)).trim() || url
+  } catch {
+    return url
+  }
+}
+
 interface UseAddUrlInteractionOptions {
   activeTab: 'single' | 'playlist' | 'profile'
   isOneClickDownloadEnabled: boolean
@@ -29,6 +45,8 @@ interface UseAddUrlInteractionOptions {
   onParseProfile: (url: string) => Promise<void> | void
   onParsePlaylist: (url: string) => Promise<void> | void
   onParseSingle: (url: string) => Promise<void> | void
+  /** Expands short links (for example `vm.tiktok.com`) before routing. */
+  onResolveUrl?: (url: string) => Promise<string>
 }
 
 interface UseAddUrlInteractionResult {
@@ -54,7 +72,8 @@ export const useAddUrlInteraction = ({
   onOneClickDownload,
   onParseProfile,
   onParsePlaylist,
-  onParseSingle
+  onParseSingle,
+  onResolveUrl
 }: UseAddUrlInteractionOptions): UseAddUrlInteractionResult => {
   const [addUrlPopoverOpen, setAddUrlPopoverOpen] = useState(false)
   const [addUrlValue, setAddUrlValue] = useState('')
@@ -86,17 +105,18 @@ export const useAddUrlInteraction = ({
    */
   const submitUrl = useCallback(
     async (rawUrl: string) => {
-      const trimmedUrl = rawUrl.trim()
-      if (!trimmedUrl) {
+      const inputUrl = rawUrl.trim()
+      if (!inputUrl) {
         onEmptyUrl()
         return
       }
-      if (!isLikelyUrl(trimmedUrl)) {
+      if (!isLikelyUrl(inputUrl)) {
         onInvalidUrl()
         return
       }
 
       setAddUrlPopoverOpen(false)
+      const trimmedUrl = await resolveSubmittedUrl(inputUrl, onResolveUrl)
 
       if (
         isVscoGalleryUrl(trimmedUrl) ||
@@ -151,7 +171,8 @@ export const useAddUrlInteraction = ({
       onOneClickDownload,
       onParseProfile,
       onParsePlaylist,
-      onParseSingle
+      onParseSingle,
+      onResolveUrl
     ]
   )
 

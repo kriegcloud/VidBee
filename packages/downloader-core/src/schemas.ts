@@ -227,6 +227,14 @@ export const VideoInfoInputSchema = z.object({
   settings: DownloadRuntimeSettingsSchema.optional()
 })
 
+export const ResolveUrlInputSchema = z.object({
+  url: z.url()
+})
+
+export const ResolveUrlOutputSchema = z.object({
+  url: z.string().min(1)
+})
+
 export const PlaylistInfoInputSchema = z.object({
   url: z.url(),
   settings: DownloadRuntimeSettingsSchema.optional()

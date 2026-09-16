@@ -51,6 +51,9 @@ interface DownloadDialogProps {
 	onDownloadsChanged?: () => Promise<void> | void;
 }
 
+const resolveShortLink = async (url: string): Promise<string> =>
+	(await orpcClient.resolveUrl({ url })).url;
+
 export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
@@ -401,6 +404,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		onParseProfile: handleParseProfileUrl,
 		onParsePlaylist: handleParsePlaylistUrl,
 		onParseSingle: handleParseSingleUrl,
+		onResolveUrl: resolveShortLink,
 	});
 
 	const handleDownloadProfile = useCallback(async () => {

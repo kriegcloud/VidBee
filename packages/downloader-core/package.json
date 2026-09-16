@@ -19,6 +19,7 @@
     "./audio-format-preferences": "./src/audio-format-preferences.ts",
     "./subtitle-languages": "./src/subtitle-languages.ts",
     "./tiktok-photo": "./src/tiktok-photo.ts",
+    "./tiktok-short-link": "./src/tiktok-short-link.ts",
     "./yt-dlp-args": "./src/yt-dlp-args.ts",
     "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts"
   },

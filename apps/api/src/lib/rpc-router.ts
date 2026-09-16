@@ -9,6 +9,7 @@ import type { DownloadTask } from '@vidbee/downloader-core'
 import {
   downloaderContract,
   enqueueInstagramProfileDownload,
+  expandTikTokShortLink,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import { resolveAutoVideoDownloadPath } from '@vidbee/downloader-core/output-path'
@@ -304,6 +305,10 @@ export const rpcRouter = os.router({
     }
   }),
 
+  resolveUrl: os.resolveUrl.handler(async ({ input }) => ({
+    url: await expandTikTokShortLink(input.url)
+  })),
+
   playlist: {
     info: os.playlist.info.handler(async ({ input }) => {
       try {
@@ -454,10 +459,12 @@ export const rpcRouter = os.router({
                 input.settings?.downloadWithoutChannelSubfolders ??
                   storedSettings.downloadWithoutChannelSubfolders
               ))
+        // Share-sheet links hide whether the post is a video or a photo set.
+        const url = await expandTikTokShortLink(input.url)
         const result = await taskQueue.add({
           input: {
-            url: input.url,
-            kind: resolveDownloadTaskKind(input.url, input.type),
+            url,
+            kind: resolveDownloadTaskKind(url, input.type),
             title: input.title,
             thumbnail: input.thumbnail,
             playlistId: input.playlistId,

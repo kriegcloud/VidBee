@@ -128,6 +128,11 @@ export {
 export type { NormalizedTikTokPhotoUrl } from './tiktok-photo'
 export { normalizeTikTokPhotoUrl } from './tiktok-photo'
 export type {
+  ExpandTikTokShortLinkOptions,
+  TikTokShortLinkFetch
+} from './tiktok-short-link'
+export { expandTikTokShortLink, isTikTokShortLink } from './tiktok-short-link'
+export type {
   CreateDownloadInput,
   DirectoryEntry,
   DirectoryListInput,

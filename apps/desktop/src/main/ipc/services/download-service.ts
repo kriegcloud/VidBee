@@ -24,6 +24,11 @@ class DownloadService extends IpcService {
   }
 
   @IpcMethod()
+  resolveUrl(_context: IpcContext, url: string): Promise<string> {
+    return downloadEngine.resolveUrl(url)
+  }
+
+  @IpcMethod()
   async getVideoInfoWithCommand(
     _context: IpcContext,
     url: string

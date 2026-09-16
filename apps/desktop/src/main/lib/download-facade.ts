@@ -20,6 +20,7 @@ import path from 'node:path'
 
 import {
   enqueueInstagramProfileDownload,
+  expandTikTokShortLink,
   type InstagramProfileDownloadInput,
   type InstagramProfileDownloadResult,
   type InstagramProfileInspection,
@@ -283,6 +284,10 @@ class DownloadFacade extends EventEmitter {
 
   // ───────────── Stateless metadata ─────────────
 
+  resolveUrl(url: string): Promise<string> {
+    return expandTikTokShortLink(url)
+  }
+
   getVideoInfo(url: string): Promise<VideoInfo> {
     return fetchVideoInfo(url)
   }
@@ -315,7 +320,12 @@ class DownloadFacade extends EventEmitter {
         if (pending.cancelled) {
           return
         }
-        const hydratedOptions = await hydrateDownloadMetadata(options)
+        // Share-sheet links hide whether the post is a video or a photo set.
+        const resolvedOptions = { ...options, url: await expandTikTokShortLink(options.url) }
+        if (pending.cancelled) {
+          return
+        }
+        const hydratedOptions = await hydrateDownloadMetadata(resolvedOptions)
         if (pending.cancelled) {
           return
         }

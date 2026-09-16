@@ -54,6 +54,8 @@ interface DownloadDialogProps {
   onOpenSettings?: () => void
 }
 
+const resolveShortLink = (url: string): Promise<string> => ipcServices.download.resolveUrl(url)
+
 export function DownloadDialog({
   onOpenSupportedSites,
   onOpenSettings: _onOpenSettings
@@ -474,7 +476,8 @@ export function DownloadDialog({
     onOneClickDownload: handleOneClickFromAddUrl,
     onParseProfile: handleParseProfileUrl,
     onParsePlaylist: handleParsePlaylistUrl,
-    onParseSingle: handleParseSingleUrl
+    onParseSingle: handleParseSingleUrl,
+    onResolveUrl: resolveShortLink
   })
 
   const handleDownloadProfile = useCallback(async () => {

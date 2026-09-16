@@ -5,10 +5,10 @@ import {
   CreateDownloadInputSchema,
   CreateDownloadOutputSchema,
   DirectoryListInputSchema,
+  EngineStatusSchema,
   FileExistsOutputSchema,
   FileOperationOutputSchema,
   FilePathInputSchema,
-  EngineStatusSchema,
   GetWebSettingsOutputSchema,
   InstagramProfileDownloadInputSchema,
   InstagramProfileDownloadOutputSchema,
@@ -26,6 +26,8 @@ import {
   RemoveHistoryByPlaylistInputSchema,
   RemoveHistoryItemsInputSchema,
   RemoveHistoryOutputSchema,
+  ResolveUrlInputSchema,
+  ResolveUrlOutputSchema,
   ResumeDownloadInputSchema,
   ResumeDownloadOutputSchema,
   RetryDownloadInputSchema,
@@ -41,6 +43,7 @@ import {
 export const downloaderContract = {
   status: oc.output(StatusOutputSchema),
   videoInfo: oc.input(VideoInfoInputSchema).output(VideoInfoOutputSchema),
+  resolveUrl: oc.input(ResolveUrlInputSchema).output(ResolveUrlOutputSchema),
   playlist: {
     info: oc.input(PlaylistInfoInputSchema).output(PlaylistInfoOutputSchema),
     download: oc.input(PlaylistDownloadInputSchema).output(PlaylistDownloadOutputSchema)
