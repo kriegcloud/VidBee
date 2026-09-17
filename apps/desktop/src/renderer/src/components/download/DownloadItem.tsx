@@ -22,6 +22,7 @@ import {
   DOWNLOAD_FEEDBACK_ISSUE_TITLE,
   FeedbackLinkButtons
 } from '@vidbee/ui/components/ui/feedback-link-buttons'
+import { SocialMediaStatus } from '@vidbee/ui/components/ui/social-media-status'
 import {
   downloadPlatformDisplayLabel,
   LOCAL_DOWNLOAD_PLATFORM_KEY,
@@ -318,6 +319,9 @@ export function DownloadItem({
         toast.info(t('notifications.downloadAlreadyQueued'))
         return
       }
+      if (download.collectionSummary && download.status === 'completed') {
+        return
+      }
       addDownload({
         ...download,
         status: 'pending',
@@ -332,6 +336,10 @@ export function DownloadItem({
 
   const handleOpenFolder = async () => {
     try {
+      if (download.collectionSummary && download.outputDirectory) {
+        await ipcServices.fs.openFile(download.outputDirectory)
+        return
+      }
       const downloadPath = download.downloadPath || settings.downloadPath
       const format = resolvedExtension
       const filePaths = buildFilePathCandidates(
@@ -620,7 +628,8 @@ export function DownloadItem({
     transcriptError: transcript?.error,
     transcriptListState
   })
-  const canPlayMedia = isCompletedStatus && Boolean(playableInput.filePath)
+  const canPlayMedia =
+    !download.collectionSummary && isCompletedStatus && Boolean(playableInput.filePath)
   const actionsAlwaysVisible = isInProgressStatus
   const hoverActionsClass = `flex items-center justify-end gap-0.5 transition-opacity ${
     actionsAlwaysVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
@@ -632,8 +641,9 @@ export function DownloadItem({
     progressInfo && download.status !== 'completed' && download.status !== 'error'
   )
   const canCopyLink = Boolean(download.url) && !isLocalMedia
-  const canOpenFile = isCompletedStatus && fileExists
-  const canDeleteFile = !isLocalMedia && isCompletedStatus && fileExists
+  const canOpenFile = !download.collectionSummary && isCompletedStatus && fileExists
+  const canDeleteFile =
+    !(download.collectionSummary || isLocalMedia) && isCompletedStatus && fileExists
   const platformLabel = downloadPlatformDisplayLabel(platform, {
     local: t('download.localSource'),
     other: t('download.otherSource')
@@ -797,6 +807,10 @@ export function DownloadItem({
             if (isListIgnoreTarget(event.target)) {
               return
             }
+            if (download.collectionSummary) {
+              void handleOpenFolder()
+              return
+            }
             handleOpenTranscript()
           }}
         >
@@ -850,6 +864,16 @@ export function DownloadItem({
             <div className="pointer-events-none min-w-0 flex-1 overflow-hidden">
               <div className="flex min-h-14 items-center gap-2">
                 <div className="min-w-0 flex-1 space-y-1.5">
+                  {download.collectionSummary && (
+                    <SocialMediaStatus
+                      completed={download.status === 'completed'}
+                      onRefresh={() => {
+                        void handleRetryDownload()
+                      }}
+                      summary={download.collectionSummary}
+                    />
+                  )}
+
                   <div
                     className={`flex min-w-0 items-center gap-1.5 ${isNowPlaying ? 'text-primary' : ''}`}
                   >

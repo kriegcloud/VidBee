@@ -13,6 +13,7 @@ export type TaskKind =
   | 'instagram-profile-category'
   | 'vsco-gallery'
   | 'facebook-gallery'
+  | 'social-media'
   | 'tiktok-photo'
   | 'threads-post'
   | 'threads-profile'
@@ -98,7 +99,22 @@ export interface TranscriptTaskResult {
 
 export type SubtitleDownloadStatus = 'downloaded' | 'unavailable' | 'skipped-auth' | 'failed'
 
+export interface SocialCollectionSummary {
+  posts: number
+  images: number
+  videos: number
+  downloaded: number
+  existing: number
+  failed: number
+  totalSize: number
+  reason: 'exhausted' | 'limit' | 'incomplete'
+  manifestPath: string
+  startedAt: number
+  finishedAt?: number
+}
+
 export interface TaskOutput {
+  collectionSummary?: SocialCollectionSummary
   /** Immutable acquisition facts captured by the downloader process. */
   subtitleAcquisition?: {
     id: string
@@ -144,6 +160,7 @@ export interface TaskOutput {
 }
 
 export interface TaskProgress {
+  collectionSummary?: SocialCollectionSummary
   /** 0..1 inclusive. Sparse — null while parsing or before yt-dlp emits. */
   percent: number | null
   bytesDownloaded: number | null

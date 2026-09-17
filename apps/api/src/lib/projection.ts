@@ -13,6 +13,8 @@ import { projectTaskToLegacy } from '@vidbee/task-queue'
 export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
   const proj = projectTaskToLegacy(task)
   const out: DownloadTask = {
+    collectionSummary: proj.collectionSummary,
+    sourceMediaKind: proj.sourceMediaKind,
     id: proj.id,
     url: proj.url,
     title: proj.title,
@@ -62,6 +64,7 @@ export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
   if (proj.progress) {
     out.progress = {
       percent: proj.progress.percent,
+      indeterminate: proj.progress.indeterminate,
       currentSpeed: proj.progress.currentSpeed,
       eta: proj.progress.eta,
       downloaded: proj.progress.downloaded,

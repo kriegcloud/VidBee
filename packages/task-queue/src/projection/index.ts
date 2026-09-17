@@ -21,6 +21,7 @@
 import type {
   ClassifiedError,
   ErrorCategory,
+  SocialCollectionSummary,
   Task,
   TaskOutput,
   TaskProgress,
@@ -99,8 +100,10 @@ export interface LegacyTaskProjection {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  collectionSummary?: SocialCollectionSummary
   batchId?: string
-  batchKind?: 'instagram-profile'
+  batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
   batchCategory?: string
   batchOrder?: number
@@ -183,8 +186,10 @@ interface MaybeHostFields {
   startedAt?: number
   completedAt?: number
   downloadPath?: string
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  collectionSummary?: SocialCollectionSummary
   batchId?: string
-  batchKind?: 'instagram-profile'
+  batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
   batchCategory?: string
   batchOrder?: number
@@ -222,6 +227,8 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     playlistTitle: opts.playlistTitle,
     playlistIndex: task.input.playlistIndex,
     playlistSize: opts.playlistSize,
+    sourceMediaKind: opts.sourceMediaKind,
+    collectionSummary: task.output?.collectionSummary ?? task.progress.collectionSummary,
     batchId: opts.batchId,
     batchKind: opts.batchKind,
     batchTitle: opts.batchTitle,
@@ -236,6 +243,18 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     downloadPath: opts.downloadPath,
     attempt: task.attempt,
     maxAttempts: task.maxAttempts
+  }
+
+  if (task.kind === 'social-media' && proj.collectionSummary) {
+    const { images, videos, manifestPath } = proj.collectionSummary
+    proj.sourceMediaKind =
+      images > 0 && videos === 0
+        ? 'image'
+        : videos > 0 && images === 0
+          ? 'video'
+          : opts.sourceMediaKind
+    proj.outputDirectory = dirnameOf(dirnameOf(manifestPath))
+    proj.downloadPath = proj.outputDirectory
   }
 
   if (subStatus) {
@@ -254,7 +273,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
   if (task.output) {
     const out = task.output as TaskOutput
     proj.fileSize = out.size
-    proj.savedFileName = basenameOf(out.filePath)
+    proj.savedFileName = task.kind === 'social-media' ? undefined : basenameOf(out.filePath)
     proj.downloadPath = out.outputDirectory ?? dirnameOf(out.filePath)
     proj.outputDirectory = out.outputDirectory
     proj.fileCount = out.fileCount

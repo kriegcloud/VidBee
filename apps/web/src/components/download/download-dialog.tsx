@@ -9,6 +9,10 @@ import {
 	type OneClickContainerOption,
 } from "@vidbee/downloader-core/format-preferences";
 import { buildSingleVideoFormatSelector } from "@vidbee/downloader-core/format-selector";
+import {
+	resolveSocialSource,
+	SocialMediaOptionsSchema,
+} from "@vidbee/downloader-core/social-media";
 import { AddUrlPopover } from "@vidbee/ui/components/ui/add-url-popover";
 import { Button } from "@vidbee/ui/components/ui/button";
 import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
@@ -19,6 +23,7 @@ import { Input } from "@vidbee/ui/components/ui/input";
 import { InstagramProfilePreview } from "@vidbee/ui/components/ui/instagram-profile-preview";
 import { Label } from "@vidbee/ui/components/ui/label";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
+import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
 import { useAddUrlInteraction } from "@vidbee/ui/lib/use-add-url-interaction";
 import { useHomeIngest } from "@vidbee/ui/lib/use-home-ingest";
 import { FolderOpen, Loader2 } from "lucide-react";
@@ -41,6 +46,7 @@ import { logger } from "../../lib/logger";
 import { orpcClient } from "../../lib/orpc-client";
 import { readOrpcDownloadSettings } from "../../lib/orpc-download-settings";
 import { resolveImageProxyUrl } from "../../lib/remote-image-proxy";
+import { readWebSettings } from "../../lib/web-settings";
 import { PlaylistDownload } from "./playlist-download";
 import {
 	SingleVideoDownload,
@@ -57,6 +63,7 @@ const resolveShortLink = async (url: string): Promise<string> =>
 export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
+	const [socialUrl, setSocialUrl] = useState<string | null>(null);
 	const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -243,6 +250,11 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			toast.error(t("errors.emptyUrl"));
 			return;
 		}
+		if (resolveSocialSource(url.trim())) {
+			setOpen(false);
+			setSocialUrl(url.trim());
+			return;
+		}
 		setSingleVideoState((prev) => ({
 			...prev,
 			selectedVideoFormat: "",
@@ -401,6 +413,10 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			toast.error(t("errors.invalidUrl"));
 		},
 		onOneClickDownload: handleOneClickFromAddUrl,
+		onParseSocial: (value) => {
+			setOpen(false);
+			setSocialUrl(value);
+		},
 		onParseProfile: handleParseProfileUrl,
 		onParsePlaylist: handleParsePlaylistUrl,
 		onParseSingle: handleParseSingleUrl,
@@ -651,6 +667,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				viewCount: videoInfo.viewCount,
 				tags: videoInfo.tags,
 				selectedFormat: selectedVideoFormat,
+				singleVideo: true,
 				format: resolvedFormat || undefined,
 				audioFormat: type === "audio" ? "mp3" : undefined,
 				startTime: singleVideoState.startTime.trim() || undefined,
@@ -1019,6 +1036,32 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				}
 				singleTabLabel={t("download.singleVideo")}
 			/>
+			{socialUrl && (
+				<SocialMediaDialog
+					onInspect={(url) =>
+						orpcClient.socialMedia.inspect({
+							url,
+							settings: readOrpcDownloadSettings(),
+						})
+					}
+					key={socialUrl}
+					url={socialUrl}
+					destination={readWebSettings().downloadPath}
+					onClose={() => setSocialUrl(null)}
+					onDownload={async (request) => {
+						const result = await orpcClient.socialMedia.download({
+							...request,
+							options: request.options
+								? SocialMediaOptionsSchema.parse(request.options)
+								: undefined,
+							settings: readOrpcDownloadSettings(),
+						});
+						await notifyDownloadsChanged();
+						return result;
+					}}
+					onVideoOptions={handleParseSingleUrl}
+				/>
+			)}
 			<IngestDropOverlay
 				description={t("download.ingestDropDescription")}
 				kind={dropKind}

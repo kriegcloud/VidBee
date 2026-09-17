@@ -22,7 +22,9 @@
     "./tiktok-photo": "./src/tiktok-photo.ts",
     "./tiktok-short-link": "./src/tiktok-short-link.ts",
     "./yt-dlp-args": "./src/yt-dlp-args.ts",
-    "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts"
+    "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts",
+    "./social-media": "./src/social-media.ts",
+    "./social-media-service": "./src/social-media-service.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

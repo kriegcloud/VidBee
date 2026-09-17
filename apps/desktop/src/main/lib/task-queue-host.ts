@@ -23,6 +23,7 @@ import {
   YtDlpExecutor,
   type YtDlpTaskOptions
 } from '@vidbee/downloader-core'
+import { restoreSocialMediaGroupCaps } from '@vidbee/downloader-core/social-media-service'
 import {
   ExecutorRouter,
   MemoryPersistAdapter,
@@ -231,6 +232,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   const queue = getDesktopTaskQueue()
   await queue.start()
   await restoreInstagramProfileGroupCaps(queue)
+  await restoreSocialMediaGroupCaps(queue)
   try {
     const { sqlite, path: persistPath } = getDatabaseConnection()
     const taskCount = Number(

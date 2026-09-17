@@ -26,6 +26,7 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@vidbee/ui/components/ui/sheet";
+import { SocialMediaStatus } from "@vidbee/ui/components/ui/social-media-status";
 import {
 	TabItem,
 	TabPanel,
@@ -426,7 +427,9 @@ export function DownloadItem({
 	};
 
 	const handleCopyServerPath = async () => {
-		const currentPath = resolvedFilePath ?? (await findExistingFilePath());
+		const currentPath = download.collectionSummary
+			? download.outputDirectory
+			: (resolvedFilePath ?? (await findExistingFilePath()));
 		if (!currentPath) {
 			toast.error(t("notifications.copyFailed"));
 			return;
@@ -505,13 +508,16 @@ export function DownloadItem({
 	const isCompletedStatus = download.status === "completed";
 	const canRetry =
 		download.status === "error" || download.status === "cancelled";
-	const showCopyAction = isCompletedStatus && fileExists;
+	const showCopyAction =
+		!download.collectionSummary && isCompletedStatus && fileExists;
 	const showOpenFolderAction = Boolean(
 		download.title && getEffectiveDownloadPath().trim(),
 	);
 	const canCopyLink = Boolean(download.url);
-	const canOpenFile = isCompletedStatus && fileExists;
-	const canDeleteFile = isCompletedStatus && fileExists;
+	const canOpenFile =
+		!download.collectionSummary && isCompletedStatus && fileExists;
+	const canDeleteFile =
+		!download.collectionSummary && isCompletedStatus && fileExists;
 	const canDeleteRecord = Boolean(onRemove);
 	const isSelectedHistory = isHistory && Boolean(onToggleSelect) && isSelected;
 
@@ -883,6 +889,16 @@ export function DownloadItem({
 						</div>
 
 						<div className="min-w-0 flex-1 overflow-hidden">
+							{download.collectionSummary && (
+								<SocialMediaStatus
+									summary={download.collectionSummary}
+									completed={download.status === "completed"}
+									onRefresh={() => {
+										void handleRetryDownload();
+									}}
+								/>
+							)}
+
 							<div className="flex min-h-14 items-center gap-2">
 								<div className="min-w-0 flex-1 space-y-1.5">
 									<div className="flex min-w-0 items-center gap-1.5">

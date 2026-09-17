@@ -16,6 +16,16 @@ export function isOutputComplete(
   output: TaskOutput,
   check: OutputCompleteCheck
 ): boolean {
+  if (kind === 'social-media') {
+    return Boolean(
+      output.collectionSummary &&
+        output.collectionSummary.reason !== 'incomplete' &&
+        output.collectionSummary.failed === 0 &&
+        output.outputDirectory &&
+        check.filePresent(output.outputDirectory) &&
+        check.filePresent(output.collectionSummary.manifestPath)
+    )
+  }
   if (
     kind === 'instagram-profile-category' ||
     kind === 'vsco-gallery' ||

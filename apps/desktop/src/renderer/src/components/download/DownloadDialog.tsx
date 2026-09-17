@@ -20,9 +20,11 @@ import {
   buildSingleVideoFormatSelector,
   isMuxedVideoFormat
 } from '@vidbee/downloader-core/format-selector'
+import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
+import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
 import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
 import { useAddUrlInteraction } from '@vidbee/ui/lib/use-add-url-interaction'
 import { useHomeIngest } from '@vidbee/ui/lib/use-home-ingest'
@@ -62,6 +64,7 @@ export function DownloadDialog({
 }: DownloadDialogProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [socialUrl, setSocialUrl] = useState<string | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
   const [videoInfoSourceUrl] = useAtom(currentVideoInfoSourceUrlAtom)
   const [videoInfoCommand] = useAtom(videoInfoCommandAtom)
@@ -178,6 +181,12 @@ export function DownloadDialog({
       }
 
       if (!url) {
+        return
+      }
+
+      if (resolveSocialSource(url)) {
+        setOpen(false)
+        setSocialUrl(url)
         return
       }
 
@@ -354,6 +363,11 @@ export function DownloadDialog({
       toast.error(t('errors.emptyUrl'))
       return
     }
+    if (resolveSocialSource(url.trim())) {
+      setOpen(false)
+      setSocialUrl(url.trim())
+      return
+    }
     if (isPlaylistLikeUrl(url.trim())) {
       // GitHub issue #391: surface the Playlist tab as soon as a playlist URL
       // is detected so the user is not left on the Single Video tab.
@@ -474,6 +488,10 @@ export function DownloadDialog({
       toast.error(t('errors.invalidUrl'))
     },
     onOneClickDownload: handleOneClickFromAddUrl,
+    onParseSocial: (value) => {
+      setOpen(false)
+      setSocialUrl(value)
+    },
     onParseProfile: handleParseProfileUrl,
     onParsePlaylist: handleParsePlaylistUrl,
     onParseSingle: handleParseSingleUrl,
@@ -770,6 +788,7 @@ export function DownloadDialog({
     const options = {
       url: downloadTargetUrl,
       type,
+      singleVideo: true,
       format: resolvedFormat || undefined,
       audioFormat: type === 'video' && isMuxedVideoFormat(selectedVideoFormat) ? '' : undefined,
       startTime: singleVideoState.startTime.trim() || undefined,
@@ -1206,6 +1225,17 @@ export function DownloadDialog({
         }
         singleTabLabel={t('download.singleVideo')}
       />
+      {socialUrl && (
+        <SocialMediaDialog
+          destination={settings.downloadPath}
+          key={socialUrl}
+          onClose={() => setSocialUrl(null)}
+          onDownload={(request) => ipcServices.download.downloadSocialMedia(request)}
+          onInspect={(url) => ipcServices.download.inspectSocialMedia(url)}
+          onVideoOptions={handleParseSingleUrl}
+          url={socialUrl}
+        />
+      )}
       <IngestDropOverlay
         description={t('download.ingestDropDescription')}
         kind={dropKind}

@@ -1,3 +1,4 @@
+import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
 import { useCallback, useState } from 'react'
 import { classifyIngestText } from './ingest'
@@ -43,6 +44,7 @@ interface UseAddUrlInteractionOptions {
   onEmptyUrl: () => void
   onInvalidUrl: () => void
   onOneClickDownload: (url: string) => Promise<void> | void
+  onParseSocial?: (url: string) => Promise<void> | void
   onParseProfile: (url: string) => Promise<void> | void
   onParsePlaylist: (url: string) => Promise<void> | void
   onParseSingle: (url: string) => Promise<void> | void
@@ -71,6 +73,7 @@ export const useAddUrlInteraction = ({
   onEmptyUrl,
   onInvalidUrl,
   onOneClickDownload,
+  onParseSocial,
   onParseProfile,
   onParsePlaylist,
   onParseSingle,
@@ -118,6 +121,11 @@ export const useAddUrlInteraction = ({
 
       setAddUrlPopoverOpen(false)
       const trimmedUrl = await resolveSubmittedUrl(inputUrl, onResolveUrl)
+
+      if (resolveSocialSource(trimmedUrl) && onParseSocial) {
+        await onParseSocial(trimmedUrl)
+        return
+      }
 
       if (
         isVscoGalleryUrl(trimmedUrl) ||
@@ -171,6 +179,7 @@ export const useAddUrlInteraction = ({
       onEmptyUrl,
       onInvalidUrl,
       onOneClickDownload,
+      onParseSocial,
       onParseProfile,
       onParsePlaylist,
       onParseSingle,

@@ -1,5 +1,5 @@
 import { type ChildProcess, spawn } from 'node:child_process'
-import { stat } from 'node:fs/promises'
+import { realpath, stat } from 'node:fs/promises'
 import path from 'node:path'
 
 import {
@@ -15,9 +15,11 @@ import {
 } from '@vidbee/task-queue'
 
 import { killProcessTree } from '@vidbee/task-queue/process'
-
+import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
+import { SocialCollectionSummarySchema } from './schemas'
+import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
 import { normalizeThreadsUrl } from './threads'
 import { normalizeTikTokPhotoUrl } from './tiktok-photo'
 import type { DownloadRuntimeSettings } from './types'
@@ -129,6 +131,9 @@ export const resolveDownloadTaskKind = (
   url: string,
   requestedType: 'audio' | 'video'
 ): TaskKind => {
+  if (resolveSocialSource(url)) {
+    return 'social-media'
+  }
   const threads = normalizeThreadsUrl(url)
   if (threads) {
     return threads.kind === 'post' ? 'threads-post' : 'threads-profile'
@@ -338,6 +343,9 @@ export class GalleryDlExecutor implements Executor {
     let skippedCount = 0
     let failedCount = 0
     let ticks = 0
+    let socialSummary: SocialCollectionSummary | undefined
+    let socialComplete = false
+    let protocolError = false
 
     const finishOnce = (event: Parameters<ExecutorEvents['onFinish']>[0]): void => {
       if (settled) {
@@ -352,6 +360,11 @@ export class GalleryDlExecutor implements Executor {
     }
 
     const taskOptions = (ctx.input.options ?? {}) as GalleryDlTaskOptions
+    const socialSource =
+      ctx.input.kind === 'social-media' ? resolveSocialSource(ctx.input.url) : null
+    const socialOptions = socialSource
+      ? SocialMediaOptionsSchema.parse(ctx.input.options?.socialMedia ?? {})
+      : undefined
     const configuredOutputDirectory =
       taskOptions.customDownloadPath?.trim() ||
       taskOptions.settings?.downloadPath?.trim() ||
@@ -401,6 +414,49 @@ export class GalleryDlExecutor implements Executor {
       directorySegments,
       filter
     )
+
+    if (socialSource) {
+      if (socialSource.kind === 'unsupported') {
+        finishOnce({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          result: {
+            type: 'error',
+            error: virtualError('unknown', 'Unsupported social media collection URL.'),
+            exitCode: null
+          },
+          closedAt: this.options.clock(),
+          stdoutTail: '',
+          stderrTail: ''
+        })
+        return makeNoopRun()
+      }
+      args.splice(
+        0,
+        args.length,
+        '--config-ignore',
+        '--no-input',
+        '--no-colors',
+        '--retries',
+        '3',
+        '--sleep-request',
+        '1',
+        '--sleep-429',
+        '60',
+        ...extraArgs,
+        '-o',
+        `extractor.vidbee-social.destination=${JSON.stringify(path.resolve(configuredOutputDirectory))}`,
+        '-o',
+        `extractor.vidbee-social.source=${JSON.stringify(socialSource)}`,
+        '-o',
+        `extractor.vidbee-social.options=${JSON.stringify(socialOptions)}`,
+        '-o',
+        `extractor.vidbee-social.run-id=${JSON.stringify(ctx.attemptId)}`,
+        '-o',
+        `extractor.vidbee-social.inspect=${ctx.input.options?.socialInspect === true}`,
+        `vidbee-social:${socialCollectionUrl(socialSource)}`
+      )
+    }
 
     let binaryPath: string
     try {
@@ -478,6 +534,43 @@ export class GalleryDlExecutor implements Executor {
         line
       })
 
+      if (socialSource) {
+        if (line.startsWith('__VIDBEE_SOCIAL__\t')) {
+          try {
+            const event: unknown = JSON.parse(line.slice('__VIDBEE_SOCIAL__\t'.length))
+            if (
+              !event ||
+              typeof event !== 'object' ||
+              !('summary' in event) ||
+              !('type' in event) ||
+              !['progress', 'complete'].includes(String(event.type))
+            ) {
+              throw new Error('Invalid social event')
+            }
+            socialSummary = SocialCollectionSummarySchema.parse(event.summary)
+            socialComplete = event.type === 'complete'
+            ticks += 1
+            events.onProgress({
+              taskId: ctx.taskId,
+              attemptId: ctx.attemptId,
+              enteredProcessing: false,
+              progress: {
+                percent: null,
+                bytesDownloaded: socialSummary.totalSize,
+                bytesTotal: null,
+                speedBps: null,
+                etaMs: null,
+                ticks,
+                collectionSummary: socialSummary
+              }
+            })
+          } catch {
+            protocolError = true
+          }
+        }
+        return
+      }
+
       if (line.startsWith(`${EVENT_PREFIX}\t`)) {
         const [, eventName, eventPath = ''] = line.split('\t', 3)
         const normalizedPath = eventPath.trim()
@@ -516,6 +609,10 @@ export class GalleryDlExecutor implements Executor {
       const text = chunk.toString()
       stdoutTail.append(text)
       stdoutCarry += text
+      if (stdoutCarry.length > 1024 * 1024) {
+        protocolError = true
+        stdoutCarry = stdoutCarry.slice(-1024 * 1024)
+      }
       const lines = stdoutCarry.split(/\r?\n/)
       stdoutCarry = lines.pop() ?? ''
       for (const line of lines) {
@@ -528,6 +625,9 @@ export class GalleryDlExecutor implements Executor {
       const text = chunk.toString()
       stderrTail.append(text)
       stderrCarry += text
+      if (stderrCarry.length > 1024 * 1024) {
+        stderrCarry = stderrCarry.slice(-1024 * 1024)
+      }
       const lines = stderrCarry.split(/\r?\n/)
       stderrCarry = lines.pop() ?? ''
       for (const rawLine of lines) {
@@ -561,6 +661,70 @@ export class GalleryDlExecutor implements Executor {
           taskId: ctx.taskId,
           attemptId: ctx.attemptId,
           result: { type: 'cancelled' },
+          closedAt,
+          stdoutTail: stdout,
+          stderrTail: stderr
+        })
+        return
+      }
+
+      if (socialSource && exitCode === 0) {
+        const summary = socialSummary
+        const resolvedDirectory = await realpath(configuredOutputDirectory).catch(() =>
+          path.resolve(configuredOutputDirectory)
+        )
+        const manifest = path.join(resolvedDirectory, '.vidbee', 'social-media.sqlite')
+        const verified =
+          summary &&
+          socialComplete &&
+          !protocolError &&
+          summary.reason !== 'incomplete' &&
+          summary.failed === 0 &&
+          summary.manifestPath === manifest &&
+          (await stat(manifest).catch(() => null))?.isFile()
+        if (cancelRequested) {
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'cancelled' },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr
+          })
+          return
+        }
+        if (!verified) {
+          const message =
+            'Collection incomplete: missing traversal result or unverified media. Successfully saved files are retained.'
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'error', error: virtualError('output-missing', message), exitCode },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: message
+          })
+          return
+        }
+        finishOnce({
+          taskId: ctx.taskId,
+          attemptId: ctx.attemptId,
+          result: {
+            type: 'success',
+            output: {
+              filePath: manifest,
+              size: summary.totalSize,
+              durationMs: null,
+              sha256: null,
+              outputDirectory: resolvedDirectory,
+              fileCount: summary.downloaded + summary.existing,
+              downloadedCount: summary.downloaded,
+              skippedCount: summary.existing,
+              failedCount: 0,
+              totalSize: summary.totalSize,
+              collectionSummary: summary
+            }
+          },
           closedAt,
           stdoutTail: stdout,
           stderrTail: stderr
@@ -773,6 +937,9 @@ const resolveExtractorArgs = (galleries: {
 }
 
 export const shouldUseGalleryDl = (url: string): boolean => {
+  if (resolveSocialSource(url)) {
+    return true
+  }
   if (
     normalizeVscoGalleryUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
@@ -801,7 +968,14 @@ export class HostRoutingExecutor implements Executor {
   }
 
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
-    if (ctx.input.kind === 'instagram-profile-category' || shouldUseGalleryDl(ctx.input.url)) {
+    if (ctx.input.options?.singleVideo === true) {
+      return this.ytDlp.run(ctx, events)
+    }
+    if (
+      ctx.input.kind === 'social-media' ||
+      ctx.input.kind === 'instagram-profile-category' ||
+      shouldUseGalleryDl(ctx.input.url)
+    ) {
       return this.galleryDl.run(ctx, events)
     }
     return this.ytDlp.run(ctx, events)

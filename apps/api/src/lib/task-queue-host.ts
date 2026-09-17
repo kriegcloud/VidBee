@@ -27,6 +27,7 @@ import {
   restoreInstagramProfileGroupCaps,
   YtDlpExecutor
 } from '@vidbee/downloader-core'
+import { restoreSocialMediaGroupCaps } from '@vidbee/downloader-core/social-media-service'
 import {
   ExecutorRouter,
   MemoryPersistAdapter,
@@ -63,7 +64,7 @@ const {
 const unifiedDbDir = apiDataDir
 
 let cachedGalleryDlPath: string | null = null
-const resolveGalleryDlPath = (): string => {
+export const resolveGalleryDlPath = (): string => {
   if (cachedGalleryDlPath && fs.existsSync(cachedGalleryDlPath)) {
     return cachedGalleryDlPath
   }
@@ -96,7 +97,9 @@ const ytDlpExecutor = new YtDlpExecutor({
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
 })
-const resolveGalleryDlExtraArgs = (settings?: DownloadRuntimeSettings): readonly string[] => {
+export const resolveGalleryDlExtraArgs = (
+  settings?: DownloadRuntimeSettings
+): readonly string[] => {
   const here = path.dirname(fileURLToPath(import.meta.url))
   const candidates = [
     trimEnv('VIDBEE_GALLERY_EXTRACTORS_DIR'),
@@ -224,6 +227,7 @@ export const startTaskQueue = async (): Promise<void> => {
   }
   await taskQueue.start()
   await restoreInstagramProfileGroupCaps(taskQueue)
+  await restoreSocialMediaGroupCaps(taskQueue)
   try {
     const settings = await (await import('./web-settings-store')).webSettingsStore.get()
     autoEnabled = settings.autoTranscribeAfterDownload === true

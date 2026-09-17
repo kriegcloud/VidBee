@@ -1,5 +1,10 @@
 import { z } from 'zod'
 import {
+  SocialMediaOptionsSchema,
+  SocialMediaPreviewSchema,
+  SocialSourceSchema
+} from './social-media'
+import {
   DEFAULT_SUBTITLE_LANGUAGES,
   MAX_SUBTITLE_LANGUAGES,
   normalizeSubtitleLanguages
@@ -17,6 +22,7 @@ export const DownloadStatusSchema = z.enum([
 
 export const DownloadProgressSchema = z.object({
   percent: z.number(),
+  indeterminate: z.boolean().optional(),
   currentSpeed: z.string().optional(),
   eta: z.string().optional(),
   downloaded: z.string().optional(),
@@ -54,6 +60,20 @@ const TaskQueueErrorCategorySchema = z.enum([
   'unknown'
 ])
 
+export const SocialCollectionSummarySchema = z.object({
+  posts: z.number().int().nonnegative(),
+  images: z.number().int().nonnegative(),
+  videos: z.number().int().nonnegative(),
+  downloaded: z.number().int().nonnegative(),
+  existing: z.number().int().nonnegative(),
+  failed: z.number().int().nonnegative(),
+  totalSize: z.number().int().nonnegative(),
+  reason: z.enum(['exhausted', 'limit', 'incomplete']),
+  manifestPath: z.string(),
+  startedAt: z.number(),
+  finishedAt: z.number().optional()
+})
+
 export const DownloadTaskSchema = z.object({
   id: z.string(),
   url: z.url(),
@@ -82,13 +102,16 @@ export const DownloadTaskSchema = z.object({
   playlistIndex: z.number().optional(),
   playlistSize: z.number().optional(),
   batchId: z.string().optional(),
-  batchKind: z.literal('instagram-profile').optional(),
+  batchKind: z.enum(['instagram-profile', 'social-media']).optional(),
   batchTitle: z.string().optional(),
   batchCategory: z.string().optional(),
   batchOrder: z.number().int().nonnegative().optional(),
   batchSourceCount: z.number().int().nonnegative().optional(),
   batchAssetCount: z.number().int().nonnegative().optional(),
   outputDirectory: z.string().optional(),
+  sourceMediaKind: z.enum(['image', 'video', 'mixed']).optional(),
+  socialMedia: SocialMediaOptionsSchema.optional(),
+  collectionSummary: SocialCollectionSummarySchema.optional(),
   fileCount: z.number().int().nonnegative().optional(),
   downloadedCount: z.number().int().nonnegative().optional(),
   skippedCount: z.number().int().nonnegative().optional(),
@@ -196,6 +219,8 @@ export const WebAppSettingsSchema = z.object({
 })
 
 export const CreateDownloadInputSchema = z.object({
+  singleVideo: z.boolean().optional(),
+  socialMedia: SocialMediaOptionsSchema.optional(),
   url: z.url(),
   type: DownloadTypeSchema,
   title: z.string().optional(),
@@ -532,4 +557,24 @@ export const GetWebSettingsOutputSchema = z.object({
 
 export const SetWebSettingsInputSchema = z.object({
   settings: WebAppSettingsSchema
+})
+
+export const SocialMediaInspectInputSchema = z.object({
+  url: z.url(),
+  settings: DownloadRuntimeSettingsSchema.optional()
+})
+export const SocialMediaInspectOutputSchema = z.object({
+  source: SocialSourceSchema,
+  preview: SocialMediaPreviewSchema
+})
+export const SocialMediaDownloadInputSchema = z.object({
+  url: z.url(),
+  categories: z.array(z.string()).max(10).optional(),
+  options: SocialMediaOptionsSchema.optional(),
+  customDownloadPath: z.string().optional(),
+  settings: DownloadRuntimeSettingsSchema.optional()
+})
+export const SocialMediaDownloadOutputSchema = z.object({
+  groupId: z.string(),
+  ids: z.array(z.string())
 })

@@ -17,7 +17,6 @@
 import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
-
 import {
   enqueueInstagramProfileDownload,
   expandTikTokShortLink,
@@ -26,6 +25,12 @@ import {
   type InstagramProfileInspection,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
+import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
+import {
+  downloadSocialMedia,
+  previewSocialMedia,
+  type SocialMediaDownloadRequest
+} from '@vidbee/downloader-core/social-media-service'
 import {
   isDownloadTaskKind,
   PRIORITY_USER,
@@ -33,7 +38,6 @@ import {
   type TaskInput,
   type TaskQueueAPI
 } from '@vidbee/task-queue'
-
 import type {
   DownloadItem,
   DownloadOptions,
@@ -50,6 +54,7 @@ import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { toSharedSettings } from './command-utils'
 import { shouldSurfaceQueuedDownload } from './download-queue-events'
+import { galleryDlManager } from './gallery-dl-manager'
 import { applyAutoVideoDownloadPath } from './path-resolver'
 import { projectProgressForRenderer, projectTaskForRenderer } from './projection'
 import {
@@ -162,7 +167,7 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
   const downloadPath = options.customDownloadPath?.trim() || settings.downloadPath || ''
   return {
     url: options.url,
-    kind: resolveDownloadTaskKind(options.url, options.type),
+    kind: options.singleVideo ? options.type : resolveDownloadTaskKind(options.url, options.type),
     subscriptionId: options.subscriptionId,
     // Stash renderer-fetched metadata at the canonical TaskInput slots so
     // projectTaskToLegacy round-trips them. Without these, the renderer's
@@ -172,6 +177,18 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
     thumbnail: options.thumbnail,
     options: {
       type: options.type,
+      singleVideo: options.singleVideo,
+      socialMedia: resolveSocialSource(options.url)
+        ? SocialMediaOptionsSchema.parse(options.socialMedia ?? {})
+        : undefined,
+      sourceMediaKind:
+        resolveSocialSource(options.url) && !options.singleVideo
+          ? options.socialMedia?.media === 'images'
+            ? 'image'
+            : options.socialMedia?.media === 'videos'
+              ? 'video'
+              : 'mixed'
+          : undefined,
       format: options.format,
       audioFormat: options.audioFormat,
       audioFormatIds: options.audioFormatIds,
@@ -204,6 +221,26 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
 }
 
 class DownloadFacade extends EventEmitter {
+  inspectSocialMedia(url: string) {
+    return previewSocialMedia(
+      url,
+      {
+        resolveBinaryPath: () => galleryDlManager.getPath(),
+        resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings)
+      },
+      toSharedSettings(settingsManager.getAll())
+    )
+  }
+
+  async downloadSocialMedia(request: SocialMediaDownloadRequest) {
+    this.subscribeOnce()
+    await startDesktopTaskQueue()
+    return downloadSocialMedia(this.queue, {
+      ...request,
+      settings: toSharedSettings(settingsManager.getAll())
+    })
+  }
+
   private subscribed = false
   /** Accumulated live yt-dlp output per active task, replayed to the renderer via `download-log`. */
   private readonly logBuffers = new Map<string, string>()
@@ -329,10 +366,10 @@ class DownloadFacade extends EventEmitter {
         if (pending.cancelled) {
           return
         }
-        const pathResolvedOptions = applyAutoVideoDownloadPath(
-          hydratedOptions,
-          settingsManager.getAll()
-        )
+        const pathResolvedOptions =
+          resolveSocialSource(hydratedOptions.url) && !hydratedOptions.singleVideo
+            ? hydratedOptions
+            : applyAutoVideoDownloadPath(hydratedOptions, settingsManager.getAll())
         const finalOptions = applySequentialFilename(pathResolvedOptions)
         ensureDirectoryExists(finalOptions.customDownloadPath)
         // Pass the renderer-generated id through so optimistic-UI rows merge
@@ -340,6 +377,10 @@ class DownloadFacade extends EventEmitter {
         await this.queue.add({
           id,
           input: buildTaskInput(id, finalOptions),
+          groupKey:
+            resolveSocialSource(finalOptions.url) && !finalOptions.singleVideo
+              ? `social:${resolveSocialSource(finalOptions.url)?.platform}`
+              : undefined,
           priority: PRIORITY_USER
         })
         if (pending.cancelled) {
@@ -428,6 +469,16 @@ class DownloadFacade extends EventEmitter {
     this.subscribeOnce()
     await startDesktopTaskQueue()
     const task = this.queue.get(id)
+    if (task?.kind === 'social-media' && task.status === 'completed') {
+      await this.queue.add({
+        input: {
+          ...task.input,
+          options: { ...task.input.options, settings: toSharedSettings(settingsManager.getAll()) }
+        },
+        groupKey: task.groupKey
+      })
+      return true
+    }
     if (!task || (task.status !== 'failed' && task.status !== 'cancelled')) {
       return false
     }

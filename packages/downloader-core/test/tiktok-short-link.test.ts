@@ -52,7 +52,7 @@ describe('expandTikTokShortLink', () => {
       fetch: redirectTo(`${PHOTO_URL}?_r=1&_t=abc`)(calls)
     })
     expect(expanded).toBe(PHOTO_URL)
-    expect(resolveDownloadTaskKind(expanded, 'video')).toBe('tiktok-photo')
+    expect(resolveDownloadTaskKind(expanded, 'video')).toBe('social-media')
     expect(calls).toHaveLength(1)
     expect(calls[0].init).toMatchObject({ method: 'HEAD', redirect: 'manual' })
     expect(new Headers(calls[0].init.headers).get('user-agent')).toBe('facebookexternalhit/1.1')
@@ -63,7 +63,7 @@ describe('expandTikTokShortLink', () => {
       fetch: redirectTo('https://m.tiktok.com/@user.name/video/7106594312292453675/')([])
     })
     expect(video).toBe('https://www.tiktok.com/@user.name/video/7106594312292453675')
-    expect(resolveDownloadTaskKind(video, 'video')).toBe('video')
+    expect(resolveDownloadTaskKind(video, 'video')).toBe('social-media')
 
     const share = await expandTikTokShortLink('https://www.tiktok.com/t/ZTRC5xgJp', {
       fetch: redirectTo('/share/photo/7240568259186019630')([])
@@ -76,7 +76,7 @@ describe('expandTikTokShortLink', () => {
       )([])
     })
     expect(handleless).toBe('https://www.tiktok.com/share/photo/7449725569123634450')
-    expect(resolveDownloadTaskKind(handleless, 'video')).toBe('tiktok-photo')
+    expect(resolveDownloadTaskKind(handleless, 'video')).toBe('social-media')
   })
 
   it.each([

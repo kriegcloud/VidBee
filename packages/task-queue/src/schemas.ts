@@ -7,6 +7,7 @@ export const TaskKindSchema = z.enum([
   'instagram-profile-category',
   'vsco-gallery',
   'facebook-gallery',
+  'social-media',
   'tiktok-photo',
   'threads-post',
   'threads-profile',
@@ -68,7 +69,22 @@ export const SubtitleDownloadStatusSchema = z.enum([
   'failed'
 ])
 
+export const SocialCollectionSummarySchema = z.object({
+  posts: z.number().int().nonnegative(),
+  images: z.number().int().nonnegative(),
+  videos: z.number().int().nonnegative(),
+  downloaded: z.number().int().nonnegative(),
+  existing: z.number().int().nonnegative(),
+  failed: z.number().int().nonnegative(),
+  totalSize: z.number().int().nonnegative(),
+  reason: z.enum(['exhausted', 'limit', 'incomplete']),
+  manifestPath: z.string(),
+  startedAt: z.number(),
+  finishedAt: z.number().optional()
+})
+
 export const TaskOutputSchema = z.object({
+  collectionSummary: SocialCollectionSummarySchema.optional(),
   filePath: z.string(),
   size: z.number().int().nonnegative(),
   durationMs: z.number().int().nullable(),
@@ -94,6 +110,7 @@ export const TaskOutputSchema = z.object({
 })
 
 export const TaskProgressSchema = z.object({
+  collectionSummary: SocialCollectionSummarySchema.optional(),
   percent: z.number().min(0).max(1).nullable(),
   bytesDownloaded: z.number().int().nullable(),
   bytesTotal: z.number().int().nullable(),

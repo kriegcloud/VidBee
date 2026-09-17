@@ -1,10 +1,6 @@
 import { TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
 import { describe, expect, it } from 'vitest'
-import {
-  resolveDownloadTaskKind,
-  resolveGalleryDlFilenameTemplate,
-  shouldUseGalleryDl
-} from '../src/gallery-dl-executor'
+import { resolveGalleryDlFilenameTemplate, shouldUseGalleryDl } from '../src/gallery-dl-executor'
 import { normalizeTikTokPhotoUrl } from '../src/tiktok-photo'
 
 describe('TikTok photo routing', () => {
@@ -34,8 +30,6 @@ describe('TikTok photo routing', () => {
     expect(normalized?.url).toBe(canonical)
     expect(normalized?.directorySegments).toEqual(segments)
     expect(shouldUseGalleryDl(input)).toBe(true)
-    expect(resolveDownloadTaskKind(input, 'video')).toBe('tiktok-photo')
-    expect(resolveDownloadTaskKind(input, 'audio')).toBe('tiktok-photo')
   })
 
   it.each([
@@ -53,10 +47,8 @@ describe('TikTok photo routing', () => {
     'https://example.org/tiktok.com/@tiktok/photo/7240568259186019630',
     'ftp://www.tiktok.com/@tiktok/photo/7240568259186019630',
     'invalid'
-  ])('leaves %s on the yt-dlp path', (input) => {
+  ])('rejects %s as a legacy photo URL', (input) => {
     expect(normalizeTikTokPhotoUrl(input)).toBeNull()
-    expect(shouldUseGalleryDl(input)).toBe(false)
-    expect(resolveDownloadTaskKind(input, 'video')).toBe('video')
   })
 
   it('numbers photo-mode files and ignores user filename templates', () => {

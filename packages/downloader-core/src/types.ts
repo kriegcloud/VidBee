@@ -1,5 +1,7 @@
+import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import type { FilenameStyle } from './filename-style'
 import type { OneClickContainerOption } from './format-preferences'
+import type { SocialMediaOptions } from './social-media'
 
 export type DownloadType = 'video' | 'audio'
 
@@ -14,6 +16,7 @@ export type DownloadStatus =
   | 'cancelled'
 
 export interface DownloadProgress {
+  indeterminate?: boolean
   percent: number
   currentSpeed?: string
   eta?: string
@@ -54,6 +57,9 @@ export type TaskQueueErrorCategory =
   | 'unknown'
 
 export interface DownloadTask {
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  socialMedia?: SocialMediaOptions
+  collectionSummary?: SocialCollectionSummary
   id: string
   url: string
   title?: string
@@ -81,7 +87,7 @@ export interface DownloadTask {
   playlistIndex?: number
   playlistSize?: number
   batchId?: string
-  batchKind?: 'instagram-profile'
+  batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
   batchCategory?: string
   batchOrder?: number
@@ -137,6 +143,8 @@ export interface PlaylistInfoInput {
 }
 
 export interface CreateDownloadInput {
+  socialMedia?: SocialMediaOptions
+  singleVideo?: boolean
   url: string
   type: DownloadType
   title?: string

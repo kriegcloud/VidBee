@@ -66,6 +66,8 @@ export const projectTaskForRenderer = (task: Readonly<Task>): DownloadItem => {
   const proj = projectTaskToLegacy(task)
   const renderer = readRendererOptions(task)
   const item: DownloadItem = {
+    collectionSummary: proj.collectionSummary,
+    sourceMediaKind: proj.sourceMediaKind,
     id: proj.id,
     url: proj.url,
     title: proj.title ?? proj.url,
@@ -223,6 +225,8 @@ export const projectTaskForRendererHistory = (task: Readonly<Task>): DownloadHis
   }
   const renderer = readRendererOptions(task)
   const item: DownloadHistoryItem = {
+    collectionSummary: proj.collectionSummary,
+    sourceMediaKind: proj.sourceMediaKind,
     id: proj.id,
     url: proj.url,
     title: proj.title ?? proj.url,

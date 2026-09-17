@@ -3,6 +3,7 @@ import type {
   InstagramProfileDownloadResult,
   InstagramProfileInspection
 } from '@vidbee/downloader-core'
+import type { SocialMediaDownloadRequest } from '@vidbee/downloader-core/social-media-service'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type {
   DownloadItem,
@@ -17,6 +18,16 @@ import { downloadEngine } from '../../lib/download-facade'
 
 class DownloadService extends IpcService {
   static readonly groupName = 'download'
+
+  @IpcMethod()
+  inspectSocialMedia(_context: IpcContext, url: string) {
+    return downloadEngine.inspectSocialMedia(url)
+  }
+
+  @IpcMethod()
+  downloadSocialMedia(_context: IpcContext, request: SocialMediaDownloadRequest) {
+    return downloadEngine.downloadSocialMedia(request)
+  }
 
   @IpcMethod()
   async getVideoInfo(_context: IpcContext, url: string): Promise<VideoInfo> {

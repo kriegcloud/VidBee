@@ -21,7 +21,7 @@ WORKDIR /app/vendor/yt-dlp
 RUN python3 devscripts/make_lazy_extractors.py \
   && python3 -m venv /opt/vidbee-media-tools \
   && /opt/vidbee-media-tools/bin/pip install --no-cache-dir \
-  ".[pin,pin-curl-cffi]" "gallery-dl==1.32.11" \
+  ".[pin,pin-curl-cffi]" "https://codeberg.org/mikf/gallery-dl/archive/f93159c24ed0e26a141ff823a0ee3bd4587489a0.tar.gz" \
   && "${YTDLP_PATH}" --version \
   && "${YTDLP_PATH}" --list-impersonate-targets | grep -Eq '^Chrome-' \
   && "${GALLERY_DL_PATH}" --version
@@ -41,6 +41,7 @@ COPY packages/transcription/package.json packages/transcription/package.json
 RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile
 
 COPY apps/api apps/api
+COPY apps/desktop/resources/gallery-dl-extractors apps/desktop/resources/gallery-dl-extractors
 COPY packages/db packages/db
 COPY packages/downloader-core packages/downloader-core
 COPY packages/i18n packages/i18n

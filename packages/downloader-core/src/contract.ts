@@ -33,6 +33,10 @@ import {
   RetryDownloadInputSchema,
   RetryDownloadOutputSchema,
   SetWebSettingsInputSchema,
+  SocialMediaDownloadInputSchema,
+  SocialMediaDownloadOutputSchema,
+  SocialMediaInspectInputSchema,
+  SocialMediaInspectOutputSchema,
   StatusOutputSchema,
   UploadSettingsFileInputSchema,
   UploadSettingsFileOutputSchema,
@@ -41,6 +45,10 @@ import {
 } from './schemas'
 
 export const downloaderContract = {
+  socialMedia: {
+    inspect: oc.input(SocialMediaInspectInputSchema).output(SocialMediaInspectOutputSchema),
+    download: oc.input(SocialMediaDownloadInputSchema).output(SocialMediaDownloadOutputSchema)
+  },
   status: oc.output(StatusOutputSchema),
   videoInfo: oc.input(VideoInfoInputSchema).output(VideoInfoOutputSchema),
   resolveUrl: oc.input(ResolveUrlInputSchema).output(ResolveUrlOutputSchema),

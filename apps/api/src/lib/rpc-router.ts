@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto'
 import { constants as fsConstants } from 'node:fs'
 import { access, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-
 import { implement, ORPCError } from '@orpc/server'
 import type { DownloadTask } from '@vidbee/downloader-core'
 import {
@@ -13,6 +12,11 @@ import {
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import { resolveAutoVideoDownloadPath } from '@vidbee/downloader-core/output-path'
+import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
+import {
+  downloadSocialMedia,
+  previewSocialMedia
+} from '@vidbee/downloader-core/social-media-service'
 import type { Task, TaskStatus } from '@vidbee/task-queue'
 import { apiDataDir, apiDefaultDownloadDir, apiSettingsFilesDir, isPathInside } from './api-paths'
 import { APP_VERSION } from './app-version'
@@ -28,6 +32,8 @@ import { projectTaskForApi } from './projection'
 import {
   applyApiTranscriptionConcurrency,
   instagramProfileInspector,
+  resolveGalleryDlExtraArgs,
+  resolveGalleryDlPath,
   setApiAutoTranscribe
 } from './task-queue-host'
 import { webSettingsStore } from './web-settings-store'
@@ -417,6 +423,23 @@ export const rpcRouter = os.router({
     })
   },
 
+  socialMedia: {
+    inspect: os.socialMedia.inspect.handler(async ({ input }) => {
+      const storedSettings = await webSettingsStore.get()
+      return previewSocialMedia(
+        input.url,
+        { resolveBinaryPath: resolveGalleryDlPath, resolveExtraArgs: resolveGalleryDlExtraArgs },
+        { ...storedSettings, ...input.settings }
+      )
+    }),
+    download: os.socialMedia.download.handler(async ({ input }) => {
+      const storedSettings = await webSettingsStore.get()
+      return downloadSocialMedia(taskQueue, {
+        ...input,
+        settings: { ...storedSettings, ...input.settings }
+      })
+    })
+  },
   instagramProfile: {
     inspect: os.instagramProfile.inspect.handler(async ({ input }) => {
       try {
@@ -451,7 +474,7 @@ export const rpcRouter = os.router({
         const storedSettings = await webSettingsStore.get()
         const customDownloadPath =
           input.customDownloadPath?.trim() ||
-          (input.playlistId
+          (input.playlistId || (resolveSocialSource(input.url) && !input.singleVideo)
             ? undefined
             : resolveAutoVideoDownloadPath(
                 input.settings?.downloadPath?.trim() || storedSettings.downloadPath,
@@ -462,15 +485,32 @@ export const rpcRouter = os.router({
         // Share-sheet links hide whether the post is a video or a photo set.
         const url = await expandTikTokShortLink(input.url)
         const result = await taskQueue.add({
+          groupKey:
+            resolveSocialSource(url) && !input.singleVideo
+              ? `social:${resolveSocialSource(url)?.platform}`
+              : undefined,
           input: {
             url,
-            kind: resolveDownloadTaskKind(url, input.type),
+            kind: input.singleVideo ? input.type : resolveDownloadTaskKind(url, input.type),
             title: input.title,
             thumbnail: input.thumbnail,
             playlistId: input.playlistId,
             playlistIndex: input.playlistIndex,
             options: {
               type: input.type,
+              singleVideo: input.singleVideo,
+              socialMedia: resolveSocialSource(url)
+                ? SocialMediaOptionsSchema.parse(input.socialMedia ?? {})
+                : undefined,
+              sourceMediaKind:
+                resolveSocialSource(url) && !input.singleVideo
+                  ? input.socialMedia?.media === 'images'
+                    ? 'image'
+                    : input.socialMedia?.media === 'videos'
+                      ? 'video'
+                      : 'mixed'
+                  : undefined,
+
               format: input.format,
               audioFormat: input.audioFormat,
               audioFormatIds: input.audioFormatIds,
@@ -479,7 +519,7 @@ export const rpcRouter = os.router({
               customDownloadPath,
               customFilenameTemplate: input.customFilenameTemplate,
               containerFormat: input.containerFormat,
-              settings: input.settings,
+              settings: { ...storedSettings, ...input.settings },
               title: input.title,
               thumbnail: input.thumbnail,
               description: input.description,
@@ -552,10 +592,21 @@ export const rpcRouter = os.router({
     retry: os.downloads.retry.handler(async ({ input }) => {
       try {
         const task = taskQueue.get(input.id)
+        if (task?.kind === 'social-media' && task.status === 'completed') {
+          const settings = await webSettingsStore.get()
+          await taskQueue.add({
+            input: { ...task.input, options: { ...task.input.options, settings } },
+            groupKey: task.groupKey
+          })
+          return { retried: true }
+        }
         if (!task || (task.status !== 'failed' && task.status !== 'cancelled')) {
           return { retried: false }
         }
-        await taskQueue.retryManual(input.id)
+        await taskQueue.retryManual(input.id, {
+          ...task.input.options,
+          settings: await webSettingsStore.get()
+        })
         return { retried: true }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {

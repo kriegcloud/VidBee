@@ -1,7 +1,9 @@
 import type { FilenameStyle } from '@vidbee/downloader-core/filename-style'
 import type { OneClickContainerOption } from '@vidbee/downloader-core/format-preferences'
+import type { SocialMediaOptions } from '@vidbee/downloader-core/social-media'
 import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
 import { defaultLanguageCode, type LanguageCode } from '@vidbee/i18n/languages'
+import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import type { AsrTierId } from '@vidbee/transcription/asr'
 import type { DownloadMirror } from '@vidbee/transcription/download-mirrors'
 
@@ -70,6 +72,8 @@ export type DownloadStatus =
   | 'cancelled'
 
 export interface DownloadItem {
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  collectionSummary?: SocialCollectionSummary
   id: string
   url: string
   title: string
@@ -114,7 +118,7 @@ export interface DownloadItem {
   playlistIndex?: number
   playlistSize?: number
   batchId?: string
-  batchKind?: 'instagram-profile'
+  batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
   batchCategory?: string
   batchOrder?: number
@@ -151,6 +155,8 @@ export interface SubscriptionFeedItem {
 }
 
 export interface DownloadHistoryItem {
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  collectionSummary?: SocialCollectionSummary
   id: string
   url: string
   title: string
@@ -188,7 +194,7 @@ export interface DownloadHistoryItem {
   playlistIndex?: number
   playlistSize?: number
   batchId?: string
-  batchKind?: 'instagram-profile'
+  batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
   batchCategory?: string
   batchOrder?: number
@@ -203,6 +209,8 @@ export interface DownloadHistoryItem {
 }
 
 export interface DownloadOptions {
+  socialMedia?: SocialMediaOptions
+  singleVideo?: boolean
   url: string
   type: 'video' | 'audio'
   format?: string
