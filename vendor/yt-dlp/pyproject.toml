@@ -84,7 +84,7 @@ pin = [
 pin-curl-cffi = [
     "certifi==2026.7.22 ; implementation_name == 'cpython'",
     "cffi==2.1.1 ; implementation_name == 'cpython'",
-    "curl-cffi==0.16.0 ; implementation_name == 'cpython'",
+    "curl-cffi==0.16.3 ; implementation_name == 'cpython'",
     "pycparser==3.0 ; implementation_name == 'cpython'",
     "typing-extensions==4.16.0 ; python_full_version < '3.11'",
 ]

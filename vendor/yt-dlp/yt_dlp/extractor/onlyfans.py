@@ -1,16 +1,57 @@
+import glob
 import hashlib
 import json
+import os
 import re
+import sys
 import time
+import urllib.parse
 
 from .common import InfoExtractor
+from ..cookies import _get_chromium_based_browser_settings, _is_path
+from ..downloader.hls import HlsFD
+from ..networking.impersonate import ImpersonateTarget
 from ..utils import (
     ExtractorError,
     clean_html,
+    determine_ext,
     int_or_none,
     parse_iso8601,
     url_or_none,
 )
+from ..utils._leveldb import read_localstorage_value
+
+# OnlyFans binds a session to the client identity that created it: the
+# User-Agent/client-hints, the TLS fingerprint (via Cloudflare) and the
+# anti-bot token x-bc (localStorage key "bcTokenSha", minted once per browser
+# profile via cdn2.onlyfans.com/key/ and bound to the account server-side).
+# Any API request carrying the session cookie with a mismatched identity or an
+# unknown x-bc is treated as session theft: the API answers "Wrong user" and
+# the session is revoked, logging out the user's real browser too.
+# => Every request must present ONE consistent browser identity, and x-bc must
+#    be the browser's stored token. Never mint a fresh one.
+_OF_IMPERSONATE = ImpersonateTarget(client='chrome')
+
+# Chrome major version claimed in the UA/client hints. Proven against the API
+# with the chrome150 TLS impersonation target; bump as real browsers move on.
+_OF_UA_VERSION = '153'
+
+_OF_SEC_CH_UA_BRANDS = {
+    'brave': '"Brave";v="{v}", "Not_A Brand";v="8", "Chromium";v="{v}"',
+    'chrome': '"Chromium";v="{v}", "Google Chrome";v="{v}", "Not_A Brand";v="8"',
+    'edge': '"Chromium";v="{v}", "Microsoft Edge";v="{v}", "Not_A Brand";v="8"',
+}
+_OF_SEC_CH_UA_DEFAULT = '"Chromium";v="{v}", "Not_A Brand";v="8"'
+
+if sys.platform == 'darwin':
+    _OF_UA_OS = 'Macintosh; Intel Mac OS X 10_15_7'
+    _OF_UA_PLATFORM = 'macOS'
+elif sys.platform in ('win32', 'cygwin'):
+    _OF_UA_OS = 'Windows NT 10.0; Win64; x64'
+    _OF_UA_PLATFORM = 'Windows'
+else:
+    _OF_UA_OS = 'X11; Linux x86_64'
+    _OF_UA_PLATFORM = 'Linux'
 
 
 class _RulesError(Exception):
@@ -393,6 +434,70 @@ class OnlyFansIE(InfoExtractor):
     _CDN_BASE = 'https://cdn2.onlyfans.com'
     _SITE_CONFIG_CACHE = {}
 
+    def _browser_headers(self, extra=None):
+        # One consistent identity on every request; brand follows the browser
+        # the session cookies come from (unknown -> plain Chromium)
+        brand_tpl = _OF_SEC_CH_UA_BRANDS.get(self._browser_name or '', _OF_SEC_CH_UA_DEFAULT)
+        headers = {
+            'User-Agent': f'Mozilla/5.0 ({_OF_UA_OS}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{_OF_UA_VERSION}.0.0.0 Safari/537.36',
+            'Sec-Ch-Ua': brand_tpl.format(v=_OF_UA_VERSION),
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': f'"{_OF_UA_PLATFORM}"',
+            'Accept-Language': 'en-US,en;q=0.9',
+        }
+        headers.update(extra or {})
+        return headers
+
+    _browser_name = None
+
+    def _resolve_bc_token(self, video_id):
+        # Explicit override, also the only option for --cookies <file> flows:
+        # --extractor-args "onlyfans:x_bc=<token>"
+        token = self._configuration_arg('x_bc', [None])[0]
+        if token:
+            return token
+
+        spec = self.get_param('cookiesfrombrowser')
+        browser_dirs = []
+        explicit_profile = None
+        if spec:
+            browser, profile = spec[0], spec[1]
+            self._browser_name = browser
+            try:
+                browser_dirs.append(_get_chromium_based_browser_settings(browser)['browser_dir'])
+            except KeyError:
+                pass
+            explicit_profile = profile
+        else:
+            # Cookie-file flow: scan every known Chromium-based browser
+            for name in ('brave', 'chrome', 'chromium', 'edge', 'vivaldi', 'opera', 'whale'):
+                try:
+                    browser_dirs.append(_get_chromium_based_browser_settings(name)['browser_dir'])
+                except KeyError:
+                    continue
+
+        profile_dirs = []
+        for browser_dir in browser_dirs:
+            if explicit_profile is None:
+                # Profiles are subdirectories (Default, Profile 1, ...); some
+                # browsers (e.g. Opera) store data directly in the root
+                profile_dirs.extend(glob.glob(os.path.join(glob.escape(browser_dir), '*')))
+                profile_dirs.append(browser_dir)
+            elif _is_path(explicit_profile):
+                profile_dirs.append(explicit_profile)
+            else:
+                profile_dirs.append(os.path.join(browser_dir, explicit_profile))
+
+        for profile_dir in profile_dirs:
+            token = read_localstorage_value(profile_dir, 'bcTokenSha')
+            if token:
+                if not spec:
+                    self.report_warning(
+                        f'Using bcTokenSha from {profile_dir}; '
+                        f'pass --extractor-args "onlyfans:x_bc=<token>" to select it explicitly')
+                return token
+        return None
+
     def _get_site_config(self, webpage, video_id):
         scripts = re.findall(r'src=["\']?(https://static2\.onlyfans\.com/static/prod/f/([\w-]+)/[^"\'\s>]+\.js)', webpage)
         if not scripts:
@@ -405,7 +510,10 @@ class OnlyFansIE(InfoExtractor):
         app_js_url = next((u for u, _ in scripts if u.endswith('/app.js')), None)
         if not app_js_url:
             raise ExtractorError('Unable to locate app.js')
-        app_js = self._download_webpage(app_js_url, video_id, note='Downloading app bundle')
+        app_js = self._download_webpage(
+            app_js_url, video_id, note='Downloading app bundle',
+            headers=self._browser_headers(),
+            impersonate=_OF_IMPERSONATE, require_impersonation=True)
         token_var = self._search_regex(r'\["app-token"\]\s*=\s*(\w+)', app_js, 'app-token var')
         app_token = self._search_regex(
             r'\b%s\s*=\s*"([0-9a-f]{32})"' % re.escape(token_var), app_js, 'app-token')
@@ -417,7 +525,9 @@ class OnlyFansIE(InfoExtractor):
         rules = None
         for js_url in urls[:12]:
             js = self._download_webpage(
-                js_url, video_id, note='Downloading sign chunk', fatal=False)
+                js_url, video_id, note='Downloading sign chunk', fatal=False,
+                headers=self._browser_headers(),
+                impersonate=_OF_IMPERSONATE, require_impersonation=True)
             if not js or '+new Date' not in js:
                 continue
             if not re.search(r'function \w+\(\)\{const \w+=\["', js):
@@ -441,30 +551,37 @@ class OnlyFansIE(InfoExtractor):
         checksum = sum(ord(digest[i]) for i in rules['checksum_indexes']) + rules['checksum_constant']
         return f'{rules["prefix"]}:{digest}:{abs(checksum):x}:{rules["suffix"]}'
 
-    def _call_api(self, path, video_id, config, user_id, referer):
+    def _call_api(self, path, video_id, config, user_id, referer, x_bc):
         time_ms = int(time.time() * 1000)
-        x_bc = self._download_webpage(
-            f'{self._CDN_BASE}/key/', video_id, note='Fetching anti-bot token',
-            fatal=False, headers={'Accept': '*/*'})
-        x_hash = self._download_webpage(
-            f'{self._CDN_BASE}/hash/?u={user_id}', video_id, note='Fetching hash token',
-            fatal=False, headers={'Accept': '*/*'})
-        headers = {
+        # x-hash is per-user and safe to mint fresh; cache it with the config
+        # to avoid a burst of token requests on every extraction
+        x_hash = config.setdefault('x_hash', {}).get(user_id)
+        if x_hash is None:
+            resp = self._download_webpage(
+                f'{self._CDN_BASE}/hash/?u={user_id}', video_id, note='Fetching hash token',
+                fatal=False, headers=self._browser_headers({'Accept': '*/*'}),
+                impersonate=_OF_IMPERSONATE, require_impersonation=True)
+            x_hash = resp.strip() if resp else None
+            config['x_hash'][user_id] = x_hash
+        headers = self._browser_headers({
             'Accept': 'application/json, text/plain, */*',
             'app-token': config['app_token'],
             'user-id': user_id,
             'time': str(time_ms),
             'sign': self._sign(config['rules'], path, user_id, time_ms),
             'x-of-rev': config['x_of_rev'],
+            'x-bc': x_bc,
             'Referer': referer,
-        }
-        if x_bc:
-            headers['x-bc'] = x_bc.strip()
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+        })
         if x_hash:
-            headers['x-hash'] = x_hash.strip()
+            headers['x-hash'] = x_hash
         return self._download_json(
             f'https://onlyfans.com{path}', video_id, headers=headers,
-            note='Calling post API', expected_status=[400, 401, 403])
+            note='Calling post API', expected_status=[400, 401, 403],
+            impersonate=_OF_IMPERSONATE, require_impersonation=True)
 
     def _extract_video(self, media, post, username):
         media_id = str(media.get('id'))
@@ -501,9 +618,36 @@ class OnlyFansIE(InfoExtractor):
                 has_drm_manifest = True
                 cf_cookie = '; '.join(f'{k}={sig[k]}' for k in cf_keys)
                 http_headers = {'Cookie': cf_cookie}
-                formats.extend(self._extract_m3u8_formats(
-                    hls_url, media_id, 'mp4', m3u8_id='hls', fatal=False,
-                    headers=http_headers))
+                # _extract_m3u8_formats cannot pass impersonation through, so
+                # fetch the manifest with the browser identity and parse it here
+                res = self._download_webpage_handle(
+                    hls_url, media_id, note='Downloading HLS manifest', fatal=False,
+                    headers=self._browser_headers(http_headers),
+                    impersonate=_OF_IMPERSONATE, require_impersonation=True)
+                if res:
+                    m3u8_doc, urlh = res
+                    if m3u8_doc.startswith('#EXTM3U'):
+                        fmts, _ = self._parse_m3u8_formats_and_subtitles(
+                            m3u8_doc, urlh.url, ext='mp4', m3u8_id='hls', fatal=False,
+                            headers=http_headers, video_id=media_id)
+                        # DRM markers (#EXT-X-KEY skd://...) live in the variant
+                        # playlists, not the master. Check one variant so the
+                        # forced allow_unplayable_formats can't turn encrypted
+                        # segments into a garbage "download"
+                        if fmts and not HlsFD._has_drm(m3u8_doc) and '#EXT-X-STREAM-INF' in m3u8_doc:
+                            variant = next((
+                                line.strip() for line in m3u8_doc.splitlines()
+                                if line.strip() and not line.startswith('#')), None)
+                            if variant:
+                                vres = self._download_webpage_handle(
+                                    urllib.parse.urljoin(urlh.url, variant), media_id,
+                                    note='Checking variant playlist', fatal=False,
+                                    headers=self._browser_headers(http_headers),
+                                    impersonate=_OF_IMPERSONATE, require_impersonation=True)
+                                if vres and HlsFD._has_drm(vres[0]):
+                                    for f in fmts:
+                                        f['has_drm'] = True
+                        formats.extend(fmts)
 
         if not formats or all(f.get('has_drm') for f in formats):
             if has_drm_manifest:
@@ -518,10 +662,32 @@ class OnlyFansIE(InfoExtractor):
             'uploader': username,
             'timestamp': parse_iso8601(post.get('postedAt')),
             'formats': formats,
+            # Media requests carry session cookies too; keep the same identity
+            'impersonate': _OF_IMPERSONATE,
+            'http_headers': self._browser_headers(http_headers),
         }
-        if http_headers:
-            info['http_headers'] = http_headers
         return info
+
+    def _extract_photo(self, media, post, username):
+        # Photos are plain CloudFront-signed images; no DRM path exists
+        files = media.get('files') or {}
+        full = files.get('full') or {}
+        full_url = url_or_none(full.get('url'))
+        if not full_url:
+            return None
+        return {
+            'id': str(media.get('id')),
+            'title': clean_html(post.get('text')) or f'OnlyFans post {post.get("id")}',
+            'url': full_url,
+            'ext': determine_ext(full_url, default_ext='jpg'),
+            'width': int_or_none(full.get('width')),
+            'height': int_or_none(full.get('height')),
+            'thumbnail': url_or_none((files.get('preview') or {}).get('url')),
+            'uploader': username,
+            'timestamp': parse_iso8601(post.get('postedAt')),
+            'impersonate': _OF_IMPERSONATE,
+            'http_headers': self._browser_headers(),
+        }
 
     def _real_extract(self, url):
         post_id, username = self._match_valid_url(url).group('id', 'username')
@@ -534,26 +700,60 @@ class OnlyFansIE(InfoExtractor):
                 method='cookies')
         user_id = auth_id.value
 
-        webpage = self._download_webpage(url, post_id, note='Downloading post page')
+        # x-bc is bound to the browser profile that owns the session; a wrong
+        # or freshly minted token gets the session revoked server-side
+        x_bc = self._resolve_bc_token(post_id)
+        if not x_bc:
+            raise ExtractorError(
+                'OnlyFans requires the anti-bot token (bcTokenSha) stored in the browser '
+                'profile that owns the session. Use --cookies-from-browser with the browser '
+                'you are logged in with, or pass --extractor-args "onlyfans:x_bc=<token>" '
+                '(browser DevTools console: localStorage.getItem("bcTokenSha"))',
+                expected=True)
+
+        webpage = self._download_webpage(
+            url, post_id, note='Downloading post page',
+            headers=self._browser_headers(),
+            impersonate=_OF_IMPERSONATE, require_impersonation=True)
         config = self._get_site_config(webpage, post_id)
 
         # The signed path is the API path plus query, exactly as requested
-        post = self._call_api(f'/api2/v2/posts/{post_id}?skip_users=all', post_id, config, user_id, url)
+        post = self._call_api(
+            f'/api2/v2/posts/{post_id}?skip_users=all', post_id, config, user_id, url, x_bc)
         if not isinstance(post, dict) or 'error' in post:
             message = (post or {}).get('error', {}).get('message') if isinstance(post, dict) else None
             raise ExtractorError(
-                f'OnlyFans API error: {message or "unknown"} (session cookies may be expired)',
+                f'OnlyFans API error: {message or "unknown"} (the session may have been revoked; '
+                f'log in again in your browser and retry with fresh cookies)',
                 expected=True)
 
-        entries = [
-            self._extract_video(media, post, username)
-            for media in post.get('media') or []
-            if isinstance(media, dict) and media.get('type') == 'video' and media.get('canView', True)
-        ]
+        entries = []
+        drm_count = 0
+        for media in post.get('media') or []:
+            if not isinstance(media, dict) or not media.get('canView', True):
+                continue
+            if media.get('type') == 'video':
+                try:
+                    entries.append(self._extract_video(media, post, username))
+                except ExtractorError as e:
+                    # ExtractorError.msg is prefixed with the video id
+                    if 'This video is DRM protected' not in (e.msg or ''):
+                        raise
+                    drm_count += 1
+            elif media.get('type') == 'photo':
+                photo = self._extract_photo(media, post, username)
+                if photo:
+                    entries.append(photo)
         if not entries:
+            if drm_count:
+                # Every video was DRM-only: fail with the accurate message
+                self.report_drm(post_id)
             self.raise_no_formats(
-                'No viewable video media found (the post may be paywalled)',
+                'No viewable media found (the post may be paywalled)',
                 expected=True, video_id=post_id)
+        if drm_count:
+            self.report_warning(
+                f'Skipped {drm_count} DRM-protected video(s); downloaded the rest', video_id=post_id)
         if len(entries) == 1:
             return entries[0]
         return self.playlist_result(
