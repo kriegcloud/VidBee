@@ -21,7 +21,7 @@ const shared = {
   format: 'esm',
   target: 'node22',
   absWorkingDir: root,
-  external: ['better-sqlite3', 'sherpa-onnx-node', 'sherpa-onnx-*'],
+  external: ['better-sqlite3', 'sherpa-onnx-node', 'sherpa-onnx-*', 'playwright-core'],
   banner: { js: requireBanner }
 }
 
@@ -39,6 +39,12 @@ await build({
   ...shared,
   entryPoints: [join(root, '../../packages/transcription/src/worker/entry.ts')],
   outfile: join(dist, 'transcription-worker.js')
+})
+
+await build({
+  ...shared,
+  entryPoints: [join(root, '../../packages/browser-capture/src/sidecar.ts')],
+  outfile: join(dist, 'browser-capture-sidecar.js')
 })
 
 cpSync(

@@ -7,7 +7,7 @@
  * cookies/proxy/runtime args stay consistent with the queue executor.
  */
 
-import { retryTransientYtDlpNetworkError } from '@vidbee/downloader-core'
+import { mapPlaylistInfo, retryTransientYtDlpNetworkError } from '@vidbee/downloader-core'
 import type { PlaylistInfo, VideoInfo, VideoInfoCommandResult } from '../../shared/types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
@@ -131,38 +131,6 @@ export const fetchVideoInfoWithCommand = async (url: string): Promise<VideoInfoC
   }
 }
 
-interface RawPlaylistEntry {
-  id?: string
-  title?: string
-  url?: string
-  webpage_url?: string
-  original_url?: string
-  ie_key?: string
-}
-
-const resolveEntryUrl = (entry: RawPlaylistEntry): string => {
-  if (entry.url?.startsWith('http')) {
-    return entry.url
-  }
-  if (entry.webpage_url) {
-    return entry.webpage_url
-  }
-  if (entry.original_url) {
-    return entry.original_url
-  }
-  if (!entry.url) {
-    return entry.id ?? ''
-  }
-  const ie = entry.ie_key?.toLowerCase() ?? ''
-  if (ie.includes('youtubemusic')) {
-    return `https://music.youtube.com/watch?v=${entry.url}`
-  }
-  if (ie.includes('youtube')) {
-    return `https://www.youtube.com/watch?v=${entry.url}`
-  }
-  return entry.id ?? ''
-}
-
 /**
  * Run one yt-dlp playlist listing probe.
  */
@@ -181,23 +149,9 @@ const execPlaylistInfo = (url: string, args: string[]): Promise<PlaylistInfo> =>
           const parsed = JSON.parse(out) as {
             id?: string
             title?: string
-            entries?: RawPlaylistEntry[]
+            entries?: Record<string, unknown>[]
           }
-          const rawEntries = Array.isArray(parsed.entries) ? parsed.entries : []
-          const entries = rawEntries
-            .map((entry, i) => ({
-              id: entry.id || `${i}`,
-              title: entry.title || `Entry ${i + 1}`,
-              url: resolveEntryUrl(entry),
-              index: i + 1
-            }))
-            .filter((e) => e.url.length > 0)
-          resolve({
-            id: parsed.id || url,
-            title: parsed.title || 'Playlist',
-            entries,
-            entryCount: entries.length
-          })
+          resolve(mapPlaylistInfo(parsed, url))
           return
         } catch (error) {
           reject(new Error(`Failed to parse playlist info: ${error}`))

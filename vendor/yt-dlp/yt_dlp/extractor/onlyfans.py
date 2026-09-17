@@ -2,6 +2,7 @@ import glob
 import hashlib
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -9,7 +10,6 @@ import urllib.parse
 
 from .common import InfoExtractor
 from ..cookies import _get_chromium_based_browser_settings, _is_path
-from ..downloader.hls import HlsFD
 from ..networking.impersonate import ImpersonateTarget
 from ..utils import (
     ExtractorError,
@@ -422,12 +422,78 @@ def _of_extract_sign_rules(js):
     }
 
 
+_OF_RESERVED_PROFILES = frozenset((
+    'api', 'api2', 'banking', 'card', 'chats', 'collections', 'credits',
+    'facebook', 'help', 'instagram', 'live', 'login', 'mentions', 'messages',
+    'my', 'notifications', 'oauth', 'payouts', 'posts', 'privacy', 'promotions',
+    'q', 'queue', 'referrals', 'reset', 'search', 'settings', 'signup',
+    'statements', 'statistics', 'stories', 'streaming', 'subscribers',
+    'subscriptions', 'tagged', 'terms', 'tracking', 'trials', 'twitter',
+    'users', 'vault',
+))
+
+_OF_PAGE_LIMIT = 10
+_OF_PAGE_SLEEP = (1.2, 2.8)
+_OF_MAX_PAGES = 1000
+
+
 class OnlyFansIE(InfoExtractor):
-    _VALID_URL = r'https?://(?:www\.)?onlyfans\.com/(?P<id>\d+)/(?P<username>[\w.-]+)'
+    _VALID_URL = r'''(?x)
+        https?://(?:www\.)?onlyfans\.com/
+        (?:
+            my/chats/chat/(?P<chat_id>\d+)
+                (?:/(?P<chat_section>gallery)
+                    (?:/(?P<chat_tab>opened|purchased|photos|videos))?
+                )?
+                (?:/media/(?P<chat_media_id>\d+))?
+          | (?P<id>\d+)/(?P<username>[\w.-]+)
+                (?:/media/(?P<media_id>\d+))?
+          | (?P<profile>(?!my(?:/|$))[\w.-]+)
+                (?:/(?P<profile_tab>media|photos|videos))?
+        )
+        /?(?:[?#].*)?$
+    '''
     _TESTS = [{
-        # Requires an active session (--cookies); DRM-only creators raise
-        # "This video is DRM protected" after metadata extraction.
         'url': 'https://onlyfans.com/2669829379/kenzeygrey',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/2669829379/kenzeygrey/media/3743089366',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/kenzeygrey',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/kenzeygrey/media',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/kenzeygrey/photos',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/kenzeygrey/videos',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/gallery',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/gallery/opened',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/gallery/purchased',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/gallery/photos',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/gallery/videos',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/?firstId=1',
+        'only_matching': True,
+    }, {
+        'url': 'https://onlyfans.com/my/chats/chat/123456/media/99',
         'only_matching': True,
     }]
 
@@ -551,7 +617,7 @@ class OnlyFansIE(InfoExtractor):
         checksum = sum(ord(digest[i]) for i in rules['checksum_indexes']) + rules['checksum_constant']
         return f'{rules["prefix"]}:{digest}:{abs(checksum):x}:{rules["suffix"]}'
 
-    def _call_api(self, path, video_id, config, user_id, referer, x_bc):
+    def _call_api(self, path, video_id, config, user_id, referer, x_bc, note='Downloading JSON metadata', fatal=True):
         time_ms = int(time.time() * 1000)
         # x-hash is per-user and safe to mint fresh; cache it with the config
         # to avoid a burst of token requests on every extraction
@@ -580,7 +646,7 @@ class OnlyFansIE(InfoExtractor):
             headers['x-hash'] = x_hash
         return self._download_json(
             f'https://onlyfans.com{path}', video_id, headers=headers,
-            note='Calling post API', expected_status=[400, 401, 403],
+            note=note, fatal=fatal, expected_status=[400, 401, 403, 404],
             impersonate=_OF_IMPERSONATE, require_impersonation=True)
 
     def _extract_video(self, media, post, username):
@@ -595,103 +661,122 @@ class OnlyFansIE(InfoExtractor):
                 'format_id': 'full',
                 'width': int_or_none(full.get('width')),
                 'height': int_or_none(full.get('height')),
+                'impersonate': _OF_IMPERSONATE,
+                'http_headers': self._browser_headers({'Referer': 'https://onlyfans.com/'}),
             })
-        for res, url in (media.get('videoSources') or {}).items():
-            if url_or_none(url):
-                formats.append({
-                    'url': url,
-                    'format_id': f'source-{res}',
-                    'height': int_or_none(res),
-                })
+        else:
+            sources = media.get('videoSources')
+            if isinstance(sources, dict):
+                for res, url in sources.items():
+                    if url_or_none(url):
+                        formats.append({
+                            'url': url,
+                            'format_id': f'source-{res}',
+                            'height': int_or_none(res),
+                            'impersonate': _OF_IMPERSONATE,
+                            'http_headers': self._browser_headers({'Referer': 'https://onlyfans.com/'}),
+                        })
 
-        http_headers = None
-        has_drm_manifest = False
         if not formats:
-            # DRM-enabled creators serve only CloudFront-signed HLS/DASH manifests
-            drm = files.get('drm') or {}
-            manifest = drm.get('manifest') or {}
-            signature = drm.get('signature') or {}
-            hls_url = url_or_none(manifest.get('hls'))
-            sig = signature.get('hls') or {}
-            cf_keys = ('CloudFront-Policy', 'CloudFront-Signature', 'CloudFront-Key-Pair-Id')
-            if hls_url and all(sig.get(k) for k in cf_keys):
-                has_drm_manifest = True
-                cf_cookie = '; '.join(f'{k}={sig[k]}' for k in cf_keys)
-                http_headers = {'Cookie': cf_cookie}
-                # _extract_m3u8_formats cannot pass impersonation through, so
-                # fetch the manifest with the browser identity and parse it here
-                res = self._download_webpage_handle(
-                    hls_url, media_id, note='Downloading HLS manifest', fatal=False,
-                    headers=self._browser_headers(http_headers),
-                    impersonate=_OF_IMPERSONATE, require_impersonation=True)
-                if res:
-                    m3u8_doc, urlh = res
-                    if m3u8_doc.startswith('#EXTM3U'):
-                        fmts, _ = self._parse_m3u8_formats_and_subtitles(
-                            m3u8_doc, urlh.url, ext='mp4', m3u8_id='hls', fatal=False,
-                            headers=http_headers, video_id=media_id)
-                        # DRM markers (#EXT-X-KEY skd://...) live in the variant
-                        # playlists, not the master. Check one variant so the
-                        # forced allow_unplayable_formats can't turn encrypted
-                        # segments into a garbage "download"
-                        if fmts and not HlsFD._has_drm(m3u8_doc) and '#EXT-X-STREAM-INF' in m3u8_doc:
-                            variant = next((
-                                line.strip() for line in m3u8_doc.splitlines()
-                                if line.strip() and not line.startswith('#')), None)
-                            if variant:
-                                vres = self._download_webpage_handle(
-                                    urllib.parse.urljoin(urlh.url, variant), media_id,
-                                    note='Checking variant playlist', fatal=False,
-                                    headers=self._browser_headers(http_headers),
-                                    impersonate=_OF_IMPERSONATE, require_impersonation=True)
-                                if vres and HlsFD._has_drm(vres[0]):
-                                    for f in fmts:
-                                        f['has_drm'] = True
-                        formats.extend(fmts)
+            return None
 
-        if not formats or all(f.get('has_drm') for f in formats):
-            if has_drm_manifest:
-                self.report_drm(media_id)
-            self.raise_no_formats('No playable media found for this post', expected=True, video_id=media_id)
-
+        best = max(
+            formats,
+            key=lambda fmt: (
+                1 if fmt.get('format_id') == 'full' else 0,
+                int_or_none(fmt.get('height')) or 0,
+            ))
+        headers = self._browser_headers({'Referer': 'https://onlyfans.com/'})
         info = {
             'id': media_id,
             'title': clean_html(post.get('text')) or f'OnlyFans post {post.get("id")}',
+            'url': best['url'],
+            'ext': determine_ext(best['url'], default_ext='mp4'),
             'duration': int_or_none(media.get('duration')),
             'thumbnail': url_or_none((files.get('preview') or {}).get('url')),
             'uploader': username,
-            'timestamp': parse_iso8601(post.get('postedAt')),
+            'timestamp': parse_iso8601(post.get('postedAt') or post.get('createdAt')),
             'formats': formats,
             # Media requests carry session cookies too; keep the same identity
             'impersonate': _OF_IMPERSONATE,
-            'http_headers': self._browser_headers(http_headers),
+            'http_headers': headers,
         }
         return info
 
     def _extract_photo(self, media, post, username):
-        # Photos are plain CloudFront-signed images; no DRM path exists
         files = media.get('files') or {}
-        full = files.get('full') or {}
-        full_url = url_or_none(full.get('url'))
-        if not full_url:
+        chosen = {}
+        photo_url = None
+        for key in ('full', 'source'):
+            candidate = files.get(key) or {}
+            photo_url = url_or_none(candidate.get('url'))
+            if photo_url:
+                chosen = candidate
+                break
+        if not photo_url:
+            photo_url = url_or_none(media.get('src'))
+        if not photo_url:
             return None
+        headers = self._browser_headers({'Referer': 'https://onlyfans.com/'})
         return {
             'id': str(media.get('id')),
             'title': clean_html(post.get('text')) or f'OnlyFans post {post.get("id")}',
-            'url': full_url,
-            'ext': determine_ext(full_url, default_ext='jpg'),
-            'width': int_or_none(full.get('width')),
-            'height': int_or_none(full.get('height')),
+            'url': photo_url,
+            'ext': determine_ext(photo_url, default_ext='jpg'),
+            'width': int_or_none(chosen.get('width')),
+            'height': int_or_none(chosen.get('height')),
             'thumbnail': url_or_none((files.get('preview') or {}).get('url')),
             'uploader': username,
-            'timestamp': parse_iso8601(post.get('postedAt')),
+            'timestamp': parse_iso8601(post.get('postedAt') or post.get('createdAt')),
             'impersonate': _OF_IMPERSONATE,
-            'http_headers': self._browser_headers(),
+            'http_headers': headers,
+            'formats': [{
+                'url': photo_url,
+                'ext': determine_ext(photo_url, default_ext='jpg'),
+                'format_id': 'full',
+                'width': int_or_none(chosen.get('width')),
+                'height': int_or_none(chosen.get('height')),
+                'impersonate': _OF_IMPERSONATE,
+                'http_headers': headers,
+            }],
         }
 
-    def _real_extract(self, url):
-        post_id, username = self._match_valid_url(url).group('id', 'username')
+    def _raise_api_error(self, payload):
+        message = None
+        if isinstance(payload, dict):
+            error = payload.get('error')
+            if isinstance(error, dict):
+                message = error.get('message')
+            elif isinstance(error, str):
+                message = error
+        raise ExtractorError(
+            f'OnlyFans API error: {message or "unknown"} (the session may have been revoked; '
+            f'log in again in your browser and retry with fresh cookies)',
+            expected=True)
 
+    def _api_items(self, payload):
+        if payload is None:
+            return []
+        if isinstance(payload, list):
+            return [item for item in payload if isinstance(item, dict)]
+        if not isinstance(payload, dict):
+            return []
+        if 'error' in payload:
+            self._raise_api_error(payload)
+        for key in ('list', 'items', 'data', 'media', 'messages', 'posts'):
+            value = payload.get(key)
+            if isinstance(value, list):
+                return [item for item in value if isinstance(item, dict)]
+        return []
+
+    def _page_sleep(self, video_id):
+        arg = (self._configuration_arg('page_sleep', [None])[0] or '').strip().lower()
+        if arg in ('0', 'false', 'no'):
+            return
+        delay = random.uniform(*_OF_PAGE_SLEEP)
+        self._sleep(delay, video_id, '%(video_id)s: Waiting %(timeout).1f seconds before the next OnlyFans page')
+
+    def _open_session(self, page_url, video_id):
         cookies = self._get_cookies('https://onlyfans.com')
         auth_id = cookies.get('auth_id')
         if not auth_id or not cookies.get('sess'):
@@ -699,10 +784,7 @@ class OnlyFansIE(InfoExtractor):
                 'OnlyFans requires an active session; pass cookies with --cookies',
                 method='cookies')
         user_id = auth_id.value
-
-        # x-bc is bound to the browser profile that owns the session; a wrong
-        # or freshly minted token gets the session revoked server-side
-        x_bc = self._resolve_bc_token(post_id)
+        x_bc = self._resolve_bc_token(video_id)
         if not x_bc:
             raise ExtractorError(
                 'OnlyFans requires the anti-bot token (bcTokenSha) stored in the browser '
@@ -710,51 +792,332 @@ class OnlyFansIE(InfoExtractor):
                 'you are logged in with, or pass --extractor-args "onlyfans:x_bc=<token>" '
                 '(browser DevTools console: localStorage.getItem("bcTokenSha"))',
                 expected=True)
-
         webpage = self._download_webpage(
-            url, post_id, note='Downloading post page',
+            page_url, video_id, note='Downloading page',
             headers=self._browser_headers(),
             impersonate=_OF_IMPERSONATE, require_impersonation=True)
-        config = self._get_site_config(webpage, post_id)
+        config = self._get_site_config(webpage, video_id)
+        return config, user_id, x_bc
 
-        # The signed path is the API path plus query, exactly as requested
-        post = self._call_api(
-            f'/api2/v2/posts/{post_id}?skip_users=all', post_id, config, user_id, url, x_bc)
-        if not isinstance(post, dict) or 'error' in post:
-            message = (post or {}).get('error', {}).get('message') if isinstance(post, dict) else None
-            raise ExtractorError(
-                f'OnlyFans API error: {message or "unknown"} (the session may have been revoked; '
-                f'log in again in your browser and retry with fresh cookies)',
-                expected=True)
+    def _media_thumbnail(self, media):
+        files = media.get('files') or {}
+        for key in ('preview', 'thumb', 'squarePreview', 'miniPreview'):
+            thumb = url_or_none((files.get(key) or {}).get('url'))
+            if thumb:
+                return thumb
+        return None
 
+    def _video_is_drm(self, media):
+        files = media.get('files') or {}
+        if url_or_none((files.get('full') or {}).get('url')):
+            return False
+        sources = media.get('videoSources') or {}
+        if isinstance(sources, dict) and any(url_or_none(url) for url in sources.values()):
+            return False
+        manifest = (files.get('drm') or {}).get('manifest') or {}
+        return bool(url_or_none(manifest.get('hls')) or url_or_none(manifest.get('dash')))
+
+    def _viewable_media(self, container):
+        media_list = container.get('media') if isinstance(container, dict) else container
+        if not isinstance(media_list, list):
+            return []
+        return [
+            media for media in media_list
+            if isinstance(media, dict) and media.get('canView', True)]
+
+    def _media_kind(self, media):
+        media_type = media.get('type')
+        if media_type == 'video':
+            # Encoded/CDM videos are skipped until analog capture is wired in
+            # a later pass. Inventory only photos and clear MP4s.
+            return None if self._video_is_drm(media) else 'video'
+        if media_type in ('photo', 'gif'):
+            return 'photo'
+        return None
+
+    def _playlist_entry_from_media(self, media, source, username, post_id=None, chat_id=None):
+        media_id = str(media.get('id') or '')
+        kind = self._media_kind(media)
+        if not media_id or not kind:
+            return None
+        info = self._extract_media_item(media, source, username)
+        if not info:
+            return None
+        if chat_id:
+            webpage_url = f'https://onlyfans.com/my/chats/chat/{chat_id}/media/{media_id}'
+        else:
+            webpage_url = f'https://onlyfans.com/{post_id}/{username}/media/{media_id}'
+        if info.get('formats'):
+            best = max(
+                info['formats'],
+                key=lambda fmt: (
+                    1 if fmt.get('format_id') == 'full' else 0,
+                    int_or_none(fmt.get('height')) or 0,
+                ))
+            info['url'] = best['url']
+            info.setdefault('ext', determine_ext(best['url'], default_ext='mp4' if kind == 'video' else 'jpg'))
+        info['webpage_url'] = webpage_url
+        info['original_url'] = webpage_url
+        info['thumbnail'] = info.get('thumbnail') or self._media_thumbnail(media)
+        info['media_type'] = kind
+        return info
+
+    def _entries_from_container(self, container, username, post_id=None, chat_id=None):
         entries = []
-        drm_count = 0
-        for media in post.get('media') or []:
-            if not isinstance(media, dict) or not media.get('canView', True):
-                continue
-            if media.get('type') == 'video':
-                try:
-                    entries.append(self._extract_video(media, post, username))
-                except ExtractorError as e:
-                    # ExtractorError.msg is prefixed with the video id
-                    if 'This video is DRM protected' not in (e.msg or ''):
-                        raise
-                    drm_count += 1
-            elif media.get('type') == 'photo':
-                photo = self._extract_photo(media, post, username)
-                if photo:
-                    entries.append(photo)
+        for media in self._viewable_media(container):
+            entry = self._playlist_entry_from_media(
+                media, container, username, post_id=post_id, chat_id=chat_id)
+            if entry:
+                entries.append(entry)
+        return entries
+
+    def _extract_media_item(self, media, source, username):
+        media_type = media.get('type')
+        if media_type == 'video':
+            return self._extract_video(media, source, username)
+        if media_type in ('photo', 'gif'):
+            photo = self._extract_photo(media, source, username)
+            if photo:
+                return photo
+        return None
+
+    def _iter_pages(self, video_id, config, user_id, referer, x_bc, build_path, cursor_from):
+        cursor = None
+        seen = set()
+        max_pages_arg = (self._configuration_arg('max_pages', [None])[0] or '').strip()
+        max_pages = int(max_pages_arg) if max_pages_arg.isdigit() else _OF_MAX_PAGES
+        max_pages = max(1, min(max_pages, _OF_MAX_PAGES))
+        for page in range(max_pages):
+            path = build_path(cursor)
+            payload = self._call_api(
+                path, video_id, config, user_id, referer, x_bc,
+                note=f'Downloading page {page + 1}')
+            items = self._api_items(payload)
+            fresh = []
+            for item in items:
+                item_id = item.get('id')
+                if item_id in seen:
+                    continue
+                seen.add(item_id)
+                fresh.append(item)
+            if not fresh:
+                break
+            yield from fresh
+            has_more = payload.get('hasMore') if isinstance(payload, dict) else None
+            next_cursor = None
+            if isinstance(payload, dict):
+                next_cursor = payload.get('nextLastId') or payload.get('lastId')
+            if next_cursor is None and items:
+                next_cursor = cursor_from(items[-1])
+            if has_more is False:
+                break
+            if not next_cursor or next_cursor == cursor:
+                break
+            if has_more is None and len(items) < _OF_PAGE_LIMIT:
+                break
+            cursor = next_cursor
+            self._page_sleep(video_id)
+
+    def _extract_post_gallery(self, post_id, username, media_id, config, user_id, x_bc):
+        post_url = f'https://onlyfans.com/{post_id}/{username}'
+        post = self._call_api(
+            f'/api2/v2/posts/{post_id}?skip_users=all', post_id, config, user_id, post_url, x_bc,
+            note='Calling post API')
+        if not isinstance(post, dict) or 'error' in post:
+            self._raise_api_error(post)
+        media_list = self._viewable_media(post)
+        if media_id:
+            media = next((item for item in media_list if str(item.get('id')) == media_id), None)
+            if not media:
+                raise ExtractorError('Media not found in this post', expected=True, video_id=media_id)
+            info = self._extract_media_item(media, post, username)
+            if info:
+                return info
+            self.raise_no_formats('No viewable media found', expected=True, video_id=media_id)
+        entries = self._entries_from_container(post, username, post_id=post_id)
         if not entries:
-            if drm_count:
-                # Every video was DRM-only: fail with the accurate message
-                self.report_drm(post_id)
             self.raise_no_formats(
                 'No viewable media found (the post may be paywalled)',
                 expected=True, video_id=post_id)
-        if drm_count:
-            self.report_warning(
-                f'Skipped {drm_count} DRM-protected video(s); downloaded the rest', video_id=post_id)
-        if len(entries) == 1:
-            return entries[0]
         return self.playlist_result(
             entries, post_id, clean_html(post.get('text')), uploader=username)
+
+    def _profile_query(self, tab):
+        extra = ''
+        if tab == 'photos':
+            extra = '&format=photo'
+        elif tab == 'videos':
+            extra = '&format=video'
+        return extra
+
+    def _extract_profile(self, username, tab, config, user_id, x_bc):
+        if username.lower() in _OF_RESERVED_PROFILES:
+            raise ExtractorError(f'Unsupported OnlyFans path: /{username}', expected=True)
+        page_url = f'https://onlyfans.com/{username}' + (f'/{tab}' if tab else '')
+        profile = self._call_api(
+            f'/api2/v2/users/{username}', username, config, user_id, page_url, x_bc,
+            note='Fetching profile')
+        if not isinstance(profile, dict) or 'error' in profile or not profile.get('id'):
+            self._raise_api_error(profile)
+        creator_id = str(profile['id'])
+        display_name = profile.get('name') or username
+        extra = self._profile_query(tab)
+
+        def build_path(cursor):
+            path = (
+                f'/api2/v2/users/{creator_id}/posts?limit={_OF_PAGE_LIMIT}'
+                f'&order=publish_date_desc&skip_users=all{extra}')
+            if cursor:
+                path += f'&beforePublishTime={urllib.parse.quote(str(cursor))}'
+            return path
+
+        def cursor_from(post):
+            return post.get('postedAtPrecise') or post.get('postedAt') or post.get('id')
+
+        entries = []
+        for post in self._iter_pages(
+                username, config, user_id, page_url, x_bc, build_path, cursor_from):
+            entries.extend(self._entries_from_container(
+                post, username, post_id=str(post.get('id') or '')))
+        if not entries:
+            self.raise_no_formats('No viewable media found on this profile', expected=True, video_id=username)
+        title_suffix = {'photos': 'photos', 'videos': 'videos', 'media': 'media'}.get(tab, 'posts')
+        return self.playlist_result(
+            entries, username, f'{display_name} ({title_suffix})', uploader=username)
+
+    def _chat_media_query(self, tab):
+        if tab == 'photos':
+            return '&type=photos'
+        if tab == 'videos':
+            return '&type=videos'
+        if tab == 'opened':
+            return '&opened=1'
+        if tab == 'purchased':
+            return '&purchased=1'
+        return ''
+
+    def _extract_chat(self, chat_id, section, tab, media_id, config, user_id, x_bc):
+        referer = f'https://onlyfans.com/my/chats/chat/{chat_id}'
+        if section:
+            referer += '/gallery' + (f'/{tab}' if tab else '')
+        chat = self._call_api(
+            f'/api2/v2/chats/{chat_id}?skip_users=all', chat_id, config, user_id, referer, x_bc,
+            note='Fetching chat', fatal=False)
+        with_user = (chat or {}).get('withUser') if isinstance(chat, dict) else None
+        username = (with_user or {}).get('username') or chat_id
+        title = (with_user or {}).get('name') or f'Chat {chat_id}'
+
+        if media_id:
+            return self._extract_chat_media(
+                chat_id, media_id, username, config, user_id, x_bc, referer)
+
+        entries = []
+        if section == 'gallery':
+            extra = self._chat_media_query(tab)
+
+            def build_path(cursor):
+                path = (
+                    f'/api2/v2/chats/{chat_id}/media?limit={_OF_PAGE_LIMIT}'
+                    f'&skip_users=all{extra}')
+                if cursor:
+                    path += f'&lastId={urllib.parse.quote(str(cursor))}'
+                return path
+
+            def cursor_from(item):
+                return item.get('id')
+
+            for item in self._iter_pages(
+                    chat_id, config, user_id, referer, x_bc, build_path, cursor_from):
+                nested = self._entries_from_container(item, username, chat_id=chat_id)
+                if nested:
+                    entries.extend(nested)
+                else:
+                    entry = self._playlist_entry_from_media(
+                        item, item, username, chat_id=chat_id)
+                    if entry:
+                        entries.append(entry)
+        else:
+            def build_path(cursor):
+                path = (
+                    f'/api2/v2/chats/{chat_id}/messages?limit={_OF_PAGE_LIMIT}'
+                    f'&order=desc&skip_users=all')
+                if cursor:
+                    path += f'&id={urllib.parse.quote(str(cursor))}'
+                return path
+
+            def cursor_from(item):
+                return item.get('id')
+
+            for message in self._iter_pages(
+                    chat_id, config, user_id, referer, x_bc, build_path, cursor_from):
+                entries.extend(self._entries_from_container(
+                    message, username, chat_id=chat_id))
+
+        if not entries:
+            self.raise_no_formats(
+                'No downloadable photos or videos found (encoded videos are skipped)',
+                expected=True, video_id=chat_id)
+        suffix = tab or ('gallery' if section else 'messages')
+        return self.playlist_result(entries, chat_id, f'{title} ({suffix})', uploader=username)
+
+    def _extract_chat_media(self, chat_id, media_id, username, config, user_id, x_bc, referer):
+        extra = self._chat_media_query(None)
+
+        def build_path(cursor):
+            path = (
+                f'/api2/v2/chats/{chat_id}/media?limit={_OF_PAGE_LIMIT}'
+                f'&skip_users=all{extra}')
+            if cursor:
+                path += f'&lastId={urllib.parse.quote(str(cursor))}'
+            return path
+
+        def cursor_from(item):
+            return item.get('id')
+
+        for item in self._iter_pages(
+                chat_id, config, user_id, referer, x_bc, build_path, cursor_from):
+            candidates = self._viewable_media(item)
+            if not candidates and isinstance(item, dict):
+                candidates = [item]
+            media = next((entry for entry in candidates if str(entry.get('id')) == str(media_id)), None)
+            if not media:
+                continue
+            info = self._extract_media_item(media, item, username)
+            if info:
+                return info
+            self.raise_no_formats(
+                'No direct photo or MP4 found for this item (encoded videos are skipped)',
+                expected=True, video_id=media_id)
+        raise ExtractorError('Chat media not found in this gallery', expected=True, video_id=media_id)
+
+    def _real_extract(self, url):
+        mobj = self._match_valid_url(url)
+        chat_id = mobj.group('chat_id')
+        post_id = mobj.group('id')
+        username = mobj.group('username')
+        media_id = mobj.group('media_id')
+        profile = mobj.group('profile')
+        profile_tab = mobj.group('profile_tab')
+        chat_section = mobj.group('chat_section')
+        chat_tab = mobj.group('chat_tab')
+        chat_media_id = mobj.group('chat_media_id')
+
+        if chat_id:
+            page_url = f'https://onlyfans.com/my/chats/chat/{chat_id}'
+            video_id = chat_id
+        elif post_id:
+            page_url = f'https://onlyfans.com/{post_id}/{username}'
+            video_id = post_id
+        else:
+            if not profile or profile.lower() in _OF_RESERVED_PROFILES:
+                raise ExtractorError('Unsupported OnlyFans URL', expected=True)
+            page_url = f'https://onlyfans.com/{profile}'
+            video_id = profile
+
+        config, user_id, x_bc = self._open_session(page_url, video_id)
+        if chat_id:
+            return self._extract_chat(
+                chat_id, chat_section, chat_tab, chat_media_id, config, user_id, x_bc)
+        if post_id:
+            return self._extract_post_gallery(post_id, username, media_id, config, user_id, x_bc)
+        return self._extract_profile(profile, profile_tab, config, user_id, x_bc)

@@ -38,6 +38,7 @@ export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
     playlistTitle: proj.playlistTitle,
     playlistIndex: proj.playlistIndex,
     playlistSize: proj.playlistSize,
+    mediaKind: proj.mediaKind,
     batchId: proj.batchId,
     batchKind: proj.batchKind,
     batchTitle: proj.batchTitle,

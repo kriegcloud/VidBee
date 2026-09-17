@@ -18,12 +18,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
 import {
   buildGalleryDlRuntimeArgs,
   type DownloadRuntimeSettings,
   GalleryDlExecutor,
   HostRoutingExecutor,
   InstagramProfileInspector,
+  restoreBrowserCaptureGroupCap,
   restoreInstagramProfileGroupCaps,
   YtDlpExecutor
 } from '@vidbee/downloader-core'
@@ -124,7 +126,35 @@ const galleryDlExecutor = new GalleryDlExecutor({
   resolveFfmpegLocation,
   defaultDownloadDir: apiDefaultDownloadDir
 })
-const downloadExecutor = new HostRoutingExecutor(ytDlpExecutor, galleryDlExecutor)
+const apiHere = path.dirname(fileURLToPath(import.meta.url))
+const captureSidecarCandidates = [
+  path.join(apiHere, 'browser-capture-sidecar.js'),
+  path.join(apiHere, '../../../../packages/browser-capture/src/sidecar.ts')
+]
+const captureSidecarScript =
+  captureSidecarCandidates.find((candidate) => fs.existsSync(candidate)) ??
+  path.join(apiHere, '../../../../packages/browser-capture/src/sidecar.ts')
+const browserCaptureExecutor = new BrowserCaptureExecutor({
+  resolveSidecarScript: () => {
+    if (!captureSidecarScript) {
+      throw new Error('Browser-capture sidecar script not found')
+    }
+    return captureSidecarScript
+  },
+  resolveFfmpegPath: () => {
+    const loc = resolveFfmpegLocation()
+    if (!loc) {
+      throw new Error('ffmpeg not found')
+    }
+    return fs.existsSync(path.join(loc, 'ffmpeg')) ? path.join(loc, 'ffmpeg') : loc
+  },
+  execArgv: captureSidecarScript?.endsWith('.ts') ? ['--import', 'tsx'] : undefined,
+  defaultDownloadDir: apiDefaultDownloadDir
+})
+const downloadExecutor = new HostRoutingExecutor(
+  new DrmFallbackExecutor(ytDlpExecutor, browserCaptureExecutor),
+  galleryDlExecutor
+)
 
 export const instagramProfileInspector = new InstagramProfileInspector({
   resolveExtraArgs: resolveGalleryDlExtraArgs,
@@ -132,7 +162,6 @@ export const instagramProfileInspector = new InstagramProfileInspector({
 })
 
 const apiModelsDir = path.join(unifiedDbDir, 'models', 'transcription')
-const apiHere = path.dirname(fileURLToPath(import.meta.url))
 const apiWorkerCandidates = [
   path.join(apiHere, 'transcription-worker.js'),
   path.join(apiHere, '../../../../packages/transcription/src/worker/entry.ts')
@@ -228,6 +257,7 @@ export const startTaskQueue = async (): Promise<void> => {
   await taskQueue.start()
   await restoreInstagramProfileGroupCaps(taskQueue)
   await restoreSocialMediaGroupCaps(taskQueue)
+  await restoreBrowserCaptureGroupCap(taskQueue)
   try {
     const settings = await (await import('./web-settings-store')).webSettingsStore.get()
     autoEnabled = settings.autoTranscribeAfterDownload === true

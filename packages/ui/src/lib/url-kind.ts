@@ -115,6 +115,85 @@ export const isVscoGalleryUrl = (value: string): boolean => {
   }
 }
 
+const ONLYFANS_HOSTS = new Set(['onlyfans.com', 'www.onlyfans.com'])
+const ONLYFANS_POST_PATH = /^\/\d+\/[A-Za-z0-9][A-Za-z0-9._-]*\/?$/
+const ONLYFANS_CHAT_LIST_PATH =
+  /^\/my\/chats\/chat\/\d+(?:\/gallery(?:\/(?:opened|purchased|photos|videos))?)?\/?$/i
+const ONLYFANS_PROFILE_TAB = /^(media|photos|videos)$/i
+const ONLYFANS_RESERVED_PROFILES = new Set([
+  'api',
+  'api2',
+  'chats',
+  'collections',
+  'credits',
+  'help',
+  'login',
+  'messages',
+  'my',
+  'notifications',
+  'posts',
+  'privacy',
+  'search',
+  'settings',
+  'signup',
+  'subscriptions',
+  'tagged',
+  'terms',
+  'users',
+  'vault'
+])
+
+const isOnlyFansHttpUrl = (value: string): URL | null => {
+  try {
+    const parsed = new URL(value)
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return null
+    }
+    if (!ONLYFANS_HOSTS.has(parsed.hostname.toLowerCase())) {
+      return null
+    }
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+/**
+ * OnlyFans posts are galleries: a single post URL can carry several photos
+ * and videos, so route them through the playlist flow to download them all.
+ */
+export const isOnlyFansPostUrl = (value: string): boolean => {
+  const parsed = isOnlyFansHttpUrl(value)
+  return Boolean(parsed && ONLYFANS_POST_PATH.test(parsed.pathname))
+}
+
+/** Profile root and /media /photos /videos tabs list many galleries. */
+export const isOnlyFansProfileUrl = (value: string): boolean => {
+  const parsed = isOnlyFansHttpUrl(value)
+  if (!parsed) {
+    return false
+  }
+  const segments = parsed.pathname.split('/').filter(Boolean)
+  if (segments.length < 1 || segments.length > 2) {
+    return false
+  }
+  const username = segments[0]
+  if (!username || ONLYFANS_RESERVED_PROFILES.has(username.toLowerCase())) {
+    return false
+  }
+  return segments.length === 1 || ONLYFANS_PROFILE_TAB.test(segments[1] ?? '')
+}
+
+/** Chat threads and chat galleries inventory media by paging the message list. */
+export const isOnlyFansChatListUrl = (value: string): boolean => {
+  const parsed = isOnlyFansHttpUrl(value)
+  return Boolean(parsed && ONLYFANS_CHAT_LIST_PATH.test(parsed.pathname))
+}
+
+/** Profile feeds and chat threads collect many media items before download. */
+export const isOnlyFansListUrl = (value: string): boolean =>
+  isOnlyFansProfileUrl(value) || isOnlyFansChatListUrl(value)
+
 /**
  * Check whether a URL should be handled as a playlist-style resource.
  *
@@ -122,6 +201,9 @@ export const isVscoGalleryUrl = (value: string): boolean => {
  */
 export const isPlaylistLikeUrl = (value: string): boolean => {
   if (isFacebookReelsUrl(value)) {
+    return true
+  }
+  if (isOnlyFansPostUrl(value) || isOnlyFansListUrl(value)) {
     return true
   }
   try {

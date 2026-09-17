@@ -49,6 +49,15 @@ export {
   VIDBEE_EXTENSION_CHROME_URL
 } from './cookie-setup'
 export { DownloaderCore } from './downloader-core'
+export {
+  BROWSER_CAPTURE_GROUP_KEY,
+  BROWSER_CAPTURE_MAX_PER_GROUP,
+  mapPlaylistInfo,
+  parsePlaylistMediaKind,
+  planPlaylistDownloadOrder,
+  playlistEntryGroupKey,
+  restoreBrowserCaptureGroupCap
+} from './playlist-plan'
 export type { FilenameStyle } from './filename-style'
 export {
   applyViaVidBeeFilename,
@@ -160,6 +169,7 @@ export type {
   PlaylistEntry,
   PlaylistInfo,
   PlaylistInfoInput,
+  PlaylistMediaKind,
   UploadSettingsFileInput,
   UploadSettingsFileKind,
   UploadSettingsFileOutput,

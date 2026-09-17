@@ -81,8 +81,18 @@ export function PlaylistDownloadGroup({
 	const errorCount = records.filter(
 		(record) => record.status === "error",
 	).length;
-	const activeCount = records.filter((record) =>
+	const activeRecords = records.filter((record) =>
 		["downloading", "processing", "pending"].includes(record.status),
+	);
+	const activeCount = activeRecords.length;
+	const inProgressPhotos = activeRecords.filter(
+		(record) => record.mediaKind === "photo",
+	).length;
+	const inProgressVideos = activeRecords.filter(
+		(record) => record.mediaKind === "video",
+	).length;
+	const inProgressRecordings = activeRecords.filter(
+		(record) => record.mediaKind === "recording",
 	).length;
 
 	const displayTitle = title || t("playlist.untitled");
@@ -144,7 +154,26 @@ export function PlaylistDownloadGroup({
 								<>
 									<span className="text-muted-foreground/50">•</span>
 									<span>
-										{t("playlist.groupActive", { count: activeCount })}
+										{[
+											inProgressPhotos > 0
+												? t("playlist.groupInProgressPhotos", {
+														count: inProgressPhotos,
+													})
+												: null,
+											inProgressVideos > 0
+												? t("playlist.groupInProgressVideos", {
+														count: inProgressVideos,
+													})
+												: null,
+											inProgressRecordings > 0
+												? t("playlist.groupInProgressRecordings", {
+														count: inProgressRecordings,
+													})
+												: null,
+										]
+											.filter(Boolean)
+											.join(", ") ||
+											t("playlist.groupActive", { count: activeCount })}
 									</span>
 								</>
 							)}

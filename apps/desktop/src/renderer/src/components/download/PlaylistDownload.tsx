@@ -223,6 +223,13 @@ export function PlaylistDownload({
                     <span className="w-8 shrink-0 text-muted-foreground text-xs tabular-nums">
                       #{entry.index}
                     </span>
+                    {entry.thumbnail ? (
+                      <img
+                        alt=""
+                        className="h-10 w-10 shrink-0 rounded-md object-cover"
+                        src={entry.thumbnail}
+                      />
+                    ) : null}
                     <span className="min-w-0 flex-1 truncate text-xs">
                       {entry.title || t('download.fetchingVideoInfo')}
                     </span>

@@ -2,6 +2,10 @@ import {
 	isFacebookGalleryUrl,
 	isFacebookReelsUrl,
 	isInstagramProfileUrl,
+	isOnlyFansChatListUrl,
+	isOnlyFansListUrl,
+	isOnlyFansPostUrl,
+	isOnlyFansProfileUrl,
 	isPlaylistLikeUrl,
 	isThreadsUrl,
 	isTikTokPhotoUrl,
@@ -121,6 +125,70 @@ describe("isVscoGalleryUrl", () => {
 		"ftp://vsco.co/allybari/gallery",
 	])("rejects a non-gallery or rehosted URL: %s", (url) => {
 		expect(isVscoGalleryUrl(url)).toBe(false);
+	});
+});
+
+describe("isOnlyFansPostUrl", () => {
+	it.each([
+		"https://onlyfans.com/2669829379/kenzeygrey",
+		"https://www.onlyfans.com/2669829379/creator.name/",
+	])("routes a post gallery through the playlist flow: %s", (url) => {
+		expect(isOnlyFansPostUrl(url)).toBe(true);
+		expect(isPlaylistLikeUrl(url)).toBe(true);
+	});
+
+	it.each([
+		"https://onlyfans.com/",
+		"https://onlyfans.com.example.org/2669829379/kenzeygrey",
+		"ftp://onlyfans.com/2669829379/kenzeygrey",
+		"https://onlyfans.com/2669829379/kenzeygrey/media/3743089366",
+	])("keeps %s off the post-gallery playlist path", (url) => {
+		expect(isOnlyFansPostUrl(url)).toBe(false);
+		expect(isOnlyFansListUrl(url)).toBe(false);
+		expect(isPlaylistLikeUrl(url)).toBe(false);
+	});
+});
+
+describe("isOnlyFansListUrl", () => {
+	it.each([
+		"https://onlyfans.com/kenzeygrey",
+		"https://onlyfans.com/kenzeygrey/media",
+		"https://onlyfans.com/kenzeygrey/photos",
+		"https://onlyfans.com/kenzeygrey/videos",
+	])("routes a profile feed through the playlist flow: %s", (url) => {
+		expect(isOnlyFansProfileUrl(url)).toBe(true);
+		expect(isOnlyFansListUrl(url)).toBe(true);
+		expect(isPlaylistLikeUrl(url)).toBe(true);
+	});
+
+	it.each([
+		"https://onlyfans.com/my/chats/chat/123456",
+		"https://onlyfans.com/my/chats/chat/123456/gallery",
+		"https://onlyfans.com/my/chats/chat/123456/gallery/opened",
+		"https://onlyfans.com/my/chats/chat/123456/gallery/purchased",
+		"https://onlyfans.com/my/chats/chat/123456/gallery/photos",
+		"https://onlyfans.com/my/chats/chat/123456/gallery/videos",
+	])("routes a chat inventory through the playlist flow: %s", (url) => {
+		expect(isOnlyFansChatListUrl(url)).toBe(true);
+		expect(isOnlyFansListUrl(url)).toBe(true);
+		expect(isPlaylistLikeUrl(url)).toBe(true);
+	});
+
+	it("does not treat a single chat media URL as a list page", () => {
+		expect(
+			isOnlyFansChatListUrl(
+				"https://onlyfans.com/my/chats/chat/123456/media/99",
+			),
+		).toBe(false);
+	});
+
+	it.each([
+		"https://onlyfans.com/my",
+		"https://onlyfans.com/2669829379/kenzeygrey",
+		"https://onlyfans.com/kenzeygrey/posts",
+	])("keeps %s off the profile list path", (url) => {
+		expect(isOnlyFansProfileUrl(url)).toBe(false);
+		expect(isOnlyFansChatListUrl(url)).toBe(false);
 	});
 });
 

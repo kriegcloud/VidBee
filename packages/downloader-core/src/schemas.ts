@@ -101,6 +101,7 @@ export const DownloadTaskSchema = z.object({
   playlistTitle: z.string().optional(),
   playlistIndex: z.number().optional(),
   playlistSize: z.number().optional(),
+  mediaKind: z.enum(['photo', 'video', 'recording']).optional(),
   batchId: z.string().optional(),
   batchKind: z.enum(['instagram-profile', 'social-media']).optional(),
   batchTitle: z.string().optional(),
@@ -298,12 +299,15 @@ export const VideoInfoSchema = z.object({
   formats: z.array(VideoFormatSchema)
 })
 
+export const PlaylistMediaKindSchema = z.enum(['photo', 'video', 'recording'])
+
 export const PlaylistEntrySchema = z.object({
   id: z.string(),
   title: z.string(),
   url: z.url(),
   index: z.number(),
-  thumbnail: z.string().optional()
+  thumbnail: z.string().optional(),
+  mediaKind: PlaylistMediaKindSchema.optional()
 })
 
 export const PlaylistInfoSchema = z.object({

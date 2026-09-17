@@ -117,6 +117,7 @@ export interface DownloadItem {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  mediaKind?: 'photo' | 'video' | 'recording'
   batchId?: string
   batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
@@ -193,6 +194,7 @@ export interface DownloadHistoryItem {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  mediaKind?: 'photo' | 'video' | 'recording'
   batchId?: string
   batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
@@ -248,6 +250,7 @@ export interface PlaylistEntry {
   url: string
   index: number
   thumbnail?: string
+  mediaKind?: 'photo' | 'video' | 'recording'
 }
 
 export interface PlaylistInfo {

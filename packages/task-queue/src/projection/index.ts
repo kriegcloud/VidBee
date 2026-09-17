@@ -102,6 +102,7 @@ export interface LegacyTaskProjection {
   playlistSize?: number
   sourceMediaKind?: 'image' | 'video' | 'mixed'
   collectionSummary?: SocialCollectionSummary
+  mediaKind?: 'photo' | 'video' | 'recording'
   batchId?: string
   batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
@@ -182,6 +183,7 @@ interface MaybeHostFields {
   duration?: number
   playlistTitle?: string
   playlistSize?: number
+  mediaKind?: 'photo' | 'video' | 'recording'
   fileSize?: number
   startedAt?: number
   completedAt?: number
@@ -229,6 +231,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     playlistSize: opts.playlistSize,
     sourceMediaKind: opts.sourceMediaKind,
     collectionSummary: task.output?.collectionSummary ?? task.progress.collectionSummary,
+    mediaKind: opts.mediaKind,
     batchId: opts.batchId,
     batchKind: opts.batchKind,
     batchTitle: opts.batchTitle,

@@ -13,12 +13,15 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
 import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
 import {
   GalleryDlExecutor,
   HostRoutingExecutor,
   InstagramProfileInspector,
+  restoreBrowserCaptureGroupCap,
   restoreInstagramProfileGroupCaps,
   YtDlpExecutor,
   type YtDlpTaskOptions
@@ -40,6 +43,7 @@ import {
 import { app, powerSaveBlocker } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
+import { resolveBrowserCaptureSidecarScript } from './browser-capture-sidecar-path'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
 import { getDatabaseConnection } from './database'
 import { startDownloadPowerSaveGuard } from './download-power-save'
@@ -113,7 +117,13 @@ const buildDownloadExecutor = (): HostRoutingExecutor => {
     resolveFfmpegLocation,
     defaultDownloadDir: resolveDesktopDownloadDir()
   })
-  return new HostRoutingExecutor(ytDlp, galleryDl)
+  const capture = new BrowserCaptureExecutor({
+    resolveSidecarScript: () =>
+      resolveBrowserCaptureSidecarScript(path.dirname(fileURLToPath(import.meta.url))),
+    resolveFfmpegPath: () => ffmpegManager.getPath(),
+    defaultDownloadDir: resolveDesktopDownloadDir()
+  })
+  return new HostRoutingExecutor(new DrmFallbackExecutor(ytDlp, capture), galleryDl)
 }
 
 let instagramProfileInspector: InstagramProfileInspector | null = null
@@ -233,6 +243,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   await queue.start()
   await restoreInstagramProfileGroupCaps(queue)
   await restoreSocialMediaGroupCaps(queue)
+  await restoreBrowserCaptureGroupCap(queue)
   try {
     const { sqlite, path: persistPath } = getDatabaseConnection()
     const taskCount = Number(

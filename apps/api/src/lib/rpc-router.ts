@@ -9,6 +9,8 @@ import {
   downloaderContract,
   enqueueInstagramProfileDownload,
   expandTikTokShortLink,
+  planPlaylistDownloadOrder,
+  playlistEntryGroupKey,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import { resolveAutoVideoDownloadPath } from '@vidbee/downloader-core/output-path'
@@ -368,7 +370,8 @@ export const rpcRouter = os.router({
           index: number
         }> = []
 
-        for (const entry of selected) {
+        const playlistGroupKey = `playlist:${groupId}`
+        for (const entry of planPlaylistDownloadOrder(selected)) {
           const result = await taskQueue.add({
             input: {
               url: entry.url,
@@ -389,10 +392,11 @@ export const rpcRouter = os.router({
                 title: entry.title,
                 thumbnail: entry.thumbnail,
                 playlistTitle: playlist.title,
-                playlistSize: selected.length
+                playlistSize: selected.length,
+                mediaKind: entry.mediaKind
               }
             },
-            groupKey: `playlist:${groupId}`
+            groupKey: playlistEntryGroupKey(entry, playlistGroupKey)
           })
           created.push({
             downloadId: result.id,

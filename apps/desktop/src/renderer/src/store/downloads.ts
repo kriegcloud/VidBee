@@ -48,6 +48,7 @@ const toHistoryRecord = (item: DownloadHistoryItem): DownloadRecord => ({
   playlistTitle: item.playlistTitle,
   playlistIndex: item.playlistIndex,
   playlistSize: item.playlistSize,
+  mediaKind: item.mediaKind,
   batchId: item.batchId,
   batchKind: item.batchKind,
   batchTitle: item.batchTitle,

@@ -33,6 +33,7 @@ const elkBundledEntry = require.resolve('elkjs/lib/elk.bundled.js', {
 const bundledWorkspacePackages = [
   '@vidbee/db',
   '@vidbee/downloader-core',
+  '@vidbee/browser-capture',
   '@vidbee/i18n',
   '@vidbee/logger',
   '@vidbee/task-queue',
@@ -42,7 +43,12 @@ const bundledWorkspacePackages = [
   '@earendil-works/pi-agent-core',
   '@earendil-works/pi-telemetry'
 ]
-const nativeRuntimeExternals = ['electron', 'better-sqlite3', 'sherpa-onnx-node'] as const
+const nativeRuntimeExternals = [
+  'electron',
+  'better-sqlite3',
+  'sherpa-onnx-node',
+  'playwright-core'
+] as const
 const nativeRuntimeExternalMatchers: Array<string | RegExp> = [
   ...nativeRuntimeExternals,
   /^electron\//,
@@ -103,6 +109,10 @@ export default defineConfig(({ mode }) => {
             'transcription-worker': resolve(
               import.meta.dirname,
               '../../packages/transcription/src/worker/entry.ts'
+            ),
+            'browser-capture-sidecar': resolve(
+              import.meta.dirname,
+              '../../packages/browser-capture/src/sidecar.ts'
             )
           },
           output: {

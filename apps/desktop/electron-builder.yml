@@ -142,6 +142,7 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 asarUnpack:
   - node_modules/sherpa-onnx-*/**
+  - node_modules/playwright-core/**
 npmRebuild: true
 publish:
   provider: github

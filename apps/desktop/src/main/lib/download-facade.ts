@@ -23,6 +23,8 @@ import {
   type InstagramProfileDownloadInput,
   type InstagramProfileDownloadResult,
   type InstagramProfileInspection,
+  planPlaylistDownloadOrder,
+  playlistEntryGroupKey,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
@@ -538,13 +540,15 @@ class DownloadFacade extends EventEmitter {
     ensureDirectoryExists(resolvedDownloadPath)
 
     const entries: PlaylistDownloadResult['entries'] = []
-    for (const entry of selected) {
+    const playlistGroupKey = `playlist:${groupId}`
+    for (const entry of planPlaylistDownloadOrder(selected)) {
       try {
         const result = await this.queue.add({
           input: {
             url: entry.url,
             kind: options.type === 'audio' ? 'audio' : 'video',
             title: entry.title,
+            thumbnail: entry.thumbnail,
             playlistId: groupId,
             playlistIndex: entry.index,
             options: {
@@ -557,13 +561,15 @@ class DownloadFacade extends EventEmitter {
               // downloads, otherwise playlist entries ignore them too.
               settings: toSharedSettings(settings),
               title: entry.title,
+              thumbnail: entry.thumbnail,
               playlistTitle: playlist.title,
               playlistSize: selected.length,
+              mediaKind: entry.mediaKind,
               origin: 'manual'
             }
           },
           priority: PRIORITY_USER,
-          groupKey: `playlist:${groupId}`
+          groupKey: playlistEntryGroupKey(entry, playlistGroupKey)
         })
         entries.push({
           downloadId: result.id,

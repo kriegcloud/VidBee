@@ -132,6 +132,9 @@ export const projectTaskForRenderer = (task: Readonly<Task>): DownloadItem => {
   if (proj.playlistSize !== undefined) {
     item.playlistSize = proj.playlistSize
   }
+  if (proj.mediaKind !== undefined) {
+    item.mediaKind = proj.mediaKind
+  }
   if (proj.batchId !== undefined) {
     item.batchId = proj.batchId
   }
@@ -292,6 +295,9 @@ export const projectTaskForRendererHistory = (task: Readonly<Task>): DownloadHis
   }
   if (proj.playlistSize !== undefined) {
     item.playlistSize = proj.playlistSize
+  }
+  if (proj.mediaKind !== undefined) {
+    item.mediaKind = proj.mediaKind
   }
   if (proj.batchId !== undefined) {
     item.batchId = proj.batchId

@@ -115,7 +115,7 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
   {
     // GitHub issue #352 is DRM protected and should be explained directly.
     message:
-      'This source is DRM protected, so VidBee cannot download it with the current yt-dlp workflow.',
+      'This source is DRM protected. VidBee will try to record in-browser playback when Xvfb and Chrome/Brave are available; otherwise it cannot decode the file.',
     patterns: ['this video is drm protected', 'requested site is known to use drm protection']
   },
   {

@@ -76,6 +76,13 @@ export function PlaylistPreviewCard({ playlist, entries, onClear }: PlaylistPrev
                     <span className="w-12 shrink-0 text-center font-semibold text-muted-foreground text-xs">
                       #{entry.index}
                     </span>
+                    {entry.thumbnail ? (
+                      <img
+                        alt=""
+                        className="h-10 w-10 shrink-0 rounded-md object-cover"
+                        src={entry.thumbnail}
+                      />
+                    ) : null}
                     <span
                       className="wrap-break-word min-w-0 flex-1 overflow-hidden truncate text-sm"
                       title={entry.title}

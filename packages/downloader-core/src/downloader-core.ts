@@ -16,6 +16,7 @@ import type {
   VideoFormat,
   VideoInfo
 } from './types'
+import { mapPlaylistInfo, planPlaylistDownloadOrder } from './playlist-plan'
 import {
   buildDownloadArgs,
   buildPlaylistInfoArgs,
@@ -80,20 +81,10 @@ interface RawVideoInfo {
   }>
 }
 
-interface RawPlaylistEntry {
-  id?: string | null
-  title?: string | null
-  url?: string | null
-  webpage_url?: string | null
-  original_url?: string | null
-  ie_key?: string | null
-  thumbnail?: string | null
-}
-
 interface RawPlaylistInfo {
   id?: string | null
   title?: string | null
-  entries?: RawPlaylistEntry[]
+  entries?: Record<string, unknown>[]
 }
 
 interface ProgressPayload {
@@ -387,46 +378,6 @@ const toOptionalStringArray = (value: unknown): string[] | undefined => {
 const toTerminal = (task: DownloadTask): boolean =>
   task.status === 'completed' || task.status === 'error' || task.status === 'cancelled'
 
-const isHttpUrl = (value?: string | null): boolean => {
-  if (!value) {
-    return false
-  }
-
-  try {
-    const parsed = new URL(value)
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-const resolvePlaylistEntryUrl = (entry: RawPlaylistEntry): string | undefined => {
-  if (isHttpUrl(entry.url)) {
-    return toOptionalString(entry.url)
-  }
-
-  if (isHttpUrl(entry.webpage_url)) {
-    return toOptionalString(entry.webpage_url)
-  }
-
-  if (isHttpUrl(entry.original_url)) {
-    return toOptionalString(entry.original_url)
-  }
-
-  if (entry.url) {
-    const extractedId = entry.url.trim()
-    const extractor = entry.ie_key?.toLowerCase() ?? ''
-    if (extractor.includes('youtube')) {
-      return `https://www.youtube.com/watch?v=${extractedId}`
-    }
-    if (extractor.includes('youtubemusic')) {
-      return `https://music.youtube.com/watch?v=${extractedId}`
-    }
-  }
-
-  return undefined
-}
-
 const trimTaskLog = (value: string): string => {
   if (value.length <= MAX_TASK_LOG_LENGTH) {
     return value
@@ -660,30 +611,7 @@ export class DownloaderCore extends EventEmitter {
       )
     )
 
-    const rawEntries = Array.isArray(raw.entries) ? raw.entries : []
-    const entries = rawEntries
-      .map((entry, index) => {
-        const resolvedUrl = resolvePlaylistEntryUrl(entry)
-        if (!(resolvedUrl && isHttpUrl(resolvedUrl))) {
-          return null
-        }
-
-        return {
-          id: toOptionalString(entry.id) ?? `${index + 1}`,
-          title: toOptionalString(entry.title) ?? `Entry ${index + 1}`,
-          url: resolvedUrl,
-          index: index + 1,
-          thumbnail: toOptionalString(entry.thumbnail)
-        }
-      })
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-
-    return {
-      id: toOptionalString(raw.id) ?? target,
-      title: toOptionalString(raw.title) ?? 'Playlist',
-      entries,
-      entryCount: entries.length
-    }
+    return mapPlaylistInfo(raw, target)
   }
 
   async startPlaylistDownload(input: PlaylistDownloadInput): Promise<PlaylistDownloadResult> {
@@ -720,7 +648,7 @@ export class DownloaderCore extends EventEmitter {
 
     const createdEntries: PlaylistDownloadResult['entries'] = []
 
-    for (const entry of selectedEntries) {
+    for (const entry of planPlaylistDownloadOrder(selectedEntries)) {
       const download = await this.createDownload({
         url: entry.url,
         type: input.type,

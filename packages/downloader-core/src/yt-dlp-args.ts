@@ -421,6 +421,32 @@ export const appendYouTubeSafeExtractorArgs = (args: string[], url: string): voi
   args.push('--extractor-args', `youtube:player_client=${YOUTUBE_SAFE_PLAYER_CLIENTS}`)
 }
 
+const isOnlyFansUrl = (value: string): boolean => {
+  try {
+    const host = new URL(value).hostname.toLowerCase()
+    return host === 'onlyfans.com' || host.endsWith('.onlyfans.com')
+  } catch {
+    return false
+  }
+}
+
+const isDirectMediaFileUrl = (value: string): boolean => {
+  try {
+    return /\.(?:jpe?g|png|gif|webp|avif|mp4|m4v|mov|webm)$/i.test(new URL(value).pathname)
+  } catch {
+    return false
+  }
+}
+
+/** CDN photos/MP4s 403 unless the request looks like Chrome with an OF referer. */
+const appendOnlyFansIdentityArgs = (args: string[], url: string): void => {
+  if (!isOnlyFansUrl(url)) {
+    return
+  }
+  args.push('--impersonate', 'chrome')
+  args.push('--add-header', 'Referer:https://onlyfans.com/')
+}
+
 export const formatYtDlpCommand = (args: string[]): string => {
   const quoted = args.map((arg) => {
     if (arg === '') {
@@ -513,7 +539,7 @@ export const buildDownloadArgs = (
   // embedding and media fixups. Downloads need playable formats and postprocessing.
   args.push('--no-allow-unplayable-formats')
 
-  if (options.type === 'video') {
+  if (options.type === 'video' && !isDirectMediaFileUrl(options.url)) {
     const formatSelector = resolveVideoFormatSelector(options)
     if (formatSelector) {
       args.push('-f', formatSelector)
@@ -634,6 +660,7 @@ export const buildDownloadArgs = (
 
   appendPlatformFilenameSafetyArgs(args)
   appendNetworkResilienceArgs(args)
+  appendOnlyFansIdentityArgs(args, options.url)
 
   if (browserForCookies && browserForCookies !== 'none') {
     args.push('--cookies-from-browser', browserForCookies)
@@ -705,6 +732,7 @@ export const buildVideoInfoArgs = (
     args.push(...jsRuntimeArgs)
   }
 
+  appendOnlyFansIdentityArgs(args, url)
   args.push(url)
   return args
 }
@@ -748,6 +776,7 @@ export const buildPlaylistInfoArgs = (
     args.push(...jsRuntimeArgs)
   }
 
+  appendOnlyFansIdentityArgs(args, url)
   args.push(url)
   return args
 }

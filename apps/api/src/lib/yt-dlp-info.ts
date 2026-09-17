@@ -14,6 +14,7 @@ import type {
 import {
   buildPlaylistInfoArgs,
   buildVideoInfoArgs,
+  mapPlaylistInfo,
   retryTransientYtDlpNetworkError
 } from '@vidbee/downloader-core'
 
@@ -48,22 +49,6 @@ interface RawVideoInfo {
   }>
 }
 
-interface RawPlaylistEntry {
-  id?: string | null
-  title?: string | null
-  url?: string | null
-  webpage_url?: string | null
-  original_url?: string | null
-  ie_key?: string | null
-  thumbnail?: string | null
-}
-
-interface RawPlaylistInfo {
-  id?: string | null
-  title?: string | null
-  entries?: RawPlaylistEntry[]
-}
-
 const trim = (v?: string | null): string => v?.trim() ?? ''
 const optString = (v: unknown): string | undefined => {
   if (typeof v !== 'string') {
@@ -84,41 +69,6 @@ const optStringArray = (v: unknown): string[] | undefined => {
     .map((e) => e.trim())
     .filter((e) => e.length > 0)
   return list.length ? list : undefined
-}
-
-const isHttpUrl = (v?: string | null): boolean => {
-  if (!v) {
-    return false
-  }
-  try {
-    const u = new URL(v)
-    return u.protocol === 'http:' || u.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-const resolveEntryUrl = (entry: RawPlaylistEntry): string | undefined => {
-  if (isHttpUrl(entry.url)) {
-    return optString(entry.url)
-  }
-  if (isHttpUrl(entry.webpage_url)) {
-    return optString(entry.webpage_url)
-  }
-  if (isHttpUrl(entry.original_url)) {
-    return optString(entry.original_url)
-  }
-  if (entry.url) {
-    const id = entry.url.trim()
-    const ie = entry.ie_key?.toLowerCase() ?? ''
-    if (ie.includes('youtube')) {
-      return `https://www.youtube.com/watch?v=${id}`
-    }
-    if (ie.includes('youtubemusic')) {
-      return `https://music.youtube.com/watch?v=${id}`
-    }
-  }
-  return undefined
 }
 
 let cachedYtDlpPath: string | null = null
@@ -240,27 +190,5 @@ export async function fetchPlaylistInfo(
   }
   const args = buildPlaylistInfoArgs(target, settings)
   const stdout = await retryTransientYtDlpNetworkError(() => runYtDlp(args))
-  const raw = JSON.parse(stdout) as RawPlaylistInfo
-  const rawEntries = Array.isArray(raw.entries) ? raw.entries : []
-  const entries = rawEntries
-    .map((entry, index) => {
-      const resolvedUrl = resolveEntryUrl(entry)
-      if (!resolvedUrl) {
-        return null
-      }
-      return {
-        id: optString(entry.id) ?? `${index + 1}`,
-        title: optString(entry.title) ?? `Entry ${index + 1}`,
-        url: resolvedUrl,
-        index: index + 1,
-        thumbnail: optString(entry.thumbnail)
-      }
-    })
-    .filter((e): e is NonNullable<typeof e> => Boolean(e))
-  return {
-    id: optString(raw.id) ?? target,
-    title: optString(raw.title) ?? 'Playlist',
-    entries,
-    entryCount: entries.length
-  }
+  return mapPlaylistInfo(JSON.parse(stdout), target)
 }

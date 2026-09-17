@@ -87,6 +87,7 @@ export interface YtDlpTaskOptions {
   tags?: readonly string[]
   playlistTitle?: string
   playlistSize?: number
+  mediaKind?: 'photo' | 'video' | 'recording'
   batchId?: string
   batchKind?: 'instagram-profile'
   batchTitle?: string

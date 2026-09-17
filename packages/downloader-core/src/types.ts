@@ -5,6 +5,8 @@ import type { SocialMediaOptions } from './social-media'
 
 export type DownloadType = 'video' | 'audio'
 
+export type PlaylistMediaKind = 'photo' | 'video' | 'recording'
+
 export type { OneClickContainerOption }
 
 export type DownloadStatus =
@@ -86,6 +88,7 @@ export interface DownloadTask {
   playlistTitle?: string
   playlistIndex?: number
   playlistSize?: number
+  mediaKind?: PlaylistMediaKind
   batchId?: string
   batchKind?: 'instagram-profile' | 'social-media'
   batchTitle?: string
@@ -210,6 +213,7 @@ export interface PlaylistEntry {
   url: string
   index: number
   thumbnail?: string
+  mediaKind?: PlaylistMediaKind
 }
 
 export interface PlaylistInfo {

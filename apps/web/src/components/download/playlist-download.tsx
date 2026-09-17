@@ -3,7 +3,7 @@ import { Button } from "@vidbee/ui/components/ui/button";
 import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
 import { Input } from "@vidbee/ui/components/ui/input";
 import { Label } from "@vidbee/ui/components/ui/label";
-import { ScrollArea } from "@vidbee/ui/components/ui/scroll-area";
+import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
 import { TabItem, Tabs, TabsList } from "@vidbee/ui/components/ui/tabs";
 import { cn } from "@vidbee/ui/lib/cn";
 import { AlertCircle, List, Loader2, Settings2 } from "lucide-react";
@@ -269,6 +269,14 @@ export function PlaylistDownload({
 											<span className="w-8 shrink-0 text-muted-foreground text-xs tabular-nums">
 												#{entry.index}
 											</span>
+											{entry.thumbnail ? (
+												<RemoteImage
+													alt=""
+													className="h-10 w-10 shrink-0 overflow-hidden rounded-md"
+													imgClassName="h-full w-full object-cover"
+													src={entry.thumbnail}
+												/>
+											) : null}
 											<span className="min-w-0 flex-1 truncate text-xs">
 												{entry.title || t("download.fetchingVideoInfo")}
 											</span>
