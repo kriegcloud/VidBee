@@ -24,6 +24,7 @@ import { InstagramProfilePreview } from "@vidbee/ui/components/ui/instagram-prof
 import { Label } from "@vidbee/ui/components/ui/label";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
 import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
+import { isPlaylistLikeUrl } from "@vidbee/ui/lib/url-kind";
 import { useAddUrlInteraction } from "@vidbee/ui/lib/use-add-url-interaction";
 import { useHomeIngest } from "@vidbee/ui/lib/use-home-ingest";
 import { FolderOpen, Loader2 } from "lucide-react";
@@ -221,6 +222,39 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					? settings.oneClickContainer
 					: undefined;
 
+			if (isPlaylistLikeUrl(trimmedUrl)) {
+				toast.info(t("playlist.fetchingInfo"));
+				try {
+					const result = await orpcClient.playlist.download({
+						url: trimmedUrl,
+						type: settings.oneClickDownloadType,
+						format,
+						audioFormat:
+							settings.oneClickDownloadType === "audio" ? "mp3" : undefined,
+						containerFormat,
+						settings: readOrpcDownloadSettings(),
+					});
+					if (result.result.totalCount === 0) {
+						toast.error(t("playlist.noEntries"));
+						return;
+					}
+					toast.success(
+						t("playlist.foundVideos", { count: result.result.totalCount }),
+					);
+					await notifyDownloadsChanged();
+					if (options?.clearInput) {
+						setUrl("");
+					}
+				} catch (startError) {
+					logger.error(
+						"Failed to start one-click playlist download:",
+						startError,
+					);
+					toast.error(t("playlist.downloadFailed"));
+				}
+				return;
+			}
+
 			try {
 				await orpcClient.downloads.create({
 					url: trimmedUrl,
@@ -244,29 +278,6 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		},
 		[notifyDownloadsChanged, settings, t],
 	);
-
-	const handleFetchVideo = useCallback(async () => {
-		if (!url.trim()) {
-			toast.error(t("errors.emptyUrl"));
-			return;
-		}
-		if (resolveSocialSource(url.trim())) {
-			setOpen(false);
-			setSocialUrl(url.trim());
-			return;
-		}
-		setSingleVideoState((prev) => ({
-			...prev,
-			selectedVideoFormat: "",
-			selectedAudioFormat: "",
-			startTime: "",
-			endTime: "",
-			selectedContainer: undefined,
-			selectedCodec: undefined,
-			selectedFps: undefined,
-		}));
-		await fetchVideoInfo(url.trim());
-	}, [url, fetchVideoInfo, t]);
 
 	const handleParsePlaylistUrl = useCallback(
 		async (trimmedUrl: string) => {
@@ -307,6 +318,34 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		},
 		[t],
 	);
+
+	const handleFetchVideo = useCallback(async () => {
+		if (!url.trim()) {
+			toast.error(t("errors.emptyUrl"));
+			return;
+		}
+		if (resolveSocialSource(url.trim())) {
+			setOpen(false);
+			setSocialUrl(url.trim());
+			return;
+		}
+		if (isPlaylistLikeUrl(url.trim())) {
+			setActiveTab("playlist");
+			await handleParsePlaylistUrl(url.trim());
+			return;
+		}
+		setSingleVideoState((prev) => ({
+			...prev,
+			selectedVideoFormat: "",
+			selectedAudioFormat: "",
+			startTime: "",
+			endTime: "",
+			selectedContainer: undefined,
+			selectedCodec: undefined,
+			selectedFps: undefined,
+		}));
+		await fetchVideoInfo(url.trim());
+	}, [fetchVideoInfo, handleParsePlaylistUrl, t, url]);
 
 	const handleParseSingleUrl = useCallback(
 		async (trimmedUrl: string) => {

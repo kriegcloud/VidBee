@@ -2,19 +2,23 @@ import { describe, expect, it } from 'vitest'
 import { buildDownloadArgs, buildPlaylistInfoArgs, buildVideoInfoArgs } from '../src/yt-dlp-args'
 
 const OF_GALLERY = 'https://onlyfans.com/my/chats/chat/312049181/gallery'
+const OF_PROFILE_MEDIA = 'https://onlyfans.com/kenzeygreyvip/media'
 const OF_SOURCE_MP4 = 'https://cdn2.onlyfans.com/files/a/ab/abc/clip_source.mp4'
 const OF_PHOTO = 'https://cdn2.onlyfans.com/files/a/ab/abc/1536x2048_photo.jpg'
 
 describe('OnlyFans download identity', () => {
   it('impersonates Chrome and sends an OnlyFans referer for gallery probes', () => {
-    const playlistArgs = buildPlaylistInfoArgs(OF_GALLERY, {})
-    const videoArgs = buildVideoInfoArgs(OF_GALLERY, {})
+    for (const url of [OF_GALLERY, OF_PROFILE_MEDIA]) {
+      const playlistArgs = buildPlaylistInfoArgs(url, {})
+      const videoArgs = buildVideoInfoArgs(url, {})
 
-    for (const args of [playlistArgs, videoArgs]) {
-      expect(args).toContain('--impersonate')
-      expect(args[args.indexOf('--impersonate') + 1]).toBe('chrome')
-      expect(args).toContain('--add-header')
-      expect(args[args.indexOf('--add-header') + 1]).toBe('Referer:https://onlyfans.com/')
+      for (const args of [playlistArgs, videoArgs]) {
+        expect(args).toContain('--impersonate')
+        expect(args[args.indexOf('--impersonate') + 1]).toBe('chrome')
+        expect(args).toContain('--add-header')
+        expect(args[args.indexOf('--add-header') + 1]).toBe('Referer:https://onlyfans.com/')
+        expect(args).toContain('onlyfans:page_sleep=0')
+      }
     }
   })
 

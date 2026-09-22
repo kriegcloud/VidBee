@@ -447,6 +447,14 @@ const appendOnlyFansIdentityArgs = (args: string[], url: string): void => {
   args.push('--add-header', 'Referer:https://onlyfans.com/')
 }
 
+/** Profile/chat inventories page the API; skip the polite delay on metadata probes. */
+const appendOnlyFansInventoryArgs = (args: string[], url: string): void => {
+  if (!isOnlyFansUrl(url)) {
+    return
+  }
+  args.push('--extractor-args', 'onlyfans:page_sleep=0')
+}
+
 export const formatYtDlpCommand = (args: string[]): string => {
   const quoted = args.map((arg) => {
     if (arg === '') {
@@ -733,6 +741,7 @@ export const buildVideoInfoArgs = (
   }
 
   appendOnlyFansIdentityArgs(args, url)
+  appendOnlyFansInventoryArgs(args, url)
   args.push(url)
   return args
 }
@@ -777,6 +786,7 @@ export const buildPlaylistInfoArgs = (
   }
 
   appendOnlyFansIdentityArgs(args, url)
+  appendOnlyFansInventoryArgs(args, url)
   args.push(url)
   return args
 }

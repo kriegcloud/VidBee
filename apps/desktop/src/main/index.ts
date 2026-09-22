@@ -3,6 +3,7 @@ import { isAbsolute, join, relative, resolve } from 'node:path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { APP_PROTOCOL, APP_PROTOCOL_SCHEME } from '@shared/constants'
 import type { YtDlpKernelStatus } from '@shared/types'
+import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
 import {
   app,
   BrowserWindow,
@@ -935,7 +936,7 @@ const startOneClickDownload = async (data: DeepLinkData): Promise<void> => {
     const containerFormat =
       downloadType === 'video' ? (settings.oneClickContainer ?? 'auto') : undefined
 
-    if (data.type === 'playlist') {
+    if (data.type === 'playlist' || isPlaylistLikeUrl(data.url)) {
       const result = await downloadEngine.startPlaylistDownload({
         url: data.url,
         type: downloadType,

@@ -275,13 +275,54 @@ export function DownloadDialog({
         setUrl(trimmedUrl)
       }
 
-      const id = `download_${Date.now()}_${Math.random().toString(36).slice(7)}`
       const format =
         settings.oneClickDownloadType === 'video'
           ? buildVideoFormatPreference(settings)
           : buildAudioFormatPreference(settings)
       const containerFormat =
         settings.oneClickDownloadType === 'video' ? settings.oneClickContainer : undefined
+
+      if (isPlaylistLikeUrl(trimmedUrl)) {
+        toast.info(t('playlist.fetchingInfo'))
+        try {
+          const result = await ipcServices.download.startPlaylistDownload({
+            url: trimmedUrl,
+            type: settings.oneClickDownloadType,
+            format,
+            containerFormat
+          })
+          if (result.totalCount === 0) {
+            toast.error(t('playlist.noEntries'))
+            return
+          }
+          const baseCreatedAt = Date.now()
+          for (const [index, entry] of result.entries.entries()) {
+            addDownload({
+              id: entry.downloadId,
+              url: entry.url,
+              title: entry.title || t('download.fetchingVideoInfo'),
+              type: settings.oneClickDownloadType,
+              status: 'pending',
+              progress: { percent: 0 },
+              createdAt: baseCreatedAt + index,
+              playlistId: result.groupId,
+              playlistTitle: result.playlistTitle,
+              playlistIndex: entry.index,
+              playlistSize: result.totalCount
+            })
+          }
+          toast.success(t('playlist.foundVideos', { count: result.totalCount }))
+          if (options?.clearInput) {
+            setUrl('')
+          }
+        } catch (error) {
+          logger.error('Failed to start one-click playlist download:', error)
+          toast.error(t('playlist.downloadFailed'))
+        }
+        return
+      }
+
+      const id = `download_${Date.now()}_${Math.random().toString(36).slice(7)}`
 
       // Insert the pending row first. Metadata hydration used to run here and
       // kept Bilibili (and similar) URLs out of the list for a long time.
