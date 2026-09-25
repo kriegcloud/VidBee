@@ -3,6 +3,7 @@ import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
 import { useCallback, useState } from 'react'
 import { classifyIngestText } from './ingest'
 import {
+  isDzenProfileUrl,
   isFacebookGalleryUrl,
   isFacebookReelsUrl,
   isInstagramProfileUrl,
@@ -139,7 +140,9 @@ export const useAddUrlInteraction = ({
 
       if (
         isInstagramProfileUrl(trimmedUrl) ||
-        (activeTab === 'profile' && !isFacebookReelsUrl(trimmedUrl))
+        (activeTab === 'profile' &&
+          !isFacebookReelsUrl(trimmedUrl) &&
+          !isDzenProfileUrl(trimmedUrl))
       ) {
         if (isProfileBusy) {
           return

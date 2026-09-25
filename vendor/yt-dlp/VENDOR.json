@@ -8,6 +8,7 @@
   "license": "Unlicense",
   "localPatches": [
     "Facebook profile reels enumeration with Relay pagination",
-    "Extract individual Facebook reels from their canonical page"
+    "Extract individual Facebook reels from their canonical page",
+    "Deduplicate Dzen profile videos and reject incomplete feed pagination"
   ]
 }

@@ -2,6 +2,7 @@ import itertools
 
 from .common import InfoExtractor
 from ..utils import (
+    ExtractorError,
     bug_reports_message,
     determine_ext,
     int_or_none,
@@ -384,26 +385,41 @@ class ZenYandexChannelIE(ZenYandexBaseIE):
     }]
 
     def _entries(self, feed_data, channel_id):
-        next_page_id = None
+        seen_videos = set()
+        seen_pages = set()
         for page in itertools.count(1):
+            if not isinstance(feed_data, dict) or not isinstance(feed_data.get('items'), list):
+                raise ExtractorError('Dzen profile feed is missing or invalid; inventory is incomplete', expected=True)
             for item in traverse_obj(feed_data, (
-                (None, ('items', lambda _, v: v['tab'] in ('shorts', 'longs'))),
-                'items', lambda _, v: url_or_none(v['link']),
+                (None, ('items', lambda _, v: v.get('tab') in ('shorts', 'longs'))),
+                'items', lambda _, v: url_or_none(v.get('link')),
             )):
-                yield self.url_result(item['link'], ZenYandexIE, item.get('id'), title=item.get('title'))
+                if not ZenYandexIE.suitable(item['link']):
+                    continue
+                video_id = ZenYandexIE._match_id(item['link'])
+                if video_id in seen_videos:
+                    continue
+                seen_videos.add(video_id)
+                yield self.url_result(item['link'], ZenYandexIE, video_id, title=item.get('title'))
 
             more = traverse_obj(feed_data, ('more', 'link', {url_or_none}))
-            current_page_id = next_page_id
-            next_page_id = traverse_obj(parse_qs(more), ('next_page_id', -1))
-            if not all((more, next_page_id, next_page_id != current_page_id)):
+            if not more:
+                if feed_data.get('more'):
+                    raise ExtractorError('Dzen profile pagination is invalid; inventory is incomplete', expected=True)
                 break
+            next_page_id = traverse_obj(parse_qs(more), ('next_page_id', -1))
+            if not next_page_id or next_page_id in seen_pages:
+                raise ExtractorError('Dzen profile pagination did not advance; inventory is incomplete', expected=True)
+            seen_pages.add(next_page_id)
 
             feed_data = self._download_json(more, channel_id, note=f'Downloading Page {page}')
 
     def _real_extract(self, url):
         channel_id = self._match_id(url)
         channel_id, ssr_data = self._fetch_ssr_data(url, channel_id)
-        channel_data = ssr_data['exportResponse']
+        channel_data = traverse_obj(ssr_data, ('exportResponse', {dict}))
+        if not channel_data or not isinstance(channel_data.get('feedData'), dict):
+            raise ExtractorError('Dzen profile feed is missing; inventory is incomplete', expected=True)
 
         return self.playlist_result(
             self._entries(channel_data['feedData'], channel_id),

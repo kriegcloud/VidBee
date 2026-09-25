@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { parseBrowserCookiesSetting } from './browser-cookies-setting'
+import { normalizeDzenProfileUrl } from './dzen-profile'
 import {
   DEFAULT_FILENAME_TEMPLATE,
   type FilenameStyle,
@@ -754,6 +755,7 @@ export const buildPlaylistInfoArgs = (
   assertDownloadSourceUrl(url)
   // GitHub issue #322: a single unavailable entry (e.g. an age-restricted
   // video in a channel/playlist) must not abort listing the whole playlist.
+  const dzenProfile = normalizeDzenProfileUrl(url)
   const args = ['-J', '--flat-playlist', '--ignore-errors', '--no-warnings', '--encoding', 'utf-8']
 
   const proxy = trim(settings.proxy)
@@ -787,6 +789,10 @@ export const buildPlaylistInfoArgs = (
 
   appendOnlyFansIdentityArgs(args, url)
   appendOnlyFansInventoryArgs(args, url)
-  args.push(url)
+  // A failed Dzen feed page must not turn a partial profile into a successful inventory.
+  if (dzenProfile) {
+    args.push('--abort-on-error')
+  }
+  args.push(dzenProfile ?? url)
   return args
 }

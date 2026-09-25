@@ -1,4 +1,5 @@
 import {
+	isDzenProfileUrl,
 	isFacebookGalleryUrl,
 	isFacebookReelsUrl,
 	isInstagramProfileUrl,
@@ -205,4 +206,28 @@ describe("isThreadsUrl", () => {
 			false,
 		);
 	});
+});
+
+describe("Dzen profile routing", () => {
+	it.each([
+		"https://dzen.ru/id/5f272f80ba199a2a3379d0d2",
+		"https://www.dzen.ru/tok_media/",
+		"https://zen.yandex.ru/tok_media",
+	])("routes the whole profile to the shared playlist flow: %s", (url) => {
+		expect(isDzenProfileUrl(url)).toBe(true);
+		expect(isPlaylistLikeUrl(url)).toBe(true);
+		expect(isInstagramProfileUrl(url)).toBe(false);
+	});
+	it.each([
+		"https://dzen.ru/video/watch/62b2294de1a1d65580ced2b1",
+		"https://dzen.ru/a/article",
+		"https://dzen.ru/search",
+		"https://dzen.ru.example.org/tok_media",
+	])(
+		"does not route an individual item or unrelated resource as a profile: %s",
+		(url) => {
+			expect(isDzenProfileUrl(url)).toBe(false);
+			expect(isPlaylistLikeUrl(url)).toBe(false);
+		},
+	);
 });
