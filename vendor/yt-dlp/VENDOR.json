@@ -9,6 +9,7 @@
   "localPatches": [
     "Facebook profile reels enumeration with Relay pagination",
     "Extract individual Facebook reels from their canonical page",
-    "Deduplicate Dzen profile videos and reject incomplete feed pagination"
+    "Deduplicate Dzen profile videos and reject incomplete feed pagination",
+    "Route Dzen shorts to video extraction using the canonical watch page"
   ]
 }

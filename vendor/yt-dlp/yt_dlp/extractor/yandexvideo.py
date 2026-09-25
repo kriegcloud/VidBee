@@ -205,7 +205,7 @@ class ZenYandexBaseIE(InfoExtractor):
 class ZenYandexIE(ZenYandexBaseIE):
     IE_NAME = 'dzen.ru'
     IE_DESC = 'Дзен (dzen) formerly Яндекс.Дзен (Yandex Zen)'
-    _VALID_URL = r'https?://(zen\.yandex|dzen)\.ru(?:/video)?/(media|watch)/(?:(?:id/[^/]+/|[^/]+/)(?:[a-z0-9-]+)-)?(?P<id>[a-z0-9-]+)'
+    _VALID_URL = r'https?://(zen\.yandex|dzen)\.ru(?:/video)?/(media|watch|shorts)/(?:(?:id/[^/]+/|[^/]+/)(?:[a-z0-9-]+)-)?(?P<id>[a-z0-9-]+)'
     _TESTS = [{
         'url': 'https://zen.yandex.ru/media/id/606fd806cc13cb3c58c05cf5/vot-eto-focus-dedy-morozy-na-gidrociklah-60c7c443da18892ebfe85ed7',
         'info_dict': {
@@ -277,6 +277,9 @@ class ZenYandexIE(ZenYandexBaseIE):
 
     def _real_extract(self, url):
         video_id = self._match_id(url)
+        # Shorts use the same publication ID; the watch page exposes video metadata.
+        if '/shorts/' in url:
+            url = f'https://dzen.ru/video/watch/{video_id}'
         video_id, ssr_data = self._fetch_ssr_data(url, video_id)
         video_data = ssr_data['videoMetaResponse']
 
@@ -327,7 +330,7 @@ class ZenYandexIE(ZenYandexBaseIE):
 
 class ZenYandexChannelIE(ZenYandexBaseIE):
     IE_NAME = 'dzen.ru:channel'
-    _VALID_URL = r'https?://(zen\.yandex|dzen)\.ru/(?!media|video)(?:id/)?(?P<id>[a-z0-9-_]+)'
+    _VALID_URL = r'https?://(zen\.yandex|dzen)\.ru/(?!(?:media|video|watch|shorts)(?:[/?#]|$))(?:id/)?(?P<id>[a-z0-9_-]+)/?(?:[?#]|$)'
     _TESTS = [{
         'url': 'https://zen.yandex.ru/tok_media',
         'info_dict': {

@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'vendor/yt-dlp'))
-from yt_dlp.extractor.yandexvideo import ZenYandexChannelIE
+from yt_dlp.extractor.yandexvideo import ZenYandexChannelIE, ZenYandexIE
 from yt_dlp.utils import ExtractorError
 
 
@@ -37,6 +37,33 @@ class TestDzenProfile(unittest.TestCase):
         self.assertEqual([entry['id'] for entry in entries], ['aaa', 'bbb', 'ccc', 'ddd'])
         self.assertTrue(all(entry['ie_key'] == 'ZenYandex' for entry in entries))
         ie._download_json.assert_called_once()
+
+    def test_real_short_url_selects_video_not_channel(self):
+        url = 'https://dzen.ru/shorts/637e48d74a40eb5b183e3ce4'
+        self.assertTrue(ZenYandexIE.suitable(url))
+        self.assertFalse(ZenYandexChannelIE.suitable(url))
+        ie = ZenYandexIE()
+        ie._fetch_ssr_data = Mock(return_value=('637e48d74a40eb5b183e3ce4', {
+            'videoMetaResponse': {'title': 'Short fixture', 'video': {
+                'duration': 15, 'mp4Streams': [{'url': 'https://example.com/short.mp4?ct=0&type=1'}],
+            }},
+        }))
+        result = ie._real_extract(url)
+        ie._fetch_ssr_data.assert_called_once_with(
+            'https://dzen.ru/video/watch/637e48d74a40eb5b183e3ce4', '637e48d74a40eb5b183e3ce4')
+        self.assertEqual(result['duration'], 15)
+        self.assertEqual(result['formats'][0]['ext'], 'mp4')
+
+    def test_short_links_are_kept_in_profile_and_deduplicated_against_watch(self):
+        item = {'link': 'https://dzen.ru/shorts/637e48d74a40eb5b183e3ce4', 'title': 'Short'}
+        shorts = list(self.extractor()._entries(feed([{'tab': 'shorts', 'items': [item]}]), 'channel'))
+        self.assertEqual([entry['url'] for entry in shorts], [item['link']])
+        entries = list(self.extractor()._entries(feed([
+            {'tab': 'shorts', 'items': [item]}, video('637e48d74a40eb5b183e3ce4'),
+        ]), 'channel'))
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]['id'], '637e48d74a40eb5b183e3ce4')
+        self.assertEqual(entries[0]['ie_key'], 'ZenYandex')
 
     def test_cycle_is_not_a_successful_partial_inventory(self):
         ie = self.extractor([feed([video('bbb')], 'page3'), feed([video('ccc')], 'page2')])
