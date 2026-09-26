@@ -116,7 +116,7 @@ export const InstagramProfilePreview = ({
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto py-4">
+    <div className="py-4">
       {error && (
         <p
           className="mb-3 rounded-lg border border-destructive/30 p-3 text-destructive text-sm"

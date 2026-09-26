@@ -61,32 +61,32 @@ export const DownloadDialogLayout = ({
           lockDialogHeight && 'min-h-[24rem]'
         )}
       >
-        <DialogHeader className="items-start space-y-1.5 pr-8 text-left">
+        <DialogHeader className="shrink-0 items-start space-y-1.5 pr-8 text-left">
           <DialogTitle className="text-xl leading-tight">{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogSubtitle}</DialogDescription>
         </DialogHeader>
 
         <Tabs
-          className="flex min-h-0 w-full flex-col"
+          className="flex min-h-0 w-full flex-1 flex-col overflow-hidden"
           defaultValue="single"
           onValueChange={(value) => onActiveTabChange(value as 'single' | 'playlist' | 'profile')}
           size="compact"
           value={activeTab}
         >
-          <div className="mt-3 border-border/60 border-t pt-3">
+          <div className="mt-3 shrink-0 border-border/60 border-t pt-3">
             <TabsList className={cn('w-fit', downloadDialogRadius, '[&>div]:rounded-md')}>
               <TabItem icon={Video} label={singleTabLabel} value="single" />
               <TabItem icon={List} label={playlistTabLabel} value="playlist" />
               <TabItem icon={Instagram} label={profileTabLabel} value="profile" />
             </TabsList>
           </div>
-          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="single">
+          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="single">
             {singleTabContent}
           </TabPanel>
-          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="playlist">
+          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="playlist">
             {playlistTabContent}
           </TabPanel>
-          <TabPanel className="min-h-0 pt-3 [&[hidden]]:hidden" value="profile">
+          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="profile">
             {profileTabContent}
           </TabPanel>
         </Tabs>
