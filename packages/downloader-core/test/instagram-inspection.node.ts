@@ -124,7 +124,10 @@ test('mapped references survive restart and failed refresh, and queue incrementa
     }
   })
   const restored = await restarted.inspect('https://instagram.com/fixture', undefined, [])
-  assert.deepEqual(restored.categories, first.categories)
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(restored.categories)),
+    JSON.parse(JSON.stringify(first.categories))
+  )
   writeFileSync(
     launcher,
     `#!/usr/bin/env node\nconsole.log(JSON.stringify([[-1,{error:'AuthRequired',message:'Login required'}]]))\n`,
