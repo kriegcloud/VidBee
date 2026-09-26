@@ -6,8 +6,12 @@ The bundled gallery-dl still handles cookies, media parsing, and downloads.
 """
 import json
 import re
+import sys
 
-from gallery_dl.extractor.instagram import InstagramPostsExtractor, InstagramReelsExtractor, shortcode_from_id
+from gallery_dl.extractor.instagram import (
+    InstagramPostExtractor, InstagramPostsExtractor, InstagramReelsExtractor, InstagramStoriesExtractor,
+    InstagramHighlightsExtractor, InstagramTaggedExtractor, InstagramGraphqlAPI, shortcode_from_id,
+)
 
 
 class InstagramWebMixin:
@@ -16,6 +20,38 @@ class InstagramWebMixin:
     _REELS_QUERY = ("37945290971781723", "PolarisProfileReelsTabContentQuery")
     _REELS_PAGE = ("28170354102656082", "PolarisProfileReelsTabContentQuery_connection")
     _COUNT = 12
+
+    def _saved_mapping(self):
+        cached = getattr(self, "_saved_mapping_cache", None)
+        if cached is not None:
+            return cached
+        config = getattr(self, "config", lambda key, default=None: default)
+        filename = config("vidbee-known-profile")
+        category = config("vidbee-inspection-category")
+        saved = {}
+        if filename:
+            with open(filename, encoding="utf-8") as handle:
+                profile = json.load(handle)
+            saved = next((entry for entry in profile.get("categories", [])
+                          if entry.get("category") == category), {})
+        self._saved_mapping_cache = saved
+        return saved
+
+    def items(self):
+        inspecting = self.config("vidbee-inspection", False)
+        for message in super().items():
+            if inspecting and message[0] == 3:
+                metadata = message[2]
+                version = getattr(self, "_highlight_versions", {}).get(str(metadata.get("post_id")))
+                if version:
+                    metadata["vidbee_source_version"] = version
+                reference = {key: metadata[key] for key in (
+                    "post_url", "post_id", "media_id", "type", "highlight_title", "description", "vidbee_source_version"
+                ) if key in metadata}
+                # Keep expiring CDN URLs and cookies out of the progress channel.
+                print("VIDBEE_MAP:" + json.dumps([3, "", reference], default=str),
+                      file=sys.stderr, flush=True)
+            yield message
 
     def _init(self):
         csrf = self.cookies.get("csrftoken", domain=".instagram.com")
@@ -77,7 +113,11 @@ class InstagramWebMixin:
 
     def _web_pages(self, reels=False):
         uid = self.api.user_id(self.item) if reels else None
-        cursor = None
+        saved = self._saved_mapping()
+        cursor = saved.get("cursor") if saved.get("state") not in ("ready", "empty") else None
+        known = {item["url"].rstrip("/").split("/")[-1] for item in saved.get("items", [])}
+        incremental = saved.get("state") in ("ready", "empty") or saved.get("incremental", False)
+        known_run = 0
         seen_cursors, seen_ids = set(), set()
         while True:
             if reels:
@@ -122,6 +162,14 @@ class InstagramWebMixin:
                 if str(media_id) in seen_ids:
                     continue
                 seen_ids.add(str(media_id))
+                shortcode = post.get("code") or shortcode_from_id(str(media_id))
+                if incremental and shortcode in known:
+                    if not (post.get("pinned_for_users") or post.get("is_pinned")):
+                        known_run += 1
+                    if known_run >= self._COUNT:
+                        return
+                    continue
+                known_run = 0
                 if reels:
                     # The reels grid only contains thumbnails. Resolve the actual video.
                     items = self.api.media(shortcode_from_id(str(media_id)))
@@ -140,6 +188,8 @@ class InstagramWebMixin:
             if not isinstance(cursor, str) or not cursor or cursor in seen_cursors:
                 raise self.exc.AbortExtraction("Instagram pagination did not advance; download is incomplete.")
             seen_cursors.add(cursor)
+            if getattr(self, "config", lambda key, default=None: default)("vidbee-inspection", False):
+                print("VIDBEE_MAP:" + json.dumps([2, {"vidbee_cursor": cursor}]), file=sys.stderr, flush=True)
 
     def _validate_media(self, post):
         for media in post.get("carousel_media") or [post]:
@@ -147,6 +197,11 @@ class InstagramWebMixin:
                 raise self.exc.AbortExtraction("Instagram media images are unavailable; download is incomplete.")
             if media.get("media_type") == 2 and not media.get("video_versions"):
                 raise self.exc.AbortExtraction("Instagram video formats are unavailable; download is incomplete.")
+
+
+class VidBeeInstagramPostExtractor(InstagramWebMixin, InstagramPostExtractor):
+    # Individual saved references need the same session handling as profile scans.
+    pattern = InstagramPostExtractor.pattern
 
 
 class VidBeeInstagramPostsExtractor(InstagramWebMixin, InstagramPostsExtractor):
@@ -162,3 +217,71 @@ class VidBeeInstagramReelsExtractor(InstagramWebMixin, InstagramReelsExtractor):
 
     def posts(self):
         return self._web_pages(reels=True)
+
+
+class VidBeeInstagramStoriesExtractor(InstagramWebMixin, InstagramStoriesExtractor):
+    pattern = InstagramStoriesExtractor.pattern
+
+
+class VidBeeInstagramHighlightsExtractor(InstagramWebMixin, InstagramHighlightsExtractor):
+    pattern = InstagramHighlightsExtractor.pattern
+
+    def _init(self):
+        super()._init()
+        self._rest_highlights_tray = self.api.highlights_tray
+        self.api.highlights_tray = self._highlights_tray
+
+    def _highlights_tray(self, user_id):
+        try:
+            tray = self._rest_highlights_tray(user_id)
+        except self.exc.AbortExtraction as error:
+            # Some accounts redirect this REST endpoint while the web tray works.
+            if "HTTP redirect to home page" not in str(error):
+                raise
+            # Use the authenticated highlights query also used by Instaloader.
+            data = InstagramGraphqlAPI(self)._call("7c16654f22c819fb63d1183034a5162f", {
+                "user_id": user_id, "include_chaining": False, "include_reel": False,
+                "include_suggested_users": False, "include_logged_out_extras": False,
+                "include_highlight_reels": True,
+            })
+            connection = (data.get("user") or {}).get("edge_highlight_reels")
+            if not isinstance(connection, dict) or not isinstance(connection.get("edges"), list):
+                raise self.exc.AbortExtraction("Instagram returned no highlights collection; mapping is incomplete.")
+            tray = [{**edge["node"], "id": "highlight:" + str(edge["node"]["id"]).removeprefix("highlight:")}
+                    for edge in connection["edges"]]
+        saved = self._saved_mapping()
+        known = {item["url"].rstrip("/").split("/")[-1]: item
+                 for item in saved.get("items", [])}
+        self._highlight_versions = {}
+        changed = []
+        for highlight in tray:
+            identifier = str(highlight["id"]).removeprefix("highlight:")
+            # Only skip when Instagram provides both freshness and item-count evidence.
+            modified, count = highlight.get("latest_reel_media"), highlight.get("media_count")
+            version = f"{modified}:{count}" if modified is not None and count is not None else None
+            if version:
+                self._highlight_versions[identifier] = version
+            previous = known.get(identifier, {})
+            if not (version and (saved.get("state") in ("ready", "empty") or saved.get("incremental"))
+                    and previous.get("sourceVersion") == version and previous.get("assetCount") == count):
+                changed.append(highlight)
+        return changed
+
+
+
+class VidBeeInstagramTaggedExtractor(InstagramWebMixin, InstagramTaggedExtractor):
+    pattern = InstagramTaggedExtractor.pattern
+
+    def posts(self):
+        saved = self._saved_mapping()
+        known = {item["url"].rstrip("/").split("/")[-1] for item in saved.get("items", [])}
+        known_run = 0
+        for post in super().posts():
+            shortcode = post.get("code") or post.get("shortcode")
+            if saved.get("state") in ("ready", "empty") and shortcode in known:
+                known_run += 1
+                if known_run >= self._COUNT:
+                    return
+                continue
+            known_run = 0
+            yield post

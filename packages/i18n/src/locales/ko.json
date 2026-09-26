@@ -1823,5 +1823,29 @@
       "stories": "스토리",
       "timeline": "타임라인"
     }
+  },
+  "profileCollections": {
+    "photos": "사진",
+    "albums": "앨범",
+    "gallery": "갤러리",
+    "countHint": "컬렉션은 다운로드 중에 검색됩니다. 미리보기 개수는 제공되는 경우 표본의 개수입니다.",
+    "rateLimited": "Instagram에서 요청을 제한하고 있습니다. 잠시 후 다시 검색하세요."
+  },
+  "instagramResume": {
+    "queued": "대기 중",
+    "savedProfiles": "저장된 프로필",
+    "noSavedProfiles": "저장된 프로필이 없습니다. Instagram 프로필을 열어 매핑을 시작하세요.",
+
+    "stop": "매핑 중지",
+    "stopping": "중지 중…",
+    "stopped": "매핑이 중지되었습니다. 발견한 항목은 저장되었습니다. 새로 고침하여 계속하세요.",
+
+    "map": "목록 가져오기",
+    "retry": "새로고침 / 재시도",
+    "unscanned": "아직 가져오지 않음",
+    "chooseItems": "항목 선택 ({{count}})",
+    "noStory": "활성 스토리가 없습니다. 스토리는 24시간 후 만료됩니다.",
+    "savedHint": "참조 링크가 이 기기에 저장됩니다. 지금 항목을 선택하거나 나중에 프로필을 다시 여세요. 쿠키를 갱신한 뒤 카테고리를 새로고침하세요. 저장된 링크로 만료된 스토리를 복구할 수는 없습니다.",
+    "alreadySaved": "이미 대기 중이거나 다운로드됨"
   }
 }

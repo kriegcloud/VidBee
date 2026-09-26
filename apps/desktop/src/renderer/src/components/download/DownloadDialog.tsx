@@ -24,8 +24,14 @@ import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
+import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collection-dialog'
+import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
-import { isPlaylistLikeUrl } from '@vidbee/ui/lib/url-kind'
+import {
+  type CollectionProfile,
+  isPlaylistLikeUrl,
+  resolveCollectionProfile
+} from '@vidbee/ui/lib/url-kind'
 import { useAddUrlInteraction } from '@vidbee/ui/lib/use-add-url-interaction'
 import { useHomeIngest } from '@vidbee/ui/lib/use-home-ingest'
 import { useAtom, useSetAtom } from 'jotai'
@@ -65,6 +71,7 @@ export function DownloadDialog({
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
+  const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
   const [videoInfoSourceUrl] = useAtom(currentVideoInfoSourceUrlAtom)
   const [videoInfoCommand] = useAtom(videoInfoCommandAtom)
@@ -112,6 +119,10 @@ export function DownloadDialog({
   const playlistBusy = playlistPreviewLoading || playlistDownloadLoading
   const [profileUrl, setProfileUrl] = useState('')
   const [profileCustomDownloadPath, setProfileCustomDownloadPath] = useState('')
+  const profileRequestId = useRef(0)
+  const [profileMappingStopping, setProfileMappingStopping] = useState(false)
+  const [selectedProfileItems, setSelectedProfileItems] = useState<Set<string>>(new Set())
+  const [mappingCategory, setMappingCategory] = useState<InstagramProfileCategory | null>(null)
   const [profileInspection, setProfileInspection] = useState<InstagramProfileInspection | null>(
     null
   )
@@ -264,7 +275,15 @@ export function DownloadDialog({
    * hydration. The facade fills title/thumbnail in the background.
    */
   const startOneClickDownload = useCallback(
-    async (targetUrl: string, options?: { clearInput?: boolean; setInputValue?: boolean }) => {
+    async (
+      targetUrl: string,
+      options?: {
+        clearInput?: boolean
+        setInputValue?: boolean
+        customDownloadPath?: string
+        collection?: boolean
+      }
+    ) => {
       const trimmedUrl = targetUrl.trim()
       if (!trimmedUrl) {
         toast.error(t('errors.emptyUrl'))
@@ -275,23 +294,27 @@ export function DownloadDialog({
         setUrl(trimmedUrl)
       }
 
+      const requestedType = options?.collection ? 'video' : settings.oneClickDownloadType
       const format =
-        settings.oneClickDownloadType === 'video'
+        requestedType === 'video'
           ? buildVideoFormatPreference(settings)
           : buildAudioFormatPreference(settings)
-      const containerFormat =
-        settings.oneClickDownloadType === 'video' ? settings.oneClickContainer : undefined
+      const containerFormat = requestedType === 'video' ? settings.oneClickContainer : undefined
 
       if (isPlaylistLikeUrl(trimmedUrl)) {
         toast.info(t('playlist.fetchingInfo'))
         try {
           const result = await ipcServices.download.startPlaylistDownload({
             url: trimmedUrl,
-            type: settings.oneClickDownloadType,
+            type: requestedType,
             format,
-            containerFormat
+            containerFormat,
+            customDownloadPath: options?.customDownloadPath
           })
           if (result.totalCount === 0) {
+            if (options?.collection) {
+              throw new Error(t('playlist.noEntries'))
+            }
             toast.error(t('playlist.noEntries'))
             return
           }
@@ -301,7 +324,7 @@ export function DownloadDialog({
               id: entry.downloadId,
               url: entry.url,
               title: entry.title || t('download.fetchingVideoInfo'),
-              type: settings.oneClickDownloadType,
+              type: requestedType,
               status: 'pending',
               progress: { percent: 0 },
               createdAt: baseCreatedAt + index,
@@ -316,6 +339,9 @@ export function DownloadDialog({
             setUrl('')
           }
         } catch (error) {
+          if (options?.collection) {
+            throw error
+          }
           logger.error('Failed to start one-click playlist download:', error)
           toast.error(t('playlist.downloadFailed'))
         }
@@ -330,7 +356,7 @@ export function DownloadDialog({
         id,
         url: trimmedUrl,
         title: t('download.fetchingVideoInfo'),
-        type: settings.oneClickDownloadType,
+        type: requestedType,
         status: 'pending' as const,
         progress: { percent: 0 },
         createdAt: Date.now()
@@ -340,9 +366,10 @@ export function DownloadDialog({
       try {
         const started = await ipcServices.download.startDownload(id, {
           url: trimmedUrl,
-          type: settings.oneClickDownloadType,
+          type: requestedType,
           format,
-          containerFormat
+          containerFormat,
+          customDownloadPath: options?.customDownloadPath
         })
         if (!started) {
           removeDownload(id)
@@ -356,6 +383,9 @@ export function DownloadDialog({
         }
       } catch (error) {
         removeDownload(id)
+        if (options?.collection) {
+          throw error
+        }
         logger.error('Failed to start one-click download:', error)
         toast.error(t('notifications.downloadFailed'))
       }
@@ -452,40 +482,48 @@ export function DownloadDialog({
   )
 
   const inspectInstagramProfile = useCallback(
-    async (targetUrl: string) => {
-      const trimmedUrl = targetUrl.trim()
-      if (!trimmedUrl) {
-        toast.error(t('errors.emptyUrl'))
-        return
-      }
-
-      clearVideoInfo()
+    async (targetUrl: string, category?: InstagramProfileCategory) => {
+      const requestId = ++profileRequestId.current
       setProfileInspectionLoading(true)
+      setMappingCategory(category ?? null)
       setProfileError(null)
-      setProfileInspection(null)
-      setSelectedProfileCategories(new Set())
       try {
-        const inspection = await ipcServices.download.inspectInstagramProfile(trimmedUrl)
-        setProfileInspection(inspection)
-        setSelectedProfileCategories(
-          new Set(
-            inspection.categories
-              .filter((category) => category.state === 'ready' && category.assetCount > 0)
-              .map((category) => category.category)
-          )
+        const inspection = await ipcServices.download.inspectInstagramProfile(
+          targetUrl,
+          category ? [category] : []
         )
-      } catch (inspectionError) {
-        logger.error('Failed to inspect Instagram profile:', inspectionError)
-        const message =
-          inspectionError instanceof Error && inspectionError.message
-            ? inspectionError.message
-            : t('instagramProfile.scanFailed')
-        setProfileError(message)
+        if (requestId !== profileRequestId.current) {
+          return
+        }
+        setProfileInspection(inspection)
+        if (category) {
+          const mapped = inspection.categories.find((entry) => entry.category === category)
+          if (mapped?.items?.some((item) => !item.downloaded)) {
+            setSelectedProfileCategories((previous) => new Set([...previous, category]))
+            setSelectedProfileItems(
+              (previous) =>
+                new Set([
+                  ...previous,
+                  ...(mapped.items ?? []).filter((item) => !item.downloaded).map((item) => item.id)
+                ])
+            )
+          }
+        }
+      } catch (failure) {
+        if (requestId !== profileRequestId.current) {
+          return
+        }
+        setProfileError(
+          failure instanceof Error ? failure.message : t('instagramProfile.scanFailed')
+        )
       } finally {
-        setProfileInspectionLoading(false)
+        if (requestId === profileRequestId.current) {
+          setProfileInspectionLoading(false)
+          setMappingCategory(null)
+        }
       }
     },
-    [clearVideoInfo, t]
+    [t]
   )
 
   const handleParseProfileUrl = useCallback(
@@ -494,6 +532,9 @@ export function DownloadDialog({
       setActiveTab('profile')
       setProfileUrl(trimmedUrl)
       setProfileCustomDownloadPath('')
+      setProfileInspection(null)
+      setSelectedProfileCategories(new Set())
+      setSelectedProfileItems(new Set())
       await inspectInstagramProfile(trimmedUrl)
     },
     [inspectInstagramProfile]
@@ -529,6 +570,10 @@ export function DownloadDialog({
       toast.error(t('errors.invalidUrl'))
     },
     onOneClickDownload: handleOneClickFromAddUrl,
+    onParseCollection: (value) => {
+      setOpen(false)
+      setCollectionProfile(resolveCollectionProfile(value))
+    },
     onParseSocial: (value) => {
       setOpen(false)
       setSocialUrl(value)
@@ -538,6 +583,53 @@ export function DownloadDialog({
     onParseSingle: handleParseSingleUrl,
     onResolveUrl: resolveShortLink
   })
+
+  const stopProfileMapping = async () => {
+    setProfileMappingStopping(true)
+    try {
+      await ipcServices.download.cancelInstagramProfileMapping(profileUrl)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('instagramProfile.scanFailed'))
+    } finally {
+      setProfileMappingStopping(false)
+    }
+  }
+
+  useEffect(() => {
+    if (
+      !open ||
+      activeTab !== 'profile' ||
+      !(profileInspectionLoading || profileInspection?.mapping?.state)
+    ) {
+      return
+    }
+    let disposed = false
+    let polling = false
+    const timer = setInterval(async () => {
+      if (polling) {
+        return
+      }
+      polling = true
+      try {
+        const inspection = await ipcServices.download.inspectInstagramProfile(profileUrl, [])
+        if (!disposed) {
+          setProfileInspection(inspection)
+        }
+      } catch (failure) {
+        if (!disposed) {
+          setProfileError(
+            failure instanceof Error ? failure.message : t('instagramProfile.scanFailed')
+          )
+        }
+      } finally {
+        polling = false
+      }
+    }, 1000)
+    return () => {
+      disposed = true
+      clearInterval(timer)
+    }
+  }, [open, activeTab, profileUrl, profileInspection?.mapping?.state, profileInspectionLoading, t])
 
   const handleDownloadProfile = useCallback(async () => {
     if (!(profileInspection && selectedProfileCategories.size > 0)) {
@@ -549,22 +641,32 @@ export function DownloadDialog({
     try {
       const result = await ipcServices.download.startInstagramProfileDownload({
         inspectionId: profileInspection.inspectionId,
+        itemIds: [...selectedProfileItems],
         categories: [...selectedProfileCategories],
         customDownloadPath: profileCustomDownloadPath.trim() || undefined
       })
+      if (result.tasks.length === 0) {
+        toast.info(t('instagramResume.alreadySaved'))
+        return
+      }
       toast.success(
         t('instagramProfile.downloadStarted', {
           count: result.totalAssetCount
         })
       )
-      setOpen(false)
     } catch (downloadError) {
       logger.error('Failed to start Instagram profile download:', downloadError)
       toast.error(t('instagramProfile.downloadFailed'))
     } finally {
       setProfileDownloadLoading(false)
     }
-  }, [profileCustomDownloadPath, profileInspection, selectedProfileCategories, t])
+  }, [
+    profileCustomDownloadPath,
+    profileInspection,
+    selectedProfileItems,
+    selectedProfileCategories,
+    t
+  ])
 
   /**
    * Send pasted or dropped URLs through the existing download flow.
@@ -939,48 +1041,56 @@ export function DownloadDialog({
       <DownloadDialogLayout
         activeTab={activeTab}
         addUrlPopover={
-          <AddUrlPopover
-            addLocalMediaLabel={t('transcript.library.addMedia')}
-            cancelLabel={t('download.cancel')}
-            confirmDisabled={!canConfirmAddUrl}
-            confirmLabel={t('download.fetch')}
-            description={t('download.enterUrlDescription')}
-            invalidMessage={
-              batchRequiresOneClick
-                ? t('errors.batchRequiresOneClick')
-                : hasAddUrlValue && !canConfirmAddUrl
-                  ? t('errors.invalidUrl')
-                  : undefined
-            }
-            moreActionsLabel={t('download.moreAddActions')}
-            onAddLocalMedia={() => {
-              void pickAndImportMedia()
-            }}
-            onCancel={() => {
-              setAddUrlPopoverOpen(false)
-            }}
-            onConfirm={() => {
-              void handleConfirmAddUrl()
-            }}
-            oneClickDownloadDescription={t('download.oneClickDownloadTooltip')}
-            oneClickDownloadEnabled={settings.oneClickDownload}
-            oneClickDownloadLabel={t('download.oneClickDownload')}
-            onOpenChange={setAddUrlPopoverOpen}
-            onOpenSupportedSites={onOpenSupportedSites}
-            onToggleOneClickDownload={() => {
-              saveSetting({ key: 'oneClickDownload', value: !settings.oneClickDownload })
-            }}
-            onTriggerClick={() => {
-              void handleOpenAddUrlPopover()
-            }}
-            onValueChange={setAddUrlValue}
-            open={addUrlPopoverOpen}
-            placeholder={t('download.urlPlaceholder')}
-            supportedSitesLabel={t('menu.supportedSites')}
-            title={t('download.enterUrl')}
-            triggerLabel={t('download.pasteUrlButton')}
-            value={addUrlValue}
-          />
+          <div className="flex items-center gap-2">
+            <SavedInstagramProfiles
+              loadProfiles={async () => ipcServices.download.listInstagramProfiles()}
+              onSelect={(profileUrl) => {
+                void handleParseProfileUrl(profileUrl)
+              }}
+            />
+            <AddUrlPopover
+              addLocalMediaLabel={t('transcript.library.addMedia')}
+              cancelLabel={t('download.cancel')}
+              confirmDisabled={!canConfirmAddUrl}
+              confirmLabel={t('download.fetch')}
+              description={t('download.enterUrlDescription')}
+              invalidMessage={
+                batchRequiresOneClick
+                  ? t('errors.batchRequiresOneClick')
+                  : hasAddUrlValue && !canConfirmAddUrl
+                    ? t('errors.invalidUrl')
+                    : undefined
+              }
+              moreActionsLabel={t('download.moreAddActions')}
+              onAddLocalMedia={() => {
+                void pickAndImportMedia()
+              }}
+              onCancel={() => {
+                setAddUrlPopoverOpen(false)
+              }}
+              onConfirm={() => {
+                void handleConfirmAddUrl()
+              }}
+              oneClickDownloadDescription={t('download.oneClickDownloadTooltip')}
+              oneClickDownloadEnabled={settings.oneClickDownload}
+              oneClickDownloadLabel={t('download.oneClickDownload')}
+              onOpenChange={setAddUrlPopoverOpen}
+              onOpenSupportedSites={onOpenSupportedSites}
+              onToggleOneClickDownload={() => {
+                saveSetting({ key: 'oneClickDownload', value: !settings.oneClickDownload })
+              }}
+              onTriggerClick={() => {
+                void handleOpenAddUrlPopover()
+              }}
+              onValueChange={setAddUrlValue}
+              open={addUrlPopoverOpen}
+              placeholder={t('download.urlPlaceholder')}
+              supportedSitesLabel={t('menu.supportedSites')}
+              title={t('download.enterUrl')}
+              triggerLabel={t('download.pasteUrlButton')}
+              value={addUrlValue}
+            />
+          </div>
         }
         dialogSubtitle={t('download.dialogSubtitle')}
         dialogTitle={t('download.dialogTitle')}
@@ -1229,11 +1339,53 @@ export function DownloadDialog({
           <InstagramProfilePreview
             error={profileError}
             inspection={profileInspection}
-            loading={profileInspectionLoading}
+            loading={profileInspectionLoading || Boolean(profileInspection?.mapping)}
+            mappingCategory={profileInspection?.mapping?.category ?? mappingCategory}
+            onMapCategory={(category) => {
+              void inspectInstagramProfile(profileUrl, category)
+            }}
+            onStopMapping={() => {
+              void stopProfileMapping()
+            }}
             onToggleCategory={(category, selected) => {
-              setSelectedProfileCategories((current) => {
-                const next = new Set(current)
+              setSelectedProfileCategories((previous) => {
+                const next = new Set(previous)
                 if (selected) {
+                  next.add(category)
+                } else {
+                  next.delete(category)
+                }
+                return next
+              })
+              setSelectedProfileItems((previous) => {
+                const next = new Set(previous)
+                for (const item of profileInspection?.categories.find(
+                  (entry) => entry.category === category
+                )?.items ?? []) {
+                  if (selected && !item.downloaded) {
+                    next.add(item.id)
+                  } else {
+                    next.delete(item.id)
+                  }
+                }
+                return next
+              })
+            }}
+            onToggleItem={(category, id, selected) => {
+              const items = new Set(selectedProfileItems)
+              if (selected) {
+                items.add(id)
+              } else {
+                items.delete(id)
+              }
+              setSelectedProfileItems(items)
+              setSelectedProfileCategories((previous) => {
+                const next = new Set(previous)
+                if (
+                  profileInspection?.categories
+                    .find((entry) => entry.category === category)
+                    ?.items?.some((item) => items.has(item.id))
+                ) {
                   next.add(category)
                 } else {
                   next.delete(category)
@@ -1250,6 +1402,8 @@ export function DownloadDialog({
               />
             )}
             selectedCategories={selectedProfileCategories}
+            selectedItems={selectedProfileItems}
+            stopping={profileMappingStopping}
           />
         }
         profileTabLabel={t('instagramProfile.tab')}
@@ -1266,6 +1420,32 @@ export function DownloadDialog({
         }
         singleTabLabel={t('download.singleVideo')}
       />
+      {collectionProfile && (
+        <ProfileCollectionDialog
+          destination={settings.downloadPath}
+          key={`${collectionProfile.platform}-${collectionProfile.owner}-${collectionProfile.selected}`}
+          onClose={() => setCollectionProfile(null)}
+          onDownload={async (collection, destination) => {
+            if (collectionProfile.platform === 'TikTok') {
+              await ipcServices.download.downloadSocialMedia({
+                url: collection.url,
+                customDownloadPath: destination || undefined
+              })
+            } else {
+              await startOneClickDownload(collection.url, {
+                collection: true,
+                customDownloadPath: destination || undefined
+              })
+            }
+          }}
+          onInspect={
+            collectionProfile.platform === 'TikTok'
+              ? (url) => ipcServices.download.inspectSocialMedia(url)
+              : undefined
+          }
+          profile={collectionProfile}
+        />
+      )}
       {socialUrl && (
         <SocialMediaDialog
           destination={settings.downloadPath}

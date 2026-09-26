@@ -22,6 +22,7 @@ import { transition as fsmTransition, IllegalTransitionError, type TransitionCon
 import type { PersistAdapter } from '../persist'
 import { ProcessRegistry, readPidStartTime, Watchdog } from '../process'
 import { computeBackoffMs, RetryScheduler, Scheduler } from '../scheduler'
+import type { SourceAdmission } from '../source-admission'
 import { TaskStore } from '../store'
 import {
   type ClassifiedError,
@@ -39,6 +40,7 @@ import {
 } from '../types'
 
 export interface TaskQueueAPIOptions {
+  admission?: SourceAdmission
   persist: PersistAdapter
   executor: Executor
   /** Defaults to 4 — the production default for desktop and web. */
@@ -175,6 +177,7 @@ export class TaskQueueAPI {
     this.zombieRunningMs = opts.zombieRunningMs ?? 8000
 
     this.scheduler = new Scheduler({
+      admission: opts.admission,
       maxConcurrency: opts.maxConcurrency ?? 4,
       defaultMaxPerGroup: opts.defaultMaxPerGroup ?? null,
       dispatch: (id) => this.dispatchOne(id),

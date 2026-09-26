@@ -11,6 +11,7 @@ import {
 	isThreadsUrl,
 	isTikTokPhotoUrl,
 	isVscoGalleryUrl,
+	resolveCollectionProfile,
 } from "@vidbee/ui/lib/url-kind";
 import { describe, expect, it } from "vitest";
 
@@ -76,7 +77,6 @@ describe("isInstagramProfileUrl", () => {
 		"https://www.instagram.com/p/ABC123/",
 		"https://www.instagram.com/reel/ABC123/",
 		"https://www.instagram.com/stories/vidbee/123/",
-		"https://www.instagram.com/vidbee/tagged/",
 		"https://example.com/vidbee/",
 	])("rejects an individual item or non-Instagram URL: %s", (url) => {
 		expect(isInstagramProfileUrl(url)).toBe(false);
@@ -230,4 +230,81 @@ describe("Dzen profile routing", () => {
 			expect(isPlaylistLikeUrl(url)).toBe(false);
 		},
 	);
+});
+
+describe("Profile collection picker", () => {
+	it.each([
+		["https://www.tiktok.com/@creator", "TikTok", "posts"],
+		["https://www.tiktok.com/@creator/liked", "TikTok", "likes"],
+		["https://facebook.com/creator", "Facebook", "photos"],
+		["https://facebook.com/creator/photos_albums", "Facebook", "albums"],
+		["https://facebook.com/creator/reels", "Facebook", "reels"],
+		["https://facebook.com/profile.php?id=123", "Facebook", "photos"],
+		["https://facebook.com/people/Creator/123", "Facebook", "photos"],
+		["https://vsco.co/creator", "VSCO", "gallery"],
+		["https://vsco.co/creator/images", "VSCO", "gallery"],
+		["https://threads.net/@creator", "Threads", "media"],
+		["https://www.threads.com/@creator/media", "Threads", "media"],
+	])("offers supported collections for %s", (url, platform, selected) => {
+		const profile = resolveCollectionProfile(url);
+		expect(profile?.platform).toBe(platform);
+		expect(profile?.selected).toBe(selected);
+		expect(
+			profile?.collections.some((category) => category.key === selected),
+		).toBe(true);
+	});
+	it.each([
+		"https://www.tiktok.com/@creator/video/123",
+		"https://www.tiktok.com/@creator/photo/123",
+		"https://vm.tiktok.com/short",
+		"https://facebook.com/reel/123",
+		"https://facebook.com/photo.php?fbid=123",
+		"https://facebook.com/media/set/?set=a.123",
+		"https://facebook.com/creator/photos/123/456",
+		"https://threads.net/@creator/post/ABC123",
+		"https://vsco.co/creator/media/abc123",
+		"https://vsco.co/discover",
+		"https://tiktok.com.evil.test/@creator",
+		"https://name:password@vsco.co/creator",
+		"https://facebook.com:999/creator",
+		"ftp://vsco.co/creator",
+		"https://instagram.com/creator",
+	])("keeps posts and unrelated URLs out: %s", (url) => {
+		expect(resolveCollectionProfile(url)).toBeNull();
+	});
+	it("uses distinct Facebook collection URLs", () => {
+		expect(
+			resolveCollectionProfile("https://facebook.com/creator")?.collections.map(
+				(c) => c.url,
+			),
+		).toEqual([
+			"https://www.facebook.com/creator/photos",
+			"https://www.facebook.com/creator/photos_albums",
+			"https://www.facebook.com/creator/reels",
+		]);
+	});
+});
+
+describe("Instagram category URL routing", () => {
+	it.each(["posts", "reels", "highlights", "tagged", "stories"])(
+		"routes %s to the saved profile",
+		(category) => {
+			expect(
+				isInstagramProfileUrl(
+					`https://www.instagram.com/mida.twins/${category}/`,
+				),
+			).toBe(true);
+		},
+	);
+	it("distinguishes a stories collection from an individual story or highlight", () => {
+		expect(
+			isInstagramProfileUrl("https://instagram.com/stories/smokeybear97/"),
+		).toBe(true);
+		expect(
+			isInstagramProfileUrl("https://instagram.com/stories/smokeybear97/123/"),
+		).toBe(false);
+		expect(
+			isInstagramProfileUrl("https://instagram.com/stories/highlights/123/"),
+		).toBe(false);
+	});
 });

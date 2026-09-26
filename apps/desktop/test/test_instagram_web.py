@@ -1,12 +1,18 @@
 """Run with Python and gallery-dl 1.32.11 or the pinned nightly source installed."""
+import re
+import io
+import json
+from contextlib import redirect_stderr
 import sys
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'resources/gallery-dl-extractors'))
-from instagram_web import InstagramWebMixin
+from instagram_web import (VidBeeInstagramPostExtractor, InstagramWebMixin, VidBeeInstagramPostsExtractor, VidBeeInstagramReelsExtractor,
+    VidBeeInstagramStoriesExtractor, VidBeeInstagramHighlightsExtractor, VidBeeInstagramTaggedExtractor)
+from requests.cookies import RequestsCookieJar
 
 
 def media(pk, video=False):
@@ -32,6 +38,63 @@ class Harness(InstagramWebMixin):
 
 
 class TestInstagramWeb(unittest.TestCase):
+    def test_all_profile_categories_preserve_session_csrf(self):
+        for cls, path in [
+            (VidBeeInstagramPostExtractor, 'p/FIXTURE/'),
+            (VidBeeInstagramPostExtractor, 'reel/FIXTURE/'),
+            (VidBeeInstagramPostsExtractor, 'fixture/posts/'),
+            (VidBeeInstagramReelsExtractor, 'fixture/reels/'),
+            (VidBeeInstagramStoriesExtractor, 'stories/fixture/'),
+            (VidBeeInstagramHighlightsExtractor, 'fixture/highlights/'),
+            (VidBeeInstagramTaggedExtractor, 'fixture/tagged/'),
+        ]:
+            with self.subTest(category=path):
+                ie = cls(re.match(cls.pattern, 'https://www.instagram.com/' + path))
+                ie.cookies = RequestsCookieJar()
+                ie.cookies.set('csrftoken', 'fixture-token', domain='.instagram.com')
+                ie._init()
+                self.assertEqual(ie.csrf_token, 'fixture-token')
+                self.assertEqual(ie.cookies.get('csrftoken', domain='.instagram.com'), 'fixture-token')
+
+    def test_mapping_progress_keeps_images_and_videos_without_cdn_urls(self):
+        ie = object.__new__(VidBeeInstagramPostsExtractor)
+        ie.config = Mock(return_value=True)
+        records = [(3, 'https://cdn.invalid/private-token.jpg', {
+            'post_url': 'https://www.instagram.com/p/IMAGE/', 'media_id': '1', 'extension': 'jpg'
+        }), (3, 'https://cdn.invalid/private-token.mp4', {
+            'post_url': 'https://www.instagram.com/reel/VIDEO/', 'media_id': '2', 'extension': 'mp4'
+        })]
+        stream = io.StringIO()
+        with patch('instagram_web.InstagramPostsExtractor.items', return_value=iter(records)):
+            with redirect_stderr(stream):
+                self.assertEqual(list(ie.items()), records)
+        lines = stream.getvalue().splitlines()
+        self.assertEqual(len(lines), 2)
+        self.assertNotIn('private-token', stream.getvalue())
+        self.assertEqual([json.loads(line.removeprefix('VIDBEE_MAP:'))[2]['media_id'] for line in lines], ['1', '2'])
+        ie.config.return_value = False
+        stream = io.StringIO()
+        with patch('instagram_web.InstagramPostsExtractor.items', return_value=iter(records)):
+            with redirect_stderr(stream):
+                self.assertEqual(list(ie.items()), records)
+        self.assertEqual(stream.getvalue(), '')
+
+    def test_highlights_falls_back_only_for_home_redirect(self):
+        ie = object.__new__(VidBeeInstagramHighlightsExtractor)
+        ie.exc = SimpleNamespace(AbortExtraction=RuntimeError)
+        ie._saved_mapping_cache = {}
+        ie._rest_highlights_tray = Mock(side_effect=RuntimeError('HTTP redirect to home page'))
+        with patch('instagram_web.InstagramGraphqlAPI') as graphql:
+            graphql.return_value._call.return_value = {'user': {'edge_highlight_reels': {'edges': [{'node': {'id': '123'}}]}}}
+            self.assertEqual(ie._highlights_tray('42'), [{'id': 'highlight:123'}])
+            self.assertEqual(graphql.return_value._call.call_args.args[1]['user_id'], '42')
+            self.assertFalse(graphql.return_value._call.call_args.args[1]['include_logged_out_extras'])
+        ie._rest_highlights_tray.side_effect = RuntimeError('HTTP redirect to login page')
+        with patch('instagram_web.InstagramGraphqlAPI') as graphql:
+            with self.assertRaisesRegex(RuntimeError, 'login'):
+                ie._highlights_tray('42')
+            graphql.assert_not_called()
+
     def test_posts_paginate_deduplicate_and_use_rest_shape(self):
         ie = Harness([page(['1', '2'], 'next', True), page(['2', '3'])])
         self.assertEqual([p['pk'] for p in ie._web_pages()], ['1', '2', '3'])
@@ -71,6 +134,35 @@ class TestInstagramWeb(unittest.TestCase):
         ie.api.media.return_value = [bad]
         with self.assertRaisesRegex(RuntimeError, 'video formats'):
             list(ie._web_pages(True))
+
+    def test_incremental_posts_stop_at_known_history_without_fetching_older_pages(self):
+        ie = Harness([page(['2', '1'], 'older', True)])
+        ie._COUNT = 1
+        ie._saved_mapping_cache = {'state': 'ready', 'items': [{'url': 'https://www.instagram.com/p/B/'}]}
+        self.assertEqual([post['pk'] for post in ie._web_pages()], ['2'])
+        self.assertEqual(ie._web_query.call_count, 1)
+
+    def test_cancelled_posts_resume_from_saved_cursor(self):
+        ie = Harness([page(['3'])])
+        ie._saved_mapping_cache = {'state': 'cancelled', 'cursor': 'saved-page', 'items': []}
+        self.assertEqual([post['pk'] for post in ie._web_pages()], ['3'])
+        operation, variables = ie._web_query.call_args.args
+        self.assertEqual(operation, ie._POSTS_PAGE)
+        self.assertEqual(variables['after'], 'saved-page')
+
+    def test_highlights_skip_unchanged_collections_but_keep_updated_ones(self):
+        ie = object.__new__(VidBeeInstagramHighlightsExtractor)
+        ie.exc = SimpleNamespace(AbortExtraction=RuntimeError)
+        ie._saved_mapping_cache = {'state': 'ready', 'items': [{'url': 'https://www.instagram.com/stories/highlights/1/', 'sourceVersion': '10:2', 'assetCount': 2}]}
+        unchanged = {'id': 'highlight:1', 'latest_reel_media': 10, 'media_count': 2}
+        ie._rest_highlights_tray = Mock(return_value=[unchanged])
+        self.assertEqual(ie._highlights_tray('42'), [])
+        changed = {**unchanged, 'media_count': 3}
+        ie._rest_highlights_tray.return_value = [changed]
+        self.assertEqual(ie._highlights_tray('42'), [changed])
+        # Missing freshness fields cannot safely prove that a collection is unchanged.
+        ie._rest_highlights_tray.return_value = [{'id': 'highlight:1'}]
+        self.assertEqual(ie._highlights_tray('42'), [{'id': 'highlight:1'}])
 
     def test_empty_collection_requires_valid_pagination(self):
         self.assertEqual(list(Harness([page([])])._web_pages()), [])

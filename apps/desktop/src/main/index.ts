@@ -57,7 +57,7 @@ import {
   startDesktopSubscriptions,
   stopDesktopSubscriptions
 } from './lib/subscriptions-host'
-import { startDesktopTaskQueue } from './lib/task-queue-host'
+import { startDesktopTaskQueue, stopDesktopInstagramProfileMappings } from './lib/task-queue-host'
 import { runDesktopTaskQueueMigration } from './lib/task-queue-migrate'
 import {
   importLocalMediaForTranscription,
@@ -1355,7 +1355,11 @@ app.on('before-quit', (event) => {
     isQuitting = true
     if (!promptRunsStoppingForQuit) {
       promptRunsStoppingForQuit = true
-      void Promise.all([stopAllPromptRuns(), stopAllAgentRuns()]).finally(() => {
+      void Promise.all([
+        stopAllPromptRuns(),
+        stopAllAgentRuns(),
+        stopDesktopInstagramProfileMappings()
+      ]).finally(() => {
         promptRunsStoppedForQuit = true
         app.quit()
       })

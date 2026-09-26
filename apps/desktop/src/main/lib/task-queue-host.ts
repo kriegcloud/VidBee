@@ -33,6 +33,7 @@ import {
   SqlitePersistAdapter,
   TaskQueueAPI
 } from '@vidbee/task-queue'
+import { SourceAdmission } from '@vidbee/task-queue/source-admission'
 import {
   applyTranscriptionConcurrency,
   mergeLegacyTaskQueueDb,
@@ -81,6 +82,8 @@ const resolveLegacyTaskQueueDbPath = (): string => {
 
 const resolveYtDlpPath = (): string => ytdlpManager.getPath()
 
+export const sourceAdmission = new SourceAdmission()
+
 const resolveFfmpegLocation = (): string | undefined => {
   try {
     const binaryPath = ffmpegManager.getPath()
@@ -128,9 +131,38 @@ const buildDownloadExecutor = (): HostRoutingExecutor => {
 
 let instagramProfileInspector: InstagramProfileInspector | null = null
 
+export const stopDesktopInstagramProfileMappings = async (): Promise<void> => {
+  await instagramProfileInspector?.stop()
+}
+
 export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector => {
   if (!instagramProfileInspector) {
     instagramProfileInspector = new InstagramProfileInspector({
+      completedDownloads: () => {
+        const completed: { url: string; category: string; assetCount: number }[] = []
+        let cursor: string | null = null
+        do {
+          const page = getDesktopTaskQueue().list({ limit: 200, cursor })
+          for (const task of page.tasks) {
+            const options = task.input.options
+            if (
+              task.status === 'completed' &&
+              typeof options?.batchCategory === 'string' &&
+              typeof options?.expectedAssetCount === 'number'
+            ) {
+              completed.push({
+                url: task.input.url,
+                category: options.batchCategory,
+                assetCount: options.expectedAssetCount
+              })
+            }
+          }
+          cursor = page.nextCursor
+        } while (cursor)
+        return completed
+      },
+      admission: sourceAdmission,
+      storageDir: path.join(app.getPath('userData'), 'instagram-profiles'),
       resolveBinaryPath: () => galleryDlManager.getPath(),
       resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings)
     })
@@ -215,6 +247,7 @@ export const getDesktopTaskQueue = (): TaskQueueAPI => {
   })
   const maxConcurrent = settingsManager.get('maxConcurrentDownloads')
   taskQueueInstance = new TaskQueueAPI({
+    admission: sourceAdmission,
     persist: adapter,
     executor,
     maxConcurrency: typeof maxConcurrent === 'number' && maxConcurrent > 0 ? maxConcurrent : 4

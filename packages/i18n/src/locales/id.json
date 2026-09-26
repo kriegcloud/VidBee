@@ -1823,5 +1823,29 @@
       "stories": "Cerita",
       "timeline": "Linimasa"
     }
+  },
+  "profileCollections": {
+    "photos": "Foto",
+    "albums": "Album",
+    "gallery": "Galeri",
+    "countHint": "Koleksi dipindai saat pengunduhan. Jumlah dalam pratinjau, jika tersedia, merupakan sampel.",
+    "rateLimited": "Instagram membatasi permintaan. Tunggu sebelum memindai lagi."
+  },
+  "instagramResume": {
+    "queued": "Dalam antrean",
+    "savedProfiles": "Profil tersimpan",
+    "noSavedProfiles": "Belum ada profil tersimpan. Buka profil Instagram untuk mulai memetakan.",
+
+    "stop": "Hentikan pemetaan",
+    "stopping": "Menghentikan…",
+    "stopped": "Pemetaan dihentikan. Item yang ditemukan disimpan; segarkan untuk melanjutkan.",
+
+    "map": "Petakan",
+    "retry": "Segarkan / coba lagi",
+    "unscanned": "Belum dipetakan",
+    "chooseItems": "Pilih item ({{count}})",
+    "noStory": "Tidak ada cerita aktif. Cerita kedaluwarsa setelah 24 jam.",
+    "savedHint": "Referensi disimpan di perangkat ini. Pilih item sekarang atau buka kembali profil nanti. Segarkan kategori setelah memperbarui cookie. Tautan tersimpan tidak dapat memulihkan cerita yang kedaluwarsa.",
+    "alreadySaved": "Sudah di antrean atau diunduh"
   }
 }

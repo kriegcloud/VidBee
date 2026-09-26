@@ -1823,5 +1823,29 @@
       "stories": "Historias",
       "timeline": "Cronología"
     }
+  },
+  "profileCollections": {
+    "photos": "Fotos",
+    "albums": "Álbumes",
+    "gallery": "Galería",
+    "countHint": "Las colecciones se analizan durante la descarga. Los recuentos de vista previa, cuando están disponibles, son una muestra.",
+    "rateLimited": "Instagram está limitando las solicitudes. Espera antes de volver a analizar."
+  },
+  "instagramResume": {
+    "queued": "En cola",
+    "savedProfiles": "Perfiles guardados",
+    "noSavedProfiles": "Aún no hay perfiles guardados. Abre un perfil de Instagram para empezar a analizarlo.",
+
+    "stop": "Detener análisis",
+    "stopping": "Deteniendo…",
+    "stopped": "Análisis detenido. Los elementos encontrados están guardados; actualiza para continuar.",
+
+    "map": "Explorar",
+    "retry": "Actualizar / reintentar",
+    "unscanned": "Aún sin explorar",
+    "chooseItems": "Elegir elementos ({{count}})",
+    "noStory": "No se encontró ninguna historia activa. Las historias caducan a las 24 horas.",
+    "savedHint": "Las referencias se guardan en este dispositivo. Selecciona elementos ahora o vuelve a abrir este perfil más tarde. Actualiza una categoría después de renovar las cookies. Los enlaces guardados no recuperan historias caducadas.",
+    "alreadySaved": "Ya en cola o descargado"
   }
 }

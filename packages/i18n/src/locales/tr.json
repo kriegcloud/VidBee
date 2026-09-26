@@ -1823,5 +1823,29 @@
       "stories": "Hikâyeler",
       "timeline": "Zaman akışı"
     }
+  },
+  "profileCollections": {
+    "photos": "Fotoğraflar",
+    "albums": "Albümler",
+    "gallery": "Galeri",
+    "countHint": "Koleksiyonlar indirme sırasında taranır. Varsa önizleme sayıları bir örneklemi gösterir.",
+    "rateLimited": "Instagram istekleri sınırlıyor. Tekrar taramadan önce bekleyin."
+  },
+  "instagramResume": {
+    "queued": "Sırada",
+    "savedProfiles": "Kaydedilen profiller",
+    "noSavedProfiles": "Henüz kaydedilen profil yok. Taramaya başlamak için bir Instagram profili açın.",
+
+    "stop": "Taramayı durdur",
+    "stopping": "Durduruluyor…",
+    "stopped": "Tarama durduruldu. Bulunan öğeler kaydedildi; devam etmek için yenileyin.",
+
+    "map": "Tara",
+    "retry": "Yenile / tekrar dene",
+    "unscanned": "Henüz taranmadı",
+    "chooseItems": "Öğeleri seç ({{count}})",
+    "noStory": "Aktif hikâye bulunamadı. Hikâyeler 24 saat sonra sona erer.",
+    "savedHint": "Referanslar bu cihazda saklanır. Öğeleri şimdi seçin veya profili daha sonra açın. Çerezleri güncelledikten sonra kategoriyi yenileyin. Kaydedilen bağlantılar süresi dolmuş hikâyeleri geri getirmez.",
+    "alreadySaved": "Zaten sırada veya indirildi"
   }
 }

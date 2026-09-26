@@ -1,4 +1,5 @@
 import type {
+  InstagramProfileCategory,
   InstagramProfileDownloadInput,
   InstagramProfileDownloadResult,
   InstagramProfileInspection
@@ -53,11 +54,22 @@ class DownloadService extends IpcService {
   }
 
   @IpcMethod()
+  listInstagramProfiles(_context: IpcContext) {
+    return downloadEngine.listInstagramProfiles()
+  }
+
+  @IpcMethod()
+  cancelInstagramProfileMapping(_context: IpcContext, url: string): boolean {
+    return downloadEngine.cancelInstagramProfileMapping(url)
+  }
+
+  @IpcMethod()
   async inspectInstagramProfile(
     _context: IpcContext,
-    url: string
+    url: string,
+    categories?: InstagramProfileCategory[]
   ): Promise<InstagramProfileInspection> {
-    return downloadEngine.inspectInstagramProfile(url)
+    return downloadEngine.inspectInstagramProfile(url, categories)
   }
 
   @IpcMethod()

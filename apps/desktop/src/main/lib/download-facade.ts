@@ -20,6 +20,7 @@ import path from 'node:path'
 import {
   enqueueInstagramProfileDownload,
   expandTikTokShortLink,
+  type InstagramProfileCategory,
   type InstagramProfileDownloadInput,
   type InstagramProfileDownloadResult,
   type InstagramProfileInspection,
@@ -64,6 +65,7 @@ import {
   getDesktopInstagramProfileInspector,
   getDesktopTaskQueue,
   resolveDesktopDownloadDir,
+  sourceAdmission,
   startDesktopTaskQueue
 } from './task-queue-host'
 import { fetchPlaylistInfo, fetchVideoInfo, fetchVideoInfoWithCommand } from './yt-dlp-info'
@@ -227,6 +229,7 @@ class DownloadFacade extends EventEmitter {
     return previewSocialMedia(
       url,
       {
+        admission: sourceAdmission,
         resolveBinaryPath: () => galleryDlManager.getPath(),
         resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings)
       },
@@ -339,9 +342,20 @@ class DownloadFacade extends EventEmitter {
     return fetchPlaylistInfo(url)
   }
 
-  inspectInstagramProfile(url: string): Promise<InstagramProfileInspection> {
+  listInstagramProfiles() {
+    return getDesktopInstagramProfileInspector().list()
+  }
+
+  cancelInstagramProfileMapping(url: string): boolean {
+    return getDesktopInstagramProfileInspector().cancel(url)
+  }
+
+  inspectInstagramProfile(
+    url: string,
+    categories?: InstagramProfileCategory[]
+  ): Promise<InstagramProfileInspection> {
     const settings = toSharedSettings(settingsManager.getAll())
-    return getDesktopInstagramProfileInspector().inspect(url, settings)
+    return getDesktopInstagramProfileInspector().inspect(url, settings, categories)
   }
 
   // ───────────── Queue control ─────────────

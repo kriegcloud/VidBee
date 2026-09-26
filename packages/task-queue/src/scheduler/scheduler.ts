@@ -1,3 +1,5 @@
+import { logCaughtError } from '@vidbee/logger'
+import type { SourceAdmission } from '../source-admission'
 /**
  * Scheduler — owns the readyHeap (priority + FIFO), the global concurrency
  * budget, the per-group quotas and the slot accounting around dispatch.
@@ -11,7 +13,6 @@
 import type { Task, TaskPriority } from '../types'
 import { AsyncMutex } from '../util/async-mutex'
 import { MinHeap } from '../util/min-heap'
-import { logCaughtError } from '@vidbee/logger'
 
 interface ReadyEntry {
   taskId: string
@@ -42,14 +43,16 @@ export interface SchedulerCallbacks {
 }
 
 export interface SchedulerOptions extends SchedulerCallbacks {
+  admission?: SourceAdmission
   maxConcurrency: number
   /** default per-group cap; null/undefined → unlimited. */
   defaultMaxPerGroup?: number | null
 }
 
 export class Scheduler {
-  private readyHeap = new MinHeap<ReadyEntry>((a, b) =>
-    a.priority !== b.priority ? a.priority - b.priority : a.seq - b.seq
+  private readonly leases = new Map<string, () => void>()
+  private readonly readyHeap = new MinHeap<ReadyEntry>((a, b) =>
+    a.priority === b.priority ? a.seq - b.seq : a.priority - b.priority
   )
   /** taskId → 1 currently consuming a slot. */
   private readonly running = new Set<string>()
@@ -62,7 +65,13 @@ export class Scheduler {
   private maxConcurrency: number
   private defaultMaxPerGroup: number | null
 
-  constructor(private readonly opts: SchedulerOptions) {
+  private readonly opts: SchedulerOptions
+
+  constructor(opts: SchedulerOptions) {
+    this.opts = opts
+    opts.admission?.subscribe(() => {
+      void this.kick()
+    })
     this.maxConcurrency = opts.maxConcurrency
     this.defaultMaxPerGroup = opts.defaultMaxPerGroup ?? null
   }
@@ -123,6 +132,7 @@ export class Scheduler {
           continue
         }
         this.running.delete(id)
+        this.releaseAdmission(id)
         const task = this.opts.getTask(id)
         if (task?.groupKey) {
           this.decGroup(task.groupKey)
@@ -146,11 +156,16 @@ export class Scheduler {
    */
   async releaseSlot(taskId: string): Promise<void> {
     await this.mutex.runExclusive(() => {
-      if (!this.running.has(taskId)) return
+      this.releaseAdmission(taskId)
+      if (!this.running.has(taskId)) {
+        return
+      }
       this.running.delete(taskId)
       const t = this.opts.getTask(taskId)
       const groupKey = t?.groupKey
-      if (groupKey) this.decGroup(groupKey)
+      if (groupKey) {
+        this.decGroup(groupKey)
+      }
     })
     await this.tryDispatch()
   }
@@ -164,16 +179,21 @@ export class Scheduler {
       this.maxConcurrency = n
       while (this.running.size > this.maxConcurrency) {
         const victim = this.pickDemoteVictim()
-        if (!victim) break
+        if (!victim) {
+          break
+        }
         toDemote.push(victim)
         this.running.delete(victim)
         const t = this.opts.getTask(victim)
-        if (t?.groupKey) this.decGroup(t.groupKey)
+        if (t?.groupKey) {
+          this.decGroup(t.groupKey)
+        }
       }
     })
     for (const id of toDemote) {
       try {
         await this.opts.demote(id)
+        this.releaseAdmission(id)
       } catch (err) {
         logCaughtError('task_queue_demote_threw', err)
       }
@@ -206,7 +226,9 @@ export class Scheduler {
     readonly perGroup: Record<string, number>
   } {
     const perGroup: Record<string, number> = {}
-    for (const [k, v] of this.perGroupRunning) perGroup[k] = v
+    for (const [k, v] of this.perGroupRunning) {
+      perGroup[k] = v
+    }
     return {
       running: this.running.size,
       queued: this.readyHeap.size(),
@@ -227,9 +249,13 @@ export class Scheduler {
     await this.mutex.runExclusive(() => {
       while (this.running.size < this.maxConcurrency && this.readyHeap.size() > 0) {
         const candidate = this.popEligible()
-        if (!candidate) break
+        if (!candidate) {
+          break
+        }
         const t = this.opts.getTask(candidate.taskId)
-        if (!t) continue
+        if (!t) {
+          continue
+        }
         this.running.add(candidate.taskId)
         this.incGroup(t.groupKey)
         toDispatch.push(candidate.taskId)
@@ -247,9 +273,12 @@ export class Scheduler {
         // the task synchronously, in which case we would already have been
         // told via `releaseSlot`. Idempotent.
         await this.mutex.runExclusive(() => {
+          this.releaseAdmission(id)
           if (this.running.delete(id)) {
             const t = this.opts.getTask(id)
-            if (t?.groupKey) this.decGroup(t.groupKey)
+            if (t?.groupKey) {
+              this.decGroup(t.groupKey)
+            }
           }
         })
       }
@@ -264,27 +293,48 @@ export class Scheduler {
     const skipped: ReadyEntry[] = []
     let chosen: ReadyEntry | undefined
     while (this.readyHeap.size() > 0) {
-      const top = this.readyHeap.pop()!
+      const top = this.readyHeap.pop()
+      if (!top) {
+        break
+      }
       const task = this.opts.getTask(top.taskId)
       if (!task) {
         // Stale entry — task was cancelled while in heap. Drop it.
         continue
       }
       if (this.canRunInGroup(task.groupKey)) {
+        if (this.opts.admission && task.kind !== 'transcription') {
+          const release = this.opts.admission.tryAcquire(task.input.url)
+          if (!release) {
+            skipped.push(top)
+            continue
+          }
+          this.leases.set(top.taskId, release)
+        }
         chosen = top
         break
       }
       skipped.push(top)
     }
-    for (const s of skipped) this.readyHeap.push(s)
+    for (const s of skipped) {
+      this.readyHeap.push(s)
+    }
     return chosen
+  }
+
+  private releaseAdmission(id: string): void {
+    const release = this.leases.get(id)
+    this.leases.delete(id)
+    release?.()
   }
 
   private canRunInGroup(groupKey: string): boolean {
     const cap = this.perGroupCap.has(groupKey)
-      ? this.perGroupCap.get(groupKey)!
+      ? this.perGroupCap.get(groupKey)
       : this.defaultMaxPerGroup
-    if (cap == null) return true
+    if (cap == null) {
+      return true
+    }
     const n = this.perGroupRunning.get(groupKey) ?? 0
     return n < cap
   }
@@ -296,10 +346,12 @@ export class Scheduler {
      * the one with the highest priority number (= lowest priority).
      */
     let victim: string | null = null
-    let victimPri: number = -1
+    let victimPri = -1
     for (const id of this.running) {
       const t = this.opts.getTask(id)
-      if (!t) continue
+      if (!t) {
+        continue
+      }
       if (t.priority > victimPri) {
         victimPri = t.priority
         victim = id
@@ -314,7 +366,10 @@ export class Scheduler {
 
   private decGroup(groupKey: string): void {
     const cur = this.perGroupRunning.get(groupKey) ?? 0
-    if (cur <= 1) this.perGroupRunning.delete(groupKey)
-    else this.perGroupRunning.set(groupKey, cur - 1)
+    if (cur <= 1) {
+      this.perGroupRunning.delete(groupKey)
+    } else {
+      this.perGroupRunning.set(groupKey, cur - 1)
+    }
   }
 }

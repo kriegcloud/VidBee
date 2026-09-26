@@ -10,10 +10,13 @@ import {
   FileOperationOutputSchema,
   FilePathInputSchema,
   GetWebSettingsOutputSchema,
+  InstagramProfileCancelInputSchema,
+  InstagramProfileCancelOutputSchema,
   InstagramProfileDownloadInputSchema,
   InstagramProfileDownloadOutputSchema,
   InstagramProfileInspectInputSchema,
   InstagramProfileInspectOutputSchema,
+  InstagramProfileListOutputSchema,
   ListDirectoriesOutputSchema,
   ListDownloadsOutputSchema,
   ListHistoryOutputSchema,
@@ -57,6 +60,8 @@ export const downloaderContract = {
     download: oc.input(PlaylistDownloadInputSchema).output(PlaylistDownloadOutputSchema)
   },
   instagramProfile: {
+    list: oc.output(InstagramProfileListOutputSchema),
+    cancel: oc.input(InstagramProfileCancelInputSchema).output(InstagramProfileCancelOutputSchema),
     inspect: oc
       .input(InstagramProfileInspectInputSchema)
       .output(InstagramProfileInspectOutputSchema),

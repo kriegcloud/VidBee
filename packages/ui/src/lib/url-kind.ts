@@ -1,5 +1,6 @@
 import { normalizeDzenProfileUrl } from '@vidbee/downloader-core/dzen-profile'
 import { normalizeFacebookGalleryUrl } from '@vidbee/downloader-core/facebook-gallery'
+import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { normalizeThreadsUrl } from '@vidbee/downloader-core/threads'
 import { normalizeTikTokPhotoUrl } from '@vidbee/downloader-core/tiktok-photo'
 
@@ -89,7 +90,16 @@ export const isInstagramProfileUrl = (value: string): boolean => {
     if (!INSTAGRAM_HOSTS.has(parsed.hostname.toLowerCase())) {
       return false
     }
-    const segments = parsed.pathname.split('/').filter(Boolean)
+    let segments = parsed.pathname.split('/').filter(Boolean)
+    if (segments.length === 2 && segments[0] === 'stories' && segments[1] !== 'highlights') {
+      segments = [segments[1]]
+    }
+    if (
+      segments.length === 2 &&
+      ['posts', 'reels', 'tagged', 'highlights', 'stories'].includes(segments[1])
+    ) {
+      segments = [segments[0]]
+    }
     if (segments.length !== 1) {
       return false
     }
@@ -234,5 +244,124 @@ export const isPlaylistLikeUrl = (value: string): boolean => {
     )
   } catch {
     return false
+  }
+}
+
+export interface ProfileCollection {
+  key: string
+  url: string
+  labelKey: string
+  requiresAuth: boolean
+}
+
+export interface CollectionProfile {
+  platform: 'TikTok' | 'Facebook' | 'VSCO' | 'Threads'
+  owner: string
+  domain: string
+  selected: string
+  collections: ProfileCollection[]
+}
+
+/** Only profile surfaces belong in the collection picker; posts retain their own flow. */
+export const resolveCollectionProfile = (value: string): CollectionProfile | null => {
+  try {
+    const url = new URL(value)
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.port) {
+      return null
+    }
+    const social = resolveSocialSource(value)
+    if (social?.platform === 'tiktok' && social.categories.length > 0) {
+      return {
+        platform: 'TikTok',
+        owner: social.owner,
+        domain: 'tiktok.com',
+        selected: social.category,
+        collections: social.categories.map((category) => ({
+          ...category,
+          labelKey: `socialMedia.categories.${category.key}`
+        }))
+      }
+    }
+    const threads = normalizeThreadsUrl(value)
+    if (threads?.kind === 'profile') {
+      return {
+        platform: 'Threads',
+        owner: threads.username,
+        domain: 'threads.com',
+        selected: 'media',
+        collections: [
+          {
+            key: 'media',
+            url: threads.url,
+            labelKey: 'socialMedia.categories.media',
+            requiresAuth: false
+          }
+        ]
+      }
+    }
+    if (isVscoGalleryUrl(value)) {
+      const owner = url.pathname.split('/')[1]
+      if (['search', 'discover', 'about', 'login', 'signup'].includes(owner.toLowerCase())) {
+        return null
+      }
+      return {
+        platform: 'VSCO',
+        owner,
+        domain: 'vsco.co',
+        selected: 'gallery',
+        collections: [
+          {
+            key: 'gallery',
+            url: `https://vsco.co/${owner}/gallery`,
+            labelKey: 'profileCollections.gallery',
+            requiresAuth: false
+          }
+        ]
+      }
+    }
+    const gallery = normalizeFacebookGalleryUrl(value)
+    const owner =
+      gallery?.directorySegments[1] ??
+      (isFacebookReelsUrl(value) ? url.pathname.split('/')[1] : undefined)
+    if (
+      !owner ||
+      ['Albums', 'Photos'].includes(owner) ||
+      (gallery && gallery.directorySegments.length !== 3)
+    ) {
+      return null
+    }
+    const root = `https://www.facebook.com/${owner}`
+    return {
+      platform: 'Facebook',
+      owner,
+      domain: 'facebook.com',
+      selected: isFacebookReelsUrl(value)
+        ? 'reels'
+        : gallery?.url.endsWith('/photos_albums')
+          ? 'albums'
+          : 'photos',
+      collections: [
+        {
+          key: 'photos',
+          url: `${root}/photos`,
+          labelKey: 'profileCollections.photos',
+          requiresAuth: true
+        },
+        {
+          key: 'albums',
+          url: `${root}/photos_albums`,
+          labelKey: 'profileCollections.albums',
+          requiresAuth: true
+        },
+        {
+          key: 'reels',
+          url: `${root}/reels`,
+          labelKey: 'instagramProfile.categories.reels',
+          requiresAuth: true
+        }
+      ]
+    }
+  } catch {
+    return null
   }
 }

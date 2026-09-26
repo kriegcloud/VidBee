@@ -37,6 +37,7 @@ import {
   TaskQueueAPI,
   TRANSCRIPTION_GROUP_KEY
 } from '@vidbee/task-queue'
+import { SourceAdmission } from '@vidbee/task-queue/source-admission'
 import {
   AutoTranscriptionCoordinator,
   clampMaxConcurrentTranscriptions,
@@ -93,6 +94,8 @@ export const resolveGalleryDlPath = (): string => {
   }
   throw new Error('gallery-dl binary not found. Set GALLERY_DL_PATH or install gallery-dl in PATH.')
 }
+
+export const sourceAdmission = new SourceAdmission()
 
 const ytDlpExecutor = new YtDlpExecutor({
   resolveYtDlpPath,
@@ -157,6 +160,31 @@ const downloadExecutor = new HostRoutingExecutor(
 )
 
 export const instagramProfileInspector = new InstagramProfileInspector({
+  completedDownloads: () => {
+    const completed: { url: string; category: string; assetCount: number }[] = []
+    let cursor: string | null = null
+    do {
+      const page = taskQueue.list({ limit: 200, cursor })
+      for (const task of page.tasks) {
+        const options = task.input.options
+        if (
+          task.status === 'completed' &&
+          typeof options?.batchCategory === 'string' &&
+          typeof options?.expectedAssetCount === 'number'
+        ) {
+          completed.push({
+            url: task.input.url,
+            category: options.batchCategory,
+            assetCount: options.expectedAssetCount
+          })
+        }
+      }
+      cursor = page.nextCursor
+    } while (cursor)
+    return completed
+  },
+  admission: sourceAdmission,
+  storageDir: path.join(unifiedDbDir, 'instagram-profiles'),
   resolveExtraArgs: resolveGalleryDlExtraArgs,
   resolveBinaryPath: resolveGalleryDlPath
 })
@@ -201,6 +229,7 @@ const executor = new ExecutorRouter({
 })
 
 export const taskQueue = new TaskQueueAPI({
+  admission: sourceAdmission,
   persist,
   executor,
   maxConcurrency: apiMaxConcurrent
@@ -274,6 +303,7 @@ export const setApiAutoTranscribe = (enabled: boolean): void => {
 }
 
 export const stopTaskQueue = async (): Promise<void> => {
+  await instagramProfileInspector.stop()
   if (!started) {
     return
   }

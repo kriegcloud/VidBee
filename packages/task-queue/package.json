@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./source-admission": "./src/source-admission.ts",
     ".": "./src/index.ts",
     "./contract": "./src/contract.ts",
     "./types": "./src/types.ts",

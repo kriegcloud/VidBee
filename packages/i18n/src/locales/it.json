@@ -1823,5 +1823,29 @@
       "stories": "Storie",
       "timeline": "Cronologia"
     }
+  },
+  "profileCollections": {
+    "photos": "Foto",
+    "albums": "Album",
+    "gallery": "Galleria",
+    "countHint": "Le raccolte vengono analizzate durante il download. I conteggi di anteprima, se disponibili, sono un campione.",
+    "rateLimited": "Instagram sta limitando le richieste. Attendi prima di ripetere la scansione."
+  },
+  "instagramResume": {
+    "queued": "In coda",
+    "savedProfiles": "Profili salvati",
+    "noSavedProfiles": "Nessun profilo salvato. Apri un profilo Instagram per avviare la scansione.",
+
+    "stop": "Interrompi scansione",
+    "stopping": "Interruzione…",
+    "stopped": "Scansione interrotta. Gli elementi trovati sono salvati; aggiorna per continuare.",
+
+    "map": "Esplora",
+    "retry": "Aggiorna / riprova",
+    "unscanned": "Non ancora esplorato",
+    "chooseItems": "Scegli elementi ({{count}})",
+    "noStory": "Nessuna storia attiva trovata. Le storie scadono dopo 24 ore.",
+    "savedHint": "I riferimenti sono salvati su questo dispositivo. Seleziona gli elementi ora o riapri questo profilo più tardi. Aggiorna una categoria dopo aver aggiornato i cookie. I link salvati non recuperano le storie scadute.",
+    "alreadySaved": "Già in coda o scaricato"
   }
 }

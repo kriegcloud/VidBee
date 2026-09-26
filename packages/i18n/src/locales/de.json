@@ -1823,5 +1823,29 @@
       "stories": "Storys",
       "timeline": "Chronik"
     }
+  },
+  "profileCollections": {
+    "photos": "Fotos",
+    "albums": "Alben",
+    "gallery": "Galerie",
+    "countHint": "Sammlungen werden beim Herunterladen erfasst. Vorschauzahlen sind, sofern verfügbar, eine Stichprobe.",
+    "rateLimited": "Instagram begrenzt Anfragen. Warten Sie vor einem erneuten Scan."
+  },
+  "instagramResume": {
+    "queued": "In Warteschlange",
+    "savedProfiles": "Gespeicherte Profile",
+    "noSavedProfiles": "Noch keine gespeicherten Profile. Öffne ein Instagram-Profil, um die Erfassung zu starten.",
+
+    "stop": "Erfassung stoppen",
+    "stopping": "Wird gestoppt…",
+    "stopped": "Erfassung gestoppt. Gefundene Elemente sind gespeichert. Zum Fortfahren aktualisieren.",
+
+    "map": "Erfassen",
+    "retry": "Aktualisieren / erneut versuchen",
+    "unscanned": "Noch nicht erfasst",
+    "chooseItems": "Elemente auswählen ({{count}})",
+    "noStory": "Keine aktive Story gefunden. Storys verfallen nach 24 Stunden.",
+    "savedHint": "Erfasste Verweise werden auf diesem Gerät gespeichert. Wählen Sie jetzt Elemente aus oder öffnen Sie dieses Profil später erneut. Aktualisieren Sie eine Kategorie nach dem Erneuern der Cookies. Gespeicherte Story-Links stellen abgelaufene Storys nicht wieder her.",
+    "alreadySaved": "Bereits eingereiht oder heruntergeladen"
   }
 }

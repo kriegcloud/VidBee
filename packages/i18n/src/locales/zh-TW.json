@@ -1823,5 +1823,29 @@
       "stories": "限時動態",
       "timeline": "時間軸"
     }
+  },
+  "profileCollections": {
+    "photos": "照片",
+    "albums": "相簿",
+    "gallery": "圖庫",
+    "countHint": "下載時會掃描合集。預覽數量（如有）僅代表抽樣結果。",
+    "rateLimited": "Instagram 正在限制請求。請稍後再掃描。"
+  },
+  "instagramResume": {
+    "queued": "排隊中",
+    "savedProfiles": "已儲存的個人檔案",
+    "noSavedProfiles": "尚無已儲存的個人檔案。開啟 Instagram 個人檔案以開始掃描。",
+
+    "stop": "停止掃描",
+    "stopping": "正在停止…",
+    "stopped": "掃描已停止。已發現的項目已儲存；重新整理以繼續。",
+
+    "map": "取得清單",
+    "retry": "重新整理 / 重試",
+    "unscanned": "尚未取得",
+    "chooseItems": "選擇項目（{{count}}）",
+    "noStory": "找不到有效限時動態。限時動態會在24小時後到期。",
+    "savedHint": "參照連結保存在此裝置上。現在選擇項目，或稍後重新開啟此個人檔案。更新 Cookie 後可重新整理分類。已保存的連結無法還原過期限時動態。",
+    "alreadySaved": "已排入佇列或已下載"
   }
 }

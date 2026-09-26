@@ -4,6 +4,7 @@ import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
 import { Input } from "@vidbee/ui/components/ui/input";
 import { Label } from "@vidbee/ui/components/ui/label";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
+import { ScrollArea } from "@vidbee/ui/components/ui/scroll-area";
 import { TabItem, Tabs, TabsList } from "@vidbee/ui/components/ui/tabs";
 import { cn } from "@vidbee/ui/lib/cn";
 import { AlertCircle, List, Loader2, Settings2 } from "lucide-react";

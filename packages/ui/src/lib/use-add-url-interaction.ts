@@ -3,14 +3,13 @@ import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
 import { useCallback, useState } from 'react'
 import { classifyIngestText } from './ingest'
 import {
-  isDzenProfileUrl,
   isFacebookGalleryUrl,
-  isFacebookReelsUrl,
   isInstagramProfileUrl,
   isPlaylistLikeUrl,
   isThreadsUrl,
   isTikTokPhotoUrl,
-  isVscoGalleryUrl
+  isVscoGalleryUrl,
+  resolveCollectionProfile
 } from './url-kind'
 
 const isLikelyUrl = (value: string): boolean => {
@@ -46,6 +45,7 @@ interface UseAddUrlInteractionOptions {
   onInvalidUrl: () => void
   onOneClickDownload: (url: string) => Promise<void> | void
   onParseSocial?: (url: string) => Promise<void> | void
+  onParseCollection?: (url: string) => Promise<void> | void
   onParseProfile: (url: string) => Promise<void> | void
   onParsePlaylist: (url: string) => Promise<void> | void
   onParseSingle: (url: string) => Promise<void> | void
@@ -70,11 +70,11 @@ export const useAddUrlInteraction = ({
   activeTab,
   isOneClickDownloadEnabled,
   isPlaylistBusy,
-  isProfileBusy,
   onEmptyUrl,
   onInvalidUrl,
   onOneClickDownload,
   onParseSocial,
+  onParseCollection,
   onParseProfile,
   onParsePlaylist,
   onParseSingle,
@@ -123,6 +123,11 @@ export const useAddUrlInteraction = ({
       setAddUrlPopoverOpen(false)
       const trimmedUrl = await resolveSubmittedUrl(inputUrl, onResolveUrl)
 
+      if (resolveCollectionProfile(trimmedUrl) && onParseCollection) {
+        await onParseCollection(trimmedUrl)
+        return
+      }
+
       if (resolveSocialSource(trimmedUrl) && onParseSocial) {
         await onParseSocial(trimmedUrl)
         return
@@ -138,15 +143,7 @@ export const useAddUrlInteraction = ({
         return
       }
 
-      if (
-        isInstagramProfileUrl(trimmedUrl) ||
-        (activeTab === 'profile' &&
-          !isFacebookReelsUrl(trimmedUrl) &&
-          !isDzenProfileUrl(trimmedUrl))
-      ) {
-        if (isProfileBusy) {
-          return
-        }
+      if (isInstagramProfileUrl(trimmedUrl)) {
         await onParseProfile(trimmedUrl)
         return
       }
@@ -178,11 +175,11 @@ export const useAddUrlInteraction = ({
       activeTab,
       isOneClickDownloadEnabled,
       isPlaylistBusy,
-      isProfileBusy,
       onEmptyUrl,
       onInvalidUrl,
       onOneClickDownload,
       onParseSocial,
+      onParseCollection,
       onParseProfile,
       onParsePlaylist,
       onParseSingle,

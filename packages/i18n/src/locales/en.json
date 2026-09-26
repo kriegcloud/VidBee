@@ -1817,5 +1817,29 @@
       "stories": "Stories",
       "timeline": "Timeline"
     }
+  },
+  "profileCollections": {
+    "photos": "Photos",
+    "albums": "Albums",
+    "gallery": "Gallery",
+    "countHint": "Collections are scanned during download. Preview counts, when available, are a sample.",
+    "rateLimited": "Instagram is limiting requests. Wait before scanning again."
+  },
+  "instagramResume": {
+    "queued": "Queued",
+    "savedProfiles": "Saved profiles",
+    "noSavedProfiles": "No saved profiles yet. Open an Instagram profile to start mapping.",
+
+    "stop": "Stop mapping",
+    "stopping": "Stopping…",
+    "stopped": "Mapping stopped. Discovered items are saved; refresh to continue.",
+
+    "map": "Map",
+    "retry": "Refresh / retry",
+    "unscanned": "Not mapped yet",
+    "chooseItems": "Choose items ({{count}})",
+    "noStory": "No active story found. Stories expire after 24 hours.",
+    "savedHint": "Mapped references are saved on this device. Select items now or reopen this profile later. Refresh a category after updating cookies. Saved story links cannot recover expired stories.",
+    "alreadySaved": "Already queued or downloaded"
   }
 }

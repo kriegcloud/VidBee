@@ -182,6 +182,7 @@ describe('Instagram highlight downloads', () => {
     const add = vi.fn(async () => ({ id: 'highlight-task' }))
     const queue = {
       add,
+      get: () => undefined,
       setMaxPerGroup: vi.fn(async () => undefined)
     } as unknown as TaskQueueAPI
     const inspector = {
@@ -232,10 +233,11 @@ describe('Instagram highlight downloads', () => {
 })
 
 describe('Instagram post downloads', () => {
-  it('excludes reels from the posts category', async () => {
+  it('preserves mixed media in the posts category', async () => {
     const add = vi.fn(async () => ({ id: 'post-task' }))
     const queue = {
       add,
+      get: () => undefined,
       setMaxPerGroup: vi.fn(async () => undefined)
     } as unknown as TaskQueueAPI
     const inspector = {
@@ -276,9 +278,7 @@ describe('Instagram post downloads', () => {
     })
 
     expect(add).toHaveBeenCalledOnce()
-    expect(add.mock.calls[0]?.[0].input.options).toMatchObject({
-      galleryDlFilter: "type == 'post'"
-    })
+    expect(add.mock.calls[0]?.[0].input.options.galleryDlFilter).toBeUndefined()
   })
 })
 

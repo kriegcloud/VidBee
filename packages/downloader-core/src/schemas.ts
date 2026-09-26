@@ -360,6 +360,8 @@ export const InstagramProfileCategorySchema = z.enum([
 ])
 
 export const InstagramCategoryStateSchema = z.enum([
+  'cancelled',
+  'unscanned',
   'ready',
   'empty',
   'auth-required',
@@ -376,19 +378,39 @@ export const InstagramInspectionErrorCodeSchema = z.enum([
 ])
 
 export const InstagramCategorySummarySchema = z.object({
+  incremental: z.boolean().optional(),
+  cursor: z.string().optional(),
   category: InstagramProfileCategorySchema,
   state: InstagramCategoryStateSchema,
   sourceCount: z.number().int().nonnegative(),
   assetCount: z.number().int().nonnegative(),
+  items: z
+    .array(
+      z.object({
+        id: z.string(),
+        url: z.url(),
+        assetCount: z.number().int().nonnegative(),
+        assetIds: z.array(z.string()).optional(),
+        sourceVersion: z.string().optional(),
+        downloaded: z.boolean().optional(),
+        title: z.string().optional()
+      })
+    )
+    .optional(),
+  mappedAt: z.number().optional(),
   errorCode: InstagramInspectionErrorCodeSchema.optional()
 })
 
 export const InstagramProfileInspectInputSchema = z.object({
   url: z.url(),
+  categories: z.array(InstagramProfileCategorySchema).optional(),
   settings: DownloadRuntimeSettingsSchema.optional()
 })
 
 export const InstagramProfileInspectionSchema = z.object({
+  mapping: z
+    .object({ category: InstagramProfileCategorySchema, state: z.enum(['queued', 'running']) })
+    .optional(),
   inspectionId: z.string().min(1),
   expiresAt: z.number().int().positive(),
   complete: z.boolean(),
@@ -410,6 +432,7 @@ export const InstagramProfileInspectOutputSchema = z.object({
 
 export const InstagramProfileDownloadInputSchema = z.object({
   inspectionId: z.string().min(1),
+  itemIds: z.array(z.string()).optional(),
   categories: z.array(InstagramProfileCategorySchema).min(1),
   customDownloadPath: z.string().optional(),
   settings: DownloadRuntimeSettingsSchema.optional()
@@ -581,4 +604,19 @@ export const SocialMediaDownloadInputSchema = z.object({
 export const SocialMediaDownloadOutputSchema = z.object({
   groupId: z.string(),
   ids: z.array(z.string())
+})
+
+export const InstagramProfileCancelInputSchema = z.object({ url: z.url() })
+export const InstagramProfileCancelOutputSchema = z.object({ cancelled: z.boolean() })
+
+export const InstagramProfileListOutputSchema = z.object({
+  profiles: z.array(
+    InstagramProfileInspectionSchema.pick({
+      mapping: true,
+      inspectionId: true,
+      profile: true,
+      totalSourceCount: true,
+      totalAssetCount: true
+    })
+  )
 })

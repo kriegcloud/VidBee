@@ -1823,5 +1823,29 @@
       "stories": "Stories",
       "timeline": "Linha do tempo"
     }
+  },
+  "profileCollections": {
+    "photos": "Fotos",
+    "albums": "Álbuns",
+    "gallery": "Galeria",
+    "countHint": "As coleções são analisadas durante o download. As contagens da prévia, quando disponíveis, são uma amostra.",
+    "rateLimited": "O Instagram está limitando as solicitações. Aguarde antes de analisar novamente."
+  },
+  "instagramResume": {
+    "queued": "Na fila",
+    "savedProfiles": "Perfis salvos",
+    "noSavedProfiles": "Nenhum perfil salvo. Abra um perfil do Instagram para iniciar o mapeamento.",
+
+    "stop": "Parar mapeamento",
+    "stopping": "Parando…",
+    "stopped": "Mapeamento interrompido. Os itens encontrados foram salvos; atualize para continuar.",
+
+    "map": "Mapear",
+    "retry": "Atualizar / tentar novamente",
+    "unscanned": "Ainda não mapeado",
+    "chooseItems": "Escolher itens ({{count}})",
+    "noStory": "Nenhum story ativo encontrado. Os stories expiram após 24 horas.",
+    "savedHint": "As referências são salvas neste dispositivo. Selecione itens agora ou reabra este perfil depois. Atualize uma categoria após atualizar os cookies. Os links salvos não recuperam stories expirados.",
+    "alreadySaved": "Já na fila ou baixado"
   }
 }

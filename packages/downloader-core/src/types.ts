@@ -259,7 +259,13 @@ export interface PlaylistDownloadResult {
 
 export type InstagramProfileCategory = 'posts' | 'reels' | 'stories' | 'highlights' | 'tagged'
 
-export type InstagramCategoryState = 'ready' | 'empty' | 'auth-required' | 'unavailable'
+export type InstagramCategoryState =
+  | 'cancelled'
+  | 'unscanned'
+  | 'ready'
+  | 'empty'
+  | 'auth-required'
+  | 'unavailable'
 
 export type InstagramInspectionErrorCode =
   | 'auth-required'
@@ -269,20 +275,36 @@ export type InstagramInspectionErrorCode =
   | 'binary-missing'
   | 'unavailable'
 
+export interface InstagramProfileItem {
+  assetIds?: string[]
+  sourceVersion?: string
+  downloaded?: boolean
+  id: string
+  url: string
+  assetCount: number
+  title?: string
+}
+
 export interface InstagramCategorySummary {
+  incremental?: boolean
+  cursor?: string
   category: InstagramProfileCategory
   state: InstagramCategoryState
   sourceCount: number
   assetCount: number
   errorCode?: InstagramInspectionErrorCode
+  items?: InstagramProfileItem[]
+  mappedAt?: number
 }
 
 export interface InstagramProfileInspectInput {
   url: string
+  categories?: InstagramProfileCategory[]
   settings?: DownloadRuntimeSettings
 }
 
 export interface InstagramProfileInspection {
+  mapping?: { category: InstagramProfileCategory; state: 'queued' | 'running' }
   inspectionId: string
   expiresAt: number
   complete: boolean
@@ -300,6 +322,7 @@ export interface InstagramProfileInspection {
 
 export interface InstagramProfileDownloadInput {
   inspectionId: string
+  itemIds?: string[]
   categories: InstagramProfileCategory[]
   customDownloadPath?: string
   settings?: DownloadRuntimeSettings

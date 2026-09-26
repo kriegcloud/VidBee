@@ -1,7 +1,6 @@
 import { type ChildProcess, spawn } from 'node:child_process'
 import { realpath, stat } from 'node:fs/promises'
 import path from 'node:path'
-
 import {
   classify,
   type Executor,
@@ -13,7 +12,6 @@ import {
   type TaskProgress,
   virtualError
 } from '@vidbee/task-queue'
-
 import { killProcessTree } from '@vidbee/task-queue/process'
 import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'

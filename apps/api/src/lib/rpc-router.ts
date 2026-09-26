@@ -36,7 +36,8 @@ import {
   instagramProfileInspector,
   resolveGalleryDlExtraArgs,
   resolveGalleryDlPath,
-  setApiAutoTranscribe
+  setApiAutoTranscribe,
+  sourceAdmission
 } from './task-queue-host'
 import { webSettingsStore } from './web-settings-store'
 import { fetchPlaylistInfo, fetchVideoInfo } from './yt-dlp-info'
@@ -432,7 +433,11 @@ export const rpcRouter = os.router({
       const storedSettings = await webSettingsStore.get()
       return previewSocialMedia(
         input.url,
-        { resolveBinaryPath: resolveGalleryDlPath, resolveExtraArgs: resolveGalleryDlExtraArgs },
+        {
+          admission: sourceAdmission,
+          resolveBinaryPath: resolveGalleryDlPath,
+          resolveExtraArgs: resolveGalleryDlExtraArgs
+        },
         { ...storedSettings, ...input.settings }
       )
     }),
@@ -445,9 +450,17 @@ export const rpcRouter = os.router({
     })
   },
   instagramProfile: {
+    list: os.instagramProfile.list.handler(() => ({ profiles: instagramProfileInspector.list() })),
+    cancel: os.instagramProfile.cancel.handler(({ input }) => ({
+      cancelled: instagramProfileInspector.cancel(input.url)
+    })),
     inspect: os.instagramProfile.inspect.handler(async ({ input }) => {
       try {
-        const inspection = await instagramProfileInspector.inspect(input.url, input.settings)
+        const inspection = await instagramProfileInspector.inspect(
+          input.url,
+          input.settings,
+          input.categories
+        )
         return { inspection }
       } catch (error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR', {

@@ -1823,5 +1823,29 @@
       "stories": "Stories",
       "timeline": "Fil chronologique"
     }
+  },
+  "profileCollections": {
+    "photos": "Photos",
+    "albums": "Albums",
+    "gallery": "Galerie",
+    "countHint": "Les collections sont analysées pendant le téléchargement. Les nombres de l’aperçu, lorsqu’ils sont disponibles, correspondent à un échantillon.",
+    "rateLimited": "Instagram limite les requêtes. Patientez avant de relancer l’analyse."
+  },
+  "instagramResume": {
+    "queued": "En attente",
+    "savedProfiles": "Profils enregistrés",
+    "noSavedProfiles": "Aucun profil enregistré. Ouvrez un profil Instagram pour commencer l’analyse.",
+
+    "stop": "Arrêter l’analyse",
+    "stopping": "Arrêt en cours…",
+    "stopped": "Analyse arrêtée. Les éléments trouvés sont enregistrés ; actualisez pour continuer.",
+
+    "map": "Recenser",
+    "retry": "Actualiser / réessayer",
+    "unscanned": "Pas encore recensé",
+    "chooseItems": "Choisir des éléments ({{count}})",
+    "noStory": "Aucune story active trouvée. Les stories expirent après 24 heures.",
+    "savedHint": "Les références sont enregistrées sur cet appareil. Sélectionnez des éléments maintenant ou rouvrez ce profil plus tard. Actualisez une catégorie après avoir mis à jour les cookies. Les liens enregistrés ne restaurent pas les stories expirées.",
+    "alreadySaved": "Déjà en file ou téléchargé"
   }
 }

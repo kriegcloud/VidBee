@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { ExecutorFinishEvent, TaskQueueAPI } from '@vidbee/task-queue'
+import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
 import { GalleryDlExecutor, type GalleryDlExecutorOptions } from './gallery-dl-executor'
 import type { SocialMediaOptions, SocialSource } from './social-media'
 import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
@@ -84,11 +85,12 @@ export const restoreSocialMediaGroupCaps = async (queue: TaskQueueAPI): Promise<
 /** Inspect at most three media-bearing posts without downloading their assets. */
 export const previewSocialMedia = async (
   url: string,
-  runtime: Omit<GalleryDlExecutorOptions, 'defaultDownloadDir'>,
+  runtime: Omit<GalleryDlExecutorOptions, 'defaultDownloadDir'> & { admission?: SourceAdmission },
   settings?: DownloadRuntimeSettings
 ) => {
   const source = await inspectSocialMedia(url)
   const directory = await mkdtemp(path.join(tmpdir(), 'vidbee-social-preview-'))
+  const release = await runtime.admission?.acquire(url)
   try {
     const executor = new GalleryDlExecutor({ ...runtime, defaultDownloadDir: directory })
     const result = await new Promise<ExecutorFinishEvent>((resolve) => {
@@ -145,6 +147,7 @@ export const previewSocialMedia = async (
       }
     }
   } finally {
+    release?.()
     await rm(directory, { recursive: true, force: true })
   }
 }
