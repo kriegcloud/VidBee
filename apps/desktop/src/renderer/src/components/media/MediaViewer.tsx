@@ -189,7 +189,10 @@ function Filmstrip({
   })
 
   useLayoutEffect(() => {
-    virtualizer.scrollToIndex(index, { align: 'center', behavior: 'auto' })
+    // Glide between neighbours; jump when the target is far (e.g. Home/End).
+    const visible = virtualizer.getVirtualItems()
+    const near = visible.some((item) => Math.abs(item.index - index) <= 1)
+    virtualizer.scrollToIndex(index, { align: 'center', behavior: near ? 'smooth' : 'auto' })
   }, [index, virtualizer])
 
   return (

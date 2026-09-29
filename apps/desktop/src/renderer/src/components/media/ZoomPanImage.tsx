@@ -36,6 +36,15 @@ interface ZoomPanImageProps {
   ref?: Ref<ZoomPanHandle>
 }
 
+interface ShownImage {
+  src: string
+  width: number
+  height: number
+}
+
+const FADE_MS = 150
+const ZOOM_ANIMATION_MS = 160
+
 interface ViewState {
   scale: number
   x: number
@@ -63,7 +72,17 @@ export function ZoomPanImage({
   viewRotation = 0
 }: ZoomPanImageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [natural, setNatural] = useState<{ width: number; height: number } | null>(null)
+  const incomingRef = useRef<HTMLImageElement>(null)
+  const outgoingRef = useRef<HTMLImageElement>(null)
+  // The image on screen. It only changes once the next one is fully decoded, so
+  // navigation never blanks the stage or paints a half-loaded frame.
+  const [shown, setShown] = useState<ShownImage | null>(null)
+  // The previous frame, kept briefly (with its last transform) to cross-fade out.
+  const [outgoing, setOutgoing] = useState<{ image: ShownImage; transform: string } | null>(null)
+  // Transform transitions are opt-in (button / double-click zoom). Image swaps and
+  // wheel ticks must never animate, or the new image "bounces" from the old zoom.
+  const [animateZoom, setAnimateZoom] = useState(false)
+  const natural = shown
   const [viewport, setViewport] = useState<{ width: number; height: number }>({
     height: 0,
     width: 0
@@ -90,12 +109,76 @@ export function ZoomPanImage({
       ? Math.min(viewport.width / box.width, viewport.height / box.height, 1)
       : 1
 
-  // Reset whenever the image changes; Omoide's lightbox kept stale zoom across images.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: src is the trigger, not a read.
-  useLayoutEffect(() => {
-    setNatural(null)
-    setIsFit(true)
+  const onLoadRef = useRef(onLoad)
+  const onErrorRef = useRef(onError)
+  onLoadRef.current = onLoad
+  onErrorRef.current = onError
+  const transformRef = useRef('')
+  const shownRef = useRef<ShownImage | null>(null)
+
+  // Decode the next image off-screen, then swap it in at fit (Omoide's lightbox kept
+  // stale zoom across images and flashed an empty stage while loading).
+  useEffect(() => {
+    let cancelled = false
+    const image = new Image()
+    image.decoding = 'async'
+    image.src = src
+    image
+      .decode()
+      .then(() => {
+        if (cancelled) {
+          return
+        }
+        const next = { height: image.naturalHeight, src, width: image.naturalWidth }
+        const current = shownRef.current
+        if (current && current.src !== src) {
+          setOutgoing({ image: current, transform: transformRef.current })
+        }
+        shownRef.current = next
+        setShown(next)
+        setAnimateZoom(false)
+        setIsFit(true)
+        onLoadRef.current?.(next.width, next.height)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          onErrorRef.current?.()
+        }
+      })
+    return () => {
+      cancelled = true
+    }
   }, [src])
+
+  // Cross-fade: new frame in, previous frame out, then drop the previous frame.
+  useLayoutEffect(() => {
+    if (!outgoing) {
+      return
+    }
+    const fadeIn = incomingRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: FADE_MS,
+      easing: 'ease-out'
+    })
+    const fadeOut = outgoingRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: FADE_MS,
+      easing: 'ease-out',
+      fill: 'forwards'
+    })
+    const timer = window.setTimeout(() => setOutgoing(null), FADE_MS)
+    return () => {
+      window.clearTimeout(timer)
+      fadeIn?.cancel()
+      fadeOut?.cancel()
+    }
+  }, [outgoing])
+
+  useEffect(() => {
+    if (!animateZoom) {
+      return
+    }
+    const timer = window.setTimeout(() => setAnimateZoom(false), ZOOM_ANIMATION_MS)
+    return () => window.clearTimeout(timer)
+  }, [animateZoom])
 
   useLayoutEffect(() => {
     const element = containerRef.current
@@ -111,15 +194,15 @@ export function ZoomPanImage({
     return () => observer.disconnect()
   }, [])
 
-  useLayoutEffect(() => {
-    if (isFit) {
-      setView({ scale: fitScale, x: 0, y: 0 })
-    }
-  }, [fitScale, isFit])
+  // While fitted, the view is derived during render, so a new image can never paint
+  // at the previous image's scale for a frame.
+  const effectiveView: ViewState = isFit ? { scale: fitScale, x: 0, y: 0 } : view
+  const effectiveRef = useRef(effectiveView)
+  effectiveRef.current = effectiveView
 
   useEffect(() => {
-    onScaleChange?.(view.scale, isFit)
-  }, [isFit, onScaleChange, view.scale])
+    onScaleChange?.(effectiveView.scale, isFit)
+  }, [effectiveView.scale, isFit, onScaleChange])
 
   const clampView = useCallback(
     (next: ViewState): ViewState => {
@@ -137,8 +220,10 @@ export function ZoomPanImage({
 
   /** Zoom to `nextScale`, keeping the point under (px, py) — relative to center — fixed. */
   const zoomAt = useCallback(
-    (nextScale: number, px = 0, py = 0) => {
-      setView((current) => {
+    (nextScale: number, px = 0, py = 0, animate = true) => {
+      setAnimateZoom(animate)
+      setView(() => {
+        const current = effectiveRef.current
         const minScale = Math.min(fitScale, 1)
         const scale = Math.min(MAX_SCALE, Math.max(minScale, nextScale))
         const ratio = scale / current.scale
@@ -157,11 +242,14 @@ export function ZoomPanImage({
     ref,
     () => ({
       actualSize: () => zoomAt(1),
-      fit: () => setIsFit(true),
-      zoomIn: () => zoomAt(view.scale * BUTTON_STEP),
-      zoomOut: () => zoomAt(view.scale / BUTTON_STEP)
+      fit: () => {
+        setAnimateZoom(true)
+        setIsFit(true)
+      },
+      zoomIn: () => zoomAt(effectiveRef.current.scale * BUTTON_STEP),
+      zoomOut: () => zoomAt(effectiveRef.current.scale / BUTTON_STEP)
     }),
-    [view.scale, zoomAt]
+    [zoomAt]
   )
 
   // Wheel must be non-passive to prevent page scroll; scope it to this surface only.
@@ -176,7 +264,9 @@ export function ZoomPanImage({
       const px = event.clientX - rect.left - rect.width / 2
       const py = event.clientY - rect.top - rect.height / 2
       const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY
-      setView((current) => {
+      setAnimateZoom(false)
+      setView(() => {
+        const current = effectiveRef.current
         const factor = Math.exp(-delta * (event.ctrlKey ? WHEEL_STEP * 4 : WHEEL_STEP))
         const minScale = Math.min(fitScale, 1)
         const scale = Math.min(MAX_SCALE, Math.max(minScale, current.scale * factor))
@@ -202,7 +292,7 @@ export function ZoomPanImage({
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      view
+      view: effectiveView
     }
     setDragging(true)
   }
@@ -239,18 +329,13 @@ export function ZoomPanImage({
         event.clientY - rect.top - rect.height / 2
       )
     } else {
+      setAnimateZoom(true)
       setIsFit(true)
     }
   }
 
-  const imageStyle = natural
-    ? {
-        height: natural.height,
-        transform: `translate(-50%, -50%) translate(${view.x}px, ${view.y}px) scale(${view.scale}) rotate(${viewRotation}deg)`,
-        transition: dragging ? 'none' : 'transform 90ms ease-out',
-        width: natural.width
-      }
-    : undefined
+  const transform = `translate(-50%, -50%) translate(${effectiveView.x}px, ${effectiveView.y}px) scale(${effectiveView.scale}) rotate(${viewRotation}deg)`
+  transformRef.current = transform
 
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: pointer surface; keyboard zoom is wired by the viewer.
@@ -267,7 +352,7 @@ export function ZoomPanImage({
       onPointerUp={endDrag}
       ref={containerRef}
     >
-      {placeholderSrc && !natural ? (
+      {placeholderSrc && !shown ? (
         <img
           alt=""
           aria-hidden
@@ -276,24 +361,40 @@ export function ZoomPanImage({
           src={placeholderSrc}
         />
       ) : null}
-      <img
-        alt={alt}
-        className={cn(
-          'absolute top-1/2 left-1/2 max-w-none origin-center',
-          natural ? 'opacity-100' : 'opacity-0'
-        )}
-        decoding="async"
-        draggable={false}
-        key={src}
-        onError={onError}
-        onLoad={(event) => {
-          const image = event.currentTarget
-          setNatural({ height: image.naturalHeight, width: image.naturalWidth })
-          onLoad?.(image.naturalWidth, image.naturalHeight)
-        }}
-        src={src}
-        style={imageStyle}
-      />
+      {outgoing ? (
+        <img
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-1/2 max-w-none origin-center"
+          draggable={false}
+          ref={outgoingRef}
+          src={outgoing.image.src}
+          style={{
+            height: outgoing.image.height,
+            transform: outgoing.transform,
+            width: outgoing.image.width
+          }}
+        />
+      ) : null}
+      {shown ? (
+        <img
+          alt={alt}
+          className="absolute top-1/2 left-1/2 max-w-none origin-center will-change-transform"
+          draggable={false}
+          key={shown.src}
+          ref={incomingRef}
+          src={shown.src}
+          style={{
+            height: shown.height,
+            transform,
+            transition:
+              animateZoom && !dragging
+                ? `transform ${ZOOM_ANIMATION_MS}ms cubic-bezier(0.2, 0, 0, 1)`
+                : 'none',
+            width: shown.width
+          }}
+        />
+      ) : null}
     </div>
   )
 }
