@@ -66,6 +66,11 @@ const toHistoryRecord = (item: DownloadHistoryItem): DownloadRecord => ({
   resolvedFormatId: item.resolvedFormatId,
   subtitleStatus: item.subtitleStatus,
   subtitleLanguages: item.subtitleLanguages,
+  sourceMediaKind: item.sourceMediaKind,
+  collectionSummary: item.collectionSummary,
+  origin: item.origin,
+  subscriptionId: item.subscriptionId,
+  glitchTipEventId: item.glitchTipEventId,
   entryType: 'history',
   downloadedAt: item.downloadedAt
 })

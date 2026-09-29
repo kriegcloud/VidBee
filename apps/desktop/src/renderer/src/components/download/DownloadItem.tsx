@@ -807,10 +807,7 @@ export function DownloadItem({
             if (isListIgnoreTarget(event.target)) {
               return
             }
-            if (download.collectionSummary) {
-              void handleOpenFolder()
-              return
-            }
+            // The detail route picks the gallery or the transcript player from the files on disk.
             handleOpenTranscript()
           }}
         >
