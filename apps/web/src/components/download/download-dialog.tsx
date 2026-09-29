@@ -9,6 +9,7 @@ import {
 	type OneClickContainerOption,
 } from "@vidbee/downloader-core/format-preferences";
 import { buildSingleVideoFormatSelector } from "@vidbee/downloader-core/format-selector";
+import { onlyFansProfile } from "@vidbee/downloader-core/onlyfans-profile";
 import {
 	resolveSocialSource,
 	SocialMediaOptionsSchema,
@@ -22,6 +23,7 @@ import { IngestDropOverlay } from "@vidbee/ui/components/ui/ingest-drop-overlay"
 import { Input } from "@vidbee/ui/components/ui/input";
 import { InstagramProfilePreview } from "@vidbee/ui/components/ui/instagram-profile-preview";
 import { Label } from "@vidbee/ui/components/ui/label";
+import { OnlyFansProfileDialog } from "@vidbee/ui/components/ui/onlyfans-profile-dialog";
 import { ProfileCollectionDialog } from "@vidbee/ui/components/ui/profile-collection-dialog";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
 import { SavedInstagramProfiles } from "@vidbee/ui/components/ui/saved-instagram-profiles";
@@ -67,9 +69,17 @@ interface DownloadDialogProps {
 const resolveShortLink = async (url: string): Promise<string> =>
 	(await orpcClient.resolveUrl({ url })).url;
 
+const onlyFansCommand = (
+	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansCommand,
+) => orpcClient.onlyFansProfile.command(input);
+const onlyFansDownload = (
+	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansDownload,
+) => orpcClient.onlyFansProfile.download(input);
+
 export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
+	const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null);
 	const [socialUrl, setSocialUrl] = useState<string | null>(null);
 	const [collectionProfile, setCollectionProfile] =
 		useState<CollectionProfile | null>(null);
@@ -455,6 +465,12 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 
 	const handleParseProfileUrl = useCallback(
 		async (trimmedUrl: string) => {
+			if (onlyFansProfile(trimmedUrl)) {
+				setOpen(false);
+				setOnlyFansUrl(trimmedUrl);
+				return;
+			}
+
 			setOpen(true);
 			setActiveTab("profile");
 			setProfileUrl(trimmedUrl);
@@ -921,9 +937,17 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				addUrlPopover={
 					<div className="flex items-center gap-2">
 						<SavedInstagramProfiles
-							loadProfiles={async () =>
-								(await orpcClient.instagramProfile.list()).profiles
-							}
+							loadProfiles={async () => [
+								...(await orpcClient.instagramProfile.list()).profiles,
+								...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
+									inspectionId: profile.profileUrl,
+									profile: {
+										username: `${profile.username} · OnlyFans`,
+										profileUrl: profile.profileUrl,
+									},
+									totalAssetCount: profile.items.length,
+								})),
+							]}
 							onSelect={(profileUrl) => {
 								void handleParseProfileUrl(profileUrl);
 							}}
@@ -1234,6 +1258,16 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				}
 				singleTabLabel={t("download.singleVideo")}
 			/>
+			{onlyFansUrl && (
+				<OnlyFansProfileDialog
+					key={onlyFansUrl}
+					url={onlyFansUrl}
+					destination={readWebSettings().downloadPath}
+					onClose={() => setOnlyFansUrl(null)}
+					command={onlyFansCommand}
+					download={onlyFansDownload}
+				/>
+			)}
 			{collectionProfile && (
 				<ProfileCollectionDialog
 					key={`${collectionProfile.platform}-${collectionProfile.owner}-${collectionProfile.selected}`}

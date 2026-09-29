@@ -15,6 +15,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
+import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
 import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
 import {
@@ -102,7 +103,7 @@ let dbPath: string | null = null
 let persistent = false
 let stopPowerSaveGuard: (() => void) | null = null
 
-const buildDownloadExecutor = (): HostRoutingExecutor => {
+const buildDownloadExecutor = (): OnlyFansBrowserExecutor => {
   const ytDlp = new YtDlpExecutor({
     resolveYtDlpPath,
     resolveFfmpegLocation,
@@ -126,13 +127,27 @@ const buildDownloadExecutor = (): HostRoutingExecutor => {
     resolveFfmpegPath: () => ffmpegManager.getPath(),
     defaultDownloadDir: resolveDesktopDownloadDir()
   })
-  return new HostRoutingExecutor(new DrmFallbackExecutor(ytDlp, capture), galleryDl)
+  return new OnlyFansBrowserExecutor(
+    getDesktopOnlyFansProfiles(),
+    new HostRoutingExecutor(new DrmFallbackExecutor(ytDlp, capture), galleryDl),
+    resolveDesktopDownloadDir
+  )
+}
+
+let onlyFansProfiles: OnlyFansProfiles | null = null
+export const getDesktopOnlyFansProfiles = (): OnlyFansProfiles => {
+  onlyFansProfiles ??= new OnlyFansProfiles(
+    path.join(app.getPath('userData'), 'onlyfans-profiles'),
+    resolveDesktopDownloadDir
+  )
+  return onlyFansProfiles
 }
 
 let instagramProfileInspector: InstagramProfileInspector | null = null
 
 export const stopDesktopInstagramProfileMappings = async (): Promise<void> => {
   await instagramProfileInspector?.stop()
+  await onlyFansProfiles?.stop()
 }
 
 export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector => {
@@ -277,6 +292,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   await restoreInstagramProfileGroupCaps(queue)
   await restoreSocialMediaGroupCaps(queue)
   await restoreBrowserCaptureGroupCap(queue)
+  await queue.setMaxPerGroup('onlyfans-browser', 1)
   try {
     const { sqlite, path: persistPath } = getDatabaseConnection()
     const taskCount = Number(

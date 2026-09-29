@@ -28,6 +28,7 @@ import {
   playlistEntryGroupKey,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
+import type { OnlyFansCommand, OnlyFansDownload } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
 import {
   downloadSocialMedia,
@@ -63,6 +64,7 @@ import { projectProgressForRenderer, projectTaskForRenderer } from './projection
 import {
   applyDesktopQueueConcurrency,
   getDesktopInstagramProfileInspector,
+  getDesktopOnlyFansProfiles,
   getDesktopTaskQueue,
   resolveDesktopDownloadDir,
   sourceAdmission,
@@ -340,6 +342,20 @@ class DownloadFacade extends EventEmitter {
 
   getPlaylistInfo(url: string): Promise<PlaylistInfo> {
     return fetchPlaylistInfo(url)
+  }
+
+  onlyFansProfileCommand(input: OnlyFansCommand) {
+    return getDesktopOnlyFansProfiles().command(input)
+  }
+
+  listOnlyFansProfiles() {
+    return getDesktopOnlyFansProfiles().list()
+  }
+
+  async downloadOnlyFansProfile(input: OnlyFansDownload) {
+    this.subscribeOnce()
+    await startDesktopTaskQueue()
+    return getDesktopOnlyFansProfiles().enqueue(this.queue, input)
   }
 
   listInstagramProfiles() {

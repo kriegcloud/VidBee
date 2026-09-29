@@ -1,6 +1,8 @@
+import ast
 import glob
 import hashlib
 import json
+import operator
 import os
 import random
 import re
@@ -261,6 +263,28 @@ def _of_eval_checksum(text, ops, decode_o):
     return indexes, result.const
 
 
+
+def _of_eval_rotation(expression):
+    """Evaluate only numeric arithmetic, never site-supplied Python or JS."""
+    operators = {ast.Add: operator.add, ast.Sub: operator.sub,
+                 ast.Mult: operator.mul, ast.Div: operator.truediv}
+
+    def evaluate(node):
+        if isinstance(node, ast.Constant) and type(node.value) is int:
+            return node.value
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+            value = evaluate(node.operand)
+            return -value if isinstance(node.op, ast.USub) else value
+        if isinstance(node, ast.BinOp) and type(node.op) in operators:
+            return operators[type(node.op)](evaluate(node.left), evaluate(node.right))
+        raise _RulesError('unsupported rotation arithmetic')
+
+    try:
+        return evaluate(ast.parse(expression, mode='eval').body)
+    except SyntaxError as error:
+        raise _RulesError('invalid rotation arithmetic') from error
+
+
 def _of_extract_sign_rules(js):
     """Extract the per-revision request-signing rules from the site's obfuscated
     sign chunk. The module ships a base64+RC4 string table that is rotated on load;
@@ -271,123 +295,111 @@ def _of_extract_sign_rules(js):
         raise _RulesError('string table not found')
     table = [json.loads(f'"{s}"') for s in re.findall(r'"((?:[^"\\]|\\.)*)"', m.group(1))]
 
-    # Decoder offset: function i(W,n){W-=487;
-    m = re.search(r'function \w+\((\w+),\w+\)\{\1-=(\d+);', js)
+    # Decoder wrappers change argument order and signed offsets between revisions.
+    m = re.search(r'function (\w+)\((\w+),\w+\)\{\2-=(\d+);', js)
     if not m:
         raise _RulesError('decoder not found')
-    off_i = int(m.group(2))
+    decoder, off_i = m.group(1), int(m.group(3))
+    wrappers = {}
+    for m in re.finditer(
+            r'function (\w+)\((\w+),(\w+)\)\{return (\w+)\(([^,{}]+),([^,{}]+)\)\}', js):
+        name, first, second, callee, left, right = m.groups()
+        wrappers[name] = (first, second, callee, left, right)
 
-    # Rotation wrapper t and target from the self-defending IIFE
-    m = re.search(r'!function\(\w+,\w+\)\{const \w+=\w+\(\);function (\w+)\(\w+,\w+\)'
-                  r'\{return \w+\(\w+-\s*-\s*(\d+),\w+\)\}', js)
-    if not m:
-        raise _RulesError('rotation wrapper not found')
-    name_t, off_t = m.group(1), int(m.group(2))
-    m = re.search(r'\}\(\w+,(\d+)\)', js)
-    if not m:
-        raise _RulesError('rotation target not found')
-    target = int(m.group(1))
+    def decode(name, args, arr, seen=()):
+        if name == decoder:
+            idx, key = args
+            if not isinstance(idx, int) or not isinstance(key, str) or not 0 <= idx - off_i < len(arr):
+                raise _RulesError('invalid decoder arguments')
+            return _of_rc4(_of_b64_decode(arr[idx - off_i]), key)
+        if name not in wrappers or name in seen:
+            raise _RulesError('unknown decoder wrapper')
+        first, second, callee, left, right = wrappers[name]
+        values = dict(zip((first, second), args))
 
-    # Module-level wrapper c (same shape as t; pick the other one)
-    name_c = off_c = None
-    for mm in re.finditer(r'function (\w+)\((\w+),(\w+)\)\{return \w+\(\3-\s*-\s*(\d+),\2\)\}', js):
-        if mm.group(1) != name_t:
-            name_c, off_c = mm.group(1), int(mm.group(4))
-            break
-    if name_c is None:
-        raise _RulesError('c wrapper not found')
+        def argument(expr):
+            m = re.fullmatch(r'(\w+)(?:\s*([+-])\s*(-?\s*\d+))?', expr)
+            if not m or m[1] not in values:
+                raise _RulesError('unsupported wrapper argument')
+            value = values[m[1]]
+            if m[2]:
+                offset = int(m[3].replace(' ', ''))
+                value += offset if m[2] == '+' else -offset
+            return value
 
-    def dec_i(idx, key, arr):
-        return _of_rc4(_of_b64_decode(arr[idx - off_i]), key)
+        return decode(callee, (argument(left), argument(right)), arr, (*seen, name))
 
-    # Solve the array rotation using the module's own self-check expression
-    m = re.search(r'if\((parseInt\(.{50,2000}?)\)\s*break', js, re.S)
-    if not m:
+    number = r'-?\d+(?:e\+?\d+)?'
+    literal = rf'(?:"(?:[^"\\]|\\.)*"|{number})'
+    call_re = re.compile(rf'(\w+)\(({literal}),\s*({literal})\)')
+
+    def decode_calls(text, arr):
+        def substitute(m):
+            if m[1] != decoder and m[1] not in wrappers:
+                return m[0]
+            args = tuple(json.loads(v) if v.startswith('"') else int(float(v)) for v in (m[2], m[3]))
+            return json.dumps(decode(m[1], args, arr))
+        return call_re.sub(substitute, text)
+
+    # Solve the rotation with the public module's arithmetic self-check.
+    m = re.search(r'if\(([-+]?parseInt\(.{50,2000}?)===\w+\)break', js, re.S)
+    target_match = re.search(r'\}\(\w+,(\d+)\)', js)
+    if not m or not target_match:
         raise _RulesError('rotation expression not found')
-    rotation_expr = m.group(1)
-
-    def try_rotation(arr):
-        def substitute(mm):
-            value = dec_i(int(mm.group(2)) + off_t, mm.group(1), arr)
-            pm = re.match(r'\s*([+-]?\d+)', value)  # JS parseInt is lenient
-            if not pm:
-                raise _RulesError('non-numeric in rotation expression')
-            return pm.group(1)
-        try:
-            expr = re.sub(r'parseInt\(\w+\("([^"]+)",\s*(-?\d+)\)\)', substitute, rotation_expr)
-        except (_RulesError, UnicodeDecodeError, IndexError, KeyError):
-            return False
-        expr = re.sub(r'===\s*\w+\s*$', '', expr)
-        if not re.fullmatch(r'[\d\s+\-*/()]+', expr):
-            return False
-        try:
-            return eval(expr, {'__builtins__': {}}, {}) == target  # noqa: S307 (arithmetic only)
-        except Exception:
-            return False
-
+    rotation_expr, target = m[1], int(target_match[1])
     for _ in range(len(table)):
-        if try_rotation(table):
-            break
+        try:
+            expr = decode_calls(rotation_expr, table)
+            def parse_int(m):
+                value = re.match(r'\s*([+-]?\d+)', json.loads(m[1]))
+                if not value:
+                    raise _RulesError('non-numeric rotation value')
+                return value[1]
+            expr = re.sub(r'parseInt\(("(?:[^"\\]|\\.)*")\)', parse_int, expr)
+            if re.fullmatch(r'[\d\s+\-*/()]+', expr) and _of_eval_rotation(expr) == target:
+                break
+        except (_RulesError, UnicodeDecodeError, IndexError, TypeError, ZeroDivisionError):
+            pass
         table.append(table.pop(0))
     else:
         raise _RulesError('string table rotation not solved')
 
-    def dec_c(key, num):
-        return dec_i(num + off_c, key, table)
-
-    # Checksum-inner wrapper o: function o(W,n){return c(n,W- -116)}
-    mo = re.search(
-        r'function (\w+)\((\w+),(\w+)\)\{return %s\(\3,\2-\s*-\s*(\d+)\)\}' % re.escape(name_c), js)
-    if not mo:
-        raise _RulesError('o wrapper not found')
-    name_o, off_o = mo.group(1), int(mo.group(4))
-
-    def dec_o(num, key):
-        return dec_c(key, num + off_o)
-
-    # Sanity checks on known plaintexts
-    m = re.search(r'\[\s*%s\("([^"]+)",\s*(\d+)\)\]\s*=\s*\+new Date' % re.escape(name_c), js)
-    if not m or dec_c(m.group(1), int(m.group(2))) != 'time':
+    js = decode_calls(js, table)
+    if not re.search(r'\["time"\]=\+new Date', js):
         raise _RulesError('time key check failed')
 
-    # static_param: first element of the array joined with "\n" for the sha1 input
+    consts = {name: json.loads(value) for name, value in
+              re.findall(r'(\w+):("(?:[^"\\]|\\.)*")', js)}
+    value_pattern = r'(?:"(?:[^"\\]|\\.)*"|\w+\["\w+"\])'
+
+    def string_value(value):
+        if value.startswith('"'):
+            return json.loads(value)
+        key = re.fullmatch(r'\w+\["(\w+)"\]', value)[1]
+        if key not in consts:
+            raise _RulesError('signing constant not found')
+        return consts[key]
+
     m = re.search(
-        r'\[\s*%s\("([^"]+)",\s*(\d+)\)\s*,\s*\w+\[[^\]]*\]\s*,\s*\w+\s*,\s*\w+\s*\|\|\s*0\s*\]'
-        r'\s*\[\s*%s\("([^"]+)",\s*(\d+)\)\s*\]\s*\(\s*"\\n"\s*\)' % (re.escape(name_c), re.escape(name_c)), js)
-    if not m or dec_c(m.group(3), int(m.group(4))) != 'join':
+        rf'\[({value_pattern}),\w+\["time"\],\w+,\w+\|\|0\]\["join"\]\("\\n"\)', js)
+    if not m:
         raise _RulesError('static_param anchor not found')
-    static_param = dec_c(m.group(1), int(m.group(2)))
-
-    # sign header key + prefix property
-    m = re.search(
-        r'return\s+\w+\[\s*%s\("([^"]+)",\s*(\d+)\)\s*\]\s*=\s*\[\s*\w+\[\s*%s\("([^"]+)",\s*(\d+)\)\s*\]'
-        r'\s*,\s*\w+\s*,\s*function' % (re.escape(name_c), re.escape(name_c)), js)
-    if not m or dec_c(m.group(1), int(m.group(2))) != 'sign':
-        raise _RulesError('sign/prefix anchor not found')
-    prefix_prop = dec_c(m.group(3), int(m.group(4)))
-
-    # suffix property + final join(":")
-    m = re.search(
-        r'\w+\[\s*%s\("([^"]+)",\s*(\d+)\)\s*\]\s*\]\s*\[\s*%s\("([^"]+)",\s*(\d+)\)\s*\]\s*\(\s*":"\s*\)'
-        % (re.escape(name_c), re.escape(name_c)), js)
-    if not m or dec_c(m.group(3), int(m.group(4))) != 'join':
+    static_param = string_value(m[1])
+    m = re.search(rf'return \w+\["sign"\]=\[({value_pattern}),\w+,function', js)
+    if not m:
+        raise _RulesError('prefix anchor not found')
+    prefix = string_value(m[1])
+    m = re.search(rf'\}}\(\w+\),({value_pattern})\]\["join"\]\(":"\)', js)
+    if not m:
         raise _RulesError('suffix anchor not found')
-    suffix_prop = dec_c(m.group(1), int(m.group(2)))
-
-    # Helper-object string constants: name: c("key", num)
-    consts = {name: (key, int(num)) for name, key, num in
-              re.findall(r'(\w+):%s\("([^"]+)",\s*(\d+)\)' % re.escape(name_c), js)}
-    if prefix_prop not in consts or suffix_prop not in consts:
-        raise _RulesError('prefix/suffix properties not found')
-    prefix = dec_c(consts[prefix_prop][0], consts[prefix_prop][1])
-    suffix = dec_c(consts[suffix_prop][0], consts[suffix_prop][1])
+    suffix = string_value(m[1])
 
     # Arithmetic helper map: name: function(a,b){return a<op>b}
     ops = dict(re.findall(r'(\w+):function\(\w+,\w+\)\{return \w+\s*([+\-*%])\s*\w+\}', js))
 
     # Checksum: symbolically evaluate the Math.abs(...) argument of the inlined IIFE
-    m = re.search(r'return\s+Math\[\s*%s\((\d+),"([^"]+)"\)\s*\]\s*\(' % re.escape(name_o), js)
-    if not m or dec_o(int(m.group(1)), m.group(2)) != 'abs':
+    m = re.search(r'return\s+Math\["abs"\]\(', js)
+    if not m:
         raise _RulesError('checksum anchor not found')
     expr_start = m.end()
     depth = 1
@@ -408,11 +420,10 @@ def _of_extract_sign_rules(js):
     if depth:
         raise _RulesError('unbalanced checksum expression')
     tail = js[i:i + 60]
-    mt = re.match(r'\[\s*%s\((\d+),"([^"]+)"\)\s*\]\s*\(\s*16\s*\)' % re.escape(name_o), tail)
-    if not mt or dec_o(int(mt.group(1)), mt.group(2)) != 'toString':
+    if not re.match(r'\["toString"\]\(16\)', tail):
         raise _RulesError('toString check failed')
 
-    checksum_indexes, checksum_constant = _of_eval_checksum(js[expr_start:i - 1], ops, dec_o)
+    checksum_indexes, checksum_constant = _of_eval_checksum(js[expr_start:i - 1], ops, None)
     return {
         'static_param': static_param,
         'prefix': prefix,

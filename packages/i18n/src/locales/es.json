@@ -1847,5 +1847,14 @@
     "noStory": "No se encontró ninguna historia activa. Las historias caducan a las 24 horas.",
     "savedHint": "Las referencias se guardan en este dispositivo. Selecciona elementos ahora o vuelve a abrir este perfil más tarde. Actualiza una categoría después de renovar las cookies. Los enlaces guardados no recuperan historias caducadas.",
     "alreadySaved": "Ya en cola o descargado"
+  },
+  "onlyFans": {
+    "sessionHint": "Inicia sesión una vez en el navegador exclusivo de VidBee en este equipo. Nunca se copian las cookies de tu Chrome habitual. Explora fotos o vídeos y selecciona los archivos disponibles para descargar.",
+    "openBrowser": "Abrir navegador",
+    "videos": "Vídeos",
+    "mapping": "Explorando perfil…",
+    "partial": "Exploración parcial guardada. Explora de nuevo para encontrar más elementos.",
+    "locked": "Bloqueado",
+    "queued": "{{count}} archivos en cola"
   }
 }

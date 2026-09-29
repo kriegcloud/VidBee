@@ -1,4 +1,10 @@
 import { oc } from '@orpc/contract'
+import { z } from 'zod'
+import {
+  OnlyFansCommandSchema,
+  OnlyFansDownloadSchema,
+  OnlyFansProfileSchema
+} from './onlyfans-profile'
 import {
   CancelDownloadInputSchema,
   CancelDownloadOutputSchema,
@@ -48,6 +54,11 @@ import {
 } from './schemas'
 
 export const downloaderContract = {
+  onlyFansProfile: {
+    command: oc.input(OnlyFansCommandSchema).output(OnlyFansProfileSchema),
+    list: oc.output(z.array(OnlyFansProfileSchema)),
+    download: oc.input(OnlyFansDownloadSchema).output(z.object({ count: z.number() }))
+  },
   socialMedia: {
     inspect: oc.input(SocialMediaInspectInputSchema).output(SocialMediaInspectOutputSchema),
     download: oc.input(SocialMediaDownloadInputSchema).output(SocialMediaDownloadOutputSchema)

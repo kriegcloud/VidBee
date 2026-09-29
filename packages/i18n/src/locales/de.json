@@ -1847,5 +1847,14 @@
     "noStory": "Keine aktive Story gefunden. Storys verfallen nach 24 Stunden.",
     "savedHint": "Erfasste Verweise werden auf diesem Gerät gespeichert. Wählen Sie jetzt Elemente aus oder öffnen Sie dieses Profil später erneut. Aktualisieren Sie eine Kategorie nach dem Erneuern der Cookies. Gespeicherte Story-Links stellen abgelaufene Storys nicht wieder her.",
     "alreadySaved": "Bereits eingereiht oder heruntergeladen"
+  },
+  "onlyFans": {
+    "sessionHint": "Melde dich einmal im separaten VidBee-Browser auf diesem Gerät an. Deine normalen Chrome-Cookies werden nie kopiert. Erfasse Fotos oder Videos und wähle verfügbare Medien zum Herunterladen aus.",
+    "openBrowser": "Browser öffnen",
+    "videos": "Videos",
+    "mapping": "Profil wird erfasst…",
+    "partial": "Teilweise Erfassung gespeichert. Erneut erfassen, um weitere Einträge zu finden.",
+    "locked": "Gesperrt",
+    "queued": "{{count}} Dateien eingereiht"
   }
 }

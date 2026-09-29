@@ -20,10 +20,12 @@ import {
   buildSingleVideoFormatSelector,
   isMuxedVideoFormat
 } from '@vidbee/downloader-core/format-selector'
+import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
+import { OnlyFansProfileDialog } from '@vidbee/ui/components/ui/onlyfans-profile-dialog'
 import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collection-dialog'
 import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
@@ -64,12 +66,16 @@ interface DownloadDialogProps {
 
 const resolveShortLink = (url: string): Promise<string> => ipcServices.download.resolveUrl(url)
 
+const onlyFansCommand = ipcServices.download.onlyFansProfileCommand
+const onlyFansDownload = ipcServices.download.downloadOnlyFansProfile
+
 export function DownloadDialog({
   onOpenSupportedSites,
   onOpenSettings: _onOpenSettings
 }: DownloadDialogProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null)
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
   const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
@@ -528,6 +534,12 @@ export function DownloadDialog({
 
   const handleParseProfileUrl = useCallback(
     async (trimmedUrl: string) => {
+      if (onlyFansProfile(trimmedUrl)) {
+        setOpen(false)
+        setOnlyFansUrl(trimmedUrl)
+        return
+      }
+
       setOpen(true)
       setActiveTab('profile')
       setProfileUrl(trimmedUrl)
@@ -1043,7 +1055,17 @@ export function DownloadDialog({
         addUrlPopover={
           <div className="flex items-center gap-2">
             <SavedInstagramProfiles
-              loadProfiles={async () => ipcServices.download.listInstagramProfiles()}
+              loadProfiles={async () => [
+                ...(await ipcServices.download.listInstagramProfiles()),
+                ...(await ipcServices.download.listOnlyFansProfiles()).map((profile) => ({
+                  inspectionId: profile.profileUrl,
+                  profile: {
+                    username: `${profile.username} · OnlyFans`,
+                    profileUrl: profile.profileUrl
+                  },
+                  totalAssetCount: profile.items.length
+                }))
+              ]}
               onSelect={(profileUrl) => {
                 void handleParseProfileUrl(profileUrl)
               }}
@@ -1420,6 +1442,16 @@ export function DownloadDialog({
         }
         singleTabLabel={t('download.singleVideo')}
       />
+      {onlyFansUrl && (
+        <OnlyFansProfileDialog
+          command={onlyFansCommand}
+          destination={settings.downloadPath}
+          download={onlyFansDownload}
+          key={onlyFansUrl}
+          onClose={() => setOnlyFansUrl(null)}
+          url={onlyFansUrl}
+        />
+      )}
       {collectionProfile && (
         <ProfileCollectionDialog
           destination={settings.downloadPath}

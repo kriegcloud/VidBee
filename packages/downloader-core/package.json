@@ -25,7 +25,8 @@
     "./yt-dlp-args": "./src/yt-dlp-args.ts",
     "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts",
     "./social-media": "./src/social-media.ts",
-    "./social-media-service": "./src/social-media-service.ts"
+    "./social-media-service": "./src/social-media-service.ts",
+    "./onlyfans-profile": "./src/onlyfans-profile.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

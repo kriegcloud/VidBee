@@ -1,35 +1,40 @@
 import { describe, expect, it } from 'vitest'
+import { onlyFansProfile } from '../src/onlyfans-profile'
 import { buildDownloadArgs, buildPlaylistInfoArgs, buildVideoInfoArgs } from '../src/yt-dlp-args'
 
-const OF_GALLERY = 'https://onlyfans.com/my/chats/chat/312049181/gallery'
-const OF_PROFILE_MEDIA = 'https://onlyfans.com/kenzeygreyvip/media'
-const OF_SOURCE_MP4 = 'https://cdn2.onlyfans.com/files/a/ab/abc/clip_source.mp4'
-const OF_PHOTO = 'https://cdn2.onlyfans.com/files/a/ab/abc/1536x2048_photo.jpg'
+describe('OnlyFans session isolation', () => {
+  it.each([
+    'https://onlyfans.com/medusa4prsdnt/media',
+    'https://onlyfans.com/my/chats/chat/123/gallery',
+    'https://cdn2.onlyfans.com/files/a/clip.mp4'
+  ])('blocks cookie replay for all legacy yt-dlp paths: %s', (url) => {
+    const settings = { browserForCookies: 'chrome', cookiesPath: '/tmp/session.txt' }
+    expect(() => buildPlaylistInfoArgs(url, settings)).toThrow('dedicated browser')
+    expect(() => buildVideoInfoArgs(url, settings)).toThrow('dedicated browser')
+    expect(() => buildDownloadArgs({ url, type: 'video' }, '/tmp/downloads', settings)).toThrow(
+      'dedicated browser'
+    )
+  })
 
-describe('OnlyFans download identity', () => {
-  it('impersonates Chrome and sends an OnlyFans referer for gallery probes', () => {
-    for (const url of [OF_GALLERY, OF_PROFILE_MEDIA]) {
-      const playlistArgs = buildPlaylistInfoArgs(url, {})
-      const videoArgs = buildVideoInfoArgs(url, {})
-
-      for (const args of [playlistArgs, videoArgs]) {
-        expect(args).toContain('--impersonate')
-        expect(args[args.indexOf('--impersonate') + 1]).toBe('chrome')
-        expect(args).toContain('--add-header')
-        expect(args[args.indexOf('--add-header') + 1]).toBe('Referer:https://onlyfans.com/')
-        expect(args).toContain('onlyfans:page_sleep=0')
-      }
+  it('normalizes profile aliases and rejects unrelated URLs', () => {
+    expect(onlyFansProfile('https://onlyfans.com/Example/media?x=1')).toEqual({
+      username: 'example',
+      profileUrl: 'https://onlyfans.com/example'
+    })
+    for (const url of [
+      'https://onlyfans.com.evil.test/example',
+      'https://onlyfans.com/my/chats',
+      'https://name@onlyfans.com/example',
+      'ftp://onlyfans.com/example',
+      'https://onlyfans.com/123/example'
+    ]) {
+      expect(onlyFansProfile(url)).toBeNull()
     }
   })
 
-  it('downloads CDN photos and source MP4s without a format merge', () => {
-    for (const url of [OF_SOURCE_MP4, OF_PHOTO]) {
-      const args = buildDownloadArgs({ url, type: 'video' }, '/tmp/vidbee-downloads', {})
-      expect(args).toContain('--impersonate')
-      expect(args[args.indexOf('--impersonate') + 1]).toBe('chrome')
-      expect(args).toContain('Referer:https://onlyfans.com/')
-      expect(args).not.toContain('-f')
-      expect(args).not.toContain('--merge-output-format')
-    }
+  it('preserves non-OnlyFans extraction', () => {
+    expect(buildVideoInfoArgs('https://youtube.com/watch?v=fixture', {})).toContain(
+      '--ignore-config'
+    )
   })
 })

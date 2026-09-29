@@ -1847,5 +1847,14 @@
     "noStory": "未找到有效快拍。快拍会在24小时后过期。",
     "savedHint": "引用链接保存在此设备上。现在选择项目，或稍后重新打开此主页。更新 Cookie 后可刷新分类。已保存的链接无法恢复过期快拍。",
     "alreadySaved": "已排队或已下载"
+  },
+  "onlyFans": {
+    "sessionHint": "请在此设备的 VidBee 专用浏览器中登录一次。不会复制您日常使用的 Chrome Cookie。扫描照片或视频，然后选择可下载的媒体。",
+    "openBrowser": "打开浏览器",
+    "videos": "视频",
+    "mapping": "正在扫描个人主页…",
+    "partial": "已保存部分扫描结果。再次扫描以发现更多项目。",
+    "locked": "已锁定",
+    "queued": "已将 {{count}} 个文件加入队列"
   }
 }

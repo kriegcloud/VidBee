@@ -19,6 +19,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
+import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
 import {
   buildGalleryDlRuntimeArgs,
   type DownloadRuntimeSettings,
@@ -154,9 +155,17 @@ const browserCaptureExecutor = new BrowserCaptureExecutor({
   execArgv: captureSidecarScript?.endsWith('.ts') ? ['--import', 'tsx'] : undefined,
   defaultDownloadDir: apiDefaultDownloadDir
 })
-const downloadExecutor = new HostRoutingExecutor(
-  new DrmFallbackExecutor(ytDlpExecutor, browserCaptureExecutor),
-  galleryDlExecutor
+export const onlyFansProfiles = new OnlyFansProfiles(
+  path.join(apiDataDir, 'onlyfans-profiles'),
+  () => apiDefaultDownloadDir
+)
+const downloadExecutor = new OnlyFansBrowserExecutor(
+  onlyFansProfiles,
+  new HostRoutingExecutor(
+    new DrmFallbackExecutor(ytDlpExecutor, browserCaptureExecutor),
+    galleryDlExecutor
+  ),
+  () => apiDefaultDownloadDir
 )
 
 export const instagramProfileInspector = new InstagramProfileInspector({
@@ -287,6 +296,7 @@ export const startTaskQueue = async (): Promise<void> => {
   await restoreInstagramProfileGroupCaps(taskQueue)
   await restoreSocialMediaGroupCaps(taskQueue)
   await restoreBrowserCaptureGroupCap(taskQueue)
+  await taskQueue.setMaxPerGroup('onlyfans-browser', 1)
   try {
     const settings = await (await import('./web-settings-store')).webSettingsStore.get()
     autoEnabled = settings.autoTranscribeAfterDownload === true
@@ -304,6 +314,7 @@ export const setApiAutoTranscribe = (enabled: boolean): void => {
 
 export const stopTaskQueue = async (): Promise<void> => {
   await instagramProfileInspector.stop()
+  await onlyFansProfiles.stop()
   if (!started) {
     return
   }

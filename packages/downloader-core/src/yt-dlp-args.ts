@@ -9,6 +9,7 @@ import {
   resolveFilenameTemplate
 } from './filename-style'
 import type { OneClickContainerOption } from './format-preferences'
+import { assertOnlyFansBrowserSession } from './onlyfans-profile'
 import { expandSubtitleLanguageAliases, resolveSubtitleLanguages } from './subtitle-languages'
 
 export interface YtDlpDownloadSettings {
@@ -541,6 +542,7 @@ export const buildDownloadArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
+  assertOnlyFansBrowserSession(options.url)
   assertDownloadSourceUrl(options.url)
   validateDownloadTimeRange(options.startTime, options.endTime)
   const args: string[] = ['--no-playlist', '--no-mtime', '--encoding', 'utf-8']
@@ -705,6 +707,7 @@ export const buildVideoInfoArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
+  assertOnlyFansBrowserSession(url)
   assertDownloadSourceUrl(url)
   const args = ['-j', '--no-playlist', '--no-warnings', '--encoding', 'utf-8']
 
@@ -752,6 +755,7 @@ export const buildPlaylistInfoArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
+  assertOnlyFansBrowserSession(url)
   assertDownloadSourceUrl(url)
   // GitHub issue #322: a single unavailable entry (e.g. an age-restricted
   // video in a channel/playlist) must not abort listing the whole playlist.

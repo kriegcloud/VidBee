@@ -34,6 +34,7 @@ import { projectTaskForApi } from './projection'
 import {
   applyApiTranscriptionConcurrency,
   instagramProfileInspector,
+  onlyFansProfiles,
   resolveGalleryDlExtraArgs,
   resolveGalleryDlPath,
   setApiAutoTranscribe,
@@ -448,6 +449,13 @@ export const rpcRouter = os.router({
         settings: { ...storedSettings, ...input.settings }
       })
     })
+  },
+  onlyFansProfile: {
+    command: os.onlyFansProfile.command.handler(({ input }) => onlyFansProfiles.command(input)),
+    list: os.onlyFansProfile.list.handler(() => onlyFansProfiles.list()),
+    download: os.onlyFansProfile.download.handler(({ input }) =>
+      onlyFansProfiles.enqueue(taskQueue, input)
+    )
   },
   instagramProfile: {
     list: os.instagramProfile.list.handler(() => ({ profiles: instagramProfileInspector.list() })),

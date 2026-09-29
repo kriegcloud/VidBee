@@ -1847,5 +1847,14 @@
     "noStory": "Nessuna storia attiva trovata. Le storie scadono dopo 24 ore.",
     "savedHint": "I riferimenti sono salvati su questo dispositivo. Seleziona gli elementi ora o riapri questo profilo più tardi. Aggiorna una categoria dopo aver aggiornato i cookie. I link salvati non recuperano le storie scadute.",
     "alreadySaved": "Già in coda o scaricato"
+  },
+  "onlyFans": {
+    "sessionHint": "Accedi una volta nel browser dedicato a VidBee su questo dispositivo. I cookie del tuo Chrome abituale non vengono mai copiati. Esplora foto o video, poi seleziona i contenuti disponibili da scaricare.",
+    "openBrowser": "Apri browser",
+    "videos": "Video",
+    "mapping": "Esplorazione del profilo…",
+    "partial": "Esplorazione parziale salvata. Ripetila per trovare altri elementi.",
+    "locked": "Bloccato",
+    "queued": "{{count}} file in coda"
   }
 }

@@ -1847,5 +1847,14 @@
     "noStory": "Aucune story active trouvée. Les stories expirent après 24 heures.",
     "savedHint": "Les références sont enregistrées sur cet appareil. Sélectionnez des éléments maintenant ou rouvrez ce profil plus tard. Actualisez une catégorie après avoir mis à jour les cookies. Les liens enregistrés ne restaurent pas les stories expirées.",
     "alreadySaved": "Déjà en file ou téléchargé"
+  },
+  "onlyFans": {
+    "sessionHint": "Connectez-vous une fois dans le navigateur dédié à VidBee sur cet appareil. Les cookies de votre Chrome habituel ne sont jamais copiés. Répertoriez les photos ou vidéos, puis sélectionnez les médias disponibles à télécharger.",
+    "openBrowser": "Ouvrir le navigateur",
+    "videos": "Vidéos",
+    "mapping": "Analyse du profil…",
+    "partial": "Analyse partielle enregistrée. Relancez-la pour découvrir davantage de médias.",
+    "locked": "Verrouillé",
+    "queued": "{{count}} fichiers en attente"
   }
 }

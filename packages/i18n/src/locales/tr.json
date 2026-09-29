@@ -1847,5 +1847,14 @@
     "noStory": "Aktif hikâye bulunamadı. Hikâyeler 24 saat sonra sona erer.",
     "savedHint": "Referanslar bu cihazda saklanır. Öğeleri şimdi seçin veya profili daha sonra açın. Çerezleri güncelledikten sonra kategoriyi yenileyin. Kaydedilen bağlantılar süresi dolmuş hikâyeleri geri getirmez.",
     "alreadySaved": "Zaten sırada veya indirildi"
+  },
+  "onlyFans": {
+    "sessionHint": "Bu cihazdaki özel VidBee tarayıcısında bir kez oturum açın. Normal Chrome çerezleriniz asla kopyalanmaz. Fotoğrafları veya videoları tarayın, ardından indirilebilir içerikleri seçin.",
+    "openBrowser": "Tarayıcıyı aç",
+    "videos": "Videolar",
+    "mapping": "Profil taranıyor…",
+    "partial": "Kısmi tarama kaydedildi. Daha fazla öğe bulmak için yeniden tarayın.",
+    "locked": "Kilitli",
+    "queued": "{{count}} dosya kuyruğa alındı"
   }
 }

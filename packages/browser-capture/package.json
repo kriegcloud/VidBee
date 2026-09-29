@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./sidecar": "./src/sidecar.ts"
+    "./sidecar": "./src/sidecar.ts",
+    "./onlyfans-profile": "./src/onlyfans-profile.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

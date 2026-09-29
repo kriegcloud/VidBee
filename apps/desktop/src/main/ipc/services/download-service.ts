@@ -4,6 +4,7 @@ import type {
   InstagramProfileDownloadResult,
   InstagramProfileInspection
 } from '@vidbee/downloader-core'
+import type { OnlyFansCommand, OnlyFansDownload } from '@vidbee/downloader-core/onlyfans-profile'
 import type { SocialMediaDownloadRequest } from '@vidbee/downloader-core/social-media-service'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type {
@@ -19,6 +20,21 @@ import { downloadEngine } from '../../lib/download-facade'
 
 class DownloadService extends IpcService {
   static readonly groupName = 'download'
+
+  @IpcMethod()
+  onlyFansProfileCommand(_context: IpcContext, input: OnlyFansCommand) {
+    return downloadEngine.onlyFansProfileCommand(input)
+  }
+
+  @IpcMethod()
+  listOnlyFansProfiles(_context: IpcContext) {
+    return downloadEngine.listOnlyFansProfiles()
+  }
+
+  @IpcMethod()
+  downloadOnlyFansProfile(_context: IpcContext, input: OnlyFansDownload) {
+    return downloadEngine.downloadOnlyFansProfile(input)
+  }
 
   @IpcMethod()
   inspectSocialMedia(_context: IpcContext, url: string) {

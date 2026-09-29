@@ -1847,5 +1847,14 @@
     "noStory": "Tidak ada cerita aktif. Cerita kedaluwarsa setelah 24 jam.",
     "savedHint": "Referensi disimpan di perangkat ini. Pilih item sekarang atau buka kembali profil nanti. Segarkan kategori setelah memperbarui cookie. Tautan tersimpan tidak dapat memulihkan cerita yang kedaluwarsa.",
     "alreadySaved": "Sudah di antrean atau diunduh"
+  },
+  "onlyFans": {
+    "sessionHint": "Masuk sekali di browser khusus VidBee pada perangkat ini. Cookie Chrome biasa Anda tidak pernah disalin. Petakan foto atau video, lalu pilih media yang tersedia untuk diunduh.",
+    "openBrowser": "Buka browser",
+    "videos": "Video",
+    "mapping": "Memetakan profil…",
+    "partial": "Pemetaan sebagian disimpan. Petakan lagi untuk menemukan lebih banyak item.",
+    "locked": "Terkunci",
+    "queued": "{{count}} file masuk antrean"
   }
 }
