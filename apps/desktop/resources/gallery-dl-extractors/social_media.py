@@ -22,11 +22,11 @@ PREFIX = "__VIDBEE_SOCIAL__\t"
 IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "avif", "heic", "heif", "bmp"}
 VIDEO_EXTENSIONS = {"mp4", "webm", "mov", "mkv", "m4v", "gifv", "ts"}
 AUDIO_EXTENSIONS = {"mp3", "m4a", "aac", "ogg", "opus", "wav"}
-SOCIAL = {"twitter", "reddit", "tiktok"}
-MEDIA_HOSTS = {"imgur", "redgifs", "gfycat", "twitter", "reddit", "tiktok"}
+SOCIAL = {"twitter", "reddit", "tiktok", "instagram"}
+MEDIA_HOSTS = {"imgur", "redgifs", "gfycat", "twitter", "reddit", "tiktok", "instagram"}
 LINKED_CATEGORIES = {
     "twitter": {"tweet", "image"}, "reddit": {"submission", "image", "redirect"},
-    "tiktok": {"post", "vmpost"}, "imgur": {"image", "album", "gallery"},
+    "tiktok": {"post", "vmpost"}, "instagram": {"post"}, "imgur": {"image", "album", "gallery"},
     "redgifs": {"image"}, "gfycat": {"gfycat"},
 }
 GRAPH_CATEGORIES = {"following", "followers", "list-members"}
@@ -214,6 +214,7 @@ class VidBeeSocialExtractor(Extractor):
                        "videos": "dash", "pinned": True, "recursion": 1 if self.options.get("linkedMedia", True) else 0, "selftext": self.options.get("linkedMedia", True)},
             "tiktok": {"photos": True, "videos": True, "covers": False,
                        "audio": self.options.get("slideshowAudio", False), "subtitles": False},
+            "instagram": {"videos": True, "previews": False, "audio": False},
         }
         if thread:
             settings["reddit"]["only"] = False
@@ -418,7 +419,7 @@ class VidBeeSocialExtractor(Extractor):
                     image = data.get("image") or {}
                     width = int(image.get("imageWidth") or width)
                     height = int(image.get("imageHeight") or height)
-                platform = {"twitter": "X", "reddit": "Reddit", "tiktok": "TikTok"}.get(child.category, safe(child.category))
+                platform = {"twitter": "X", "reddit": "Reddit", "tiktok": "TikTok", "instagram": "Instagram"}.get(child.category, safe(child.category))
                 metadata = {**data, "vb_platform": platform, "vb_owner": safe(data.get("subreddit") or author),
                             "vb_post": safe(post_id), "vb_asset": safe(asset_id), "vb_key": key,
                             "vb_kind": kind, "vb_width": width, "vb_height": height, "extension": ext}

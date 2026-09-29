@@ -20,7 +20,7 @@ export type SocialMediaOptions = z.infer<typeof SocialMediaOptionsSchema>
 export const DEFAULT_SOCIAL_MEDIA_OPTIONS: SocialMediaOptions = SocialMediaOptionsSchema.parse({})
 
 export const SocialSourceSchema = z.object({
-  platform: z.enum(['x', 'reddit', 'tiktok']),
+  platform: z.enum(['x', 'reddit', 'tiktok', 'instagram']),
   url: z.url(),
   kind: z.enum(['post', 'profile', 'feed', 'image', 'unsupported']),
   category: z.string(),
@@ -54,6 +54,14 @@ const TIKTOK_HOSTS = new Set([
   'vm.tiktok.com',
   'vt.tiktok.com'
 ])
+const INSTAGRAM_HOSTS = new Set([
+  'instagram.com',
+  'www.instagram.com',
+  'm.instagram.com',
+  'instagr.am'
+])
+const INSTAGRAM_USER = /^[A-Za-z0-9_.]{1,30}$/
+const INSTAGRAM_SHORTCODE = /^[A-Za-z0-9_-]+$/
 const X_USER = /^[A-Za-z0-9_]{1,15}$/
 const TIKTOK_USER = /^@[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$/
 const REDDIT_USER = /^[A-Za-z0-9_-]+$/
@@ -281,6 +289,26 @@ const resolveTikTok = (url: URL, parts: string[]): SocialSource => {
   return source
 }
 
+/**
+ * Instagram posts can be image carousels that yt-dlp cannot download, so they
+ * use the gallery-dl collection path. Reels and profiles keep their own flows.
+ */
+const resolveInstagram = (parts: string[]): SocialSource | null => {
+  const offset = parts.length === 3 && INSTAGRAM_USER.test(parts[0]) ? 1 : 0
+  const [section = '', code = ''] = parts.slice(offset)
+  if (parts.length !== offset + 2 || section !== 'p' || !INSTAGRAM_SHORTCODE.test(code)) {
+    return null
+  }
+  const url = new URL(`https://www.instagram.com/p/${code}/`)
+  return {
+    ...descriptor('instagram', url),
+    kind: 'post',
+    category: 'post',
+    owner: offset ? parts[0] : 'instagram',
+    requiresAuth: true
+  }
+}
+
 /** Resolve only explicit supported surfaces; platform URLs never silently become videos. */
 export const resolveSocialSource = (value: string): SocialSource | null => {
   try {
@@ -338,6 +366,9 @@ export const resolveSocialSource = (value: string): SocialSource | null => {
         url.pathname = parts.join('/')
       }
       return resolveTikTok(url, parts)
+    }
+    if (INSTAGRAM_HOSTS.has(host)) {
+      return resolveInstagram(parts)
     }
     return null
   } catch {

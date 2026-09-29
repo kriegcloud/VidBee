@@ -219,14 +219,16 @@ export function SocialMediaDialog({
                   )}
                 </>
               )}
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  checked={options.linkedMedia}
-                  onChange={(event) => setFlag('linkedMedia', event.target.checked)}
-                  type="checkbox"
-                />
-                {t('socialMedia.linkedMedia')}
-              </label>
+              {source.platform !== 'instagram' && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    checked={options.linkedMedia}
+                    onChange={(event) => setFlag('linkedMedia', event.target.checked)}
+                    type="checkbox"
+                  />
+                  {t('socialMedia.linkedMedia')}
+                </label>
+              )}
               {source.platform === 'tiktok' && (
                 <label className="flex items-center gap-2 text-sm">
                   <input

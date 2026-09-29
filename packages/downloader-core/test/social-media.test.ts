@@ -33,7 +33,24 @@ describe('social collection routing', () => {
       'post',
       'https://www.tiktok.com/@fixture/photo/123'
     ],
-    ['https://tiktok.com/@fixture/liked', 'tiktok', 'feed', 'https://www.tiktok.com/@fixture/likes']
+    [
+      'https://tiktok.com/@fixture/liked',
+      'tiktok',
+      'feed',
+      'https://www.tiktok.com/@fixture/likes'
+    ],
+    [
+      'https://www.instagram.com/fixture/p/DYlQVsCDFmP/?img_index=18',
+      'instagram',
+      'post',
+      'https://www.instagram.com/p/DYlQVsCDFmP/'
+    ],
+    [
+      'https://instagram.com/p/DYlQVsCDFmP',
+      'instagram',
+      'post',
+      'https://www.instagram.com/p/DYlQVsCDFmP/'
+    ]
   ])('normalizes %s', (url, platform, kind, canonical) => {
     expect(resolveSocialSource(url)).toMatchObject({ platform, kind, url: canonical })
     expect(resolveDownloadTaskKind(url, 'video')).toBe('social-media')
@@ -72,6 +89,14 @@ describe('social collection routing', () => {
   ])('rejects unsupported surface %s without video fallback', (url) => {
     expect(resolveSocialSource(url)?.kind).toBe('unsupported')
     expect(resolveDownloadTaskKind(url, 'video')).toBe('social-media')
+  })
+  it.each([
+    'https://www.instagram.com/reel/DYlQVsCDFmP/',
+    'https://www.instagram.com/fixture/',
+    'https://www.instagram.com/fixture/tagged/',
+    'https://www.instagram.com/p/DYlQVsCDFmP/c/123/'
+  ])('leaves Instagram reel and profile URL %s to their own flows', (url) => {
+    expect(resolveSocialSource(url)).toBeNull()
   })
   it.each([
     'https://x.com.evil.test/u/status/123',

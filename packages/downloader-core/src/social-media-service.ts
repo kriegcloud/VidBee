@@ -77,7 +77,7 @@ export const downloadSocialMedia = async (
 }
 
 export const restoreSocialMediaGroupCaps = async (queue: TaskQueueAPI): Promise<void> => {
-  for (const platform of ['x', 'reddit', 'tiktok']) {
+  for (const platform of ['x', 'reddit', 'tiktok', 'instagram']) {
     await queue.setMaxPerGroup(`social:${platform}`, 1)
   }
 }

@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 from gallery_dl import config, extractor, job
 from gallery_dl.extractor.common import Extractor, Message
-from gallery_dl.extractor import reddit, tiktok
+from gallery_dl.extractor import instagram, reddit, tiktok
 
 MODULE = Path(__file__).resolve().parents[1] / 'resources/gallery-dl-extractors/social_media.py'
 spec = importlib.util.spec_from_file_location('vidbee_social_test', MODULE)
@@ -228,6 +228,23 @@ class SocialMediaTest(unittest.TestCase):
         self.assertEqual(result['videos'], 0)
         for i in range(1, 4):
             self.assertEqual((Path(self.temp.name) / f'TikTok/fixture/123/{i}.png').read_bytes(), PNG)
+
+    def test_pinned_instagram_extractor_downloads_image_only_carousel(self):
+        # Image-only carousels have no video formats, so yt-dlp cannot fetch them.
+        items = [{'pk': str(i), 'media_type': 1, 'taken_at': 1789516800,
+                  'image_versions2': {'candidates': [
+                      {'url': Fixture.asset_url + f'/{i}.png', 'width': 1, 'height': 1}]}}
+                 for i in range(1, 4)]
+        post = {'pk': '99', 'code': 'DYlQVsCDFmP', 'taken_at': 1789516800, 'media_type': 8,
+                'caption': None, 'user': {'pk': '7', 'username': 'fixture'}, 'carousel_media': items}
+        config.set(('extractor', 'vidbee-social'), 'source',
+                   {'platform': 'instagram', 'kind': 'post', 'owner': 'fixture'})
+        with patch.object(instagram.InstagramRestAPI, 'media', return_value=[post]):
+            status, result = self.run_download(url='https://www.instagram.com/p/DYlQVsCDFmP/')
+        self.assertEqual(status, 0)
+        self.assertEqual((result['posts'], result['images'], result['videos']), (1, 3, 0))
+        for i in range(1, 4):
+            self.assertEqual((Path(self.temp.name) / f'Instagram/fixture/99/{i}.png').read_bytes(), PNG)
 
     def test_pinned_reddit_extractor_includes_comment_media(self):
         post = {'id': 'abc123', 'author': 'fixture', 'created_utc': 1789516800,
