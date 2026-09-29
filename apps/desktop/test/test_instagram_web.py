@@ -114,6 +114,23 @@ class TestInstagramWeb(unittest.TestCase):
         self.assertEqual(operation, ie._REELS_PAGE)
         self.assertEqual(variables['id'], '123')
 
+    def test_tagged_uses_web_query_and_resolves_grid_media(self):
+        grid_video = {**media('2', True), 'video_versions': None}
+        def tagged(nodes, cursor=None, more=False):
+            return {'xdt_api__v1__usertags__user_id__feed_connection': {
+                'edges': [{'node': node} for node in nodes],
+                'page_info': {'has_next_page': more, 'end_cursor': cursor}}}
+        ie = Harness([tagged([media('1')], 'next', True), tagged([grid_video])])
+        ie.user_id = '456'
+        posts = list(ie._web_pages(tagged=True))
+        self.assertEqual(len(posts), 2)
+        self.assertTrue(posts[1]['video_versions'])
+        self.assertEqual(ie.api.media.call_count, 2)
+        ie.api.user_id.assert_not_called()
+        first, second = (call.args for call in ie._web_query.call_args_list)
+        self.assertEqual((first[0], first[1]['after'], first[1]['user_id']), (ie._TAGGED_PAGE, None, '456'))
+        self.assertEqual(second[1]['after'], 'next')
+
     def test_missing_collection_does_not_look_empty(self):
         with self.assertRaisesRegex(RuntimeError, 'no profile collection'):
             list(Harness([{}])._web_pages())

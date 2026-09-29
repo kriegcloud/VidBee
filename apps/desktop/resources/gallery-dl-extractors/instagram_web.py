@@ -19,6 +19,8 @@ class InstagramWebMixin:
     _POSTS_PAGE = ("39535953862670189", "PolarisProfilePostsTabContentQuery_connection")
     _REELS_QUERY = ("37945290971781723", "PolarisProfileReelsTabContentQuery")
     _REELS_PAGE = ("28170354102656082", "PolarisProfileReelsTabContentQuery_connection")
+    # The tagged tab's pagination query also serves the first page (verified 2026-09-28).
+    _TAGGED_PAGE = ("28412176455057653", "PolarisProfileTaggedTabContentQuery_connection")
     _COUNT = 12
 
     def _saved_mapping(self):
@@ -111,8 +113,8 @@ class InstagramWebMixin:
         # Required collection, pagination, and media fields are validated below.
         return data
 
-    def _web_pages(self, reels=False):
-        uid = self.api.user_id(self.item) if reels else None
+    def _web_pages(self, reels=False, tagged=False):
+        uid = self.user_id if tagged else self.api.user_id(self.item) if reels else None
         saved = self._saved_mapping()
         cursor = saved.get("cursor") if saved.get("state") not in ("ready", "empty") else None
         known = {item["url"].rstrip("/").split("/")[-1] for item in saved.get("items", [])}
@@ -120,7 +122,14 @@ class InstagramWebMixin:
         known_run = 0
         seen_cursors, seen_ids = set(), set()
         while True:
-            if reels:
+            if tagged:
+                variables = {
+                    "after": cursor, "before": None, "count": self._COUNT, "first": self._COUNT,
+                    "last": None, "user_id": uid,
+                    "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
+                }
+                operation = self._TAGGED_PAGE
+            elif reels:
                 variables = {
                     "data": {"include_feed_video": True, "page_size": self._COUNT, "target_user_id": uid},
                     "user_id" if cursor is None else "id": uid,
@@ -140,10 +149,12 @@ class InstagramWebMixin:
                 operation = self._POSTS_QUERY if cursor is None else self._POSTS_PAGE
                 if cursor is not None:
                     variables.update({"before": None, "last": None, "include_multi_captions": True})
-            if cursor is not None:
+            if cursor is not None and not tagged:
                 variables.update({"after": cursor, "first": self._COUNT})
             data = self._web_query(operation, variables)
-            if reels:
+            if tagged:
+                connection = data.get("xdt_api__v1__usertags__user_id__feed_connection")
+            elif reels:
                 connection = (data.get("fetch__XDTUserDict") or {}).get("clips_connection")
             else:
                 connection = data.get("xdt_api__v1__feed__user_timeline_graphql_connection")
@@ -170,12 +181,12 @@ class InstagramWebMixin:
                         return
                     continue
                 known_run = 0
-                if reels:
-                    # The reels grid only contains thumbnails. Resolve the actual video.
+                if reels or tagged:
+                    # Grid nodes omit video formats, dates, and carousel item IDs. Resolve the actual media.
                     items = self.api.media(shortcode_from_id(str(media_id)))
                     post = next(iter(items), None)
                     if not post:
-                        raise self.exc.AbortExtraction("Instagram reel has no media details; download is incomplete.")
+                        raise self.exc.AbortExtraction("Instagram media details are unavailable; download is incomplete.")
                 location = post.get("location")
                 if location and "short_name" not in location:
                     location["short_name"] = location.get("name") or "location"
@@ -273,15 +284,5 @@ class VidBeeInstagramTaggedExtractor(InstagramWebMixin, InstagramTaggedExtractor
     pattern = InstagramTaggedExtractor.pattern
 
     def posts(self):
-        saved = self._saved_mapping()
-        known = {item["url"].rstrip("/").split("/")[-1] for item in saved.get("items", [])}
-        known_run = 0
-        for post in super().posts():
-            shortcode = post.get("code") or post.get("shortcode")
-            if saved.get("state") in ("ready", "empty") and shortcode in known:
-                known_run += 1
-                if known_run >= self._COUNT:
-                    return
-                continue
-            known_run = 0
-            yield post
+        # The REST usertags feed is aggressively rate limited; the web tab query is not.
+        return self._web_pages(tagged=True)
