@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "Dalam antrean",
     "savedProfiles": "Profil tersimpan",
+    "searchSavedProfiles": "Cari profil tersimpan...",
+    "noMatchingProfiles": "Tidak ada profil yang cocok",
     "noSavedProfiles": "Belum ada profil tersimpan. Buka profil Instagram untuk mulai memetakan.",
 
     "stop": "Hentikan pemetaan",

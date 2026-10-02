@@ -1829,6 +1829,8 @@
   "instagramResume": {
     "queued": "Queued",
     "savedProfiles": "Saved profiles",
+    "searchSavedProfiles": "Search saved profiles...",
+    "noMatchingProfiles": "No matching profiles",
     "noSavedProfiles": "No saved profiles yet. Open an Instagram profile to start mapping.",
 
     "stop": "Stop mapping",

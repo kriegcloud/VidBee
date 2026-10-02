@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "排队中",
     "savedProfiles": "已保存的主页",
+    "searchSavedProfiles": "搜索已保存的主页...",
+    "noMatchingProfiles": "没有匹配的主页",
     "noSavedProfiles": "暂无已保存的主页。打开 Instagram 主页以开始扫描。",
 
     "stop": "停止扫描",

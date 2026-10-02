@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "대기 중",
     "savedProfiles": "저장된 프로필",
+    "searchSavedProfiles": "저장된 프로필 검색...",
+    "noMatchingProfiles": "일치하는 프로필이 없습니다",
     "noSavedProfiles": "저장된 프로필이 없습니다. Instagram 프로필을 열어 매핑을 시작하세요.",
 
     "stop": "매핑 중지",

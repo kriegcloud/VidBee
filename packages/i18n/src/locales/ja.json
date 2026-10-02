@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "待機中",
     "savedProfiles": "保存済みプロフィール",
+    "searchSavedProfiles": "保存済みプロフィールを検索...",
+    "noMatchingProfiles": "一致するプロフィールがありません",
     "noSavedProfiles": "保存済みのプロフィールはありません。Instagramのプロフィールを開いてマッピングを開始してください。",
 
     "stop": "マッピングを停止",

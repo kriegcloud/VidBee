@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "В очереди",
     "savedProfiles": "Сохранённые профили",
+    "searchSavedProfiles": "Поиск сохранённых профилей...",
+    "noMatchingProfiles": "Подходящих профилей нет",
     "noSavedProfiles": "Сохранённых профилей пока нет. Откройте профиль Instagram, чтобы начать сканирование.",
 
     "stop": "Остановить сканирование",

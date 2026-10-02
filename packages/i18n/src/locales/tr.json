@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "Sırada",
     "savedProfiles": "Kaydedilen profiller",
+    "searchSavedProfiles": "Kaydedilen profilleri ara...",
+    "noMatchingProfiles": "Eşleşen profil yok",
     "noSavedProfiles": "Henüz kaydedilen profil yok. Taramaya başlamak için bir Instagram profili açın.",
 
     "stop": "Taramayı durdur",

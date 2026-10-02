@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "Na fila",
     "savedProfiles": "Perfis salvos",
+    "searchSavedProfiles": "Pesquisar perfis salvos...",
+    "noMatchingProfiles": "Nenhum perfil correspondente",
     "noSavedProfiles": "Nenhum perfil salvo. Abra um perfil do Instagram para iniciar o mapeamento.",
 
     "stop": "Parar mapeamento",

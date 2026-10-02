@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "En attente",
     "savedProfiles": "Profils enregistrés",
+    "searchSavedProfiles": "Rechercher des profils enregistrés...",
+    "noMatchingProfiles": "Aucun profil correspondant",
     "noSavedProfiles": "Aucun profil enregistré. Ouvrez un profil Instagram pour commencer l’analyse.",
 
     "stop": "Arrêter l’analyse",

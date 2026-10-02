@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "En cola",
     "savedProfiles": "Perfiles guardados",
+    "searchSavedProfiles": "Buscar perfiles guardados...",
+    "noMatchingProfiles": "No hay perfiles coincidentes",
     "noSavedProfiles": "Aún no hay perfiles guardados. Abre un perfil de Instagram para empezar a analizarlo.",
 
     "stop": "Detener análisis",

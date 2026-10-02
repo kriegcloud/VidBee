@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "In coda",
     "savedProfiles": "Profili salvati",
+    "searchSavedProfiles": "Cerca tra i profili salvati...",
+    "noMatchingProfiles": "Nessun profilo corrispondente",
     "noSavedProfiles": "Nessun profilo salvato. Apri un profilo Instagram per avviare la scansione.",
 
     "stop": "Interrompi scansione",

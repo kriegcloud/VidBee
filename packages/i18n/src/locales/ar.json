@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "في قائمة الانتظار",
     "savedProfiles": "الملفات الشخصية المحفوظة",
+    "searchSavedProfiles": "ابحث في الملفات الشخصية المحفوظة...",
+    "noMatchingProfiles": "لا توجد ملفات شخصية مطابقة",
     "noSavedProfiles": "لا توجد ملفات شخصية محفوظة بعد. افتح ملفًا شخصيًا على Instagram لبدء المسح.",
 
     "stop": "إيقاف المسح",

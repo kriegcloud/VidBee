@@ -1835,6 +1835,8 @@
   "instagramResume": {
     "queued": "In Warteschlange",
     "savedProfiles": "Gespeicherte Profile",
+    "searchSavedProfiles": "Gespeicherte Profile durchsuchen...",
+    "noMatchingProfiles": "Keine passenden Profile",
     "noSavedProfiles": "Noch keine gespeicherten Profile. Öffne ein Instagram-Profil, um die Erfassung zu starten.",
 
     "stop": "Erfassung stoppen",
