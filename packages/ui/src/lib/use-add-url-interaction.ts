@@ -1,4 +1,5 @@
 import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
 import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
@@ -124,6 +125,11 @@ export const useAddUrlInteraction = ({
 
       setAddUrlPopoverOpen(false)
       const trimmedUrl = await resolveSubmittedUrl(inputUrl, onResolveUrl)
+
+      if (resolveMappedProfileSource(trimmedUrl)) {
+        await onParseProfile(trimmedUrl)
+        return
+      }
 
       if (resolveCollectionProfile(trimmedUrl) && onParseCollection) {
         await onParseCollection(trimmedUrl)

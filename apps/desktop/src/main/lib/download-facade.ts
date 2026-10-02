@@ -14,6 +14,8 @@
  * read on demand from the persisted attempt tail (`queue.getTaskLog`).
  * `glitchTipEventId` remains a best-effort no-op in this iteration.
  */
+
+import { randomUUID } from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -29,6 +31,7 @@ import {
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
 import { FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
+import { isMappedProfilePostUrl } from '@vidbee/downloader-core/mapped-profile-source'
 import type { OnlyFansCommand, OnlyFansDownload } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
 import {
@@ -261,6 +264,28 @@ class DownloadFacade extends EventEmitter {
     const items = profile.categories[category]?.items.filter((item) => ids.includes(item.id)) ?? []
     if (items.length !== new Set(ids).size) {
       throw new Error('Some selected posts are no longer in the saved profile map.')
+    }
+    if (items.some((item) => !isMappedProfilePostUrl(profile.platform, item.url))) {
+      throw new Error('Saved profile contains an invalid post URL.')
+    }
+    if (profile.platform === 'redgifs') {
+      this.subscribeOnce()
+      await startDesktopTaskQueue()
+      for (const item of items) {
+        const id = randomUUID()
+        await this.queue.add({
+          id,
+          input: buildTaskInput(id, {
+            url: item.url,
+            type: 'video',
+            singleVideo: true,
+            title: item.title,
+            customDownloadPath: destination
+          }),
+          priority: PRIORITY_USER
+        })
+      }
+      return { count: items.length }
     }
     for (const item of items) {
       await this.downloadSocialMedia({ url: item.url, customDownloadPath: destination })

@@ -21,6 +21,7 @@ import {
   buildSingleVideoFormatSelector,
   isMuxedVideoFormat
 } from '@vidbee/downloader-core/format-selector'
+import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
 import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
@@ -223,6 +224,12 @@ export function DownloadDialog({
       }
 
       if (!url) {
+        return
+      }
+
+      if (resolveMappedProfileSource(url)) {
+        setOpen(false)
+        setSocialProfileUrl(url)
         return
       }
 
@@ -470,6 +477,11 @@ export function DownloadDialog({
       toast.error(t('errors.emptyUrl'))
       return
     }
+    if (resolveMappedProfileSource(url.trim())) {
+      setOpen(false)
+      setSocialProfileUrl(url.trim())
+      return
+    }
     if (resolveSocialSource(url.trim())) {
       setOpen(false)
       const social = resolveSocialSource(url.trim())
@@ -569,8 +581,7 @@ export function DownloadDialog({
 
   const handleParseProfileUrl = useCallback(
     async (trimmedUrl: string) => {
-      const social = resolveSocialSource(trimmedUrl)
-      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+      if (resolveMappedProfileSource(trimmedUrl)) {
         setOpen(false)
         setSocialProfileUrl(trimmedUrl)
         return
@@ -625,8 +636,7 @@ export function DownloadDialog({
     onOneClickDownload: handleOneClickFromAddUrl,
     onParseCollection: (value) => {
       setOpen(false)
-      const social = resolveSocialSource(value)
-      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+      if (resolveMappedProfileSource(value)) {
         setSocialProfileUrl(value)
       } else {
         setCollectionProfile(resolveCollectionProfile(value))
@@ -634,8 +644,7 @@ export function DownloadDialog({
     },
     onParseSocial: (value) => {
       setOpen(false)
-      const social = resolveSocialSource(value)
-      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+      if (resolveMappedProfileSource(value)) {
         setSocialProfileUrl(value)
       } else {
         setSocialUrl(value)
@@ -1127,7 +1136,7 @@ export function DownloadDialog({
                 ...(await ipcServices.download.listSocialProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
                   profile: {
-                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : 'TikTok'}`,
+                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : profile.platform === 'redgifs' ? 'Redgifs' : 'TikTok'}`,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: Object.values(profile.categories).reduce(

@@ -3,12 +3,14 @@ import { SocialProfileManager } from '@vidbee/downloader-core/social-profile-man
 import { app } from 'electron'
 import { galleryDlManager } from './gallery-dl-manager'
 import { sourceAdmission } from './task-queue-host'
+import { ytdlpManager } from './ytdlp-manager'
 
 let manager: SocialProfileManager | null = null
 
 export const getSocialProfileManager = (): SocialProfileManager => {
   manager ??= new SocialProfileManager({
     storageDir: path.join(app.getPath('userData'), 'social-profiles'),
+    resolveYtDlpPath: () => ytdlpManager.getPath(),
     runtime: {
       admission: sourceAdmission,
       resolveBinaryPath: () => galleryDlManager.getPath(),

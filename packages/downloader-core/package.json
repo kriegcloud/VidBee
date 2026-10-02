@@ -27,6 +27,7 @@
     "./social-media": "./src/social-media.ts",
     "./social-media-service": "./src/social-media-service.ts",
     "./social-profile-manager": "./src/social-profile-manager.ts",
+    "./mapped-profile-source": "./src/mapped-profile-source.ts",
     "./onlyfans-profile": "./src/onlyfans-profile.ts",
     "./fansly-profile": "./src/fansly-profile.ts"
   },

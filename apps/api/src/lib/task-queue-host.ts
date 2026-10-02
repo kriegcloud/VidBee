@@ -128,6 +128,7 @@ export const resolveGalleryDlExtraArgs = (
 
 export const socialProfileManager = new SocialProfileManager({
   storageDir: path.join(unifiedDbDir, 'social-profiles'),
+  resolveYtDlpPath,
   runtime: {
     admission: sourceAdmission,
     resolveBinaryPath: resolveGalleryDlPath,

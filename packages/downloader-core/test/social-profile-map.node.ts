@@ -41,9 +41,14 @@ emit({ type: 'complete', summary: { posts: 1, images: 1, videos: 0, downloaded: 
 
   const manager = new SocialProfileManager({
     storageDir: path.join(root, 'profiles'),
+    resolveYtDlpPath: () => bin,
     runtime: { resolveBinaryPath: () => bin }
   })
-  assert.ok(['mapping', 'complete'].includes(manager.map('https://x.com/fixture', 'tweets').categories.tweets?.state ?? ''))
+  assert.ok(
+    ['mapping', 'complete'].includes(
+      manager.map('https://x.com/fixture', 'tweets').categories.tweets?.state ?? ''
+    )
+  )
   let saved = manager.get('https://x.com/fixture')
   for (let attempt = 0; attempt < 40 && saved.categories.tweets?.state === 'mapping'; attempt++) {
     await new Promise((resolve) => setTimeout(resolve, 25))

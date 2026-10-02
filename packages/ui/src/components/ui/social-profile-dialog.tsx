@@ -1,4 +1,4 @@
-import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
+import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
 import type { SocialMappedProfile } from '@vidbee/downloader-core/social-media-service'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -38,7 +38,7 @@ export function SocialProfileDialog({
   const inputId = useId()
   const getProfileRef = useRef(getProfile)
   getProfileRef.current = getProfile
-  const source = resolveSocialSource(url)
+  const source = resolveMappedProfileSource(url)
   const [profile, setProfile] = useState<SocialMappedProfile | null>(null)
   const [category, setCategory] = useState(
     source?.categories.find((entry) => entry.key === source.category)?.key ??
@@ -116,15 +116,18 @@ export function SocialProfileDialog({
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {source?.platform === 'x' ? 'X' : 'TikTok'} · {profile?.owner ?? source?.owner}
+            {source?.platform === 'x' ? 'X' : source?.platform === 'redgifs' ? 'Redgifs' : 'TikTok'}{' '}
+            · {profile?.owner ?? source?.owner}
           </DialogTitle>
           <DialogDescription>{t('socialMedia.categoriesLabel')}</DialogDescription>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          {t(openLogin ? 'socialMedia.profileSessionHint' : 'socialMedia.auth')}
-        </p>
+        {source?.platform !== 'redgifs' && (
+          <p className="text-muted-foreground text-sm">
+            {t(openLogin ? 'socialMedia.profileSessionHint' : 'socialMedia.auth')}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
-          {openLogin && (
+          {openLogin && source?.platform !== 'redgifs' && (
             <Button disabled={busy || mapping} onClick={() => void act('open')} variant="outline">
               {t('onlyFans.openBrowser')}
             </Button>
@@ -199,7 +202,7 @@ export function SocialProfileDialog({
                 }
               />
               <span className="min-w-0 flex-1 truncate">
-                {item.author} · {item.id}
+                {item.title ?? `${item.author} · ${item.id}`}
               </span>
               <span className="shrink-0 text-muted-foreground">
                 {item.images} 🖼 · {item.videos} ▶

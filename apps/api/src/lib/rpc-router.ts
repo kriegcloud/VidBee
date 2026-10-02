@@ -13,6 +13,7 @@ import {
   playlistEntryGroupKey,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
+import { isMappedProfilePostUrl } from '@vidbee/downloader-core/mapped-profile-source'
 import { resolveAutoVideoDownloadPath } from '@vidbee/downloader-core/output-path'
 import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
 import {
@@ -470,13 +471,34 @@ export const rpcRouter = os.router({
           message: 'Selected posts are no longer in the saved profile map.'
         })
       }
+      if (items.some((item) => !isMappedProfilePostUrl(profile.platform, item.url))) {
+        throw new ORPCError('BAD_REQUEST', {
+          message: 'Saved profile contains an invalid post URL.'
+        })
+      }
       const settings = await webSettingsStore.get()
       for (const item of items) {
-        await downloadSocialMedia(taskQueue, {
-          url: item.url,
-          customDownloadPath: input.destination,
-          settings
-        })
+        if (profile.platform === 'redgifs') {
+          await taskQueue.add({
+            input: {
+              url: item.url,
+              kind: 'video',
+              title: item.title,
+              options: {
+                type: 'video',
+                singleVideo: true,
+                customDownloadPath: input.destination,
+                settings
+              }
+            }
+          })
+        } else {
+          await downloadSocialMedia(taskQueue, {
+            url: item.url,
+            customDownloadPath: input.destination,
+            settings
+          })
+        }
       }
       return { count: items.length }
     })

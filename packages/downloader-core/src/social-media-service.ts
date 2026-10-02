@@ -15,6 +15,7 @@ export interface SocialMappedItem {
   id: string
   url: string
   author: string
+  title?: string
   images: number
   videos: number
   downloaded?: boolean
@@ -28,7 +29,7 @@ export interface SocialProfileCategory {
 
 export interface SocialMappedProfile {
   profileUrl: string
-  platform: 'x' | 'tiktok'
+  platform: 'x' | 'tiktok' | 'redgifs'
   owner: string
   categories: Record<string, SocialProfileCategory>
   updatedAt: number
@@ -38,6 +39,7 @@ export const SocialMappedItemSchema = z.object({
   id: z.string(),
   url: z.url(),
   author: z.string(),
+  title: z.string().optional(),
   images: z.number().int().nonnegative(),
   videos: z.number().int().nonnegative(),
   downloaded: z.boolean().optional()
@@ -51,7 +53,7 @@ export const SocialProfileCategorySchema = z.object({
 
 export const SocialMappedProfileSchema = z.object({
   profileUrl: z.url(),
-  platform: z.enum(['x', 'tiktok']),
+  platform: z.enum(['x', 'tiktok', 'redgifs']),
   owner: z.string(),
   categories: z.record(z.string(), SocialProfileCategorySchema),
   updatedAt: z.number()
