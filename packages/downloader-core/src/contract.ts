@@ -109,6 +109,7 @@ export const downloaderContract = {
     create: oc.input(CreateDownloadInputSchema).output(CreateDownloadOutputSchema),
     list: oc.output(ListDownloadsOutputSchema),
     cancel: oc.input(CancelDownloadInputSchema).output(CancelDownloadOutputSchema),
+    cancelAll: oc.output(z.object({ cancelled: z.number().int(), failed: z.number().int() })),
     pause: oc.input(PauseDownloadInputSchema).output(PauseDownloadOutputSchema),
     resume: oc.input(ResumeDownloadInputSchema).output(ResumeDownloadOutputSchema),
     retry: oc.input(RetryDownloadInputSchema).output(RetryDownloadOutputSchema)

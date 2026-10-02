@@ -154,6 +154,11 @@ class DownloadService extends IpcService {
     return downloadEngine.cancelDownload(id)
   }
 
+  @IpcMethod()
+  cancelAllDownloads(_context: IpcContext): Promise<{ cancelled: number; failed: number }> {
+    return downloadEngine.cancelAllDownloads()
+  }
+
   /**
    * Pause a queued or in-flight download.
    *

@@ -15,6 +15,7 @@ import {
   DownloadFilterBar,
   type DownloadFilterItem
 } from '@vidbee/ui/components/ui/download-filter-bar'
+import { DownloadQueueStatus } from '@vidbee/ui/components/ui/download-queue-status'
 import { DownloadSelectionToolbar } from '@vidbee/ui/components/ui/download-selection-toolbar'
 import { ListMarqueeBox } from '@vidbee/ui/components/ui/list-marquee-box'
 import {
@@ -23,6 +24,7 @@ import {
   listDownloadPlatformCounts,
   matchesDownloadPlatformFilter
 } from '@vidbee/ui/lib/download-platform'
+import { getDownloadQueueProgress } from '@vidbee/ui/lib/download-queue-progress'
 import {
   indexSavedSocialProfileGroups,
   type SavedSocialProfileGroup
@@ -134,6 +136,8 @@ export function UnifiedDownloadHistory({
     Map<string, SavedSocialProfileGroup>
   >(new Map())
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [stopAllOpen, setStopAllOpen] = useState(false)
+  const [stoppingAll, setStoppingAll] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     let cancelled = false
@@ -176,6 +180,25 @@ export function UnifiedDownloadHistory({
     [allRecords]
   )
   const selectedCount = selectedIds.size
+  const queueProgress = useMemo(() => getDownloadQueueProgress(allRecords), [allRecords])
+
+  const handleStopAll = async () => {
+    setStoppingAll(true)
+    try {
+      const result = await ipcServices.download.cancelAllDownloads()
+      if (result.failed > 0) {
+        toast.error(t('download.stopAllFailed', { count: result.failed }))
+      } else {
+        toast.success(t('download.jobsStopped', { count: result.cancelled }))
+      }
+      setStopAllOpen(false)
+    } catch (error) {
+      logger.error('Failed to stop all downloads:', error)
+      toast.error(t('download.stopAllFailed', { count: queueProgress?.active ?? 0 }))
+    } finally {
+      setStoppingAll(false)
+    }
+  }
 
   const platformCounts = useMemo(
     () => listDownloadPlatformCounts(allRecords.map((record) => record.url)),
@@ -578,6 +601,20 @@ export function UnifiedDownloadHistory({
           onFilterChange={setPlatformFilter}
           overflowLabel={t('download.morePlatforms')}
         />
+        {queueProgress && (
+          <DownloadQueueStatus
+            active={queueProgress.active}
+            label={t('download.queueProgress', {
+              finished: queueProgress.finished,
+              total: queueProgress.total,
+              active: queueProgress.active
+            })}
+            onStopAll={() => setStopAllOpen(true)}
+            percent={queueProgress.percent}
+            stopLabel={t('download.stopAllJobs')}
+            stopping={stoppingAll}
+          />
+        )}
       </CardHeader>
       <ScrollArea className="flex-1 overflow-y-auto">
         <CardContent className="w-full space-y-3 overflow-x-hidden p-0">
@@ -733,6 +770,35 @@ export function UnifiedDownloadHistory({
             </DialogFooter>
           </DialogContent>
         )}
+      </Dialog>
+      <Dialog
+        onOpenChange={(open) => {
+          if (!stoppingAll) {
+            setStopAllOpen(open)
+          }
+        }}
+        open={stopAllOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('download.stopAllConfirmTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('download.stopAllConfirmDescription', { count: queueProgress?.active ?? 0 })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button disabled={stoppingAll} onClick={() => setStopAllOpen(false)} variant="outline">
+              {t('download.cancel')}
+            </Button>
+            <Button
+              disabled={stoppingAll}
+              onClick={() => void handleStopAll()}
+              variant="destructive"
+            >
+              {t('download.stopAllJobs')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   )

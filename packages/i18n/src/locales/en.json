@@ -160,6 +160,12 @@
     "downloadBtn": "Download",
     "downloadPending": "Pending",
     "downloadQueue": "Download Queue",
+    "queueProgress": "{{finished}} / {{total}} finished · {{active}} active",
+    "stopAllJobs": "Stop all jobs",
+    "stopAllConfirmTitle": "Stop all downloads?",
+    "stopAllConfirmDescription": "This will cancel {{count}} active or queued downloads. Completed files will stay on disk.",
+    "jobsStopped": "Stopped {{count}} jobs",
+    "stopAllFailed": "Could not stop {{count}} jobs",
     "customDownloadFolder": "Custom download folder",
     "retry": "Retry Download",
     "autoFolderPlaceholder": "Automatic folder (based on metadata)",
@@ -1861,5 +1867,5 @@
     "sessionHint": "Sign in to Fansly in the dedicated browser, then map posts or media. Your saved login stays in that browser. Close the login window before mapping.",
     "posts": "Posts",
     "media": "Media"
-}
+  }
 }

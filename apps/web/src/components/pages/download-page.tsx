@@ -19,6 +19,7 @@ import {
 	DownloadFilterBar,
 	type DownloadFilterItem,
 } from "@vidbee/ui/components/ui/download-filter-bar";
+import { DownloadQueueStatus } from "@vidbee/ui/components/ui/download-queue-status";
 import { DownloadSelectionToolbar } from "@vidbee/ui/components/ui/download-selection-toolbar";
 import { ListMarqueeBox } from "@vidbee/ui/components/ui/list-marquee-box";
 import { ScrollArea } from "@vidbee/ui/components/ui/scroll-area";
@@ -29,6 +30,7 @@ import {
 	listDownloadPlatformCounts,
 	matchesDownloadPlatformFilter,
 } from "@vidbee/ui/lib/download-platform";
+import { getDownloadQueueProgress } from "@vidbee/ui/lib/download-queue-progress";
 import {
 	indexSavedSocialProfileGroups,
 	type SavedSocialProfileGroup,
@@ -100,6 +102,8 @@ export const DownloadPage = () => {
 		Map<string, SavedSocialProfileGroup>
 	>(new Map());
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+	const [stopAllOpen, setStopAllOpen] = useState(false);
+	const [stoppingAll, setStoppingAll] = useState(false);
 	const listRef = useRef<HTMLDivElement>(null);
 	const { finishPointer, marquee, onPointerDown, onPointerMove } =
 		useListMarqueeSelection({
@@ -116,6 +120,10 @@ export const DownloadPage = () => {
 	const [alsoDeleteFiles, setAlsoDeleteFiles] = useState(false);
 	const alsoDeleteFilesId = useId();
 	const [isApiReachable, setIsApiReachable] = useState(false);
+	const queueProgress = useMemo(
+		() => getDownloadQueueProgress(allRecords),
+		[allRecords],
+	);
 	const [apiConnectionMessage, setApiConnectionMessage] = useState("");
 
 	const refreshData = useCallback(async () => {
@@ -175,6 +183,27 @@ export const DownloadPage = () => {
 			setApiConnectionMessage(message);
 		}
 	}, [settings.enableDownloadNotifications, t]);
+
+	const handleStopAll = async () => {
+		setStoppingAll(true);
+		try {
+			const result = await orpcClient.downloads.cancelAll();
+			await refreshData();
+			if (result.failed > 0) {
+				toast.error(t("download.stopAllFailed", { count: result.failed }));
+			} else {
+				toast.success(t("download.jobsStopped", { count: result.cancelled }));
+			}
+			setStopAllOpen(false);
+		} catch (error) {
+			logger.error("Failed to stop all downloads:", error);
+			toast.error(
+				t("download.stopAllFailed", { count: queueProgress?.active ?? 0 }),
+			);
+		} finally {
+			setStoppingAll(false);
+		}
+	};
 
 	useEffect(() => {
 		void refreshData();
@@ -713,6 +742,20 @@ export const DownloadPage = () => {
 						onFilterChange={setPlatformFilter}
 						overflowLabel={t("download.morePlatforms")}
 					/>
+					{queueProgress && (
+						<DownloadQueueStatus
+							active={queueProgress.active}
+							label={t("download.queueProgress", {
+								finished: queueProgress.finished,
+								total: queueProgress.total,
+								active: queueProgress.active,
+							})}
+							onStopAll={() => setStopAllOpen(true)}
+							percent={queueProgress.percent}
+							stopLabel={t("download.stopAllJobs")}
+							stopping={stoppingAll}
+						/>
+					)}
 					{!isApiReachable && apiConnectionMessage ? (
 						<p className="font-medium text-destructive text-sm">
 							{apiConnectionMessage}
@@ -893,6 +936,41 @@ export const DownloadPage = () => {
 							</DialogFooter>
 						</DialogContent>
 					)}
+				</Dialog>
+				<Dialog
+					onOpenChange={(open) => {
+						if (!stoppingAll) {
+							setStopAllOpen(open);
+						}
+					}}
+					open={stopAllOpen}
+				>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>{t("download.stopAllConfirmTitle")}</DialogTitle>
+							<DialogDescription>
+								{t("download.stopAllConfirmDescription", {
+									count: queueProgress?.active ?? 0,
+								})}
+							</DialogDescription>
+						</DialogHeader>
+						<DialogFooter>
+							<Button
+								disabled={stoppingAll}
+								onClick={() => setStopAllOpen(false)}
+								variant="outline"
+							>
+								{t("download.cancel")}
+							</Button>
+							<Button
+								disabled={stoppingAll}
+								onClick={() => void handleStopAll()}
+								variant="destructive"
+							>
+								{t("download.stopAllJobs")}
+							</Button>
+						</DialogFooter>
+					</DialogContent>
 				</Dialog>
 			</div>
 		</AppShell>

@@ -160,6 +160,12 @@
     "downloadBtn": "Unduh",
     "downloadPending": "Menunggu",
     "downloadQueue": "Antrian Unduhan",
+    "queueProgress": "{{finished}} / {{total}} selesai · {{active}} aktif",
+    "stopAllJobs": "Hentikan semua tugas",
+    "stopAllConfirmTitle": "Hentikan semua unduhan?",
+    "stopAllConfirmDescription": "Ini akan membatalkan {{count}} unduhan aktif atau dalam antrean. Berkas yang sudah selesai tetap tersimpan.",
+    "jobsStopped": "{{count}} tugas dihentikan",
+    "stopAllFailed": "Tidak dapat menghentikan {{count}} tugas",
     "customDownloadFolder": "Folder unduhan khusus",
     "retry": "Coba ulang unduhan",
     "autoFolderPlaceholder": "Folder otomatis (berdasarkan metadata)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Masuk ke Fansly di browser khusus, lalu pindai postingan atau media. Sesi masuk Anda tetap tersimpan di browser tersebut. Tutup jendela masuk sebelum memindai.",
     "posts": "Postingan",
     "media": "Media"
-}
+  }
 }

@@ -20,7 +20,7 @@ import {
   downloadSocialMedia,
   previewSocialMedia
 } from '@vidbee/downloader-core/social-media-service'
-import type { Task, TaskStatus } from '@vidbee/task-queue'
+import { isDownloadTaskKind, type Task, type TaskStatus } from '@vidbee/task-queue'
 import { apiDataDir, apiDefaultDownloadDir, apiSettingsFilesDir, isPathInside } from './api-paths'
 import { APP_VERSION } from './app-version'
 import { getDatabaseFilePath } from './database'
@@ -479,6 +479,7 @@ export const rpcRouter = os.router({
       const settings = await webSettingsStore.get()
       const batchId = `social_profile_${randomUUID()}`
       const batchTitle = `@${profile.owner}`
+      let count = 0
       for (const [index, item] of items.entries()) {
         if (profile.platform === 'redgifs') {
           await taskQueue.add({
@@ -498,15 +499,17 @@ export const rpcRouter = os.router({
               }
             }
           })
+          count += 1
         } else {
-          await downloadSocialMedia(
+          const result = await downloadSocialMedia(
             taskQueue,
             { url: item.url, customDownloadPath: input.destination, settings },
             { id: batchId, title: batchTitle, order: index }
           )
+          count += result.ids.length
         }
       }
-      return { count: items.length }
+      return { count }
     })
   },
   fanslyProfile: {
@@ -651,6 +654,34 @@ export const rpcRouter = os.router({
           message: toErrorMessage(error, 'Failed to cancel download.')
         })
       }
+    }),
+    cancelAll: os.downloads.cancelAll.handler(async () => {
+      const ids: string[] = []
+      let cursor: string | null = null
+      do {
+        const page = taskQueue.list({ limit: 200, cursor })
+        for (const task of page.tasks) {
+          if (NON_TERMINAL_TASK_STATUSES.has(task.status) && isDownloadTaskKind(task.kind)) {
+            ids.push(task.id)
+          }
+        }
+        cursor = page.nextCursor
+      } while (cursor)
+      let cancelled = 0
+      let failed = 0
+      for (const id of ids) {
+        const task = taskQueue.get(id)
+        if (!(task && NON_TERMINAL_TASK_STATUSES.has(task.status))) {
+          continue
+        }
+        try {
+          await taskQueue.cancel(id)
+          cancelled += 1
+        } catch {
+          failed += 1
+        }
+      }
+      return { cancelled, failed }
     }),
     pause: os.downloads.pause.handler(async ({ input }) => {
       try {

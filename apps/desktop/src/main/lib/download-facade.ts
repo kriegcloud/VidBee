@@ -296,8 +296,9 @@ class DownloadFacade extends EventEmitter {
       }
       return { count: items.length }
     }
+    let count = 0
     for (const [index, item] of items.entries()) {
-      await this.downloadSocialMedia(
+      const result = await this.downloadSocialMedia(
         {
           url: item.url,
           customDownloadPath: destination,
@@ -305,8 +306,9 @@ class DownloadFacade extends EventEmitter {
         },
         { id: batchId, title: batchTitle, order: index }
       )
+      count += result.ids.length
     }
-    return { count: items.length }
+    return { count }
   }
 
   inspectSocialMedia(url: string) {
@@ -559,6 +561,27 @@ class DownloadFacade extends EventEmitter {
       logger.error('download-facade: cancelDownload failed', err)
       return false
     }
+  }
+
+  /** Cancel the current queue snapshot, including starts not yet persisted. */
+  async cancelAllDownloads(): Promise<{ cancelled: number; failed: number }> {
+    const ids = new Set([
+      ...this.getActiveDownloads().map((item) => item.id),
+      ...this.pendingStarts.keys()
+    ])
+    let cancelled = 0
+    let failed = 0
+    for (const id of ids) {
+      if (await this.cancelDownload(id)) {
+        cancelled += 1
+      } else {
+        const task = this.queue.get(id)
+        if (task && NON_TERMINAL.has(task.status)) {
+          failed += 1
+        }
+      }
+    }
+    return { cancelled, failed }
   }
 
   /**

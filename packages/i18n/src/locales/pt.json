@@ -160,6 +160,12 @@
     "downloadBtn": "Baixar",
     "downloadPending": "Pendente",
     "downloadQueue": "Fila de Download",
+    "queueProgress": "{{finished}} / {{total}} concluídos · {{active}} ativos",
+    "stopAllJobs": "Parar todos os trabalhos",
+    "stopAllConfirmTitle": "Parar todos os downloads?",
+    "stopAllConfirmDescription": "Isso cancelará {{count}} downloads ativos ou na fila. Os arquivos concluídos permanecerão no disco.",
+    "jobsStopped": "{{count}} trabalhos parados",
+    "stopAllFailed": "Não foi possível parar {{count}} trabalhos",
     "customDownloadFolder": "Pasta de download personalizada",
     "retry": "Tentar baixar novamente",
     "autoFolderPlaceholder": "Pasta automática (com base nos metadados)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Entre no Fansly no navegador dedicado e mapeie publicações ou mídias. Sua sessão fica salva nesse navegador. Feche a janela de login antes de mapear.",
     "posts": "Publicações",
     "media": "Mídias"
-}
+  }
 }

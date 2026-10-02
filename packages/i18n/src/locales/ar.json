@@ -160,6 +160,12 @@
     "downloadBtn": "تحميل",
     "downloadPending": "قيد الانتظار",
     "downloadQueue": "قائمة انتظار التحميل",
+    "queueProgress": "اكتمل {{finished}} من {{total}} · {{active}} نشط",
+    "stopAllJobs": "إيقاف كل المهام",
+    "stopAllConfirmTitle": "إيقاف كل التنزيلات؟",
+    "stopAllConfirmDescription": "سيؤدي هذا إلى إلغاء {{count}} تنزيلات نشطة أو في قائمة الانتظار. ستبقى الملفات المكتملة على القرص.",
+    "jobsStopped": "تم إيقاف {{count}} مهام",
+    "stopAllFailed": "تعذر إيقاف {{count}} مهام",
     "customDownloadFolder": "مجلد تنزيل مخصص",
     "retry": "إعادة المحاولة",
     "autoFolderPlaceholder": "مجلد تلقائي (استنادًا إلى البيانات الوصفية)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "سجّل الدخول إلى Fansly في المتصفح المخصص، ثم افحص المنشورات أو الوسائط. تظل جلسة تسجيل الدخول محفوظة في ذلك المتصفح. أغلق نافذة تسجيل الدخول قبل الفحص.",
     "posts": "المنشورات",
     "media": "الوسائط"
-}
+  }
 }

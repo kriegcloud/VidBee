@@ -32,6 +32,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         type(self).requests += 1
         payload = PNG
+        if self.path.startswith('/image-2.png'):
+            payload += b'\x00'
         mime = 'image/png'
         if self.video_directory and self.path.startswith('/video/'):
             filename = self.path.rsplit('/', 1)[-1].split('?')[0]
@@ -57,6 +59,7 @@ class Fixture(Extractor):
     fail = False
     duplicate = False
     alternate_authors = False
+    same_content = False
 
     def items(self):
         for i in range(self.count):
@@ -64,9 +67,10 @@ class Fixture(Extractor):
                     'date': f'2026-09-{15+i}',
                     'extension': self.extension, 'width': self.width, 'height': 1}
             yield Message.Directory, '', data
-            yield Message.Url, self.asset_url + '/image.png', data
+            image_url = '/image.png' if self.same_content else f'/image-{i+1}.png'
+            yield Message.Url, self.asset_url + image_url, data
             if self.duplicate:
-                yield Message.Url, self.asset_url + '/image.png', data
+                yield Message.Url, self.asset_url + image_url, data
         if self.fail:
             self.log.error('Failed to extract a post')
 
@@ -92,6 +96,7 @@ class SocialMediaTest(unittest.TestCase):
         Fixture.width = 1
         Fixture.count = 2
         Fixture.fail = Fixture.duplicate = Fixture.alternate_authors = False
+        Fixture.same_content = False
         Handler.requests = 0
         Handler.video_directory = None
         config.clear()
@@ -123,11 +128,40 @@ class SocialMediaTest(unittest.TestCase):
         self.assertEqual(status, 0)
         self.assertEqual(result['existing'], 2)
         self.assertEqual(Handler.requests, 2)
-        (Path(self.temp.name) / 'X/fixture/1/1.png').unlink()
+        (Path(self.temp.name) / 'X/fixture/1_1.png').unlink()
         status, result = self.run_download()
         self.assertEqual(status, 0)
         self.assertEqual(result['downloaded'], 1)
         self.assertEqual(result['existing'], 1)
+
+    def test_x_reposts_keep_one_file_and_reuse_verified_content(self):
+        Fixture.same_content = True
+        status, result = self.run_download()
+        self.assertEqual(status, 0)
+        self.assertEqual(result['downloaded'], 1)
+        self.assertEqual(result['existing'], 1)
+        self.assertEqual(len(list((Path(self.temp.name) / 'X/fixture').glob('*.png'))), 1)
+        self.assertEqual(Handler.requests, 2)
+        status, result = self.run_download()
+        self.assertEqual(status, 0)
+        self.assertEqual(result['downloaded'], 0)
+        self.assertEqual(result['existing'], 2)
+        self.assertEqual(Handler.requests, 2)
+
+    def test_x_existing_nested_file_is_reused_without_downloading_again(self):
+        self.run_download(maxPosts=1)
+        flat = Path(self.temp.name) / 'X/fixture/1_1.png'
+        nested = Path(self.temp.name) / 'X/fixture/1/1.png'
+        nested.parent.mkdir()
+        flat.rename(nested)
+        with contextlib.closing(sqlite3.connect(Path(self.temp.name) / '.vidbee/social-media.sqlite')) as db:
+            db.execute('UPDATE assets SET path=? WHERE id=?', (str(nested), 'twitter:1:1:image'))
+            db.commit()
+        status, result = self.run_download(maxPosts=1)
+        self.assertEqual(status, 0)
+        self.assertEqual(result['existing'], 1)
+        self.assertEqual(result['downloaded'], 0)
+        self.assertEqual(Handler.requests, 1)
 
     def test_smaller_image_is_not_success(self):
         Fixture.width = 2000
@@ -159,7 +193,7 @@ class SocialMediaTest(unittest.TestCase):
 
     def test_corrupt_same_size_file_is_downloaded_again(self):
         self.run_download()
-        path = Path(self.temp.name) / 'X/fixture/1/1.png'
+        path = Path(self.temp.name) / 'X/fixture/1_1.png'
         path.write_bytes(b'x' * len(PNG))
         status, result = self.run_download()
         self.assertEqual(status, 0)
@@ -173,7 +207,7 @@ class SocialMediaTest(unittest.TestCase):
         status, result = self.run_download()
         self.assertEqual(status, 0)
         self.assertEqual(result['downloaded'], 2)
-        self.assertTrue((Path(self.temp.name) / 'X/fixture/1/1.png').exists())
+        self.assertTrue((Path(self.temp.name) / 'X/fixture/1_1.png').exists())
         _, result = self.run_download()
         self.assertEqual(result['existing'], 2)
         self.assertEqual(result['downloaded'], 0)

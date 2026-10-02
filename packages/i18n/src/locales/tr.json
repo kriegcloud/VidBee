@@ -160,6 +160,12 @@
     "downloadBtn": "İndir",
     "downloadPending": "Beklemede",
     "downloadQueue": "İndirme Kuyruğu",
+    "queueProgress": "{{finished}} / {{total}} tamamlandı · {{active}} etkin",
+    "stopAllJobs": "Tüm işleri durdur",
+    "stopAllConfirmTitle": "Tüm indirmeler durdurulsun mu?",
+    "stopAllConfirmDescription": "Bu işlem {{count}} etkin veya sıradaki indirmeyi iptal eder. Tamamlanan dosyalar diskte kalır.",
+    "jobsStopped": "{{count}} iş durduruldu",
+    "stopAllFailed": "{{count}} iş durdurulamadı",
     "customDownloadFolder": "Özel indirme klasörü",
     "retry": "İndirmeyi Tekrar Dene",
     "autoFolderPlaceholder": "Otomatik klasör (meta verilere göre)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Ayrı tarayıcıda Fansly hesabınıza giriş yapın, ardından gönderileri veya medyayı tarayın. Oturumunuz o tarayıcıda saklanır. Taramadan önce giriş penceresini kapatın.",
     "posts": "Gönderiler",
     "media": "Medya"
-}
+  }
 }

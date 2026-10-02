@@ -145,7 +145,70 @@ test('selected social profile posts share one batch with their original order', 
     { ...batch, order: 1 }
   )
 
-  assert.deepEqual(options.map((entry) => entry.batchId), ['profile-batch', 'profile-batch'])
-  assert.deepEqual(options.map((entry) => entry.batchOrder), [0, 1])
-  assert.deepEqual(options.map((entry) => entry.batchTitle), ['@fixture', '@fixture'])
+  assert.deepEqual(
+    options.map((entry) => entry.batchId),
+    ['profile-batch', 'profile-batch']
+  )
+  assert.deepEqual(
+    options.map((entry) => entry.batchOrder),
+    [0, 1]
+  )
+  assert.deepEqual(
+    options.map((entry) => entry.batchTitle),
+    ['@fixture', '@fixture']
+  )
+})
+
+test('an X post is not queued twice while an earlier copy is active', async () => {
+  const url = 'https://x.com/i/web/status/123456789'
+  const tasks = new Map<
+    string,
+    { id: string; kind: 'social-media'; status: string; input: { url: string } }
+  >()
+  let additions = 0
+  const queue = {
+    setMaxPerGroup: async () => {},
+    list: () => ({ tasks: [...tasks.values()], nextCursor: null }),
+    get: (id: string) => tasks.get(id),
+    add: async ({ input }: { input: { url: string } }) => {
+      additions += 1
+      const task = {
+        id: `task-${additions}`,
+        kind: 'social-media' as const,
+        status: 'queued',
+        input
+      }
+      tasks.set(task.id, task)
+      return task
+    }
+  } as unknown as TaskQueueAPI
+
+  const first = await downloadSocialMedia(queue, { url })
+  const repeated = await downloadSocialMedia(queue, { url })
+  assert.equal(first.ids.length, 1)
+  assert.deepEqual(repeated.ids, [])
+  assert.equal(additions, 1)
+  tasks.get(first.ids[0]!)!.status = 'cancelled'
+  const retried = await downloadSocialMedia(queue, { url })
+  assert.equal(retried.ids.length, 1)
+})
+
+test('an X post already restored from disk is not queued again', async () => {
+  const url = 'https://x.com/i/web/status/123456789'
+  let additions = 0
+  const queue = {
+    setMaxPerGroup: async () => {},
+    list: () => ({
+      tasks: [{ id: 'restored', kind: 'social-media', status: 'queued', input: { url } }],
+      nextCursor: null
+    }),
+    get: () => ({ status: 'queued' }),
+    add: async () => {
+      additions += 1
+      return { id: 'new' }
+    }
+  } as unknown as TaskQueueAPI
+  const result = await downloadSocialMedia(queue, { url })
+  assert.deepEqual(result.ids, [])
+  assert.equal(additions, 0)
 })

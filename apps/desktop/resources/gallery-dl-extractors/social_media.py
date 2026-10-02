@@ -109,6 +109,7 @@ class Manifest:
         os.chmod(self.path, 0o600)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, path TEXT, size INTEGER, sha256 TEXT, width INTEGER, height INTEGER, quality TEXT)")
+        self.db.execute("CREATE INDEX IF NOT EXISTS assets_sha256 ON assets (sha256)")
         self.db.execute("CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY, summary TEXT NOT NULL)")
         self.db.execute("CREATE TEMP TABLE seen (kind TEXT, id TEXT, PRIMARY KEY(kind,id))")
         self.run_id = run_id
@@ -117,16 +118,19 @@ class Manifest:
         result = self.db.execute("INSERT OR IGNORE INTO seen VALUES (?,?)", (kind, str(value)))
         return result.rowcount == 1
 
-    def verified(self, key, path, width, height):
+    def verified(self, key, path, width, height, allow_account_alias=False):
         row = self.db.execute("SELECT path,size,sha256,width,height,quality FROM assets WHERE id=?", (key,)).fetchone()
         if not row or row[5] != "highest-v1":
             return None
         saved, size, sha256, saved_width, saved_height, _ = row
         # CDNs can return JPEG bytes for a .webp URL. gallery-dl corrects the
         # extension; keep those native bytes and find the verified final path.
-        if (os.path.dirname(saved) != os.path.dirname(path) or
-                os.path.splitext(os.path.basename(saved))[0] != os.path.splitext(os.path.basename(path))[0] or
-                os.path.realpath(saved) != saved):
+        same_asset_path = (os.path.dirname(saved) == os.path.dirname(path) and
+                           os.path.splitext(os.path.basename(saved))[0] == os.path.splitext(os.path.basename(path))[0])
+        account_directory = os.path.dirname(path)
+        account_alias = (allow_account_alias and
+                         os.path.commonpath((saved, account_directory)) == account_directory)
+        if not (same_asset_path or account_alias) or os.path.realpath(saved) != saved:
             return None
         try:
             if (os.path.isfile(saved) and os.path.getsize(saved) == size and size > 0 and
@@ -136,6 +140,25 @@ class Manifest:
         except OSError:
             pass
         return None
+
+    def duplicate_content(self, path, width, height):
+        sha256 = digest(path)
+        account_directory = os.path.dirname(path)
+        for saved, size, saved_width, saved_height in self.db.execute(
+                "SELECT path,size,width,height FROM assets WHERE sha256=? AND quality='highest-v1'", (sha256,)):
+            if saved == path or os.path.realpath(saved) != saved:
+                continue
+            if os.path.commonpath((saved, account_directory)) != account_directory:
+                continue
+            if (os.path.isfile(saved) and os.path.getsize(saved) == size and size > 0 and
+                    (not width or saved_width >= width) and (not height or saved_height >= height) and
+                    digest(saved) == sha256):
+                return saved
+        return None
+
+    def alias(self, key, saved):
+        self.db.execute("INSERT OR REPLACE INTO assets SELECT ?,path,size,sha256,width,height,quality FROM assets WHERE path=? LIMIT 1", (key, saved))
+        self.db.commit()
 
     def record(self, key, path, width, height):
         size = os.path.getsize(path)
@@ -183,7 +206,7 @@ class VidBeeSocialExtractor(Extractor):
         self.source_url = self.groups[0]
         self.options = self.config("options", {})
         self.source = self.config("source", {})
-        if self.source.get("platform") == "tiktok":
+        if self.source.get("platform") in ("tiktok", "x"):
             self.directory_fmt = ("{vb_platform}", "{vb_owner}")
             self.filename_fmt = "{vb_post}_{vb_asset}.{extension}"
         self.root_directory = os.path.realpath(self.config("destination"))
@@ -244,6 +267,16 @@ class VidBeeSocialExtractor(Extractor):
                 self.summary["failed"] += 1
                 self.asset_done = True
                 self.log.error("Image quality verification failed; lower-quality copies are not accepted")
+                self.event("progress")
+                return
+        if data["vb_platform"] == "X":
+            duplicate = self.manifest.duplicate_content(filename, width, height)
+            if duplicate:
+                os.remove(filename)
+                self.manifest.alias(data["vb_key"], duplicate)
+                self.asset_done = True
+                self.summary["existing"] += 1
+                self.summary["totalSize"] += os.path.getsize(duplicate)
                 self.event("progress")
                 return
         size = self.manifest.record(data["vb_key"], filename, width, height)
@@ -426,7 +459,7 @@ class VidBeeSocialExtractor(Extractor):
                 metadata = {**data, "vb_platform": platform, "vb_owner": safe(data.get("subreddit") or author),
                             "vb_post": safe(post_id), "vb_asset": safe(asset_id), "vb_key": key,
                             "vb_kind": kind, "vb_width": width, "vb_height": height, "extension": ext}
-                if child.category == "tiktok":
+                if child.category in ("tiktok", "twitter"):
                     relative_path = (platform, metadata["vb_owner"],
                                      f"{metadata['vb_post']}_{metadata['vb_asset']}.{ext}")
                 else:
@@ -448,7 +481,8 @@ class VidBeeSocialExtractor(Extractor):
                             "id": post_id, "url": post_url, "kind": kind, "author": author}}), flush=True)
                     self.event("progress")
                     continue
-                if verified_path := self.manifest.verified(key, filename, width, height):
+                if verified_path := self.manifest.verified(
+                        key, filename, width, height, child.category == "twitter"):
                     self.summary["existing"] += 1
                     self.summary["totalSize"] += os.path.getsize(verified_path)
                     self.event("progress")

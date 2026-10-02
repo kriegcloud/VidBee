@@ -157,7 +157,8 @@ export const mapSocialMediaProfile = async (
       if (source.platform === 'x' && discoveredItems === 0) {
         return {
           complete: false,
-          error: 'X returned no downloadable posts. Check the dedicated browser session and retry mapping.'
+          error:
+            'X returned no downloadable posts. Check the dedicated browser session and retry mapping.'
         }
       }
       return { complete: true }
@@ -165,11 +166,14 @@ export const mapSocialMediaProfile = async (
     const diagnostic = `${result.result.error.rawMessage}\n${result.stderrTail}`
     return {
       complete: false,
-      error: /AuthRequired|Could not authenticate you|login required|authenticated cookies|Extracted 0 cookies/i.test(diagnostic)
-        ? source.platform === 'x'
-          ? 'AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping.'
-          : 'AuthRequired: sign in with the dedicated browser and retry mapping.'
-        : 'Profile mapping stopped before traversal completed. Saved items were retained.'
+      error:
+        /AuthRequired|Could not authenticate you|login required|authenticated cookies|Extracted 0 cookies/i.test(
+          diagnostic
+        )
+          ? source.platform === 'x'
+            ? 'AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping.'
+            : 'AuthRequired: sign in with the dedicated browser and retry mapping.'
+          : 'Profile mapping stopped before traversal completed. Saved items were retained.'
     }
   } finally {
     release?.()
@@ -195,6 +199,35 @@ export const inspectSocialMedia = async (url: string): Promise<SocialSource> => 
   return source
 }
 
+const queuedXPosts = new WeakMap<TaskQueueAPI, Map<string, Set<string>>>()
+const pendingXPosts = new WeakMap<TaskQueueAPI, Set<string>>()
+const nonTerminal = new Set(['queued', 'running', 'processing', 'paused', 'retry-scheduled'])
+
+const xPostIndex = (queue: TaskQueueAPI): Map<string, Set<string>> => {
+  const existing = queuedXPosts.get(queue)
+  if (existing) {
+    return existing
+  }
+  const index = new Map<string, Set<string>>()
+  let cursor: string | null = null
+  do {
+    const page = queue.list({ limit: 200, cursor })
+    for (const task of page.tasks) {
+      if (task.kind === 'social-media' && nonTerminal.has(task.status)) {
+        const source = resolveSocialSource(task.input.url)
+        if (source?.platform === 'x' && source.kind === 'post') {
+          const ids = index.get(source.url) ?? new Set<string>()
+          ids.add(task.id)
+          index.set(source.url, ids)
+        }
+      }
+    }
+    cursor = page.nextCursor
+  } while (cursor)
+  queuedXPosts.set(queue, index)
+  return index
+}
+
 /** Queue each explicitly selected category through the same host-neutral executor. */
 export const downloadSocialMedia = async (
   queue: TaskQueueAPI,
@@ -218,28 +251,50 @@ export const downloadSocialMedia = async (
   await queue.setMaxPerGroup(groupKey, 1)
   const ids: string[] = []
   for (const [index, url] of urls.entries()) {
-    const result = await queue.add({
-      groupKey,
-      input: {
-        kind: 'social-media',
-        url,
-        title: `${source.platform}: ${source.owner}`,
-        options: {
-          socialMedia: options,
-          settings: request.settings,
-          customDownloadPath: request.customDownloadPath,
-          downloadPath: request.customDownloadPath?.trim() || request.settings?.downloadPath,
-          batchId: groupId,
-          batchKind: 'social-media',
-          batchTitle: batch?.title ?? source.owner,
-          batchCategory: resolveSocialSource(url)?.category,
-          batchOrder: (batch?.order ?? 0) + index,
-          sourceMediaKind:
-            options.media === 'images' ? 'image' : options.media === 'videos' ? 'video' : 'mixed'
+    const xPost = source.platform === 'x' && resolveSocialSource(url)?.kind === 'post'
+    const queued = xPost ? xPostIndex(queue) : null
+    const pending = xPost ? (pendingXPosts.get(queue) ?? new Set<string>()) : null
+    if (pending && !pendingXPosts.has(queue)) {
+      pendingXPosts.set(queue, pending)
+    }
+    if (
+      pending?.has(url) ||
+      [...(queued?.get(url) ?? [])].some((id) => nonTerminal.has(queue.get(id)?.status ?? ''))
+    ) {
+      continue
+    }
+    pending?.add(url)
+    try {
+      const result = await queue.add({
+        groupKey,
+        input: {
+          kind: 'social-media',
+          url,
+          title: `${source.platform}: ${source.owner}`,
+          options: {
+            socialMedia: options,
+            settings: request.settings,
+            customDownloadPath: request.customDownloadPath,
+            downloadPath: request.customDownloadPath?.trim() || request.settings?.downloadPath,
+            batchId: groupId,
+            batchKind: 'social-media',
+            batchTitle: batch?.title ?? source.owner,
+            batchCategory: resolveSocialSource(url)?.category,
+            batchOrder: (batch?.order ?? 0) + index,
+            sourceMediaKind:
+              options.media === 'images' ? 'image' : options.media === 'videos' ? 'video' : 'mixed'
+          }
         }
+      })
+      ids.push(result.id)
+      if (queued) {
+        const previous = queued.get(url) ?? new Set<string>()
+        previous.add(result.id)
+        queued.set(url, previous)
       }
-    })
-    ids.push(result.id)
+    } finally {
+      pending?.delete(url)
+    }
   }
   return { groupId, ids }
 }

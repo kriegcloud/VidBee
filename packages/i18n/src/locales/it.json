@@ -160,6 +160,12 @@
     "downloadBtn": "Scarica",
     "downloadPending": "In attesa",
     "downloadQueue": "Coda Download",
+    "queueProgress": "{{finished}} / {{total}} completati · {{active}} attivi",
+    "stopAllJobs": "Interrompi tutti i lavori",
+    "stopAllConfirmTitle": "Interrompere tutti i download?",
+    "stopAllConfirmDescription": "Verranno annullati {{count}} download attivi o in coda. I file completati resteranno sul disco.",
+    "jobsStopped": "{{count}} lavori interrotti",
+    "stopAllFailed": "Impossibile interrompere {{count}} lavori",
     "customDownloadFolder": "Cartella di download personalizzata",
     "retry": "Riprova download",
     "autoFolderPlaceholder": "Cartella automatica (in base ai metadati)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Accedi a Fansly nel browser dedicato, quindi scansiona post o contenuti multimediali. La sessione rimane salvata in quel browser. Chiudi la finestra di accesso prima della scansione.",
     "posts": "Post",
     "media": "Media"
-}
+  }
 }

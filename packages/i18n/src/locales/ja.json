@@ -160,6 +160,12 @@
     "downloadBtn": "ダウンロード",
     "downloadPending": "保留中",
     "downloadQueue": "ダウンロードキュー",
+    "queueProgress": "{{finished}} / {{total}} 件完了 · {{active}} 件実行中",
+    "stopAllJobs": "すべてのジョブを停止",
+    "stopAllConfirmTitle": "すべてのダウンロードを停止しますか？",
+    "stopAllConfirmDescription": "実行中または待機中のダウンロード {{count}} 件をキャンセルします。完了したファイルはディスクに残ります。",
+    "jobsStopped": "{{count}} 件のジョブを停止しました",
+    "stopAllFailed": "{{count}} 件のジョブを停止できませんでした",
     "customDownloadFolder": "カスタムダウンロードフォルダー",
     "retry": "ダウンロードを再試行",
     "autoFolderPlaceholder": "自動フォルダー（メタデータに基づく）",
@@ -1867,5 +1873,5 @@
     "sessionHint": "専用ブラウザーでFanslyにログインしてから、投稿やメディアをスキャンしてください。ログイン状態はそのブラウザーに保存されます。 スキャンする前にログインウィンドウを閉じてください。",
     "posts": "投稿",
     "media": "メディア"
-}
+  }
 }

@@ -129,7 +129,6 @@ export function useDownloadEvents() {
         return
       }
       updateDownload({ id, changes: { status: 'completed', completedAt: Date.now() } })
-      toast.success(t('notifications.downloadCompleted'))
       void (async () => {
         const historyItem = await syncHistoryItem(id)
         if (!(historyItem?.downloadPath && historyItem.title)) {

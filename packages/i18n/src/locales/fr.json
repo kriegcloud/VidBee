@@ -160,6 +160,12 @@
     "downloadBtn": "Télécharger",
     "downloadPending": "En attente",
     "downloadQueue": "File de Téléchargement",
+    "queueProgress": "{{finished}} / {{total}} terminés · {{active}} actifs",
+    "stopAllJobs": "Arrêter toutes les tâches",
+    "stopAllConfirmTitle": "Arrêter tous les téléchargements ?",
+    "stopAllConfirmDescription": "Cela annulera {{count}} téléchargements actifs ou en attente. Les fichiers terminés resteront sur le disque.",
+    "jobsStopped": "{{count}} tâches arrêtées",
+    "stopAllFailed": "Impossible d’arrêter {{count}} tâches",
     "customDownloadFolder": "Dossier de téléchargement personnalisé",
     "retry": "Relancer le téléchargement",
     "autoFolderPlaceholder": "Dossier automatique (basé sur les métadonnées)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Connectez-vous à Fansly dans le navigateur dédié, puis analysez les publications ou les médias. Votre session reste enregistrée dans ce navigateur. Fermez la fenêtre de connexion avant de lancer l’analyse.",
     "posts": "Publications",
     "media": "Médias"
-}
+  }
 }

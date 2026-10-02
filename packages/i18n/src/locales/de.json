@@ -160,6 +160,12 @@
     "downloadBtn": "Herunterladen",
     "downloadPending": "Ausstehend",
     "downloadQueue": "Download-Warteschlange",
+    "queueProgress": "{{finished}} / {{total}} abgeschlossen · {{active}} aktiv",
+    "stopAllJobs": "Alle Aufträge stoppen",
+    "stopAllConfirmTitle": "Alle Downloads stoppen?",
+    "stopAllConfirmDescription": "Dadurch werden {{count}} aktive oder wartende Downloads abgebrochen. Fertige Dateien bleiben auf dem Datenträger.",
+    "jobsStopped": "{{count}} Aufträge gestoppt",
+    "stopAllFailed": "{{count}} Aufträge konnten nicht gestoppt werden",
     "customDownloadFolder": "Benutzerdefinierter Download-Ordner",
     "retry": "Download erneut versuchen",
     "autoFolderPlaceholder": "Automatischer Ordner (basierend auf Metadaten)",
@@ -1867,5 +1873,5 @@
     "sessionHint": "Melde dich im separaten Browser bei Fansly an und erfasse dann Beiträge oder Medien. Deine Anmeldung bleibt in diesem Browser gespeichert. Schließe vor dem Erfassen das Anmeldefenster.",
     "posts": "Beiträge",
     "media": "Medien"
-}
+  }
 }

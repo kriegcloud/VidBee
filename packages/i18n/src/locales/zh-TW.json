@@ -160,6 +160,12 @@
     "downloadBtn": "下載",
     "downloadPending": "待處理",
     "downloadQueue": "下載佇列",
+    "queueProgress": "已完成 {{finished}} / {{total}} · {{active}} 個進行中",
+    "stopAllJobs": "停止所有工作",
+    "stopAllConfirmTitle": "停止所有下載？",
+    "stopAllConfirmDescription": "這將取消 {{count}} 個進行中或排隊中的下載。已完成的檔案仍會保留在磁碟上。",
+    "jobsStopped": "已停止 {{count}} 個工作",
+    "stopAllFailed": "無法停止 {{count}} 個工作",
     "customDownloadFolder": "自訂下載資料夾",
     "retry": "重試下載",
     "autoFolderPlaceholder": "自動資料夾（依中繼資料）",
@@ -1867,5 +1873,5 @@
     "sessionHint": "在專用瀏覽器中登入 Fansly，然後掃描貼文或媒體。登入狀態會保存在該瀏覽器中。 掃描前請關閉登入視窗。",
     "posts": "貼文",
     "media": "媒體"
-}
+  }
 }
