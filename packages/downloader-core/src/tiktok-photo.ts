@@ -35,7 +35,7 @@ export const normalizeTikTokPhotoUrl = (value: string): NormalizedTikTokPhotoUrl
         url: `${ROOT}/share/photo/${postId}`,
         username: '',
         postId,
-        directorySegments: ['TikTok', 'Photos', postId]
+        directorySegments: ['TikTok', 'Photos']
       }
     }
     if (!owner.startsWith('@')) {
@@ -49,7 +49,7 @@ export const normalizeTikTokPhotoUrl = (value: string): NormalizedTikTokPhotoUrl
       url: `${ROOT}/@${username}/photo/${postId}`,
       username,
       postId,
-      directorySegments: ['TikTok', username, postId]
+      directorySegments: ['TikTok', username]
     }
   } catch {
     return null

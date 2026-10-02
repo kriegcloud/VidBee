@@ -216,6 +216,8 @@ class SocialMediaTest(unittest.TestCase):
             self.assertEqual(list(Path(other).iterdir()), [])
 
     def test_pinned_tiktok_extractor_keeps_photo_order_and_originals(self):
+        config.set(('extractor', 'vidbee-social'), 'source',
+                   {'platform': 'tiktok', 'kind': 'post', 'owner': 'fixture'})
         item = {'id': '123', 'author': {'uniqueId': 'fixture'}, 'desc': 'photos',
                 'createTime': 1789516800, 'imagePost': {'images': [
                     {'imageURL': {'urlList': [Fixture.asset_url + f'/{i}.png']},
@@ -227,7 +229,14 @@ class SocialMediaTest(unittest.TestCase):
         self.assertEqual(result['images'], 3)
         self.assertEqual(result['videos'], 0)
         for i in range(1, 4):
-            self.assertEqual((Path(self.temp.name) / f'TikTok/fixture/123/{i}.png').read_bytes(), PNG)
+            self.assertEqual((Path(self.temp.name) / f'TikTok/fixture/123_{i}.png').read_bytes(), PNG)
+        item['id'] = '124'
+        with patch.object(tiktok.TiktokExtractor, '_extract_rehydration_data', return_value=response):
+            status, result = self.run_download(url='https://www.tiktok.com/@fixture/photo/124')
+        self.assertEqual(status, 0)
+        for i in range(1, 4):
+            self.assertEqual((Path(self.temp.name) / f'TikTok/fixture/124_{i}.png').read_bytes(), PNG)
+        self.assertEqual(len(list((Path(self.temp.name) / 'TikTok/fixture').glob('*.png'))), 6)
 
     def test_pinned_instagram_extractor_downloads_image_only_carousel(self):
         # Image-only carousels have no video formats, so yt-dlp cannot fetch them.

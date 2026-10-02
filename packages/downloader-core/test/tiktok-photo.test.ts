@@ -8,22 +8,22 @@ describe('TikTok photo routing', () => {
     [
       'https://www.tiktok.com/@chillezy/photo/7240568259186019630',
       'https://www.tiktok.com/@chillezy/photo/7240568259186019630',
-      ['TikTok', 'chillezy', '7240568259186019630']
+      ['TikTok', 'chillezy']
     ],
     [
       'https://tiktok.com/@hull.city_1904/photo/7553302113757990166/?lang=en&q=x#top',
       'https://www.tiktok.com/@hull.city_1904/photo/7553302113757990166',
-      ['TikTok', 'hull.city_1904', '7553302113757990166']
+      ['TikTok', 'hull.city_1904']
     ],
     [
       'http://ignored:credentials@m.tiktok.com:8080/@memezar/photo/7449708266168274208',
       'https://www.tiktok.com/@memezar/photo/7449708266168274208',
-      ['TikTok', 'memezar', '7449708266168274208']
+      ['TikTok', 'memezar']
     ],
     [
       'https://www.tiktok.com/share/photo/7449708266168274208',
       'https://www.tiktok.com/share/photo/7449708266168274208',
-      ['TikTok', 'Photos', '7449708266168274208']
+      ['TikTok', 'Photos']
     ]
   ])('canonicalizes %s for gallery-dl', (input, canonical, segments) => {
     const normalized = normalizeTikTokPhotoUrl(input)

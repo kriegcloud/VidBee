@@ -183,6 +183,9 @@ class VidBeeSocialExtractor(Extractor):
         self.source_url = self.groups[0]
         self.options = self.config("options", {})
         self.source = self.config("source", {})
+        if self.source.get("platform") == "tiktok":
+            self.directory_fmt = ("{vb_platform}", "{vb_owner}")
+            self.filename_fmt = "{vb_post}_{vb_asset}.{extension}"
         self.root_directory = os.path.realpath(self.config("destination"))
         self.manifest = Manifest(self.root_directory, self.config("run-id"))
         self.summary = {"posts": 0, "images": 0, "videos": 0, "downloaded": 0,
@@ -423,7 +426,13 @@ class VidBeeSocialExtractor(Extractor):
                 metadata = {**data, "vb_platform": platform, "vb_owner": safe(data.get("subreddit") or author),
                             "vb_post": safe(post_id), "vb_asset": safe(asset_id), "vb_key": key,
                             "vb_kind": kind, "vb_width": width, "vb_height": height, "extension": ext}
-                filename = os.path.join(self.root_directory, platform, metadata["vb_owner"], metadata["vb_post"], safe(asset_id) + "." + ext)
+                if child.category == "tiktok":
+                    relative_path = (platform, metadata["vb_owner"],
+                                     f"{metadata['vb_post']}_{metadata['vb_asset']}.{ext}")
+                else:
+                    relative_path = (platform, metadata["vb_owner"], metadata["vb_post"],
+                                     safe(asset_id) + "." + ext)
+                filename = os.path.join(self.root_directory, *relative_path)
                 if os.path.commonpath((os.path.realpath(filename), self.root_directory)) != self.root_directory:
                     raise exception.AbortExtraction("Media directory contains an unsafe symbolic link")
                 if kind in ("image", "video"):
