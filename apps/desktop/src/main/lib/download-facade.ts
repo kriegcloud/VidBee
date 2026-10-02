@@ -40,7 +40,7 @@ import {
   type SocialMediaDownloadRequest
 } from '@vidbee/downloader-core/social-media-service'
 import {
-  isDownloadTaskKind,
+  isMediaTaskKind,
   PRIORITY_USER,
   type Task,
   type TaskInput,
@@ -237,6 +237,17 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
   }
 }
 
+/** Share metadata, directory and settings preparation with callers that await queue admission. */
+export const prepareDownloadTaskInput = async (
+  id: string,
+  options: DownloadOptions
+): Promise<TaskInput> => {
+  const hydrated = await hydrateDownloadMetadata(options)
+  const resolved = applyAutoVideoDownloadPath(hydrated, settingsManager.getAll())
+  ensureDirectoryExists(resolved.customDownloadPath)
+  return buildTaskInput(id, resolved)
+}
+
 class DownloadFacade extends EventEmitter {
   openSocialProfileLogin(url: string) {
     return socialSessionManager.open(url)
@@ -356,8 +367,12 @@ class DownloadFacade extends EventEmitter {
     }
     this.subscribed = true
     const queue = this.queue
+    queue.on('task-removed', (event) => {
+      this.logBuffers.delete(event.taskId)
+      this.emit('download-removed', event.taskId)
+    })
     queue.on('snapshot-changed', (event) => {
-      if (!isDownloadTaskKind(event.task.kind)) {
+      if (!isMediaTaskKind(event.task.kind)) {
         return
       }
       const item = projectTaskForRenderer(event.task)
@@ -365,7 +380,7 @@ class DownloadFacade extends EventEmitter {
     })
     queue.on('transition', (event) => {
       const task = queue.get(event.taskId)
-      if (!(task && isDownloadTaskKind(task.kind))) {
+      if (!(task && isMediaTaskKind(task.kind))) {
         return
       }
       const item = projectTaskForRenderer(task)
@@ -780,7 +795,7 @@ class DownloadFacade extends EventEmitter {
     do {
       const page = this.queue.list({ limit: 200, cursor })
       for (const t of page.tasks) {
-        if (NON_TERMINAL.has(t.status) && isDownloadTaskKind(t.kind)) {
+        if (NON_TERMINAL.has(t.status) && isMediaTaskKind(t.kind)) {
           active.push(projectTaskForRenderer(t))
         }
       }

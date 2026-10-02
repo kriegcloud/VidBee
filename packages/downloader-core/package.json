@@ -13,6 +13,7 @@
     "./facebook-gallery": "./src/facebook-gallery.ts",
     "./filename-style": "./src/filename-style.ts",
     "./format-preferences": "./src/format-preferences.ts",
+    "./format-presentation": "./src/format-presentation.ts",
     "./gallery-dl-executor": "./src/gallery-dl-executor.ts",
     "./instagram-profile": "./src/instagram-profile.ts",
     "./format-selector": "./src/format-selector.ts",

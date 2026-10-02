@@ -46,6 +46,7 @@ import {
 import { app, powerSaveBlocker } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
+import { AsrModelExecutor } from './asr-model-executor'
 import { resolveBrowserCaptureSidecarScript } from './browser-capture-sidecar-path'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
 import { getDatabaseConnection } from './database'
@@ -53,6 +54,7 @@ import { startDownloadPowerSaveGuard } from './download-power-save'
 import { applyExtensionCookieSettings } from './extension-cookies'
 import { ffmpegManager } from './ffmpeg-manager'
 import { galleryDlManager } from './gallery-dl-manager'
+import { MediaTransformExecutor } from './media-transform-executor'
 import { setDesktopTaskQueueRef } from './queue-ref'
 import {
   broadcastTranscript,
@@ -273,7 +275,11 @@ export const getDesktopTaskQueue = (): TaskQueueAPI => {
   persistent = isPersistent
   const executor = new ExecutorRouter({
     defaultExecutor: buildDownloadExecutor(),
-    byKind: { transcription: buildTranscriptionExecutor() }
+    byKind: {
+      transcription: buildTranscriptionExecutor(),
+      conversion: new MediaTransformExecutor(),
+      'model-download': new AsrModelExecutor()
+    }
   })
   const maxConcurrent = settingsManager.get('maxConcurrentDownloads')
   taskQueueInstance = new TaskQueueAPI({
@@ -291,6 +297,8 @@ export const getDesktopTaskQueue = (): TaskQueueAPI => {
  * Push the current download and transcription concurrency settings into the scheduler.
  */
 export const applyDesktopQueueConcurrency = (): void => {
+  void getDesktopTaskQueue().setMaxPerGroup('conversion', 1)
+  void getDesktopTaskQueue().setMaxPerGroup('model-download', 1)
   applyTranscriptionConcurrency({
     queue: getDesktopTaskQueue(),
     maxConcurrentDownloads: settingsManager.get('maxConcurrentDownloads'),

@@ -523,6 +523,52 @@ export const resolveVideoFormatSelector = (options: YtDlpDownloadOptions): strin
   return withBestFallback(`${format}+${audioFormat}`)
 }
 
+const UNSUPPORTED_THUMBNAIL_EMBED_ERROR = /supported filetypes for thumbnail embedding are/i
+
+export const THUMBNAIL_EMBED_UNSUPPORTED_LOG =
+  '[VidBee] Thumbnail embedding is unsupported for this container. The video was saved. Choose MP4 or MKV to embed cover art.'
+
+/**
+ * Thumbnail flags for one download.
+ *
+ * WebM cannot store cover art. `--embed-thumbnail` makes yt-dlp fail the
+ * download after the video is saved (GitHub issue #467). Write a separate
+ * thumbnail file instead. MP4, MKV, and Auto still embed the cover.
+ */
+export const resolveThumbnailDownloadArgs = (
+  type: YtDlpDownloadOptions['type'],
+  container: OneClickContainerOption | undefined,
+  embedThumbnail: boolean
+): string[] => {
+  if (!embedThumbnail) {
+    return ['--no-embed-thumbnail']
+  }
+  if (type === 'video' && container === 'webm') {
+    return ['--no-embed-thumbnail', '--write-thumbnail']
+  }
+  return ['--embed-thumbnail']
+}
+
+/**
+ * Return whether yt-dlp failed only because cover art cannot be embedded.
+ *
+ * Other ERROR lines still fail the download. Callers must also confirm a
+ * non-empty media file exists before treating the run as successful.
+ */
+export const isUnsupportedThumbnailEmbedOnlyFailure = (output: string): boolean => {
+  if (!UNSUPPORTED_THUMBNAIL_EMBED_ERROR.test(output)) {
+    return false
+  }
+  const errorLines = output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^ERROR:/i.test(line))
+  return (
+    errorLines.length > 0 &&
+    errorLines.every((line) => UNSUPPORTED_THUMBNAIL_EMBED_ERROR.test(line))
+  )
+}
+
 export const resolveAudioFormatSelector = (options: YtDlpDownloadOptions): string => {
   const format = options.format
 
@@ -551,7 +597,10 @@ export const buildDownloadArgs = (
   // embedding and media fixups. Downloads need playable formats and postprocessing.
   args.push('--no-allow-unplayable-formats')
 
-  if (options.type === 'video' && !isDirectMediaFileUrl(options.url)) {
+  const container: OneClickContainerOption | undefined =
+    options.type === 'video' ? (options.containerFormat ?? 'auto') : undefined
+
+  if (options.type === 'video' && container && !isDirectMediaFileUrl(options.url)) {
     const formatSelector = resolveVideoFormatSelector(options)
     if (formatSelector) {
       args.push('-f', formatSelector)
@@ -566,7 +615,6 @@ export const buildDownloadArgs = (
     // GitHub issues #207 and #129: `auto` keeps the mp4/mkv fallback so
     // ffmpeg muxing failures (HEVC + Hi-Res audio on bilibili, webm
     // fragments on YouTube under proxies, etc.) do not abort the download.
-    const container = options.containerFormat ?? 'auto'
     if (container === 'auto') {
       args.push('--merge-output-format', 'mp4/mkv')
     } else if (container !== 'original') {
@@ -619,26 +667,23 @@ export const buildDownloadArgs = (
   if (shouldAttemptSubtitles) {
     args.push('--sub-langs', subtitleLanguages.join(','))
     args.push('--sleep-subtitles', '1')
-    // `--embed-subs` only writes official / creator-uploaded captions.
-    // YouTube videos often have automatic captions and no official track, so
-    // also request those when the setting is on; otherwise the embed step
-    // has nothing to mux.
+    // `--embed-subs` does not request YouTube automatic captions. Ask for them
+    // only when that setting is on, or the embed step has nothing to mux.
     if (writeAutoSubs) {
       args.push('--write-auto-subs')
     } else {
       args.push('--no-write-auto-subs')
     }
-    if (shouldEmbedSubs) {
-      args.push('--embed-subs')
-    } else {
-      args.push('--write-subs')
-      args.push('--no-embed-subs')
-    }
+    // yt-dlp deletes the subtitle file after `--embed-subs` unless `--write-subs`
+    // is also set. Downloading subtitles means keep that sidecar; embedding is
+    // additional. GitHub issue #475.
+    args.push('--write-subs')
+    args.push(shouldEmbedSubs ? '--embed-subs' : '--no-embed-subs')
   } else {
     args.push('--no-write-subs', '--no-write-auto-subs', '--no-embed-subs')
   }
 
-  args.push(embedThumbnail ? '--embed-thumbnail' : '--no-embed-thumbnail')
+  args.push(...resolveThumbnailDownloadArgs(options.type, container, embedThumbnail))
   args.push(embedMetadata ? '--embed-metadata' : '--no-embed-metadata')
   args.push(embedChapters ? '--embed-chapters' : '--no-embed-chapters')
 
@@ -747,6 +792,75 @@ export const buildVideoInfoArgs = (
 
   appendOnlyFansIdentityArgs(args, url)
   appendOnlyFansInventoryArgs(args, url)
+  args.push(url)
+  return args
+}
+
+/**
+ * Build a skip-download yt-dlp argv that writes caption sidecars next to an info JSON.
+ *
+ * @param url Watch URL.
+ * @param outputTemplate yt-dlp `-o` template without an extension.
+ * @param settings Host cookies, proxy, and config.
+ * @param jsRuntimeArgs Active Desktop JS runtime flags.
+ * @param subtitleLanguages yt-dlp `--sub-langs` value.
+ */
+export const buildCaptionExtractArgs = (
+  url: string,
+  outputTemplate: string,
+  settings: YtDlpDownloadSettings,
+  jsRuntimeArgs: string[] = [],
+  subtitleLanguages = 'all'
+): string[] => {
+  assertDownloadSourceUrl(url)
+  const args = [
+    '--skip-download',
+    '--write-subs',
+    '--write-auto-subs',
+    '--write-info-json',
+    '--sub-langs',
+    subtitleLanguages || 'all',
+    '--sub-format',
+    'vtt/srt/ttml/best',
+    '--sleep-subtitles',
+    '1',
+    '--no-playlist',
+    '--no-warnings',
+    '--encoding',
+    'utf-8',
+    '-o',
+    outputTemplate
+  ]
+
+  const proxy = trim(settings.proxy)
+  if (proxy) {
+    args.push('--proxy', proxy)
+  }
+
+  appendMetadataNetworkResilienceArgs(args)
+
+  const browserForCookies = normalizeBrowserCookiesSettingForYtDlp(settings.browserForCookies)
+  if (browserForCookies && browserForCookies !== 'none') {
+    args.push('--cookies-from-browser', browserForCookies)
+  }
+
+  const cookiesPath = trim(settings.cookiesPath)
+  if (cookiesPath) {
+    args.push('--cookies', cookiesPath)
+  }
+
+  const configPath = resolvePathWithHome(settings.configPath)
+  if (configPath) {
+    args.push('--config-location', configPath)
+  } else {
+    args.push('--ignore-config')
+    appendYouTubeSafeExtractorArgs(args, url)
+  }
+
+  if (jsRuntimeArgs.length > 0) {
+    args.push(...jsRuntimeArgs)
+  }
+
   args.push(url)
   return args
 }

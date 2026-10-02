@@ -20,7 +20,7 @@ import { EventBus, type TaskQueueEvent, type TaskQueueListener } from '../events
 import type { Executor, ExecutorRun } from '../executor'
 import { transition as fsmTransition, IllegalTransitionError, type TransitionContext } from '../fsm'
 import type { PersistAdapter } from '../persist'
-import { ProcessRegistry, readPidStartTime, Watchdog } from '../process'
+import { ProcessRegistry, readPidStartTime, Watchdog, type WatchdogEntry } from '../process'
 import { computeBackoffMs, RetryScheduler, Scheduler } from '../scheduler'
 import type { SourceAdmission } from '../source-admission'
 import { TaskStore } from '../store'
@@ -30,6 +30,7 @@ import {
   PRIORITY_USER,
   type Task,
   type TaskInput,
+  type TaskKind,
   type TaskOutput,
   type TaskPriority,
   type TaskProgress,
@@ -106,6 +107,8 @@ export interface AddTaskRequest {
 }
 
 export interface ListOptions {
+  query?: string
+  kind?: TaskKind
   status?: TaskStatus
   groupKey?: string
   parentId?: string
@@ -192,7 +195,7 @@ export class TaskQueueAPI {
       onDue: (id) => this.handleRetryDue(id)
     })
 
-    this.watchdog = new Watchdog((id) => this.handleStalled(id), {
+    this.watchdog = new Watchdog((id, entry) => this.handleStalled(id, entry), {
       runningIdleMs: opts.runningIdleMs,
       processingIdleMs: opts.processingIdleMs,
       setTimer: opts.setTimer,
@@ -494,6 +497,98 @@ export class TaskQueueAPI {
     return this.store.get(id)
   }
 
+  /**
+   * Whether `id` exists in the durable store. `get` only reads this process's
+   * memory, which is loaded from SQLite at startup and does not observe tasks
+   * another host later writes to the shared database.
+   */
+  async hasTask(id: string): Promise<boolean> {
+    return await this.persist.hasTask(id)
+  }
+
+  /** Persist a display title for any task kind without changing execution options. */
+  async rename(id: string, title: string): Promise<void> {
+    const task = this.store.get(id)
+    if (!task) {
+      throw new Error(`Task not found: ${id}`)
+    }
+    const normalized = title.trim()
+    if (!normalized || normalized.length > 200) {
+      throw new Error('Title must contain 1–200 characters')
+    }
+    const next = { ...task, input: { ...task.input, title: normalized }, updatedAt: this.clock() }
+    this.store.update(next)
+    try {
+      await this.persist.upsertTask({ task: next, progress: next.progress })
+    } catch (error) {
+      if (this.store.get(id) === next) {
+        this.store.update(task)
+      }
+      throw error
+    }
+    const current = this.store.get(id)
+    if (current) {
+      this.bus.emit({ type: 'snapshot-changed', taskId: id, task: current, at: this.clock() })
+    }
+  }
+
+  /** Update all terminal task references to a relocated file in one persistence transaction. */
+  async relocateFileReferences(from: string, to: string): Promise<void> {
+    if (!(from && to)) {
+      throw new Error('Source and destination paths are required')
+    }
+    const tasks = this.store.list({ limit: Number.MAX_SAFE_INTEGER }).tasks
+    const affected = tasks.filter(
+      (task) => task.output?.filePath === from || task.input.options?.sourceFilePath === from
+    )
+    if (affected.some((task) => !TERMINAL_STATUSES.has(task.status))) {
+      throw new Error('Finish or cancel tasks using this file before renaming it')
+    }
+    const affectedIds = new Set(affected.map((task) => task.id))
+    if (
+      tasks.some(
+        (task) =>
+          task.parentId && affectedIds.has(task.parentId) && !TERMINAL_STATUSES.has(task.status)
+      )
+    ) {
+      throw new Error('Finish or cancel dependent tasks before renaming their source file')
+    }
+    const updated = affected.map((task) => ({
+      ...task,
+      input:
+        task.input.options?.sourceFilePath === from
+          ? { ...task.input, options: { ...task.input.options, sourceFilePath: to } }
+          : task.input,
+      output: task.output?.filePath === from ? { ...task.output, filePath: to } : task.output,
+      updatedAt: this.clock()
+    }))
+    for (const task of updated) {
+      this.store.update(task)
+    }
+    try {
+      await this.persist.upsertTasks(updated.map((task) => ({ task, progress: task.progress })))
+    } catch (error) {
+      for (const [index, task] of updated.entries()) {
+        const original = affected[index]
+        if (original && this.store.get(task.id) === task) {
+          this.store.update(original)
+        }
+      }
+      throw error
+    }
+    for (const task of updated) {
+      const current = this.store.get(task.id)
+      if (current) {
+        this.bus.emit({
+          type: 'snapshot-changed',
+          taskId: task.id,
+          task: current,
+          at: this.clock()
+        })
+      }
+    }
+  }
+
   list(opts: ListOptions = {}): { tasks: Task[]; nextCursor: string | null } {
     return this.store.list(opts)
   }
@@ -675,6 +770,7 @@ export class TaskQueueAPI {
       await this.persist.deleteTask(id)
       for (const childId of removing) {
         this.store.remove(childId)
+        this.bus.emit({ type: 'task-removed', taskId: childId, at: this.clock() })
       }
     } finally {
       for (const childId of removing) {
@@ -826,12 +922,13 @@ export class TaskQueueAPI {
             }
             this.applyProgress(id, e.progress)
             this.watchdog.bump(id)
-            if (e.enteredProcessing && current.status === 'running') {
-              void this.applyTransition(id, 'processing', {
-                trigger: 'progressing',
-                reason: null
-              }).catch((error) => logCaughtError('task_queue_processing_transition_threw', error))
-              this.watchdog.promoteToProcessing(id)
+            if (e.enteredProcessing) {
+              this.enterProcessing(id, attemptId)
+            }
+          },
+          onProcessing: () => {
+            if (acceptingEvents) {
+              this.enterProcessing(id, attemptId)
             }
           },
           onStd: (e) => {
@@ -1093,13 +1190,28 @@ export class TaskQueueAPI {
     await this.scheduler.enqueue(id, next.priority)
   }
 
-  private handleStalled(id: string): void {
+  private enterProcessing(id: string, attemptId: string): void {
+    if (this.active.get(id)?.attemptId !== attemptId || this.store.get(id)?.status !== 'running') {
+      return
+    }
+    void this.applyTransition(id, 'processing', { trigger: 'progressing', reason: null }).catch(
+      (error) => logCaughtError('task_queue_processing_transition_threw', error)
+    )
+    this.watchdog.promoteToProcessing(id)
+  }
+
+  private handleStalled(id: string, entry: Readonly<WatchdogEntry>): void {
     const active = this.active.get(id)
     const task = this.store.get(id)
     if (!(active && task) || TERMINAL_STATUSES.has(task.status)) {
       return
     }
-    active.markStalled(virtualError('stalled', 'Watchdog: task idle exceeded'))
+    active.markStalled(
+      virtualError(
+        'stalled',
+        `Watchdog: task idle exceeded (phase=${entry.status}, idleMs=${this.clock() - entry.lastBumpAt}, lastOutputAt=${entry.lastBumpAt})`
+      )
+    )
     // The close callback owns finalization and slot release. Cancelling only
     // sends signals; its promise can resolve before the process is reaped.
     void active.run.cancel(0).catch((error) => {

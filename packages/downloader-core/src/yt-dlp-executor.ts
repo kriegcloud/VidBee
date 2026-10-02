@@ -20,7 +20,7 @@ import type {
   TaskInput,
   TaskOutput
 } from '@vidbee/task-queue'
-import { virtualError } from '@vidbee/task-queue'
+import { classify, virtualError } from '@vidbee/task-queue'
 import { killProcessTree } from '@vidbee/task-queue/process'
 import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type { OneClickContainerOption } from './format-preferences'
@@ -28,7 +28,9 @@ import type { DownloadRuntimeSettings } from './types'
 import {
   buildDownloadArgs,
   formatYtDlpCommand,
+  isUnsupportedThumbnailEmbedOnlyFailure,
   resolveSubtitleDownloadSkipReason,
+  THUMBNAIL_EMBED_UNSUPPORTED_LOG,
   VIDBEE_OUTPUT_PATH_PREFIX
 } from './yt-dlp-args'
 import { DownloadProgressAggregator, type YtDlpProgressPayload } from './yt-dlp-progress'
@@ -141,12 +143,9 @@ const DEFAULT_KILL_GRACE_MS = 10_000
 const STDOUT_TAIL_BYTES = 8 * 1024
 const STDERR_TAIL_BYTES = 8 * 1024
 const OUTPUT_PATH_SCAN_BYTES = 4 * 1024
-const PROCESSING_DETECT_PATTERNS = [
-  /\bMerging formats?\b/i,
-  /^\[Postprocess\]/m,
-  /\b(?:Embedding|Adding|Fixing|Converting)\b/i,
-  /\b(?:ExtractAudio|VideoConvertor|FFmpeg)\b/i
-]
+const PROCESSING_LINE =
+  /^\[(?:Merger|Postprocess|ExtractAudio|VideoConvertor|VideoRemuxer|EmbedThumbnail|EmbedSubtitle|Metadata|Fixup\w*|FFmpeg)\]/i
+const OUTPUT_LINE_END = /\r\n|\n|\r/
 const SUBTITLE_DOWNLOAD_ERROR = /Unable to download video subtitles for/i
 const SUBTITLE_DOWNLOAD_INFO = /\[info\][^\r\n]*Downloading subtitles:\s*([^\r\n]+)/i
 const SUBTITLE_UNAVAILABLE_INFO =
@@ -239,6 +238,7 @@ export class YtDlpExecutor implements Executor {
     const stdoutTail = createTailBuffer(STDOUT_TAIL_BYTES)
     const stderrTail = createTailBuffer(STDERR_TAIL_BYTES)
     let postprocessSeen = false
+    const processingLines = { stdout: '', stderr: '' }
     let settled = false
     let cancelRequested = false
     let killTimer: NodeJS.Timeout | null = null
@@ -258,6 +258,18 @@ export class YtDlpExecutor implements Executor {
     let progressAggregator = new DownloadProgressAggregator()
     let subtitleFallbackAttempted = false
     const canRetryWithoutSubtitles = !(ctx.input.rawArgs?.length || this.opts.buildArgs)
+
+    const captureProcessing = (text: string, stream: 'stdout' | 'stderr'): void => {
+      if (postprocessSeen || settled || cancelRequested) {
+        return
+      }
+      const lines = `${processingLines[stream]}${text}`.split(OUTPUT_LINE_END)
+      processingLines[stream] = (lines.pop() ?? '').slice(-OUTPUT_PATH_SCAN_BYTES)
+      if (lines.some((line) => PROCESSING_LINE.test(line.trimStart()))) {
+        postprocessSeen = true
+        events.onProcessing?.({ taskId: ctx.taskId, attemptId: ctx.attemptId })
+      }
+    }
 
     /** Preserve complete path signals even after the persisted log tail rolls over. */
     const captureOutputPath = (text: string): void => {
@@ -365,9 +377,7 @@ export class YtDlpExecutor implements Executor {
         stdoutTail.append(text)
         captureOutputPath(text)
         captureSubtitleSignals(text)
-        if (!postprocessSeen && hasPostprocessSignal(text)) {
-          postprocessSeen = true
-        }
+        captureProcessing(text, 'stdout')
         const fid = extractFormatId(text)
         if (fid) {
           formatIdSeen = fid
@@ -380,9 +390,7 @@ export class YtDlpExecutor implements Executor {
         stderrTail.append(text)
         captureOutputPath(text)
         captureSubtitleSignals(text)
-        if (!postprocessSeen && hasPostprocessSignal(text)) {
-          postprocessSeen = true
-        }
+        captureProcessing(text, 'stderr')
         events.onStd({
           taskId: ctx.taskId,
           attemptId: ctx.attemptId,
@@ -476,7 +484,7 @@ export class YtDlpExecutor implements Executor {
           })
           return
         }
-        const error = virtualError('unknown', err.message)
+        const error = classifyYtDlpExit(null, `${stderrTail.read()}\n${err.message}`)
         finishOnce({
           taskId: ctx.taskId,
           attemptId: ctx.attemptId,
@@ -549,6 +557,18 @@ export class YtDlpExecutor implements Executor {
             finishSuccessfulProcess(closedAt)
             return
           }
+          const savedPath = filePathSeen ?? extractSavedFilePath(`${stdout}\n${stderr}`)
+          // GitHub issue #467: cover embedding can fail after a valid WebM
+          // (or other unsupported container) is already on disk. Keep that
+          // media file instead of reporting the download as failed.
+          if (
+            hasNonEmptyFile(savedPath) &&
+            isUnsupportedThumbnailEmbedOnlyFailure(processStderr || stderr)
+          ) {
+            stderrTail.append(`\n${THUMBNAIL_EMBED_UNSUPPORTED_LOG}\n`)
+            finishSuccessfulProcess(closedAt)
+            return
+          }
           if (
             !subtitleFallbackAttempted &&
             canRetryWithoutSubtitles &&
@@ -565,6 +585,8 @@ export class YtDlpExecutor implements Executor {
             })
             progressAggregator = new DownloadProgressAggregator()
             postprocessSeen = false
+            processingLines.stdout = ''
+            processingLines.stderr = ''
             try {
               const fallbackArgs = withoutSubtitleDownloadArgs(processArgs)
               proc = spawnProcess(fallbackArgs)
@@ -842,8 +864,16 @@ function insertFfmpegLocation(args: string[], ffmpegLocation: string): void {
   }
 }
 
-function hasPostprocessSignal(text: string): boolean {
-  return PROCESSING_DETECT_PATTERNS.some((re) => re.test(text))
+/** Return whether a produced media file is present and non-empty. */
+function hasNonEmptyFile(filePath: string | undefined): boolean {
+  if (!filePath) {
+    return false
+  }
+  try {
+    return existsSync(filePath) && statSync(filePath).size > 0
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -911,38 +941,9 @@ function extractSavedFilePath(rawLog: string): string | undefined {
   return undefined
 }
 
-/**
- * Map a yt-dlp non-zero exit + stderr to a ClassifiedError. The kernel's
- * own classifier handles structured retry decisions; we only need to seed
- * with a sensible category.
- */
+/** Use the queue's canonical classifier for both process errors and non-zero exits. */
 function classifyYtDlpExit(exitCode: number | null, stderr: string): ClassifiedError {
-  const txt = stderr.toLowerCase()
-  if (/(http error 429|too many requests|rate.?limit)/.test(txt)) {
-    return virtualError('http-429', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(login required|requires (?:cookies|authentication)|sign in to confirm)/.test(txt)) {
-    return virtualError('auth-required', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(not available in your country|geo.?restricted|geographic)/.test(txt)) {
-    return virtualError('geo-blocked', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(video unavailable|not found|404)/.test(txt)) {
-    return virtualError('not-found', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(no space left|disk full|enospc)/.test(txt)) {
-    return virtualError('disk-full', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(permission denied|eacces)/.test(txt)) {
-    return virtualError('permission-denied', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(ffmpeg|ffprobe)/.test(txt)) {
-    return virtualError('ffmpeg', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  if (/(network|timeout|econnreset|enotfound|ehostunreach)/.test(txt)) {
-    return virtualError('network-transient', stderr || `yt-dlp exited ${exitCode}`)
-  }
-  return virtualError('unknown', stderr || `yt-dlp exited with code ${exitCode ?? -1}`)
+  return classify({ exitCode, stderr: stderr || `yt-dlp exited with code ${exitCode ?? -1}` })
 }
 
 interface TailBuffer {

@@ -39,6 +39,10 @@ export class MemoryPersistAdapter implements PersistAdapter {
   private readonly journal: ProcessJournalRow[] = []
   private journalSeq = 0
 
+  async hasTask(taskId: string): Promise<boolean> {
+    return this.tasks.has(taskId)
+  }
+
   async insertTask(task: Task): Promise<void> {
     this.tasks.set(task.id, structuredClone(task))
     this.progress.set(task.id, structuredClone(task.progress))
@@ -47,6 +51,15 @@ export class MemoryPersistAdapter implements PersistAdapter {
   async upsertTask(input: PersistTransitionInput): Promise<void> {
     this.tasks.set(input.task.id, structuredClone(input.task))
     this.progress.set(input.task.id, structuredClone(input.progress))
+  }
+
+  /** Clone the entire batch before changing any stored task. */
+  async upsertTasks(inputs: PersistTransitionInput[]): Promise<void> {
+    const copies = structuredClone(inputs)
+    for (const { task, progress } of copies) {
+      this.tasks.set(task.id, task)
+      this.progress.set(task.id, progress)
+    }
   }
 
   async upsertProgress(taskId: string, progress: TaskProgress): Promise<void> {

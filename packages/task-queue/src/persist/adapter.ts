@@ -50,10 +50,18 @@ export interface JournalAppendInput {
 }
 
 export interface PersistAdapter {
+  /**
+   * Whether `taskId` has a row in the durable store. Callers that share the
+   * database across hosts must use this instead of an in-memory snapshot:
+   * another process can insert or delete the row after this process started.
+   */
+  hasTask(taskId: string): Promise<boolean>
   /** Insert a new task (called from `add()`). */
   insertTask(task: Task): Promise<void>
   /** Replace the existing task row + progress row. Used for every transition. */
   upsertTask(input: PersistTransitionInput): Promise<void>
+  /** Atomically replace related task snapshots when a shared source file moves. */
+  upsertTasks(inputs: PersistTransitionInput[]): Promise<void>
   /** Downsampled progress write (the orchestrator calls at most every 1s). */
   upsertProgress(taskId: string, progress: TaskProgress): Promise<void>
   /**

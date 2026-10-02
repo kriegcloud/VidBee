@@ -102,6 +102,12 @@ export class SqlitePersistAdapter implements PersistAdapter {
     this.applyPragmas()
   }
 
+  async hasTask(taskId: string): Promise<boolean> {
+    this.ensureStmts()
+    const row = this.stmts.hasTask.get(taskId) as { present: number } | undefined
+    return row !== undefined
+  }
+
   async insertTask(task: Task): Promise<void> {
     this.ensureStmts()
     const tx = this.db.transaction((row: Task) => {
@@ -117,6 +123,18 @@ export class SqlitePersistAdapter implements PersistAdapter {
       this.stmts.upsertProgress.run(JSON.stringify(progress), task.id)
     })
     tx.immediate(input.task, input.progress)
+  }
+
+  /** Commit all source references together so retries never see a partially moved file. */
+  async upsertTasks(inputs: PersistTransitionInput[]): Promise<void> {
+    this.ensureStmts()
+    const tx = this.db.transaction(() => {
+      for (const { task, progress } of inputs) {
+        this.stmts.upsertTask.run(...this.bindTask(task))
+        this.stmts.upsertProgress.run(JSON.stringify(progress), task.id)
+      }
+    })
+    tx.immediate()
   }
 
   async upsertProgress(taskId: string, progress: TaskProgress): Promise<void> {
@@ -215,7 +233,9 @@ export class SqlitePersistAdapter implements PersistAdapter {
   async loadLatestAttempt(taskId: string): Promise<AttemptRow | null> {
     this.ensureStmts()
     const row = this.stmts.loadLatestAttempt.get(taskId) as AttemptDbRow | undefined
-    if (!row) return null
+    if (!row) {
+      return null
+    }
     return {
       id: row.id,
       taskId: row.task_id,
@@ -263,7 +283,9 @@ export class SqlitePersistAdapter implements PersistAdapter {
   }
 
   private ensureStmts(): void {
-    if (this.stmts) return
+    if (this.stmts) {
+      return
+    }
     this.stmts = {
       insertTask: this.db.prepare(SQL_INSERT_TASK),
       upsertTask: this.db.prepare(SQL_UPSERT_TASK),
@@ -275,6 +297,7 @@ export class SqlitePersistAdapter implements PersistAdapter {
       closeAttempt: this.db.prepare(SQL_CLOSE_ATTEMPT),
       appendJournal: this.db.prepare(SQL_APPEND_JOURNAL),
       findOpenSpawns: this.db.prepare(SQL_FIND_OPEN_SPAWNS),
+      hasTask: this.db.prepare(SQL_HAS_TASK),
       loadAllTasks: this.db.prepare(SQL_LOAD_ALL_TASKS),
       loadLatestAttempt: this.db.prepare(SQL_LOAD_LATEST_ATTEMPT),
       ageJournal: this.db.prepare(SQL_AGE_JOURNAL),
@@ -321,6 +344,7 @@ interface Stmts {
   closeAttempt: SqliteLikeStatement
   appendJournal: SqliteLikeStatement
   findOpenSpawns: SqliteLikeStatement
+  hasTask: SqliteLikeStatement
   loadAllTasks: SqliteLikeStatement
   loadLatestAttempt: SqliteLikeStatement
   ageJournal: SqliteLikeStatement
@@ -477,6 +501,10 @@ WHERE s.op = 'spawn'
       AND c.seq > s.seq
   )
 ORDER BY s.seq ASC
+`
+
+const SQL_HAS_TASK = `
+SELECT 1 AS present FROM tasks WHERE id = ?
 `
 
 const SQL_LOAD_ALL_TASKS = `

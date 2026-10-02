@@ -50,6 +50,7 @@ import {
 import { type LanguageCode, languageList, normalizeLanguageCode } from '@vidbee/i18n/languages'
 import { DragRegion } from '@vidbee/ui/components/ui/drag-region'
 import { SubtitleLanguagePicker } from '@vidbee/ui/components/ui/subtitle-language-picker'
+import { WebmThumbnailNotice } from '@vidbee/ui/components/ui/webm-thumbnail-notice'
 import { useAtom, useSetAtom } from 'jotai'
 import { Film, Music } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -386,6 +387,7 @@ export function Settings() {
                           <ItemDescription>
                             {t('settings.oneClickContainerDescription')}
                           </ItemDescription>
+                          <WebmThumbnailNotice container={settings.oneClickContainer} />
                         </ItemContent>
                         <ItemActions>
                           <Select
@@ -620,6 +622,7 @@ export function Settings() {
                     <ItemContent>
                       <ItemTitle>{t('settings.embedThumbnail')}</ItemTitle>
                       <ItemDescription>{t('settings.embedThumbnailDescription')}</ItemDescription>
+                      <WebmThumbnailNotice container={settings.oneClickContainer} />
                     </ItemContent>
                     <ItemActions>
                       <Switch
@@ -687,6 +690,65 @@ export function Settings() {
 
               <TabPanel className="space-y-4" value="providers">
                 <AiProvidersPanel />
+                <ItemGroup>
+                  <Item variant="muted">
+                    <ItemContent>
+                      <ItemTitle>{t('settings.agentManagementTools')}</ItemTitle>
+                      <ItemDescription>
+                        {t('settings.agentManagementToolsDescription')}
+                      </ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                      <Select
+                        onValueChange={(value) => {
+                          handleSettingChange(
+                            'agentManagementTools',
+                            value as 'off' | 'ask' | 'auto'
+                          )
+                        }}
+                        value={settings.agentManagementTools ?? 'ask'}
+                      >
+                        <SelectTrigger className="w-36">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(['off', 'ask', 'auto'] as const).map((mode) => (
+                            <SelectItem key={mode} value={mode}>
+                              {t(`settings.agentManagementToolsOptions.${mode}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </ItemActions>
+                  </Item>
+                  <Item variant="muted">
+                    <ItemContent>
+                      <ItemTitle>{t('settings.agentMaxConcurrentRuns')}</ItemTitle>
+                      <ItemDescription>
+                        {t('settings.agentMaxConcurrentRunsDescription')}
+                      </ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                      <Select
+                        onValueChange={(value) => {
+                          handleSettingChange('agentMaxConcurrentRuns', Number(value))
+                        }}
+                        value={String(settings.agentMaxConcurrentRuns ?? 2)}
+                      >
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4].map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </ItemActions>
+                  </Item>
+                </ItemGroup>
               </TabPanel>
 
               <TabPanel className="space-y-4" value="prompts">

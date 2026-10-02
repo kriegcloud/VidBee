@@ -34,10 +34,12 @@ export class Watchdog {
   private readonly setTimer: NonNullable<WatchdogConfig['setTimer']>
   private readonly clearTimer: NonNullable<WatchdogConfig['clearTimer']>
   private readonly clock: NonNullable<WatchdogConfig['clock']>
+  private readonly onStalled: (taskId: string, entry: Readonly<WatchdogEntry>) => void
 
-  private readonly onStalled: (taskId: string) => void
-
-  constructor(onStalled: (taskId: string) => void, config: WatchdogConfig = {}) {
+  constructor(
+    onStalled: (taskId: string, entry: Readonly<WatchdogEntry>) => void,
+    config: WatchdogConfig = {}
+  ) {
     this.onStalled = onStalled
     this.runningIdleMs = config.runningIdleMs ?? 60_000
     this.processingIdleMs = config.processingIdleMs ?? 600_000
@@ -114,7 +116,7 @@ export class Watchdog {
           // disarm before notifying so onStalled can call back into us safely
           this.entries.delete(entry.taskId)
           try {
-            this.onStalled(entry.taskId)
+            this.onStalled(entry.taskId, cur)
           } catch (err) {
             logCaughtError('task_queue_watchdog_threw', err)
           }

@@ -3,7 +3,7 @@
  * by groupKey/status. Only the orchestrator writes here; consumers receive
  * read-only snapshots.
  */
-import type { Task, TaskQueueStats, TaskSnapshot, TaskStatus } from '../types'
+import type { Task, TaskKind, TaskQueueStats, TaskSnapshot, TaskStatus } from '../types'
 
 const STATUSES: readonly TaskStatus[] = [
   'queued',
@@ -117,14 +117,21 @@ export class TaskStore {
   }
 
   list(opts?: {
+    query?: string
+    kind?: TaskKind
     status?: TaskStatus
     groupKey?: string
     parentId?: string
     limit?: number
     cursor?: string | null
   }): { tasks: Task[]; nextCursor: string | null } {
+    const query = opts?.query?.trim().toLocaleLowerCase()
+    const kind = opts?.kind
+    // Query/kind filters depend on mutable task fields (title), so they bypass
+    // the id-listing cache, which is only invalidated on index transitions.
+    const cacheable = !(query || kind)
     const key = JSON.stringify([opts?.status, opts?.groupKey, opts?.parentId])
-    let listing = this.listings.get(key)
+    let listing = cacheable ? this.listings.get(key) : undefined
     if (!listing) {
       const candidates = opts?.parentId
         ? (this.byParent.get(opts.parentId) ?? [])
@@ -148,19 +155,30 @@ export class TaskStore {
         if (opts?.parentId && t.parentId !== opts.parentId) {
           continue
         }
+        if (kind && t.kind !== kind) {
+          continue
+        }
+        if (
+          query &&
+          !`${t.id}\n${t.input.title ?? ''}\n${t.input.url}`.toLocaleLowerCase().includes(query)
+        ) {
+          continue
+        }
         all.push(t)
       }
       all.sort((a, b) => a.createdAt - b.createdAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
       const ids = all.map((t) => t.id)
       listing = { ids, positions: new Map(ids.map((id, index) => [id, index])) }
-      // Bound retained query combinations, including one-off parent lookups.
-      if (this.listings.size >= 32) {
-        const oldest = this.listings.keys().next().value
-        if (oldest !== undefined) {
-          this.listings.delete(oldest)
+      if (cacheable) {
+        // Bound retained query combinations, including one-off parent lookups.
+        if (this.listings.size >= 32) {
+          const oldest = this.listings.keys().next().value
+          if (oldest !== undefined) {
+            this.listings.delete(oldest)
+          }
         }
+        this.listings.set(key, listing)
       }
-      this.listings.set(key, listing)
     }
     const startIdx = opts?.cursor ? (listing.positions.get(opts.cursor) ?? -1) + 1 : 0
     const limit = opts?.limit ?? 100

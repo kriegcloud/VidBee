@@ -214,7 +214,10 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     url: task.input.url,
     title: task.input.title,
     thumbnail: task.input.thumbnail,
-    type: task.kind === 'audio' ? 'audio' : 'video',
+    type:
+      task.kind === 'audio' || (task.kind === 'conversion' && task.input.options?.type === 'audio')
+        ? 'audio'
+        : 'video',
     status,
     internalStatus: task.status,
     statusReason: task.statusReason,

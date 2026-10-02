@@ -213,6 +213,7 @@ export const WebAppSettingsSchema = z.object({
         'sense-voice-2025',
         'parakeet-v2',
         'parakeet-v3',
+        'orukeet',
         'quality'
       ])
       .default('minimal')

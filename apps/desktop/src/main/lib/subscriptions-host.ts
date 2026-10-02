@@ -28,15 +28,11 @@ import {
   type SubscriptionWithItems
 } from '@vidbee/subscriptions-core'
 import type { SubscriptionFeedItem, SubscriptionRule } from '../../shared/types'
-import {
-  buildAudioFormatPreference,
-  buildVideoFormatPreference
-} from '../../shared/utils/format-preferences'
-import { sanitizeFilenameTemplate } from '../download-engine/args-builder'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { getDatabaseConnection } from './database'
 import { historyManager } from './history-manager'
+import { buildDesktopSubscriptionTaskInput } from './subscription-enqueue'
 import { getDesktopTaskQueue } from './task-queue-host'
 
 const logger = scopedLoggers.engine
@@ -83,6 +79,7 @@ const ensureDirectoryExists = (dir?: string): void => {
 
 let api: SubscriptionsApi | null = null
 let started = false
+let removeTaskListener: (() => void) | null = null
 
 export const getDesktopSubscriptions = (): SubscriptionsApi => {
   if (api) {
@@ -100,41 +97,20 @@ export const getDesktopSubscriptions = (): SubscriptionsApi => {
     metaStore,
     fetcher: new RssParserFeedFetcher(),
     isHistoryDup: (url) => historyManager.hasHistoryForUrl(url),
-    enqueueItem: async ({ subscription, item }) => {
-      const settings = settingsManager.getAll()
-      const downloadDirectory = subscription.downloadDirectory?.trim() || settings.downloadPath
-      const namingTemplate = subscription.namingTemplate
-        ? sanitizeFilenameTemplate(subscription.namingTemplate)
-        : undefined
-      const downloadType = settings.oneClickDownloadType ?? 'video'
-      const formatPreference =
-        downloadType === 'video'
-          ? buildVideoFormatPreference(settings)
-          : buildAudioFormatPreference(settings)
-      const containerFormat =
-        downloadType === 'video' ? (settings.oneClickContainer ?? 'auto') : undefined
+    // `get` is this process's startup snapshot. A task the API wrote to the
+    // shared database after that is still a real download.
+    taskExists: (taskId) => getDesktopTaskQueue().hasTask(taskId),
+    enqueueItem: async ({ subscription, item, trigger, creation }) => {
+      const { task, downloadDirectory } = buildDesktopSubscriptionTaskInput({
+        settings: settingsManager.getAll(),
+        subscription,
+        item,
+        trigger,
+        creation
+      })
       ensureDirectoryExists(downloadDirectory)
-      const tags = Array.from(new Set([subscription.platform, ...subscription.tags]))
-
       const result = await getDesktopTaskQueue().add({
-        input: {
-          url: item.url,
-          kind: 'subscription-item',
-          title: item.title,
-          ...(item.thumbnail === undefined ? {} : { thumbnail: item.thumbnail }),
-          subscriptionId: subscription.id,
-          options: {
-            type: downloadType,
-            format: formatPreference,
-            ...(containerFormat === undefined ? {} : { containerFormat }),
-            customDownloadPath: downloadDirectory,
-            ...(namingTemplate ? { customFilenameTemplate: namingTemplate } : {}),
-            tags,
-            origin: 'subscription',
-            subscriptionId: subscription.id,
-            itemId: item.id
-          }
-        },
+        input: task,
         priority: 10,
         groupKey: subscription.id
       })
@@ -158,7 +134,11 @@ export const startDesktopSubscriptions = async (): Promise<void> => {
   if (started) {
     return
   }
-  await getDesktopSubscriptions().start()
+  const subscriptions = getDesktopSubscriptions()
+  await subscriptions.start()
+  removeTaskListener = getDesktopTaskQueue().on('task-removed', (event) => {
+    subscriptions.noteTaskRemoved(event.taskId)
+  })
   started = true
 }
 
@@ -166,6 +146,8 @@ export const stopDesktopSubscriptions = async (): Promise<void> => {
   if (!started) {
     return
   }
+  removeTaskListener?.()
+  removeTaskListener = null
   await api?.stop()
   started = false
 }

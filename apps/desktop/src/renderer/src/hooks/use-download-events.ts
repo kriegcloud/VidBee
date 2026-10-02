@@ -231,6 +231,9 @@ export function useDownloadEvents() {
         return
       }
       updateDownload({ id, changes: data.updates })
+      if (isFinalStatus(data.updates.status)) {
+        void syncHistoryItem(id)
+      }
     }
 
     const queuedSubscription = ipcEvents.on('download:queued', handleQueued)
@@ -241,6 +244,7 @@ export function useDownloadEvents() {
     const completedSubscription = ipcEvents.on('download:completed', handleCompleted)
     const errorSubscription = ipcEvents.on('download:error', handleError)
     const cancelledSubscription = ipcEvents.on('download:cancelled', handleCancelled)
+    const removedSubscription = ipcEvents.on('download:removed', handleCancelled)
     return () => {
       ipcEvents.removeListener('download:queued', queuedSubscription)
       ipcEvents.removeListener('download:updated', updatedSubscription)
@@ -250,6 +254,7 @@ export function useDownloadEvents() {
       ipcEvents.removeListener('download:completed', completedSubscription)
       ipcEvents.removeListener('download:error', errorSubscription)
       ipcEvents.removeListener('download:cancelled', cancelledSubscription)
+      ipcEvents.removeListener('download:removed', removedSubscription)
     }
   }, [
     addDownload,

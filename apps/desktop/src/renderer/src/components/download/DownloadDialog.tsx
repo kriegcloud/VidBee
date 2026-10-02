@@ -15,7 +15,8 @@ import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidb
 import { FanslyCommandSchema, fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import {
   ONE_CLICK_CONTAINER_OPTIONS,
-  type OneClickContainerOption
+  type OneClickContainerOption,
+  resolvePlaylistContainerFormat
 } from '@vidbee/downloader-core/format-preferences'
 import {
   buildSingleVideoFormatSelector,
@@ -32,6 +33,7 @@ import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collec
 import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
 import { SocialProfileDialog } from '@vidbee/ui/components/ui/social-profile-dialog'
+import { WebmThumbnailNotice } from '@vidbee/ui/components/ui/webm-thumbnail-notice'
 import {
   type CollectionProfile,
   isPlaylistLikeUrl,
@@ -873,8 +875,11 @@ export function DownloadDialog({
         downloadType === 'video'
           ? buildVideoFormatPreference(settings)
           : buildAudioFormatPreference(settings)
-      const containerFormat =
-        downloadType === 'video' ? (playlistContainer ?? settings.oneClickContainer) : undefined
+      const containerFormat = resolvePlaylistContainerFormat(
+        downloadType,
+        playlistContainer,
+        settings.oneClickContainer
+      )
 
       const result = await ipcServices.download.startPlaylistDownload({
         url: trimmedUrl,
@@ -1410,12 +1415,22 @@ export function DownloadDialog({
             advancedOptionsOpen={advancedOptionsOpen}
             containerSelect={
               downloadType === 'video' && (
-                <DownloadContainerSelect
-                  disabled={playlistBusy}
-                  onValueChange={setPlaylistContainer}
-                  options={ONE_CLICK_CONTAINER_OPTIONS}
-                  value={playlistContainer ?? settings.oneClickContainer ?? 'auto'}
-                />
+                <>
+                  <DownloadContainerSelect
+                    disabled={playlistBusy}
+                    onValueChange={setPlaylistContainer}
+                    options={ONE_CLICK_CONTAINER_OPTIONS}
+                    value={playlistContainer ?? settings.oneClickContainer ?? 'auto'}
+                  />
+                  <WebmThumbnailNotice
+                    className="w-full"
+                    container={resolvePlaylistContainerFormat(
+                      downloadType,
+                      playlistContainer,
+                      settings.oneClickContainer
+                    )}
+                  />
+                </>
               )
             }
             downloadType={downloadType}
