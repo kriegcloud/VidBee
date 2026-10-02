@@ -1,9 +1,10 @@
-import { type ChildProcess, spawn } from 'node:child_process'
+import { type ChildProcess, spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { resolveBrowserExecutable } from '@vidbee/browser-capture'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { app } from 'electron'
+import { resolveSocialSessionKeyring } from './social-session-keyring'
 
 type SocialSessionSite = 'x' | 'tiktok'
 
@@ -14,6 +15,22 @@ const site = (url: string): SocialSessionSite | null => {
 
 class SocialSessionManager {
   private readonly loginBrowsers = new Map<SocialSessionSite, ChildProcess>()
+
+  private linuxKeyring(): 'kwallet' | null {
+    if (process.platform !== 'linux') {
+      return null
+    }
+    const desktop = [
+      process.env.XDG_CURRENT_DESKTOP,
+      process.env.XDG_SESSION_DESKTOP,
+      process.env.DESKTOP_SESSION,
+      process.env.KDE_FULL_SESSION
+    ]
+      .filter(Boolean)
+      .join(':')
+    const kwalletAvailable = spawnSync('which', ['kwallet-query'], { stdio: 'ignore' }).status === 0
+    return resolveSocialSessionKeyring(desktop, kwalletAvailable)
+  }
 
   private directory(platform: SocialSessionSite): string {
     return path.join(app.getPath('userData'), 'social-sessions', platform, 'browser-session')
@@ -39,6 +56,7 @@ class SocialSessionManager {
       [
         `--user-data-dir=${directory}`,
         '--no-first-run',
+        ...(this.linuxKeyring() === 'kwallet' ? ['--password-store=kwallet'] : []),
         platform === 'x' ? 'https://x.com/home' : 'https://www.tiktok.com/'
       ],
       { stdio: 'ignore' }
@@ -63,13 +81,7 @@ class SocialSessionManager {
     if (child && child.exitCode === null && child.signalCode === null) {
       throw new Error('Close the dedicated login window before mapping or downloading.')
     }
-    const desktop = [
-      process.env.XDG_CURRENT_DESKTOP,
-      process.env.XDG_SESSION_DESKTOP,
-      process.env.DESKTOP_SESSION,
-      process.env.KDE_FULL_SESSION
-    ].join(':')
-    const keyring = process.platform === 'linux' && /kde|plasma/i.test(desktop) ? '+kwallet' : ''
+    const keyring = this.linuxKeyring() === 'kwallet' ? '+kwallet' : ''
     return ['--cookies-from-browser', `chrome${keyring}:${directory}`]
   }
 }
