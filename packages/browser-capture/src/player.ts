@@ -1,5 +1,6 @@
 import type { Browser, Page } from 'playwright-core'
 import type { PlaywrightCookie } from './cookies'
+import { virtualDisplayEnv } from './display'
 import { playbackPageUrl } from './drm'
 import {
   evenSize,
@@ -79,6 +80,23 @@ const waitForSettledQuality = async (page: Page, signal: AbortSignal): Promise<D
 }
 
 /**
+ * `--kiosk` only covers the first window, and Playwright opens each context in
+ * a new one, so ask the browser to drop its tab strip and toolbar. Without
+ * this the viewport (and the pinned video) starts below the browser chrome
+ * while ffmpeg grabs from the screen origin.
+ */
+const enterWindowFullscreen = async (page: Page): Promise<void> => {
+  try {
+    const cdp = await page.context().newCDPSession(page)
+    const { windowId } = await cdp.send('Browser.getWindowForTarget')
+    await cdp.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'fullscreen' } })
+    await cdp.detach()
+  } catch {
+    /* best effort: some builds refuse window control */
+  }
+}
+
+/**
  * Launch headed Chromium on the virtual display, inject cookies, and play the
  * first media element so ffmpeg can record the composited (decrypted) frames.
  */
@@ -94,13 +112,7 @@ export const startPlayback = async (input: {
   signal: AbortSignal
 }): Promise<PlaybackSession> => {
   const { chromium } = await import('playwright-core')
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    DISPLAY: input.display
-  }
-  if (input.pulseSink) {
-    env.PULSE_SINK = input.pulseSink
-  }
+  const env = virtualDisplayEnv(process.env, input.display, input.pulseSink)
 
   const browser: Browser = await chromium.launch({
     executablePath: input.executablePath,
@@ -108,6 +120,7 @@ export const startPlayback = async (input: {
     env,
     ignoreDefaultArgs: ['--enable-automation'],
     args: [
+      '--ozone-platform=x11',
       `--window-size=${input.width},${input.height}`,
       '--window-position=0,0',
       '--kiosk',
@@ -149,6 +162,7 @@ export const startPlayback = async (input: {
   }
 
   const page = await context.newPage()
+  await enterWindowFullscreen(page)
   const target = playbackPageUrl(input.url)
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 45_000 })
   await page.evaluate(() => {

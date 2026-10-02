@@ -12,6 +12,24 @@ export interface VirtualDisplay {
   stop: () => Promise<void>
 }
 
+/**
+ * Environment for a child that must render on the virtual display. Wayland
+ * variables are dropped so Chromium's Ozone auto-detection cannot pick the
+ * desktop compositor over Xvfb.
+ */
+export const virtualDisplayEnv = (
+  base: NodeJS.ProcessEnv,
+  display: string,
+  pulseSink?: string
+): NodeJS.ProcessEnv => {
+  const { WAYLAND_DISPLAY: _waylandDisplay, WAYLAND_SOCKET: _waylandSocket, ...rest } = base
+  const env: NodeJS.ProcessEnv = { ...rest, DISPLAY: display, XDG_SESSION_TYPE: 'x11' }
+  if (pulseSink) {
+    env.PULSE_SINK = pulseSink
+  }
+  return env
+}
+
 const killChild = (child: ChildProcess | null, signal: NodeJS.Signals = 'SIGTERM'): void => {
   if (!child?.pid) {
     return

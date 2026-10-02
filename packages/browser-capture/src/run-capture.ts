@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { parseNetscapeCookieFile, toPlaywrightCookies } from './cookies'
-import { startVirtualDisplay } from './display'
+import { startVirtualDisplay, virtualDisplayEnv } from './display'
 import { startPlayback } from './player'
 import type { CaptureJob } from './protocol'
 import { evenSize } from './quality'
@@ -55,13 +55,7 @@ export const runCapture = async (
       `Pinned decoded quality ${grabWidth}x${grabHeight}${playing.method ? ` (${playing.method})` : ''}`
     )
     await sleep(350)
-    const env: NodeJS.ProcessEnv = {
-      ...process.env,
-      DISPLAY: display.display
-    }
-    if (display.pulseSink) {
-      env.PULSE_SINK = display.pulseSink
-    }
+    const env = virtualDisplayEnv(process.env, display.display, display.pulseSink)
     const startWithAudio = Boolean(display.pulseSink)
     const recorderInput = {
       ffmpegPath: job.ffmpegPath,

@@ -15,6 +15,7 @@ export function projectTaskForApi(task: Readonly<Task>): DownloadTask {
   const out: DownloadTask = {
     collectionSummary: proj.collectionSummary,
     sourceMediaKind: proj.sourceMediaKind,
+    browserCapture: proj.browserCapture,
     id: proj.id,
     url: proj.url,
     title: proj.title,

@@ -60,6 +60,7 @@ export type TaskQueueErrorCategory =
 
 export interface DownloadTask {
   sourceMediaKind?: 'image' | 'video' | 'mixed'
+  browserCapture?: boolean
   socialMedia?: SocialMediaOptions
   collectionSummary?: SocialCollectionSummary
   id: string
@@ -148,6 +149,8 @@ export interface PlaylistInfoInput {
 export interface CreateDownloadInput {
   socialMedia?: SocialMediaOptions
   singleVideo?: boolean
+  /** Record the playback page in a browser instead of downloading directly. */
+  browserCapture?: boolean
   url: string
   type: DownloadType
   title?: string

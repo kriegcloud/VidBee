@@ -6,7 +6,12 @@ import type {
   ExecutorRun
 } from '@vidbee/task-queue'
 import { isBrowserCaptureAvailable } from './availability'
-import { DRM_FALLBACK_MESSAGE, isDrmProtectedMessage } from './drm'
+import {
+  BROWSER_CAPTURE_REQUESTED_MESSAGE,
+  BROWSER_CAPTURE_UNAVAILABLE_MESSAGE,
+  DRM_FALLBACK_MESSAGE,
+  isDrmProtectedMessage
+} from './drm'
 
 const isDrmFinish = (event: ExecutorFinishEvent): boolean => {
   if (event.result.type !== 'error') {
@@ -17,9 +22,15 @@ const isDrmFinish = (event: ExecutorFinishEvent): boolean => {
   )
 }
 
+const isCaptureRequested = (ctx: ExecutorContext): boolean =>
+  ctx.input.options?.browserCapture === true
+
 /**
  * Run yt-dlp (or another primary executor) first. When decoding is impossible
  * because of CDM DRM, fall back to recording headed Chromium on Xvfb.
+ *
+ * A task created with `options.browserCapture: true` skips the primary and
+ * records the playback page directly, provided capture is available here.
  */
 export class DrmFallbackExecutor implements Executor {
   constructor(
@@ -29,6 +40,19 @@ export class DrmFallbackExecutor implements Executor {
   ) {}
 
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
+    if (isCaptureRequested(ctx)) {
+      const available = this.isAvailable()
+      events.onStd({
+        taskId: ctx.taskId,
+        attemptId: ctx.attemptId,
+        stream: 'stderr',
+        line: available ? BROWSER_CAPTURE_REQUESTED_MESSAGE : BROWSER_CAPTURE_UNAVAILABLE_MESSAGE
+      })
+      if (available) {
+        return this.capture.run(ctx, events)
+      }
+    }
+
     let active: ExecutorRun | null = null
     let captureStarted = false
 

@@ -593,6 +593,7 @@ export const rpcRouter = os.router({
             options: {
               type: input.type,
               singleVideo: input.singleVideo,
+              browserCapture: input.browserCapture,
               socialMedia: resolveSocialSource(url)
                 ? SocialMediaOptionsSchema.parse(input.socialMedia ?? {})
                 : undefined,

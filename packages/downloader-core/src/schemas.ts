@@ -111,6 +111,7 @@ export const DownloadTaskSchema = z.object({
   batchAssetCount: z.number().int().nonnegative().optional(),
   outputDirectory: z.string().optional(),
   sourceMediaKind: z.enum(['image', 'video', 'mixed']).optional(),
+  browserCapture: z.boolean().optional(),
   socialMedia: SocialMediaOptionsSchema.optional(),
   collectionSummary: SocialCollectionSummarySchema.optional(),
   fileCount: z.number().int().nonnegative().optional(),
@@ -222,6 +223,7 @@ export const WebAppSettingsSchema = z.object({
 
 export const CreateDownloadInputSchema = z.object({
   singleVideo: z.boolean().optional(),
+  browserCapture: z.boolean().optional(),
   socialMedia: SocialMediaOptionsSchema.optional(),
   url: z.url(),
   type: DownloadTypeSchema,

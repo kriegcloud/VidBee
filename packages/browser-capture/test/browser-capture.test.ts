@@ -8,7 +8,14 @@ import type {
 import { virtualError } from '@vidbee/task-queue'
 import { describe, expect, it } from 'vitest'
 import { parseNetscapeCookieFile, toPlaywrightCookies } from '../src/cookies'
-import { isDrmProtectedMessage, playbackPageUrl } from '../src/drm'
+import { virtualDisplayEnv } from '../src/display'
+import {
+  BROWSER_CAPTURE_REQUESTED_MESSAGE,
+  BROWSER_CAPTURE_UNAVAILABLE_MESSAGE,
+  DRM_FALLBACK_MESSAGE,
+  isDrmProtectedMessage,
+  playbackPageUrl
+} from '../src/drm'
 import { DrmFallbackExecutor } from '../src/drm-fallback'
 import { encodeSidecarEvent, parseCaptureJob, parseSidecarEvent } from '../src/protocol'
 import { evenSize } from '../src/quality'
@@ -81,6 +88,35 @@ describe('sidecar protocol', () => {
     })
     expect(job.width).toBe(3840)
     expect(job.height).toBe(3840)
+  })
+})
+
+describe('virtualDisplayEnv', () => {
+  it('pins the child to the virtual X display even inside a Wayland session', () => {
+    const env = virtualDisplayEnv(
+      {
+        DISPLAY: ':0',
+        HOME: '/home/user',
+        WAYLAND_DISPLAY: 'wayland-0',
+        WAYLAND_SOCKET: '7',
+        XDG_SESSION_TYPE: 'wayland'
+      },
+      ':90',
+      'vidbee_cap_90'
+    )
+    expect(env).toEqual({
+      DISPLAY: ':90',
+      HOME: '/home/user',
+      PULSE_SINK: 'vidbee_cap_90',
+      XDG_SESSION_TYPE: 'x11'
+    })
+  })
+
+  it('omits PULSE_SINK without a null sink and leaves the base env untouched', () => {
+    const base = { DISPLAY: ':0', WAYLAND_DISPLAY: 'wayland-0' }
+    const env = virtualDisplayEnv(base, ':91')
+    expect(env).toEqual({ DISPLAY: ':91', XDG_SESSION_TYPE: 'x11' })
+    expect(base).toEqual({ DISPLAY: ':0', WAYLAND_DISPLAY: 'wayland-0' })
   })
 })
 
@@ -200,5 +236,80 @@ describe('DrmFallbackExecutor', () => {
     })
     await expect(finished).resolves.toBe('error')
     expect(captureRan).toBe(false)
+  })
+
+  const captureCtx: ExecutorContext = {
+    ...ctx,
+    input: { ...ctx.input, options: { browserCapture: true } }
+  }
+
+  const successFinish = (onFinish: ExecutorEvents['onFinish']): void => {
+    onFinish({
+      taskId: ctx.taskId,
+      attemptId: ctx.attemptId,
+      result: {
+        type: 'success',
+        output: { filePath: '/tmp/out.mp4', size: 12, durationMs: 1000, sha256: null }
+      },
+      closedAt: Date.now(),
+      stdoutTail: '',
+      stderrTail: ''
+    })
+  }
+
+  const runOrder = (
+    context: ExecutorContext,
+    primaryFinish: (onFinish: ExecutorEvents['onFinish']) => void,
+    isAvailable: () => boolean
+  ): Promise<{ order: string[]; lines: string[]; result: string }> => {
+    const order: string[] = []
+    const lines: string[] = []
+    const primary: Executor = {
+      run(_context, events): ExecutorRun {
+        order.push('primary')
+        queueMicrotask(() => primaryFinish(events.onFinish))
+        return noopRun
+      }
+    }
+    const capture: Executor = {
+      run(_context, events): ExecutorRun {
+        order.push('capture')
+        queueMicrotask(() => successFinish(events.onFinish))
+        return noopRun
+      }
+    }
+    return new Promise((resolve) => {
+      new DrmFallbackExecutor(primary, capture, isAvailable).run(context, {
+        onSpawn: () => undefined,
+        onProgress: () => undefined,
+        onStd: (event) => lines.push(event.line),
+        onFinish: (event) => resolve({ order, lines, result: event.result.type })
+      })
+    })
+  }
+
+  it('starts capture directly when browser capture is requested', async () => {
+    const outcome = await runOrder(captureCtx, successFinish, () => true)
+    expect(outcome.order).toEqual(['capture'])
+    expect(outcome.lines).toEqual([BROWSER_CAPTURE_REQUESTED_MESSAGE])
+    expect(outcome.result).toBe('success')
+  })
+
+  it('runs the primary when requested capture is unavailable', async () => {
+    const outcome = await runOrder(captureCtx, successFinish, () => false)
+    expect(outcome.order).toEqual(['primary'])
+    expect(outcome.lines).toEqual([BROWSER_CAPTURE_UNAVAILABLE_MESSAGE])
+    expect(outcome.result).toBe('success')
+  })
+
+  it('keeps the DRM fallback when capture is not requested', async () => {
+    const plain = await runOrder(ctx, successFinish, () => true)
+    expect(plain.order).toEqual(['primary'])
+    expect(plain.lines).toEqual([])
+
+    const drm = await runOrder(ctx, drmFinish, () => true)
+    expect(drm.order).toEqual(['primary', 'capture'])
+    expect(drm.lines).toEqual([DRM_FALLBACK_MESSAGE])
+    expect(drm.result).toBe('success')
   })
 })

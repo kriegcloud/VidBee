@@ -23,6 +23,12 @@ const DRM_PATTERNS = ['drm protected', 'known to use drm protection'] as const
 export const DRM_FALLBACK_MESSAGE =
   '[VidBee] Source is DRM protected; recording in-browser playback on a virtual display.'
 
+export const BROWSER_CAPTURE_REQUESTED_MESSAGE =
+  '[VidBee] Browser capture requested; recording in-browser playback on a virtual display.'
+
+export const BROWSER_CAPTURE_UNAVAILABLE_MESSAGE =
+  '[VidBee] Browser capture requested but unavailable on this host (needs Linux, Xvfb and a Chromium-family browser); downloading directly instead.'
+
 /** True when a yt-dlp finish event is the expected CDM/DRM failure. */
 export const isDrmProtectedMessage = (text: string): boolean => {
   const normalized = text.toLowerCase()
