@@ -1849,12 +1849,20 @@
     "alreadySaved": "Già in coda o scaricato"
   },
   "onlyFans": {
+    "chat": "Chat {{id}}",
+    "chatHint": "Scansiona le foto e i video di questa conversazione nel browser dedicato. È possibile scaricare solo gli allegati disponibili.",
     "sessionHint": "Accedi una volta nel browser dedicato a VidBee su questo dispositivo. I cookie del tuo Chrome abituale non vengono mai copiati. Esplora foto o video, poi seleziona i contenuti disponibili da scaricare.",
     "openBrowser": "Apri browser",
+    "selectNotDownloaded": "Seleziona non scaricati ({{count}})",
     "videos": "Video",
     "mapping": "Esplorazione del profilo…",
     "partial": "Esplorazione parziale salvata. Ripetila per trovare altri elementi.",
     "locked": "Bloccato",
     "queued": "{{count}} file in coda"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Accedi a Fansly nel browser dedicato, quindi scansiona post o contenuti multimediali. La sessione rimane salvata in quel browser. Chiudi la finestra di accesso prima della scansione.",
+    "posts": "Post",
+    "media": "Media"
+}
 }

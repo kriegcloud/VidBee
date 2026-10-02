@@ -1849,12 +1849,20 @@
     "alreadySaved": "Zaten sırada veya indirildi"
   },
   "onlyFans": {
+    "chat": "Sohbet {{id}}",
+    "chatHint": "Bu konuşmadaki fotoğraf ve videoları özel tarayıcıyla tarayın. Yalnızca erişilebilir ekler indirilebilir.",
     "sessionHint": "Bu cihazdaki özel VidBee tarayıcısında bir kez oturum açın. Normal Chrome çerezleriniz asla kopyalanmaz. Fotoğrafları veya videoları tarayın, ardından indirilebilir içerikleri seçin.",
     "openBrowser": "Tarayıcıyı aç",
+    "selectNotDownloaded": "İndirilmemişleri seç ({{count}})",
     "videos": "Videolar",
     "mapping": "Profil taranıyor…",
     "partial": "Kısmi tarama kaydedildi. Daha fazla öğe bulmak için yeniden tarayın.",
     "locked": "Kilitli",
     "queued": "{{count}} dosya kuyruğa alındı"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Ayrı tarayıcıda Fansly hesabınıza giriş yapın, ardından gönderileri veya medyayı tarayın. Oturumunuz o tarayıcıda saklanır. Taramadan önce giriş penceresini kapatın.",
+    "posts": "Gönderiler",
+    "media": "Medya"
+}
 }

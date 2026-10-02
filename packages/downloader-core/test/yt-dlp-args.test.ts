@@ -32,6 +32,27 @@ describe('OnlyFans session isolation', () => {
     }
   })
 
+  it('routes canonical chat and message links into the dedicated map', () => {
+    for (const url of [
+      'https://onlyfans.com/my/chats/chat/50465073/',
+      'https://www.onlyfans.com/my/chats/chat/50465073?firstId=123'
+    ]) {
+      expect(onlyFansProfile(url)).toEqual({
+        username: '50465073',
+        chatId: '50465073',
+        profileUrl: 'https://onlyfans.com/my/chats/chat/50465073'
+      })
+    }
+    for (const url of [
+      'https://onlyfans.com/my/chats/chat/nope',
+      'https://onlyfans.com/my/chats/chat/7/extra',
+      'https://onlyfans.com/50465073',
+      'https://evil.test/my/chats/chat/7'
+    ]) {
+      expect(onlyFansProfile(url)).toBeNull()
+    }
+  })
+
   it('preserves non-OnlyFans extraction', () => {
     expect(buildVideoInfoArgs('https://youtube.com/watch?v=fixture', {})).toContain(
       '--ignore-config'

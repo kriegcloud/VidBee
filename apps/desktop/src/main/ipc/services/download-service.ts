@@ -22,6 +22,19 @@ class DownloadService extends IpcService {
   static readonly groupName = 'download'
 
   @IpcMethod()
+  fanslyProfileCommand(_context: IpcContext, input: OnlyFansCommand) {
+    return downloadEngine.fanslyProfileCommand(input)
+  }
+  @IpcMethod()
+  listFanslyProfiles(_context: IpcContext) {
+    return downloadEngine.listFanslyProfiles()
+  }
+  @IpcMethod()
+  downloadFanslyProfile(_context: IpcContext, input: OnlyFansDownload) {
+    return downloadEngine.downloadFanslyProfile(input)
+  }
+
+  @IpcMethod()
   onlyFansProfileCommand(_context: IpcContext, input: OnlyFansCommand) {
     return downloadEngine.onlyFansProfileCommand(input)
   }

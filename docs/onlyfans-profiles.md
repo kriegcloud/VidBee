@@ -5,8 +5,10 @@ OnlyFans profile links open the same shared dialog on desktop and web. Choose
 This uses a persistent browser profile inside the host's OnlyFans storage
 directory. It never imports the user's regular Chrome cookies or local storage.
 
-Choose **Photos** or **Videos**, then **Map**. VidBee observes the normal site's
-post responses while scrolling the selected profile. Counts update during
+Choose **Map** to scan the combined **Media** feed. **All**, **Photos**, and
+**Videos** filter the saved results without restricting the scan. VidBee observes the normal site's
+post responses while scrolling the selected profile. Reopen a map using **Saved profiles** or the
+**OnlyFans · Map** action in a downloaded item’s context menu. Counts update during
 mapping. **Stop mapping** retains discovered references, and the profile appears
 in **Saved profiles**. Reopening or refreshing merges media by ID. A refresh
 starts at the top of the current site feed; it does not replay an API cursor.
@@ -20,8 +22,17 @@ Select available originals and choose **Download selected**. Downloads appear
 in the normal task queue. Each download refreshes the original media URL by
 opening its post in the dedicated browser. The CDN transfer sends no account
 cookies; partial transfers are not marked complete. Locked items and DRM-only
-videos are shown but cannot be selected. Messages, purchased chat galleries,
-and DRM recording are not implemented by this profile flow.
+videos are shown but cannot be selected. DRM recording is not implemented.
+
+Chat links (`/my/chats/chat/<id>`) also open the dedicated map dialog. Chat maps
+are saved independently of creator profiles, with All/Photos/Videos filters.
+Mapping observes the selected conversation's message responses and scrolls upward
+through older messages. Downloads revisit the attachment's message using its
+`firstId` link to refresh access before transferring an available original.
+Locked messages remain unselectable; the mapper does not purchase or unlock them.
+Message text is not saved. Saved profiles and downloaded-item context menus reopen
+chat maps as well as profile maps. Opening a conversation may mark messages read
+through the site's normal behavior.
 
 Desktop and web share the schemas, mapping service, executor and UI. A web/API
 host needs an installed Chrome-family browser and a graphical session accessible
@@ -57,3 +68,12 @@ Photo tasks include the collection manifest required by the queue's completion
 guard; a regression test covers that guard. The user's regular Chrome login
 status still requires their confirmation. The exported cookie file was not
 replayed in this test.
+
+## Chat verification (2026-09-29)
+
+The installed AppImage routed a `/my/chats/chat/<id>/` URL from Add URL into the
+chat dialog. The existing dedicated session mapped three attachments (one
+available, two locked) and reached the site's end marker. The available JPEG
+completed through the task queue (1,123,270 bytes), refreshing its message via
+`firstId`. Saved profiles reopened the same chat map with the download marked
+complete. No cookies were imported. Database integrity checks passed.

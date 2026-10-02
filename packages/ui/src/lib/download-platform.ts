@@ -20,6 +20,7 @@ interface KnownPlatform {
 }
 
 const KNOWN_PLATFORMS: readonly KnownPlatform[] = [
+  { key: 'fansly', label: 'Fansly', domain: 'fansly.com', suffixes: ['fansly.com'] },
   {
     key: 'youtube',
     label: 'YouTube',

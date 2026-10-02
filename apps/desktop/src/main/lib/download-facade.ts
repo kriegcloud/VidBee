@@ -28,6 +28,7 @@ import {
   playlistEntryGroupKey,
   resolveDownloadTaskKind
 } from '@vidbee/downloader-core'
+import { FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
 import type { OnlyFansCommand, OnlyFansDownload } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
 import {
@@ -63,6 +64,7 @@ import { applyAutoVideoDownloadPath } from './path-resolver'
 import { projectProgressForRenderer, projectTaskForRenderer } from './projection'
 import {
   applyDesktopQueueConcurrency,
+  getDesktopFanslyProfiles,
   getDesktopInstagramProfileInspector,
   getDesktopOnlyFansProfiles,
   getDesktopTaskQueue,
@@ -342,6 +344,18 @@ class DownloadFacade extends EventEmitter {
 
   getPlaylistInfo(url: string): Promise<PlaylistInfo> {
     return fetchPlaylistInfo(url)
+  }
+
+  fanslyProfileCommand(input: OnlyFansCommand) {
+    return getDesktopFanslyProfiles().command(FanslyCommandSchema.parse(input))
+  }
+  listFanslyProfiles() {
+    return getDesktopFanslyProfiles().list()
+  }
+  async downloadFanslyProfile(input: OnlyFansDownload) {
+    this.subscribeOnce()
+    await startDesktopTaskQueue()
+    return getDesktopFanslyProfiles().enqueue(this.queue, input)
   }
 
   onlyFansProfileCommand(input: OnlyFansCommand) {

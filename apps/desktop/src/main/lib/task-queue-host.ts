@@ -15,6 +15,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
+import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
 import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
 import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
@@ -129,9 +130,22 @@ const buildDownloadExecutor = (): OnlyFansBrowserExecutor => {
   })
   return new OnlyFansBrowserExecutor(
     getDesktopOnlyFansProfiles(),
-    new HostRoutingExecutor(new DrmFallbackExecutor(ytDlp, capture), galleryDl),
+    new OnlyFansBrowserExecutor(
+      getDesktopFanslyProfiles(),
+      new HostRoutingExecutor(new DrmFallbackExecutor(ytDlp, capture), galleryDl),
+      resolveDesktopDownloadDir
+    ),
     resolveDesktopDownloadDir
   )
+}
+
+let fanslyProfiles: FanslyProfiles | null = null
+export const getDesktopFanslyProfiles = (): FanslyProfiles => {
+  fanslyProfiles ??= new FanslyProfiles(
+    path.join(app.getPath('userData'), 'fansly-profiles'),
+    resolveDesktopDownloadDir
+  )
+  return fanslyProfiles
 }
 
 let onlyFansProfiles: OnlyFansProfiles | null = null
@@ -148,6 +162,7 @@ let instagramProfileInspector: InstagramProfileInspector | null = null
 export const stopDesktopInstagramProfileMappings = async (): Promise<void> => {
   await instagramProfileInspector?.stop()
   await onlyFansProfiles?.stop()
+  await fanslyProfiles?.stop()
 }
 
 export const getDesktopInstagramProfileInspector = (): InstagramProfileInspector => {
@@ -293,6 +308,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   await restoreSocialMediaGroupCaps(queue)
   await restoreBrowserCaptureGroupCap(queue)
   await queue.setMaxPerGroup('onlyfans-browser', 1)
+  await queue.setMaxPerGroup('fansly-browser', 1)
   try {
     const { sqlite, path: persistPath } = getDatabaseConnection()
     const taskCount = Number(

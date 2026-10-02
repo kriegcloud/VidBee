@@ -1849,12 +1849,20 @@
     "alreadySaved": "Já na fila ou baixado"
   },
   "onlyFans": {
+    "chat": "Conversa {{id}}",
+    "chatHint": "Analise as fotos e os vídeos desta conversa no navegador dedicado. Apenas os anexos disponíveis podem ser baixados.",
     "sessionHint": "Inicie sessão uma vez no navegador dedicado do VidBee neste dispositivo. Os cookies do seu Chrome habitual nunca são copiados. Mapeie fotos ou vídeos e selecione os conteúdos disponíveis para baixar.",
     "openBrowser": "Abrir navegador",
+    "selectNotDownloaded": "Selecionar não baixados ({{count}})",
     "videos": "Vídeos",
     "mapping": "Mapeando perfil…",
     "partial": "Mapeamento parcial salvo. Mapeie novamente para descobrir mais itens.",
     "locked": "Bloqueado",
     "queued": "{{count}} arquivos na fila"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Entre no Fansly no navegador dedicado e mapeie publicações ou mídias. Sua sessão fica salva nesse navegador. Feche a janela de login antes de mapear.",
+    "posts": "Publicações",
+    "media": "Mídias"
+}
 }

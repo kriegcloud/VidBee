@@ -1849,12 +1849,20 @@
     "alreadySaved": "Bereits eingereiht oder heruntergeladen"
   },
   "onlyFans": {
+    "chat": "Chat {{id}}",
+    "chatHint": "Erfasse die Fotos und Videos dieser Unterhaltung im eigenen Browser. Nur verfügbare Anhänge können heruntergeladen werden.",
     "sessionHint": "Melde dich einmal im separaten VidBee-Browser auf diesem Gerät an. Deine normalen Chrome-Cookies werden nie kopiert. Erfasse Fotos oder Videos und wähle verfügbare Medien zum Herunterladen aus.",
     "openBrowser": "Browser öffnen",
+    "selectNotDownloaded": "Nicht heruntergeladene auswählen ({{count}})",
     "videos": "Videos",
     "mapping": "Profil wird erfasst…",
     "partial": "Teilweise Erfassung gespeichert. Erneut erfassen, um weitere Einträge zu finden.",
     "locked": "Gesperrt",
     "queued": "{{count}} Dateien eingereiht"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Melde dich im separaten Browser bei Fansly an und erfasse dann Beiträge oder Medien. Deine Anmeldung bleibt in diesem Browser gespeichert. Schließe vor dem Erfassen das Anmeldefenster.",
+    "posts": "Beiträge",
+    "media": "Medien"
+}
 }

@@ -1849,12 +1849,20 @@
     "alreadySaved": "已排入佇列或已下載"
   },
   "onlyFans": {
+    "chat": "聊天 {{id}}",
+    "chatHint": "使用專用瀏覽器掃描此對話中的照片和影片。只能下載可存取的附件。",
     "sessionHint": "請在此裝置的 VidBee 專用瀏覽器中登入一次。不會複製您平常使用的 Chrome Cookie。掃描相片或影片，然後選擇可下載的媒體。",
     "openBrowser": "開啟瀏覽器",
+    "selectNotDownloaded": "選取未下載項目 ({{count}})",
     "videos": "影片",
     "mapping": "正在掃描個人檔案…",
     "partial": "已儲存部分掃描結果。再次掃描以尋找更多項目。",
     "locked": "已鎖定",
     "queued": "已將 {{count}} 個檔案加入佇列"
-  }
+  },
+  "fansly": {
+    "sessionHint": "在專用瀏覽器中登入 Fansly，然後掃描貼文或媒體。登入狀態會保存在該瀏覽器中。 掃描前請關閉登入視窗。",
+    "posts": "貼文",
+    "media": "媒體"
+}
 }

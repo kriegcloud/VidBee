@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   OnlyFansBrowserExecutor,
   OnlyFansProfiles,
+  onlyFansChatResponse,
   onlyFansItems,
   onlyFansMediaUrl
 } from '../src/onlyfans-profile'
@@ -51,7 +52,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-function setup(auth = true, emitPosts = true) {
+function setup(auth = true, emitPosts = true, chat = false) {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'vidbee-of-test-'))
   dirs.push(dir)
   const events = new EventEmitter()
@@ -65,12 +66,17 @@ function setup(auth = true, emitPosts = true) {
   const context = {
     pages: () => [page],
     on: vi.fn(),
-    close: vi.fn(),
+    close: vi.fn(async () => undefined),
     cookies: vi.fn(async () => (auth ? [{ name: 'sess' }, { name: 'auth_id' }] : []))
   }
   const page = {
-    waitForResponse: vi.fn(async () =>
-      response('https://onlyfans.com/api2/v2/posts/100', fixture.list[0])
+    waitForResponse: vi.fn(async (_predicate?: unknown) =>
+      response(
+        chat
+          ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+          : 'https://onlyfans.com/api2/v2/posts/100',
+        chat ? fixture : fixture.list[0]
+      )
     ),
     isClosed: () => closed,
     context: () => context,
@@ -80,7 +86,8 @@ function setup(auth = true, emitPosts = true) {
     close: vi.fn(async () => {
       closed = true
     }),
-    url: () => 'https://onlyfans.com/example/photos',
+    url: () =>
+      chat ? 'https://onlyfans.com/my/chats/chat/7' : 'https://onlyfans.com/example/photos',
     evaluate: vi.fn(),
     goto: vi.fn(async () => {
       events.emit('response', response('https://onlyfans.com/api2/v2/users/example', { id: 7 }))
@@ -88,7 +95,12 @@ function setup(auth = true, emitPosts = true) {
       if (emitPosts) {
         events.emit(
           'response',
-          response('https://onlyfans.com/api2/v2/users/7/posts/medias', fixture)
+          response(
+            chat
+              ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+              : 'https://onlyfans.com/api2/v2/users/7/posts/medias',
+            fixture
+          )
         )
         await Promise.resolve()
       }
@@ -99,6 +111,73 @@ function setup(auth = true, emitPosts = true) {
 }
 
 describe('OnlyFans browser mapping', () => {
+  it('limits chat responses to the selected conversation', () => {
+    expect(
+      onlyFansChatResponse(new URL('https://onlyfans.com/api2/v2/chats/7/messages?limit=10'), '7')
+    ).toBe(true)
+    for (const url of [
+      'https://onlyfans.com/api2/v2/chats/8/messages',
+      'https://onlyfans.com/api2/v2/chats/7/messages/like',
+      'https://evil.test/api2/v2/chats/7/messages'
+    ]) {
+      expect(onlyFansChatResponse(new URL(url), '7')).toBe(false)
+    }
+  })
+
+  it('maps mixed chat attachments, reopens saved chats, and refreshes the message before download', async () => {
+    const { profiles, dir, page } = setup(true, true, true)
+    const url = 'https://onlyfans.com/my/chats/chat/7'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    expect(page.goto).toHaveBeenCalledWith(url, expect.anything())
+    expect(profiles.get(url)).toMatchObject({ chatId: '7', category: 'media' })
+    expect(profiles.get(url).items.map((item) => item.category)).toEqual([
+      'photos',
+      'videos',
+      'photos'
+    ])
+    const saved = readFileSync(path.join(dir, '7.json'), 'utf8')
+    expect(saved).not.toContain('Signature')
+    const restored = new OnlyFansProfiles(dir, () => dir)
+    expect(restored.list()[0]).toMatchObject({ profileUrl: url, chatId: '7' })
+    expect(restored.get('https://onlyfans.com/example').items).toHaveLength(0)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(new Uint8Array([255, 216, 255, 217]), {
+            headers: { 'content-type': 'image/jpeg' }
+          })
+      )
+    )
+    const output = await profiles.download(url, '1', dir, new AbortController().signal, vi.fn())
+    expect(output.size).toBe(4)
+    expect(page.goto).toHaveBeenLastCalledWith(`${url}?firstId=100`, expect.anything())
+    const predicate = page.waitForResponse.mock.calls[0]?.[0] as unknown as (
+      response: unknown
+    ) => Promise<boolean>
+    const candidate = (chatId: number, payload: unknown) => ({
+      url: () => `https://onlyfans.com/api2/v2/chats/${chatId}/messages`,
+      ok: () => true,
+      json: async () => payload
+    })
+    expect(await predicate(candidate(8, fixture))).toBe(false)
+    expect(await predicate(candidate(7, { list: [] }))).toBe(false)
+    expect(await predicate(candidate(7, fixture))).toBe(true)
+    await profiles.stop()
+  })
+
+  it('scrolls chat history upward and retains a partial map on stop', async () => {
+    const { profiles, page } = setup(true, false, true)
+    const url = 'https://onlyfans.com/my/chats/chat/7'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(page.evaluate).toHaveBeenCalled())
+    expect(page.evaluate).toHaveBeenCalledWith(expect.any(Function), { nested: true, chat: true })
+    await profiles.command({ url, action: 'stop' })
+    expect(profiles.get(url).state).toBe('partial')
+    await profiles.stop()
+  })
+
   it('distinguishes original, DRM and inaccessible media', () => {
     const items = onlyFansItems(fixture)
     expect(items.map(({ item }) => item.state)).toEqual(['available', 'drm', 'locked'])
@@ -125,6 +204,7 @@ describe('OnlyFans browser mapping', () => {
     const url = 'https://onlyfans.com/example'
     await profiles.command({ url, action: 'map' })
     await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'), { timeout: 2500 })
+    expect(profiles.get(url).category).toBe('media')
     expect(profiles.get(url).items).toHaveLength(3)
     await profiles.command({ url, action: 'map' })
     await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'), { timeout: 2500 })
@@ -135,13 +215,13 @@ describe('OnlyFans browser mapping', () => {
   })
 
   it('stops an unfinished map and retains its saved state', async () => {
-    const { profiles, page } = setup(true, false)
+    const { profiles, page, context } = setup(true, false)
     const url = 'https://onlyfans.com/example'
     await profiles.command({ url, action: 'map' })
     await vi.waitFor(() => expect(page.evaluate).toHaveBeenCalled())
     await profiles.command({ url, action: 'stop' })
     expect(profiles.get(url).state).toBe('partial')
-    expect(page.close).toHaveBeenCalledOnce()
+    expect(context.close).toHaveBeenCalledOnce()
     await profiles.stop()
   })
 

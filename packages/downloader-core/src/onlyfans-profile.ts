@@ -1,18 +1,23 @@
 import { z } from 'zod'
 
 export const OnlyFansCategorySchema = z.enum(['photos', 'videos'])
+export const OnlyFansScanSchema = z.enum(['media', 'photos', 'videos', 'posts'])
 export const OnlyFansItemSchema = z.object({
   id: z.string().regex(/^\d+$/),
   postId: z.string().regex(/^\d+$/),
   category: OnlyFansCategorySchema,
-  state: z.enum(['available', 'locked', 'drm']),
+  state: z.enum(['available', 'locked', 'drm', 'unsupported']),
   downloaded: z.boolean().default(false)
 })
 export const OnlyFansProfileSchema = z.object({
   username: z.string().regex(/^[a-z0-9._-]{1,64}$/),
   profileUrl: z.string().url(),
+  chatId: z
+    .string()
+    .regex(/^\d{1,20}$/)
+    .optional(),
   state: z.enum(['idle', 'mapping', 'partial', 'complete', 'auth-required', 'error']),
-  category: OnlyFansCategorySchema.optional(),
+  category: OnlyFansScanSchema.optional(),
   updatedAt: z.number(),
   pages: z.number(),
   items: z.array(OnlyFansItemSchema),
@@ -21,7 +26,7 @@ export const OnlyFansProfileSchema = z.object({
 export const OnlyFansCommandSchema = z.object({
   url: z.string().url(),
   action: z.enum(['get', 'open', 'map', 'stop']),
-  category: OnlyFansCategorySchema.default('photos')
+  category: OnlyFansScanSchema.default('media')
 })
 export const OnlyFansDownloadSchema = z.object({
   url: z.string().url(),
@@ -47,7 +52,9 @@ const RESERVED = new Set([
   'search'
 ])
 
-export function onlyFansProfile(value: string): { username: string; profileUrl: string } | null {
+export function onlyFansProfile(
+  value: string
+): { username: string; profileUrl: string; chatId?: string } | null {
   try {
     const url = new URL(value)
     const parts = url.pathname.split('/').filter(Boolean)
@@ -58,10 +65,26 @@ export function onlyFansProfile(value: string): { username: string; profileUrl: 
       ) ||
       url.username ||
       url.password ||
-      url.port ||
+      url.port
+    ) {
+      return null
+    }
+    if (
+      parts.length === 4 &&
+      parts.slice(0, 3).join('/') === 'my/chats/chat' &&
+      /^\d{1,20}$/.test(parts[3])
+    ) {
+      const chatId = parts[3]
+      return {
+        username: chatId,
+        chatId,
+        profileUrl: `https://onlyfans.com/my/chats/chat/${chatId}`
+      }
+    }
+    if (
       parts.length < 1 ||
       parts.length > 2 ||
-      (parts.length === 2 && !['media', 'photos', 'videos'].includes(parts[1]))
+      (parts.length === 2 && !['media', 'photos', 'videos', 'posts'].includes(parts[1]))
     ) {
       return null
     }

@@ -1,7 +1,9 @@
-import type {
-  OnlyFansCommand,
-  OnlyFansDownload,
-  OnlyFansProfile
+import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import {
+  type OnlyFansCommand,
+  type OnlyFansDownload,
+  type OnlyFansProfile,
+  onlyFansProfile
 } from '@vidbee/downloader-core/onlyfans-profile'
 import { useCallback, useEffect, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,10 +23,16 @@ interface Props {
 /** Shared profile controls; desktop IPC and web RPC supply the same contract. */
 export function OnlyFansProfileDialog({ url, destination, onClose, command, download }: Props) {
   const { t } = useTranslation()
+  const isFansly = Boolean(fanslyProfile(url))
+  const chatId = onlyFansProfile(url)?.chatId
+  const platform = isFansly ? 'Fansly' : 'OnlyFans'
+  const [source, setSource] = useState<'posts' | 'media'>(
+    url.endsWith('/posts') ? 'posts' : 'media'
+  )
   const inputId = useId()
   const [profile, setProfile] = useState<OnlyFansProfile | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [category, setCategory] = useState<'photos' | 'videos'>('photos')
+  const [category, setCategory] = useState<'media' | 'photos' | 'videos'>('media')
   const [directory, setDirectory] = useState(destination)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -68,14 +76,19 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
     setError('')
     setNotice('')
     try {
-      setProfile(await command({ url, action, category }))
+      setProfile(await command({ url, action, category: isFansly ? source : 'media' }))
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : t('notifications.downloadFailed'))
     } finally {
       setBusy(false)
     }
   }
-  const items = profile?.items.filter((item) => item.category === category) ?? []
+  const items =
+    profile?.items.filter((item) => category === 'media' || item.category === category) ?? []
+  const pendingIds = items
+    .filter((item) => item.state === 'available' && !item.downloaded)
+    .map((item) => item.id)
+  const allPendingSelected = pendingIds.length > 0 && pendingIds.every((id) => selected.has(id))
   const mapping = profile?.state === 'mapping'
   const stateLabels = {
     idle: 'instagramResume.unscanned',
@@ -96,9 +109,34 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
     >
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>OnlyFans · @{profile?.username ?? ''}</DialogTitle>
-          <DialogDescription>{t('onlyFans.sessionHint')}</DialogDescription>
+          <DialogTitle>
+            {platform} ·{' '}
+            {chatId ? t('onlyFans.chat', { id: chatId }) : `@${profile?.username ?? ''}`}
+          </DialogTitle>
+          <DialogDescription>
+            {t(
+              chatId
+                ? 'onlyFans.chatHint'
+                : isFansly
+                  ? 'fansly.sessionHint'
+                  : 'onlyFans.sessionHint'
+            )}
+          </DialogDescription>
         </DialogHeader>
+        {isFansly && (
+          <div className="flex gap-2">
+            {(['posts', 'media'] as const).map((value) => (
+              <Button
+                disabled={busy || mapping}
+                key={value}
+                onClick={() => setSource(value)}
+                variant={source === value ? 'default' : 'outline'}
+              >
+                {t(value === 'posts' ? 'fansly.posts' : 'fansly.media')}
+              </Button>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap gap-2">
           <Button
             disabled={busy || mapping}
@@ -109,7 +147,7 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
           >
             {t('onlyFans.openBrowser')}
           </Button>
-          {(['photos', 'videos'] as const).map((value) => (
+          {(['media', 'photos', 'videos'] as const).map((value) => (
             <Button
               key={value}
               onClick={() => {
@@ -118,7 +156,13 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
               }}
               variant={category === value ? 'default' : 'outline'}
             >
-              {t(value === 'photos' ? 'profileCollections.photos' : 'onlyFans.videos')}
+              {t(
+                value === 'media'
+                  ? 'download.all'
+                  : value === 'photos'
+                    ? 'profileCollections.photos'
+                    : 'onlyFans.videos'
+              )}
             </Button>
           ))}
           <Button
@@ -135,7 +179,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
           {profile
             ? t(
                 stateLabels[
-                  profile.category && profile.category !== category && !mapping
+                  !isFansly &&
+                  profile.category &&
+                  profile.category !== 'media' &&
+                  profile.category !== category &&
+                  !mapping
                     ? 'idle'
                     : profile.state
                 ]
@@ -145,7 +193,7 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
           {t('instagramProfile.sourceTotal', { count: items.length })}
         </p>
         {profile?.state === 'auth-required' && (
-          <p className="text-sm">{t('onlyFans.sessionHint')}</p>
+          <p className="text-sm">{t(isFansly ? 'fansly.sessionHint' : 'onlyFans.sessionHint')}</p>
         )}
         {(error || profile?.error) && (
           <p className="break-words text-destructive text-sm" role="alert">
@@ -159,19 +207,15 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
         )}
         <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
           <Button
-            disabled={!items.some((item) => item.state === 'available' && !item.downloaded)}
+            disabled={pendingIds.length === 0 && selected.size === 0}
             onClick={() => {
-              setSelected(
-                new Set(
-                  items
-                    .filter((item) => item.state === 'available' && !item.downloaded)
-                    .map((item) => item.id)
-                )
-              )
+              setSelected(allPendingSelected ? new Set() : new Set(pendingIds))
             }}
             variant="outline"
           >
-            {t('history.selectAll')}
+            {allPendingSelected
+              ? t('history.clearSelection')
+              : t('onlyFans.selectNotDownloaded', { count: pendingIds.length })}
           </Button>
           {items.map((item) => (
             <label
@@ -203,9 +247,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
                   ? t('download.completed')
                   : item.state === 'available'
                     ? t('instagramProfile.states.ready')
-                    : item.state === 'drm'
-                      ? 'DRM'
-                      : t('onlyFans.locked')}
+                    : item.state === 'unsupported'
+                      ? t('instagramProfile.states.unavailable')
+                      : item.state === 'drm'
+                        ? 'DRM'
+                        : t('onlyFans.locked')}
               </span>
             </label>
           ))}

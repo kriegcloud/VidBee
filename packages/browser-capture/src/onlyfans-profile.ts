@@ -1,3 +1,4 @@
+import { type ChildProcess, spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import {
   createWriteStream,
@@ -114,6 +115,17 @@ export function onlyFansItems(payload: unknown): { item: OnlyFansItem; mediaUrl:
   return output
 }
 
+/** Match only the selected conversation, never the chat list or another conversation. */
+export function onlyFansChatResponse(url: URL, chatId: string): boolean {
+  return (
+    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/chats/${chatId}/messages`
+  )
+}
+
+function onlyFansMessageUrl(item: OnlyFansItem, profile: OnlyFansProfile): string | null {
+  return profile.chatId ? `${profile.profileUrl}?firstId=${item.postId}` : null
+}
+
 async function* readBody(body: ReadableStream<Uint8Array>): AsyncGenerator<Uint8Array> {
   const reader = body.getReader()
   try {
@@ -129,7 +141,44 @@ async function* readBody(body: ReadableStream<Uint8Array>): AsyncGenerator<Uint8
   }
 }
 
+export interface BrowserProfileAdapter {
+  name: string
+  key: string
+  origin: string
+  normalize: typeof onlyFansProfile
+  isSite: typeof isOnlyFansSite
+  items: typeof onlyFansItems
+  ownerResponse: (url: URL, username: string) => boolean
+  ownerId: (payload: unknown, username: string) => string | null
+  feedResponse: (url: URL, ownerId: string) => boolean
+  complete: (payload: unknown) => boolean
+  postUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
+  postResponse: (url: URL, item: OnlyFansItem) => boolean
+  requiresCookies: boolean
+}
+
+const onlyFansAdapter: BrowserProfileAdapter = {
+  name: 'OnlyFans',
+  key: 'onlyfans',
+  origin: 'https://onlyfans.com',
+  normalize: onlyFansProfile,
+  isSite: isOnlyFansSite,
+  items: onlyFansItems,
+  ownerResponse: (url, username) =>
+    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/users/${username}`,
+  ownerId: (payload) => id(record(payload).id),
+  feedResponse: (url, ownerId) =>
+    url.origin === 'https://onlyfans.com' &&
+    url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
+  complete: (payload) => record(payload).hasMore === false,
+  postUrl: (item, profile) => `https://onlyfans.com/${item.postId}/${profile.username}`,
+  postResponse: (url, item) =>
+    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
+  requiresCookies: true
+}
+
 export class OnlyFansProfiles {
+  private loginBrowser: ChildProcess | null = null
   private context: BrowserContext | null = null
   private opening: Promise<BrowserContext> | null = null
   private page: Page | null = null
@@ -139,10 +188,16 @@ export class OnlyFansProfiles {
   private readonly profiles = new Map<string, OnlyFansProfile>()
   private readonly media = new Map<string, string>()
 
+  readonly adapter: BrowserProfileAdapter
   private readonly storageDir: string
   private readonly defaultDownloadDir: () => string
 
-  constructor(storageDir: string, defaultDownloadDir: () => string) {
+  constructor(
+    storageDir: string,
+    defaultDownloadDir: () => string,
+    adapter: BrowserProfileAdapter = onlyFansAdapter
+  ) {
+    this.adapter = adapter
     this.storageDir = storageDir
     this.defaultDownloadDir = defaultDownloadDir
   }
@@ -160,9 +215,9 @@ export class OnlyFansProfiles {
   }
 
   get(url: string): OnlyFansProfile {
-    const normalized = onlyFansProfile(url)
+    const normalized = this.adapter.normalize(url)
     if (!normalized) {
-      throw new Error('Enter an OnlyFans profile URL.')
+      throw new Error(`Enter a ${this.adapter.name} profile URL.`)
     }
     let profile = this.profiles.get(normalized.username)
     if (!profile) {
@@ -171,7 +226,8 @@ export class OnlyFansProfiles {
         profile = OnlyFansProfileSchema.parse(JSON.parse(readFileSync(filename, 'utf8')))
         if (
           profile.username !== normalized.username ||
-          profile.profileUrl !== normalized.profileUrl
+          profile.profileUrl !== normalized.profileUrl ||
+          profile.chatId !== normalized.chatId
         ) {
           throw new Error('Saved profile identity does not match.')
         }
@@ -194,7 +250,9 @@ export class OnlyFansProfiles {
       .filter((name) => /^[a-z0-9._-]+\.json$/.test(name))
       .flatMap((name) => {
         try {
-          return [this.get(`https://onlyfans.com/${name.slice(0, -5)}`)]
+          const saved: unknown = JSON.parse(readFileSync(path.join(this.storageDir, name), 'utf8'))
+          const profile = OnlyFansProfileSchema.parse(saved)
+          return [this.get(profile.profileUrl)]
         } catch {
           return []
         }
@@ -205,12 +263,19 @@ export class OnlyFansProfiles {
     if (this.context) {
       return this.context
     }
+    if (
+      this.loginBrowser &&
+      this.loginBrowser.exitCode === null &&
+      this.loginBrowser.signalCode === null
+    ) {
+      throw new Error('Close the dedicated login window after signing in, then map the profile.')
+    }
     if (!this.opening) {
       this.opening = (async () => {
         const executablePath = resolveBrowserExecutable('chrome')
         if (!executablePath) {
           throw new Error(
-            'Install Chrome or Chromium on the VidBee host to open its OnlyFans session.'
+            `Install Chrome or Chromium on the VidBee host to open its ${this.adapter.name} session.`
           )
         }
         const { chromium } = await import('playwright-core')
@@ -262,7 +327,40 @@ export class OnlyFansProfiles {
       return this.get(input.url)
     }
     if (this.active || this.downloading) {
-      throw new Error('Another OnlyFans operation is running. Stop it or wait for it to finish.')
+      throw new Error(
+        `Another ${this.adapter.name} operation is running. Stop it or wait for it to finish.`
+      )
+    }
+    if (input.action === 'open' && this.adapter.key === 'fansly') {
+      if (this.context) {
+        await this.context.close()
+      }
+      const executable = resolveBrowserExecutable('chrome')
+      if (!executable) {
+        throw new Error('Install Chrome or Chromium to sign in.')
+      }
+      const directory = path.join(this.storageDir, 'browser-session')
+      mkdirSync(directory, { recursive: true, mode: 0o700 })
+      if (
+        !(
+          this.loginBrowser &&
+          this.loginBrowser.exitCode === null &&
+          this.loginBrowser.signalCode === null
+        )
+      ) {
+        const child = spawn(
+          executable,
+          [`--user-data-dir=${directory}`, '--no-first-run', profile.profileUrl],
+          { stdio: 'ignore' }
+        )
+        this.loginBrowser = child
+        await new Promise<void>((resolve, reject) => {
+          child.once('spawn', resolve)
+          child.once('error', reject)
+        })
+      }
+      this.save(profile)
+      return this.get(input.url)
     }
     if (input.action === 'open') {
       const page = await this.browserPage()
@@ -286,7 +384,7 @@ export class OnlyFansProfiles {
 
   private collect(profile: OnlyFansProfile, payload: unknown): void {
     const items = new Map(profile.items.map((item) => [item.id, item]))
-    for (const { item, mediaUrl } of onlyFansItems(payload)) {
+    for (const { item, mediaUrl } of this.adapter.items(payload)) {
       const previous = items.get(item.id)
       items.set(item.id, { ...item, downloaded: previous?.downloaded ?? false })
       if (mediaUrl) {
@@ -299,41 +397,54 @@ export class OnlyFansProfiles {
 
   private async map(
     profile: OnlyFansProfile,
-    category: 'photos' | 'videos',
+    category: 'media' | 'photos' | 'videos' | 'posts',
     signal: AbortSignal
   ): Promise<void> {
     let page: Page | null = null
     let finished = false
     let lastResponse = Date.now()
-    let ownerId: string | null = null
+    let ownerId: string | null = profile.chatId ?? null
+    let closing: Promise<void> | undefined
     const abort = (): void => {
-      void page?.close().catch(() => undefined)
+      closing = page
+        ?.context()
+        .close()
+        .catch(() => undefined)
+        .finally(() => {
+          this.context = null
+          this.page = null
+        })
     }
     signal.addEventListener('abort', abort, { once: true })
     const pending = new Set<Promise<void>>()
     const handle = async (response: Response): Promise<void> => {
       const url = new URL(response.url())
-      if (url.origin !== 'https://onlyfans.com') {
+      if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && !response.ok()) {
+        profile.state = [401, 403].includes(response.status()) ? 'auth-required' : 'error'
+        finished = true
         return
       }
-      if (url.pathname === `/api2/v2/users/${profile.username}` && response.ok()) {
-        ownerId = id(record(await response.json()).id)
+      if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && response.ok()) {
+        ownerId = this.adapter.ownerId(await response.json(), profile.username)
         return
       }
-      if (!(ownerId && url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`))) {
+      const isFeed = profile.chatId
+        ? onlyFansChatResponse(url, profile.chatId)
+        : Boolean(ownerId && this.adapter.feedResponse(url, ownerId))
+      if (!isFeed) {
         return
       }
       if (!response.ok()) {
         profile.state = [401, 403].includes(response.status()) ? 'auth-required' : 'error'
         profile.error =
           response.status() === 429
-            ? 'OnlyFans asked to slow down. Stop and retry later.'
-            : 'OnlyFans could not load this page. Check the dedicated browser.'
+            ? `${this.adapter.name} asked to slow down. Stop and retry later.`
+            : `${this.adapter.name} could not load this page. Check the dedicated browser.`
         finished = true
         return
       }
       const payload: unknown = await response.json()
-      if (record(payload).error) {
+      if (record(payload).error || record(payload).success === false) {
         profile.state = 'auth-required'
         finished = true
         return
@@ -341,7 +452,7 @@ export class OnlyFansProfiles {
       this.collect(profile, payload)
       profile.pages += 1
       lastResponse = Date.now()
-      finished = record(payload).hasMore === false
+      finished = this.adapter.complete(payload)
     }
     const listener = (response: Response): void => {
       const work = handle(response)
@@ -355,8 +466,11 @@ export class OnlyFansProfiles {
     }
     try {
       page = await this.browserPage()
-      const cookies = await page.context().cookies('https://onlyfans.com')
+      const cookies = this.adapter.requiresCookies
+        ? await page.context().cookies(this.adapter.origin)
+        : []
       if (
+        this.adapter.requiresCookies &&
         !(
           cookies.some((cookie) => cookie.name === 'sess') &&
           cookies.some((cookie) => cookie.name === 'auth_id')
@@ -366,17 +480,47 @@ export class OnlyFansProfiles {
         return
       }
       page.on('response', listener)
-      await page.goto(`${profile.profileUrl}/${category}`, {
+      await page.goto(profile.chatId ? profile.profileUrl : `${profile.profileUrl}/${category}`, {
         waitUntil: 'domcontentloaded',
         timeout: 45_000
       })
       const deadline = Date.now() + 10 * 60 * 1000
       while (!finished && Date.now() < deadline && Date.now() - lastResponse < 20_000) {
         signal.throwIfAborted()
-        if (onlyFansProfile(page.url())?.username !== profile.username) {
+        if (this.adapter.normalize(page.url())?.username !== profile.username) {
           throw new Error('The browser left the mapped profile.')
         }
-        await page.evaluate(() => window.scrollBy(0, Math.max(600, window.innerHeight * 0.8)))
+        await page.evaluate(
+          ({ nested, chat }) => {
+            const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1)
+            if (!nested) {
+              window.scrollBy(0, step)
+              return
+            }
+            const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
+              .filter((element) => {
+                const bounds = element.getBoundingClientRect()
+                return (
+                  bounds.width > 300 &&
+                  bounds.height > 200 &&
+                  bounds.bottom > 0 &&
+                  bounds.top < window.innerHeight &&
+                  element.scrollHeight > element.clientHeight + 10 &&
+                  /auto|scroll/.test(getComputedStyle(element).overflowY)
+                )
+              })
+              .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))
+            if (candidates[0]) {
+              candidates[0].scrollBy(0, step)
+            } else {
+              window.scrollBy(0, step)
+            }
+          },
+          {
+            nested: this.adapter.key === 'fansly' || Boolean(profile.chatId),
+            chat: Boolean(profile.chatId)
+          }
+        )
         await delay(1500, undefined, { signal })
       }
       if (profile.state === 'mapping') {
@@ -387,12 +531,17 @@ export class OnlyFansProfiles {
         profile.state = signal.aborted ? 'partial' : 'error'
         profile.error = signal.aborted
           ? undefined
-          : 'The browser could not finish mapping. Reopen it and retry; saved items are retained.'
+          : this.loginBrowser &&
+              this.loginBrowser.exitCode === null &&
+              this.loginBrowser.signalCode === null
+            ? 'Close the dedicated login window after signing in, then map the profile.'
+            : 'The browser could not finish mapping. Reopen it and retry; saved items are retained.'
       }
     } finally {
       signal.removeEventListener('abort', abort)
       page?.off('response', listener)
       await Promise.allSettled(pending)
+      await closing
       if (signal.aborted && profile.state === 'mapping') {
         profile.state = 'partial'
       }
@@ -402,7 +551,7 @@ export class OnlyFansProfiles {
 
   async enqueue(queue: TaskQueueAPI, raw: OnlyFansDownload): Promise<{ count: number }> {
     if (this.active) {
-      throw new Error('Finish or stop OnlyFans mapping before downloading.')
+      throw new Error(`Finish or stop ${this.adapter.name} mapping before downloading.`)
     }
     const input = OnlyFansDownloadSchema.parse(raw)
     const profile = this.get(input.url)
@@ -413,11 +562,11 @@ export class OnlyFansProfiles {
     if (selected.length !== wanted.size) {
       throw new Error('Select available mapped media. Locked and DRM media cannot be downloaded.')
     }
-    await queue.setMaxPerGroup('onlyfans-browser', 1)
+    await queue.setMaxPerGroup(`${this.adapter.key}-browser`, 1)
     let count = 0
     for (const item of selected) {
       const directory = path.resolve(input.customDownloadPath || this.defaultDownloadDir())
-      const taskId = `onlyfans_${profile.username}_${item.id}_${createHash('sha256').update(directory).digest('hex').slice(0, 16)}`
+      const taskId = `${this.adapter.key}_${profile.username}_${item.id}_${createHash('sha256').update(directory).digest('hex').slice(0, 16)}`
       const existing = queue.get(taskId)
       if (existing && !['failed', 'cancelled'].includes(existing.status)) {
         continue
@@ -428,10 +577,13 @@ export class OnlyFansProfiles {
         await queue.add({
           id: taskId,
           priority: PRIORITY_USER,
-          groupKey: 'onlyfans-browser',
+          groupKey: `${this.adapter.key}-browser`,
           input: {
             kind: item.category === 'videos' ? 'video' : 'social-media',
-            url: `https://onlyfans.com/${item.postId}/${profile.username}`,
+            url:
+              this.adapter.key === 'fansly'
+                ? `${profile.profileUrl}/posts`
+                : (onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile)),
             title: `@${profile.username} · ${item.category} · ${item.id}`,
             options: {
               onlyFansProfile: profile.profileUrl,
@@ -454,7 +606,7 @@ export class OnlyFansProfiles {
     progress: (bytes: number, total: number) => void
   ): Promise<{ filePath: string; size: number }> {
     if (this.active || this.downloading) {
-      throw new Error('Finish or stop OnlyFans mapping before downloading.')
+      throw new Error(`Finish or stop ${this.adapter.name} mapping before downloading.`)
     }
     const snapshot = this.get(profileUrl)
     const profile = this.profiles.get(snapshot.username)
@@ -471,12 +623,20 @@ export class OnlyFansProfiles {
       const page = await this.browserPage()
       // Refresh expiring CDN URLs through a normal site navigation in the same session.
       const responsePromise = page.waitForResponse(
-        (response) => {
+        async (response) => {
           const url = new URL(response.url())
-          return (
-            url.origin === 'https://onlyfans.com' &&
-            url.pathname === `/api2/v2/posts/${item.postId}`
-          )
+          const matches = profile.chatId
+            ? onlyFansChatResponse(url, profile.chatId) ||
+              (url.origin === this.adapter.origin &&
+                url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}`)
+            : this.adapter.postResponse(url, item)
+          if (!(matches && profile.chatId && response.ok())) {
+            return matches
+          }
+          // A chat can load several message batches; wait for the requested attachment.
+          return this.adapter
+            .items(await response.json())
+            .some(({ item: candidate }) => candidate.id === mediaId)
         },
         { timeout: 30_000 }
       )
@@ -485,7 +645,7 @@ export class OnlyFansProfiles {
         (response) => ({ response }),
         () => ({ response: null })
       )
-      await page.goto(`https://onlyfans.com/${item.postId}/${profile.username}`, {
+      await page.goto(onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile), {
         waitUntil: 'domcontentloaded',
         timeout: 45_000
       })
@@ -504,17 +664,17 @@ export class OnlyFansProfiles {
       if (!/^\.(?:jpe?g|png|webp|gif|mp4|mov|m4v)$/.test(extension)) {
         throw new Error('Unsupported original media format.')
       }
-      const folder = path.join(destination, 'OnlyFans', profile.username, item.category)
+      const folder = path.join(destination, this.adapter.name, profile.username, item.category)
       mkdirSync(folder, { recursive: true })
       const target = path.join(folder, `${item.postId}_${item.id}${extension}`)
       const responseMedia = await fetch(mediaUrl, {
-        headers: { Referer: 'https://onlyfans.com/' },
+        headers: { Referer: `${this.adapter.origin}/` },
         redirect: 'error',
         signal: AbortSignal.any([signal, AbortSignal.timeout(30 * 60 * 1000)])
       })
       if (!(responseMedia.ok && responseMedia.body)) {
         throw new Error(
-          `OnlyFans media download failed (HTTP ${responseMedia.status}). Remap and retry.`
+          `${this.adapter.name} media download failed (HTTP ${responseMedia.status}). Remap and retry.`
         )
       }
       const contentType = responseMedia.headers.get('content-type') ?? ''
@@ -571,7 +731,7 @@ export class OnlyFansBrowserExecutor implements Executor {
   }
 
   run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
-    if (!isOnlyFansSite(ctx.input.url)) {
+    if (!this.profiles.adapter.isSite(ctx.input.url)) {
       return this.fallback.run(ctx, events)
     }
     const controller = new AbortController()
@@ -592,7 +752,7 @@ export class OnlyFansBrowserExecutor implements Executor {
           typeof options.onlyFansMediaId !== 'string'
         ) {
           throw new Error(
-            'Open this OnlyFans profile in VidBee and map it using the dedicated browser session.'
+            `Open this ${this.profiles.adapter.name} profile in VidBee and map it using the dedicated browser session.`
           )
         }
         const output = await this.profiles.download(
@@ -649,7 +809,8 @@ export class OnlyFansBrowserExecutor implements Executor {
           result: { type: 'success', output: completed }
         })
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'OnlyFans download failed.'
+        const message =
+          error instanceof Error ? error.message : `${this.profiles.adapter.name} download failed.`
         events.onFinish({
           taskId: ctx.taskId,
           attemptId: ctx.attemptId,

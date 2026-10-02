@@ -1,3 +1,4 @@
+import { fanslyProfile, FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
 import type {
 	InstagramProfileCategory,
 	InstagramProfileInspection,
@@ -71,15 +72,27 @@ const resolveShortLink = async (url: string): Promise<string> =>
 
 const onlyFansCommand = (
 	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansCommand,
-) => orpcClient.onlyFansProfile.command(input);
+) => fanslyProfile(input.url) ? orpcClient.fanslyProfile.command(FanslyCommandSchema.parse(input)) : orpcClient.onlyFansProfile.command(input);
 const onlyFansDownload = (
 	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansDownload,
-) => orpcClient.onlyFansProfile.download(input);
+) => fanslyProfile(input.url) ? orpcClient.fanslyProfile.download(input) : orpcClient.onlyFansProfile.download(input);
 
 export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const openProfile = (event: Event) => {
+      const url: unknown = (event as CustomEvent<unknown>).detail
+      if (typeof url === 'string' && (onlyFansProfile(url) || fanslyProfile(url))) {
+        setOpen(false)
+        setOnlyFansUrl(url)
+      }
+    }
+    window.addEventListener('vidbee:open-onlyfans-profile', openProfile)
+    return () => window.removeEventListener('vidbee:open-onlyfans-profile', openProfile)
+  }, [])
+
 	const [socialUrl, setSocialUrl] = useState<string | null>(null);
 	const [collectionProfile, setCollectionProfile] =
 		useState<CollectionProfile | null>(null);
@@ -465,7 +478,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 
 	const handleParseProfileUrl = useCallback(
 		async (trimmedUrl: string) => {
-			if (onlyFansProfile(trimmedUrl)) {
+			if (onlyFansProfile(trimmedUrl) || fanslyProfile(trimmedUrl)) {
 				setOpen(false);
 				setOnlyFansUrl(trimmedUrl);
 				return;
@@ -939,10 +952,11 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 						<SavedInstagramProfiles
 							loadProfiles={async () => [
 								...(await orpcClient.instagramProfile.list()).profiles,
-								...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
+								...(await orpcClient.fanslyProfile.list()).map(profile => ({inspectionId: profile.profileUrl, profile: {username: `${profile.username} · Fansly`, profileUrl: profile.profileUrl}, totalAssetCount: profile.items.length})),
+...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
 									profile: {
-										username: `${profile.username} · OnlyFans`,
+										username: `${profile.chatId ? t('onlyFans.chat', { id: profile.chatId }) : profile.username} · OnlyFans`,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: profile.items.length,

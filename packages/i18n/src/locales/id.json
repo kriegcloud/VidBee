@@ -1849,12 +1849,20 @@
     "alreadySaved": "Sudah di antrean atau diunduh"
   },
   "onlyFans": {
+    "chat": "Percakapan {{id}}",
+    "chatHint": "Pindai foto dan video dalam percakapan ini menggunakan browser khusus. Hanya lampiran yang tersedia yang dapat diunduh.",
     "sessionHint": "Masuk sekali di browser khusus VidBee pada perangkat ini. Cookie Chrome biasa Anda tidak pernah disalin. Petakan foto atau video, lalu pilih media yang tersedia untuk diunduh.",
     "openBrowser": "Buka browser",
+    "selectNotDownloaded": "Pilih yang belum diunduh ({{count}})",
     "videos": "Video",
     "mapping": "Memetakan profil…",
     "partial": "Pemetaan sebagian disimpan. Petakan lagi untuk menemukan lebih banyak item.",
     "locked": "Terkunci",
     "queued": "{{count}} file masuk antrean"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Masuk ke Fansly di browser khusus, lalu pindai postingan atau media. Sesi masuk Anda tetap tersimpan di browser tersebut. Tutup jendela masuk sebelum memindai.",
+    "posts": "Postingan",
+    "media": "Media"
+}
 }

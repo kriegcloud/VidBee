@@ -1,9 +1,12 @@
+import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { Copy, File, FolderOpen, ListPlus, Pause, Play, RotateCw, Trash2, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ContextMenuItem, ContextMenuSeparator } from './context-menu'
 
 export interface DownloadRecordContextMenuItemsProps {
+  sourceUrl?: string
   canCopyLink: boolean
   canCopyToClipboard: boolean
   canDeleteFile: boolean
@@ -38,6 +41,7 @@ export interface DownloadRecordContextMenuItemsProps {
  * Shared download-record menu used by list rows and the playlist overflow.
  */
 export function DownloadRecordContextMenuItems({
+  sourceUrl,
   canCopyLink,
   canCopyToClipboard,
   canDeleteFile,
@@ -68,8 +72,32 @@ export function DownloadRecordContextMenuItems({
   showTranscriptRetry = false
 }: DownloadRecordContextMenuItemsProps): ReactNode {
   const { t } = useTranslation()
+  let profileUrl: string | undefined
+  try {
+    const source = new URL(sourceUrl ?? '')
+    const parts = source.pathname.split('/').filter(Boolean)
+    if (/^\d+$/.test(parts[0] ?? '') && parts.length === 2) {
+      source.pathname = `/${parts[1]}`
+    }
+    profileUrl = onlyFansProfile(source.href)?.profileUrl ?? fanslyProfile(source.href)?.profileUrl
+  } catch {
+    // Non-URL records have no profile map.
+  }
   return (
     <>
+      {profileUrl && (
+        <ContextMenuItem
+          onSelect={() =>
+            window.dispatchEvent(
+              new CustomEvent('vidbee:open-onlyfans-profile', { detail: profileUrl })
+            )
+          }
+        >
+          <FolderOpen className="h-4 w-4" />
+          {profileUrl && fanslyProfile(profileUrl) ? 'Fansly' : 'OnlyFans'} ·{' '}
+          {t('instagramResume.map')}
+        </ContextMenuItem>
+      )}
       {showOpenFile ? (
         <ContextMenuItem disabled={!canOpenFile} onClick={onOpenFile}>
           <File className="h-4 w-4" />

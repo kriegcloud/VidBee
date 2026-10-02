@@ -1228,6 +1228,7 @@ export function DownloadItem({
             void ipcServices.transcript.retry(download.id)
           }}
           showTranscriptRetry={transcriptListState === 'failed'}
+          sourceUrl={download.url}
         />
       </ContextMenuContent>
     </ContextMenu>

@@ -1849,12 +1849,20 @@
     "alreadySaved": "已排队或已下载"
   },
   "onlyFans": {
+    "chat": "聊天 {{id}}",
+    "chatHint": "使用专用浏览器扫描此对话中的照片和视频。只能下载可访问的附件。",
     "sessionHint": "请在此设备的 VidBee 专用浏览器中登录一次。不会复制您日常使用的 Chrome Cookie。扫描照片或视频，然后选择可下载的媒体。",
     "openBrowser": "打开浏览器",
+    "selectNotDownloaded": "选择未下载项 ({{count}})",
     "videos": "视频",
     "mapping": "正在扫描个人主页…",
     "partial": "已保存部分扫描结果。再次扫描以发现更多项目。",
     "locked": "已锁定",
     "queued": "已将 {{count}} 个文件加入队列"
-  }
+  },
+  "fansly": {
+    "sessionHint": "在专用浏览器中登录 Fansly，然后扫描帖子或媒体。登录状态会保存在该浏览器中。 扫描前请关闭登录窗口。",
+    "posts": "帖子",
+    "media": "媒体"
+}
 }

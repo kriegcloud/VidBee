@@ -1,10 +1,10 @@
 from .common import InfoExtractor
 from .zype import ZypeIE
-from ..utils import traverse_obj
+from ..utils import ExtractorError, parse_iso8601, traverse_obj
 
 
 class OfTVIE(InfoExtractor):
-    _VALID_URL = r'https?://(?:www\.)?of\.tv/video/(?P<id>\w+)'
+    _VALID_URL = r'https?://(?:www\.)?of\.tv/video/(?P<id>[0-9a-fA-F]{24})/?(?:$|[?#])'
     _TESTS = [{
         'url': 'https://of.tv/video/627d7d95b353db0001dadd1a',
         'md5': 'cb9cd5db3bb9ee0d32bfd7e373d6ef0a',
@@ -52,3 +52,60 @@ class OfTVPlaylistIE(InfoExtractor):
 
         return self.playlist_from_matches(
             traverse_obj(json_match, (..., 'discovery_url')), playlist_id)
+
+
+class OfTVChannelIE(InfoExtractor):
+    _VALID_URL = r'https?://(?:www\.)?of\.tv/c/(?P<id>[a-zA-Z0-9_-]+)/?(?:$|[?#])'
+    _TESTS = [{
+        'url': 'https://of.tv/c/medusa',
+        'playlist_mincount': 1,
+        'info_dict': {
+            'id': 'medusa',
+            'title': 'Medusa',
+        },
+    }]
+
+    def _real_extract(self, url):
+        channel_id = self._match_id(url)
+        data = self._download_json(f'https://api.of.tv/v0/pages/creators/{channel_id}', channel_id)['data']
+        creator = data.get('creator') or {}
+        if not creator:
+            raise ExtractorError('OF.TV channel not found', expected=True)
+
+        entries = [
+            self.url_result(f'https://of.tv/v/{video["unique_id"]}', OfTVVideoIE, video['unique_id'], video.get('title'))
+            for video in traverse_obj(data, ('creator_playlist', 'items')) or []
+            if video.get('unique_id')
+        ]
+        return self.playlist_result(entries, channel_id, creator.get('channel_name'), creator.get('channel_description'))
+
+
+class OfTVVideoIE(InfoExtractor):
+    _VALID_URL = r'https?://(?:www\.)?of\.tv/(?:v|video)/(?P<id>[a-zA-Z0-9_-]+)(?:/embed)?/?(?:$|[?#])'
+    _TESTS = [{
+        'url': 'https://of.tv/v/KkMWY',
+        'info_dict': {
+            'id': 'KkMWY',
+            'ext': 'mp4',
+            'title': 'I Tried Reddit’s Favorite Teas',
+        },
+        'params': {'skip_download': True},
+    }]
+
+    def _real_extract(self, url):
+        video_id = self._match_id(url)
+        video = self._download_json(f'https://api.of.tv/v0/pages/videos/{video_id}', video_id)['data']['video']
+        stream_url = video.get('video_src')
+        if not stream_url:
+            raise ExtractorError('OF.TV video has no stream', expected=True)
+
+        return {
+            'id': video['unique_id'],
+            'title': video.get('title') or video.get('seo_title'),
+            'description': video.get('description'),
+            'thumbnail': video.get('thumbnail_url'),
+            'duration': video.get('duration'),
+            'timestamp': parse_iso8601(video.get('published_at')),
+            'creator': traverse_obj(video, ('creator', 'channel_name')),
+            'formats': self._extract_m3u8_formats(stream_url, video_id, 'mp4'),
+        }

@@ -3,6 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { parseBrowserCookiesSetting } from './browser-cookies-setting'
 import { normalizeDzenProfileUrl } from './dzen-profile'
+import { isFanslySite } from './fansly-profile'
 import {
   DEFAULT_FILENAME_TEMPLATE,
   type FilenameStyle,
@@ -542,7 +543,7 @@ export const buildDownloadArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
-  assertOnlyFansBrowserSession(options.url)
+  assertBrowserProfileSession(options.url)
   assertDownloadSourceUrl(options.url)
   validateDownloadTimeRange(options.startTime, options.endTime)
   const args: string[] = ['--no-playlist', '--no-mtime', '--encoding', 'utf-8']
@@ -707,7 +708,7 @@ export const buildVideoInfoArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
-  assertOnlyFansBrowserSession(url)
+  assertBrowserProfileSession(url)
   assertDownloadSourceUrl(url)
   const args = ['-j', '--no-playlist', '--no-warnings', '--encoding', 'utf-8']
 
@@ -755,7 +756,7 @@ export const buildPlaylistInfoArgs = (
   settings: YtDlpDownloadSettings,
   jsRuntimeArgs: string[] = []
 ): string[] => {
-  assertOnlyFansBrowserSession(url)
+  assertBrowserProfileSession(url)
   assertDownloadSourceUrl(url)
   // GitHub issue #322: a single unavailable entry (e.g. an age-restricted
   // video in a channel/playlist) must not abort listing the whole playlist.
@@ -799,4 +800,13 @@ export const buildPlaylistInfoArgs = (
   }
   args.push(dzenProfile ?? url)
   return args
+}
+
+function assertBrowserProfileSession(url: string): void {
+  assertOnlyFansBrowserSession(url)
+  if (isFanslySite(url)) {
+    throw new Error(
+      'Open the Fansly profile in VidBee and map it using the dedicated browser session.'
+    )
+  }
 }

@@ -1843,12 +1843,20 @@
     "alreadySaved": "Already queued or downloaded"
   },
   "onlyFans": {
+    "chat": "Chat {{id}}",
+    "chatHint": "Map the photos and videos in this conversation using the dedicated browser. Only available attachments can be downloaded.",
     "sessionHint": "Sign in once in the dedicated VidBee browser on this host. Your usual Chrome cookies are never copied. Map photos or videos, then select available media to download.",
     "openBrowser": "Open browser",
+    "selectNotDownloaded": "Select not downloaded ({{count}})",
     "videos": "Videos",
     "mapping": "Mapping profile…",
     "partial": "Partial map saved. Map again to continue discovering items.",
     "locked": "Locked",
     "queued": "Queued {{count}} files"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Sign in to Fansly in the dedicated browser, then map posts or media. Your saved login stays in that browser. Close the login window before mapping.",
+    "posts": "Posts",
+    "media": "Media"
+}
 }

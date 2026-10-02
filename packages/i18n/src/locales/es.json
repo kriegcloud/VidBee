@@ -1849,12 +1849,20 @@
     "alreadySaved": "Ya en cola o descargado"
   },
   "onlyFans": {
+    "chat": "Chat {{id}}",
+    "chatHint": "Explora las fotos y los vídeos de esta conversación con el navegador dedicado. Solo se pueden descargar los archivos adjuntos disponibles.",
     "sessionHint": "Inicia sesión una vez en el navegador exclusivo de VidBee en este equipo. Nunca se copian las cookies de tu Chrome habitual. Explora fotos o vídeos y selecciona los archivos disponibles para descargar.",
     "openBrowser": "Abrir navegador",
+    "selectNotDownloaded": "Seleccionar no descargados ({{count}})",
     "videos": "Vídeos",
     "mapping": "Explorando perfil…",
     "partial": "Exploración parcial guardada. Explora de nuevo para encontrar más elementos.",
     "locked": "Bloqueado",
     "queued": "{{count}} archivos en cola"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Inicia sesión en Fansly en el navegador dedicado y explora publicaciones o contenido multimedia. La sesión se guarda en ese navegador. Cierra la ventana de inicio de sesión antes de explorar.",
+    "posts": "Publicaciones",
+    "media": "Multimedia"
+}
 }

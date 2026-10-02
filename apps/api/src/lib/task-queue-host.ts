@@ -19,6 +19,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
+import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
 import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
 import {
   buildGalleryDlRuntimeArgs,
@@ -159,11 +160,19 @@ export const onlyFansProfiles = new OnlyFansProfiles(
   path.join(apiDataDir, 'onlyfans-profiles'),
   () => apiDefaultDownloadDir
 )
+export const fanslyProfiles = new FanslyProfiles(
+  path.join(apiDataDir, 'fansly-profiles'),
+  () => apiDefaultDownloadDir
+)
 const downloadExecutor = new OnlyFansBrowserExecutor(
   onlyFansProfiles,
-  new HostRoutingExecutor(
-    new DrmFallbackExecutor(ytDlpExecutor, browserCaptureExecutor),
-    galleryDlExecutor
+  new OnlyFansBrowserExecutor(
+    fanslyProfiles,
+    new HostRoutingExecutor(
+      new DrmFallbackExecutor(ytDlpExecutor, browserCaptureExecutor),
+      galleryDlExecutor
+    ),
+    () => apiDefaultDownloadDir
   ),
   () => apiDefaultDownloadDir
 )
@@ -297,6 +306,7 @@ export const startTaskQueue = async (): Promise<void> => {
   await restoreSocialMediaGroupCaps(taskQueue)
   await restoreBrowserCaptureGroupCap(taskQueue)
   await taskQueue.setMaxPerGroup('onlyfans-browser', 1)
+  await taskQueue.setMaxPerGroup('fansly-browser', 1)
   try {
     const settings = await (await import('./web-settings-store')).webSettingsStore.get()
     autoEnabled = settings.autoTranscribeAfterDownload === true
@@ -315,6 +325,7 @@ export const setApiAutoTranscribe = (enabled: boolean): void => {
 export const stopTaskQueue = async (): Promise<void> => {
   await instagramProfileInspector.stop()
   await onlyFansProfiles.stop()
+  await fanslyProfiles.stop()
   if (!started) {
     return
   }

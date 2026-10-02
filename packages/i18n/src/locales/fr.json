@@ -1849,12 +1849,20 @@
     "alreadySaved": "Déjà en file ou téléchargé"
   },
   "onlyFans": {
+    "chat": "Discussion {{id}}",
+    "chatHint": "Analysez les photos et vidéos de cette discussion dans le navigateur dédié. Seules les pièces jointes accessibles peuvent être téléchargées.",
     "sessionHint": "Connectez-vous une fois dans le navigateur dédié à VidBee sur cet appareil. Les cookies de votre Chrome habituel ne sont jamais copiés. Répertoriez les photos ou vidéos, puis sélectionnez les médias disponibles à télécharger.",
     "openBrowser": "Ouvrir le navigateur",
+    "selectNotDownloaded": "Sélectionner les non téléchargés ({{count}})",
     "videos": "Vidéos",
     "mapping": "Analyse du profil…",
     "partial": "Analyse partielle enregistrée. Relancez-la pour découvrir davantage de médias.",
     "locked": "Verrouillé",
     "queued": "{{count}} fichiers en attente"
-  }
+  },
+  "fansly": {
+    "sessionHint": "Connectez-vous à Fansly dans le navigateur dédié, puis analysez les publications ou les médias. Votre session reste enregistrée dans ce navigateur. Fermez la fenêtre de connexion avant de lancer l’analyse.",
+    "posts": "Publications",
+    "media": "Médias"
+}
 }

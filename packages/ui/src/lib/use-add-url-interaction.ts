@@ -1,3 +1,4 @@
+import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
@@ -144,7 +145,11 @@ export const useAddUrlInteraction = ({
         return
       }
 
-      if (isInstagramProfileUrl(trimmedUrl) || onlyFansProfile(trimmedUrl)) {
+      if (
+        isInstagramProfileUrl(trimmedUrl) ||
+        onlyFansProfile(trimmedUrl) ||
+        fanslyProfile(trimmedUrl)
+      ) {
         await onParseProfile(trimmedUrl)
         return
       }

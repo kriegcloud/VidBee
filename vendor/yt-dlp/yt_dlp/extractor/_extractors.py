@@ -1310,6 +1310,8 @@ from .odnoklassniki import OdnoklassnikiIE
 from .oftv import (
     OfTVIE,
     OfTVPlaylistIE,
+    OfTVChannelIE,
+    OfTVVideoIE,
 )
 from .oktoberfesttv import OktoberfestTVIE
 from .olympics import OlympicsReplayIE

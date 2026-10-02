@@ -1194,7 +1194,7 @@ export function DownloadItem({
 			</ContextMenuTrigger>
 
 			<ContextMenuContent>
-				<DownloadRecordContextMenuItems
+				<DownloadRecordContextMenuItems sourceUrl={download.url}
 					canCopyLink={canCopyLink}
 					canCopyToClipboard={false}
 					canDeleteFile={canDeleteFile}

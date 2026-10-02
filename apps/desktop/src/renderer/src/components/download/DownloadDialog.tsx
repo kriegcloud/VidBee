@@ -12,6 +12,7 @@ import {
 } from '@shared/utils/format-preferences'
 import { buildVideoInfoDownloadMetadata } from '@shared/utils/video-info-metadata'
 import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidbee/downloader-core'
+import { FanslyCommandSchema, fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import {
   ONE_CLICK_CONTAINER_OPTIONS,
   type OneClickContainerOption
@@ -66,8 +67,18 @@ interface DownloadDialogProps {
 
 const resolveShortLink = (url: string): Promise<string> => ipcServices.download.resolveUrl(url)
 
-const onlyFansCommand = ipcServices.download.onlyFansProfileCommand
-const onlyFansDownload = ipcServices.download.downloadOnlyFansProfile
+const onlyFansCommand = (
+  input: import('@vidbee/downloader-core/onlyfans-profile').OnlyFansCommand
+) =>
+  fanslyProfile(input.url)
+    ? ipcServices.download.fanslyProfileCommand(FanslyCommandSchema.parse(input))
+    : ipcServices.download.onlyFansProfileCommand(input)
+const onlyFansDownload = (
+  input: import('@vidbee/downloader-core/onlyfans-profile').OnlyFansDownload
+) =>
+  fanslyProfile(input.url)
+    ? ipcServices.download.downloadFanslyProfile(input)
+    : ipcServices.download.downloadOnlyFansProfile(input)
 
 export function DownloadDialog({
   onOpenSupportedSites,
@@ -76,6 +87,18 @@ export function DownloadDialog({
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null)
+  useEffect(() => {
+    const openProfile = (event: Event) => {
+      const url: unknown = (event as CustomEvent<unknown>).detail
+      if (typeof url === 'string' && (onlyFansProfile(url) || fanslyProfile(url))) {
+        setOpen(false)
+        setOnlyFansUrl(url)
+      }
+    }
+    window.addEventListener('vidbee:open-onlyfans-profile', openProfile)
+    return () => window.removeEventListener('vidbee:open-onlyfans-profile', openProfile)
+  }, [])
+
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
   const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
@@ -534,7 +557,7 @@ export function DownloadDialog({
 
   const handleParseProfileUrl = useCallback(
     async (trimmedUrl: string) => {
-      if (onlyFansProfile(trimmedUrl)) {
+      if (onlyFansProfile(trimmedUrl) || fanslyProfile(trimmedUrl)) {
         setOpen(false)
         setOnlyFansUrl(trimmedUrl)
         return
@@ -1057,10 +1080,18 @@ export function DownloadDialog({
             <SavedInstagramProfiles
               loadProfiles={async () => [
                 ...(await ipcServices.download.listInstagramProfiles()),
+                ...(await ipcServices.download.listFanslyProfiles()).map((profile) => ({
+                  inspectionId: profile.profileUrl,
+                  profile: {
+                    username: `${profile.username} · Fansly`,
+                    profileUrl: profile.profileUrl
+                  },
+                  totalAssetCount: profile.items.length
+                })),
                 ...(await ipcServices.download.listOnlyFansProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
                   profile: {
-                    username: `${profile.username} · OnlyFans`,
+                    username: `${profile.chatId ? t('onlyFans.chat', { id: profile.chatId }) : profile.username} · OnlyFans`,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: profile.items.length

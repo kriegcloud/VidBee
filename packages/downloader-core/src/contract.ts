@@ -1,5 +1,6 @@
 import { oc } from '@orpc/contract'
 import { z } from 'zod'
+import { FanslyCommandSchema, FanslyDownloadSchema, FanslyProfileSchema } from './fansly-profile'
 import {
   OnlyFansCommandSchema,
   OnlyFansDownloadSchema,
@@ -54,6 +55,11 @@ import {
 } from './schemas'
 
 export const downloaderContract = {
+  fanslyProfile: {
+    command: oc.input(FanslyCommandSchema).output(FanslyProfileSchema),
+    list: oc.output(z.array(FanslyProfileSchema)),
+    download: oc.input(FanslyDownloadSchema).output(z.object({ count: z.number() }))
+  },
   onlyFansProfile: {
     command: oc.input(OnlyFansCommandSchema).output(OnlyFansProfileSchema),
     list: oc.output(z.array(OnlyFansProfileSchema)),

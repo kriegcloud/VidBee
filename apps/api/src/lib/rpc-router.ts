@@ -33,6 +33,7 @@ import {
 import { projectTaskForApi } from './projection'
 import {
   applyApiTranscriptionConcurrency,
+  fanslyProfiles,
   instagramProfileInspector,
   onlyFansProfiles,
   resolveGalleryDlExtraArgs,
@@ -449,6 +450,13 @@ export const rpcRouter = os.router({
         settings: { ...storedSettings, ...input.settings }
       })
     })
+  },
+  fanslyProfile: {
+    command: os.fanslyProfile.command.handler(({ input }) => fanslyProfiles.command(input)),
+    list: os.fanslyProfile.list.handler(() => fanslyProfiles.list()),
+    download: os.fanslyProfile.download.handler(({ input }) =>
+      fanslyProfiles.enqueue(taskQueue, input)
+    )
   },
   onlyFansProfile: {
     command: os.onlyFansProfile.command.handler(({ input }) => onlyFansProfiles.command(input)),
