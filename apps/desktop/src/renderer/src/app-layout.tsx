@@ -403,6 +403,9 @@ export function AppLayout() {
 
         <TranscriptPlaybackHost />
         <Toaster
+          // An explicit dir stops sonner calling getComputedStyle(documentElement) on
+          // every render, which forced a full style recalc of the page each time.
+          dir={i18n.dir()}
           offset={playbackBarHeight > 0 ? playbackBarHeight + 16 : undefined}
           richColors={true}
         />

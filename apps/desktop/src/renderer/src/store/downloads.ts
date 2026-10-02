@@ -137,6 +137,36 @@ export const addHistoryRecordAtom = atom(null, (get, set, item: DownloadHistoryI
   set(downloadRecordsAtom, downloads)
 })
 
+/**
+ * Replace every history record in one write.
+ *
+ * Startup used to clear and then call `addHistoryRecordAtom` once per item, which
+ * cloned the whole map and notified every subscriber per item: O(n²) work and
+ * thousands of derived recomputes for a large history.
+ */
+export const replaceHistoryRecordsAtom = atom(
+  null,
+  (get, set, items: readonly DownloadHistoryItem[]) => {
+    const downloads = new Map<string, DownloadRecord>()
+    for (const [key, record] of get(downloadRecordsAtom)) {
+      if (record.entryType !== 'history') {
+        downloads.set(key, record)
+      }
+    }
+    for (const item of items) {
+      const activeKey = recordKey('active', item.id)
+      if (downloads.has(activeKey)) {
+        if (!isFinalStatus(item.status)) {
+          continue
+        }
+        downloads.delete(activeKey)
+      }
+      downloads.set(recordKey('history', item.id), toHistoryRecord(item))
+    }
+    set(downloadRecordsAtom, downloads)
+  }
+)
+
 /** Remove downloads from history and the persisted playback playlist together. */
 export const removeHistoryRecordsAtom = atom(null, (get, set, ids: string[]) => {
   if (ids.length === 0) {

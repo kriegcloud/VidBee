@@ -195,6 +195,15 @@ export const DownloadFilterBar = <TFilter extends string>({
     registerItem
   } = useProximityHover(tabsRef, { axis: 'x' })
 
+  // Re-measure only when what the tabs render changes. The parent rebuilds `filters`
+  // every render; keying on identity forced a synchronous layout of the whole page
+  // (thousands of history rows) on every store update.
+  const filtersSignature = filters
+    .map((filter) => `${filter.key}\u0000${filter.label}\u0000${filter.count}`)
+    .join('\u0001')
+  const filterCount = filters.length
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: filtersSignature is the trigger; the effect reads the rendered measure row.
   useLayoutEffect(() => {
     const cluster = clusterRef.current
     const measure = measureRef.current
@@ -205,7 +214,7 @@ export const DownloadFilterBar = <TFilter extends string>({
     const update = () => {
       const children = Array.from(measure.children) as HTMLElement[]
       if (children.length < 2) {
-        setVisibleCount(filters.length)
+        setVisibleCount(filterCount)
         return
       }
       const overflowWidth = children.at(-1)?.getBoundingClientRect().width ?? 0
@@ -227,7 +236,7 @@ export const DownloadFilterBar = <TFilter extends string>({
     observer.observe(cluster)
     observer.observe(measure)
     return () => observer.disconnect()
-  }, [filters])
+  }, [filterCount, filtersSignature])
 
   const hasOverflow = visibleCount < filters.length
   const activeIndex = filters.findIndex((filter) => filter.key === activeFilter)

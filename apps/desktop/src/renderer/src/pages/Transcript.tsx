@@ -570,6 +570,12 @@ export function TranscriptPage() {
     },
     [speakers, t]
   )
+  // The page re-renders on every playback clock tick; rebuilding the full transcript
+  // text there cost O(segments) per frame during playback.
+  const transcriptText = useMemo(
+    () => buildPromptTranscriptText(segments, speakerName),
+    [segments, speakerName]
+  )
   const speakerColorIndex = useCallback(
     (speakerId: string | null): number | null => {
       if (!speakerId) {
@@ -953,7 +959,7 @@ export function TranscriptPage() {
             streamLive={streamLive}
             transcriptLanguage={transcriptLanguage}
             transcriptOrigin={transcriptOrigin}
-            transcriptText={buildPromptTranscriptText(segments, speakerName)}
+            transcriptText={transcriptText}
           />
         }
         captionsRef={captionsRef}
