@@ -73,6 +73,7 @@ export const mapSocialMediaProfile = async (
   }
   const directory = await mkdtemp(path.join(tmpdir(), 'vidbee-social-map-'))
   let release: (() => void) | null | undefined
+  let discoveredItems = 0
   try {
     release = await runtime.admission?.acquire(url, signal)
     if (signal.aborted) {
@@ -132,6 +133,7 @@ export const mapSocialMediaProfile = async (
               if (post?.kind !== 'post' || post.platform !== source.platform) {
                 return
               }
+              discoveredItems += 1
               onItem({
                 id: entry.id,
                 url: post.url,
@@ -152,12 +154,21 @@ export const mapSocialMediaProfile = async (
       return { complete: false }
     }
     if (result.result.type === 'success') {
+      if (source.platform === 'x' && discoveredItems === 0) {
+        return {
+          complete: false,
+          error: 'X returned no downloadable posts. Check the dedicated browser session and retry mapping.'
+        }
+      }
       return { complete: true }
     }
+    const diagnostic = `${result.result.error.rawMessage}\n${result.stderrTail}`
     return {
       complete: false,
-      error: result.result.error.rawMessage.includes('AuthRequired')
-        ? 'AuthRequired: sign in with the dedicated browser and retry mapping.'
+      error: /AuthRequired|Could not authenticate you|login required|authenticated cookies|Extracted 0 cookies/i.test(diagnostic)
+        ? source.platform === 'x'
+          ? 'AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping.'
+          : 'AuthRequired: sign in with the dedicated browser and retry mapping.'
         : 'Profile mapping stopped before traversal completed. Saved items were retained.'
     }
   } finally {
@@ -187,7 +198,8 @@ export const inspectSocialMedia = async (url: string): Promise<SocialSource> => 
 /** Queue each explicitly selected category through the same host-neutral executor. */
 export const downloadSocialMedia = async (
   queue: TaskQueueAPI,
-  request: SocialMediaDownloadRequest
+  request: SocialMediaDownloadRequest,
+  batch?: { id: string; title: string; order: number }
 ): Promise<{ groupId: string; ids: string[] }> => {
   const source = await inspectSocialMedia(request.url)
   const options = SocialMediaOptionsSchema.parse(request.options ?? {})
@@ -201,7 +213,7 @@ export const downloadSocialMedia = async (
         return category.url
       })
     : [socialCollectionUrl(source)]
-  const groupId = `social_${randomUUID()}`
+  const groupId = batch?.id ?? `social_${randomUUID()}`
   const groupKey = `social:${source.platform}`
   await queue.setMaxPerGroup(groupKey, 1)
   const ids: string[] = []
@@ -219,9 +231,9 @@ export const downloadSocialMedia = async (
           downloadPath: request.customDownloadPath?.trim() || request.settings?.downloadPath,
           batchId: groupId,
           batchKind: 'social-media',
-          batchTitle: source.owner,
+          batchTitle: batch?.title ?? source.owner,
           batchCategory: resolveSocialSource(url)?.category,
-          batchOrder: index,
+          batchOrder: (batch?.order ?? 0) + index,
           sourceMediaKind:
             options.media === 'images' ? 'image' : options.media === 'videos' ? 'video' : 'mixed'
         }

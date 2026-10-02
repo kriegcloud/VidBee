@@ -12,6 +12,7 @@
     "./lib/cn": "./src/lib/cn.ts",
     "./lib/download-platform": "./src/lib/download-platform.ts",
     "./lib/list-marquee": "./src/lib/list-marquee.ts",
+    "./lib/saved-social-profile-groups": "./src/lib/saved-social-profile-groups.ts",
     "./lib/use-list-marquee": "./src/lib/use-list-marquee.ts",
     "./lib/shape-context": "./src/lib/shape-context.tsx",
     "./lib/ingest": "./src/lib/ingest.ts",

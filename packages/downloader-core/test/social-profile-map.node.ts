@@ -3,7 +3,12 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
-import { mapSocialMediaProfile, type SocialMappedItem } from '../src/social-media-service'
+import type { TaskQueueAPI } from '@vidbee/task-queue'
+import {
+  downloadSocialMedia,
+  mapSocialMediaProfile,
+  type SocialMappedItem
+} from '../src/social-media-service'
 import { SocialProfileManager } from '../src/social-profile-manager'
 
 test('social mapping retains post references without accepting media URLs', async (t) => {
@@ -67,4 +72,80 @@ emit({ type: 'complete', summary: { posts: 1, images: 1, videos: 0, downloaded: 
   }
   assert.equal(saved.categories.tweets?.items[0]?.images, 1)
   assert.equal(manager.list()[0]?.owner, 'fixture')
+})
+
+test('X mapping reports an empty traversal and rejected browser cookies instead of ready', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-x-map-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const bin = path.join(root, 'fake-gallery')
+  await writeFile(
+    bin,
+    `#!${process.execPath}
+const fs = require('node:fs');
+const path = require('node:path');
+const raw = process.argv.find((arg) => arg.startsWith('extractor.vidbee-social.destination='));
+const destination = JSON.parse(raw.slice(raw.indexOf('=') + 1));
+const manifest = path.join(destination, '.vidbee', 'social-media.sqlite');
+fs.mkdirSync(path.dirname(manifest), { recursive: true });
+fs.writeFileSync(manifest, 'manifest');
+console.log('__VIDBEE_SOCIAL__\\t' + JSON.stringify({ type: 'complete', summary: { posts: 0, images: 0, videos: 0, downloaded: 0, existing: 0, failed: 0, totalSize: 0, reason: 'exhausted', manifestPath: manifest, startedAt: 1, finishedAt: 2 } }));
+`,
+    { mode: 0o755 }
+  )
+  const options = { resolveBinaryPath: () => bin }
+  const signal = new AbortController().signal
+  const empty = await mapSocialMediaProfile(
+    'https://x.com/fixture/tweets',
+    options,
+    undefined,
+    signal,
+    () => {}
+  )
+  assert.equal(empty.complete, false)
+  assert.match(empty.error ?? '', /no downloadable posts/i)
+
+  await writeFile(
+    bin,
+    `#!${process.execPath}
+process.stderr.write("[twitter][error] 'Could not authenticate you'\\n");
+process.exit(4);
+`,
+    { mode: 0o755 }
+  )
+  const rejected = await mapSocialMediaProfile(
+    'https://x.com/fixture/tweets',
+    options,
+    undefined,
+    signal,
+    () => {}
+  )
+  assert.equal(rejected.complete, false)
+  assert.match(rejected.error ?? '', /AuthRequired/)
+})
+
+test('selected social profile posts share one batch with their original order', async () => {
+  const options: Record<string, unknown>[] = []
+  const queue = {
+    setMaxPerGroup: async () => {},
+    add: async ({ input }: { input: { options?: Record<string, unknown> } }) => {
+      options.push(input.options ?? {})
+      return { id: `task-${options.length}` }
+    }
+  } as unknown as TaskQueueAPI
+  const batch = { id: 'profile-batch', title: '@fixture', order: 0 }
+
+  await downloadSocialMedia(
+    queue,
+    { url: 'https://www.tiktok.com/@fixture/video/123456789' },
+    batch
+  )
+  await downloadSocialMedia(
+    queue,
+    { url: 'https://www.tiktok.com/@fixture/video/987654321' },
+    { ...batch, order: 1 }
+  )
+
+  assert.deepEqual(options.map((entry) => entry.batchId), ['profile-batch', 'profile-batch'])
+  assert.deepEqual(options.map((entry) => entry.batchOrder), [0, 1])
+  assert.deepEqual(options.map((entry) => entry.batchTitle), ['@fixture', '@fixture'])
 })

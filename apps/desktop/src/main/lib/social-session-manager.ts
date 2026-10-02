@@ -63,7 +63,14 @@ class SocialSessionManager {
     if (child && child.exitCode === null && child.signalCode === null) {
       throw new Error('Close the dedicated login window before mapping or downloading.')
     }
-    return ['--cookies-from-browser', `chrome:${directory}`]
+    const desktop = [
+      process.env.XDG_CURRENT_DESKTOP,
+      process.env.XDG_SESSION_DESKTOP,
+      process.env.DESKTOP_SESSION,
+      process.env.KDE_FULL_SESSION
+    ].join(':')
+    const keyring = process.platform === 'linux' && /kde|plasma/i.test(desktop) ? '+kwallet' : ''
+    return ['--cookies-from-browser', `chrome${keyring}:${directory}`]
   }
 }
 

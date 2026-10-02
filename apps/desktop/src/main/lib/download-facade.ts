@@ -228,7 +228,11 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
       uploader: options.uploader,
       viewCount: options.viewCount,
       duration: options.duration,
-      selectedFormat: options.selectedFormat
+      selectedFormat: options.selectedFormat,
+      batchId: options.batchId,
+      batchKind: options.batchId ? 'social-media' : undefined,
+      batchTitle: options.batchTitle,
+      batchOrder: options.batchOrder
     }
   }
 }
@@ -268,10 +272,12 @@ class DownloadFacade extends EventEmitter {
     if (items.some((item) => !isMappedProfilePostUrl(profile.platform, item.url))) {
       throw new Error('Saved profile contains an invalid post URL.')
     }
+    const batchId = `social_profile_${randomUUID()}`
+    const batchTitle = `@${profile.owner}`
     if (profile.platform === 'redgifs') {
       this.subscribeOnce()
       await startDesktopTaskQueue()
-      for (const item of items) {
+      for (const [index, item] of items.entries()) {
         const id = randomUUID()
         await this.queue.add({
           id,
@@ -280,15 +286,25 @@ class DownloadFacade extends EventEmitter {
             type: 'video',
             singleVideo: true,
             title: item.title,
-            customDownloadPath: destination
+            customDownloadPath: destination,
+            batchId,
+            batchTitle,
+            batchOrder: index
           }),
           priority: PRIORITY_USER
         })
       }
       return { count: items.length }
     }
-    for (const item of items) {
-      await this.downloadSocialMedia({ url: item.url, customDownloadPath: destination })
+    for (const [index, item] of items.entries()) {
+      await this.downloadSocialMedia(
+        {
+          url: item.url,
+          customDownloadPath: destination,
+          settings: toSharedSettings(settingsManager.getAll())
+        },
+        { id: batchId, title: batchTitle, order: index }
+      )
     }
     return { count: items.length }
   }
@@ -306,13 +322,20 @@ class DownloadFacade extends EventEmitter {
     )
   }
 
-  async downloadSocialMedia(request: SocialMediaDownloadRequest) {
+  async downloadSocialMedia(
+    request: SocialMediaDownloadRequest,
+    batch?: { id: string; title: string; order: number }
+  ) {
     this.subscribeOnce()
     await startDesktopTaskQueue()
-    return downloadSocialMedia(this.queue, {
-      ...request,
-      settings: toSharedSettings(settingsManager.getAll())
-    })
+    return downloadSocialMedia(
+      this.queue,
+      {
+        ...request,
+        settings: toSharedSettings(settingsManager.getAll())
+      },
+      batch
+    )
   }
 
   private subscribed = false

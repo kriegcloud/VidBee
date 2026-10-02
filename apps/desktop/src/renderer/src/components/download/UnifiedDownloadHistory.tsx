@@ -23,6 +23,10 @@ import {
   listDownloadPlatformCounts,
   matchesDownloadPlatformFilter
 } from '@vidbee/ui/lib/download-platform'
+import {
+  indexSavedSocialProfileGroups,
+  type SavedSocialProfileGroup
+} from '@vidbee/ui/lib/saved-social-profile-groups'
 import { useListMarqueeSelection } from '@vidbee/ui/lib/use-list-marquee'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Layers } from 'lucide-react'
@@ -126,8 +130,25 @@ export function UnifiedDownloadHistory({
   const transcriptMap = useAtomValue(transcriptMapAtom)
   const settings = useAtomValue(settingsAtom)
   const [platformFilter, setPlatformFilter] = useState(ALL_DOWNLOAD_PLATFORM_FILTER)
+  const [savedProfileGroups, setSavedProfileGroups] = useState<
+    Map<string, SavedSocialProfileGroup>
+  >(new Map())
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const listRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    let cancelled = false
+    void ipcServices.download
+      .listSocialProfiles()
+      .then((profiles) => {
+        if (!cancelled) {
+          setSavedProfileGroups(indexSavedSocialProfileGroups(profiles))
+        }
+      })
+      .catch((error: unknown) => logger.warn('Failed to list saved social profiles:', error))
+    return () => {
+      cancelled = true
+    }
+  }, [])
   const { finishPointer, marquee, onPointerDown, onPointerMove } = useListMarqueeSelection({
     containerRef: listRef,
     onSelectIds: (ids) => {
@@ -463,15 +484,16 @@ export function UnifiedDownloadHistory({
       []
 
     for (const record of filteredRecords) {
-      const groupId = record.batchId ?? record.playlistId
+      const savedGroup = savedProfileGroups.get(record.url)
+      const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId
       if (groupId) {
         let group = groups.get(groupId)
         if (!group) {
           group = {
             id: groupId,
-            title: record.batchTitle || record.playlistTitle || record.title,
-            totalCount: record.batchId ? 0 : record.playlistSize || 0,
-            isPlaylist: !record.batchId,
+            title: savedGroup?.title || record.batchTitle || record.playlistTitle || record.title,
+            totalCount: savedGroup || record.batchId ? 0 : record.playlistSize || 0,
+            isPlaylist: !(savedGroup || record.batchId),
             records: []
           }
           groups.set(groupId, group)
@@ -504,7 +526,7 @@ export function UnifiedDownloadHistory({
     }
 
     return { order, groups }
-  }, [filteredRecords])
+  }, [filteredRecords, savedProfileGroups])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

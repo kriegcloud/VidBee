@@ -29,6 +29,10 @@ import {
 	listDownloadPlatformCounts,
 	matchesDownloadPlatformFilter,
 } from "@vidbee/ui/lib/download-platform";
+import {
+	indexSavedSocialProfileGroups,
+	type SavedSocialProfileGroup,
+} from "@vidbee/ui/lib/saved-social-profile-groups";
 import { useListMarqueeSelection } from "@vidbee/ui/lib/use-list-marquee";
 import { Layers } from "lucide-react";
 import {
@@ -92,6 +96,9 @@ export const DownloadPage = () => {
 	const [platformFilter, setPlatformFilter] = useState(
 		ALL_DOWNLOAD_PLATFORM_FILTER,
 	);
+	const [savedProfileGroups, setSavedProfileGroups] = useState<
+		Map<string, SavedSocialProfileGroup>
+	>(new Map());
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const listRef = useRef<HTMLDivElement>(null);
 	const { finishPointer, marquee, onPointerDown, onPointerMove } =
@@ -179,6 +186,26 @@ export const DownloadPage = () => {
 			window.clearInterval(timer);
 		};
 	}, [refreshData]);
+
+	useEffect(() => {
+		if (!isApiReachable) {
+			return;
+		}
+		let cancelled = false;
+		void orpcClient.socialProfile
+			.list()
+			.then((profiles) => {
+				if (!cancelled) {
+					setSavedProfileGroups(indexSavedSocialProfileGroups(profiles));
+				}
+			})
+			.catch((error: unknown) =>
+				logger.warn("Failed to list saved social profiles:", error),
+			);
+		return () => {
+			cancelled = true;
+		};
+	}, [isApiReachable]);
 
 	useEffect(() => {
 		if (!isApiReachable) {
@@ -499,19 +526,22 @@ export const DownloadPage = () => {
 		> = [];
 
 		for (const record of filteredRecords) {
-			const groupId = record.batchId ?? record.playlistId;
+			const savedGroup = savedProfileGroups.get(record.url);
+			const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId;
 			if (groupId) {
 				let group = groups.get(groupId);
 				if (!group) {
 					group = {
 						id: groupId,
 						title:
+							savedGroup?.title ||
 							record.batchTitle ||
 							record.playlistTitle ||
 							record.title ||
 							t("playlist.untitled"),
-						totalCount: record.batchId ? 0 : record.playlistSize || 0,
-						isPlaylist: !record.batchId,
+						totalCount:
+							savedGroup || record.batchId ? 0 : record.playlistSize || 0,
+						isPlaylist: !savedGroup && !record.batchId,
 						records: [],
 					};
 					groups.set(groupId, group);
@@ -550,7 +580,7 @@ export const DownloadPage = () => {
 		}
 
 		return { order, groups };
-	}, [filteredRecords, t]);
+	}, [filteredRecords, savedProfileGroups, t]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {

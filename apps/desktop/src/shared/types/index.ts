@@ -211,6 +211,9 @@ export interface DownloadHistoryItem {
 }
 
 export interface DownloadOptions {
+  batchId?: string
+  batchTitle?: string
+  batchOrder?: number
   socialMedia?: SocialMediaOptions
   singleVideo?: boolean
   url: string

@@ -477,7 +477,9 @@ export const rpcRouter = os.router({
         })
       }
       const settings = await webSettingsStore.get()
-      for (const item of items) {
+      const batchId = `social_profile_${randomUUID()}`
+      const batchTitle = `@${profile.owner}`
+      for (const [index, item] of items.entries()) {
         if (profile.platform === 'redgifs') {
           await taskQueue.add({
             input: {
@@ -488,16 +490,20 @@ export const rpcRouter = os.router({
                 type: 'video',
                 singleVideo: true,
                 customDownloadPath: input.destination,
-                settings
+                settings,
+                batchId,
+                batchKind: 'social-media',
+                batchTitle,
+                batchOrder: index
               }
             }
           })
         } else {
-          await downloadSocialMedia(taskQueue, {
-            url: item.url,
-            customDownloadPath: input.destination,
-            settings
-          })
+          await downloadSocialMedia(
+            taskQueue,
+            { url: item.url, customDownloadPath: input.destination, settings },
+            { id: batchId, title: batchTitle, order: index }
+          )
         }
       }
       return { count: items.length }
