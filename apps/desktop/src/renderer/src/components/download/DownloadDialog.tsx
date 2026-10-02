@@ -30,6 +30,7 @@ import { OnlyFansProfileDialog } from '@vidbee/ui/components/ui/onlyfans-profile
 import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collection-dialog'
 import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
+import { SocialProfileDialog } from '@vidbee/ui/components/ui/social-profile-dialog'
 import {
   type CollectionProfile,
   isPlaylistLikeUrl,
@@ -100,6 +101,7 @@ export function DownloadDialog({
   }, [])
 
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
+  const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null)
   const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
   const [videoInfoSourceUrl] = useAtom(currentVideoInfoSourceUrlAtom)
@@ -226,7 +228,12 @@ export function DownloadDialog({
 
       if (resolveSocialSource(url)) {
         setOpen(false)
-        setSocialUrl(url)
+        const social = resolveSocialSource(url)
+        if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+          setSocialProfileUrl(url)
+        } else {
+          setSocialUrl(url)
+        }
         return
       }
 
@@ -465,7 +472,12 @@ export function DownloadDialog({
     }
     if (resolveSocialSource(url.trim())) {
       setOpen(false)
-      setSocialUrl(url.trim())
+      const social = resolveSocialSource(url.trim())
+      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+        setSocialProfileUrl(url.trim())
+      } else {
+        setSocialUrl(url.trim())
+      }
       return
     }
     if (isPlaylistLikeUrl(url.trim())) {
@@ -557,6 +569,12 @@ export function DownloadDialog({
 
   const handleParseProfileUrl = useCallback(
     async (trimmedUrl: string) => {
+      const social = resolveSocialSource(trimmedUrl)
+      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+        setOpen(false)
+        setSocialProfileUrl(trimmedUrl)
+        return
+      }
       if (onlyFansProfile(trimmedUrl) || fanslyProfile(trimmedUrl)) {
         setOpen(false)
         setOnlyFansUrl(trimmedUrl)
@@ -607,11 +625,21 @@ export function DownloadDialog({
     onOneClickDownload: handleOneClickFromAddUrl,
     onParseCollection: (value) => {
       setOpen(false)
-      setCollectionProfile(resolveCollectionProfile(value))
+      const social = resolveSocialSource(value)
+      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+        setSocialProfileUrl(value)
+      } else {
+        setCollectionProfile(resolveCollectionProfile(value))
+      }
     },
     onParseSocial: (value) => {
       setOpen(false)
-      setSocialUrl(value)
+      const social = resolveSocialSource(value)
+      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+        setSocialProfileUrl(value)
+      } else {
+        setSocialUrl(value)
+      }
     },
     onParseProfile: handleParseProfileUrl,
     onParsePlaylist: handleParsePlaylistUrl,
@@ -1095,6 +1123,17 @@ export function DownloadDialog({
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: profile.items.length
+                })),
+                ...(await ipcServices.download.listSocialProfiles()).map((profile) => ({
+                  inspectionId: profile.profileUrl,
+                  profile: {
+                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : 'TikTok'}`,
+                    profileUrl: profile.profileUrl
+                  },
+                  totalAssetCount: Object.values(profile.categories).reduce(
+                    (total, category) => total + category.items.length,
+                    0
+                  )
                 }))
               ]}
               onSelect={(profileUrl) => {
@@ -1518,6 +1557,23 @@ export function DownloadDialog({
           onInspect={(url) => ipcServices.download.inspectSocialMedia(url)}
           onVideoOptions={handleParseSingleUrl}
           url={socialUrl}
+        />
+      )}
+      {socialProfileUrl && (
+        <SocialProfileDialog
+          destination={settings.downloadPath}
+          downloadItems={(profileUrl, category, ids, destination) =>
+            ipcServices.download.downloadSocialProfileItems(profileUrl, category, ids, destination)
+          }
+          getProfile={(profileUrl) => ipcServices.download.getSocialProfile(profileUrl)}
+          key={socialProfileUrl}
+          mapProfile={(profileUrl, category) =>
+            ipcServices.download.mapSocialProfile(profileUrl, category)
+          }
+          onClose={() => setSocialProfileUrl(null)}
+          openLogin={(profileUrl) => ipcServices.download.openSocialProfileLogin(profileUrl)}
+          stopProfile={(profileUrl) => ipcServices.download.stopSocialProfile(profileUrl)}
+          url={socialProfileUrl}
         />
       )}
       <IngestDropOverlay

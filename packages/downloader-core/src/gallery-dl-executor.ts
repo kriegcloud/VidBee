@@ -88,7 +88,7 @@ interface GalleryDlTaskOptions extends YtDlpTaskOptions {
 export interface GalleryDlExecutorOptions {
   resolveBinaryPath: () => string
   defaultDownloadDir: string
-  resolveExtraArgs?: (settings?: DownloadRuntimeSettings) => readonly string[]
+  resolveExtraArgs?: (settings?: DownloadRuntimeSettings, url?: string) => readonly string[]
   resolveFfmpegLocation?: () => string | undefined
   killGraceMs?: number
   clock?: () => number
@@ -390,7 +390,7 @@ export class GalleryDlExecutor implements Executor {
     const filter = taskOptions.galleryDlFilter?.trim()
     const expectedAssetCount = Math.max(taskOptions.expectedAssetCount ?? 0, 0)
     const extraArgs = [
-      ...(this.options.resolveExtraArgs?.(taskOptions.settings) ??
+      ...(this.options.resolveExtraArgs?.(taskOptions.settings, ctx.input.url) ??
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
     const extractorArgs = resolveExtractorArgs({
@@ -452,6 +452,8 @@ export class GalleryDlExecutor implements Executor {
         `extractor.vidbee-social.run-id=${JSON.stringify(ctx.attemptId)}`,
         '-o',
         `extractor.vidbee-social.inspect=${ctx.input.options?.socialInspect === true}`,
+        '-o',
+        `extractor.vidbee-social.map-items=${ctx.input.options?.socialMap === true}`,
         `vidbee-social:${socialCollectionUrl(socialSource)}`
       )
     }
@@ -536,6 +538,9 @@ export class GalleryDlExecutor implements Executor {
         if (line.startsWith('__VIDBEE_SOCIAL__\t')) {
           try {
             const event: unknown = JSON.parse(line.slice('__VIDBEE_SOCIAL__\t'.length))
+            if (event && typeof event === 'object' && 'type' in event && event.type === 'item') {
+              return
+            }
             if (
               !event ||
               typeof event !== 'object' ||
@@ -701,6 +706,22 @@ export class GalleryDlExecutor implements Executor {
             closedAt,
             stdoutTail: stdout,
             stderrTail: message
+          })
+          return
+        }
+        if (
+          ctx.input.options?.socialInspect !== true &&
+          (summary.totalSize <= 0 || summary.downloaded + summary.existing === 0)
+        ) {
+          const message =
+            'Collection contained no downloadable media. Check the selected category and authentication.'
+          finishOnce({
+            taskId: ctx.taskId,
+            attemptId: ctx.attemptId,
+            result: { type: 'error', error: virtualError('output-missing', message), exitCode },
+            closedAt,
+            stdoutTail: stdout,
+            stderrTail: stderr || message
           })
           return
         }

@@ -1804,6 +1804,7 @@
     "quality": "Kualitas gambar tertinggi yang tersedia. Format asli. Tanpa penggantian dengan gambar yang lebih kecil.",
     "available": "Mengunduh semua media yang dapat diakses dari situs pada proses ini. Situs dapat membatasi riwayat umpan.",
     "auth": "Koleksi ini mungkin memerlukan browser yang sudah masuk atau berkas cookie di Pengaturan.",
+    "profileSessionHint": "Masuk di peramban khusus VidBee, lalu tutup jendelanya sebelum memetakan. Sesi peramban biasa Anda tidak digunakan.",
     "counts": "{{posts}} postingan · {{images}} gambar · {{videos}} video · {{saved}} disimpan · {{existing}} sudah ada · {{failed}} gagal",
     "categories": {
       "tweets": "Postingan",

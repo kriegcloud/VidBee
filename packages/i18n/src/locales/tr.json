@@ -1804,6 +1804,7 @@
     "quality": "Mevcut en yüksek görsel kalitesi. Özgün biçim. Daha küçük görsellerle değiştirilmez.",
     "available": "Bu çalıştırmada sitenin erişime açtığı tüm medyayı indirir. Site, akış geçmişini sınırlayabilir.",
     "auth": "Bu koleksiyon için Ayarlar’da oturum açılmış bir tarayıcı veya çerez dosyası gerekebilir.",
+    "profileSessionHint": "Özel VidBee tarayıcısında oturum açın, ardından eşlemeden önce pencereyi kapatın. Normal tarayıcı oturumunuz kullanılmaz.",
     "counts": "{{posts}} gönderi · {{images}} görsel · {{videos}} video · {{saved}} kaydedildi · {{existing}} mevcut · {{failed}} başarısız",
     "categories": {
       "tweets": "Gönderiler",

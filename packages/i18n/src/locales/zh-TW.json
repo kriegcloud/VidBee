@@ -1804,6 +1804,7 @@
     "quality": "使用可取得的最高圖片品質並保留原始格式，不會改用較小的圖片。",
     "available": "下載本次執行中網站允許存取的所有媒體。網站可能限制動態消息的歷史紀錄。",
     "auth": "此收藏集可能需要在設定中選擇已登入的瀏覽器或 Cookie 檔案。",
+    "profileSessionHint": "請在 VidBee 專用瀏覽器中登入，然後在對應前關閉該視窗。不會使用您平常的瀏覽器工作階段。",
     "counts": "{{posts}} 則貼文 · {{images}} 張圖片 · {{videos}} 部影片 · 已儲存 {{saved}} · 已存在 {{existing}} · 失敗 {{failed}}",
     "categories": {
       "tweets": "貼文",

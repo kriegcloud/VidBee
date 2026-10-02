@@ -1804,6 +1804,7 @@
     "quality": "使用可获得的最高图片质量并保留原始格式，不会降级为较小的图片。",
     "available": "下载本次运行中网站允许访问的所有媒体。网站可能限制信息流的历史记录。",
     "auth": "此收藏集可能需要在设置中选择已登录的浏览器或 Cookie 文件。",
+    "profileSessionHint": "请在 VidBee 专用浏览器中登录，然后在映射前关闭该窗口。不会使用您平常的浏览器会话。",
     "counts": "{{posts}} 个帖子 · {{images}} 张图片 · {{videos}} 个视频 · 已保存 {{saved}} · 已存在 {{existing}} · 失败 {{failed}}",
     "categories": {
       "tweets": "帖子",

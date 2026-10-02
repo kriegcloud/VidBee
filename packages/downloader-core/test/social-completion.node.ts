@@ -8,6 +8,7 @@ import { GalleryDlExecutor } from '../src/gallery-dl-executor'
 
 for (const scenario of [
   'exhausted',
+  'empty',
   'symlink-destination',
   'limit',
   'incomplete',
@@ -29,10 +30,10 @@ for (const scenario of [
       posts: 0,
       images: 0,
       videos: 0,
-      downloaded: 0,
+      downloaded: scenario === 'empty' ? 0 : 1,
       existing: 0,
       failed: scenario === 'failed-asset' ? 1 : 0,
-      totalSize: 0,
+      totalSize: scenario === 'empty' ? 0 : 123,
       reason:
         scenario === 'limit' ? 'limit' : scenario === 'incomplete' ? 'incomplete' : 'exhausted',
       manifestPath: scenario === 'wrong-manifest' ? '/unrelated/manifest' : manifest,
@@ -71,7 +72,7 @@ for (const scenario of [
       ['exhausted', 'limit', 'symlink-destination'].includes(scenario) ? 'success' : 'error'
     )
     if (result.result.type === 'success') {
-      assert.equal(result.result.output.fileCount, 0)
+      assert.equal(result.result.output.fileCount, 1)
       assert.equal(
         result.result.output.collectionSummary?.reason,
         scenario === 'limit' ? 'limit' : 'exhausted'

@@ -62,6 +62,8 @@ import { shouldSurfaceQueuedDownload } from './download-queue-events'
 import { galleryDlManager } from './gallery-dl-manager'
 import { applyAutoVideoDownloadPath } from './path-resolver'
 import { projectProgressForRenderer, projectTaskForRenderer } from './projection'
+import { getSocialProfileManager } from './social-profile-manager'
+import { socialSessionManager } from './social-session-manager'
 import {
   applyDesktopQueueConcurrency,
   getDesktopFanslyProfiles,
@@ -229,13 +231,51 @@ const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
 }
 
 class DownloadFacade extends EventEmitter {
+  openSocialProfileLogin(url: string) {
+    return socialSessionManager.open(url)
+  }
+
+  getSocialProfile(url: string) {
+    return getSocialProfileManager().get(url)
+  }
+
+  listSocialProfiles() {
+    return getSocialProfileManager().list()
+  }
+
+  mapSocialProfile(url: string, category: string) {
+    return getSocialProfileManager().map(url, category, toSharedSettings(settingsManager.getAll()))
+  }
+
+  stopSocialProfile(url: string) {
+    return getSocialProfileManager().stop(url)
+  }
+
+  async downloadSocialProfileItems(
+    url: string,
+    category: string,
+    ids: string[],
+    destination?: string
+  ) {
+    const profile = getSocialProfileManager().get(url)
+    const items = profile.categories[category]?.items.filter((item) => ids.includes(item.id)) ?? []
+    if (items.length !== new Set(ids).size) {
+      throw new Error('Some selected posts are no longer in the saved profile map.')
+    }
+    for (const item of items) {
+      await this.downloadSocialMedia({ url: item.url, customDownloadPath: destination })
+    }
+    return { count: items.length }
+  }
+
   inspectSocialMedia(url: string) {
     return previewSocialMedia(
       url,
       {
         admission: sourceAdmission,
         resolveBinaryPath: () => galleryDlManager.getPath(),
-        resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings)
+        resolveExtraArgs: (settings, sourceUrl) =>
+          galleryDlManager.getRuntimeArgs(settings, sourceUrl)
       },
       toSharedSettings(settingsManager.getAll())
     )

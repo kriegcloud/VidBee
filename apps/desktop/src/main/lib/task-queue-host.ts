@@ -118,7 +118,7 @@ const buildDownloadExecutor = (): OnlyFansBrowserExecutor => {
   })
   const galleryDl = new GalleryDlExecutor({
     resolveBinaryPath: () => galleryDlManager.getPath(),
-    resolveExtraArgs: (settings) => galleryDlManager.getRuntimeArgs(settings),
+    resolveExtraArgs: (settings, url) => galleryDlManager.getRuntimeArgs(settings, url),
     resolveFfmpegLocation,
     defaultDownloadDir: resolveDesktopDownloadDir()
   })

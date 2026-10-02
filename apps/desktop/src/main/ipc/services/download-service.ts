@@ -55,6 +55,42 @@ class DownloadService extends IpcService {
   }
 
   @IpcMethod()
+  openSocialProfileLogin(_context: IpcContext, url: string) {
+    return downloadEngine.openSocialProfileLogin(url)
+  }
+
+  @IpcMethod()
+  getSocialProfile(_context: IpcContext, url: string) {
+    return downloadEngine.getSocialProfile(url)
+  }
+
+  @IpcMethod()
+  listSocialProfiles(_context: IpcContext) {
+    return downloadEngine.listSocialProfiles()
+  }
+
+  @IpcMethod()
+  mapSocialProfile(_context: IpcContext, url: string, category: string) {
+    return downloadEngine.mapSocialProfile(url, category)
+  }
+
+  @IpcMethod()
+  stopSocialProfile(_context: IpcContext, url: string) {
+    return downloadEngine.stopSocialProfile(url)
+  }
+
+  @IpcMethod()
+  downloadSocialProfileItems(
+    _context: IpcContext,
+    url: string,
+    category: string,
+    ids: string[],
+    destination?: string
+  ) {
+    return downloadEngine.downloadSocialProfileItems(url, category, ids, destination)
+  }
+
+  @IpcMethod()
   downloadSocialMedia(_context: IpcContext, request: SocialMediaDownloadRequest) {
     return downloadEngine.downloadSocialMedia(request)
   }

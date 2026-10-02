@@ -1776,6 +1776,7 @@
     "quality": "Highest available image quality. Original format. No smaller-image fallback.",
     "available": "Downloads all media the site makes accessible in this run. Feed history can be limited by the site.",
     "auth": "This collection may require a signed-in browser or cookie file in Settings.",
+    "profileSessionHint": "Sign in in the dedicated VidBee browser, then close that window before mapping. Your regular browser session is not used.",
     "media": "Media",
     "all": "Images and videos",
     "images": "Images only",

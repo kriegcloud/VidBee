@@ -1804,6 +1804,7 @@
     "quality": "Qualité d’image maximale disponible. Format original. Aucun remplacement par une image plus petite.",
     "available": "Télécharge tous les médias accessibles sur le site lors de cette exécution. Le site peut limiter l’historique du fil.",
     "auth": "Cette collection peut nécessiter un navigateur connecté ou un fichier de cookies dans les paramètres.",
+    "profileSessionHint": "Connectez-vous dans le navigateur dédié de VidBee, puis fermez cette fenêtre avant la cartographie. Votre session habituelle ne sera pas utilisée.",
     "counts": "{{posts}} publications · {{images}} images · {{videos}} vidéos · {{saved}} enregistrés · {{existing}} existants · {{failed}} échecs",
     "categories": {
       "tweets": "Publications",

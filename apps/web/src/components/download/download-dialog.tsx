@@ -1,10 +1,13 @@
-import { fanslyProfile, FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
 import type {
 	InstagramProfileCategory,
 	InstagramProfileInspection,
 	PlaylistInfo,
 	VideoInfo,
 } from "@vidbee/downloader-core";
+import {
+	FanslyCommandSchema,
+	fanslyProfile,
+} from "@vidbee/downloader-core/fansly-profile";
 import {
 	ONE_CLICK_CONTAINER_OPTIONS,
 	type OneClickContainerOption,
@@ -29,6 +32,7 @@ import { ProfileCollectionDialog } from "@vidbee/ui/components/ui/profile-collec
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
 import { SavedInstagramProfiles } from "@vidbee/ui/components/ui/saved-instagram-profiles";
 import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
+import { SocialProfileDialog } from "@vidbee/ui/components/ui/social-profile-dialog";
 import {
 	type CollectionProfile,
 	isPlaylistLikeUrl,
@@ -72,28 +76,39 @@ const resolveShortLink = async (url: string): Promise<string> =>
 
 const onlyFansCommand = (
 	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansCommand,
-) => fanslyProfile(input.url) ? orpcClient.fanslyProfile.command(FanslyCommandSchema.parse(input)) : orpcClient.onlyFansProfile.command(input);
+) =>
+	fanslyProfile(input.url)
+		? orpcClient.fanslyProfile.command(FanslyCommandSchema.parse(input))
+		: orpcClient.onlyFansProfile.command(input);
 const onlyFansDownload = (
 	input: import("@vidbee/downloader-core/onlyfans-profile").OnlyFansDownload,
-) => fanslyProfile(input.url) ? orpcClient.fanslyProfile.download(input) : orpcClient.onlyFansProfile.download(input);
+) =>
+	fanslyProfile(input.url)
+		? orpcClient.fanslyProfile.download(input)
+		: orpcClient.onlyFansProfile.download(input);
 
 export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null);
-  useEffect(() => {
-    const openProfile = (event: Event) => {
-      const url: unknown = (event as CustomEvent<unknown>).detail
-      if (typeof url === 'string' && (onlyFansProfile(url) || fanslyProfile(url))) {
-        setOpen(false)
-        setOnlyFansUrl(url)
-      }
-    }
-    window.addEventListener('vidbee:open-onlyfans-profile', openProfile)
-    return () => window.removeEventListener('vidbee:open-onlyfans-profile', openProfile)
-  }, [])
+	useEffect(() => {
+		const openProfile = (event: Event) => {
+			const url: unknown = (event as CustomEvent<unknown>).detail;
+			if (
+				typeof url === "string" &&
+				(onlyFansProfile(url) || fanslyProfile(url))
+			) {
+				setOpen(false);
+				setOnlyFansUrl(url);
+			}
+		};
+		window.addEventListener("vidbee:open-onlyfans-profile", openProfile);
+		return () =>
+			window.removeEventListener("vidbee:open-onlyfans-profile", openProfile);
+	}, []);
 
 	const [socialUrl, setSocialUrl] = useState<string | null>(null);
+	const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null);
 	const [collectionProfile, setCollectionProfile] =
 		useState<CollectionProfile | null>(null);
 	const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
@@ -373,7 +388,15 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		}
 		if (resolveSocialSource(url.trim())) {
 			setOpen(false);
-			setSocialUrl(url.trim());
+			const social = resolveSocialSource(url.trim());
+			if (
+				social?.categories.length &&
+				["x", "tiktok"].includes(social.platform)
+			) {
+				setSocialProfileUrl(url.trim());
+			} else {
+				setSocialUrl(url.trim());
+			}
 			return;
 		}
 		if (isPlaylistLikeUrl(url.trim())) {
@@ -478,6 +501,15 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 
 	const handleParseProfileUrl = useCallback(
 		async (trimmedUrl: string) => {
+			const social = resolveSocialSource(trimmedUrl);
+			if (
+				social?.categories.length &&
+				["x", "tiktok"].includes(social.platform)
+			) {
+				setOpen(false);
+				setSocialProfileUrl(trimmedUrl);
+				return;
+			}
 			if (onlyFansProfile(trimmedUrl) || fanslyProfile(trimmedUrl)) {
 				setOpen(false);
 				setOnlyFansUrl(trimmedUrl);
@@ -520,11 +552,27 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		onOneClickDownload: handleOneClickFromAddUrl,
 		onParseCollection: (value) => {
 			setOpen(false);
-			setCollectionProfile(resolveCollectionProfile(value));
+			const social = resolveSocialSource(value);
+			if (
+				social?.categories.length &&
+				["x", "tiktok"].includes(social.platform)
+			) {
+				setSocialProfileUrl(value);
+			} else {
+				setCollectionProfile(resolveCollectionProfile(value));
+			}
 		},
 		onParseSocial: (value) => {
 			setOpen(false);
-			setSocialUrl(value);
+			const social = resolveSocialSource(value);
+			if (
+				social?.categories.length &&
+				["x", "tiktok"].includes(social.platform)
+			) {
+				setSocialProfileUrl(value);
+			} else {
+				setSocialUrl(value);
+			}
 		},
 		onParseProfile: handleParseProfileUrl,
 		onParsePlaylist: handleParsePlaylistUrl,
@@ -952,14 +1000,32 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 						<SavedInstagramProfiles
 							loadProfiles={async () => [
 								...(await orpcClient.instagramProfile.list()).profiles,
-								...(await orpcClient.fanslyProfile.list()).map(profile => ({inspectionId: profile.profileUrl, profile: {username: `${profile.username} · Fansly`, profileUrl: profile.profileUrl}, totalAssetCount: profile.items.length})),
-...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
+								...(await orpcClient.fanslyProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
 									profile: {
-										username: `${profile.chatId ? t('onlyFans.chat', { id: profile.chatId }) : profile.username} · OnlyFans`,
+										username: `${profile.username} · Fansly`,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: profile.items.length,
+								})),
+								...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
+									inspectionId: profile.profileUrl,
+									profile: {
+										username: `${profile.chatId ? t("onlyFans.chat", { id: profile.chatId }) : profile.username} · OnlyFans`,
+										profileUrl: profile.profileUrl,
+									},
+									totalAssetCount: profile.items.length,
+								})),
+								...(await orpcClient.socialProfile.list()).map((profile) => ({
+									inspectionId: profile.profileUrl,
+									profile: {
+										username: `${profile.owner} · ${profile.platform === "x" ? "X" : "TikTok"}`,
+										profileUrl: profile.profileUrl,
+									},
+									totalAssetCount: Object.values(profile.categories).reduce(
+										(total, category) => total + category.items.length,
+										0,
+									),
 								})),
 							]}
 							onSelect={(profileUrl) => {
@@ -1338,6 +1404,29 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 						return result;
 					}}
 					onVideoOptions={handleParseSingleUrl}
+				/>
+			)}
+			{socialProfileUrl && (
+				<SocialProfileDialog
+					key={socialProfileUrl}
+					url={socialProfileUrl}
+					destination={readWebSettings().downloadPath}
+					onClose={() => setSocialProfileUrl(null)}
+					getProfile={(url) => orpcClient.socialProfile.get({ url })}
+					mapProfile={(url, category) =>
+						orpcClient.socialProfile.map({ url, category })
+					}
+					stopProfile={(url) => orpcClient.socialProfile.stop({ url })}
+					downloadItems={async (url, category, ids, destination) => {
+						const result = await orpcClient.socialProfile.download({
+							url,
+							category,
+							ids,
+							destination,
+						});
+						await notifyDownloadsChanged();
+						return result;
+					}}
 				/>
 			)}
 			<IngestDropOverlay

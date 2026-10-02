@@ -7,6 +7,7 @@ import { buildGalleryDlRuntimeArgs, type DownloadRuntimeSettings } from '@vidbee
 
 import { scopedLoggers } from '../utils/logger'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
+import { socialSessionManager } from './social-session-manager'
 
 class GalleryDlManager {
   private binaryPath: string | null = null
@@ -18,13 +19,23 @@ class GalleryDlManager {
     return this.binaryPath
   }
 
-  getRuntimeArgs(settings?: DownloadRuntimeSettings): readonly string[] {
+  getRuntimeArgs(settings?: DownloadRuntimeSettings, url?: string): readonly string[] {
     const resources = resolveBundledResourcesPath(['gallery-dl-extractors'])
     const modules = path.join(resources, 'gallery-dl-extractors')
+    const sessionArgs = url ? socialSessionManager.cookieArgs(url) : null
     return [
       '-o',
       `extractor.module-sources=${JSON.stringify([modules, null])}`,
-      ...buildGalleryDlRuntimeArgs(settings)
+      ...(sessionArgs
+        ? [
+            ...buildGalleryDlRuntimeArgs({
+              ...settings,
+              browserForCookies: 'none',
+              cookiesPath: undefined
+            }),
+            ...sessionArgs
+          ]
+        : buildGalleryDlRuntimeArgs(settings))
     ]
   }
 

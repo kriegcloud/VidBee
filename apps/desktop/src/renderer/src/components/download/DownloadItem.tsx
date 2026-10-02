@@ -35,6 +35,7 @@ import {
   AudioLines,
   Captions,
   CheckCircle2,
+  Copy,
   FileAudio,
   Loader2,
   MoreHorizontal,
@@ -1137,6 +1138,7 @@ export function DownloadItem({
             <Sheet onOpenChange={setSheetOpen} open={sheetOpen}>
               <SheetContent
                 className="flex h-full min-h-0 w-full flex-col p-0 sm:max-w-lg"
+                onClick={(event) => event.stopPropagation()}
                 side="right"
               >
                 <div className="flex h-full min-h-0 flex-col overflow-hidden">
@@ -1149,11 +1151,29 @@ export function DownloadItem({
                       <span>
                         {isInProgressStatus ? t('download.logs.live') : t('download.logs.history')}
                       </span>
-                      {logAutoScroll ? null : (
-                        <span className="text-muted-foreground/70">
-                          {t('download.logs.scrollPaused')}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {logAutoScroll ? null : (
+                          <span className="text-muted-foreground/70">
+                            {t('download.logs.scrollPaused')}
+                          </span>
+                        )}
+                        <Button
+                          disabled={!hasLogContent}
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(logContent)
+                              toast.success(t('kernelPreparation.copied'))
+                            } catch {
+                              toast.error(t('notifications.copyFailed'))
+                            }
+                          }}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Copy aria-hidden="true" className="size-3.5" />
+                          {t('kernelPreparation.copyLog')}
+                        </Button>
+                      </div>
                     </div>
                     {hasYtDlpCommand && (
                       <div className="rounded-md border border-border/60 bg-muted/20 p-2">

@@ -1804,6 +1804,7 @@
     "quality": "Maior qualidade de imagem disponível. Formato original. Sem substituição por imagens menores.",
     "available": "Baixa todo o conteúdo que o site disponibiliza nesta execução. O site pode limitar o histórico do feed.",
     "auth": "Esta coleção pode exigir um navegador conectado ou um arquivo de cookies nas configurações.",
+    "profileSessionHint": "Entre no navegador dedicado do VidBee e feche a janela antes de mapear. Sua sessão normal do navegador não será usada.",
     "counts": "{{posts}} publicações · {{images}} imagens · {{videos}} vídeos · {{saved}} salvos · {{existing}} existentes · {{failed}} falhas",
     "categories": {
       "tweets": "Publicações",

@@ -1804,6 +1804,7 @@
     "quality": "Massima qualità immagine disponibile. Formato originale. Nessuna sostituzione con immagini più piccole.",
     "available": "Scarica tutti i contenuti accessibili dal sito in questa esecuzione. Il sito può limitare la cronologia del feed.",
     "auth": "Questa raccolta potrebbe richiedere un browser con accesso effettuato o un file cookie nelle impostazioni.",
+    "profileSessionHint": "Accedi nel browser dedicato di VidBee, poi chiudi la finestra prima della mappatura. La tua normale sessione del browser non verrà usata.",
     "counts": "{{posts}} post · {{images}} immagini · {{videos}} video · {{saved}} salvati · {{existing}} esistenti · {{failed}} non riusciti",
     "categories": {
       "tweets": "Post",

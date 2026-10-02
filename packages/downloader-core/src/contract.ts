@@ -53,6 +53,7 @@ import {
   VideoInfoInputSchema,
   VideoInfoOutputSchema
 } from './schemas'
+import { SocialMappedProfileSchema } from './social-media-service'
 
 export const downloaderContract = {
   fanslyProfile: {
@@ -68,6 +69,24 @@ export const downloaderContract = {
   socialMedia: {
     inspect: oc.input(SocialMediaInspectInputSchema).output(SocialMediaInspectOutputSchema),
     download: oc.input(SocialMediaDownloadInputSchema).output(SocialMediaDownloadOutputSchema)
+  },
+  socialProfile: {
+    get: oc.input(z.object({ url: z.url() })).output(SocialMappedProfileSchema),
+    list: oc.output(z.array(SocialMappedProfileSchema)),
+    map: oc
+      .input(z.object({ url: z.url(), category: z.string().min(1) }))
+      .output(SocialMappedProfileSchema),
+    stop: oc.input(z.object({ url: z.url() })).output(SocialMappedProfileSchema),
+    download: oc
+      .input(
+        z.object({
+          url: z.url(),
+          category: z.string().min(1),
+          ids: z.array(z.string()).min(1),
+          destination: z.string().optional()
+        })
+      )
+      .output(z.object({ count: z.number().int().nonnegative() }))
   },
   status: oc.output(StatusOutputSchema),
   videoInfo: oc.input(VideoInfoInputSchema).output(VideoInfoOutputSchema),

@@ -32,6 +32,7 @@ import {
   YtDlpExecutor
 } from '@vidbee/downloader-core'
 import { restoreSocialMediaGroupCaps } from '@vidbee/downloader-core/social-media-service'
+import { SocialProfileManager } from '@vidbee/downloader-core/social-profile-manager'
 import {
   ExecutorRouter,
   MemoryPersistAdapter,
@@ -124,6 +125,15 @@ export const resolveGalleryDlExtraArgs = (
     ...buildGalleryDlRuntimeArgs(settings)
   ]
 }
+
+export const socialProfileManager = new SocialProfileManager({
+  storageDir: path.join(unifiedDbDir, 'social-profiles'),
+  runtime: {
+    admission: sourceAdmission,
+    resolveBinaryPath: resolveGalleryDlPath,
+    resolveExtraArgs: resolveGalleryDlExtraArgs
+  }
+})
 
 const galleryDlExecutor = new GalleryDlExecutor({
   resolveExtraArgs: resolveGalleryDlExtraArgs,

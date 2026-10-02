@@ -39,6 +39,7 @@ import {
   resolveGalleryDlExtraArgs,
   resolveGalleryDlPath,
   setApiAutoTranscribe,
+  socialProfileManager,
   sourceAdmission
 } from './task-queue-host'
 import { webSettingsStore } from './web-settings-store'
@@ -449,6 +450,35 @@ export const rpcRouter = os.router({
         ...input,
         settings: { ...storedSettings, ...input.settings }
       })
+    })
+  },
+  socialProfile: {
+    get: os.socialProfile.get.handler(({ input }) => socialProfileManager.get(input.url)),
+    list: os.socialProfile.list.handler(() => socialProfileManager.list()),
+    map: os.socialProfile.map.handler(async ({ input }) => {
+      const settings = await webSettingsStore.get()
+      return socialProfileManager.map(input.url, input.category, settings)
+    }),
+    stop: os.socialProfile.stop.handler(({ input }) => socialProfileManager.stop(input.url)),
+    download: os.socialProfile.download.handler(async ({ input }) => {
+      const profile = socialProfileManager.get(input.url)
+      const items =
+        profile.categories[input.category]?.items.filter((item) => input.ids.includes(item.id)) ??
+        []
+      if (items.length !== new Set(input.ids).size) {
+        throw new ORPCError('BAD_REQUEST', {
+          message: 'Selected posts are no longer in the saved profile map.'
+        })
+      }
+      const settings = await webSettingsStore.get()
+      for (const item of items) {
+        await downloadSocialMedia(taskQueue, {
+          url: item.url,
+          customDownloadPath: input.destination,
+          settings
+        })
+      }
+      return { count: items.length }
     })
   },
   fanslyProfile: {

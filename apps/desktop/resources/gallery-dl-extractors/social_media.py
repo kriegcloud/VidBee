@@ -429,6 +429,14 @@ class VidBeeSocialExtractor(Extractor):
                 if kind in ("image", "video"):
                     self.summary["images" if kind == "image" else "videos"] += 1
                 if self.inspect_mode:
+                    if self.config("map-items", False) and child.category in ("twitter", "tiktok"):
+                        if child.category == "twitter":
+                            post_url = f"https://x.com/i/web/status/{post_id}"
+                        else:
+                            post_type = "photo" if kind == "image" else "video"
+                            post_url = f"https://www.tiktok.com/@{author}/{post_type}/{post_id}"
+                        print(PREFIX + json.dumps({"type": "item", "item": {
+                            "id": post_id, "url": post_url, "kind": kind, "author": author}}), flush=True)
                     self.event("progress")
                     continue
                 if verified_path := self.manifest.verified(key, filename, width, height):

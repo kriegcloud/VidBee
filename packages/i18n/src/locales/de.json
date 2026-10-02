@@ -1804,6 +1804,7 @@
     "quality": "Höchste verfügbare Bildqualität. Originalformat. Kein Ersatz durch kleinere Bilder.",
     "available": "Lädt alle Medien herunter, die die Website in diesem Durchlauf bereitstellt. Der Feed-Verlauf kann durch die Website begrenzt sein.",
     "auth": "Diese Sammlung erfordert möglicherweise einen angemeldeten Browser oder eine Cookie-Datei in den Einstellungen.",
+    "profileSessionHint": "Melde dich im eigenen VidBee-Browser an und schließe das Fenster vor der Zuordnung. Deine normale Browsersitzung wird nicht verwendet.",
     "counts": "{{posts}} Beiträge · {{images}} Bilder · {{videos}} Videos · {{saved}} gespeichert · {{existing}} vorhanden · {{failed}} fehlgeschlagen",
     "categories": {
       "tweets": "Beiträge",

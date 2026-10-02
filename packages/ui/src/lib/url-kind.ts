@@ -19,6 +19,7 @@ const YOUTUBE_HOSTS = ['youtube.com', 'youtu.be', 'm.youtube.com'] as const
 // /user/…, /c/…) list many videos; route them through the playlist flow so a
 // single unavailable entry can't abort the whole fetch (GitHub issue #322).
 const YOUTUBE_CHANNEL_PATH = /^\/(@[^/]+|channel\/|user\/|c\/)/i
+const OFTV_CREATOR_PATH = /^\/c\/[A-Za-z0-9_.-]+\/?$/
 const INSTAGRAM_HOSTS = new Set([
   'instagram.com',
   'www.instagram.com',
@@ -231,6 +232,12 @@ export const isPlaylistLikeUrl = (value: string): boolean => {
     }
 
     const host = parsed.hostname.toLowerCase()
+    if (
+      (host === 'of.tv' || host === 'www.of.tv') &&
+      OFTV_CREATOR_PATH.test(parsed.pathname)
+    ) {
+      return true
+    }
     const isYouTubeHost = YOUTUBE_HOSTS.some(
       (suffix) => host === suffix || host.endsWith(`.${suffix}`)
     )
