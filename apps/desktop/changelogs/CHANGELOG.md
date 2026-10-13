@@ -5,11 +5,51 @@ For full release notes, see [GitHub Releases](https://github.com/nexmoe/VidBee/r
 
 ## [Unreleased]
 
+## [v2.2.3](https://github.com/nexmoe/VidBee/releases/tag/v2.2.3) - 2026-10-11
+
 ### Fixed
+- Keep models from the same AI provider together when editing or removing the provider.
+- Avoid appending unused screenshots after illustrated Agent answers.
+
+## [v2.2.2](https://github.com/nexmoe/VidBee/releases/tag/v2.2.2) - 2026-10-11
+
+### Fixed
+- Restore Agent conversations and transcript prompts that fail immediately in the installed app.
+
+## [v2.2.1](https://github.com/nexmoe/VidBee/releases/tag/v2.2.1) - 2026-10-11
+
+### Fixed
+- Restore Account settings in the released desktop app.
+
+## [v2.2.0](https://github.com/nexmoe/VidBee/releases/tag/v2.2.0) - 2026-10-11
+
+### What's New
+- Choose FireRedASR v2 for Chinese, English, and Chinese dialects, or the larger Qwen3-ASR 1.7B model for local transcription.
+- Choose Orukeet for local transcription. (by @Nathan-Roll1, [#480](https://github.com/nexmoe/VidBee/pull/480))
+- Sign in to your VidBee account and use Cloud models in Agent conversations.
+- Ask Agent to manage downloads and subscriptions, transcribe files, or convert and trim media.
+
+### Fixed
+- Choose the video container when downloading a playlist. (by @jabrailkhalil, [#469](https://github.com/nexmoe/VidBee/pull/469))
+- Keep downloaded WebM videos when cover art cannot be embedded, and retain subtitle files for subscription downloads. ([#487](https://github.com/nexmoe/VidBee/pull/487), [#484](https://github.com/nexmoe/VidBee/pull/484))
+- Reduce account refresh requests and reuse Cloud model capabilities between conversations. ([#495](https://github.com/nexmoe/VidBee/pull/495))
+- Keep Agent titles saved during live runs, pause execution timers while awaiting approval, and release Cloud capacity when streams stop. ([#495](https://github.com/nexmoe/VidBee/pull/495))
+- Ask before protected settings changes and deletions, including download folders outside the library reached through symbolic links. ([#495](https://github.com/nexmoe/VidBee/pull/495))
+- Preserve original video links in Markdown and PDF exports and capture the requested article screenshots accurately, including cached frames. ([#495](https://github.com/nexmoe/VidBee/pull/495))
 - Downloads no longer time out after one minute while merging or converting media. ([#462](https://github.com/nexmoe/VidBee/issues/462), [#488](https://github.com/nexmoe/VidBee/pull/488))
 - Desktop and web format pickers retain high-resolution HLS streams and distinct audio languages when HTTP downloads are also available. ([#443](https://github.com/nexmoe/VidBee/issues/443), [#488](https://github.com/nexmoe/VidBee/pull/488))
 - RSS videos can be queued again after their downloads are removed, including removals from another connected app. You can also copy video links from the RSS item menu. ([#479](https://github.com/nexmoe/VidBee/issues/479), [#485](https://github.com/nexmoe/VidBee/pull/485))
 - Incomplete Qwen3-ASR model files are repaired or reported clearly before transcription starts. Overlapping model installations no longer delete each other's files, including when one is cancelled. ([#473](https://github.com/nexmoe/VidBee/issues/473), [#486](https://github.com/nexmoe/VidBee/pull/486))
+- Resume unfinished article sections and capture relevant screenshots while writing.
+- Finish completed agent answers promptly and keep long thinking histories readable.
+- Preserve thinking duration and branded footers in shared images and exported documents.
+- Keep subscription settings enabled when saving auto-download changes.
+- Import available platform-generated subtitles before starting local transcription.
+- Show account balances and pending credit recovery more reliably.
+- Prevent duplicate downloads, including simultaneous requests and files already saved on this computer.
+- Keep transcription queues moving and preserve elapsed times after reloading the app.
+- Preserve agent reasoning history and improve Markdown PDF exports.
+- Remove download records reliably when their saved files have already been deleted.
 
 ## [v2.1.0](https://github.com/nexmoe/VidBee/releases/tag/v2.1.0) - 2026-08-30
 

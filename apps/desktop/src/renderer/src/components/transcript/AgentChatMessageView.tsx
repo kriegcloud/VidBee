@@ -11,6 +11,7 @@ import { Message, MessageContent, MessageFooter } from '@renderer/components/ui/
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 import { exportFileName } from '@renderer/lib/capture-prompt-share'
 import { ipcServices } from '@renderer/lib/ipc'
+import { thinkingDurationHeader } from '@renderer/lib/thinking-header'
 import { type AgentChatMessage, type AgentThread, selectedAgentMessages } from '@shared/agent-chat'
 import { artifactsForMessage } from '@shared/agent-markdown'
 import {
@@ -22,7 +23,7 @@ import {
   Share2,
   ThumbsDown
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { AgentEventStream } from './AgentEventStream'
@@ -48,7 +49,7 @@ function MessageAction({
       <TooltipTrigger asChild>
         <Button
           aria-label={label}
-          className="h-6 w-6 justify-start rounded-md p-0 text-muted-foreground [&_svg]:size-3.5"
+          className="h-6 w-6 justify-center rounded-md p-0 text-muted-foreground [&_svg]:size-3.5"
           data-testid={testId}
           disabled={disabled}
           onClick={onClick}
@@ -73,6 +74,7 @@ export function AgentChatMessageView({
   currentTimeMs,
   durationMs,
   sourceTitle,
+  sourceUrl,
   onSeek,
   onRetry,
   onDecideTool,
@@ -87,6 +89,8 @@ export function AgentChatMessageView({
   durationMs: number
   /** Media title used as the default PDF / Markdown file name. */
   sourceTitle?: string | null
+  /** Original video URL appended to PDF and Markdown exports. */
+  sourceUrl?: string | null
   onSeek?: (seconds: number) => void
   onRetry: (id: string) => void
   onDecideTool?: (input: { toolCallId: string; approved: boolean; remember: boolean }) => void
@@ -100,9 +104,11 @@ export function AgentChatMessageView({
   )
   const sourceOffset = run?.sourceOffset ?? 0
   /** Translate source timestamps back into the locally downloaded excerpt. */
-  const seekSource = onSeek
-    ? (seconds: number): void => onSeek(Math.max(0, seconds - sourceOffset))
-    : undefined
+  const seekSource = useMemo(
+    () =>
+      onSeek ? (seconds: number): void => onSeek(Math.max(0, seconds - sourceOffset)) : undefined,
+    [onSeek, sourceOffset]
+  )
   const running = run?.status === 'running'
   const versions = thread.messages.filter(
     (item) => item.role === 'assistant' && item.parentId === message.parentId
@@ -139,6 +145,10 @@ export function AgentChatMessageView({
     }
   }
   const canExport = Boolean(showAnswer && message.text.trim())
+  const thinkingLabel =
+    (message.thinkingMs ?? 0) > 0
+      ? thinkingDurationHeader(t, false, message.thinkingMs ?? 0)
+      : undefined
   /**
    * Persist this reply through a native save dialog and reveal the file.
    *
@@ -162,7 +172,9 @@ export function AgentChatMessageView({
         await ipcServices.fs.saveTextFile({
           content: message.text,
           defaultFileName: exportFileName(sourceTitle, 'md'),
-          threadId: thread.id
+          threadId: thread.id,
+          ...(sourceUrl ? { source: { url: sourceUrl, label: t('transcript.info.url') } } : {}),
+          ...(thinkingLabel ? { thinkingLabel } : {})
         })
       )
     } catch {
@@ -181,7 +193,9 @@ export function AgentChatMessageView({
           defaultFileName: exportFileName(sourceTitle, 'pdf'),
           markdown: message.text,
           threadId: thread.id,
-          title: sourceTitle ?? undefined
+          title: sourceTitle ?? undefined,
+          ...(sourceUrl ? { source: { url: sourceUrl, label: t('transcript.info.url') } } : {}),
+          ...(thinkingLabel ? { thinkingLabel } : {})
         })
       )
     } catch {
@@ -287,7 +301,7 @@ export function AgentChatMessageView({
                   <DropdownMenuTrigger asChild>
                     <Button
                       aria-label={t('transcript.promptMore')}
-                      className="h-6 w-6 justify-start rounded-md p-0 text-muted-foreground [&_svg]:size-3.5"
+                      className="h-6 w-6 justify-center rounded-md p-0 text-muted-foreground [&_svg]:size-3.5"
                       data-testid="transcript-prompt-more"
                       size="icon"
                       type="button"

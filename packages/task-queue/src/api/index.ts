@@ -16,6 +16,7 @@ import { existsSync, statSync } from 'node:fs'
 import { logCaughtError } from '@vidbee/logger'
 import { defaultMaxAttempts, virtualError } from '../classifier'
 import { isOutputComplete } from '../complete'
+import { downloadIdentity } from '../download-identity'
 import { EventBus, type TaskQueueEvent, type TaskQueueListener } from '../events'
 import type { Executor, ExecutorRun } from '../executor'
 import { transition as fsmTransition, IllegalTransitionError, type TransitionContext } from '../fsm'
@@ -139,6 +140,7 @@ export class TaskQueueAPI {
   private readonly rng: () => number
   private readonly active = new Map<string, ActiveRun>()
   private readonly attemptFinished = new Map<string, Promise<void>>()
+  private readonly pendingAdmissions = new Map<string, Promise<void>>()
   private readonly progressLastWrite = new Map<string, number>()
   private readonly progressDirty = new Map<string, TaskProgress>()
   private readonly removingHistory = new Set<string>()
@@ -371,6 +373,32 @@ export class TaskQueueAPI {
 
   // ───────────── RPC surface ─────────────
 
+  /** Reuse active downloads and completed media whose physical file is still present. */
+  findDuplicateDownload(
+    input: TaskInput,
+    parentId: string | null = null
+  ): Readonly<Task> | undefined {
+    const identity = downloadIdentity(input)
+    if (!identity) {
+      return undefined
+    }
+    return this.store
+      .list({ limit: Number.MAX_SAFE_INTEGER })
+      .tasks.find(
+        (task) =>
+          task.parentId === parentId &&
+          task.status !== 'failed' &&
+          task.status !== 'cancelled' &&
+          (task.status !== 'completed' ||
+            Boolean(
+              task.output &&
+                isOutputComplete(task.kind, task.output, { filePresent: this.filePresent })
+            )) &&
+          downloadIdentity(task.input) === identity
+      )
+  }
+
+  /** Admit matching media only once, including concurrent requests from different hosts. */
   async add(req: AddTaskRequest): Promise<{ id: string }> {
     const now = this.clock()
     // Honor caller-supplied id (optimistic UI correlation). Idempotent: if a
@@ -378,11 +406,17 @@ export class TaskQueueAPI {
     if (req.id) {
       const existing = this.store.get(req.id)
       if (existing) {
+        await this.pendingAdmissions.get(existing.id)
         return { id: existing.id }
       }
     }
     if (req.parentId && (!this.store.has(req.parentId) || this.removingHistory.has(req.parentId))) {
       throw new Error(`add: parent task ${req.parentId} is missing or being removed`)
+    }
+    const duplicate = this.findDuplicateDownload(req.input, req.parentId ?? null)
+    if (duplicate) {
+      await this.pendingAdmissions.get(duplicate.id)
+      return { id: duplicate.id }
     }
     const id = req.id ?? randomUUID()
     const task: Task = {
@@ -409,11 +443,15 @@ export class TaskQueueAPI {
     }
     this.store.insert(task)
     try {
-      await this.persist.insertTask(task)
+      const admission = this.persist.insertTask(task)
+      this.pendingAdmissions.set(id, admission)
+      await admission
     } catch (error) {
       // A rejected insert must not leave a runnable, memory-only task behind.
       this.store.remove(id)
       throw error
+    } finally {
+      this.pendingAdmissions.delete(id)
     }
     this.bus.emit({
       type: 'transition',

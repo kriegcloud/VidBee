@@ -865,7 +865,8 @@
       "whisper": "Whisper — 多语种",
       "parakeet": "Parakeet",
       "sense-voice": "SenseVoice — 中日韩英",
-      "qwen3": "Qwen3-ASR — 中文精度最高"
+      "qwen3": "Qwen3-ASR — 中文精度最高",
+      "fire-red-asr": "FireRedASR — 中文、英文及中文方言"
     },
     "asrLanguages": {
       "multi": "多语种"
@@ -922,9 +923,19 @@
         "size": "约 670 MB"
       },
       "quality": {
-        "title": "Qwen3-ASR",
+        "title": "Qwen3-ASR 0.6B",
         "tag": "中文精度最高，需要高性能电脑",
         "size": "约 840 MB"
+      },
+      "qwen3-1.7b": {
+        "title": "Qwen3-ASR 1.7B",
+        "tag": "更大的 Qwen3 模型，需要更多内存",
+        "size": "约 2.4 GB"
+      },
+      "fire-red-asr": {
+        "title": "FireRedASR v2",
+        "tag": "支持中文、英文及中文方言，需要较多内存",
+        "size": "约 1.2 GB"
       }
     },
     "providersTab": "服务商",
@@ -1038,9 +1049,7 @@
       "off": "关闭",
       "ask": "先询问",
       "auto": "自动允许"
-    },
-    "agentMaxConcurrentRuns": "本地智能体并发数",
-    "agentMaxConcurrentRunsDescription": "使用本地模型时，最多可同时运行几段智能体对话"
+    }
   },
   "subscriptions": {
     "title": "订阅",
@@ -1508,8 +1517,8 @@
     "promptWaiting": "等待模型响应 · 已等待 {{seconds}} 秒",
     "promptRunning": "正在生成…",
     "promptThinking": "思考过程",
-    "promptThinkingFor": "已思考 {{seconds}} 秒",
-    "promptThoughtFor": "思考了 {{seconds}} 秒",
+    "promptThinkingFor": "已思考 {{duration}}",
+    "promptThoughtFor": "思考了 {{duration}}",
     "promptAborted": "已停止",
     "promptTabCompleted": "已完成",
     "promptTabError": "异常",
@@ -1648,10 +1657,10 @@
     "promptShareSplitCount": "Number of images (optional)",
     "promptShareSplitCountAuto": "Automatic",
     "promptShareSplitCountHint": "Leave blank for automatic splitting. Fewer images may be saved to keep content intact.",
-    "thinkingSecond": "{{count}} second",
-    "thinkingSeconds": "{{count}} seconds",
-    "thinkingMinute": "{{count}} minute",
-    "thinkingMinutes": "{{count}} minutes",
+    "thinkingSecond": "{{count}} 秒",
+    "thinkingSeconds": "{{count}} 秒",
+    "thinkingMinute": "{{count}} 分钟",
+    "thinkingMinutes": "{{count}} 分钟",
     "promptCloudServiceErrorDetail": "Your transcript is saved. This service issue needs to be resolved before you can generate the response."
   },
   "whatsNew": {

@@ -17,12 +17,13 @@ import {
 } from '../../shared/agent-chat'
 import { type AgentFailure, AgentUserError, parseAgentError } from '../../shared/agent-errors'
 import { isUuid, sanitizeAgentConversationTitle } from '../../shared/agent-history'
+import { unboundArticleImageTimes } from '../../shared/agent-markdown'
 import { AI_CHAT_PROMPT_ID, agentChatPrompt, resolveAiPromptContent } from '../../shared/ai-prompts'
 import type { AiPrompt } from '../../shared/ai-types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
-import { writeSectionedArticle } from './agent-article'
-import { materializeAgentArticleImages } from './agent-article-images'
+import { type AgentArticleSection, writeSectionedArticle } from './agent-article'
+import { materializeAgentArticleImages, rejectUnboundArticleImages } from './agent-article-images'
 import { AGENT_ARTICLE_REVIEW_PROMPT, tryReviewAgentArticle } from './agent-article-review'
 import {
   BudgetCalibration,
@@ -35,7 +36,7 @@ import {
 import { getAgentChatStore, publicAgentThread, type SaveScope } from './agent-chat-store'
 import { sdkOverflowResponse } from './agent-cloud-budget'
 import { createCloudAgentRequestManager, markCloudAgentFailures } from './agent-cloud-request'
-import { AgentCloudSlots, CLOUD_AGENT_CONCURRENCY } from './agent-cloud-slots'
+import { AgentCloudSlots, bindCloudSlotStream, CLOUD_AGENT_CONCURRENCY } from './agent-cloud-slots'
 import { AgentSummaryUnavailableError } from './agent-compaction'
 import { buildAgentHistory, buildAgentSystemPrompt } from './agent-context'
 import { prepareAgentDocument } from './agent-document'
@@ -54,9 +55,7 @@ import {
   cloudProfileRequestHeaders,
   expandTruncatedOutputBudget,
   fallbackThinkingOptions,
-  readAgentModelProfile,
-  thinkingOptionsFromProfile,
-  throwIfCloudProfileUnsupported
+  thinkingOptionsFromProfile
 } from './agent-model-profile'
 import { agentAnswer, finalAgentAnswer } from './agent-output'
 import {
@@ -77,6 +76,7 @@ import { createAgentTools } from './agent-tools'
 import { addAgentUsage } from './agent-usage'
 import { createVidbeeCloudModel, resolvePiModel, thinkingOptionsFromProvider } from './ai-model'
 import { aiStore } from './ai-store'
+import { loadCloudCapabilities } from './cloud-capabilities'
 import { getDesktopTaskQueueRef, peekDesktopTaskQueueRef } from './queue-ref'
 
 interface ActiveAgentRun {
@@ -88,6 +88,8 @@ interface ActiveAgentRun {
   flush?: ReturnType<typeof setTimeout>
   pendingType?: string
   dirty?: SaveScope
+  /** True after settleRun has taken ownership, so a late completion cannot settle twice. */
+  settled?: boolean
   done?: Promise<void>
   timers?: AgentRunTimers
   approvals?: Map<string, (decision: { approved: boolean; remember: boolean }) => void>
@@ -98,9 +100,27 @@ interface ActiveAgentRun {
 const active = new Map<string, ActiveAgentRun>()
 const cloudSlots = new AgentCloudSlots()
 const log = scopedLoggers.ai
-let cloudCapacity = {
-  concurrentStreams: CLOUD_AGENT_CONCURRENCY,
-  version: 2 as 2 | 3
+/** How long stop and quit wait for a live run before forcing it settled. */
+export const AGENT_STOP_WAIT_MS = 10_000
+
+/**
+ * Unsaved persistence scope for a live run.
+ *
+ * @param threadId Conversation id.
+ */
+export function peekAgentRunDirty(threadId: string): SaveScope | undefined {
+  const dirty = active.get(threadId)?.dirty
+  if (
+    !(
+      dirty?.thread ||
+      dirty?.messageIds?.length ||
+      dirty?.runIds?.length ||
+      dirty?.artifactIds?.length
+    )
+  ) {
+    return undefined
+  }
+  return dirty
 }
 
 /** Broadcast only committed product snapshots, never provider-private messages or secrets. */
@@ -179,7 +199,6 @@ function persist(
     syncThinkingMs(entry, now)
     const eventType = entry.pendingType ?? type
     const dirty = entry.dirty
-    entry.dirty = {}
     const full =
       eventType.startsWith('run.') ||
       eventType === 'thread.renamed' ||
@@ -188,15 +207,20 @@ function persist(
       broadcast(
         getAgentChatStore().save(entry.thread, eventType, entry.run.id, full ? undefined : dirty)
       )
+      if (entry.dirty === dirty) {
+        entry.dirty = {}
+      }
       return true
     } catch (error) {
       entry.run.error = 'Could not persist the agent conversation.'
       entry.run.errorCode = 'PERSISTENCE_FAILED'
       entry.controller.abort()
-      log.error('Agent persistence failed', {
-        runId: entry.run.id,
-        error: error instanceof Error ? error.message : 'unknown'
-      })
+      log.error(
+        `Agent persistence failed: ${JSON.stringify({
+          runId: entry.run.id,
+          error: error instanceof Error ? error.message : 'unknown'
+        })}`
+      )
       return false
     }
   }
@@ -275,13 +299,6 @@ export function sendAgentMessage(input: AgentChatInput): AgentThread {
   }
   if (active.has(thread.id)) {
     throw new Error('This agent is already responding')
-  }
-  const provider = aiStore.getActiveProviderSecret()
-  const cap = provider
-    ? Math.min(4, Math.max(1, settingsManager.getAll().agentMaxConcurrentRuns ?? 2))
-    : cloudCapacity.concurrentStreams
-  if (active.size >= cap) {
-    throw new Error('Too many agents are already running. Stop one or wait for it to finish.')
   }
   const prompt = resolveAgentPrompt(thread.promptId)
   if (!getDesktopTaskQueueRef().get(input.downloadId)) {
@@ -382,6 +399,57 @@ export function sendAgentMessage(input: AgentChatInput): AgentThread {
   return publicAgentThread(thread)
 }
 
+/**
+ * Settle a run that is still going when stop or quit reaches its time bound.
+ *
+ * @param entry Live run whose controller has already been aborted.
+ */
+function finishHungRun(entry: ActiveAgentRun): void {
+  entry.controller.abort()
+  entry.agent?.abort()
+  entry.session?.abortCompaction()
+  if (entry.run.status === 'running') {
+    entry.run.status = 'aborted'
+    entry.run.errorCode = 'CANCELLED'
+  }
+  try {
+    settleRun(entry)
+  } finally {
+    entry.done = Promise.resolve()
+  }
+}
+
+/**
+ * Wait for a run to finish. After the bound, settle it so stop and quit can return.
+ *
+ * @param entry Live run that has already been aborted.
+ */
+async function waitForAgentStop(entry: ActiveAgentRun): Promise<void> {
+  const done = entry.done
+  if (!done) {
+    finishHungRun(entry)
+    return
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined
+  /** Bound the wait so a hung provider call cannot block stop or quit. */
+  const timeout = new Promise<'timeout'>((resolve) => {
+    timer = setTimeout(() => resolve('timeout'), AGENT_STOP_WAIT_MS)
+  })
+  try {
+    const result = await Promise.race([done.then(() => 'done' as const), timeout])
+    if (result === 'timeout') {
+      log.error(
+        `Agent stop timed out: ${JSON.stringify({ runId: entry.run.id, timeoutMs: AGENT_STOP_WAIT_MS })}`
+      )
+      finishHungRun(entry)
+    }
+  } finally {
+    if (timer) {
+      clearTimeout(timer)
+    }
+  }
+}
+
 /** Stop models and media together; terminal state cannot be overwritten by late events. */
 export async function stopAgentRun(threadId: string): Promise<AgentThread | null> {
   const entry = active.get(threadId)
@@ -398,7 +466,7 @@ export async function stopAgentRun(threadId: string): Promise<AgentThread | null
       }
     }
     persist(entry, 'run.aborted', true)
-    await entry.done
+    await waitForAgentStop(entry)
     return publicAgentThread(entry.thread)
   }
   const thread = getAgentChatStore().get(threadId)
@@ -513,44 +581,54 @@ export async function removeAgentImage(threadId: string, imageId: string): Promi
   return publicAgentThread(thread)
 }
 
-/** Fetch current serving capabilities for both the Composer and run admission. */
-async function loadCloudAgentProfile(signal?: AbortSignal, modelId = aiStore.getCloudModelId()) {
-  const { authClient, getDesktopAuthApiUrl } = await import('./auth-client')
-  const baseUrl = getDesktopAuthApiUrl()
-  const cookie = authClient.getCookie()
-  const response = await fetch(
-    `${baseUrl}/api/ai/agent/capabilities${modelId ? `?modelId=${encodeURIComponent(modelId)}` : ''}`,
-    {
-      headers: { Cookie: cookie, ...cloudProfileRequestHeaders() },
-      signal: signal ?? AbortSignal.timeout(10_000)
-    }
-  )
-  const payload: unknown = await response.json().catch(() => null)
-  throwIfCloudProfileUnsupported(response.status, payload)
-  if (!response.ok) {
-    throw new Error(
-      response.status === 401 ? 'Sign in required' : 'Cloud agent capabilities are unavailable'
-    )
+/**
+ * Commit a tab title on the thread copy a live run is already persisting.
+ *
+ * @param entry In-flight run that owns the thread.
+ * @param title Requested tab title.
+ */
+function renameLiveThread(entry: ActiveAgentRun, title: string): void {
+  const next = sanitizeAgentConversationTitle(title)
+  if (!next) {
+    throw new Error('Title is empty')
   }
-  try {
-    const capabilities = readAgentModelProfile(payload)
-    cloudCapacity = {
-      concurrentStreams: capabilities.limits.concurrentStreams,
-      version: capabilities.version
-    }
-    cloudSlots.setLimit(capabilities.limits.concurrentStreams)
-    return {
-      baseUrl,
-      cookie,
-      modelId:
-        payload && typeof payload === 'object' && 'id' in payload && typeof payload.id === 'string'
-          ? payload.id
-          : modelId,
-      capabilities
-    }
-  } catch (error) {
-    log.error('Rejected Cloud agent model profile:', payload)
-    throw error
+  const previous = entry.thread.title
+  entry.thread.title = next
+  if (!persist(entry, 'thread.renamed', true)) {
+    entry.thread.title = previous
+    throw new Error('Conversation title could not be saved')
+  }
+}
+
+/**
+ * Rename a conversation tab. An in-flight run keeps the only writable thread copy.
+ *
+ * @param threadId Conversation to rename.
+ * @param title Requested tab title.
+ */
+export function renameAgentThread(threadId: string, title: string): void {
+  const entry = active.get(threadId)
+  if (entry) {
+    renameLiveThread(entry, title)
+    return
+  }
+  getAgentChatStore().rename(threadId, title)
+}
+
+/** Fetch current serving capabilities for the Composer and Cloud request scheduling. */
+async function loadCloudAgentProfile(signal?: AbortSignal, modelId = aiStore.getCloudModelId()) {
+  const {
+    baseUrl,
+    cookie,
+    payload,
+    profile: capabilities
+  } = await loadCloudCapabilities(modelId ?? undefined, signal)
+  cloudSlots.setLimit(capabilities.limits.concurrentStreams)
+  return {
+    baseUrl,
+    cookie,
+    modelId: typeof payload.id === 'string' ? payload.id : modelId,
+    capabilities
   }
 }
 
@@ -692,63 +770,44 @@ async function cloudTransport(
         : new Error('The agent run was cancelled')
     }
     let releaseSlot: (() => void) | undefined
-    let result: Response
+    let handedOff = false
+    /** Release the acquired slot once and drop the cancellation listener. */
+    const releaseOnce = (): void => {
+      signal.removeEventListener('abort', cancelRequest)
+      const release = releaseSlot
+      releaseSlot = undefined
+      release?.()
+    }
     try {
       releaseSlot = await cloudSlots.acquire(signal)
-      result = await requestCloud(payloadKey, {
+      const result = await requestCloud(payloadKey, {
         signal,
         request,
         cancel: cancelCloudRequest,
         onRecover: () => persist(entry, 'run.retrying', true)
       })
+      entry.run.cloudResultId = result.headers.get('X-VidBee-Result-Id') ?? undefined
+      if (!result.body) {
+        return result
+      }
+      const body = bindCloudSlotStream(signal, result.body, releaseOnce, () => cancelRequest())
+      // Encode Cloud reason tokens into [VB:*] markers before the SDK classifies error prose.
+      const response = new Response(markCloudAgentFailures(body), {
+        status: result.status,
+        headers: result.headers
+      })
+      handedOff = true
+      return response
     } catch (error) {
-      signal.removeEventListener('abort', cancelRequest)
       if (signal.aborted) {
         await cancelRequest()
       }
-      releaseSlot?.()
       throw error
-    }
-    entry.run.cloudResultId = result.headers.get('X-VidBee-Result-Id') ?? undefined
-    if (!result.body) {
-      signal.removeEventListener('abort', cancelRequest)
-      releaseSlot()
-      return result
-    }
-    const reader = result.body.getReader()
-    const wrapped = new ReadableStream<Uint8Array>({
-      async pull(controller) {
-        try {
-          const next = await reader.read()
-          if (next.done) {
-            signal.removeEventListener('abort', cancelRequest)
-            releaseSlot?.()
-            controller.close()
-          } else {
-            controller.enqueue(next.value)
-          }
-        } catch (error) {
-          signal.removeEventListener('abort', cancelRequest)
-          await cancelRequest()
-          releaseSlot?.()
-          controller.error(error)
-        }
-      },
-      async cancel() {
-        signal.removeEventListener('abort', cancelRequest)
-        try {
-          await cancelRequest()
-          await reader.cancel()
-        } finally {
-          releaseSlot?.()
-        }
+    } finally {
+      if (!handedOff) {
+        releaseOnce()
       }
-    })
-    // Encode Cloud reason tokens into [VB:*] markers before the SDK classifies error prose.
-    return new Response(markCloudAgentFailures(wrapped), {
-      status: result.status,
-      headers: result.headers
-    })
+    }
   }
   return { model, fetch: managedFetch, profile: capabilities }
 }
@@ -883,6 +942,10 @@ function failureFromError(error: unknown, aborted: boolean): AgentFailure {
 
 /** Single settlement: status, tools, session, timers, and the final persist. */
 function settleRun(entry: ActiveAgentRun, failure?: AgentFailure): void {
+  if (entry.settled) {
+    return
+  }
+  entry.settled = true
   denyPendingApprovals(entry)
   if (entry.run.status === 'running') {
     if (failure) {
@@ -908,7 +971,20 @@ function settleRun(entry: ActiveAgentRun, failure?: AgentFailure): void {
     }
   }
   getAgentChatStore().pruneEvents(entry.thread)
-  persist(entry, `run.${entry.run.status}`, true)
+  const savedError = entry.run.error
+  const savedCode = entry.run.errorCode
+  if (!persist(entry, `run.${entry.run.status}`, true)) {
+    entry.run.error = savedError
+    entry.run.errorCode = savedCode
+    if (!persist(entry, `run.${entry.run.status}`, true)) {
+      log.error(
+        `Agent final persist failed: ${JSON.stringify({
+          runId: entry.run.id,
+          status: entry.run.status
+        })}`
+      )
+    }
+  }
   log.info(
     `Agent run settled: ${JSON.stringify({
       runId: entry.run.id,
@@ -1091,7 +1167,13 @@ function registerRunTools(ctx: AgentRunContext): AgentTool[] {
       return selected
     },
     artifacts: thread.artifacts,
-    history: () => [...ctx.history, ...ctx.archived],
+    history: () => [
+      ...ctx.history,
+      ...ctx.archived,
+      ...((run.articleSections as AgentArticleSection[] | undefined) ?? []).flatMap((section) =>
+        section.attempts.flatMap((attempt) => attempt.messages as AgentMessage[])
+      )
+    ],
     notes: () => run.workingNotes ?? '',
     writeNotes: (notes) => {
       const previous = run.workingNotes
@@ -1104,16 +1186,7 @@ function registerRunTools(ctx: AgentRunContext): AgentTool[] {
     renameConversation:
       thread.promptId === AI_CHAT_PROMPT_ID
         ? (title: string) => {
-            const next = sanitizeAgentConversationTitle(title)
-            if (!next) {
-              throw new Error('Title is empty')
-            }
-            const previous = thread.title
-            thread.title = next
-            if (!persist(entry, 'thread.renamed', true)) {
-              thread.title = previous
-              throw new Error('Conversation title could not be saved')
-            }
+            renameLiveThread(entry, title)
           }
         : undefined,
     maxToolBytes: policy.toolResultMaxBytes,
@@ -1493,7 +1566,7 @@ async function prepareRun(ctx: AgentRunContext): Promise<void> {
   const retriedMessage = thread.messages.find((item) => item.id === input.retryMessageId)
   const retryInSections = retryArticleInSections({
     previous: thread.runs.find((item) => item.id === retriedMessage?.runId),
-    sourceReady: !chooseSource && Boolean(ctx.prepared || !needsSource),
+    sourceReady: !chooseSource && lines.some((line) => line.text.trim()),
     isChat: thread.promptId === AI_CHAT_PROMPT_ID
   })
   signals.sectionedRetry = retryInSections
@@ -1545,6 +1618,13 @@ async function sectionedWritePhase(ctx: AgentRunContext): Promise<void> {
     ctx.previousPhase === 'continue-truncated' ||
     ctx.signals.sectionedRetry
   run.contextStatus = 'writing'
+  const retriedMessage = thread.messages.find((item) => item.id === input.retryMessageId)
+  const previousRun = thread.runs.find((item) => item.id === retriedMessage?.runId)
+  const resume =
+    previousRun?.evidenceSource === run.evidenceSource &&
+    previousRun?.instruction === run.instruction
+      ? (previousRun?.articleSections as AgentArticleSection[] | undefined)
+      : undefined
   persist(entry, 'article.writing-started', true)
   const result = await runUntilAborted(
     controller.signal,
@@ -1552,6 +1632,7 @@ async function sectionedWritePhase(ctx: AgentRunContext): Promise<void> {
       lines: source.lines,
       task: `${run.instruction}\nLatest user request: ${text}\nFollow the user’s output language, otherwise the transcript language.`,
       artifacts: thread.artifacts,
+      resume,
       sectionMaxBytes: afterTruncation
         ? Math.min(TOKEN_BYTES * policy.articleSectionTokens, 8192)
         : TOKEN_BYTES * policy.articleSectionTokens,
@@ -1575,12 +1656,41 @@ async function sectionedWritePhase(ctx: AgentRunContext): Promise<void> {
           apiKey: provider?.apiKey || 'vidbee-cloud',
           fetch: transport.fetch,
           signal: request.signal,
+          tuning: transport.profile?.harness,
+          tools: request.useTools
+            ? ctx.tools.filter((tool) =>
+                [
+                  'get_video_info',
+                  'read_transcript',
+                  'search_transcript',
+                  'read_history',
+                  'search_history',
+                  'capture_frames',
+                  'read_artifact'
+                ].includes(tool.name)
+              )
+            : undefined,
           systemPrompt: request.systemPrompt,
           content: request.content,
           onMessageUpdate: request.onMessageUpdate,
+          onMessage: (result) => {
+            if (result.role === 'assistant') {
+              for (const part of result.content) {
+                if (part.type === 'toolCall') {
+                  run.tools.push({ id: part.id, name: part.name, status: 'running' })
+                }
+              }
+            } else if (result.role === 'toolResult') {
+              const tool = run.tools.find((item) => item.id === result.toolCallId)
+              if (tool) {
+                tool.status = result.isError ? 'error' : 'completed'
+                tool.detail = undefined
+              }
+            }
+            request.onMessage(result)
+          },
           onUsage: (result) => {
             run.usage = addAgentUsage(run.usage, result.usage)
-            request.onMessage(result)
             persist(entry, 'article.usage', true)
           }
         }),
@@ -1658,7 +1768,7 @@ async function finalizePhase(ctx: AgentRunContext): Promise<void> {
   }
   if (ctx.source.mediaEnabled && ctx.message.text.trim()) {
     try {
-      ctx.message.text = await materializeAgentArticleImages({
+      const materialized = await materializeAgentArticleImages({
         text: ctx.message.text,
         artifacts: thread.artifacts,
         runId: run.id,
@@ -1674,12 +1784,24 @@ async function finalizePhase(ctx: AgentRunContext): Promise<void> {
           persist(entry, status === 'running' ? 'tool.started' : 'tool.completed', true)
         }
       })
-      persist(entry, 'article.images-attached', true)
+      ctx.message.text = materialized.text
+      const missing = rejectUnboundArticleImages(
+        run,
+        materialized.unresolved,
+        materialized.captureError
+      )
+      persist(entry, missing ? 'article.images-unresolved' : 'article.images-attached', true)
     } catch (error) {
       if (controller.signal.aborted) {
         throw error
       }
-      persist(entry, 'article.images-skipped', true)
+      const message = error instanceof Error ? error.message : String(error)
+      const missing = rejectUnboundArticleImages(
+        run,
+        unboundArticleImageTimes(ctx.message.text, thread.artifacts, run.id),
+        message
+      )
+      persist(entry, missing ? 'article.images-unresolved' : 'article.images-skipped', true)
     }
   }
   run.status = run.error ? 'error' : 'completed'

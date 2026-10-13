@@ -65,7 +65,6 @@ import {
   startIdleMinimalModelFill,
   subscribeTranscriptBroadcasts
 } from './lib/transcript-host'
-import { applyUpdateChannel } from './lib/update-channel'
 import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdlp-kernel-host'
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
 import { isPortableMode } from './portable'
@@ -1053,6 +1052,7 @@ function registerVidbeeProtocol(): void {
   }
 }
 
+/** Initialize stable automatic updates for installed desktop apps. */
 function initAutoUpdater(): void {
   if (isVendoredYtDlpBuild()) {
     log.info('Vendored build is managed from source, skipping automatic app updates')
@@ -1070,6 +1070,10 @@ function initAutoUpdater(): void {
     autoUpdater.logger = log
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
+    autoUpdater.allowPrerelease = false
+    autoUpdater.channel = 'latest'
+    // Setting the channel enables downgrades unless explicitly disabled afterward.
+    autoUpdater.allowDowngrade = false
 
     autoUpdater.on('update-available', (info) => {
       log.info('Update available:', info.version)
@@ -1110,7 +1114,6 @@ function initAutoUpdater(): void {
 
     log.info('Auto-updater initialized successfully')
     log.info('Automatic updates are required, checking for updates immediately...')
-    applyUpdateChannel()
     // Use checkForUpdates instead of checkForUpdatesAndNotify
     // because we have our own notification system and want to ensure immediate download
     void autoUpdater.checkForUpdates()

@@ -1,6 +1,6 @@
 {
   "name": "vidbee",
-  "version": "2.1.0",
+  "version": "2.2.3",
   "description": "Free, open-source desktop app to download media, create local transcripts, and ask AI",
   "main": "./out/main/index.js",
   "author": "VidBee",
@@ -27,7 +27,6 @@
     "build:mac": "pnpm run setup && node scripts/check-ytdlp.js mac && pnpm run build && electron-builder --mac --publish never",
     "build:linux": "pnpm run setup && node scripts/check-ytdlp.js linux && pnpm run build && electron-builder --linux --publish never",
     "release": "git checkout main && git pull && pnpm run check && bumpp",
-    "release:preview": "git checkout main && git pull && pnpm run check && bumpp --preid preview",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "fix": "ultracite fix"

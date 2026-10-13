@@ -48,6 +48,7 @@ interface TranscriptExportDialogProps {
   resolveSpeaker: (speakerId: string | null) => string
   segments: TranscriptSegmentView[]
   title: string
+  sourceUrl?: string | null
 }
 
 const STYLES: Array<{
@@ -83,7 +84,8 @@ export function TranscriptExportDialog({
   open,
   resolveSpeaker,
   segments,
-  title
+  title,
+  sourceUrl
 }: TranscriptExportDialogProps) {
   const { t } = useTranslation()
   const [style, setStyle] = useState<TranscriptExportStyle>('transcript')
@@ -154,7 +156,10 @@ export function TranscriptExportDialog({
     try {
       const saved = await ipcServices.fs.saveTextFile({
         content: preview,
-        defaultFileName: buildTranscriptExportFileName(title, format)
+        defaultFileName: buildTranscriptExportFileName(title, format, style === 'subtitles'),
+        ...(format === 'md' && sourceUrl
+          ? { source: { url: sourceUrl, label: t('transcript.info.url') } }
+          : {})
       })
       if (!saved) {
         return
@@ -282,6 +287,7 @@ export function TranscriptExportDialog({
                         'h-auto flex-col gap-2 px-2 py-3 font-normal',
                         selected && 'border-primary bg-primary/5'
                       )}
+                      data-testid={`transcript-export-style-${item.id}`}
                       disabled={saving}
                       key={item.id}
                       onClick={() => setStyle(item.id)}
@@ -311,6 +317,11 @@ export function TranscriptExportDialog({
                         'h-auto flex-col gap-2 px-2 py-3 font-normal',
                         selected && 'border-primary bg-primary/5'
                       )}
+                      data-testid={
+                        isVideo
+                          ? `transcript-export-encode-${item.id}`
+                          : `transcript-export-format-${item.id}`
+                      }
                       disabled={saving}
                       key={item.id}
                       onClick={() => {
@@ -410,7 +421,12 @@ export function TranscriptExportDialog({
             >
               <Copy />
             </Button>
-            <Button disabled={!canExport} onClick={() => void handleExport()} type="button">
+            <Button
+              data-testid="transcript-export-action"
+              disabled={!canExport}
+              onClick={() => void handleExport()}
+              type="button"
+            >
               {saving ? t('transcript.export.exporting') : t('transcript.export.action')}
             </Button>
           </div>

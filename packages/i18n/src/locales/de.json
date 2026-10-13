@@ -802,9 +802,14 @@
         "size": "~670 MB"
       },
       "quality": {
-        "title": "Qwen3-ASR",
+        "title": "Qwen3-ASR 0.6B",
         "tag": "Beste chinesische Genauigkeit. Braucht einen starken PC",
         "size": "~840 MB"
+      },
+      "qwen3-1.7b": {
+        "title": "Qwen3-ASR 1.7B",
+        "tag": "Größeres Qwen3-Modell. Benötigt mehr RAM",
+        "size": "~2,4 GB"
       },
       "whisper-medium": {
         "title": "Whisper Medium",
@@ -830,6 +835,11 @@
         "title": "Parakeet TDT v3",
         "tag": "Neueres englisches Parakeet. Beste Englischwahl",
         "size": "~650 MB"
+      },
+      "fire-red-asr": {
+        "title": "FireRedASR v2",
+        "tag": "Chinesisch, Englisch und chinesische Dialekte. Benötigt mehr RAM",
+        "size": "~1,2 GB"
       }
     },
     "asrDownload": "Herunterladen",
@@ -848,7 +858,8 @@
       "whisper": "Whisper — mehrsprachig",
       "sense-voice": "SenseVoice — Chinesisch, Japanisch, Koreanisch, Englisch",
       "qwen3": "Qwen3-ASR — höchste chinesische Genauigkeit",
-      "parakeet": "Parakeet"
+      "parakeet": "Parakeet",
+      "fire-red-asr": "FireRedASR — Chinesisch, Englisch und chinesische Dialekte"
     },
     "asrLanguages": {
       "multi": "mehrsprachig"
@@ -1038,9 +1049,7 @@
       "off": "Aus",
       "ask": "Zuerst fragen",
       "auto": "Automatisch erlauben"
-    },
-    "agentMaxConcurrentRuns": "Gleichzeitige lokale Agentenläufe",
-    "agentMaxConcurrentRunsDescription": "Wie viele Agentengespräche mit lokalem Modell gleichzeitig laufen dürfen"
+    }
   },
   "subscriptions": {
     "title": "Abonnements",
@@ -1508,8 +1517,8 @@
     "promptWaiting": "Warte auf Modellantwort · {{seconds}} s",
     "promptRunning": "Wird geschrieben…",
     "promptThinking": "Denken",
-    "promptThinkingFor": "Denkt seit {{seconds}} s",
-    "promptThoughtFor": "{{seconds}} s nachgedacht",
+    "promptThinkingFor": "Denkt seit {{duration}}",
+    "promptThoughtFor": "Hat {{duration}} nachgedacht",
     "promptAborted": "Gestoppt",
     "promptTabCompleted": "Abgeschlossen",
     "promptTabError": "Fehlgeschlagen",
@@ -1648,10 +1657,10 @@
     "promptShareSplitCount": "Number of images (optional)",
     "promptShareSplitCountAuto": "Automatic",
     "promptShareSplitCountHint": "Leave blank for automatic splitting. Fewer images may be saved to keep content intact.",
-    "thinkingSecond": "{{count}} second",
-    "thinkingSeconds": "{{count}} seconds",
-    "thinkingMinute": "{{count}} minute",
-    "thinkingMinutes": "{{count}} minutes",
+    "thinkingSecond": "{{count}} Sekunde",
+    "thinkingSeconds": "{{count}} Sekunden",
+    "thinkingMinute": "{{count}} Minute",
+    "thinkingMinutes": "{{count}} Minuten",
     "promptCloudServiceErrorDetail": "Your transcript is saved. This service issue needs to be resolved before you can generate the response."
   },
   "whatsNew": {
