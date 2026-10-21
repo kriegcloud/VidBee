@@ -1,5 +1,5 @@
 import { Instagram, List, Video } from 'lucide-react'
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 import { cn } from '../../lib/cn'
 import {
   Dialog,
@@ -15,6 +15,7 @@ import { TabItem, TabPanel, Tabs, TabsList } from './tabs'
 export const downloadDialogRadius = 'rounded-md'
 
 interface DownloadDialogLayoutProps {
+  contentRef?: Ref<HTMLDivElement>
   open: boolean
   lockDialogHeight: boolean
   activeTab: 'single' | 'playlist' | 'profile'
@@ -36,6 +37,7 @@ interface DownloadDialogLayoutProps {
  * Download dialog chrome modeled on a title / chips / preview / footer card.
  */
 export const DownloadDialogLayout = ({
+  contentRef,
   open,
   lockDialogHeight,
   activeTab,
@@ -60,6 +62,7 @@ export const DownloadDialogLayout = ({
           'flex max-h-[90vh] flex-col gap-0 overflow-hidden rounded-md p-6 sm:max-w-lg',
           lockDialogHeight && 'min-h-[24rem]'
         )}
+        ref={contentRef}
       >
         <DialogHeader className="shrink-0 items-start space-y-1.5 pr-8 text-left">
           <DialogTitle className="text-xl leading-tight">{dialogTitle}</DialogTitle>
@@ -80,13 +83,22 @@ export const DownloadDialogLayout = ({
               <TabItem icon={Instagram} label={profileTabLabel} value="profile" />
             </TabsList>
           </div>
-          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="single">
+          <TabPanel
+            className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden"
+            value="single"
+          >
             {singleTabContent}
           </TabPanel>
-          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="playlist">
+          <TabPanel
+            className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden"
+            value="playlist"
+          >
             {playlistTabContent}
           </TabPanel>
-          <TabPanel className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden" value="profile">
+          <TabPanel
+            className="min-h-0 overflow-y-auto overscroll-contain pt-3 [&[hidden]]:hidden"
+            value="profile"
+          >
             {profileTabContent}
           </TabPanel>
         </Tabs>

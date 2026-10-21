@@ -1,3 +1,4 @@
+import { DownloadCookieSourceSchema } from '@vidbee/task-queue/schemas'
 import { z } from 'zod'
 import {
   SocialMediaOptionsSchema,
@@ -89,6 +90,7 @@ export const DownloadTaskSchema = z.object({
   speed: z.string().optional(),
   ytDlpCommand: z.string().optional(),
   ytDlpLog: z.string().optional(),
+  cookieSources: z.array(DownloadCookieSourceSchema).optional(),
   downloadPath: z.string().optional(),
   savedFileName: z.string().optional(),
   description: z.string().optional(),

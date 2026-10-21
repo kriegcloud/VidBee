@@ -24,7 +24,6 @@ import {
 } from '@vidbee/ui/components/ui/download-filter-bar'
 import { DownloadQueueStatus } from '@vidbee/ui/components/ui/download-queue-status'
 import { DownloadSelectionToolbar } from '@vidbee/ui/components/ui/download-selection-toolbar'
-import { ListMarqueeBox } from '@vidbee/ui/components/ui/list-marquee-box'
 import {
   ALL_DOWNLOAD_PLATFORM_FILTER,
   downloadPlatformDisplayLabel,
@@ -36,8 +35,7 @@ import {
   indexSavedSocialProfileGroups,
   type SavedSocialProfileGroup
 } from '@vidbee/ui/lib/saved-social-profile-groups'
-import { useListMarqueeSelection } from '@vidbee/ui/lib/use-list-marquee'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom, useStore } from 'jotai'
 import { ChevronDown, Layers, ListFilter } from 'lucide-react'
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -46,7 +44,9 @@ import {
   buildFilePathCandidates,
   normalizeSavedFileName
 } from '../../../../shared/utils/download-file'
-import { buildDownloadTaskTree } from '../../lib/download-task-tree'
+import { useDownloadOriginContexts } from '../../hooks/use-download-origin-contexts'
+import { useExtensionCookieConnection } from '../../hooks/use-extension-cookie-connection'
+import { buildDownloadListModel } from '../../lib/download-list-rows'
 import { ipcServices } from '../../lib/ipc'
 import { logger } from '../../lib/logger'
 import { buildTranscriptPlaybackInput } from '../../lib/transcript-playback-source'
@@ -63,8 +63,8 @@ import { addPlaybackPlaylistItemsAtom } from '../../store/transcript-playlist'
 import { transcriptMapAtom } from '../../store/transcripts'
 import { ScrollArea } from '../ui/scroll-area'
 import { DownloadDialog } from './DownloadDialog'
-import { DownloadTaskTree } from './DownloadTaskTree'
-import { PlaylistDownloadGroup } from './PlaylistDownloadGroup'
+import { DownloadHistoryVirtualList } from './DownloadHistoryVirtualList'
+import { usePlaylistExpanded } from './playlist-expanded-state'
 
 const SOURCE_FILTER_OPTIONS = [
   ['all', 'download.allSources'],
@@ -144,8 +144,9 @@ export function UnifiedDownloadHistory({
   const removeHistoryRecordsByPlaylist = useSetAtom(removeHistoryRecordsByPlaylistAtom)
   const addPlaylistItems = useSetAtom(addPlaybackPlaylistItemsAtom)
   const takePlaybackSession = useSetAtom(takePlaybackSessionAtom)
-  const transcriptMap = useAtomValue(transcriptMapAtom)
+  const store = useStore()
   const settings = useAtomValue(settingsAtom)
+  const extensionConnection = useExtensionCookieConnection()
   const [platformFilter, setPlatformFilter] = useState(ALL_DOWNLOAD_PLATFORM_FILTER)
   const [savedProfileGroups, setSavedProfileGroups] = useState<
     Map<string, SavedSocialProfileGroup>
@@ -169,13 +170,8 @@ export function UnifiedDownloadHistory({
       cancelled = true
     }
   }, [])
-  const { finishPointer, marquee, onPointerDown, onPointerMove } = useListMarqueeSelection({
-    containerRef: listRef,
-    onSelectIds: (ids) => {
-      setSelectedIds(new Set(ids))
-    },
-    selectedIds
-  })
+  const [viewport, setViewport] = useState<HTMLDivElement | null>(null)
+  const prefixRef = useRef<HTMLDivElement>(null)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
   const [confirmBusy, setConfirmBusy] = useState(false)
   const [alsoDeleteFiles, setAlsoDeleteFiles] = useState(false)
@@ -188,7 +184,7 @@ export function UnifiedDownloadHistory({
     const browserSetting = settings.browserForCookies?.trim()
     return Boolean(browserSetting && browserSetting !== 'none')
   }, [settings.browserForCookies, settings.cookiesPath])
-  const showCookiesTip = !hasCookieConfig
+  const showCookiesTip = !(hasCookieConfig || extensionConnection.connected)
   const canOpenCookiesSettings = Boolean(onOpenCookiesSettings ?? onOpenSettings)
 
   const historyRecords = useMemo(
@@ -228,21 +224,18 @@ export function UnifiedDownloadHistory({
         (originFilter === 'all' || (record.origin ?? 'manual') === originFilter)
     )
   }, [allRecords, platformFilter, originFilter])
-
-  const taskTree = useMemo(
+  const originContexts = useDownloadOriginContexts(allRecords, originFilter, platformFilter)
+  const { expand, isExpanded, toggle } = usePlaylistExpanded()
+  const listModel = useMemo(
     () =>
-      buildDownloadTaskTree(
-        allRecords,
-        filteredRecords,
-        originFilter === 'all'
-          ? []
-          : allRecords.filter(
-              (record) =>
-                matchesDownloadPlatformFilter(record.url, platformFilter) &&
-                transcriptMap[record.id]?.creation?.origin === originFilter
-            )
-      ),
-    [allRecords, filteredRecords, originFilter, platformFilter, transcriptMap]
+      buildDownloadListModel({
+        contexts: originContexts,
+        filtered: filteredRecords,
+        isExpanded,
+        records: allRecords,
+        savedProfileGroups
+      }),
+    [allRecords, filteredRecords, isExpanded, originContexts, savedProfileGroups]
   )
 
   const visibleHistoryIds = useMemo(
@@ -371,6 +364,7 @@ export function UnifiedDownloadHistory({
       return
     }
     addPlaylistItems(selectedInOrder)
+    const transcriptMap = store.get(transcriptMapAtom)
     const recordsById = new Map(historyRecords.map((record) => [record.id, record]))
     const firstPlayable = selectedInOrder
       .map((id) => recordsById.get(id) ?? null)
@@ -531,65 +525,6 @@ export function UnifiedDownloadHistory({
     }
   }
 
-  const groupedView = useMemo(() => {
-    const groups = new Map<
-      string,
-      {
-        id: string
-        title: string
-        totalCount: number
-        isPlaylist: boolean
-        records: DownloadRecord[]
-      }
-    >()
-    const order: Array<{ type: 'group'; id: string } | { type: 'single'; record: DownloadRecord }> =
-      []
-
-    for (const record of taskTree.roots) {
-      const savedGroup = savedProfileGroups.get(record.url)
-      const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId
-      if (groupId) {
-        let group = groups.get(groupId)
-        if (!group) {
-          group = {
-            id: groupId,
-            title: savedGroup?.title || record.batchTitle || record.playlistTitle || record.title,
-            totalCount: savedGroup || record.batchId ? 0 : record.playlistSize || 0,
-            isPlaylist: !(savedGroup || record.batchId),
-            records: []
-          }
-          groups.set(groupId, group)
-          order.push({ type: 'group', id: groupId })
-        }
-        group.records.push(record)
-        if (!group.title && (record.batchTitle || record.playlistTitle)) {
-          group.title = record.batchTitle || record.playlistTitle || record.title
-        }
-        if (!group.totalCount && record.playlistSize) {
-          group.totalCount = record.playlistSize
-        }
-      } else {
-        order.push({ type: 'single', record })
-      }
-    }
-
-    for (const group of groups.values()) {
-      group.records.sort((a, b) => {
-        const aIndex = a.batchOrder ?? a.playlistIndex ?? Number.MAX_SAFE_INTEGER
-        const bIndex = b.batchOrder ?? b.playlistIndex ?? Number.MAX_SAFE_INTEGER
-        if (aIndex !== bIndex) {
-          return aIndex - bIndex
-        }
-        return b.createdAt - a.createdAt
-      })
-      if (!group.totalCount) {
-        group.totalCount = group.records.length
-      }
-    }
-
-    return { order, groups }
-  }, [taskTree, savedProfileGroups])
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) {
@@ -702,105 +637,73 @@ export function UnifiedDownloadHistory({
           />
         )}
       </CardHeader>
-      <ScrollArea className="flex-1 overflow-y-auto">
-        <CardContent className="w-full space-y-3 overflow-x-hidden p-0">
-          {topContent}
-          {showCookiesTip && (
-            <div className="mx-6 mt-4 rounded-xl bg-muted/40 px-6 py-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-col items-start gap-2.5">
-                  <div className="space-y-1">
-                    <p className="font-bold text-[10px] text-muted-foreground/70 uppercase tracking-wider">
-                      {t('history.cookiesTipTitle')}
-                    </p>
-                    <p className="max-w-[540px] text-foreground/85 text-sm leading-relaxed">
-                      <Trans
-                        components={{
-                          strong: <strong className="font-semibold text-foreground" />
-                        }}
-                        i18nKey="history.cookiesTipDescription"
-                      />
-                    </p>
+      <ScrollArea className="flex-1 overflow-y-auto" viewportRef={setViewport}>
+        <CardContent
+          className="w-full space-y-3 overflow-x-hidden p-0"
+          data-download-transfer-list=""
+        >
+          <div data-download-list-prefix="" ref={prefixRef}>
+            {topContent}
+            {showCookiesTip && (
+              <div className="mx-6 mt-4 rounded-xl bg-muted/40 px-6 py-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col items-start gap-2.5">
+                    <div className="space-y-1">
+                      <p className="font-bold text-[10px] text-muted-foreground/70 uppercase tracking-wider">
+                        {t('history.cookiesTipTitle')}
+                      </p>
+                      <p className="max-w-[540px] text-foreground/85 text-sm leading-relaxed">
+                        <Trans
+                          components={{
+                            strong: <strong className="font-semibold text-foreground" />
+                          }}
+                          i18nKey="history.cookiesTipDescription"
+                        />
+                      </p>
+                    </div>
+                    <Button
+                      className="h-8 rounded-lg px-4 font-medium text-xs"
+                      disabled={!canOpenCookiesSettings}
+                      onClick={() => {
+                        if (onOpenCookiesSettings) {
+                          onOpenCookiesSettings()
+                          return
+                        }
+                        onOpenSettings?.()
+                      }}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      {t('history.cookiesTipCta')}
+                    </Button>
                   </div>
-                  <Button
-                    className="h-8 rounded-lg px-4 font-medium text-xs"
-                    disabled={!canOpenCookiesSettings}
-                    onClick={() => {
-                      if (onOpenCookiesSettings) {
-                        onOpenCookiesSettings()
-                        return
-                      }
-                      onOpenSettings?.()
-                    }}
-                    size="sm"
-                    variant="secondary"
-                  >
-                    {t('history.cookiesTipCta')}
-                  </Button>
                 </div>
               </div>
-            </div>
-          )}
-          {taskTree.roots.length === 0 ? (
+            )}
+          </div>
+          {listModel.rows.length === 0 ? (
             <DownloadEmptyState
               className="mx-6 mb-4"
               hint={t('download.ingestEmptyHint')}
               message={t('download.noItems')}
             />
           ) : (
-            <div
-              className={cn('relative w-full pb-4', marquee && 'select-none')}
-              onPointerCancel={finishPointer}
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={finishPointer}
-              ref={listRef}
-            >
-              {marquee ? <ListMarqueeBox marquee={marquee} /> : null}
-              {groupedView.order.map((item) => {
-                if (item.type === 'single') {
-                  return (
-                    <DownloadTaskTree
-                      childrenByParent={taskTree.children}
-                      contextIds={taskTree.contextIds}
-                      download={item.record}
-                      key={`${item.record.entryType}:${item.record.id}`}
-                      matchingIds={taskTree.matchingIds}
-                      onToggleSelect={handleToggleSelect}
-                      selectedIds={selectedIds}
-                      selectionActive={selectedCount > 0}
-                    />
-                  )
-                }
-
-                const group = groupedView.groups.get(item.id)
-                if (!group) {
-                  return null
-                }
-
-                return (
-                  <PlaylistDownloadGroup
-                    childrenByParent={taskTree.children}
-                    contextIds={taskTree.contextIds}
-                    groupId={group.id}
-                    isPlaylist={group.isPlaylist}
-                    key={`group:${group.id}`}
-                    matchingIds={taskTree.matchingIds}
-                    onDeletePlaylist={
-                      group.isPlaylist && originFilter === 'all'
-                        ? handleRequestDeletePlaylist
-                        : undefined
-                    }
-                    onToggleSelect={handleToggleSelect}
-                    records={group.records}
-                    selectedIds={selectedIds}
-                    selectionActive={selectedCount > 0}
-                    title={group.title}
-                    totalCount={group.totalCount}
-                  />
-                )
-              })}
-            </div>
+            <DownloadHistoryVirtualList
+              expandPlaylist={expand}
+              isPlaylistExpanded={isExpanded}
+              listRef={listRef}
+              model={listModel}
+              onDeletePlaylist={originFilter === 'all' ? handleRequestDeletePlaylist : undefined}
+              onSelectIds={(ids) => {
+                setSelectedIds(new Set(ids))
+              }}
+              onTogglePlaylist={toggle}
+              onToggleSelect={handleToggleSelect}
+              prefixRef={prefixRef}
+              selectedIds={selectedIds}
+              selectionActive={selectedCount > 0}
+              viewport={viewport}
+            />
           )}
         </CardContent>
       </ScrollArea>

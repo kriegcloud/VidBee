@@ -3,7 +3,8 @@ import type { OneClickContainerOption } from '@vidbee/downloader-core/format-pre
 import type { SocialMediaOptions } from '@vidbee/downloader-core/social-media'
 import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
 import { defaultLanguageCode, type LanguageCode } from '@vidbee/i18n/languages'
-import type { TaskCreationMetadata, TaskKind } from '@vidbee/task-queue'
+import type { SubscriptionDownloadPreferences } from '@vidbee/subscriptions-core/types'
+import type { DownloadCookieSource, TaskCreationMetadata, TaskKind } from '@vidbee/task-queue'
 import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import type { AsrTierId } from '@vidbee/transcription/asr'
 import type { DownloadMirror } from '@vidbee/transcription/download-mirrors'
@@ -75,6 +76,7 @@ export type DownloadStatus =
 export interface DownloadItem {
   sourceMediaKind?: 'image' | 'video' | 'mixed'
   collectionSummary?: SocialCollectionSummary
+  cookieSources?: DownloadCookieSource[]
   id: string
   url: string
   title: string
@@ -162,6 +164,7 @@ export interface SubscriptionFeedItem {
 export interface DownloadHistoryItem {
   sourceMediaKind?: 'image' | 'video' | 'mixed'
   collectionSummary?: SocialCollectionSummary
+  cookieSources?: DownloadCookieSource[]
   id: string
   url: string
   title: string
@@ -309,7 +312,7 @@ export type SubscriptionStatus = 'idle' | 'checking' | 'up-to-date' | 'failed'
 
 export const SUBSCRIPTION_DUPLICATE_FEED_ERROR = 'SUBSCRIPTION_DUPLICATE_FEED_URL'
 
-export interface SubscriptionRule {
+export interface SubscriptionRule extends SubscriptionDownloadPreferences {
   id: string
   title: string
   sourceUrl: string
@@ -341,7 +344,7 @@ export interface SubscriptionResolvedFeed {
   platform: SubscriptionPlatform
 }
 
-export interface SubscriptionCreatePayload {
+export interface SubscriptionCreatePayload extends SubscriptionDownloadPreferences {
   sourceUrl: string
   feedUrl: string
   platform: SubscriptionPlatform
@@ -354,7 +357,7 @@ export interface SubscriptionCreatePayload {
   enabled?: boolean
 }
 
-export interface SubscriptionUpdatePayload {
+export interface SubscriptionUpdatePayload extends SubscriptionDownloadPreferences {
   title?: string
   sourceUrl?: string
   feedUrl?: string

@@ -85,8 +85,14 @@ export const SocialCollectionSummarySchema = z.object({
   finishedAt: z.number().optional()
 })
 
+export const DownloadCookieSourceSchema = z.object({
+  type: z.enum(['extension', 'browser', 'file']),
+  browser: z.string().optional()
+})
+
 export const TaskOutputSchema = z.object({
   collectionSummary: SocialCollectionSummarySchema.optional(),
+  cookieSources: z.array(DownloadCookieSourceSchema).optional(),
   filePath: z.string(),
   size: z.number().int().nonnegative(),
   durationMs: z.number().int().nullable(),

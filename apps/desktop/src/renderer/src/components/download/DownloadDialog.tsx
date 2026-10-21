@@ -26,6 +26,7 @@ import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profi
 import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
+import { useDownloadTransfer } from '@vidbee/ui/components/ui/download-transfer'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { OnlyFansProfileDialog } from '@vidbee/ui/components/ui/onlyfans-profile-dialog'
@@ -88,6 +89,7 @@ export function DownloadDialog({
   onOpenSupportedSites,
   onOpenSettings: _onOpenSettings
 }: DownloadDialogProps) {
+  const { contentRef, popoverRef, transferToList } = useDownloadTransfer()
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null)
@@ -332,9 +334,10 @@ export function DownloadDialog({
       const trimmedUrl = targetUrl.trim()
       if (!trimmedUrl) {
         toast.error(t('errors.emptyUrl'))
-        return
+        return false
       }
 
+      const source = popoverRef.current ?? contentRef.current
       if (options?.setInputValue) {
         setUrl(trimmedUrl)
       }
@@ -419,13 +422,15 @@ export function DownloadDialog({
         if (!started) {
           removeDownload(id)
           toast.info(t('notifications.downloadAlreadyQueued'))
-          return
+          return false
         }
 
         toast.success(t('download.oneClickDownloadStarted'))
+        transferToList(id, source)
         if (options?.clearInput) {
           setUrl('')
         }
+        return true
       } catch (error) {
         removeDownload(id)
         if (options?.collection) {
@@ -433,9 +438,10 @@ export function DownloadDialog({
         }
         logger.error('Failed to start one-click download:', error)
         toast.error(t('notifications.downloadFailed'))
+        return false
       }
     },
-    [settings, addDownload, removeDownload, t]
+    [settings, addDownload, removeDownload, t, transferToList, popoverRef, contentRef]
   )
 
   const handleParsePlaylistUrl = useCallback(
@@ -608,7 +614,7 @@ export function DownloadDialog({
 
   const handleOneClickFromAddUrl = useCallback(
     async (trimmedUrl: string) => {
-      await startOneClickDownload(trimmedUrl, { setInputValue: false, clearInput: false })
+      return await startOneClickDownload(trimmedUrl, { setInputValue: false, clearInput: false })
     },
     [startOneClickDownload]
   )
@@ -621,6 +627,7 @@ export function DownloadDialog({
     handleConfirmAddUrl,
     handleOpenAddUrlPopover,
     hasAddUrlValue,
+    isSubmitting,
     setAddUrlPopoverOpen,
     setAddUrlValue,
     submitUrl
@@ -898,6 +905,7 @@ export function DownloadDialog({
       }
 
       // Queue events preserve the actual state and group of reused download tasks.
+      transferToList(result.entries[0]?.downloadId)
       setOpen(false) // Close dialog after download starts
     } catch (error) {
       logger.error('Failed to start playlist download:', error)
@@ -914,7 +922,8 @@ export function DownloadDialog({
     t,
     playlistCustomDownloadPath,
     playlistContainer,
-    selectedEntryIds
+    selectedEntryIds,
+    transferToList
   ])
 
   // Update single video title when videoInfo changes
@@ -1011,12 +1020,13 @@ export function DownloadDialog({
       }
       addDownload(downloadItem)
 
+      transferToList(id)
       setOpen(false) // Close dialog after download starts
     } catch (error) {
       logger.error('Failed to start download:', error)
       toast.error(t('notifications.downloadFailed'))
     }
-  }, [videoInfo, videoInfoSourceUrl, singleVideoState, addDownload, t, url])
+  }, [videoInfo, videoInfoSourceUrl, singleVideoState, addDownload, t, url, transferToList])
 
   const wasDialogOpenRef = useRef(open)
 
@@ -1141,6 +1151,7 @@ export function DownloadDialog({
               cancelLabel={t('download.cancel')}
               confirmDisabled={!canConfirmAddUrl}
               confirmLabel={t('download.fetch')}
+              contentRef={popoverRef}
               description={t('download.enterUrlDescription')}
               invalidMessage={
                 batchRequiresOneClick
@@ -1173,6 +1184,7 @@ export function DownloadDialog({
               onValueChange={setAddUrlValue}
               open={addUrlPopoverOpen}
               placeholder={t('download.urlPlaceholder')}
+              submitting={isSubmitting}
               supportedSitesLabel={t('menu.supportedSites')}
               title={t('download.enterUrl')}
               triggerLabel={t('download.pasteUrlButton')}
@@ -1180,6 +1192,7 @@ export function DownloadDialog({
             />
           </div>
         }
+        contentRef={contentRef}
         dialogSubtitle={t('download.dialogSubtitle')}
         dialogTitle={t('download.dialogTitle')}
         footer={

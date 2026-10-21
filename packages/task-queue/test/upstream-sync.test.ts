@@ -87,3 +87,32 @@ test('sweeping dead slots releases platform admission and preserves live group c
   release()
   await scheduler.releaseSlot('live')
 })
+
+test('ASR waits for download capacity while source admission still serializes downloads', async () => {
+  const tasks = new Map([
+    ['first', task('first', { input: { kind: 'video', url: 'https://instagram.com/p/one/' } })],
+    ['second', task('second', { input: { kind: 'video', url: 'https://instagram.com/p/two/' } })],
+    ['asr', task('asr', { kind: 'transcription', groupKey: 'transcription' })]
+  ])
+  const dispatched: string[] = []
+  const scheduler = new Scheduler({
+    admission: new SourceAdmission(),
+    maxConcurrency: 3,
+    getTask: (id) => tasks.get(id),
+    dispatch: (id) => {
+      dispatched.push(id)
+      return true
+    },
+    demote: () => {}
+  })
+  await scheduler.setMaxConcurrentDownloads(1)
+  await scheduler.enqueue('first', 0)
+  await scheduler.enqueue('second', 0)
+  await scheduler.enqueue('asr', 1)
+  assert.deepEqual(dispatched, ['first'])
+  await scheduler.releaseSlot('first')
+  assert.deepEqual(dispatched, ['first', 'second'])
+  await scheduler.releaseSlot('second')
+  assert.deepEqual(dispatched, ['first', 'second', 'asr'])
+  await scheduler.releaseSlot('asr')
+})

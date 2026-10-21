@@ -12,6 +12,7 @@
     "./lib/cn": "./src/lib/cn.ts",
     "./lib/download-platform": "./src/lib/download-platform.ts",
     "./lib/download-queue-progress": "./src/lib/download-queue-progress.ts",
+    "./lib/download-transfer-target": "./src/lib/download-transfer-target.ts",
     "./lib/list-marquee": "./src/lib/list-marquee.ts",
     "./lib/saved-social-profile-groups": "./src/lib/saved-social-profile-groups.ts",
     "./lib/use-list-marquee": "./src/lib/use-list-marquee.ts",
