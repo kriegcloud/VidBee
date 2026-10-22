@@ -115,6 +115,81 @@ export function onlyFansItems(payload: unknown): { item: OnlyFansItem; mediaUrl:
   return output
 }
 
+export interface ChatVideoAttachment {
+  id: string
+  postId: string
+  state: OnlyFansItem['state']
+  durationSec: number | null
+  previewPath: string | null
+}
+
+const previewPath = (media: Record<string, unknown>): string | null => {
+  const files = record(media.files)
+  for (const key of ['thumb', 'preview', 'squarePreview', 'miniPreview']) {
+    const raw = record(files[key]).url
+    if (typeof raw !== 'string') {
+      continue
+    }
+    try {
+      const url = new URL(raw)
+      if (url.protocol === 'https:' && /^cdn\d*\.onlyfans\.com$/.test(url.hostname)) {
+        return url.pathname
+      }
+    } catch {
+      /* ignore unreadable preview urls */
+    }
+  }
+  return null
+}
+
+/**
+ * Videos in the order `onlyFansItems` walks a chat message payload.
+ * Photos and other attachments are skipped and do not shift the index.
+ */
+export function chatVideoAttachments(payload: unknown): ChatVideoAttachment[] {
+  const body = record(payload)
+  const posts = Array.isArray(body.list) ? body.list : [body]
+  const extras = new Map<string, { durationSec: number | null; previewPath: string | null }>()
+  for (const value of posts) {
+    const post = record(value)
+    if (!Array.isArray(post.media)) {
+      continue
+    }
+    for (const raw of post.media) {
+      const media = record(raw)
+      const mediaId = id(media.id)
+      if (!(mediaId && media.type === 'video')) {
+        continue
+      }
+      const duration = Number(media.duration)
+      extras.set(mediaId, {
+        durationSec: Number.isFinite(duration) && duration > 0 ? duration : null,
+        previewPath: previewPath(media)
+      })
+    }
+  }
+  return onlyFansItems(payload)
+    .filter(({ item }) => item.category === 'videos')
+    .map(({ item }) => {
+      const extra = extras.get(item.id)
+      return {
+        id: item.id,
+        postId: item.postId,
+        state: item.state,
+        durationSec: extra?.durationSec ?? null,
+        previewPath: extra?.previewPath ?? null
+      }
+    })
+}
+
+/** 1-based video index in message-list order. A missing index is null, not a later video. */
+export function chatVideoByOrdinal(payload: unknown, ordinal: number): ChatVideoAttachment | null {
+  if (!Number.isInteger(ordinal) || ordinal < 1) {
+    return null
+  }
+  return chatVideoAttachments(payload)[ordinal - 1] ?? null
+}
+
 /** Match only the selected conversation, never the chat list or another conversation. */
 export function onlyFansChatResponse(url: URL, chatId: string): boolean {
   return (

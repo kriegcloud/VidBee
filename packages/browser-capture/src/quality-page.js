@@ -7,7 +7,7 @@ export const pinHighestQualityInPage = () => {
 
   const methods = []
   const score = (item) =>
-    (item.height || 0) * 100000 + (item.width || 0) * 10 + (item.bitrate || item.bandwidth || 0)
+    (item.height || 0) * 100_000 + (item.width || 0) * 10 + (item.bitrate || item.bandwidth || 0)
 
   const pinHls = (hls) => {
     const levels = hls.levels
@@ -35,7 +35,7 @@ export const pinHighestQualityInPage = () => {
   }
 
   const pinShaka = (player) => {
-    if (!player.getVariantTracks || !player.selectVariantTrack) {
+    if (!(player.getVariantTracks && player.selectVariantTrack)) {
       return
     }
     if (player.configure) {
@@ -59,7 +59,7 @@ export const pinHighestQualityInPage = () => {
   }
 
   const pinDash = (player) => {
-    if (!player.getBitrateInfoListFor || !player.setQualityFor) {
+    if (!(player.getBitrateInfoListFor && player.setQualityFor)) {
       return
     }
     if (player.updateSettings) {
@@ -133,11 +133,21 @@ export const pinHighestQualityInPage = () => {
   video.style.objectFit = 'fill'
   video.style.zIndex = '2147483647'
   video.style.background = '#000'
-  const width = video.videoWidth || 0
-  const height = video.videoHeight || 0
+  const decodedWidth = video.videoWidth || 0
+  const decodedHeight = video.videoHeight || 0
+  let width = decodedWidth
+  let height = decodedHeight
+  const longSide = Math.max(decodedWidth, decodedHeight)
+  if (longSide > 0 && longSide < 960) {
+    const scale = 960 / longSide
+    width = Math.round(decodedWidth * scale)
+    height = Math.round(decodedHeight * scale)
+  }
   if (width > 0 && height > 0) {
-    video.style.width = `${width + (width % 2)}px`
-    video.style.height = `${height + (height % 2)}px`
+    width += width % 2
+    height += height % 2
+    video.style.width = `${width}px`
+    video.style.height = `${height}px`
   }
   void video.play()
 

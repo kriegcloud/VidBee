@@ -1,3 +1,38 @@
+const onlyFansChatPath = (value: string): URL | null => {
+  try {
+    const parsed = new URL(value)
+    const parts = parsed.pathname.split('/').filter(Boolean)
+    if (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname === 'onlyfans.com' || parsed.hostname === 'www.onlyfans.com') &&
+      parts[0] === 'my' &&
+      parts[1] === 'chats' &&
+      parts[2] === 'chat' &&
+      /^\d+$/.test(parts[3] ?? '')
+    ) {
+      return parsed
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
+/**
+ * Chat captures keep the conversation URL, including `firstId`.
+ * Other pages still drop media suffixes so the player can open them.
+ */
+export const capturePageUrl = (value: string, videoOrdinal?: number): string => {
+  if (videoOrdinal && videoOrdinal > 0) {
+    const chat = onlyFansChatPath(value)
+    if (chat) {
+      chat.hash = ''
+      return chat.toString()
+    }
+  }
+  return playbackPageUrl(value)
+}
+
 /** Strip site-specific media suffixes so the player opens the watchable page. */
 export const playbackPageUrl = (value: string): string => {
   try {

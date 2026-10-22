@@ -50,6 +50,8 @@ export interface CaptureJob {
   height: number
   durationHintSec?: number
   localStorage?: Record<string, string>
+  userDataDir?: string
+  videoOrdinal?: number
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -95,6 +97,16 @@ export const parseCaptureJob = (value: unknown): CaptureJob => {
       typeof value.durationHintSec === 'number' && value.durationHintSec > 0
         ? value.durationHintSec
         : undefined,
-    localStorage
+    localStorage,
+    userDataDir:
+      typeof value.userDataDir === 'string' && value.userDataDir.trim()
+        ? value.userDataDir
+        : undefined,
+    videoOrdinal:
+      typeof value.videoOrdinal === 'number' &&
+      Number.isInteger(value.videoOrdinal) &&
+      value.videoOrdinal > 0
+        ? value.videoOrdinal
+        : undefined
   }
 }

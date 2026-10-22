@@ -5,6 +5,7 @@ import path from 'node:path'
 import { isOutputComplete } from '@vidbee/task-queue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  chatVideoByOrdinal,
   OnlyFansBrowserExecutor,
   OnlyFansProfiles,
   onlyFansChatResponse,
@@ -109,6 +110,80 @@ function setup(auth = true, emitPosts = true, chat = false) {
   mocks.launch.mockResolvedValue(context)
   return { dir, page, context, profiles: new OnlyFansProfiles(dir, () => dir) }
 }
+
+describe('chat video ordinal', () => {
+  it('selects the third video from a mixed message list', () => {
+    const payload = {
+      list: [
+        {
+          id: 10,
+          media: [
+            {
+              id: 1,
+              type: 'photo',
+              files: { full: { url: 'https://cdn2.onlyfans.com/files/a.jpg' } }
+            },
+            {
+              id: 2,
+              type: 'video',
+              duration: 11,
+              files: { full: { url: 'https://cdn2.onlyfans.com/files/v1.mp4' } }
+            }
+          ]
+        },
+        {
+          id: 20,
+          media: [
+            {
+              id: 3,
+              type: 'photo',
+              files: { full: { url: 'https://cdn2.onlyfans.com/files/b.jpg' } }
+            },
+            {
+              id: 4,
+              type: 'video',
+              duration: 22,
+              files: { drm: { manifest: { dash: 'https://cdn2.onlyfans.com/dash/x.mpd' } } }
+            }
+          ]
+        },
+        {
+          id: 30,
+          media: [
+            {
+              id: 5,
+              type: 'video',
+              duration: 33,
+              files: {
+                full: { url: 'https://cdn2.onlyfans.com/files/v3.mp4' },
+                thumb: { url: 'https://cdn2.onlyfans.com/files/thumbs/v3.jpg?Policy=private' }
+              }
+            },
+            {
+              id: 6,
+              type: 'photo',
+              files: { full: { url: 'https://cdn2.onlyfans.com/files/c.jpg' } }
+            },
+            {
+              id: 7,
+              type: 'video',
+              duration: 44,
+              canView: false,
+              files: { full: { url: 'https://cdn2.onlyfans.com/files/v4.mp4' } }
+            }
+          ]
+        }
+      ]
+    }
+    const third = chatVideoByOrdinal(payload, 3)
+    expect(third).toMatchObject({ id: '5', postId: '30', state: 'available', durationSec: 33 })
+    expect(third?.id).not.toBe(chatVideoByOrdinal(payload, 1)?.id)
+    expect(third?.previewPath).toBe('/files/thumbs/v3.jpg')
+    expect(onlyFansItems(payload).find((entry) => entry.item.id === third?.id)?.item.category).toBe(
+      'videos'
+    )
+  })
+})
 
 describe('OnlyFans browser mapping', () => {
   it('limits chat responses to the selected conversation', () => {

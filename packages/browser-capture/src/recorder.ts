@@ -1,9 +1,5 @@
 import { type ChildProcess, spawn } from 'node:child_process'
-import {
-  CAPTURE_AUDIO_BITRATE_K,
-  CAPTURE_FPS,
-  CAPTURE_X264_CRF
-} from './quality'
+import { CAPTURE_AUDIO_BITRATE_K, CAPTURE_FPS, CAPTURE_X264_CRF } from './quality'
 
 export interface RecorderHandle {
   stop: () => Promise<void>
@@ -18,8 +14,12 @@ export const buildRecorderArgs = (input: {
   pulseSink?: string
   includeAudio: boolean
   fps?: number
+  originX?: number
+  originY?: number
 }): string[] => {
   const fps = input.fps && input.fps >= 24 ? Math.min(60, Math.round(input.fps)) : CAPTURE_FPS
+  const originX = input.originX ?? 0
+  const originY = input.originY ?? 0
   const args = [
     '-hide_banner',
     '-loglevel',
@@ -36,7 +36,7 @@ export const buildRecorderArgs = (input: {
     '-framerate',
     String(fps),
     '-i',
-    `${input.display}.0+0,0`
+    `${input.display}.0+${originX},${originY}`
   ]
   if (input.includeAudio && input.pulseSink) {
     args.push('-thread_queue_size', '4096', '-f', 'pulse', '-i', `${input.pulseSink}.monitor`)
@@ -56,21 +56,75 @@ export const buildRecorderArgs = (input: {
     '+faststart'
   )
   if (input.includeAudio && input.pulseSink) {
-    args.push(
-      '-c:a',
-      'aac',
-      '-b:a',
-      `${CAPTURE_AUDIO_BITRATE_K}k`,
-      '-ar',
-      '48000',
-      '-ac',
-      '2'
-    )
+    args.push('-c:a', 'aac', '-b:a', `${CAPTURE_AUDIO_BITRATE_K}k`, '-ar', '48000', '-ac', '2')
   } else {
     args.push('-an')
   }
   args.push(input.outputPath)
   return args
+}
+
+const MAGENTA_CHANNEL = 240
+
+/** Find the magenta corner painted on the video, in X screen pixels. */
+export const measureGrabOrigin = async (input: {
+  ffmpegPath: string
+  display: string
+  scanWidth: number
+  scanHeight: number
+}): Promise<{ x: number; y: number }> => {
+  const raw = await new Promise<Buffer>((resolve, reject) => {
+    const child = spawn(
+      input.ffmpegPath,
+      [
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        '-f',
+        'x11grab',
+        '-video_size',
+        `${input.scanWidth}x${input.scanHeight}`,
+        '-i',
+        `${input.display}.0+0,0`,
+        '-frames:v',
+        '1',
+        '-f',
+        'rawvideo',
+        '-pix_fmt',
+        'rgb24',
+        '-'
+      ],
+      { stdio: ['ignore', 'pipe', 'ignore'] }
+    )
+    const chunks: Buffer[] = []
+    let stderr = ''
+    child.stdout.on('data', (chunk: Buffer) => {
+      chunks.push(chunk)
+    })
+    child.stderr?.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString()
+    })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve(Buffer.concat(chunks))
+        return
+      }
+      reject(new Error(`Failed to read the capture display: ${stderr.trim()}`))
+    })
+  })
+  for (let y = 0; y < input.scanHeight; y += 1) {
+    for (let x = 0; x < input.scanWidth; x += 1) {
+      const offset = (y * input.scanWidth + x) * 3
+      const red = raw[offset] ?? 0
+      const green = raw[offset + 1] ?? 0
+      const blue = raw[offset + 2] ?? 0
+      if (red > MAGENTA_CHANNEL && green < 30 && blue > MAGENTA_CHANNEL) {
+        return { x, y }
+      }
+    }
+  }
+  return { x: 0, y: 0 }
 }
 
 const stopFfmpeg = (child: ChildProcess): Promise<void> =>
@@ -116,6 +170,8 @@ export const startRecorder = (input: {
   pulseSink?: string
   includeAudio: boolean
   fps?: number
+  originX?: number
+  originY?: number
   env?: NodeJS.ProcessEnv
 }): RecorderHandle => {
   const args = buildRecorderArgs(input)

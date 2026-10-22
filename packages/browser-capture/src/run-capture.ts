@@ -40,7 +40,11 @@ export const runCapture = async (
       pulseSink: display.pulseSink,
       width: job.width,
       height: job.height,
-      signal: input.signal
+      signal: input.signal,
+      userDataDir: job.userDataDir,
+      videoOrdinal: job.videoOrdinal,
+      ffmpegPath: job.ffmpegPath,
+      onLog: input.onLog
     })
     input.onLog('Waiting for in-browser playback (CDM decrypts in Chromium)')
     const playing = await playback.waitUntilPlaying()
@@ -71,6 +75,8 @@ export const runCapture = async (
       outputPath: job.outputPath,
       pulseSink: display.pulseSink,
       fps: playing.fps,
+      originX: playing.originX,
+      originY: playing.originY,
       env
     }
     try {

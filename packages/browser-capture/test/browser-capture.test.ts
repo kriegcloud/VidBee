@@ -8,8 +8,9 @@ import type {
 import { virtualError } from '@vidbee/task-queue'
 import { describe, expect, it } from 'vitest'
 import { parseNetscapeCookieFile, toPlaywrightCookies } from '../src/cookies'
-import { isDrmProtectedMessage, playbackPageUrl } from '../src/drm'
+import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '../src/drm'
 import { DrmFallbackExecutor } from '../src/drm-fallback'
+import { waitUntilPlaybackAdvances } from '../src/player'
 import { encodeSidecarEvent, parseCaptureJob, parseSidecarEvent } from '../src/protocol'
 import { evenSize } from '../src/quality'
 import { buildRecorderArgs } from '../src/recorder'
@@ -19,6 +20,12 @@ describe('playbackPageUrl', () => {
     expect(playbackPageUrl('https://onlyfans.com/2669829379/kenzeygrey/media/3743089366')).toBe(
       'https://onlyfans.com/2669829379/kenzeygrey?media=3743089366'
     )
+  })
+
+  it('keeps the chat anchor when a video ordinal is requested', () => {
+    expect(
+      capturePageUrl('https://onlyfans.com/my/chats/chat/179257357/?firstId=11738419404009', 3)
+    ).toBe('https://onlyfans.com/my/chats/chat/179257357/?firstId=11738419404009')
   })
 
   it('opens the chat gallery for a chat media stub', () => {
@@ -48,7 +55,7 @@ describe('netscape cookies', () => {
         value: 'test-value',
         domain: 'example.com',
         path: '/',
-        expires: 1999999999,
+        expires: 1_999_999_999,
         httpOnly: true,
         secure: true,
         sameSite: 'Lax'
@@ -84,6 +91,18 @@ describe('sidecar protocol', () => {
   })
 })
 
+describe('playback start', () => {
+  it('fails when the media clock stays at zero', async () => {
+    const signal = new AbortController().signal
+    await expect(
+      waitUntilPlaybackAdvances(
+        async () => ({ currentTime: 0, duration: 12, paused: true, ended: false }),
+        { timeoutMs: 20, signal, sleep: async () => undefined }
+      )
+    ).rejects.toThrow('Timed out waiting for in-browser playback to start')
+  })
+})
+
 describe('ffmpeg recorder args', () => {
   it('grabs the virtual display without audio when Pulse is missing', () => {
     const args = buildRecorderArgs({
@@ -99,6 +118,19 @@ describe('ffmpeg recorder args', () => {
     expect(args).toContain('60')
     expect(args).toContain('12')
     expect(args).not.toContain('pulse')
+  })
+
+  it('offsets the grab when the viewport is below the browser chrome', () => {
+    const args = buildRecorderArgs({
+      display: ':99',
+      width: 536,
+      height: 960,
+      outputPath: '/tmp/out.mp4',
+      includeAudio: false,
+      originX: 0,
+      originY: 87
+    })
+    expect(args).toContain(':99.0+0,87')
   })
 
   it('rounds grab size to even dimensions', () => {
