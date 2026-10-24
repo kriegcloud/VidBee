@@ -120,6 +120,14 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     goto: vi.fn(async (url: string) => {
       currentUrl = url
       events.emit('response', response('https://onlyfans.com/api2/v2/users/example', { id: 7 }))
+      if (chat) {
+        events.emit(
+          'response',
+          response('https://onlyfans.com/api2/v2/chats/7', {
+            withUser: { username: 'babee.vip' }
+          })
+        )
+      }
       await Promise.resolve()
       if (emitPosts) {
         const galleryQuery =
@@ -235,7 +243,7 @@ describe('OnlyFans browser mapping', () => {
     }
   })
 
-  it('matches only the selected chat gallery filter', () => {
+  it('matches the selected chat media feed even when the site changes its filter query', () => {
     const base = 'https://onlyfans.com/api2/v2/chats/7/media?limit=10'
     for (const [route, query] of [
       ['gallery', ''],
@@ -247,8 +255,9 @@ describe('OnlyFans browser mapping', () => {
       expect(onlyFansChatMediaResponse(new URL(`${base}${query}`), '7', route)).toBe(true)
       expect(onlyFansChatMediaResponse(new URL(`${base}${query}`), '8', route)).toBe(false)
     }
-    expect(onlyFansChatMediaResponse(new URL(`${base}&opened=1`), '7', 'gallery')).toBe(false)
-    expect(onlyFansChatMediaResponse(new URL(base), '7', 'purchased')).toBe(false)
+    expect(onlyFansChatMediaResponse(new URL(`${base}&mediaType=photo`), '7', 'photos')).toBe(true)
+    expect(onlyFansChatMediaResponse(new URL(base), '7', 'purchased')).toBe(true)
+    expect(onlyFansChatMediaResponse(new URL(base), '7', 'messages')).toBe(false)
   })
 
   it.each([
@@ -263,8 +272,12 @@ describe('OnlyFans browser mapping', () => {
     await profiles.command({ url, action: 'map' })
     await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
     expect(page.goto).toHaveBeenCalledWith(url, expect.anything())
-    expect(profiles.get(url).items.map((entry) => entry.id)).toEqual(['8', '9'])
-    expect(profiles.get(url).items[0]).toMatchObject({ postId: '100', state: 'available' })
+    expect(profiles.get(url).items.map((entry) => entry.id)).toEqual(
+      route === 'photos' ? ['8'] : route === 'videos' ? ['9'] : ['8', '9']
+    )
+    expect(profiles.get(url).items[0]).toMatchObject(
+      route === 'videos' ? { postId: '9', state: 'locked' } : { postId: '100', state: 'available' }
+    )
     expect(profiles.get('https://onlyfans.com/my/chats/chat/7').items).toHaveLength(0)
     expect(readFileSync(path.join(dir, `7-${route}.json`), 'utf8')).not.toContain('Signature')
     expect(new OnlyFansProfiles(dir, () => dir).list()[0].profileUrl).toBe(url)
@@ -315,6 +328,17 @@ describe('OnlyFans browser mapping', () => {
     expect(await predicate(candidate(8, fixture))).toBe(false)
     expect(await predicate(candidate(7, { list: [] }))).toBe(false)
     expect(await predicate(candidate(7, fixture))).toBe(true)
+    await profiles.stop()
+  })
+
+  it('links a chat from its chat response when the page header is absent', async () => {
+    const { profiles, ownerLink } = setup(true, true, true)
+    ownerLink.getAttribute.mockResolvedValue(null)
+    const url = 'https://onlyfans.com/my/chats/chat/7'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    expect(profiles.get(url).creatorUsername).toBe('babee.vip')
+    expect(profiles.get('https://onlyfans.com/babee.vip').linkedChatId).toBe('7')
     await profiles.stop()
   })
 
@@ -468,7 +492,13 @@ describe('OnlyFans browser mapping', () => {
         status: () => 200,
         json: async () => ({
           id: 100,
-          media: [{ id: 1, type: 'photo', files: { preview: { url: 'https://cdn2.onlyfans.com/files/preview.jpg' } } }]
+          media: [
+            {
+              id: 1,
+              type: 'photo',
+              files: { preview: { url: 'https://cdn2.onlyfans.com/files/preview.jpg' } }
+            }
+          ]
         })
       })
       .mockResolvedValueOnce({
@@ -482,9 +512,12 @@ describe('OnlyFans browser mapping', () => {
     page.evaluate.mockResolvedValue({ width: 1920, height: 1080 })
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(new Uint8Array([255, 216, 255, 217]), {
-        headers: { 'content-type': 'image/jpeg' }
-      }))
+      vi.fn(
+        async () =>
+          new Response(new Uint8Array([255, 216, 255, 217]), {
+            headers: { 'content-type': 'image/jpeg' }
+          })
+      )
     )
 
     const result = await profiles.download(url, '1', dir, new AbortController().signal, vi.fn())
@@ -499,11 +532,13 @@ describe('OnlyFans browser mapping', () => {
       ok: () => true,
       json: async () => ({
         id: 100,
-        media: [{
-          id: mediaId,
-          type: 'photo',
-          files: { full: { url: 'https://cdn2.onlyfans.com/files/photo.jpg' } }
-        }]
+        media: [
+          {
+            id: mediaId,
+            type: 'photo',
+            files: { full: { url: 'https://cdn2.onlyfans.com/files/photo.jpg' } }
+          }
+        ]
       })
     })
     expect(await openedPredicate(openedResponse(2))).toBe(false)

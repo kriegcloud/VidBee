@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
+  indexOnlyFansChatOwners,
   indexSavedSocialProfileGroups,
   resolveCreatorProfileGroup
 } from '../src/lib/saved-social-profile-groups'
@@ -36,7 +37,7 @@ test('saved TikTok and Redgifs posts nest under their profile even without a sha
   })
 })
 
-test('OnlyFans and Fansly media resolve to one group per creator, chats kept apart', () => {
+test('OnlyFans and Fansly media resolve to one group per creator', () => {
   const post = resolveCreatorProfileGroup({
     url: 'https://onlyfans.com/2214255537/syd.babee',
     title: '@syd.babee · photos · 2214255537'
@@ -49,6 +50,32 @@ test('OnlyFans and Fansly media resolve to one group per creator, chats kept apa
     resolveCreatorProfileGroup({ url: 'https://onlyfans.com/2215175806/Syd.Babee' })?.id,
     post?.id
   )
+  const chatOwners = indexOnlyFansChatOwners([
+    {
+      username: '160988745',
+      profileUrl: 'https://onlyfans.com/my/chats/chat/160988745',
+      chatId: '160988745',
+      creatorUsername: 'babee.vip',
+      state: 'complete',
+      updatedAt: 1,
+      pages: 1,
+      items: []
+    }
+  ])
+  assert.deepEqual(
+    resolveCreatorProfileGroup(
+      {
+        url: 'https://onlyfans.com/my/chats/chat/160988745?firstId=7',
+        title: '@160988745 · photos · 7'
+      },
+      chatOwners
+    ),
+    { id: 'creator-profile:onlyfans:babee.vip', title: '@babee.vip' }
+  )
+  assert.deepEqual(resolveCreatorProfileGroup({ url: 'https://onlyfans.com/7/babee.vip' }), {
+    id: 'creator-profile:onlyfans:babee.vip',
+    title: '@babee.vip'
+  })
   assert.deepEqual(
     resolveCreatorProfileGroup({
       url: 'https://onlyfans.com/my/chats/chat/160988745?firstId=7',

@@ -33,6 +33,7 @@ import {
 } from "@vidbee/ui/lib/download-platform";
 import { getDownloadQueueProgress } from "@vidbee/ui/lib/download-queue-progress";
 import {
+	indexOnlyFansChatOwners,
 	indexSavedSocialProfileGroups,
 	resolveCreatorProfileGroup,
 	type SavedSocialProfileGroup,
@@ -102,6 +103,9 @@ export const DownloadPage = () => {
 	);
 	const [savedProfileGroups, setSavedProfileGroups] = useState<
 		Map<string, SavedSocialProfileGroup>
+	>(new Map());
+	const [onlyFansChatOwners, setOnlyFansChatOwners] = useState<
+		Map<string, string>
 	>(new Map());
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [stopAllOpen, setStopAllOpen] = useState(false);
@@ -223,15 +227,18 @@ export const DownloadPage = () => {
 			return;
 		}
 		let cancelled = false;
-		void orpcClient.socialProfile
-			.list()
-			.then((profiles) => {
+		void Promise.all([
+			orpcClient.socialProfile.list(),
+			orpcClient.onlyFansProfile.list(),
+		])
+			.then(([profiles, onlyFansProfiles]) => {
 				if (!cancelled) {
 					setSavedProfileGroups(indexSavedSocialProfileGroups(profiles));
+					setOnlyFansChatOwners(indexOnlyFansChatOwners(onlyFansProfiles));
 				}
 			})
 			.catch((error: unknown) =>
-				logger.warn("Failed to list saved social profiles:", error),
+				logger.warn("Failed to list saved profile groups:", error),
 			);
 		return () => {
 			cancelled = true;
@@ -561,7 +568,7 @@ export const DownloadPage = () => {
 		for (const record of filteredRecords) {
 			const savedGroup =
 				savedProfileGroups.get(record.url) ??
-				resolveCreatorProfileGroup(record);
+				resolveCreatorProfileGroup(record, onlyFansChatOwners);
 			const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId;
 			if (groupId) {
 				let group = groups.get(groupId);
@@ -618,7 +625,7 @@ export const DownloadPage = () => {
 		}
 
 		return { order, groups };
-	}, [filteredRecords, savedProfileGroups, t]);
+	}, [filteredRecords, savedProfileGroups, onlyFansChatOwners, t]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {

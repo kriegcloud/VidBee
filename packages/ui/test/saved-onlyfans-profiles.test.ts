@@ -37,6 +37,17 @@ test('linked creator posts and chat appear as one saved profile', () => {
   assert.equal(saved[0].profile.profileUrl, creator.profileUrl)
   assert.equal(saved[0].totalAssetCount, 2)
   assert.deepEqual(saved[0].mapping, { state: 'running' })
+
+  const gallery: OnlyFansProfile = {
+    ...chat,
+    chatRoute: 'gallery',
+    profileUrl: `${chat.profileUrl}/gallery`,
+    creatorUsername: undefined,
+    items: [media('3')]
+  }
+  const withLegacyRoute = savedOnlyFansProfiles([gallery, chat, creator], (id) => `Chat ${id}`)
+  assert.equal(withLegacyRoute.length, 1)
+  assert.equal(withLegacyRoute[0].totalAssetCount, 3)
 })
 
 test('unlinked legacy chat remains selectable by its own URL', () => {

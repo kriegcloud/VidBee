@@ -1,5 +1,6 @@
 import type { OnlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import type { SavedProfile } from '../components/ui/saved-instagram-profiles'
+import { indexOnlyFansChatOwners } from './saved-social-profile-groups'
 
 /** Show a creator's posts and linked chat as one saved profile. */
 export function savedOnlyFansProfiles(
@@ -7,9 +8,12 @@ export function savedOnlyFansProfiles(
   chatLabel: (id: string) => string
 ): SavedProfile[] {
   const groups = new Map<string, { entry: SavedProfile; mediaIds: Set<string> }>()
+  const chatOwners = indexOnlyFansChatOwners(profiles)
   for (const profile of profiles) {
-    const owner = profile.creatorUsername ?? profile.username
-    const key = profile.chatId && !profile.creatorUsername ? `chat:${profile.chatId}` : owner
+    const owner = profile.chatId
+      ? (chatOwners.get(profile.chatId) ?? profile.username)
+      : profile.username
+    const key = profile.chatId && !chatOwners.has(profile.chatId) ? `chat:${profile.chatId}` : owner
     let group = groups.get(key)
     if (!group) {
       group = {
@@ -18,7 +22,8 @@ export function savedOnlyFansProfiles(
           platform: 'onlyfans',
           platformLabel: 'OnlyFans',
           profile: {
-            username: profile.chatId && !profile.creatorUsername ? chatLabel(profile.chatId) : owner,
+            username:
+              profile.chatId && !chatOwners.has(profile.chatId) ? chatLabel(profile.chatId) : owner,
             profileUrl: profile.profileUrl
           },
           totalAssetCount: 0

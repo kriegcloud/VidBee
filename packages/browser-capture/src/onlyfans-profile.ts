@@ -224,14 +224,7 @@ export function onlyFansChatMediaResponse(
     return true
   }
   const target = onlyFansChatTargets[route]
-  if (target.feed !== 'media') {
-    return false
-  }
-  const filters = url.searchParams
-  if (target.filter) {
-    return filters.get(target.filter[0]) === target.filter[1]
-  }
-  return !(filters.has('opened') || filters.has('purchased') || filters.has('type'))
+  return target.feed === 'media'
 }
 
 function onlyFansMessageUrl(item: OnlyFansItem, profile: OnlyFansProfile): string | null {
@@ -360,6 +353,34 @@ export class OnlyFansProfiles {
     renameSync(`${target}.tmp`, target)
   }
 
+  private linkChatCreatorUsername(profile: OnlyFansProfile, username: string): void {
+    if (!(profile.chatId && this.adapter.key === 'onlyfans')) {
+      return
+    }
+    const owner = this.adapter.normalize(`${this.adapter.origin}/${username}`)
+    if (!owner || owner.chatId) {
+      return
+    }
+    for (const route of this.list()) {
+      if (route.chatId !== profile.chatId) {
+        continue
+      }
+      const saved = this.profiles.get(this.profileKey(route))
+      if (saved && saved.creatorUsername !== owner.username) {
+        saved.creatorUsername = owner.username
+        this.save(saved)
+      }
+    }
+    profile.creatorUsername = owner.username
+    this.save(profile)
+    const creator = this.get(owner.profileUrl)
+    const savedCreator = this.profiles.get(this.profileKey(creator))
+    if (savedCreator && savedCreator.linkedChatId !== profile.chatId) {
+      savedCreator.linkedChatId = profile.chatId
+      this.save(savedCreator)
+    }
+  }
+
   private async linkChatCreator(page: Page, profile: OnlyFansProfile): Promise<void> {
     if (!(profile.chatId && this.adapter.key === 'onlyfans')) {
       return
@@ -369,7 +390,7 @@ export class OnlyFansProfiles {
       href = await page
         .locator('h1.g-page-title a.g-user-name[href]')
         .first()
-        .getAttribute('href', { timeout: 5_000 })
+        .getAttribute('href', { timeout: 5000 })
     } catch {
       return
     }
@@ -382,16 +403,8 @@ export class OnlyFansProfiles {
     } catch {
       return
     }
-    if (!owner || owner.chatId) {
-      return
-    }
-    profile.creatorUsername = owner.username
-    this.save(profile)
-    const creator = this.get(owner.profileUrl)
-    const savedCreator = this.profiles.get(this.profileKey(creator))
-    if (savedCreator && savedCreator.linkedChatId !== profile.chatId) {
-      savedCreator.linkedChatId = profile.chatId
-      this.save(savedCreator)
+    if (owner && !owner.chatId) {
+      this.linkChatCreatorUsername(profile, owner.username)
     }
   }
 
@@ -569,6 +582,12 @@ export class OnlyFansProfiles {
   private collect(profile: OnlyFansProfile, payload: unknown): void {
     const items = new Map(profile.items.map((item) => [item.id, item]))
     for (const { item, mediaUrl } of this.adapter.items(payload)) {
+      if (
+        (profile.chatRoute === 'photos' || profile.chatRoute === 'videos') &&
+        item.category !== profile.chatRoute
+      ) {
+        continue
+      }
       const previous = items.get(item.id)
       items.set(item.id, { ...item, downloaded: previous?.downloaded ?? false })
       if (mediaUrl) {
@@ -603,6 +622,20 @@ export class OnlyFansProfiles {
     const pending = new Set<Promise<void>>()
     const handle = async (response: Response): Promise<void> => {
       const url = new URL(response.url())
+      if (
+        profile.chatId &&
+        this.adapter.key === 'onlyfans' &&
+        url.origin === this.adapter.origin &&
+        url.pathname === `/api2/v2/chats/${profile.chatId}` &&
+        response.ok()
+      ) {
+        const chat = record(await response.json())
+        const username = record(chat.withUser).username
+        if (typeof username === 'string') {
+          this.linkChatCreatorUsername(profile, username)
+        }
+        return
+      }
       if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && !response.ok()) {
         profile.state = [401, 403].includes(response.status()) ? 'auth-required' : 'error'
         finished = true
@@ -668,7 +701,7 @@ export class OnlyFansProfiles {
       })
       await this.linkChatCreator(page, profile)
       const deadline = Date.now() + 10 * 60 * 1000
-      while (!finished && Date.now() < deadline && Date.now() - lastResponse < 20_000) {
+      while (!finished && Date.now() < deadline && Date.now() - lastResponse < 90_000) {
         signal.throwIfAborted()
         const current = this.adapter.normalize(page.url())
         if (
@@ -684,8 +717,8 @@ export class OnlyFansProfiles {
             return
           }
           const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
-            .filter((element) => {
-              const bounds = element.getBoundingClientRect()
+            .map((element) => ({ element, bounds: element.getBoundingClientRect() }))
+            .filter(({ element, bounds }) => {
               return (
                 bounds.width > 300 &&
                 bounds.height > 200 &&
@@ -695,12 +728,25 @@ export class OnlyFansProfiles {
                 /auto|scroll/.test(getComputedStyle(element).overflowY)
               )
             })
-            .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))
-          if (candidates[0]) {
-            candidates[0].scrollBy(0, step)
-          } else {
-            window.scrollBy(0, step)
+          const contentPane = candidates.filter(
+            ({ bounds }) => bounds.left >= window.innerWidth * 0.45
+          )
+          const choices = contentPane.length > 0 ? contentPane : candidates
+          choices.sort((a, b) =>
+            contentPane.length > 0
+              ? b.bounds.left - a.bounds.left
+              : b.element.scrollHeight -
+                b.element.clientHeight -
+                (a.element.scrollHeight - a.element.clientHeight)
+          )
+          for (const { element } of choices) {
+            const before = element.scrollTop
+            element.scrollTop += step
+            if (element.scrollTop !== before) {
+              return
+            }
           }
+          window.scrollBy(0, step)
         }, this.adapter.scrollMode(profile))
         await delay(1500, undefined, { signal })
       }
@@ -815,7 +861,7 @@ export class OnlyFansProfiles {
               .items(await candidate.json())
               .some(({ item: entry }) => entry.id === mediaId)
           },
-          { timeout: 8_000 }
+          { timeout: 8000 }
         )
         // Register a rejection handler before navigation can fail.
         const responseResult = responsePromise.then(
@@ -829,7 +875,9 @@ export class OnlyFansProfiles {
         response = await responseResult
         payload = response?.ok() ? await response.json() : null
         if (
-          !this.adapter.items(payload).some(({ item: entry, mediaUrl }) => entry.id === mediaId && mediaUrl)
+          !this.adapter
+            .items(payload)
+            .some(({ item: entry, mediaUrl }) => entry.id === mediaId && mediaUrl)
         ) {
           const opened = await this.openCoveredMedia(page, item, profile, signal)
           if (opened) {
@@ -924,7 +972,10 @@ export class OnlyFansProfiles {
     if (!this.adapter.isSite(page.url())) {
       return null
     }
-    const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }))
+    const viewport = await page.evaluate(() => ({
+      width: window.innerWidth,
+      height: window.innerHeight
+    }))
     const visibleCovers: Locator[] = []
     for (const cover of await page.getByText('Click to open', { exact: true }).all()) {
       if (!(await cover.isVisible())) {
@@ -961,7 +1012,7 @@ export class OnlyFansProfiles {
       (matched) => matched,
       () => null
     )
-    await visibleCovers[0].click({ timeout: 5_000 })
+    await visibleCovers[0].click({ timeout: 5000 })
     return result
   }
 

@@ -86,7 +86,8 @@ const appendTasks = (
  */
 const groupRoots = (
   roots: DownloadRecord[],
-  savedProfileGroups?: ReadonlyMap<string, SavedSocialProfileGroup>
+  savedProfileGroups?: ReadonlyMap<string, SavedSocialProfileGroup>,
+  onlyFansChatOwners?: ReadonlyMap<string, string>
 ): {
   groups: Map<string, PlaylistGroup>
   order: Array<{ type: 'group'; id: string } | { type: 'single'; record: DownloadRecord }>
@@ -95,7 +96,8 @@ const groupRoots = (
   const order: Array<{ type: 'group'; id: string } | { type: 'single'; record: DownloadRecord }> =
     []
   for (const record of roots) {
-    const savedGroup = savedProfileGroups?.get(record.url) ?? resolveCreatorProfileGroup(record)
+    const savedGroup =
+      savedProfileGroups?.get(record.url) ?? resolveCreatorProfileGroup(record, onlyFansChatOwners)
     const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId
     if (groupId) {
       let group = groups.get(groupId)
@@ -147,12 +149,17 @@ const groupRoots = (
 export const buildDownloadListModel = (input: {
   records: DownloadRecord[]
   savedProfileGroups?: ReadonlyMap<string, SavedSocialProfileGroup>
+  onlyFansChatOwners?: ReadonlyMap<string, string>
   filtered: DownloadRecord[]
   contexts: DownloadRecord[]
   isExpanded: (groupId: string) => boolean
 }): DownloadListModel => {
   const tree = buildDownloadTaskTree(input.records, input.filtered, input.contexts)
-  const { groups, order } = groupRoots(tree.roots, input.savedProfileGroups)
+  const { groups, order } = groupRoots(
+    tree.roots,
+    input.savedProfileGroups,
+    input.onlyFansChatOwners
+  )
   const locations = new Map<string, DownloadListLocation>()
   const expandedRows: DownloadListRow[] = []
   const rows: DownloadListRow[] = []

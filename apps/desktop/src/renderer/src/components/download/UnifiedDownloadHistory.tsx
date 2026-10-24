@@ -33,6 +33,7 @@ import {
 import { getDownloadQueueProgress } from '@vidbee/ui/lib/download-queue-progress'
 import { prepareDownloadTransferTarget } from '@vidbee/ui/lib/download-transfer-target'
 import {
+  indexOnlyFansChatOwners,
   indexSavedSocialProfileGroups,
   type SavedSocialProfileGroup
 } from '@vidbee/ui/lib/saved-social-profile-groups'
@@ -158,6 +159,7 @@ export function UnifiedDownloadHistory({
   const [savedProfileGroups, setSavedProfileGroups] = useState<
     Map<string, SavedSocialProfileGroup>
   >(new Map())
+  const [onlyFansChatOwners, setOnlyFansChatOwners] = useState<Map<string, string>>(new Map())
   const [originFilter, setOriginFilter] = useState('all')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [stopAllOpen, setStopAllOpen] = useState(false)
@@ -165,14 +167,17 @@ export function UnifiedDownloadHistory({
   const listRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     let cancelled = false
-    void ipcServices.download
-      .listSocialProfiles()
-      .then((profiles) => {
+    void Promise.all([
+      ipcServices.download.listSocialProfiles(),
+      ipcServices.download.listOnlyFansProfiles()
+    ])
+      .then(([profiles, onlyFansProfiles]) => {
         if (!cancelled) {
           setSavedProfileGroups(indexSavedSocialProfileGroups(profiles))
+          setOnlyFansChatOwners(indexOnlyFansChatOwners(onlyFansProfiles))
         }
       })
-      .catch((error: unknown) => logger.warn('Failed to list saved social profiles:', error))
+      .catch((error: unknown) => logger.warn('Failed to list saved profile groups:', error))
     return () => {
       cancelled = true
     }
@@ -240,9 +245,17 @@ export function UnifiedDownloadHistory({
         filtered: filteredRecords,
         isExpanded,
         records: allRecords,
-        savedProfileGroups
+        savedProfileGroups,
+        onlyFansChatOwners
       }),
-    [allRecords, filteredRecords, isExpanded, originContexts, savedProfileGroups]
+    [
+      allRecords,
+      filteredRecords,
+      isExpanded,
+      originContexts,
+      savedProfileGroups,
+      onlyFansChatOwners
+    ]
   )
 
   const restoredFocusRef = useRef(false)
