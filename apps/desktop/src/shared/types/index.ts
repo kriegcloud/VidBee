@@ -8,6 +8,7 @@ import type { DownloadCookieSource, TaskCreationMetadata, TaskKind } from '@vidb
 import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import type { AsrTierId } from '@vidbee/transcription/asr'
 import type { DownloadMirror } from '@vidbee/transcription/download-mirrors'
+import type { ExtensionCookieSourcePreference } from '../extension-cookies'
 
 export type {
   YtDlpKernelPreparationStep,
@@ -381,6 +382,8 @@ export interface AppSettings {
   downloadWithoutChannelSubfolders: boolean
   browserForCookies: string
   cookiesPath: string
+  /** Remember extension profiles in cookie priority order, including offline sources. */
+  extensionCookieSources: ExtensionCookieSourcePreference[]
   proxy: string
   configPath: string
   language: LanguageCode
@@ -428,6 +431,7 @@ export const defaultSettings: AppSettings = {
   downloadWithoutChannelSubfolders: false,
   browserForCookies: 'none',
   cookiesPath: '',
+  extensionCookieSources: [],
   proxy: '',
   configPath: '',
   language: defaultLanguageCode,

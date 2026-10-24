@@ -67,7 +67,7 @@ overrides:
   ws: '>=8.21.0'
 
 patchedDependencies:
-  streamdown@2.7.1: b9f4b4ddd21e71ae25ac3a48f2cad926401bbcec4caada455414b4927f34662d
+  streamdown@2.7.1: ee6414d8e07422119ff128881bd445cb442f5abc4eb32096274bda7c9e115b2c
 
 importers:
 
@@ -364,6 +364,9 @@ importers:
       drizzle-orm:
         specifier: '>=0.45.2 <0.46'
         version: 0.45.2(@opentelemetry/api@1.9.1)(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)(kysely@0.29.5)
+      electron-ga4-telemetry:
+        specifier: github:nexmoe/electron-ga4-telemetry#12e35349b209228930fe42a7e89cd96217d8f3a7
+        version: https://codeload.github.com/nexmoe/electron-ga4-telemetry/tar.gz/12e35349b209228930fe42a7e89cd96217d8f3a7(electron@43.8.3(supports-color@7.2.0))
       electron-ipc-decorator:
         specifier: ^0.2.0
         version: 0.2.0(electron@43.8.3(supports-color@7.2.0))
@@ -388,6 +391,9 @@ importers:
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.3.1)
+      marked:
+        specifier: ^17.0.1
+        version: 17.0.6
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -417,7 +423,7 @@ importers:
         version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       streamdown:
         specifier: ^2.7.1
-        version: 2.7.1(patch_hash=b9f4b4ddd21e71ae25ac3a48f2cad926401bbcec4caada455414b4927f34662d)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@7.2.0)
+        version: 2.7.1(patch_hash=ee6414d8e07422119ff128881bd445cb442f5abc4eb32096274bda7c9e115b2c)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@7.2.0)
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
@@ -910,6 +916,18 @@ importers:
       '@shadcn/react':
         specifier: ^0.3.0
         version: 0.3.0(@types/react@19.3.0)(react@19.3.1)
+      '@streamdown/cjk':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2(supports-color@7.2.0))(react@19.3.1)(supports-color@7.2.0)(unified@11.0.5)
+      '@streamdown/code':
+        specifier: ^1.1.1
+        version: 1.1.1(react@19.3.1)
+      '@streamdown/math':
+        specifier: ^1.0.3
+        version: 1.0.3(react@19.3.1)(supports-color@7.2.0)
+      '@tanstack/react-virtual':
+        specifier: ^3.14.22
+        version: 3.14.22(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@vidbee/downloader-core':
         specifier: workspace:*
         version: link:../downloader-core
@@ -928,12 +946,18 @@ importers:
       i18next:
         specifier: ^25.6.0
         version: 25.10.10(typescript@7.0.2)
+      katex:
+        specifier: ^0.16.47
+        version: 0.16.47
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.3.1)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      pele:
+        specifier: ^1.9.0
+        version: 1.9.0
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -949,6 +973,9 @@ importers:
       sonner:
         specifier: ^2.0.7
         version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      streamdown:
+        specifier: ^2.5.0
+        version: 2.7.1(patch_hash=ee6414d8e07422119ff128881bd445cb442f5abc4eb32096274bda7c9e115b2c)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@7.2.0)
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
@@ -4892,6 +4919,16 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  electron-ga4-telemetry@https://codeload.github.com/nexmoe/electron-ga4-telemetry/tar.gz/12e35349b209228930fe42a7e89cd96217d8f3a7:
+    resolution: {gitHosted: true, integrity: sha512-tO1t2GseWVxSO2ZvgzJVkST9saL1psy1zrpjPRQSKUrbqTfHHejDjBnoq2iERG9Pxg0OcDeknsuQF0SsxCGeIA==, tarball: https://codeload.github.com/nexmoe/electron-ga4-telemetry/tar.gz/12e35349b209228930fe42a7e89cd96217d8f3a7}
+    version: 0.3.0
+    engines: {node: '>=22'}
+    peerDependencies:
+      electron: '>=43.4.1 <44'
+    peerDependenciesMeta:
+      electron:
+        optional: true
+
   electron-ipc-decorator@0.2.0:
     resolution: {integrity: sha512-7020pQ/8qdm+CkVQRQG1A0zhWERI4OFyCnULtcPFv4JJRE1rwfBKrKwWIxsoeFpjBEGEV1M7Ms5FGt2jLrMY5g==}
     engines: {node: '>=18.0.0'}
@@ -6267,6 +6304,11 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  marked@17.0.6:
+    resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   marked@18.0.5:
     resolution: {integrity: sha512-S6GcvALHg6K4ohtu4E7x0a1AqhAjp6cV8KhLSyN9qVapnzJkusVBxZRcIU9AeYsbe6P1hKDusSbEOzGyyuce6w==}
@@ -12512,6 +12554,10 @@ snapshots:
       - electron-builder-squirrel-windows
       - supports-color
 
+  electron-ga4-telemetry@https://codeload.github.com/nexmoe/electron-ga4-telemetry/tar.gz/12e35349b209228930fe42a7e89cd96217d8f3a7(electron@43.8.3(supports-color@7.2.0)):
+    optionalDependencies:
+      electron: 43.8.3(supports-color@7.2.0)
+
   electron-ipc-decorator@0.2.0(electron@43.8.3(supports-color@7.2.0)):
     dependencies:
       electron: 43.8.3(supports-color@7.2.0)
@@ -13925,6 +13971,8 @@ snapshots:
   many-keys-map@2.0.1: {}
 
   markdown-table@3.0.4: {}
+
+  marked@17.0.6: {}
 
   marked@18.0.5: {}
 
@@ -15534,7 +15582,7 @@ snapshots:
 
   stdin-discarder@0.3.1: {}
 
-  streamdown@2.7.1(patch_hash=b9f4b4ddd21e71ae25ac3a48f2cad926401bbcec4caada455414b4927f34662d)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@7.2.0):
+  streamdown@2.7.1(patch_hash=ee6414d8e07422119ff128881bd445cb442f5abc4eb32096274bda7c9e115b2c)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@7.2.0):
     dependencies:
       clsx: 2.1.1
       hast-util-to-jsx-runtime: 2.3.6(supports-color@7.2.0)

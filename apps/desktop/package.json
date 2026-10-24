@@ -1,6 +1,6 @@
 {
   "name": "vidbee",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Free, open-source desktop app to download media, create local transcripts, and ask AI",
   "main": "./out/main/index.js",
   "author": "VidBee",
@@ -87,6 +87,7 @@
     "conf": "^15.0.2",
     "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.2",
+    "electron-ga4-telemetry": "github:nexmoe/electron-ga4-telemetry#12e35349b209228930fe42a7e89cd96217d8f3a7",
     "electron-ipc-decorator": "^0.2.0",
     "electron-log": "^5.4.3",
     "electron-store": "^11.0.2",
@@ -95,6 +96,7 @@
     "jotai": "^2.15.0",
     "katex": "^0.16.47",
     "lucide-react": "^0.545.0",
+    "marked": "^17.0.1",
     "next-themes": "^0.4.6",
     "playwright-core": "^1.64.1",
     "pele": "^1.9.0",

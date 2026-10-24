@@ -56,6 +56,7 @@ import { ffmpegManager } from './ffmpeg-manager'
 import { galleryDlManager } from './gallery-dl-manager'
 import { MediaTransformExecutor } from './media-transform-executor'
 import { setDesktopTaskQueueRef } from './queue-ref'
+import { SubtitleDownloadExecutor } from './subtitle-download-executor'
 import {
   broadcastTranscriptForDownload,
   broadcastTranscriptPartials,
@@ -278,6 +279,7 @@ export const getDesktopTaskQueue = (): TaskQueueAPI => {
     byKind: {
       transcription: buildTranscriptionExecutor(),
       conversion: new MediaTransformExecutor(),
+      subtitles: new SubtitleDownloadExecutor(),
       'model-download': new AsrModelExecutor()
     }
   })

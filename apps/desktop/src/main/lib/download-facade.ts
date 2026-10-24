@@ -41,7 +41,7 @@ import {
 } from '@vidbee/downloader-core/social-media-service'
 import {
   downloadIdentity,
-  isMediaTaskKind,
+  isLibraryTaskKind,
   PRIORITY_USER,
   type Task,
   type TaskInput,
@@ -58,12 +58,12 @@ import type {
   VideoInfo,
   VideoInfoCommandResult
 } from '../../shared/types'
-import { buildPendingDownloadItem, hasDisplayMetadata } from '../../shared/utils/pending-download'
-import { buildVideoInfoDownloadMetadata } from '../../shared/utils/video-info-metadata'
+import { buildPendingDownloadItem } from '../../shared/utils/pending-download'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { cancelledPartTargets, deleteCancelledDownloadParts } from './cancelled-download-parts'
 import { toSharedSettings } from './command-utils'
+import { hydrateDownloadMetadata } from './download-metadata'
 import { shouldSurfaceQueuedDownload } from './download-queue-events'
 import { galleryDlManager } from './gallery-dl-manager'
 import { applyAutoVideoDownloadPath } from './path-resolver'
@@ -147,33 +147,11 @@ const applySequentialFilename = (options: DownloadOptions): DownloadOptions => {
   return { ...options, customFilenameTemplate: `${reserveSequentialIndex(dir)}.%(ext)s` }
 }
 
-/** Fill missing title/thumbnail metadata from yt-dlp before a task is queued. */
-const hydrateDownloadMetadata = async (options: DownloadOptions): Promise<DownloadOptions> => {
-  if (
-    hasDisplayMetadata(options) ||
-    resolveDownloadTaskKind(options.url, options.type) !== options.type
-  ) {
-    return options
-  }
-
-  try {
-    const info = await fetchVideoInfo(options.url)
-    const metadata = buildVideoInfoDownloadMetadata(info)
-    return {
-      ...options,
-      title: options.title ?? metadata.title,
-      thumbnail: options.thumbnail ?? metadata.thumbnail,
-      description: options.description ?? metadata.description,
-      channel: options.channel ?? metadata.channel,
-      uploader: options.uploader ?? metadata.uploader,
-      viewCount: options.viewCount ?? metadata.viewCount,
-      duration: options.duration ?? metadata.duration
-    }
-  } catch (err) {
-    logger.warn('download-facade: failed to hydrate video metadata', err)
-    return options
-  }
-}
+/** Hydrate display metadata only for kinds yt-dlp can probe; gallery and profile tasks map themselves. */
+const hydrateMediaDownloadMetadata = async (options: DownloadOptions): Promise<DownloadOptions> =>
+  resolveDownloadTaskKind(options.url, options.type) === options.type
+    ? hydrateDownloadMetadata(options)
+    : options
 
 const buildTaskInput = (id: string, options: DownloadOptions): TaskInput => {
   const settings = settingsManager.getAll()
@@ -242,7 +220,7 @@ export const prepareDownloadTaskInput = async (
   id: string,
   options: DownloadOptions
 ): Promise<TaskInput> => {
-  const hydrated = await hydrateDownloadMetadata(options)
+  const hydrated = await hydrateMediaDownloadMetadata(options)
   const resolved = applyAutoVideoDownloadPath(hydrated, settingsManager.getAll())
   ensureDirectoryExists(resolved.customDownloadPath)
   return buildTaskInput(id, resolved)
@@ -375,7 +353,7 @@ class DownloadFacade extends EventEmitter {
       this.emit('download-removed', event.taskId)
     })
     queue.on('snapshot-changed', (event) => {
-      if (!isMediaTaskKind(event.task.kind)) {
+      if (!isLibraryTaskKind(event.task.kind)) {
         return
       }
       const item = projectTaskForRenderer(event.task)
@@ -383,7 +361,7 @@ class DownloadFacade extends EventEmitter {
     })
     queue.on('transition', (event) => {
       const task = queue.get(event.taskId)
-      if (!(task && isMediaTaskKind(task.kind))) {
+      if (!(task && isLibraryTaskKind(task.kind))) {
         return
       }
       const item = projectTaskForRenderer(task)
@@ -529,7 +507,7 @@ class DownloadFacade extends EventEmitter {
         if (pending.cancelled) {
           return
         }
-        const hydratedOptions = await hydrateDownloadMetadata(resolvedOptions)
+        const hydratedOptions = await hydrateMediaDownloadMetadata(resolvedOptions)
         if (pending.cancelled) {
           return
         }
@@ -579,6 +557,9 @@ class DownloadFacade extends EventEmitter {
    * @param task Cancelled download task.
    */
   private async removeCancelledPartialFiles(task: Task): Promise<void> {
+    if (task.kind === 'subtitles') {
+      return
+    }
     try {
       const options = task.input.options ?? {}
       let configured = ''
@@ -848,7 +829,7 @@ class DownloadFacade extends EventEmitter {
     do {
       const page = this.queue.list({ limit: 200, cursor })
       for (const t of page.tasks) {
-        if (NON_TERMINAL.has(t.status) && isMediaTaskKind(t.kind)) {
+        if (NON_TERMINAL.has(t.status) && isLibraryTaskKind(t.kind)) {
           active.push(projectTaskForRenderer(t))
         }
       }

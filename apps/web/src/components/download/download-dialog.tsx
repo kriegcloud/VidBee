@@ -121,6 +121,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const videoInfoRequestId = useRef(0);
 	const { settings, updateSettings } = useWebDownloadSettings();
 
 	const [url, setUrl] = useState("");
@@ -237,6 +238,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				return;
 			}
 
+			const requestId = ++videoInfoRequestId.current;
 			setLoading(true);
 			setError(null);
 			setVideoInfo(null);
@@ -246,15 +248,23 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					url: trimmedUrl,
 					settings: readOrpcDownloadSettings(),
 				});
+				if (requestId !== videoInfoRequestId.current) {
+					return;
+				}
 				setVideoInfo(result.video);
 			} catch (fetchError) {
+				if (requestId !== videoInfoRequestId.current) {
+					return;
+				}
 				const message =
 					fetchError instanceof Error && fetchError.message
 						? fetchError.message
 						: t("errors.fetchInfoFailed");
 				setError(message);
 			} finally {
-				setLoading(false);
+				if (requestId === videoInfoRequestId.current) {
+					setLoading(false);
+				}
 			}
 		},
 		[t],
@@ -363,6 +373,10 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 
 	const handleParsePlaylistUrl = useCallback(
 		async (trimmedUrl: string) => {
+			videoInfoRequestId.current++;
+			setVideoInfo(null);
+			setLoading(false);
+			setError(null);
 			setOpen(true);
 			setActiveTab("playlist");
 			setPlaylistUrl(trimmedUrl);
@@ -554,6 +568,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		addUrlValue,
 		batchRequiresOneClick,
 		canConfirmAddUrl,
+		handleActiveTabChange,
 		handleConfirmAddUrl,
 		handleOpenAddUrlPopover,
 		hasAddUrlValue,
@@ -563,9 +578,11 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		submitUrl,
 	} = useAddUrlInteraction({
 		activeTab,
+		sourceUrl: activeTab === "playlist" ? playlistUrl : url,
 		isOneClickDownloadEnabled: settings.oneClickDownload,
 		isPlaylistBusy: playlistBusy,
 		isProfileBusy: profileBusy,
+		onActiveTabChange: setActiveTab,
 		onEmptyUrl: () => {
 			toast.error(t("errors.emptyUrl"));
 		},
@@ -1254,7 +1271,8 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					</div>
 				}
 				lockDialogHeight={lockDialogHeight}
-				onActiveTabChange={setActiveTab}
+				tabsDisabled={playlistBusy || profileBusy}
+				onActiveTabChange={handleActiveTabChange}
 				onOpenChange={setOpen}
 				open={open}
 				playlistTabContent={

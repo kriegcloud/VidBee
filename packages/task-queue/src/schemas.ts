@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const TaskKindSchema = z.enum([
   'video',
   'audio',
+  'subtitles',
   'playlist',
   'instagram-profile-category',
   'vsco-gallery',

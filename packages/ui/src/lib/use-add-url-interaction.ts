@@ -36,11 +36,15 @@ const resolveSubmittedUrl = async (
   }
 }
 
+type AddUrlTab = 'single' | 'playlist' | 'profile'
+
 interface UseAddUrlInteractionOptions {
-  activeTab: 'single' | 'playlist' | 'profile'
+  activeTab: AddUrlTab
+  sourceUrl: string
   isOneClickDownloadEnabled: boolean
   isPlaylistBusy: boolean
   isProfileBusy: boolean
+  onActiveTabChange: (tab: AddUrlTab) => void
   onEmptyUrl: () => void
   onInvalidUrl: () => void
   onOneClickDownload: (url: string) => Promise<boolean | undefined> | Promise<void> | boolean | void
@@ -60,6 +64,7 @@ interface UseAddUrlInteractionResult {
   batchRequiresOneClick: boolean
   canConfirmAddUrl: boolean
   hasAddUrlValue: boolean
+  handleActiveTabChange: (tab: AddUrlTab) => Promise<void>
   handleConfirmAddUrl: () => Promise<void>
   handleOpenAddUrlPopover: () => Promise<void>
   setAddUrlPopoverOpen: (open: boolean) => void
@@ -69,8 +74,11 @@ interface UseAddUrlInteractionResult {
 
 export const useAddUrlInteraction = ({
   activeTab,
+  sourceUrl,
   isOneClickDownloadEnabled,
   isPlaylistBusy,
+  isProfileBusy,
+  onActiveTabChange,
   onEmptyUrl,
   onInvalidUrl,
   onOneClickDownload,
@@ -91,6 +99,38 @@ export const useAddUrlInteraction = ({
   const addUrlValues = classifyIngestText(trimmedAddUrlValue).urls
   const batchRequiresOneClick = addUrlValues.length > 1 && !isOneClickDownloadEnabled
   const canConfirmAddUrl = addUrlValues.length > 0 && !batchRequiresOneClick
+
+  /** Fetch the current source in the selected mode instead of exposing an empty tab. */
+  const handleActiveTabChange = useCallback(
+    async (tab: AddUrlTab) => {
+      if (tab === activeTab || isPlaylistBusy || isProfileBusy) {
+        return
+      }
+      onActiveTabChange(tab)
+      if (tab === 'profile') {
+        // The profile tab keeps its own URL field and explicit inspect action.
+        return
+      }
+      const trimmedUrl = sourceUrl.trim()
+      if (!trimmedUrl) {
+        return
+      }
+      if (tab === 'playlist') {
+        await onParsePlaylist(trimmedUrl)
+        return
+      }
+      await onParseSingle(trimmedUrl)
+    },
+    [
+      activeTab,
+      sourceUrl,
+      isPlaylistBusy,
+      isProfileBusy,
+      onActiveTabChange,
+      onParsePlaylist,
+      onParseSingle
+    ]
+  )
 
   /** Keep the source popover alive until the first accepted task can fly from it. */
   const submitOneClickUrls = useCallback(
@@ -257,6 +297,7 @@ export const useAddUrlInteraction = ({
     batchRequiresOneClick,
     canConfirmAddUrl,
     hasAddUrlValue,
+    handleActiveTabChange,
     handleConfirmAddUrl,
     handleOpenAddUrlPopover,
     setAddUrlPopoverOpen,
