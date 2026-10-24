@@ -323,6 +323,44 @@ describe('OnlyFans browser mapping', () => {
     await profiles.stop()
   })
 
+  it('retries a transient failed post response before downloading another photo from that post', async () => {
+    const { profiles, page, dir } = setup()
+    const url = 'https://onlyfans.com/example'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    page.waitForResponse.mockResolvedValueOnce({
+      url: () => 'https://onlyfans.com/api2/v2/posts/100',
+      ok: () => false,
+      status: () => 403,
+      json: async () => ({})
+    })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(new Uint8Array([255, 216, 255, 217]), {
+            headers: { 'content-type': 'image/jpeg' }
+          })
+      )
+    )
+
+    const result = await profiles.download(url, '1', dir, new AbortController().signal, vi.fn())
+    expect(result.size).toBe(4)
+    expect(page.goto).toHaveBeenCalledTimes(3)
+    expect(page.goto).toHaveBeenNthCalledWith(
+      2,
+      'https://onlyfans.com/100/example',
+      expect.anything()
+    )
+    expect(page.goto).toHaveBeenNthCalledWith(
+      3,
+      'https://onlyfans.com/100/example',
+      expect.anything()
+    )
+    expect(profiles.get(url).items[0].downloaded).toBe(true)
+    await profiles.stop()
+  })
+
   it('does not mark an HTML error page as downloaded media', async () => {
     const { profiles, dir } = setup()
     const url = 'https://onlyfans.com/example'

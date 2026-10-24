@@ -697,36 +697,55 @@ export class OnlyFansProfiles {
       signal.throwIfAborted()
       const page = await this.browserPage()
       // Refresh expiring CDN URLs through a normal site navigation in the same session.
-      const responsePromise = page.waitForResponse(
-        async (response) => {
-          const url = new URL(response.url())
-          const matches = profile.chatId
-            ? onlyFansChatResponse(url, profile.chatId) ||
-              (url.origin === this.adapter.origin &&
-                url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}`)
-            : this.adapter.postResponse(url, item)
-          if (!(matches && profile.chatId && response.ok())) {
-            return matches
-          }
-          // A chat can load several message batches; wait for the requested attachment.
-          return this.adapter
-            .items(await response.json())
-            .some(({ item: candidate }) => candidate.id === mediaId)
-        },
-        { timeout: 30_000 }
-      )
-      // Register a rejection handler before navigation can fail.
-      const responseResult = responsePromise.then(
-        (response) => ({ response }),
-        () => ({ response: null })
-      )
-      await page.goto(onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile), {
-        waitUntil: 'domcontentloaded',
-        timeout: 45_000
-      })
-      const { response } = await responseResult
-      if (!response?.ok()) {
-        throw new Error('Open the dedicated browser and check your login and access to this post.')
+      let response: Response | null = null
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const responsePromise = page.waitForResponse(
+          async (candidate) => {
+            const url = new URL(candidate.url())
+            const matches = profile.chatId
+              ? onlyFansChatResponse(url, profile.chatId) ||
+                (url.origin === this.adapter.origin &&
+                  url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}`)
+              : this.adapter.postResponse(url, item)
+            if (!(matches && profile.chatId && candidate.ok())) {
+              return matches
+            }
+            // A chat can load several message batches; wait for the requested attachment.
+            return this.adapter
+              .items(await candidate.json())
+              .some(({ item: entry }) => entry.id === mediaId)
+          },
+          { timeout: 30_000 }
+        )
+        // Register a rejection handler before navigation can fail.
+        const responseResult = responsePromise.then(
+          (matched) => matched,
+          () => null
+        )
+        await page.goto(onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile), {
+          waitUntil: 'domcontentloaded',
+          timeout: 45_000
+        })
+        response = await responseResult
+        if (response?.ok() || !response || response.status() === 429) {
+          break
+        }
+        if (attempt === 0) {
+          await delay(1500, undefined, { signal })
+        }
+      }
+      if (!response) {
+        throw new Error(
+          'The post did not return media in the dedicated browser. Reopen it and retry.'
+        )
+      }
+      if (!response.ok()) {
+        if (response.status() === 429) {
+          throw new Error(`${this.adapter.name} asked to slow down. Retry later.`)
+        }
+        throw new Error(
+          `The post request failed (HTTP ${response.status()}). Check access in the dedicated browser.`
+        )
       }
       this.media.delete(this.key(profile.username, mediaId))
       this.collect(profile, await response.json())
