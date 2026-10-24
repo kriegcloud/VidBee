@@ -3,22 +3,25 @@
  *
  * Asset digests come from the GitHub release API for gdl-org/builds.
  */
-export const GALLERY_DL_RELEASE = '2026.09.10'
+// 1.33.0-dev: Instagram highlights, stories, and tagged posts moved to Relay
+// GraphQL queries (mikf/gallery-dl#9765, #9777); the REST endpoints now
+// return 500 or redirect to the home page.
+export const GALLERY_DL_RELEASE = '2026.10.22'
 
 export const GALLERY_DL_PLATFORM_ASSETS = {
   win32: {
     asset: 'gallery-dl_windows.exe',
     output: 'gallery-dl.exe',
-    sha256: '1c4a7f897f6cb0d75639a5905d2a0a1f1ee2fc6d881c2af97f289d7bba367ac2'
+    sha256: '15e5594b75791862689dcee14e49dd233790f150c263c322b4de780582113b6f'
   },
   darwin: {
     asset: 'gallery-dl_macos',
     output: 'gallery-dl_macos',
-    sha256: '35cbadf6f5c1594d866e3e4f1b6b84dcbdce1a1ed64430c5745b54d5aa55d07b'
+    sha256: 'f07ce45aabc3cc46a51f10d50863020284c701facdcd6b84ad5765da00e53626'
   },
   linux: {
     asset: 'gallery-dl_linux',
     output: 'gallery-dl_linux',
-    sha256: '527a85325e41679d414517b7bbf50f2f9ba39940b0d28c99b3b4dbfd09b48507'
+    sha256: '883ad543109bbf19547a8eddc4217255a0a44993fb75c9c113003765a10e5b45'
   }
 }

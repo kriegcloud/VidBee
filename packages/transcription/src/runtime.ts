@@ -1,7 +1,7 @@
 import { execFileSync, spawn } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
 import type { AsrTierId } from './asr-tiers'
 import { atomicWriteJson } from './atomic-file'
@@ -72,7 +72,10 @@ export const nodeVersionMeetsBaseline = (version: string, minMajor = MIN_NODE_MA
 
 export const probeCacheKey = (execPath: string): string => {
   try {
-    return `${execPath}:${statSync(execPath).mtimeMs}`
+    const stat = statSync(execPath)
+    // AppImage mounts get a random directory per launch, so key on the binary
+    // itself rather than its absolute path.
+    return `${basename(execPath)}:${stat.size}:${stat.mtimeMs}`
   } catch {
     return `${execPath}:missing`
   }

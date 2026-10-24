@@ -395,21 +395,31 @@ export const runDesktopTaskQueueMigration = (): MigrateResult => {
   queueDb.exec(TASK_QUEUE_DDL_V1)
   queueDb.exec(TRANSCRIPT_DDL_V1)
   if (fs.existsSync(standaloneQueueDb) && standaloneQueueDb !== taskQueueDbPath) {
-    try {
-      const escaped = standaloneQueueDb.replace(/'/g, "''")
-      queueDb.exec(`ATTACH DATABASE '${escaped}' AS legacy_tq`)
-      queueDb.exec(`
-        INSERT OR IGNORE INTO tasks SELECT * FROM legacy_tq.tasks;
-        INSERT OR IGNORE INTO attempts SELECT * FROM legacy_tq.attempts;
-      `)
-      queueDb.exec('DETACH DATABASE legacy_tq')
-      const migratedPath = `${standaloneQueueDb}.migrated`
-      if (!fs.existsSync(migratedPath)) {
-        fs.renameSync(standaloneQueueDb, migratedPath)
+    const migratedPath = `${standaloneQueueDb}.migrated`
+    if (fs.existsSync(migratedPath)) {
+      // The legacy queue was merged already. A later file at the old path was
+      // written by an outdated build; merging it again on every boot resurrects
+      // tasks the user has since deleted.
+      try {
+        fs.renameSync(standaloneQueueDb, `${migratedPath}-stale-${Date.now()}`)
+        logger.info('task-queue-migrate: set aside a stale standalone task-queue.db')
+      } catch (err) {
+        logger.warn('task-queue-migrate: could not set aside stale task-queue.db:', err)
       }
-      logger.info('task-queue-migrate: merged standalone task-queue.db into vidbee.db')
-    } catch (err) {
-      logger.warn('task-queue-migrate: could not merge standalone task-queue.db:', err)
+    } else {
+      try {
+        const escaped = standaloneQueueDb.replace(/'/g, "''")
+        queueDb.exec(`ATTACH DATABASE '${escaped}' AS legacy_tq`)
+        queueDb.exec(`
+          INSERT OR IGNORE INTO tasks SELECT * FROM legacy_tq.tasks;
+          INSERT OR IGNORE INTO attempts SELECT * FROM legacy_tq.attempts;
+        `)
+        queueDb.exec('DETACH DATABASE legacy_tq')
+        fs.renameSync(standaloneQueueDb, migratedPath)
+        logger.info('task-queue-migrate: merged standalone task-queue.db into vidbee.db')
+      } catch (err) {
+        logger.warn('task-queue-migrate: could not merge standalone task-queue.db:', err)
+      }
     }
   }
 

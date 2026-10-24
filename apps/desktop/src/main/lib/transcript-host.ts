@@ -62,6 +62,7 @@ import { enqueueAsrModelDownload, listAsrModelTasks, waitForAsrModelTask } from 
 import { getDatabaseConnection } from './database'
 import { ffmpegManager } from './ffmpeg-manager'
 import { type ImportLocalMediaResult, importLocalMediaFiles } from './import-local-media'
+import { createKeyedCoalescer, PROGRESS_IPC_INTERVAL_MS } from './ipc-coalescer'
 import { getDesktopTaskQueueRef, peekDesktopTaskQueueRef } from './queue-ref'
 import { resolveTaskSourceFile } from './source-file'
 import { readElectronLocaleHints } from './system-locale'
@@ -1070,31 +1071,55 @@ export const insertTranscriptSegment = (
   return { segmentId: inserted.segmentId, snapshot }
 }
 
-export const broadcastTranscriptPartials = (
-  downloadTaskId: string,
-  segments: PipelineSegment[]
-): void => {
-  const payload: TranscriptPartialEvent = {
-    downloadTaskId,
-    taskId: transcriptionPartials.getByDownload(downloadTaskId)?.taskId ?? '',
-    segments
-  }
+const sendToWindows = (channel: string, payload: unknown): void => {
   for (const window of BrowserWindow.getAllWindows()) {
     if (!window.isDestroyed()) {
-      window.webContents.send('transcript:partial', payload)
+      window.webContents.send(channel, payload)
     }
   }
 }
 
+// Each partial carries the whole segment list, so a burst (resume replay, fast
+// ASR chunks) only needs its latest payload. Hold emits to the progress rate.
+const partialBroadcasts = createKeyedCoalescer<TranscriptPartialEvent>({
+  intervalMs: PROGRESS_IPC_INTERVAL_MS,
+  merge: (_pending, next) => next,
+  emit: (_downloadTaskId, payload) => sendToWindows('transcript:partial', payload)
+})
+
+export const broadcastTranscriptPartials = (
+  downloadTaskId: string,
+  segments: PipelineSegment[]
+): void => {
+  partialBroadcasts.push(downloadTaskId, {
+    downloadTaskId,
+    taskId: transcriptionPartials.getByDownload(downloadTaskId)?.taskId ?? '',
+    segments
+  })
+}
+
 /** Publish transcript changes and admit any configured automatic skill runs. */
 export const broadcastTranscript = (snapshot: TranscriptSnapshot): void => {
+  // Keep partial and full updates ordered for the renderer.
+  partialBroadcasts.flush(snapshot.downloadTaskId)
   runAutoSkillsForTranscript(snapshot)
-  const list = toTranscriptListSnapshot(snapshot)
-  for (const window of BrowserWindow.getAllWindows()) {
-    if (!window.isDestroyed()) {
-      window.webContents.send('transcript:updated', list)
-    }
-  }
+  sendToWindows('transcript:updated', toTranscriptListSnapshot(snapshot))
+}
+
+/**
+ * Publish the stored state of one download's transcript without touching the
+ * media folder. Stage changes and queue transitions use this; detail views and
+ * finished imports still scan sidecar captions through getTranscriptSnapshot.
+ *
+ * @param downloadTaskId Parent download id.
+ */
+export const broadcastTranscriptForDownload = (downloadTaskId: string): void => {
+  broadcastTranscript(
+    finishTranscriptSnapshot(
+      readTranscriptView(downloadTaskId, { importSidecars: false, scanSidecars: false }),
+      true
+    )
+  )
 }
 
 export const subscribeTranscriptBroadcasts = (): void => {
@@ -1114,11 +1139,6 @@ export const subscribeTranscriptBroadcasts = (): void => {
     if (task.kind !== 'transcription' && event.type === 'snapshot-changed') {
       return
     }
-    broadcastTranscript(
-      finishTranscriptSnapshot(
-        readTranscriptView(downloadId, { importSidecars: false, scanSidecars: false }),
-        true
-      )
-    )
+    broadcastTranscriptForDownload(downloadId)
   })
 }

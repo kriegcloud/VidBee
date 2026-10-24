@@ -1193,7 +1193,9 @@ if (gotSingleInstanceLock) {
     activateMainWindow()
   })
 } else {
-  app.quit()
+  // The running instance already received this argv through 'second-instance'.
+  // Exit now; app.quit() would let the whole boot (database, IPC, window) run first.
+  app.exit(0)
 }
 
 app.on('child-process-gone', (_event, details) => {

@@ -57,10 +57,9 @@ import { galleryDlManager } from './gallery-dl-manager'
 import { MediaTransformExecutor } from './media-transform-executor'
 import { setDesktopTaskQueueRef } from './queue-ref'
 import {
-  broadcastTranscript,
+  broadcastTranscriptForDownload,
   broadcastTranscriptPartials,
   getModelManager,
-  getTranscriptSnapshot,
   getTranscriptStore,
   resolveTranscriptionBackend,
   resolveTranscriptionGpuKinds,
@@ -261,7 +260,8 @@ const buildTranscriptionExecutor = (): TranscriptionExecutor => {
       broadcastTranscriptPartials(downloadTaskId, segments)
     },
     onStage: ({ downloadTaskId }) => {
-      broadcastTranscript(getTranscriptSnapshot(downloadTaskId))
+      // Stage changes only need the stored heads; sidecar scans belong to detail reads.
+      broadcastTranscriptForDownload(downloadTaskId)
     }
   })
 }

@@ -19,6 +19,9 @@ import type {
 import { normalizeBrowserCookiesSettingForYtDlp } from './yt-dlp-args'
 
 const DEFAULT_MAX_CACHE_ENTRIES = 20
+// Instagram blocks the whole network or account for a while after a throttle;
+// further requests only extend it, so every profile scan waits this long.
+export const INSTAGRAM_RATE_LIMIT_COOLDOWN_MS = 15 * 60 * 1000
 const INSTAGRAM_PROFILE_GROUP_PREFIX = 'instagram_profile_group_'
 const INSTAGRAM_PROFILE_GROUP_KEY = 'instagram-profile'
 const INSTAGRAM_USERNAME_PATTERN = /^[A-Za-z0-9._]{1,30}$/
@@ -262,6 +265,10 @@ const runGalleryJson = (
       'extractor.instagram.vidbee-inspection=true',
       '--no-input',
       '--no-colors',
+      // gallery-dl retries 5xx and 429 five times by default; a mapping scan
+      // should report a throttle quickly instead of deepening it.
+      '--retries',
+      '1',
       ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
       ...(sleepBeforeExtraction ? ['--sleep-extractor', '6.0-12.0'] : []),
       ...extraArgs,
@@ -336,6 +343,11 @@ const runGalleryJson = (
             result.parseError = true
           }
         } else {
+          if (line.includes('Unable to load modules')) {
+            // Without the VidBee module gallery-dl silently falls back to its
+            // stock extractors, which emit no mapping progress.
+            result.parseError = true
+          }
           result.stderr = `${result.stderr}\n${line}`.slice(-16_384)
         }
         newline = stderrBuffer.indexOf('\n')
@@ -395,7 +407,13 @@ const inspectionFailureCode = (
   if (binaryMissing) {
     return 'binary-missing'
   }
-  if (/429|too many requests|rate.?limit/i.test(stderr)) {
+  // Instagram throttles with 429s, "please wait" 401s, and soft redirects to
+  // the home page; none of these are cookie problems.
+  if (
+    /429|too many requests|rate.?limit|please wait a few minutes|redirect to home page|temporarily blocked/i.test(
+      stderr
+    )
+  ) {
     return 'rate-limited'
   }
   if (
@@ -545,6 +563,7 @@ export class InstagramProfileInspector {
   private readonly clock: () => number
   private readonly maxCacheEntries: number
   private readonly options: InstagramProfileInspectorOptions
+  private rateLimitedUntil = 0
 
   constructor(options: InstagramProfileInspectorOptions) {
     this.options = options
@@ -735,7 +754,11 @@ export class InstagramProfileInspector {
       totalAssetCount: 0
     }
     const selected = requestedCategories ?? INSTAGRAM_PROFILE_CATEGORIES
-    this.save({ inspection, categoryUrls })
+    if (!cached) {
+      this.save({ inspection, categoryUrls })
+    }
+    // The dialog polls with no categories every second; that read must not
+    // rewrite the saved profile.
     if (selected.length === 0 || signal?.aborted) {
       return this.withMapping(inspection)
     }
@@ -753,131 +776,151 @@ export class InstagramProfileInspector {
       const incremental =
         previous?.incremental || previous?.state === 'ready' || previous?.state === 'empty'
       let summary: InstagramCategorySummary
-      try {
-        const categoryArgs = [
-          ...extraArgs,
-          '-o',
-          `extractor.instagram.vidbee-inspection-category=${category}`,
-          ...(this.options.storageDir
-            ? [
-                '-o',
-                `extractor.instagram.vidbee-known-profile=${path.join(this.options.storageDir, `${inspectionId}.json`)}`
-              ]
-            : [])
-        ]
-        if (mapping) {
-          mapping.category = category
-          mapping.state = 'queued'
-        }
-        const release = this.options.admission
-          ? await this.options.admission.acquire(url, signal)
-          : () => {}
-        if (!release || signal?.aborted) {
-          release?.()
-          break
-        }
-        if (mapping) {
-          mapping.state = 'running'
-        }
-        let result: GalleryJsonResult
-        try {
-          result = await runGalleryJson(
-            binaryPath,
-            categoryUrls[category],
-            categoryArgs,
-            true,
-            signal,
-            (progress) => {
-              const discovered = new Map((previous?.items ?? []).map((item) => [item.id, item]))
-              for (const item of progress.items.values()) {
-                const id = `${category}:${item.id}`
-                const prior = discovered.get(id)
-                if (!prior || item.assetCount >= prior.assetCount) {
-                  discovered.set(id, { ...item, id })
-                }
-              }
-              const items = [...discovered.values()]
-              const partial: InstagramCategorySummary = {
-                category,
-                incremental,
-                state: 'cancelled',
-                items,
-                cursor: progress.cursor ?? previous?.cursor,
-                sourceCount: items.length,
-                assetCount: items.reduce((total, item) => total + item.assetCount, 0),
-                mappedAt: this.clock()
-              }
-              inspection.categories = inspection.categories.map((entry) =>
-                entry.category === category ? partial : entry
-              )
-              inspection.complete = false
-              inspection.totalSourceCount = inspection.categories.reduce(
-                (total, entry) => total + entry.sourceCount,
-                0
-              )
-              inspection.totalAssetCount = inspection.categories.reduce(
-                (total, entry) => total + entry.assetCount,
-                0
-              )
-              this.save({ inspection, categoryUrls })
-            }
-          )
-        } finally {
-          release()
-        }
-        summary = result.cancelled
-          ? {
-              category,
-              state: 'cancelled',
-              sourceCount: 0,
-              assetCount: 0,
-              cursor: result.cursor ?? previous?.cursor
-            }
-          : toCategorySummary(category, result)
-        summary.incremental = incremental
-        const items = [...result.items.values()].map((item) => ({
-          ...item,
-          id: `${category}:${item.id}`
-        }))
-        // A failed refresh must not destroy references discovered by an earlier scan.
-        const merged = new Map((previous?.items ?? []).map((item) => [item.id, item]))
-        for (const item of items) {
-          const prior = merged.get(item.id)
-          if (result.cancelled && prior && prior.assetCount > item.assetCount) {
-            continue
-          }
-          const sameMedia = prior?.assetIds?.length
-            ? JSON.stringify([...prior.assetIds].sort()) ===
-              JSON.stringify([...(item.assetIds ?? [])].sort())
-            : prior?.assetCount === item.assetCount
-          merged.set(item.id, { ...item, downloaded: sameMedia && prior?.downloaded })
-        }
-        summary.items = [...merged.values()]
-        if (summary.state === 'unavailable' || summary.state === 'auth-required') {
-          summary.cursor = result.cursor ?? previous?.cursor
-        }
-        if (summary.items.length) {
-          if (summary.state === 'empty') {
-            summary.state = 'ready'
-          }
-          summary.sourceCount = summary.items.length
-          summary.assetCount = summary.items.reduce((total, item) => total + item.assetCount, 0)
-        }
-        summary.mappedAt = this.clock()
-        const user = resolveUserRecord(result.directoryMetadata[0])
-        inspection.profile.displayName =
-          readString(user, 'full_name', 'fullname') ?? inspection.profile.displayName
-        inspection.profile.avatarUrl =
-          readString(user, 'profile_pic_url_hd', 'profile_pic_url') ?? inspection.profile.avatarUrl
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error)
+      const cooldownUntil = this.rateLimitedUntil
+      if (cooldownUntil > this.clock()) {
+        // Do not spawn gallery-dl while Instagram is throttling this network.
         summary = {
           ...previous,
           category,
+          incremental,
           state: 'unavailable',
+          errorCode: 'rate-limited',
+          retryAfter: cooldownUntil,
           sourceCount: previous?.sourceCount ?? 0,
-          assetCount: previous?.assetCount ?? 0,
-          errorCode: inspectionFailureCode(message, /ENOENT|not found/i.test(message))
+          assetCount: previous?.assetCount ?? 0
+        }
+      } else {
+        try {
+          const categoryArgs = [
+            ...extraArgs,
+            '-o',
+            `extractor.instagram.vidbee-inspection-category=${category}`,
+            ...(this.options.storageDir
+              ? [
+                  '-o',
+                  `extractor.instagram.vidbee-known-profile=${path.join(this.options.storageDir, `${inspectionId}.json`)}`
+                ]
+              : [])
+          ]
+          if (mapping) {
+            mapping.category = category
+            mapping.state = 'queued'
+          }
+          const release = this.options.admission
+            ? await this.options.admission.acquire(url, signal)
+            : () => {}
+          if (!release || signal?.aborted) {
+            release?.()
+            break
+          }
+          if (mapping) {
+            mapping.state = 'running'
+          }
+          let result: GalleryJsonResult
+          try {
+            result = await runGalleryJson(
+              binaryPath,
+              categoryUrls[category],
+              categoryArgs,
+              true,
+              signal,
+              (progress) => {
+                const discovered = new Map((previous?.items ?? []).map((item) => [item.id, item]))
+                for (const item of progress.items.values()) {
+                  const id = `${category}:${item.id}`
+                  const prior = discovered.get(id)
+                  if (!prior || item.assetCount >= prior.assetCount) {
+                    discovered.set(id, { ...item, id })
+                  }
+                }
+                const items = [...discovered.values()]
+                const partial: InstagramCategorySummary = {
+                  category,
+                  incremental,
+                  state: 'cancelled',
+                  items,
+                  cursor: progress.cursor ?? previous?.cursor,
+                  sourceCount: items.length,
+                  assetCount: items.reduce((total, item) => total + item.assetCount, 0),
+                  mappedAt: this.clock()
+                }
+                inspection.categories = inspection.categories.map((entry) =>
+                  entry.category === category ? partial : entry
+                )
+                inspection.complete = false
+                inspection.totalSourceCount = inspection.categories.reduce(
+                  (total, entry) => total + entry.sourceCount,
+                  0
+                )
+                inspection.totalAssetCount = inspection.categories.reduce(
+                  (total, entry) => total + entry.assetCount,
+                  0
+                )
+                this.save({ inspection, categoryUrls })
+              }
+            )
+          } finally {
+            release()
+          }
+          summary = result.cancelled
+            ? {
+                category,
+                state: 'cancelled',
+                sourceCount: 0,
+                assetCount: 0,
+                cursor: result.cursor ?? previous?.cursor
+              }
+            : toCategorySummary(category, result)
+          summary.incremental = incremental
+          const items = [...result.items.values()].map((item) => ({
+            ...item,
+            id: `${category}:${item.id}`
+          }))
+          // A failed refresh must not destroy references discovered by an earlier scan.
+          const merged = new Map((previous?.items ?? []).map((item) => [item.id, item]))
+          for (const item of items) {
+            const prior = merged.get(item.id)
+            if (result.cancelled && prior && prior.assetCount > item.assetCount) {
+              continue
+            }
+            const sameMedia = prior?.assetIds?.length
+              ? JSON.stringify([...prior.assetIds].sort()) ===
+                JSON.stringify([...(item.assetIds ?? [])].sort())
+              : prior?.assetCount === item.assetCount
+            merged.set(item.id, { ...item, downloaded: sameMedia && prior?.downloaded })
+          }
+          summary.items = [...merged.values()]
+          if (summary.state === 'unavailable' || summary.state === 'auth-required') {
+            summary.cursor = result.cursor ?? previous?.cursor
+          }
+          if (summary.items.length) {
+            if (summary.state === 'empty') {
+              summary.state = 'ready'
+            }
+            summary.sourceCount = summary.items.length
+            summary.assetCount = summary.items.reduce((total, item) => total + item.assetCount, 0)
+          }
+          summary.mappedAt = this.clock()
+          const user = resolveUserRecord(result.directoryMetadata[0])
+          inspection.profile.displayName =
+            readString(user, 'full_name', 'fullname') ?? inspection.profile.displayName
+          inspection.profile.avatarUrl =
+            readString(user, 'profile_pic_url_hd', 'profile_pic_url') ??
+            inspection.profile.avatarUrl
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error)
+          summary = {
+            ...previous,
+            category,
+            state: 'unavailable',
+            sourceCount: previous?.sourceCount ?? 0,
+            assetCount: previous?.assetCount ?? 0,
+            errorCode: inspectionFailureCode(message, /ENOENT|not found/i.test(message))
+          }
+        }
+        if (summary.errorCode === 'rate-limited') {
+          this.rateLimitedUntil = this.clock() + INSTAGRAM_RATE_LIMIT_COOLDOWN_MS
+          summary.retryAfter = this.rateLimitedUntil
         }
       }
       inspection.categories = INSTAGRAM_PROFILE_CATEGORIES.map((key) =>

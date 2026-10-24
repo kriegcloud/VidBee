@@ -3,6 +3,7 @@ import {
   createRootRouteWithContext,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   redirect
 } from '@tanstack/react-router'
 import { useContext } from 'react'
@@ -10,11 +11,15 @@ import { AppLayout } from './app-layout'
 import { DesktopChromeContext } from './desktop-chrome'
 import { validateTranscriptTabSearch } from './lib/transcript-tab-search'
 import { transcriptRouteTransitionTypes } from './lib/transcript-view-transition'
-import { About } from './pages/About'
 import { Home } from './pages/Home'
-import { Settings } from './pages/Settings'
-import { Subscriptions } from './pages/Subscriptions'
-import { TranscriptPage } from './pages/Transcript'
+
+// Only the home page ships in the entry chunk. The transcript and settings
+// pages pull in the markdown, math, and diagram renderers, so they load on
+// first navigation instead of at every launch.
+const About = lazyRouteComponent(() => import('./pages/About'), 'About')
+const Settings = lazyRouteComponent(() => import('./pages/Settings'), 'Settings')
+const Subscriptions = lazyRouteComponent(() => import('./pages/Subscriptions'), 'Subscriptions')
+const TranscriptPage = lazyRouteComponent(() => import('./pages/Transcript'), 'TranscriptPage')
 
 export type SettingsTab =
   | 'account'

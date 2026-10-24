@@ -403,7 +403,8 @@ export const InstagramCategorySummarySchema = z.object({
     )
     .optional(),
   mappedAt: z.number().optional(),
-  errorCode: InstagramInspectionErrorCodeSchema.optional()
+  errorCode: InstagramInspectionErrorCodeSchema.optional(),
+  retryAfter: z.number().optional()
 })
 
 export const InstagramProfileInspectInputSchema = z.object({

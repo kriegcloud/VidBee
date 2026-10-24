@@ -21,7 +21,12 @@ export interface InstagramCategoryPreview {
     | 'network'
     | 'binary-missing'
     | 'unavailable'
+  /** Epoch ms after which Instagram throttling is expected to have lifted. */
+  retryAfter?: number
 }
+
+const formatRetryTime = (retryAfter: number): string =>
+  new Date(retryAfter).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
 export interface InstagramProfilePreviewData {
   mapping?: { category: InstagramProfileCategory; state: 'queued' | 'running' }
@@ -172,8 +177,22 @@ export const InstagramProfilePreview = ({
       )}
       {!inspection.complete && inspection.categories.some((category) => category.errorCode) && (
         <div className="mb-3 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-sm">
-          <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-          <span>{t('instagramProfile.partialHint')}</span>
+          {inspection.categories.some((category) => category.errorCode === 'rate-limited') ? (
+            <>
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+              <span>{t('instagramProfile.rateLimitedHint')}</span>
+            </>
+          ) : inspection.categories.some((category) => category.errorCode === 'auth-required') ? (
+            <>
+              <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+              <span>{t('instagramProfile.partialHint')}</span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+              <span>{t('instagramProfile.unavailableHint')}</span>
+            </>
+          )}
         </div>
       )}
 
@@ -233,7 +252,16 @@ export const InstagramProfilePreview = ({
                   : summary.state === 'cancelled'
                     ? t('instagramResume.stopped')
                     : summary.errorCode === 'rate-limited'
-                      ? t('profileCollections.rateLimited')
+                      ? [
+                          t('profileCollections.rateLimited'),
+                          summary.retryAfter
+                            ? t('instagramProfile.retryAfter', {
+                                time: formatRetryTime(summary.retryAfter)
+                              })
+                            : ''
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')
                       : summary.state === 'unscanned'
                         ? t('instagramResume.unscanned')
                         : summary.state === 'empty' && summary.category === 'stories'

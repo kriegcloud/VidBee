@@ -1,28 +1,30 @@
-"""VidBee Instagram profile extraction using the browser's paginated web API.
+"""VidBee Instagram profile extraction on top of gallery-dl's Relay GraphQL API.
 
-Operation IDs verified against Instagram's Relay bundles on 2026-09-10.
-Session tokens are read from the authenticated page and kept only in memory.
-The bundled gallery-dl still handles cookies, media parsing, and downloads.
+Verified against gallery-dl 1.33.0-dev (gdl-org/builds 2026.10.22). Upstream now
+serves posts, reels, tagged posts, highlights, and stories through Instagram's
+persisted Relay queries with automatic doc_id discovery, so VidBee only adds
+mapping progress, saved-reference resume, incremental stops, and change
+detection on top of it. Session tokens stay inside gallery-dl.
 """
 import json
-import re
 import sys
 
 from gallery_dl.extractor.instagram import (
     InstagramPostExtractor, InstagramPostsExtractor, InstagramReelsExtractor, InstagramStoriesExtractor,
-    InstagramHighlightsExtractor, InstagramTaggedExtractor, InstagramGraphqlAPI, shortcode_from_id,
+    InstagramHighlightsExtractor, InstagramTaggedExtractor, shortcode_from_id,
 )
+
+# Stop an incremental scan after this many consecutive already-mapped posts.
+KNOWN_RUN_STOP = 12
+HIGHLIGHT_CHUNK = 5
+PINNED_KEYS = ("pinned_for_users", "is_pinned", "timeline_pinned_user_ids", "clips_tab_pinned_user_ids")
+
+
+def emit_map(payload):
+    print("VIDBEE_MAP:" + json.dumps(payload, default=str), file=sys.stderr, flush=True)
 
 
 class InstagramWebMixin:
-    _POSTS_QUERY = ("38154989454116081", "PolarisProfilePostsQuery")
-    _POSTS_PAGE = ("39535953862670189", "PolarisProfilePostsTabContentQuery_connection")
-    _REELS_QUERY = ("37945290971781723", "PolarisProfileReelsTabContentQuery")
-    _REELS_PAGE = ("28170354102656082", "PolarisProfileReelsTabContentQuery_connection")
-    # The tagged tab's pagination query also serves the first page (verified 2026-09-28).
-    _TAGGED_PAGE = ("28412176455057653", "PolarisProfileTaggedTabContentQuery_connection")
-    _COUNT = 12
-
     def _saved_mapping(self):
         cached = getattr(self, "_saved_mapping_cache", None)
         if cached is not None:
@@ -39,8 +41,11 @@ class InstagramWebMixin:
         self._saved_mapping_cache = saved
         return saved
 
+    def _inspecting(self):
+        return bool(self.config("vidbee-inspection", False))
+
     def items(self):
-        inspecting = self.config("vidbee-inspection", False)
+        inspecting = self._inspecting()
         for message in super().items():
             if inspecting and message[0] == 3:
                 metadata = message[2]
@@ -51,156 +56,118 @@ class InstagramWebMixin:
                     "post_url", "post_id", "media_id", "type", "highlight_title", "description", "vidbee_source_version"
                 ) if key in metadata}
                 # Keep expiring CDN URLs and cookies out of the progress channel.
-                print("VIDBEE_MAP:" + json.dumps([3, "", reference], default=str),
-                      file=sys.stderr, flush=True)
+                emit_map([3, "", reference])
             yield message
 
     def _init(self):
         csrf = self.cookies.get("csrftoken", domain=".instagram.com")
         super()._init()
         if csrf:
+            # Keep the browser's CSRF token instead of gallery-dl's generated one.
             self.csrf_token = csrf
             self.cookies.set("csrftoken", csrf, domain=".instagram.com")
-        self._web_body = None
+        self._vidbee_resume_cursor = None
+        self._vidbee_track_cursor = False
+        self._vidbee_last_cursor = None
 
-    def _web_context(self):
-        page = self.request(f"{self.root}/{self.item}/").text
-        def module(name):
-            match = re.search(r'"' + name + r'"\s*,\s*\[\]\s*,', page)
-            if match:
-                try:
-                    return json.JSONDecoder().raw_decode(page[match.end():])[0]
-                except ValueError:
-                    pass
-            return {}
-        dtsg = module("DTSGInitialData").get("token", "")
-        lsd = module("LSD").get("token", "")
-        if not lsd:
-            raise self.exc.AbortExtraction("Instagram web session is unavailable; check your cookies.")
-        body = {
-            "av": self.cookies.get("ds_user_id", domain=".instagram.com") or "0",
-            "__user": "0", "__a": "1", "__d": "www", "__comet_req": "7",
-            "fb_dtsg": dtsg, "lsd": lsd,
-            "jazoest": "2" + str(sum(map(ord, dtsg))),
-            "fb_api_caller_class": "RelayModern", "server_timestamps": "true",
-        }
-        site = module("SiteData")
-        for key, field in (("__hs", "haste_session"), ("__hsi", "hsi"),
-                           ("__rev", "client_revision"), ("__spin_r", "__spin_r"),
-                           ("__spin_b", "__spin_b"), ("__spin_t", "__spin_t")):
-            if site.get(field) is not None:
-                body[key] = str(site[field])
-        self._web_body = body
+    # gallery-dl asks for the start cursor when the profile feed pagination
+    # begins and reports every page cursor afterwards. Nested media lookups
+    # paginate too, so the resume cursor is handed out exactly once.
+    def _init_cursor(self):
+        cursor = self._vidbee_resume_cursor
+        if cursor:
+            self._vidbee_resume_cursor = None
+            return cursor
+        return super()._init_cursor()
 
-    def _web_query(self, operation, variables):
-        if self._web_body is None:
-            self._web_context()
-        doc_id, name = operation
-        response = self.request(f"{self.root}/graphql/query", method="POST", data={
-            **self._web_body, "doc_id": doc_id, "fb_api_req_friendly_name": name,
-            "variables": json.dumps(variables),
-        }, headers={
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Origin": self.root, "Referer": f"{self.root}/{self.item}/",
-            "X-CSRFToken": self.csrf_token, "X-IG-App-ID": "936619743392459",
-            "X-FB-Friendly-Name": name, "X-FB-LSD": self._web_body["lsd"],
-            "Sec-Fetch-Dest": "empty", "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-origin",
-        }).json()
-        data = response.get("data")
-        if not isinstance(data, dict):
-            raise self.exc.AbortExtraction("Instagram rejected the profile query; check cookies or try again later.")
-        # Instagram can return nonfatal errors for unrelated location avatars.
-        # Required collection, pagination, and media fields are validated below.
-        return data
+    def _update_cursor(self, cursor):
+        if cursor and self._vidbee_track_cursor and cursor != self._vidbee_last_cursor and self._inspecting():
+            self._vidbee_last_cursor = cursor
+            emit_map([2, {"vidbee_cursor": cursor}])
+        return super()._update_cursor(cursor)
 
-    def _web_pages(self, reels=False, tagged=False):
-        uid = self.user_id if tagged else self.api.user_id(self.item) if reels else None
+    def _web_posts(self, nodes, resolve=None):
+        """Yield media for profile feed nodes, honoring saved references."""
         saved = self._saved_mapping()
-        cursor = saved.get("cursor") if saved.get("state") not in ("ready", "empty") else None
+        finished = saved.get("state") in ("ready", "empty")
+        incremental = finished or saved.get("incremental", False)
+        self._vidbee_resume_cursor = None if finished else saved.get("cursor")
+        self._vidbee_track_cursor = True
         known = {item["url"].rstrip("/").split("/")[-1] for item in saved.get("items", [])}
-        incremental = saved.get("state") in ("ready", "empty") or saved.get("incremental", False)
         known_run = 0
-        seen_cursors, seen_ids = set(), set()
-        while True:
-            if tagged:
-                variables = {
-                    "after": cursor, "before": None, "count": self._COUNT, "first": self._COUNT,
-                    "last": None, "user_id": uid,
-                    "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
-                }
-                operation = self._TAGGED_PAGE
-            elif reels:
-                variables = {
-                    "data": {"include_feed_video": True, "page_size": self._COUNT, "target_user_id": uid},
-                    "user_id" if cursor is None else "id": uid,
-                    "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
-                }
-                operation = self._REELS_QUERY if cursor is None else self._REELS_PAGE
-            else:
-                variables = {
-                    "data": {"count": self._COUNT, "include_reel_media_seen_timestamp": True,
-                             "include_relationship_info": True, "latest_besties_reel_media": True,
-                             "latest_reel_media": True},
-                    "username": self.item,
-                    "__relay_internal__pv__PolarisMultiCaptionCarouselEnabledrelayprovider": True,
-                    "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
-                    "__relay_internal__pv__PolarisReelsRecoDebugOverlayEnabledrelayprovider": False,
-                }
-                operation = self._POSTS_QUERY if cursor is None else self._POSTS_PAGE
-                if cursor is not None:
-                    variables.update({"before": None, "last": None, "include_multi_captions": True})
-            if cursor is not None and not tagged:
-                variables.update({"after": cursor, "first": self._COUNT})
-            data = self._web_query(operation, variables)
-            if tagged:
-                connection = data.get("xdt_api__v1__usertags__user_id__feed_connection")
-            elif reels:
-                connection = (data.get("fetch__XDTUserDict") or {}).get("clips_connection")
-            else:
-                connection = data.get("xdt_api__v1__feed__user_timeline_graphql_connection")
-            if not isinstance(connection, dict):
-                raise self.exc.AbortExtraction("Instagram returned no profile collection; download is incomplete.")
-            edges, page = connection.get("edges"), connection.get("page_info")
-            if not isinstance(edges, list) or not isinstance(page, dict) or not isinstance(page.get("has_next_page"), bool):
-                raise self.exc.AbortExtraction("Instagram returned invalid profile pagination; download is incomplete.")
-            for edge in edges:
-                post = (edge.get("node") or {})
-                if reels:
-                    post = post.get("media") or {}
-                media_id = post.get("pk")
-                if not media_id:
-                    raise self.exc.AbortExtraction("Instagram returned unreadable media; download is incomplete.")
-                if str(media_id) in seen_ids:
-                    continue
-                seen_ids.add(str(media_id))
-                shortcode = post.get("code") or shortcode_from_id(str(media_id))
-                if incremental and shortcode in known:
-                    if not (post.get("pinned_for_users") or post.get("is_pinned")):
-                        known_run += 1
-                    if known_run >= self._COUNT:
-                        return
-                    continue
-                known_run = 0
-                if reels or tagged:
-                    # Grid nodes omit video formats, dates, and carousel item IDs. Resolve the actual media.
-                    items = self.api.media(shortcode_from_id(str(media_id)))
-                    post = next(iter(items), None)
-                    if not post:
-                        raise self.exc.AbortExtraction("Instagram media details are unavailable; download is incomplete.")
-                location = post.get("location")
-                if location and "short_name" not in location:
-                    location["short_name"] = location.get("name") or "location"
-                self._validate_media(post)
-                post.pop("__typename", None)  # Web nodes use the REST media shape.
-                yield post
-            if not page["has_next_page"]:
-                return
-            cursor = page.get("end_cursor")
-            if not isinstance(cursor, str) or not cursor or cursor in seen_cursors:
-                raise self.exc.AbortExtraction("Instagram pagination did not advance; download is incomplete.")
-            seen_cursors.add(cursor)
-            if getattr(self, "config", lambda key, default=None: default)("vidbee-inspection", False):
-                print("VIDBEE_MAP:" + json.dumps([2, {"vidbee_cursor": cursor}]), file=sys.stderr, flush=True)
+        seen_ids = set()
+        for node in nodes:
+            media_id = node.get("pk") or node.get("id")
+            if not media_id:
+                raise self.exc.AbortExtraction("Instagram returned unreadable media; mapping is incomplete.")
+            media_id = str(media_id)
+            if media_id in seen_ids:
+                continue
+            seen_ids.add(media_id)
+            shortcode = node.get("code") or shortcode_from_id(media_id)
+            if incremental and shortcode in known:
+                if not any(node.get(key) for key in PINNED_KEYS):
+                    known_run += 1
+                if known_run >= KNOWN_RUN_STOP:
+                    return
+                continue
+            known_run = 0
+            post = node
+            if resolve is not None:
+                # Grid nodes omit video formats, dates, and carousel item IDs.
+                post = next(iter(resolve(shortcode)), None)
+                if not post:
+                    raise self.exc.AbortExtraction("Instagram media details are unavailable; download is incomplete.")
+            self._validate_media(post)
+            yield post
+
+    # Instagram's Relay bundle (checked 2026-10-22) declares these provided
+    # variables for the profile tab queries. Omitting any of them makes the
+    # server answer "missing_required_variable_value" with HTTP 200, which the
+    # stock extractor reports as KeyError: 'data'.
+    _TAB_PROVIDERS = {
+        "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
+        "__relay_internal__pv__PolarisSEOIsCrawlerrelayprovider": False,
+    }
+    _POSTS_PROVIDERS = {
+        "__relay_internal__pv__PolarisMultiCaptionCarouselEnabledrelayprovider": True,
+        "__relay_internal__pv__PolarisThreadsStyleCommentsEnabledrelayprovider": False,
+        "__relay_internal__pv__PolarisReelsRecoDebugOverlayEnabledrelayprovider": False,
+    }
+
+    def _user_feed(self):
+        variables = {
+            "after": None, "before": None,
+            "data": {"count": 12, "include_reel_media_seen_timestamp": True, "include_relationship_info": True,
+                     "latest_besties_reel_media": True, "latest_reel_media": True},
+            "first": 12, "include_multi_captions": True, "last": None,
+            "username": self.api.user(self.item)["username"],
+            **self._TAB_PROVIDERS, **self._POSTS_PROVIDERS,
+        }
+        return self.api._pagination_graphql(
+            "PolarisProfilePostsTabContentQuery_connection", variables,
+            "xdt_api__v1__feed__user_timeline_graphql_connection")
+
+    def _user_reels(self):
+        user_id = str(self.api.user(self.item)["id"])
+        variables = {
+            "after": "",
+            "data": {"include_feed_video": True, "page_size": 12, "target_user_id": user_id},
+            "first": 12, "id": user_id,
+            **self._TAB_PROVIDERS,
+        }
+        return self.api._pagination_graphql(
+            "PolarisProfileReelsTabContentQuery_connection", variables, "fetch__XDTUserDict")
+
+    def _user_tagged(self):
+        variables = {
+            "after": None, "before": None, "count": 12, "first": 12, "last": None,
+            "user_id": str(self.api.user(self.item)["id"]),
+            **self._TAB_PROVIDERS,
+        }
+        return self.api._pagination_graphql(
+            "PolarisProfileTaggedTabContentQuery_connection", variables,
+            "xdt_api__v1__usertags__user_id__feed_connection")
 
     def _validate_media(self, post):
         for media in post.get("carousel_media") or [post]:
@@ -220,14 +187,15 @@ class VidBeeInstagramPostsExtractor(InstagramWebMixin, InstagramPostsExtractor):
     pattern = r"(?:https?://)?(?:www\.)?instagram\.com/([^/?#]+)/(?:posts|photos)/?(?:[?#]|$)"
 
     def posts(self):
-        return self._web_pages()
+        return self._web_posts(self._user_feed())
 
 
 class VidBeeInstagramReelsExtractor(InstagramWebMixin, InstagramReelsExtractor):
     pattern = r"(?:https?://)?(?:www\.)?instagram\.com/([^/?#]+)/reels/?(?:[?#]|$)"
 
     def posts(self):
-        return self._web_pages(reels=True)
+        nodes = (reel.get("media") or {} for reel in self._user_reels())
+        return self._web_posts(nodes, resolve=self.api.media)
 
 
 class VidBeeInstagramStoriesExtractor(InstagramWebMixin, InstagramStoriesExtractor):
@@ -237,52 +205,32 @@ class VidBeeInstagramStoriesExtractor(InstagramWebMixin, InstagramStoriesExtract
 class VidBeeInstagramHighlightsExtractor(InstagramWebMixin, InstagramHighlightsExtractor):
     pattern = InstagramHighlightsExtractor.pattern
 
-    def _init(self):
-        super()._init()
-        self._rest_highlights_tray = self.api.highlights_tray
-        self.api.highlights_tray = self._highlights_tray
-
-    def _highlights_tray(self, user_id):
-        try:
-            tray = self._rest_highlights_tray(user_id)
-        except self.exc.AbortExtraction as error:
-            # Some accounts redirect this REST endpoint while the web tray works.
-            if "HTTP redirect to home page" not in str(error):
-                raise
-            # Use the authenticated highlights query also used by Instaloader.
-            data = InstagramGraphqlAPI(self)._call("7c16654f22c819fb63d1183034a5162f", {
-                "user_id": user_id, "include_chaining": False, "include_reel": False,
-                "include_suggested_users": False, "include_logged_out_extras": False,
-                "include_highlight_reels": True,
-            })
-            connection = (data.get("user") or {}).get("edge_highlight_reels")
-            if not isinstance(connection, dict) or not isinstance(connection.get("edges"), list):
-                raise self.exc.AbortExtraction("Instagram returned no highlights collection; mapping is incomplete.")
-            tray = [{**edge["node"], "id": "highlight:" + str(edge["node"]["id"]).removeprefix("highlight:")}
-                    for edge in connection["edges"]]
+    def posts(self):
+        tray = self.api.highlights_tray(self.item)
         saved = self._saved_mapping()
         known = {item["url"].rstrip("/").split("/")[-1]: item
                  for item in saved.get("items", [])}
         self._highlight_versions = {}
-        changed = []
+        reel_ids = []
         for highlight in tray:
-            identifier = str(highlight["id"]).removeprefix("highlight:")
+            reel_id = str(highlight["id"])
+            identifier = reel_id.removeprefix("highlight:")
             # Only skip when Instagram provides both freshness and item-count evidence.
             modified, count = highlight.get("latest_reel_media"), highlight.get("media_count")
             version = f"{modified}:{count}" if modified is not None and count is not None else None
             if version:
                 self._highlight_versions[identifier] = version
             previous = known.get(identifier, {})
-            if not (version and (saved.get("state") in ("ready", "empty") or saved.get("incremental"))
-                    and previous.get("sourceVersion") == version and previous.get("assetCount") == count):
-                changed.append(highlight)
-        return changed
-
+            if version and (saved.get("state") in ("ready", "empty") or saved.get("incremental")) \
+                    and previous.get("sourceVersion") == version and previous.get("assetCount") == count:
+                continue
+            reel_ids.append(reel_id)
+        for offset in range(0, len(reel_ids), HIGHLIGHT_CHUNK):
+            yield from self.api.reels_media(reel_ids[offset:offset + HIGHLIGHT_CHUNK])
 
 
 class VidBeeInstagramTaggedExtractor(InstagramWebMixin, InstagramTaggedExtractor):
     pattern = InstagramTaggedExtractor.pattern
 
     def posts(self):
-        # The REST usertags feed is aggressively rate limited; the web tab query is not.
-        return self._web_pages(tagged=True)
+        return self._web_posts(self._user_tagged(), resolve=self.api.media)

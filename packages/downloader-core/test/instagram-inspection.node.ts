@@ -6,6 +6,7 @@ import { test } from 'node:test'
 import type { TaskQueueAPI } from '@vidbee/task-queue'
 import {
   enqueueInstagramProfileDownload,
+  INSTAGRAM_RATE_LIMIT_COOLDOWN_MS,
   InstagramProfileInspector
 } from '../src/instagram-profile'
 
@@ -39,7 +40,47 @@ console.log(JSON.stringify(result))
   assert.equal(result.categories.find((x) => x.category === 'posts')?.state, 'auth-required')
   assert.equal(result.categories.find((x) => x.category === 'reels')?.errorCode, 'rate-limited')
   assert.equal(result.categories.find((x) => x.category === 'reels')?.assetCount, 1)
-  assert.equal(result.categories.find((x) => x.category === 'stories')?.state, 'empty')
+  assert.equal(result.categories.find((x) => x.category === 'highlights')?.state, 'empty')
+  // Categories after a throttle are not scanned; they inherit the cooldown.
+  assert.equal(result.categories.find((x) => x.category === 'stories')?.errorCode, 'rate-limited')
+})
+
+test('a throttled scan pauses further gallery-dl launches until the cooldown passes', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'vidbee-instagram-cooldown-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const log = join(dir, 'calls.jsonl')
+  const launcher = join(dir, 'gallery')
+  writeFileSync(
+    launcher,
+    `#!/usr/bin/env node
+require('node:fs').appendFileSync(${JSON.stringify(log)}, JSON.stringify(process.argv.at(-1))+'\\n')
+console.log(JSON.stringify([[-1,{error:'AbortExtraction',message:'HTTP redirect to home page (https://www.instagram.com/)'}]]))
+`,
+    { mode: 0o755 }
+  )
+  let now = 1_000_000
+  const inspector = new InstagramProfileInspector({
+    resolveBinaryPath: () => launcher,
+    resolveExtraArgs: () => [],
+    clock: () => now
+  })
+  const launches = (): number => readFileSync(log, 'utf8').trim().split('\n').filter(Boolean).length
+  const first = await inspector.inspect('https://www.instagram.com/fixture/')
+  assert.equal(launches(), 1)
+  assert.ok(
+    first.categories.every(
+      (category) => category.state === 'unavailable' && category.errorCode === 'rate-limited'
+    )
+  )
+  assert.equal(first.categories[0]?.retryAfter, now + INSTAGRAM_RATE_LIMIT_COOLDOWN_MS)
+  const throttled = await inspector.inspect('https://www.instagram.com/other/', undefined, [
+    'posts'
+  ])
+  assert.equal(launches(), 1)
+  assert.equal(throttled.categories.find((x) => x.category === 'posts')?.errorCode, 'rate-limited')
+  now += INSTAGRAM_RATE_LIMIT_COOLDOWN_MS + 1
+  await inspector.inspect('https://www.instagram.com/other/', undefined, ['posts'])
+  assert.equal(launches(), 2)
 })
 
 test('concurrent profile scans share duplicate requests and serialize different profiles', async (t) => {

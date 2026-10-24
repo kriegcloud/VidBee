@@ -950,9 +950,21 @@ const resolveExtractorArgs = (galleries: {
   if (galleries.tiktokPhoto) {
     return TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS
   }
-  return galleries.vscoGallery
-    ? VSCO_GALLERY_DL_EXTRACTOR_ARGS
-    : INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS
+  if (galleries.vscoGallery) {
+    return VSCO_GALLERY_DL_EXTRACTOR_ARGS
+  }
+  // Each Instagram item is its own gallery-dl process, so the in-process
+  // request interval never spaces the first request. Pace launches and keep
+  // retries short so a throttle is reported instead of hammered.
+  return [
+    ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
+    '--sleep-extractor',
+    '4.0-8.0',
+    '--retries',
+    '2',
+    '--sleep-429',
+    '60'
+  ]
 }
 
 export const shouldUseGalleryDl = (url: string): boolean => {

@@ -297,6 +297,8 @@ export interface InstagramCategorySummary {
   sourceCount: number
   assetCount: number
   errorCode?: InstagramInspectionErrorCode
+  /** Epoch ms after which Instagram throttling is expected to have lifted. */
+  retryAfter?: number
   items?: InstagramProfileItem[]
   mappedAt?: number
 }

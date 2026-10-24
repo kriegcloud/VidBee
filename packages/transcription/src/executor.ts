@@ -134,6 +134,7 @@ export class TranscriptionExecutor implements Executor {
   private readonly opts: TranscriptionExecutorOptions
   private readonly providerSelectionProbes = new Map<string, Promise<SherpaProviderSelection>>()
   private readonly providerSelections = new Map<string, SherpaProviderSelection>()
+  private runtimeResolution: Promise<WorkerRuntime> | null = null
 
   constructor(opts: TranscriptionExecutorOptions) {
     this.opts = opts
@@ -229,9 +230,14 @@ export class TranscriptionExecutor implements Executor {
     })
 
     let persistDir: string | null = null
+    let lastStage: TranscriptionStage | null = null
     const emitProgress = (stage: TranscriptionStage, percent: number | null, ticks: number) => {
       const next = transcriptionPartials.setStage(ctx.taskId, parsed.downloadTaskId, stage)
-      if (persistDir) {
+      // Progress arrives for every recognized chunk and heartbeat; the manifest
+      // and the host's stage broadcast only change when the stage does.
+      const stageChanged = stage !== lastStage
+      lastStage = stage
+      if (stageChanged && persistDir) {
         try {
           saveManifestStages(persistDir, next.stageHistory)
         } catch (error) {
@@ -241,11 +247,13 @@ export class TranscriptionExecutor implements Executor {
           }
         }
       }
-      this.opts.onStage?.({
-        taskId: ctx.taskId,
-        downloadTaskId: parsed.downloadTaskId,
-        stage
-      })
+      if (stageChanged) {
+        this.opts.onStage?.({
+          taskId: ctx.taskId,
+          downloadTaskId: parsed.downloadTaskId,
+          stage
+        })
+      }
       events.onProgress({
         taskId: ctx.taskId,
         attemptId: ctx.attemptId,
@@ -413,6 +421,25 @@ export class TranscriptionExecutor implements Executor {
   }
 
   private async resolveRuntime(
+    events: ExecutorEvents,
+    ctx: ExecutorContext
+  ): Promise<WorkerRuntime> {
+    // Candidate discovery runs synchronous `node -v` style probes on the host
+    // thread, so resolve once per process and only retry after a failure.
+    if (this.runtimeResolution) {
+      return this.runtimeResolution
+    }
+    const resolution = this.resolveRuntimeUncached(events, ctx)
+    this.runtimeResolution = resolution
+    resolution.catch(() => {
+      if (this.runtimeResolution === resolution) {
+        this.runtimeResolution = null
+      }
+    })
+    return resolution
+  }
+
+  private resolveRuntimeUncached(
     events: ExecutorEvents,
     ctx: ExecutorContext
   ): Promise<WorkerRuntime> {
