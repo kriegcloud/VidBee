@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "Na fila",
+    "mappingNow": "Mapeando",
+    "allSites": "Todos",
+    "filterBySite": "Filtrar por site",
     "savedProfiles": "Perfis salvos",
     "searchSavedProfiles": "Pesquisar perfis salvos...",
     "noMatchingProfiles": "Nenhum perfil correspondente",

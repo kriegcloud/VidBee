@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "대기 중",
+    "mappingNow": "매핑 중",
+    "allSites": "전체",
+    "filterBySite": "사이트별 필터",
     "savedProfiles": "저장된 프로필",
     "searchSavedProfiles": "저장된 프로필 검색...",
     "noMatchingProfiles": "일치하는 프로필이 없습니다",

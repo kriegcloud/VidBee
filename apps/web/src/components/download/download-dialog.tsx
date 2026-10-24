@@ -33,7 +33,10 @@ import { Label } from "@vidbee/ui/components/ui/label";
 import { OnlyFansProfileDialog } from "@vidbee/ui/components/ui/onlyfans-profile-dialog";
 import { ProfileCollectionDialog } from "@vidbee/ui/components/ui/profile-collection-dialog";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
-import { SavedInstagramProfiles } from "@vidbee/ui/components/ui/saved-instagram-profiles";
+import {
+	SavedInstagramProfiles,
+	socialPlatformLabels,
+} from "@vidbee/ui/components/ui/saved-instagram-profiles";
 import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
 import { SocialProfileDialog } from "@vidbee/ui/components/ui/social-profile-dialog";
 import { WebmThumbnailNotice } from "@vidbee/ui/components/ui/webm-thumbnail-notice";
@@ -1046,27 +1049,55 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					<div className="flex items-center gap-2">
 						<SavedInstagramProfiles
 							loadProfiles={async () => [
-								...(await orpcClient.instagramProfile.list()).profiles,
+								...(await orpcClient.instagramProfile.list()).profiles.map(
+									(profile) => ({
+										...profile,
+										platform: "instagram",
+										platformLabel: "Instagram",
+									}),
+								),
 								...(await orpcClient.fanslyProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
+									platform: "fansly",
+									platformLabel: "Fansly",
+									mapping:
+										profile.state === "mapping"
+											? ({ state: "running" } as const)
+											: undefined,
 									profile: {
-										username: `${profile.username} · Fansly`,
+										username: profile.username,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: profile.items.length,
 								})),
 								...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
+									platform: "onlyfans",
+									platformLabel: "OnlyFans",
+									mapping:
+										profile.state === "mapping"
+											? ({ state: "running" } as const)
+											: undefined,
 									profile: {
-										username: `${profile.chatId ? t("onlyFans.chat", { id: profile.chatId }) : profile.username} · OnlyFans`,
+										username: profile.chatId
+											? t("onlyFans.chat", { id: profile.chatId })
+											: profile.username,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: profile.items.length,
 								})),
 								...(await orpcClient.socialProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
+									platform: profile.platform,
+									platformLabel:
+										socialPlatformLabels[profile.platform] ?? profile.platform,
+									mapping: Object.values(profile.categories).some(
+										(category) => category.state === "mapping",
+									)
+										? ({ state: "running" } as const)
+										: undefined,
 									profile: {
-										username: `${profile.owner} · ${profile.platform === "x" ? "X" : profile.platform === "redgifs" ? "Redgifs" : profile.platform === "facebook" ? "Facebook" : "TikTok"}`,
+										username: profile.owner,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: Object.values(profile.categories).reduce(

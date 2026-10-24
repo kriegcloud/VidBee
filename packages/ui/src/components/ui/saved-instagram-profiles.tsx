@@ -1,16 +1,34 @@
 import { FolderOpen, Loader2, Search } from 'lucide-react'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from './button'
 import { Input } from './input'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 
-interface SavedProfile {
+const REFRESH_INTERVAL_MS = 4000
+const ACTIVE_FILTER = 'active'
+const ALL_FILTER = 'all'
+
+export interface SavedProfile {
   mapping?: { state: 'queued' | 'running' }
   inspectionId: string
+  /** Stable site key used by the site filter, e.g. `instagram` or `onlyfans`. */
+  platform: string
+  /** Human readable site name shown beside the username. */
+  platformLabel: string
   profile: { username: string; profileUrl: string }
   totalAssetCount: number
 }
+
+/** Display names for the saved social profile platforms. */
+export const socialPlatformLabels: Record<string, string> = {
+  facebook: 'Facebook',
+  redgifs: 'Redgifs',
+  tiktok: 'TikTok',
+  x: 'X'
+}
+
+const isActive = (profile: SavedProfile) => profile.mapping !== undefined
 
 export function SavedInstagramProfiles({
   loadProfiles,
@@ -25,20 +43,50 @@ export function SavedInstagramProfiles({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+  const [siteFilter, setSiteFilter] = useState<string>(ALL_FILTER)
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([])
   const listId = useId()
+
+  const activeCount = useMemo(() => profiles.filter(isActive).length, [profiles])
+
+  const sites = useMemo(() => {
+    const counts = new Map<string, { label: string; count: number }>()
+    for (const profile of profiles) {
+      const entry = counts.get(profile.platform)
+      if (entry) {
+        entry.count += 1
+      } else {
+        counts.set(profile.platform, { label: profile.platformLabel, count: 1 })
+      }
+    }
+    return [...counts.entries()]
+      .map(([platform, entry]) => ({ platform, ...entry }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  }, [profiles])
+
   const filteredProfiles = useMemo(() => {
     const search = query.trim().toLocaleLowerCase()
-    if (!search) {
-      return profiles
-    }
-    return profiles.filter(({ profile }) =>
-      `${profile.username} ${profile.profileUrl}`.toLocaleLowerCase().includes(search)
-    )
-  }, [profiles, query])
+    const matching = profiles.filter((profile) => {
+      if (siteFilter === ACTIVE_FILTER) {
+        if (!isActive(profile)) {
+          return false
+        }
+      } else if (siteFilter !== ALL_FILTER && profile.platform !== siteFilter) {
+        return false
+      }
+      if (!search) {
+        return true
+      }
+      return `${profile.profile.username} ${profile.platformLabel} ${profile.profile.profileUrl}`
+        .toLocaleLowerCase()
+        .includes(search)
+    })
+    // Surface the profiles that are mapping right now without reordering the rest.
+    return [...matching.filter(isActive), ...matching.filter((profile) => !isActive(profile))]
+  }, [profiles, query, siteFilter])
 
   useEffect(() => {
     optionRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' })
@@ -49,17 +97,55 @@ export function SavedInstagramProfiles({
     onSelect(profile.profile.profileUrl)
   }
 
-  const load = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setProfiles(await loadProfiles())
-    } catch (failure) {
-      setError(failure instanceof Error ? failure.message : t('instagramProfile.scanFailed'))
-    } finally {
-      setLoading(false)
+  const load = useCallback(
+    async (silent = false) => {
+      if (!silent) {
+        setLoading(true)
+      }
+      setError(null)
+      try {
+        setProfiles(await loadProfiles())
+      } catch (failure) {
+        setError(failure instanceof Error ? failure.message : t('instagramProfile.scanFailed'))
+      } finally {
+        if (!silent) {
+          setLoading(false)
+        }
+      }
+    },
+    [loadProfiles, t]
+  )
+
+  // Hold the latest loader so a re-rendered parent cannot keep resetting the timer below.
+  const loadRef = useRef(load)
+  useEffect(() => {
+    loadRef.current = load
+  }, [load])
+
+  // Keep the mapping indicators honest while the dropdown stays open.
+  useEffect(() => {
+    if (!open) {
+      return
     }
+    const timer = setInterval(() => {
+      void loadRef.current(true)
+    }, REFRESH_INTERVAL_MS)
+    return () => {
+      clearInterval(timer)
+    }
+  }, [open])
+
+  const resetActive = () => {
+    setActiveIndex(0)
+    listRef.current?.scrollTo({ top: 0 })
   }
+
+  const filterChipClass = (selected: boolean) =>
+    `shrink-0 cursor-pointer rounded-full border px-2 py-0.5 text-xs transition-colors ${
+      selected
+        ? 'border-primary bg-primary text-primary-foreground'
+        : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+    }`
 
   return (
     <Popover
@@ -67,6 +153,7 @@ export function SavedInstagramProfiles({
         setOpen(nextOpen)
         if (nextOpen) {
           setQuery('')
+          setSiteFilter(ALL_FILTER)
           setActiveIndex(0)
           void load()
         }
@@ -81,7 +168,7 @@ export function SavedInstagramProfiles({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-80 p-1"
+        className="w-96 p-1"
         onOpenAutoFocus={(event) => {
           event.preventDefault()
           inputRef.current?.focus()
@@ -104,8 +191,7 @@ export function SavedInstagramProfiles({
             className="pl-8"
             onChange={(event) => {
               setQuery(event.target.value)
-              setActiveIndex(0)
-              listRef.current?.scrollTo({ top: 0 })
+              resetActive()
             }}
             onKeyDown={(event) => {
               if (event.key === 'ArrowDown' && filteredProfiles.length > 0) {
@@ -132,6 +218,52 @@ export function SavedInstagramProfiles({
             value={query}
           />
         </div>
+        {sites.length > 1 || activeCount > 0 ? (
+          <div
+            aria-label={t('instagramResume.filterBySite')}
+            className="flex flex-wrap gap-1 px-1 pb-1"
+            role="group"
+          >
+            <button
+              aria-pressed={siteFilter === ALL_FILTER}
+              className={filterChipClass(siteFilter === ALL_FILTER)}
+              onClick={() => {
+                setSiteFilter(ALL_FILTER)
+                resetActive()
+              }}
+              type="button"
+            >
+              {t('instagramResume.allSites')} {profiles.length}
+            </button>
+            {activeCount > 0 ? (
+              <button
+                aria-pressed={siteFilter === ACTIVE_FILTER}
+                className={filterChipClass(siteFilter === ACTIVE_FILTER)}
+                onClick={() => {
+                  setSiteFilter(ACTIVE_FILTER)
+                  resetActive()
+                }}
+                type="button"
+              >
+                {t('instagramResume.mappingNow')} {activeCount}
+              </button>
+            ) : null}
+            {sites.map((site) => (
+              <button
+                aria-pressed={siteFilter === site.platform}
+                className={filterChipClass(siteFilter === site.platform)}
+                key={site.platform}
+                onClick={() => {
+                  setSiteFilter(site.platform)
+                  resetActive()
+                }}
+                type="button"
+              >
+                {site.label} {site.count}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div
           aria-label={t('instagramResume.savedProfiles')}
           className="max-h-72 overflow-y-auto"
@@ -176,15 +308,23 @@ export function SavedInstagramProfiles({
                 type="button"
               >
                 <span className="min-w-0 flex-1 truncate">@{profile.profile.username}</span>
-                <span className="shrink-0 text-muted-foreground text-xs">
-                  {profile.mapping
-                    ? t(
-                        profile.mapping.state === 'queued'
-                          ? 'instagramResume.queued'
-                          : 'instagramProfile.scanning'
-                      )
-                    : t('instagramProfile.assetTotal', { count: profile.totalAssetCount })}
+                <span className="shrink-0 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground uppercase tracking-wide">
+                  {profile.platformLabel}
                 </span>
+                {profile.mapping ? (
+                  <span className="flex shrink-0 items-center gap-1 text-primary text-xs">
+                    <Loader2 aria-hidden className="size-3 animate-spin" />
+                    {t(
+                      profile.mapping.state === 'queued'
+                        ? 'instagramResume.queued'
+                        : 'instagramResume.mappingNow'
+                    )}
+                  </span>
+                ) : (
+                  <span className="shrink-0 text-muted-foreground text-xs">
+                    {t('instagramProfile.assetTotal', { count: profile.totalAssetCount })}
+                  </span>
+                )}
               </button>
             ))
           )}

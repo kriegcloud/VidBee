@@ -2026,15 +2026,16 @@
   },
   "instagramResume": {
     "queued": "Queued",
+    "mappingNow": "Mapping",
+    "allSites": "All",
+    "filterBySite": "Filter by site",
     "savedProfiles": "Saved profiles",
     "searchSavedProfiles": "Search saved profiles...",
     "noMatchingProfiles": "No matching profiles",
     "noSavedProfiles": "No saved profiles yet. Open an Instagram profile to start mapping.",
-
     "stop": "Stop mapping",
     "stopping": "Stopping…",
     "stopped": "Mapping stopped. Discovered items are saved; refresh to continue.",
-
     "map": "Map",
     "retry": "Refresh / retry",
     "unscanned": "Not mapped yet",

@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "В очереди",
+    "mappingNow": "Сканирование",
+    "allSites": "Все",
+    "filterBySite": "Фильтр по сайту",
     "savedProfiles": "Сохранённые профили",
     "searchSavedProfiles": "Поиск сохранённых профилей...",
     "noMatchingProfiles": "Подходящих профилей нет",

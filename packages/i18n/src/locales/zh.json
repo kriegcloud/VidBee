@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "排队中",
+    "mappingNow": "映射中",
+    "allSites": "全部",
+    "filterBySite": "按站点筛选",
     "savedProfiles": "已保存的主页",
     "searchSavedProfiles": "搜索已保存的主页...",
     "noMatchingProfiles": "没有匹配的主页",

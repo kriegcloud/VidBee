@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "Dalam antrean",
+    "mappingNow": "Memetakan",
+    "allSites": "Semua",
+    "filterBySite": "Filter menurut situs",
     "savedProfiles": "Profil tersimpan",
     "searchSavedProfiles": "Cari profil tersimpan...",
     "noMatchingProfiles": "Tidak ada profil yang cocok",

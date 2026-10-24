@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "Sırada",
+    "mappingNow": "Eşleniyor",
+    "allSites": "Tümü",
+    "filterBySite": "Siteye göre filtrele",
     "savedProfiles": "Kaydedilen profiller",
     "searchSavedProfiles": "Kaydedilen profilleri ara...",
     "noMatchingProfiles": "Eşleşen profil yok",

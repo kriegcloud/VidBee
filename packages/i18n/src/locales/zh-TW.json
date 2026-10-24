@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "排隊中",
+    "mappingNow": "對應中",
+    "allSites": "全部",
+    "filterBySite": "依站台篩選",
     "savedProfiles": "已儲存的個人檔案",
     "searchSavedProfiles": "搜尋已儲存的個人檔案...",
     "noMatchingProfiles": "找不到相符的個人檔案",

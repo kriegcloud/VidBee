@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "في قائمة الانتظار",
+    "mappingNow": "جارٍ الفهرسة",
+    "allSites": "الكل",
+    "filterBySite": "تصفية حسب الموقع",
     "savedProfiles": "الملفات الشخصية المحفوظة",
     "searchSavedProfiles": "ابحث في الملفات الشخصية المحفوظة...",
     "noMatchingProfiles": "لا توجد ملفات شخصية مطابقة",

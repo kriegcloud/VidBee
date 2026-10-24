@@ -2026,6 +2026,9 @@
   },
   "instagramResume": {
     "queued": "待機中",
+    "mappingNow": "マッピング中",
+    "allSites": "すべて",
+    "filterBySite": "サイトで絞り込む",
     "savedProfiles": "保存済みプロフィール",
     "searchSavedProfiles": "保存済みプロフィールを検索...",
     "noMatchingProfiles": "一致するプロフィールがありません",

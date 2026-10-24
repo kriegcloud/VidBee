@@ -31,7 +31,10 @@ import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { OnlyFansProfileDialog } from '@vidbee/ui/components/ui/onlyfans-profile-dialog'
 import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collection-dialog'
-import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
+import {
+  SavedInstagramProfiles,
+  socialPlatformLabels
+} from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
 import { SocialProfileDialog } from '@vidbee/ui/components/ui/social-profile-dialog'
 import { WebmThumbnailNotice } from '@vidbee/ui/components/ui/webm-thumbnail-notice'
@@ -1119,27 +1122,48 @@ export function DownloadDialog({
           <div className="flex items-center gap-2">
             <SavedInstagramProfiles
               loadProfiles={async () => [
-                ...(await ipcServices.download.listInstagramProfiles()),
+                ...(await ipcServices.download.listInstagramProfiles()).map((profile) => ({
+                  ...profile,
+                  platform: 'instagram',
+                  platformLabel: 'Instagram'
+                })),
                 ...(await ipcServices.download.listFanslyProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
+                  platform: 'fansly',
+                  platformLabel: 'Fansly',
+                  mapping:
+                    profile.state === 'mapping' ? ({ state: 'running' } as const) : undefined,
                   profile: {
-                    username: `${profile.username} · Fansly`,
+                    username: profile.username,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: profile.items.length
                 })),
                 ...(await ipcServices.download.listOnlyFansProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
+                  platform: 'onlyfans',
+                  platformLabel: 'OnlyFans',
+                  mapping:
+                    profile.state === 'mapping' ? ({ state: 'running' } as const) : undefined,
                   profile: {
-                    username: `${profile.chatId ? t('onlyFans.chat', { id: profile.chatId }) : profile.username} · OnlyFans`,
+                    username: profile.chatId
+                      ? t('onlyFans.chat', { id: profile.chatId })
+                      : profile.username,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: profile.items.length
                 })),
                 ...(await ipcServices.download.listSocialProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
+                  platform: profile.platform,
+                  platformLabel: socialPlatformLabels[profile.platform] ?? profile.platform,
+                  mapping: Object.values(profile.categories).some(
+                    (category) => category.state === 'mapping'
+                  )
+                    ? ({ state: 'running' } as const)
+                    : undefined,
                   profile: {
-                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : profile.platform === 'redgifs' ? 'Redgifs' : profile.platform === 'facebook' ? 'Facebook' : 'TikTok'}`,
+                    username: profile.owner,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: Object.values(profile.categories).reduce(
