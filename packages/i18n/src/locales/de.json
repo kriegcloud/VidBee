@@ -382,6 +382,8 @@
     "openFolder": "Ordner öffnen",
     "openInBrowser": "Klicken, um im Browser zu öffnen",
     "openSourceInBrowser": "Im Browser öffnen",
+    "viewDetail": "Details anzeigen",
+    "fileCount": "{{count}} Dateien",
     "removeAction": "Entfernen",
     "removeItem": "Element entfernen",
     "deleteFile": "Datei löschen",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Gespeicherte Profile durchsuchen...",
     "noMatchingProfiles": "Keine passenden Profile",
     "noSavedProfiles": "Noch keine gespeicherten Profile. Öffne ein Instagram-Profil, um die Erfassung zu starten.",
-
     "stop": "Erfassung stoppen",
     "stopping": "Wird gestoppt…",
     "stopped": "Erfassung gestoppt. Gefundene Elemente sind gespeichert. Zum Fortfahren aktualisieren.",
-
     "map": "Erfassen",
     "retry": "Aktualisieren / erneut versuchen",
     "unscanned": "Noch nicht erfasst",

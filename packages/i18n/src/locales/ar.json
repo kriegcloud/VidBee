@@ -382,6 +382,8 @@
     "openFolder": "فتح المجلد",
     "openInBrowser": "انقر لفتح في المتصفح",
     "openSourceInBrowser": "فتح في المتصفح",
+    "viewDetail": "عرض التفاصيل",
+    "fileCount": "{{count}} ملف",
     "removeAction": "إزالة",
     "removeItem": "إزالة العنصر",
     "deleteFile": "حذف الملف",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "ابحث في الملفات الشخصية المحفوظة...",
     "noMatchingProfiles": "لا توجد ملفات شخصية مطابقة",
     "noSavedProfiles": "لا توجد ملفات شخصية محفوظة بعد. افتح ملفًا شخصيًا على Instagram لبدء المسح.",
-
     "stop": "إيقاف المسح",
     "stopping": "جارٍ الإيقاف…",
     "stopped": "تم إيقاف المسح وحفظ العناصر المكتشفة. حدّث للمتابعة.",
-
     "map": "حصر العناصر",
     "retry": "تحديث / إعادة المحاولة",
     "unscanned": "لم تُحصر بعد",

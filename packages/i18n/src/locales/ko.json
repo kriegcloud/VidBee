@@ -382,6 +382,8 @@
     "openFolder": "폴더 열기",
     "openInBrowser": "브라우저에서 열려면 클릭",
     "openSourceInBrowser": "브라우저에서 열기",
+    "viewDetail": "세부 정보 보기",
+    "fileCount": "파일 {{count}}개",
     "removeAction": "제거",
     "removeItem": "항목 제거",
     "deleteFile": "파일 삭제",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "저장된 프로필 검색...",
     "noMatchingProfiles": "일치하는 프로필이 없습니다",
     "noSavedProfiles": "저장된 프로필이 없습니다. Instagram 프로필을 열어 매핑을 시작하세요.",
-
     "stop": "매핑 중지",
     "stopping": "중지 중…",
     "stopped": "매핑이 중지되었습니다. 발견한 항목은 저장되었습니다. 새로 고침하여 계속하세요.",
-
     "map": "목록 가져오기",
     "retry": "새로고침 / 재시도",
     "unscanned": "아직 가져오지 않음",

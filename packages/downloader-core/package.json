@@ -18,6 +18,7 @@
     "./instagram-profile": "./src/instagram-profile.ts",
     "./format-selector": "./src/format-selector.ts",
     "./schemas": "./src/schemas.ts",
+    "./pinterest": "./src/pinterest.ts",
     "./output-path": "./src/output-path.ts",
     "./audio-format-preferences": "./src/audio-format-preferences.ts",
     "./subtitle-languages": "./src/subtitle-languages.ts",

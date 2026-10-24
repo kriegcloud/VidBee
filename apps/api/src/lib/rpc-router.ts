@@ -11,7 +11,8 @@ import {
   expandTikTokShortLink,
   planPlaylistDownloadOrder,
   playlistEntryGroupKey,
-  resolveDownloadTaskKind
+  resolveDownloadTaskKind,
+  shouldUseGalleryDl
 } from '@vidbee/downloader-core'
 import { isMappedProfilePostUrl } from '@vidbee/downloader-core/mapped-profile-source'
 import { resolveAutoVideoDownloadPath } from '@vidbee/downloader-core/output-path'
@@ -481,15 +482,15 @@ export const rpcRouter = os.router({
       const batchTitle = `@${profile.owner}`
       let count = 0
       for (const [index, item] of items.entries()) {
-        if (profile.platform === 'redgifs' || profile.platform === 'facebook') {
+        if (profile.platform !== 'x' && profile.platform !== 'tiktok') {
           await taskQueue.add({
             input: {
               url: item.url,
-              kind: item.videos > 0 ? 'video' : 'facebook-gallery',
+              kind: resolveDownloadTaskKind(item.url, 'video'),
               title: item.title,
               options: {
                 type: 'video',
-                singleVideo: item.videos > 0,
+                singleVideo: !shouldUseGalleryDl(item.url) && item.videos > 0,
                 customDownloadPath: input.destination,
                 settings,
                 batchId,

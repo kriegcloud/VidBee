@@ -382,6 +382,8 @@
     "openFolder": "Apri Cartella",
     "openInBrowser": "Clicca per aprire nel browser",
     "openSourceInBrowser": "Apri nel browser",
+    "viewDetail": "Vedi dettagli",
+    "fileCount": "{{count}} file",
     "removeAction": "Rimuovi",
     "removeItem": "Rimuovi Elemento",
     "deleteFile": "Elimina File",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Cerca tra i profili salvati...",
     "noMatchingProfiles": "Nessun profilo corrispondente",
     "noSavedProfiles": "Nessun profilo salvato. Apri un profilo Instagram per avviare la scansione.",
-
     "stop": "Interrompi scansione",
     "stopping": "Interruzione…",
     "stopped": "Scansione interrotta. Gli elementi trovati sono salvati; aggiorna per continuare.",
-
     "map": "Esplora",
     "retry": "Aggiorna / riprova",
     "unscanned": "Non ancora esplorato",

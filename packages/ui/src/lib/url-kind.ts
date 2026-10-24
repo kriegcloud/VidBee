@@ -1,5 +1,6 @@
 import { normalizeDzenProfileUrl } from '@vidbee/downloader-core/dzen-profile'
 import { normalizeFacebookGalleryUrl } from '@vidbee/downloader-core/facebook-gallery'
+import { normalizePinterestUrl } from '@vidbee/downloader-core/pinterest'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { normalizeThreadsUrl } from '@vidbee/downloader-core/threads'
 import { normalizeTikTokPhotoUrl } from '@vidbee/downloader-core/tiktok-photo'
@@ -9,6 +10,8 @@ export const isFacebookGalleryUrl = (value: string): boolean =>
 
 /** TikTok photo-mode posts download as an image set; video posts stay on yt-dlp. */
 export const isTikTokPhotoUrl = (value: string): boolean => normalizeTikTokPhotoUrl(value) !== null
+
+export const isPinterestUrl = (value: string): boolean => normalizePinterestUrl(value) !== null
 
 export const isThreadsUrl = (value: string): boolean => normalizeThreadsUrl(value) !== null
 

@@ -382,6 +382,8 @@
     "openFolder": "Ouvrir le Dossier",
     "openInBrowser": "Cliquez pour ouvrir dans le navigateur",
     "openSourceInBrowser": "Ouvrir dans le navigateur",
+    "viewDetail": "Voir le détail",
+    "fileCount": "{{count}} fichiers",
     "removeAction": "Supprimer",
     "removeItem": "Supprimer l'Élément",
     "deleteFile": "Supprimer le Fichier",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Rechercher des profils enregistrés...",
     "noMatchingProfiles": "Aucun profil correspondant",
     "noSavedProfiles": "Aucun profil enregistré. Ouvrez un profil Instagram pour commencer l’analyse.",
-
     "stop": "Arrêter l’analyse",
     "stopping": "Arrêt en cours…",
     "stopped": "Analyse arrêtée. Les éléments trouvés sont enregistrés ; actualisez pour continuer.",
-
     "map": "Recenser",
     "retry": "Actualiser / réessayer",
     "unscanned": "Pas encore recensé",

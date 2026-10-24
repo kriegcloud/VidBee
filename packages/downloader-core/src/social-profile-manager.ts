@@ -14,6 +14,7 @@ import type { GalleryDlExecutorOptions } from './gallery-dl-executor'
 import type { GalleryDlProfileMapRuntime } from './gallery-dl-json-run'
 import type { MappedProfilePlatform } from './mapped-profile-source'
 import { resolveMappedProfileSource } from './mapped-profile-source'
+import { mapPinterestProfile } from './pinterest-profile-map'
 import { mapRedGifsProfile } from './redgifs-profile-service'
 import {
   mapSocialMediaProfile,
@@ -39,13 +40,16 @@ export interface SocialProfileManagerOptions {
 const PRE_AGGREGATED: ReadonlySet<MappedProfilePlatform> = new Set<MappedProfilePlatform>([
   'facebook',
   'vsco',
-  'threads'
+  'threads',
+  'pinterest'
 ])
 
 const profileSource = (value: string) => {
   const source = resolveMappedProfileSource(value)
   if (!source) {
-    throw new Error('Enter a Facebook, X, TikTok, Redgifs, VSCO, or Threads profile URL.')
+    throw new Error(
+      'Enter a Facebook, X, TikTok, Redgifs, VSCO, Threads, or Pinterest profile URL.'
+    )
   }
   return source
 }
@@ -158,6 +162,9 @@ export class SocialProfileManager {
         signal,
         onItem
       )
+    }
+    if (platform === 'pinterest') {
+      return mapPinterestProfile(url, owner, runtime, settings, signal, onItem)
     }
     if (platform === 'vsco') {
       return mapVscoProfile(url, owner, runtime, settings, signal, onItem)

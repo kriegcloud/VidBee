@@ -6,6 +6,7 @@ export const TaskKindSchema = z.enum([
   'subtitles',
   'playlist',
   'instagram-profile-category',
+  'pinterest-gallery',
   'vsco-gallery',
   'facebook-gallery',
   'social-media',

@@ -16,6 +16,7 @@ import { killProcessTree } from '@vidbee/task-queue/process'
 import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
+import { normalizePinterestUrl, PINTEREST_EXTRACTOR_ARGS } from './pinterest'
 import { SocialCollectionSummarySchema } from './schemas'
 import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
 import { normalizeThreadsUrl } from './threads'
@@ -110,6 +111,9 @@ export const resolveDownloadTaskKind = (
   url: string,
   requestedType: 'audio' | 'video'
 ): TaskKind => {
+  if (normalizePinterestUrl(url)) {
+    return 'pinterest-gallery'
+  }
   if (resolveSocialSource(url)) {
     return 'social-media'
   }
@@ -142,7 +146,7 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
 }
 
 export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => {
-  if (normalizeThreadsUrl(url)) {
+  if (normalizeThreadsUrl(url) || normalizePinterestUrl(url)) {
     return '{id}_{num:>02}.{extension}'
   }
   if (normalizeTikTokPhotoUrl(url)) {
@@ -159,6 +163,7 @@ export const resolveGalleryDlFilenameTemplate = (
   options: GalleryDlTaskOptions
 ): string => {
   if (
+    normalizePinterestUrl(url) ||
     normalizeVscoUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
     normalizeTikTokPhotoUrl(url) ||
@@ -348,11 +353,13 @@ export class GalleryDlExecutor implements Executor {
       taskOptions.customDownloadPath?.trim() ||
       taskOptions.settings?.downloadPath?.trim() ||
       this.options.defaultDownloadDir
+    const pinterest = normalizePinterestUrl(ctx.input.url)
     const vsco = normalizeVscoUrl(ctx.input.url)
     const facebookGallery = normalizeFacebookGalleryUrl(ctx.input.url)
     const tiktokPhoto = normalizeTikTokPhotoUrl(ctx.input.url)
     const threads = normalizeThreadsUrl(ctx.input.url)
     const galleryDirectorySegments =
+      pinterest?.directorySegments ??
       threads?.directorySegments ??
       facebookGallery?.directorySegments ??
       tiktokPhoto?.directorySegments ??
@@ -376,13 +383,19 @@ export class GalleryDlExecutor implements Executor {
         buildGalleryDlRuntimeArgs(taskOptions.settings))
     ]
     const extractorArgs = resolveExtractorArgs({
+      pinterest,
       facebookGallery,
       tiktokPhoto,
       vsco,
       threads
     })
     const args = buildArgs(
-      threads?.url ?? facebookGallery?.url ?? tiktokPhoto?.url ?? vsco?.url ?? ctx.input.url,
+      pinterest?.url ??
+        threads?.url ??
+        facebookGallery?.url ??
+        tiktokPhoto?.url ??
+        vsco?.url ??
+        ctx.input.url,
       directoryTemplate,
       filenameTemplate,
       [...extractorArgs, ...extraArgs],
@@ -914,11 +927,23 @@ export class GalleryDlExecutor implements Executor {
 const GALLERY_DL_HOSTS = ['instagram.com', 'instagr.am', 'cdninstagram.com'] as const
 
 const resolveExtractorArgs = (galleries: {
+  pinterest: unknown
   threads: unknown
   facebookGallery: unknown
   tiktokPhoto: unknown
   vsco: unknown
 }): readonly string[] => {
+  if (galleries.pinterest) {
+    return [
+      ...PINTEREST_EXTRACTOR_ARGS,
+      '--sleep-request',
+      '1',
+      '--sleep-429',
+      '60',
+      '--retries',
+      '3'
+    ]
+  }
   if (galleries.threads) {
     return ['--sleep-request', '1', '--sleep-429', '60', '--retries', '3']
   }
@@ -950,6 +975,7 @@ export const shouldUseGalleryDl = (url: string): boolean => {
     return true
   }
   if (
+    normalizePinterestUrl(url) ||
     normalizeVscoUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
     normalizeTikTokPhotoUrl(url) ||

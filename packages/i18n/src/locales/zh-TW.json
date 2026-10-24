@@ -382,6 +382,8 @@
     "openFolder": "開啟資料夾",
     "openInBrowser": "點擊在瀏覽器中開啟",
     "openSourceInBrowser": "在瀏覽器中開啟",
+    "viewDetail": "查看詳細",
+    "fileCount": "{{count}} 個檔案",
     "removeAction": "移除",
     "removeItem": "移除項目",
     "deleteFile": "刪除檔案",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "搜尋已儲存的個人檔案...",
     "noMatchingProfiles": "找不到相符的個人檔案",
     "noSavedProfiles": "尚無已儲存的個人檔案。開啟 Instagram 個人檔案以開始掃描。",
-
     "stop": "停止掃描",
     "stopping": "正在停止…",
     "stopped": "掃描已停止。已發現的項目已儲存；重新整理以繼續。",
-
     "map": "取得清單",
     "retry": "重新整理 / 重試",
     "unscanned": "尚未取得",

@@ -150,6 +150,7 @@ export function DownloadHistoryVirtualList({
   const { finishPointer, marquee, onPointerDown, onPointerMove } = useListMarqueeSelection({
     containerRef: listRef,
     geometryRows,
+    getScrollElement: () => viewport,
     onSelectIds,
     selectedIds
   })

@@ -1,9 +1,17 @@
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
+import { normalizePinterestUrl } from './pinterest'
 import { resolveSocialSource } from './social-media'
 import { normalizeThreadsUrl } from './threads'
 import { normalizeVscoUrl } from './vsco'
 
-export type MappedProfilePlatform = 'x' | 'tiktok' | 'redgifs' | 'facebook' | 'vsco' | 'threads'
+export type MappedProfilePlatform =
+  | 'x'
+  | 'tiktok'
+  | 'redgifs'
+  | 'facebook'
+  | 'vsco'
+  | 'threads'
+  | 'pinterest'
 
 export interface MappedProfileSource {
   platform: MappedProfilePlatform
@@ -20,7 +28,8 @@ export const MAPPED_PROFILE_SITE_LABELS: Record<MappedProfilePlatform, string> =
   redgifs: 'Redgifs',
   facebook: 'Facebook',
   vsco: 'VSCO',
-  threads: 'Threads'
+  threads: 'Threads',
+  pinterest: 'Pinterest'
 }
 
 const REDGIFS_USER = /^[A-Za-z0-9._-]{1,64}$/
@@ -30,6 +39,10 @@ export const redGifsWatchUrl = (id: string): string | null =>
   REDGIFS_POST.test(id) ? `https://www.redgifs.com/watch/${id.toLowerCase()}` : null
 
 export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: string): boolean => {
+  if (platform === 'pinterest') {
+    const pin = normalizePinterestUrl(value)
+    return pin?.kind === 'pin' && pin.url === value
+  }
   if (platform === 'vsco') {
     const vsco = normalizeVscoUrl(value)
     return (vsco?.kind === 'media' || vsco?.kind === 'video') && vsco.url === value
@@ -81,6 +94,16 @@ export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: s
 }
 
 export const resolveMappedProfileSource = (value: string): MappedProfileSource | null => {
+  const pinterest = normalizePinterestUrl(value)
+  if (pinterest?.kind === 'profile') {
+    return {
+      platform: 'pinterest',
+      owner: pinterest.username,
+      profileUrl: pinterest.url,
+      category: 'posts',
+      categories: [{ key: 'posts', url: pinterest.url, requiresAuth: false }]
+    }
+  }
   const vsco = normalizeVscoUrl(value)
   if (vsco?.kind === 'gallery') {
     return {

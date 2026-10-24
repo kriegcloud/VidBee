@@ -382,6 +382,8 @@
     "openFolder": "Abrir Pasta",
     "openInBrowser": "Clique para abrir no navegador",
     "openSourceInBrowser": "Abrir no navegador",
+    "viewDetail": "Ver detalhes",
+    "fileCount": "{{count}} arquivos",
     "removeAction": "Remover",
     "removeItem": "Remover Item",
     "deleteFile": "Remover Arquivo",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Pesquisar perfis salvos...",
     "noMatchingProfiles": "Nenhum perfil correspondente",
     "noSavedProfiles": "Nenhum perfil salvo. Abra um perfil do Instagram para iniciar o mapeamento.",
-
     "stop": "Parar mapeamento",
     "stopping": "Parando…",
     "stopped": "Mapeamento interrompido. Os itens encontrados foram salvos; atualize para continuar.",
-
     "map": "Mapear",
     "retry": "Atualizar / tentar novamente",
     "unscanned": "Ainda não mapeado",

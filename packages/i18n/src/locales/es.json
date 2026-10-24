@@ -382,6 +382,8 @@
     "openFolder": "Abrir Carpeta",
     "openInBrowser": "Haz clic para abrir en el navegador",
     "openSourceInBrowser": "Abrir en el navegador",
+    "viewDetail": "Ver detalle",
+    "fileCount": "{{count}} archivos",
     "removeAction": "Eliminar",
     "removeItem": "Eliminar Elemento",
     "deleteFile": "Eliminar Archivo",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Buscar perfiles guardados...",
     "noMatchingProfiles": "No hay perfiles coincidentes",
     "noSavedProfiles": "Aún no hay perfiles guardados. Abre un perfil de Instagram para empezar a analizarlo.",
-
     "stop": "Detener análisis",
     "stopping": "Deteniendo…",
     "stopped": "Análisis detenido. Los elementos encontrados están guardados; actualiza para continuar.",
-
     "map": "Explorar",
     "retry": "Actualizar / reintentar",
     "unscanned": "Aún sin explorar",

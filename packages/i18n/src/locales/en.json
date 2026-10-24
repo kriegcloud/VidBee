@@ -382,6 +382,8 @@
     "openFolder": "Open Folder",
     "openInBrowser": "Click to open in browser",
     "openSourceInBrowser": "Open in Browser",
+    "viewDetail": "View Detail",
+    "fileCount": "{{count}} files",
     "removeAction": "Remove",
     "removeItem": "Remove Item",
     "deleteFile": "Delete File",

@@ -1,6 +1,7 @@
 import {
   Copy,
   ExternalLink,
+  Eye,
   File,
   FolderOpen,
   ListPlus,
@@ -34,6 +35,7 @@ export interface DownloadRecordContextMenuItemsProps {
   onCopyToClipboard: () => void
   onDeleteFile: () => void
   onDeleteRecord: () => void
+  onOpenDetail?: () => void
   onOpenFile: () => void
   onOpenFolder: () => void
   onOpenInBrowser?: () => void
@@ -70,6 +72,7 @@ export function DownloadRecordContextMenuItems({
   onCopyToClipboard,
   onDeleteFile,
   onDeleteRecord,
+  onOpenDetail,
   onOpenFile,
   onOpenFolder,
   onOpenInBrowser,
@@ -99,6 +102,12 @@ export function DownloadRecordContextMenuItems({
           {mapperTarget.siteLabel} · {t('instagramResume.map')}
         </ContextMenuItem>
       )}
+      {onOpenDetail ? (
+        <ContextMenuItem onClick={onOpenDetail}>
+          <Eye className="h-4 w-4" />
+          {t('history.viewDetail')}
+        </ContextMenuItem>
+      ) : null}
       {showOpenFile ? (
         <ContextMenuItem disabled={!canOpenFile} onClick={onOpenFile}>
           <File className="h-4 w-4" />

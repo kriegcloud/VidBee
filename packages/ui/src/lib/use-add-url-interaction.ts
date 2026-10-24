@@ -6,6 +6,7 @@ import { resolveDownloadWorkflow } from './download-workflow'
 import { classifyIngestText } from './ingest'
 import {
   isFacebookGalleryUrl,
+  isPinterestUrl,
   isThreadsUrl,
   isTikTokPhotoUrl,
   isVscoGalleryUrl,
@@ -215,7 +216,8 @@ export const useAddUrlInteraction = ({
         isVscoGalleryUrl(trimmedUrl) ||
         isFacebookGalleryUrl(trimmedUrl) ||
         isTikTokPhotoUrl(trimmedUrl) ||
-        isThreadsUrl(trimmedUrl)
+        isThreadsUrl(trimmedUrl) ||
+        isPinterestUrl(trimmedUrl)
       ) {
         await onOneClickDownload(trimmedUrl)
         return

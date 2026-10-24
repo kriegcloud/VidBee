@@ -382,6 +382,8 @@
     "openFolder": "フォルダを開く",
     "openInBrowser": "ブラウザで開くにはクリック",
     "openSourceInBrowser": "ブラウザーで開く",
+    "viewDetail": "詳細を表示",
+    "fileCount": "{{count}} ファイル",
     "removeAction": "削除",
     "removeItem": "アイテムを削除",
     "deleteFile": "ファイルを削除",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "保存済みプロフィールを検索...",
     "noMatchingProfiles": "一致するプロフィールがありません",
     "noSavedProfiles": "保存済みのプロフィールはありません。Instagramのプロフィールを開いてマッピングを開始してください。",
-
     "stop": "マッピングを停止",
     "stopping": "停止中…",
     "stopped": "マッピングを停止しました。見つかった項目は保存されています。更新して続行してください。",
-
     "map": "一覧を取得",
     "retry": "更新 / 再試行",
     "unscanned": "未取得",

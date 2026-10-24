@@ -2,6 +2,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
   useCallback,
+  useEffect,
   useRef,
   useState
 } from 'react'
@@ -11,11 +12,15 @@ import {
   LIST_MARQUEE_MOVE_PX,
   type ListMarquee,
   listItemIdsInMarquee,
-  listMarqueeRect
+  listMarqueeRect,
+  listMarqueeScrollStep,
+  listRectToLocal
 } from './list-marquee'
 
 interface ListMarqueePointer {
   baseIds: string[]
+  lastClientX: number
+  lastClientY: number
   originX: number
   originY: number
   pointerId: number
@@ -34,6 +39,8 @@ interface UseListMarqueeSelectionOptions {
   enabled?: boolean
   /** When set, hit-testing uses these boxes instead of mounted DOM nodes. */
   geometryRows?: () => readonly ListMarqueeGeometryRow[]
+  /** The scrolling ancestor, so a drag past the edge keeps reaching new rows. */
+  getScrollElement?: () => HTMLElement | null
   itemAttr?: string
   selectableAttr?: string
   selectedIds: ReadonlySet<string>
@@ -43,11 +50,16 @@ interface UseListMarqueeSelectionOptions {
 /**
  * Finder-style drag rectangle over a list. Hold or move to select; a plain
  * click is left to the item (so rows can navigate instead of selecting).
+ *
+ * The rectangle is anchored in coordinates local to the list element, which
+ * scrolls with the rows. A drag that runs off the edge therefore keeps growing
+ * over the rows that scroll into view instead of shedding the ones that leave.
  */
 export const useListMarqueeSelection = ({
   containerRef,
   enabled = true,
   geometryRows,
+  getScrollElement,
   itemAttr = 'data-download-id',
   selectableAttr = 'data-download-selectable',
   selectedIds,
@@ -56,12 +68,15 @@ export const useListMarqueeSelection = ({
   const [marquee, setMarquee] = useState<ListMarquee | null>(null)
   const pointerRef = useRef<ListMarqueePointer | null>(null)
   const holdTimerRef = useRef<number | null>(null)
+  const autoScrollFrameRef = useRef<number | null>(null)
   const selectedIdsRef = useRef(selectedIds)
   const onSelectIdsRef = useRef(onSelectIds)
   const geometryRowsRef = useRef(geometryRows)
+  const getScrollElementRef = useRef(getScrollElement)
   selectedIdsRef.current = selectedIds
   onSelectIdsRef.current = onSelectIds
   geometryRowsRef.current = geometryRows
+  getScrollElementRef.current = getScrollElement
 
   /**
    * Cancel a pending long-press timer.
@@ -72,6 +87,17 @@ export const useListMarqueeSelection = ({
     }
     window.clearTimeout(holdTimerRef.current)
     holdTimerRef.current = null
+  }, [])
+
+  /**
+   * Stop the edge auto-scroll loop.
+   */
+  const clearAutoScroll = useCallback((): void => {
+    if (autoScrollFrameRef.current === null) {
+      return
+    }
+    window.cancelAnimationFrame(autoScrollFrameRef.current)
+    autoScrollFrameRef.current = null
   }, [])
 
   /**
@@ -117,23 +143,51 @@ export const useListMarqueeSelection = ({
       if (!(pointer && container)) {
         return
       }
+      pointer.lastClientX = clientX
+      pointer.lastClientY = clientY
       const listRect = container.getBoundingClientRect()
-      setMarquee({
-        x1: pointer.originX,
-        x2: clientX - listRect.left,
-        y1: pointer.originY,
-        y2: clientY - listRect.top
-      })
-      const box = listMarqueeRect(pointer.startClientX, pointer.startClientY, clientX, clientY)
-      const hits = listItemIdsInMarquee(measureSelectableRows(), box)
+      const origin = { left: listRect.left, top: listRect.top }
+      const currentX = clientX - origin.left
+      const currentY = clientY - origin.top
+      setMarquee({ x1: pointer.originX, x2: currentX, y1: pointer.originY, y2: currentY })
+      // Both the box and the rows live in list-local space, so scrolling moves
+      // them together and the anchor stays on the row it was dropped on.
+      const box = listMarqueeRect(pointer.originX, pointer.originY, currentX, currentY)
+      const rows = measureSelectableRows().map((row) => ({
+        id: row.id,
+        rect: listRectToLocal(row.rect, origin)
+      }))
       const next = new Set(pointer.baseIds)
-      for (const id of hits) {
+      for (const id of listItemIdsInMarquee(rows, box)) {
         next.add(id)
       }
       onSelectIdsRef.current(Array.from(next))
     },
     [containerRef, measureSelectableRows]
   )
+
+  /**
+   * Scroll the list while the pointer rests in a scroller edge band, growing the
+   * marquee over each row that comes into view.
+   */
+  const runAutoScroll = useCallback((): void => {
+    autoScrollFrameRef.current = null
+    const pointer = pointerRef.current
+    const scroller = getScrollElementRef.current?.()
+    if (!(pointer?.selecting && scroller)) {
+      return
+    }
+    const bounds = scroller.getBoundingClientRect()
+    const step = listMarqueeScrollStep(pointer.lastClientY, bounds)
+    if (step !== 0) {
+      const before = scroller.scrollTop
+      scroller.scrollTop = before + step
+      if (scroller.scrollTop !== before) {
+        updateMarqueeSelection(pointer.lastClientX, pointer.lastClientY)
+      }
+    }
+    autoScrollFrameRef.current = window.requestAnimationFrame(runAutoScroll)
+  }, [updateMarqueeSelection])
 
   /**
    * Start the Finder-style selection rectangle.
@@ -155,8 +209,10 @@ export const useListMarqueeSelection = ({
         }
       }
       updateMarqueeSelection(clientX, clientY)
+      clearAutoScroll()
+      autoScrollFrameRef.current = window.requestAnimationFrame(runAutoScroll)
     },
-    [containerRef, updateMarqueeSelection]
+    [clearAutoScroll, containerRef, runAutoScroll, updateMarqueeSelection]
   )
 
   /**
@@ -164,6 +220,7 @@ export const useListMarqueeSelection = ({
    */
   const finishPointer = useCallback((): void => {
     clearHoldTimer()
+    clearAutoScroll()
     const pointer = pointerRef.current
     const container = containerRef.current
     if (
@@ -176,7 +233,25 @@ export const useListMarqueeSelection = ({
     }
     pointerRef.current = null
     setMarquee(null)
-  }, [clearHoldTimer, containerRef])
+  }, [clearAutoScroll, clearHoldTimer, containerRef])
+
+  // A wheel or trackpad scroll fires no pointermove, so re-run the hit test
+  // against the rows that just moved under the anchored rectangle.
+  useEffect(() => {
+    if (!marquee) {
+      return
+    }
+    const onScroll = () => {
+      const pointer = pointerRef.current
+      if (pointer?.selecting) {
+        updateMarqueeSelection(pointer.lastClientX, pointer.lastClientY)
+      }
+    }
+    window.addEventListener('scroll', onScroll, true)
+    return () => window.removeEventListener('scroll', onScroll, true)
+  }, [marquee, updateMarqueeSelection])
+
+  useEffect(() => clearAutoScroll, [clearAutoScroll])
 
   /**
    * Start a potential marquee unless the pointer landed on a control.
@@ -196,6 +271,8 @@ export const useListMarqueeSelection = ({
     clearHoldTimer()
     pointerRef.current = {
       baseIds: Array.from(selectedIdsRef.current),
+      lastClientX: event.clientX,
+      lastClientY: event.clientY,
       originX: event.clientX - listRect.left,
       originY: event.clientY - listRect.top,
       pointerId: event.pointerId,

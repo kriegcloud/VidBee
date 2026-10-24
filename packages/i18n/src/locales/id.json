@@ -382,6 +382,8 @@
     "openFolder": "Buka Folder",
     "openInBrowser": "Klik untuk membuka di browser",
     "openSourceInBrowser": "Buka di peramban",
+    "viewDetail": "Lihat detail",
+    "fileCount": "{{count}} berkas",
     "removeAction": "Hapus",
     "removeItem": "Hapus Item",
     "deleteFile": "Hapus File",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Cari profil tersimpan...",
     "noMatchingProfiles": "Tidak ada profil yang cocok",
     "noSavedProfiles": "Belum ada profil tersimpan. Buka profil Instagram untuk mulai memetakan.",
-
     "stop": "Hentikan pemetaan",
     "stopping": "Menghentikan…",
     "stopped": "Pemetaan dihentikan. Item yang ditemukan disimpan; segarkan untuk melanjutkan.",
-
     "map": "Petakan",
     "retry": "Segarkan / coba lagi",
     "unscanned": "Belum dipetakan",

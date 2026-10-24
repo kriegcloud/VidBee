@@ -382,6 +382,8 @@
     "openFolder": "Klasörü Aç",
     "openInBrowser": "Tarayıcıda açmak için tıklayın",
     "openSourceInBrowser": "Tarayıcıda aç",
+    "viewDetail": "Ayrıntıyı görüntüle",
+    "fileCount": "{{count}} dosya",
     "removeAction": "Kaldır",
     "removeItem": "Öğeyi Kaldır",
     "deleteFile": "Dosyayı Sil",
@@ -2037,11 +2039,9 @@
     "searchSavedProfiles": "Kaydedilen profilleri ara...",
     "noMatchingProfiles": "Eşleşen profil yok",
     "noSavedProfiles": "Henüz kaydedilen profil yok. Taramaya başlamak için bir Instagram profili açın.",
-
     "stop": "Taramayı durdur",
     "stopping": "Durduruluyor…",
     "stopped": "Tarama durduruldu. Bulunan öğeler kaydedildi; devam etmek için yenileyin.",
-
     "map": "Tara",
     "retry": "Yenile / tekrar dene",
     "unscanned": "Henüz taranmadı",

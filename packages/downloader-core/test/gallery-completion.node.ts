@@ -8,6 +8,7 @@ import { GalleryDlExecutor } from '../src/gallery-dl-executor'
 
 for (const kind of [
   'instagram-profile-category',
+  'pinterest-gallery',
   'vsco-gallery',
   'facebook-gallery',
   'tiktok-photo',
@@ -59,17 +60,19 @@ for (const kind of [
             input: {
               kind: kind as TaskKind,
               url:
-                kind === 'threads-post'
-                  ? 'https://www.threads.com/@fixture/post/ABCDE'
-                  : kind === 'threads-profile'
-                    ? 'https://www.threads.com/@fixture/media'
-                    : kind === 'facebook-gallery'
-                      ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
-                      : kind === 'tiktok-photo'
-                        ? 'https://www.tiktok.com/@fixture/photo/7240568259186019630'
-                        : kind === 'vsco-gallery'
-                          ? 'https://vsco.co/fixture/gallery'
-                          : 'https://www.instagram.com/fixture/photos/'
+                kind === 'pinterest-gallery'
+                  ? 'https://www.pinterest.com/pin/338051515795810385/'
+                  : kind === 'threads-post'
+                    ? 'https://www.threads.com/@fixture/post/ABCDE'
+                    : kind === 'threads-profile'
+                      ? 'https://www.threads.com/@fixture/media'
+                      : kind === 'facebook-gallery'
+                        ? 'https://www.facebook.com/profile.php?id=123&sk=photos'
+                        : kind === 'tiktok-photo'
+                          ? 'https://www.tiktok.com/@fixture/photo/7240568259186019630'
+                          : kind === 'vsco-gallery'
+                            ? 'https://vsco.co/fixture/gallery'
+                            : 'https://www.instagram.com/fixture/photos/'
             }
           },
           { onSpawn() {}, onProgress() {}, onStd() {}, onFinish: resolve }

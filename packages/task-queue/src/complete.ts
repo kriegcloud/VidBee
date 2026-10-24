@@ -29,6 +29,7 @@ export function isOutputComplete(
   }
   if (
     kind === 'instagram-profile-category' ||
+    kind === 'pinterest-gallery' ||
     kind === 'vsco-gallery' ||
     kind === 'facebook-gallery' ||
     kind === 'tiktok-photo' ||

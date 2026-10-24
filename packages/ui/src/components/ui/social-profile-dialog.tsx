@@ -138,7 +138,7 @@ export function SocialProfileDialog({
           </DialogTitle>
           <DialogDescription>{t('socialMedia.categoriesLabel')}</DialogDescription>
         </DialogHeader>
-        {source?.platform !== 'redgifs' && source?.platform !== 'vsco' && (
+        {source?.categories.some((entry) => entry.requiresAuth) && (
           <p className="text-muted-foreground text-sm">
             {t(openLogin ? 'socialMedia.profileSessionHint' : 'socialMedia.auth')}
           </p>

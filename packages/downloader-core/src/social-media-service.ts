@@ -54,7 +54,7 @@ export const SocialProfileCategorySchema = z.object({
 
 export const SocialMappedProfileSchema = z.object({
   profileUrl: z.url(),
-  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook', 'vsco', 'threads']),
+  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook', 'vsco', 'threads', 'pinterest']),
   owner: z.string(),
   categories: z.record(z.string(), SocialProfileCategorySchema),
   updatedAt: z.number()

@@ -53,6 +53,7 @@ import {
   normalizeSavedFileName
 } from '../../../../shared/utils/download-file'
 import { useCachedThumbnail } from '../../hooks/use-cached-thumbnail'
+import { useLocalPoster } from '../../hooks/use-local-poster'
 import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
 import { rememberDownloadListFocus } from '../../lib/download-list-focus'
 import { ipcServices } from '../../lib/ipc'
@@ -82,6 +83,9 @@ import { AgentTaskIndicator } from './AgentTaskIndicator'
 import { DownloadRecordContextMenuItems } from './DownloadRecordContextMenuItems'
 import { resolveDownloadContents } from './download-contents'
 import { canRetryDownload, getQualityLabel } from './download-item-utils'
+
+/** The only parts of a row that open its detail view. */
+const ACTIVATE_SELECTOR = '[data-download-activate]'
 
 const tryFileOperation = async (
   paths: string[],
@@ -207,6 +211,13 @@ export function DownloadItem({
   const lastSheetOpenRef = useRef(false)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const cachedThumbnail = useCachedThumbnail(download.thumbnail)
+  // Sites reached through gallery-dl report no thumbnail URL, so the saved
+  // media is the only poster source those rows will ever have.
+  const localPoster = useLocalPoster(
+    download.thumbnail
+      ? null
+      : { directory: download.outputDirectory ?? null, filePath: existingFilePath }
+  )
   const playbackInput = buildTranscriptPlaybackInput({
     cachedThumbnail,
     download,
@@ -507,6 +518,18 @@ export function DownloadItem({
     })
   }
 
+  /**
+   * Open whatever "detail" means for this row: a collection has a folder of
+   * files rather than one media page.
+   */
+  const handleOpenDetail = () => {
+    if (download.collectionSummary) {
+      void handleOpenFolder()
+      return
+    }
+    handleOpenTranscript()
+  }
+
   const playableInput = {
     ...playbackInput,
     filePath: contents.media ? (playbackInput.filePath ?? existingFilePath) : null
@@ -520,7 +543,13 @@ export function DownloadItem({
     const image = cover?.querySelector('img')
     flyCoverToPlaylistButton({
       from: cover?.getBoundingClientRect() ?? null,
-      src: image?.currentSrc || image?.src || cachedThumbnail || download.thumbnail || null
+      src:
+        image?.currentSrc ||
+        image?.src ||
+        cachedThumbnail ||
+        download.thumbnail ||
+        localPoster ||
+        null
     })
   }
 
@@ -629,8 +658,13 @@ export function DownloadItem({
     local: t('download.localSource'),
     other: t('download.otherSource')
   })
+  // yt-dlp reports a chosen format; gallery-dl routes only ever report what
+  // actually landed on disk, so fall back to that rather than showing nothing.
   const selectedFormatSize =
-    download.selectedFormat?.filesize || download.selectedFormat?.filesize_approx
+    download.selectedFormat?.filesize ||
+    download.selectedFormat?.filesize_approx ||
+    download.fileSize ||
+    download.totalSize
   const inlineFileSize = selectedFormatSize ? formatFileSize(selectedFormatSize) : undefined
   const displayErrorMessage = getDownloadErrorGuidance(download.error) ?? download.error
   const cookieFailureKind = getCookieSetupFailureKind(download.error)
@@ -761,6 +795,12 @@ export function DownloadItem({
   if (inlineFileSize && !showInlineProgress) {
     metaItems.push({ key: 'size', node: inlineFileSize })
   }
+  if (download.fileCount && download.fileCount > 1 && !showInlineProgress) {
+    metaItems.push({
+      key: 'file-count',
+      node: t('history.fileCount', { count: download.fileCount })
+    })
+  }
   if (download.origin === 'agent' || download.origin === 'subscription') {
     metaItems.push({
       key: 'origin',
@@ -791,7 +831,7 @@ export function DownloadItem({
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: nested buttons and checkbox own keyboard focus */}
         <div
           aria-current={isNowPlaying ? 'true' : undefined}
-          className={`group relative w-full max-w-full cursor-pointer overflow-hidden px-6 py-2 text-left transition-colors ${
+          className={`group relative w-full max-w-full overflow-hidden px-6 py-2 text-left transition-colors ${
             isSelectedHistory || isContextMenuOpen ? 'bg-primary/10' : ''
           }`}
           data-download-id={download.id}
@@ -801,17 +841,19 @@ export function DownloadItem({
             if (isListIgnoreTarget(event.target)) {
               return
             }
-            if (download.collectionSummary) {
-              void handleOpenFolder()
+            // Only the cover and the title open the item; the empty run of row
+            // beside them is dead space so a stray click cannot navigate away.
+            if (!(event.target instanceof Element && event.target.closest(ACTIVATE_SELECTOR))) {
               return
             }
-            handleOpenTranscript()
+            handleOpenDetail()
           }}
         >
           <div className="flex w-full items-start gap-3">
             {/* Thumbnail */}
             <div
-              className="pointer-events-none relative z-20 aspect-video h-14 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-background/60"
+              className="relative z-20 aspect-video h-14 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-background/60"
+              data-download-activate=""
               data-download-transfer-cover=""
               ref={coverRef}
             >
@@ -844,7 +886,7 @@ export function DownloadItem({
                     <Play className="h-4 w-4" />
                   )
                 }
-                src={download.thumbnail}
+                src={download.thumbnail || localPoster}
               />
               {isNowPlaying ? (
                 <span
@@ -885,7 +927,12 @@ export function DownloadItem({
                         domain={platform.domain}
                       />
                     </span>
-                    <p className="min-w-0 truncate font-medium text-sm">{download.title}</p>
+                    <p
+                      className="pointer-events-auto min-w-0 cursor-pointer truncate font-medium text-sm hover:underline"
+                      data-download-activate=""
+                    >
+                      {download.title}
+                    </p>
                   </div>
                   <DownloadItemMeta
                     accented={isNowPlaying}
@@ -1225,6 +1272,7 @@ export function DownloadItem({
           onDeleteRecord={() => {
             void handleDeleteRecord()
           }}
+          onOpenDetail={handleOpenDetail}
           onOpenFile={() => {
             void handleOpenFile()
           }}

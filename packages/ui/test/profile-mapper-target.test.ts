@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { resolveProfileMapperTarget } from '../src/lib/profile-mapper-target'
+import { isPinterestUrl } from '../src/lib/url-kind'
 
 test('any post row can name the profile its mapper should open', () => {
   assert.deepEqual(
@@ -51,4 +52,17 @@ test('URLs that cannot name an owner get no mapper entry', () => {
   assert.equal(resolveProfileMapperTarget('not a url'), null)
   assert.equal(resolveProfileMapperTarget('https://www.redgifs.com/watch/example'), null)
   assert.equal(resolveProfileMapperTarget('https://www.youtube.com/watch?v=dQw4w9WgXcQ'), null)
+})
+
+test('Pinterest created feeds open the shared profile mapper', () => {
+  assert.equal(isPinterestUrl('https://www.pinterest.com/pin/338051515795810385/'), true)
+  assert.equal(isPinterestUrl('https://www.pinterest.com/search/'), false)
+  assert.deepEqual(resolveProfileMapperTarget('https://www.pinterest.com/TheLumiShop/_created/'), {
+    profileUrl: 'https://www.pinterest.com/TheLumiShop/_created/',
+    siteLabel: 'Pinterest'
+  })
+  assert.equal(
+    resolveProfileMapperTarget('https://www.pinterest.com/pin/338051515795810385/'),
+    null
+  )
 })

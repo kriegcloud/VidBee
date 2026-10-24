@@ -12,6 +12,7 @@ export type TaskKind =
   | 'subtitles'
   | 'playlist'
   | 'instagram-profile-category'
+  | 'pinterest-gallery'
   | 'vsco-gallery'
   | 'facebook-gallery'
   | 'social-media'
