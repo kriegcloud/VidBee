@@ -151,8 +151,9 @@ export const useAddUrlInteraction = ({
       }
 
       const trimmedUrl = await resolveSubmittedUrl(inputUrl, onResolveUrl)
+      const mappedSource = resolveMappedProfileSource(trimmedUrl)
 
-      if (resolveMappedProfileSource(trimmedUrl)) {
+      if (mappedSource && mappedSource.platform !== 'facebook') {
         setAddUrlPopoverOpen(false)
         await onParseProfile(trimmedUrl)
         return

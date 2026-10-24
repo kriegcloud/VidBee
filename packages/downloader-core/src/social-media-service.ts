@@ -29,7 +29,7 @@ export interface SocialProfileCategory {
 
 export interface SocialMappedProfile {
   profileUrl: string
-  platform: 'x' | 'tiktok' | 'redgifs'
+  platform: 'x' | 'tiktok' | 'redgifs' | 'facebook'
   owner: string
   categories: Record<string, SocialProfileCategory>
   updatedAt: number
@@ -53,7 +53,7 @@ export const SocialProfileCategorySchema = z.object({
 
 export const SocialMappedProfileSchema = z.object({
   profileUrl: z.url(),
-  platform: z.enum(['x', 'tiktok', 'redgifs']),
+  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook']),
   owner: z.string(),
   categories: z.record(z.string(), SocialProfileCategorySchema),
   updatedAt: z.number()

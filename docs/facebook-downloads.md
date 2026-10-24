@@ -2,11 +2,14 @@
 
 ## Profile reels
 
-Paste `https://www.facebook.com/USERNAME/reels` into **Add URL** to open VidBee's
-profile collections dialog. Choose **Map** on Reels to open the playlist picker,
-then select individual videos or the full mapped list. The same Map action is
-available after pasting the profile root. The Photos and Albums collection
-actions continue to use gallery-dl's collection downloader.
+Paste a Facebook profile root, `/photos`, `/photos_albums`, or `/reels` URL into
+**Add URL** to open Profile collections. Choose **Map** beside Photos, Albums,
+or Reels to open the saved profile mapper, or use **Download selected** for
+whole collection downloads. VidBee saves stable photo or reel links as they are discovered;
+signed media URLs are not stored. Choose individual mapped items or select all
+before queuing downloads. A failed gallery page keeps the discovered items and
+marks that category partial rather than claiming a complete inventory. Map
+again after updating cookie settings to refresh the category.
 Named and numeric profiles on the `www`, `m`, `mbasic`, and `web` hosts are
 supported. Each selected reel becomes an ordinary video task with its own
 progress, retry controls, quality selection, and the configured cookie settings.
@@ -58,7 +61,8 @@ URLs are normalized to HTTPS on `www.facebook.com`, keeping only the parameters
 needed for extraction. Video, watch, reel, and share links use yt-dlp; profile
 reels use the playlist flow described above.
 
-Profile photos are stored under `Facebook/<profile>/Photos` within the selected
+Mapped individual photos are stored under `Facebook/Photos` within
+the selected download directory. Profile photos are stored under `Facebook/<profile>/Photos` within the selected
 download directory. Album collections use `Facebook/<profile>/Albums`, individual
 albums use `Facebook/Albums/<set ID>`, and individual photos use `Facebook/Photos`.
 Files use Facebook's media IDs (`{id}.{extension}`) to prevent collisions with

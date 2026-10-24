@@ -9,6 +9,7 @@ import {
 } from 'node:fs'
 import path from 'node:path'
 import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
+import { mapFacebookProfile } from './facebook-profile-map'
 import type { GalleryDlExecutorOptions } from './gallery-dl-executor'
 import { resolveMappedProfileSource } from './mapped-profile-source'
 import { mapRedGifsProfile } from './redgifs-profile-service'
@@ -30,7 +31,7 @@ export interface SocialProfileManagerOptions {
 const profileSource = (value: string) => {
   const source = resolveMappedProfileSource(value)
   if (!source) {
-    throw new Error('Enter an X, TikTok, or Redgifs profile URL.')
+    throw new Error('Enter a Facebook, X, TikTok, or Redgifs profile URL.')
   }
   return source
 }
@@ -142,35 +143,51 @@ export class SocialProfileManager {
     const seenThisRun = new Map<string, SocialMappedItem>()
     const onItem = (entry: SocialMappedItem) => {
       const current = seenThisRun.get(entry.id)
-      const next = current
-        ? {
-            ...current,
-            url: entry.images ? entry.url : current.url,
-            images: current.images + entry.images,
-            videos: current.videos + entry.videos
-          }
-        : entry
+      const next =
+        current && source.platform !== 'facebook'
+          ? {
+              ...current,
+              url: entry.images ? entry.url : current.url,
+              images: current.images + entry.images,
+              videos: current.videos + entry.videos
+            }
+          : entry
       seenThisRun.set(entry.id, next)
       items.set(entry.id, next)
       mapped.items = [...items.values()]
       this.save(profile)
     }
     const mapping =
-      source.platform === 'redgifs'
-        ? mapRedGifsProfile(
+      source.platform === 'facebook'
+        ? mapFacebookProfile(
             selected.url,
-            this.options.resolveYtDlpPath,
-            this.options.runtime.admission,
-            controller.signal,
-            onItem
-          )
-        : mapSocialMediaProfile(
-            selected.url,
-            this.options.runtime,
+            category as 'photos' | 'albums' | 'reels',
+            source.owner,
+            {
+              admission: this.options.runtime.admission,
+              resolveGalleryDlPath: this.options.runtime.resolveBinaryPath,
+              resolveYtDlpPath: this.options.resolveYtDlpPath,
+              resolveGalleryDlArgs: this.options.runtime.resolveExtraArgs
+            },
             settings,
             controller.signal,
             onItem
           )
+        : source.platform === 'redgifs'
+          ? mapRedGifsProfile(
+              selected.url,
+              this.options.resolveYtDlpPath,
+              this.options.runtime.admission,
+              controller.signal,
+              onItem
+            )
+          : mapSocialMediaProfile(
+              selected.url,
+              this.options.runtime,
+              settings,
+              controller.signal,
+              onItem
+            )
     const done = mapping
       .then((result) => {
         mapped.state = result.complete

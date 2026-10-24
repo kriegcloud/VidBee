@@ -116,7 +116,13 @@ export function SocialProfileDialog({
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {source?.platform === 'x' ? 'X' : source?.platform === 'redgifs' ? 'Redgifs' : 'TikTok'}{' '}
+            {source?.platform === 'x'
+              ? 'X'
+              : source?.platform === 'redgifs'
+                ? 'Redgifs'
+                : source?.platform === 'facebook'
+                  ? 'Facebook'
+                  : 'TikTok'}{' '}
             · {profile?.owner ?? source?.owner}
           </DialogTitle>
           <DialogDescription>{t('socialMedia.categoriesLabel')}</DialogDescription>
@@ -127,7 +133,7 @@ export function SocialProfileDialog({
           </p>
         )}
         <div className="flex flex-wrap gap-2">
-          {openLogin && source?.platform !== 'redgifs' && (
+          {openLogin && source?.platform !== 'redgifs' && source?.platform !== 'facebook' && (
             <Button disabled={busy || mapping} onClick={() => void act('open')} variant="outline">
               {t('onlyFans.openBrowser')}
             </Button>
@@ -151,7 +157,13 @@ export function SocialProfileDialog({
               size="sm"
               variant={category === entry.key ? 'default' : 'outline'}
             >
-              {t(`socialMedia.categories.${entry.key}`)}
+              {t(
+                source?.platform === 'facebook'
+                  ? entry.key === 'reels'
+                    ? 'instagramProfile.categories.reels'
+                    : `profileCollections.${entry.key}`
+                  : `socialMedia.categories.${entry.key}`
+              )}
             </Button>
           ))}
         </div>

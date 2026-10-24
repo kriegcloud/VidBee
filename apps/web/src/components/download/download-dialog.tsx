@@ -115,6 +115,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 
 	const [socialUrl, setSocialUrl] = useState<string | null>(null);
 	const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null);
+	const [socialProfileDestination, setSocialProfileDestination] = useState("");
 	const [collectionProfile, setCollectionProfile] =
 		useState<CollectionProfile | null>(null);
 	const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
@@ -574,7 +575,8 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		onOneClickDownload: handleOneClickFromAddUrl,
 		onParseCollection: (value) => {
 			setOpen(false);
-			if (resolveMappedProfileSource(value)) {
+			const mappedSource = resolveMappedProfileSource(value);
+			if (mappedSource && mappedSource.platform !== "facebook") {
 				setSocialProfileUrl(value);
 			} else {
 				setCollectionProfile(resolveCollectionProfile(value));
@@ -1047,7 +1049,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 								...(await orpcClient.socialProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
 									profile: {
-										username: `${profile.owner} · ${profile.platform === "x" ? "X" : profile.platform === "redgifs" ? "Redgifs" : "TikTok"}`,
+										username: `${profile.owner} · ${profile.platform === "x" ? "X" : profile.platform === "redgifs" ? "Redgifs" : profile.platform === "facebook" ? "Facebook" : "TikTok"}`,
 										profileUrl: profile.profileUrl,
 									},
 									totalAssetCount: Object.values(profile.categories).reduce(
@@ -1396,6 +1398,11 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					onClose={() => setCollectionProfile(null)}
 					onMap={async (collection, destination) => {
 						setCollectionProfile(null);
+						if (collection.mapping === "profile") {
+							setSocialProfileDestination(destination);
+							setSocialProfileUrl(collection.url);
+							return;
+						}
 						await handleParsePlaylistUrl(collection.url);
 						setPlaylistCustomDownloadPath(destination);
 					}}
@@ -1455,8 +1462,13 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				<SocialProfileDialog
 					key={socialProfileUrl}
 					url={socialProfileUrl}
-					destination={readWebSettings().downloadPath}
-					onClose={() => setSocialProfileUrl(null)}
+					destination={
+						socialProfileDestination || readWebSettings().downloadPath
+					}
+					onClose={() => {
+						setSocialProfileUrl(null);
+						setSocialProfileDestination("");
+					}}
 					getProfile={(url) => orpcClient.socialProfile.get({ url })}
 					mapProfile={(url, category) =>
 						orpcClient.socialProfile.map({ url, category })

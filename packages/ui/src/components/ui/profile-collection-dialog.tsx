@@ -162,7 +162,7 @@ export function ProfileCollectionDialog({
                     )}
                   </div>
                 )}
-                {onMap && item.mapping === 'playlist' && (
+                {onMap && item.mapping && (
                   <div className="px-4 pb-3">
                     <Button
                       disabled={locked}

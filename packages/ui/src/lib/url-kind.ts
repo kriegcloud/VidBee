@@ -232,10 +232,7 @@ export const isPlaylistLikeUrl = (value: string): boolean => {
     }
 
     const host = parsed.hostname.toLowerCase()
-    if (
-      (host === 'of.tv' || host === 'www.of.tv') &&
-      OFTV_CREATOR_PATH.test(parsed.pathname)
-    ) {
+    if ((host === 'of.tv' || host === 'www.of.tv') && OFTV_CREATOR_PATH.test(parsed.pathname)) {
       return true
     }
     const isYouTubeHost = YOUTUBE_HOSTS.some(
@@ -259,7 +256,7 @@ export interface ProfileCollection {
   url: string
   labelKey: string
   requiresAuth: boolean
-  mapping?: 'playlist'
+  mapping?: 'playlist' | 'profile'
 }
 
 export interface CollectionProfile {
@@ -353,20 +350,22 @@ export const resolveCollectionProfile = (value: string): CollectionProfile | nul
           key: 'photos',
           url: `${root}/photos`,
           labelKey: 'profileCollections.photos',
-          requiresAuth: true
+          requiresAuth: true,
+          mapping: 'profile'
         },
         {
           key: 'albums',
           url: `${root}/photos_albums`,
           labelKey: 'profileCollections.albums',
-          requiresAuth: true
+          requiresAuth: true,
+          mapping: 'profile'
         },
         {
           key: 'reels',
           url: `${root}/reels`,
           labelKey: 'instagramProfile.categories.reels',
           requiresAuth: true,
-          mapping: 'playlist'
+          mapping: 'profile'
         }
       ]
     }

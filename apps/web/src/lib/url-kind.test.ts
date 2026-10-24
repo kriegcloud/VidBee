@@ -283,10 +283,10 @@ describe("Profile collection picker", () => {
 			"https://www.facebook.com/creator/reels",
 		]);
 		expect(
-			resolveCollectionProfile(
-				"https://facebook.com/creator",
-			)?.collections.find((collection) => collection.key === "reels")?.mapping,
-		).toBe("playlist");
+			resolveCollectionProfile("https://facebook.com/creator")?.collections.map(
+				(collection) => collection.mapping,
+			),
+		).toEqual(["profile", "profile", "profile"]);
 	});
 });
 

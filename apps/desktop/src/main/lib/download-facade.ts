@@ -285,7 +285,7 @@ class DownloadFacade extends EventEmitter {
     }
     const batchId = `social_profile_${randomUUID()}`
     const batchTitle = `@${profile.owner}`
-    if (profile.platform === 'redgifs') {
+    if (profile.platform === 'redgifs' || profile.platform === 'facebook') {
       this.subscribeOnce()
       await startDesktopTaskQueue()
       for (const [index, item] of items.entries()) {
@@ -295,7 +295,7 @@ class DownloadFacade extends EventEmitter {
           input: buildTaskInput(id, {
             url: item.url,
             type: 'video',
-            singleVideo: true,
+            singleVideo: item.videos > 0,
             title: item.title,
             customDownloadPath: destination,
             batchId,

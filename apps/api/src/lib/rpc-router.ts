@@ -481,15 +481,15 @@ export const rpcRouter = os.router({
       const batchTitle = `@${profile.owner}`
       let count = 0
       for (const [index, item] of items.entries()) {
-        if (profile.platform === 'redgifs') {
+        if (profile.platform === 'redgifs' || profile.platform === 'facebook') {
           await taskQueue.add({
             input: {
               url: item.url,
-              kind: 'video',
+              kind: item.videos > 0 ? 'video' : 'facebook-gallery',
               title: item.title,
               options: {
                 type: 'video',
-                singleVideo: true,
+                singleVideo: item.videos > 0,
                 customDownloadPath: input.destination,
                 settings,
                 batchId,

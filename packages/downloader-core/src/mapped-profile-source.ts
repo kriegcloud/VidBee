@@ -1,6 +1,7 @@
+import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { resolveSocialSource } from './social-media'
 
-export type MappedProfilePlatform = 'x' | 'tiktok' | 'redgifs'
+export type MappedProfilePlatform = 'x' | 'tiktok' | 'redgifs' | 'facebook'
 
 export interface MappedProfileSource {
   platform: MappedProfilePlatform
@@ -17,6 +18,25 @@ export const redGifsWatchUrl = (id: string): string | null =>
   REDGIFS_POST.test(id) ? `https://www.redgifs.com/watch/${id.toLowerCase()}` : null
 
 export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: string): boolean => {
+  if (platform === 'facebook') {
+    try {
+      const parsed = new URL(value)
+      return (
+        parsed.protocol === 'https:' &&
+        parsed.hostname === 'www.facebook.com' &&
+        !parsed.username &&
+        !parsed.password &&
+        !parsed.port &&
+        !parsed.hash &&
+        ((/^\/reel\/\d+\/?$/.test(parsed.pathname) && !parsed.search) ||
+          (parsed.pathname === '/photo/' &&
+            parsed.searchParams.size === 1 &&
+            /^\d+$/.test(parsed.searchParams.get('fbid') ?? '')))
+      )
+    } catch {
+      return false
+    }
+  }
   if (platform !== 'redgifs') {
     const source = resolveSocialSource(value)
     return source?.platform === platform && source.kind === 'post'
@@ -41,6 +61,52 @@ export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: s
 }
 
 export const resolveMappedProfileSource = (value: string): MappedProfileSource | null => {
+  try {
+    const parsed = new URL(value)
+    const host = parsed.hostname.toLowerCase()
+    if (
+      ['http:', 'https:'].includes(parsed.protocol) &&
+      [
+        'facebook.com',
+        'www.facebook.com',
+        'm.facebook.com',
+        'mbasic.facebook.com',
+        'web.facebook.com'
+      ].includes(host) &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.port
+    ) {
+      const gallery = normalizeFacebookGalleryUrl(value)
+      const reels = /^\/([A-Za-z0-9][A-Za-z0-9.]*)\/reels\/?$/.exec(parsed.pathname)
+      const reelOwner =
+        reels && normalizeFacebookGalleryUrl(`https://www.facebook.com/${reels[1]}`)
+          ? reels[1]
+          : null
+      const owner =
+        gallery?.directorySegments.length === 3 ? gallery.directorySegments[1] : reelOwner
+      if (owner) {
+        const profileUrl = `https://www.facebook.com/${owner}`
+        return {
+          platform: 'facebook',
+          owner,
+          profileUrl,
+          category: reelOwner
+            ? 'reels'
+            : gallery?.url.endsWith('/photos_albums')
+              ? 'albums'
+              : 'photos',
+          categories: [
+            { key: 'photos', url: `${profileUrl}/photos`, requiresAuth: true },
+            { key: 'albums', url: `${profileUrl}/photos_albums`, requiresAuth: true },
+            { key: 'reels', url: `${profileUrl}/reels`, requiresAuth: true }
+          ]
+        }
+      }
+    }
+  } catch {
+    return null
+  }
   const social = resolveSocialSource(value)
   if (social?.categories.length && (social.platform === 'x' || social.platform === 'tiktok')) {
     return {

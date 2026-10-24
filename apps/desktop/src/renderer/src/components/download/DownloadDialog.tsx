@@ -108,6 +108,7 @@ export function DownloadDialog({
 
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
   const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null)
+  const [socialProfileDestination, setSocialProfileDestination] = useState('')
   const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
   const [videoInfoSourceUrl] = useAtom(currentVideoInfoSourceUrlAtom)
@@ -646,7 +647,8 @@ export function DownloadDialog({
     onOneClickDownload: handleOneClickFromAddUrl,
     onParseCollection: (value) => {
       setOpen(false)
-      if (resolveMappedProfileSource(value)) {
+      const mappedSource = resolveMappedProfileSource(value)
+      if (mappedSource && mappedSource.platform !== 'facebook') {
         setSocialProfileUrl(value)
       } else {
         setCollectionProfile(resolveCollectionProfile(value))
@@ -1134,7 +1136,7 @@ export function DownloadDialog({
                 ...(await ipcServices.download.listSocialProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
                   profile: {
-                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : profile.platform === 'redgifs' ? 'Redgifs' : 'TikTok'}`,
+                    username: `${profile.owner} · ${profile.platform === 'x' ? 'X' : profile.platform === 'redgifs' ? 'Redgifs' : profile.platform === 'facebook' ? 'Facebook' : 'TikTok'}`,
                     profileUrl: profile.profileUrl
                   },
                   totalAssetCount: Object.values(profile.categories).reduce(
@@ -1567,6 +1569,11 @@ export function DownloadDialog({
           }
           onMap={async (collection, destination) => {
             setCollectionProfile(null)
+            if (collection.mapping === 'profile') {
+              setSocialProfileDestination(destination)
+              setSocialProfileUrl(collection.url)
+              return
+            }
             await handleParsePlaylistUrl(collection.url)
             setPlaylistCustomDownloadPath(destination)
           }}
@@ -1586,7 +1593,7 @@ export function DownloadDialog({
       )}
       {socialProfileUrl && (
         <SocialProfileDialog
-          destination={settings.downloadPath}
+          destination={socialProfileDestination || settings.downloadPath}
           downloadItems={(profileUrl, category, ids, destination) =>
             ipcServices.download.downloadSocialProfileItems(profileUrl, category, ids, destination)
           }
@@ -1595,7 +1602,10 @@ export function DownloadDialog({
           mapProfile={(profileUrl, category) =>
             ipcServices.download.mapSocialProfile(profileUrl, category)
           }
-          onClose={() => setSocialProfileUrl(null)}
+          onClose={() => {
+            setSocialProfileUrl(null)
+            setSocialProfileDestination('')
+          }}
           openLogin={(profileUrl) => ipcServices.download.openSocialProfileLogin(profileUrl)}
           stopProfile={(profileUrl) => ipcServices.download.stopSocialProfile(profileUrl)}
           url={socialProfileUrl}
