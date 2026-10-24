@@ -1,8 +1,18 @@
-import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
-import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
-import { Copy, File, FolderOpen, ListPlus, Pause, Play, RotateCw, Trash2, X } from 'lucide-react'
+import {
+  Copy,
+  ExternalLink,
+  File,
+  FolderOpen,
+  ListPlus,
+  Pause,
+  Play,
+  RotateCw,
+  Trash2,
+  X
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { resolveProfileMapperTarget } from '../../lib/profile-mapper-target'
 import { ContextMenuItem, ContextMenuSeparator } from './context-menu'
 
 export interface DownloadRecordContextMenuItemsProps {
@@ -26,6 +36,7 @@ export interface DownloadRecordContextMenuItemsProps {
   onDeleteRecord: () => void
   onOpenFile: () => void
   onOpenFolder: () => void
+  onOpenInBrowser?: () => void
   onPause: () => void
   onResume: () => void
   onRetry: () => void
@@ -61,6 +72,7 @@ export function DownloadRecordContextMenuItems({
   onDeleteRecord,
   onOpenFile,
   onOpenFolder,
+  onOpenInBrowser,
   onPause,
   onResume,
   onRetry,
@@ -72,30 +84,19 @@ export function DownloadRecordContextMenuItems({
   showTranscriptRetry = false
 }: DownloadRecordContextMenuItemsProps): ReactNode {
   const { t } = useTranslation()
-  let profileUrl: string | undefined
-  try {
-    const source = new URL(sourceUrl ?? '')
-    const parts = source.pathname.split('/').filter(Boolean)
-    if (/^\d+$/.test(parts[0] ?? '') && parts.length === 2) {
-      source.pathname = `/${parts[1]}`
-    }
-    profileUrl = onlyFansProfile(source.href)?.profileUrl ?? fanslyProfile(source.href)?.profileUrl
-  } catch {
-    // Non-URL records have no profile map.
-  }
+  const mapperTarget = resolveProfileMapperTarget(sourceUrl)
   return (
     <>
-      {profileUrl && (
+      {mapperTarget && (
         <ContextMenuItem
           onSelect={() =>
             window.dispatchEvent(
-              new CustomEvent('vidbee:open-onlyfans-profile', { detail: profileUrl })
+              new CustomEvent('vidbee:open-profile-mapper', { detail: mapperTarget.profileUrl })
             )
           }
         >
           <FolderOpen className="h-4 w-4" />
-          {profileUrl && fanslyProfile(profileUrl) ? 'Fansly' : 'OnlyFans'} ·{' '}
-          {t('instagramResume.map')}
+          {mapperTarget.siteLabel} · {t('instagramResume.map')}
         </ContextMenuItem>
       )}
       {showOpenFile ? (
@@ -133,6 +134,12 @@ export function DownloadRecordContextMenuItems({
         <span aria-hidden className="h-4 w-4 shrink-0" />
         {t('history.copyUrl')}
       </ContextMenuItem>
+      {onOpenInBrowser ? (
+        <ContextMenuItem disabled={!canCopyLink} onClick={onOpenInBrowser}>
+          <ExternalLink className="h-4 w-4" />
+          {t('history.openSourceInBrowser')}
+        </ContextMenuItem>
+      ) : null}
       {extraItems}
       {canRetry || canResumeDownload || canPauseDownload || isInProgressStatus ? (
         <>

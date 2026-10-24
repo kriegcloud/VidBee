@@ -375,6 +375,19 @@ export function DownloadItem({
     }
   }
 
+  /** Open the post's source page in the system browser. */
+  const handleOpenInBrowser = async () => {
+    if (!download.url) {
+      return
+    }
+    try {
+      await ipcServices.fs.openExternal(download.url)
+    } catch (error) {
+      logger.error('Failed to open the source URL:', error)
+      toast.error(t('notifications.openInBrowserFailed'))
+    }
+  }
+
   const handleCopyLink = async () => {
     if (!download.url) {
       toast.error(t('notifications.copyFailed'))
@@ -1217,6 +1230,9 @@ export function DownloadItem({
           }}
           onOpenFolder={() => {
             void handleOpenFolder()
+          }}
+          onOpenInBrowser={() => {
+            void handleOpenInBrowser()
           }}
           onPause={() => {
             void handlePause()

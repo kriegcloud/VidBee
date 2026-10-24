@@ -101,21 +101,6 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const [onlyFansUrl, setOnlyFansUrl] = useState<string | null>(null);
-	useEffect(() => {
-		const openProfile = (event: Event) => {
-			const url: unknown = (event as CustomEvent<unknown>).detail;
-			if (
-				typeof url === "string" &&
-				(onlyFansProfile(url) || fanslyProfile(url))
-			) {
-				setOpen(false);
-				setOnlyFansUrl(url);
-			}
-		};
-		window.addEventListener("vidbee:open-onlyfans-profile", openProfile);
-		return () =>
-			window.removeEventListener("vidbee:open-onlyfans-profile", openProfile);
-	}, []);
 
 	const [socialUrl, setSocialUrl] = useState<string | null>(null);
 	const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null);
@@ -566,6 +551,22 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		},
 		[inspectInstagramProfile],
 	);
+
+	// Any list row can ask for its profile's mapper; the parse route picks the right one.
+	useEffect(() => {
+		const openProfileMapper = (event: Event) => {
+			const url: unknown = (event as CustomEvent<unknown>).detail;
+			if (typeof url === "string") {
+				void handleParseProfileUrl(url);
+			}
+		};
+		window.addEventListener("vidbee:open-profile-mapper", openProfileMapper);
+		return () =>
+			window.removeEventListener(
+				"vidbee:open-profile-mapper",
+				openProfileMapper,
+			);
+	}, [handleParseProfileUrl]);
 
 	const {
 		addUrlPopoverOpen,
