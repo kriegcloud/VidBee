@@ -8,6 +8,7 @@ import {
   chatVideoByOrdinal,
   OnlyFansBrowserExecutor,
   OnlyFansProfiles,
+  onlyFansChatMediaResponse,
   onlyFansChatResponse,
   onlyFansItems,
   onlyFansMediaUrl
@@ -40,6 +41,19 @@ const fixture = {
   hasMore: false
 }
 
+const galleryFixture = {
+  list: [
+    {
+      id: 8,
+      messageId: 100,
+      type: 'photo',
+      files: { full: { url: 'https://cdn2.onlyfans.com/files/gallery.jpg?Signature=private' } }
+    },
+    { id: 9, type: 'video', canView: false, files: {} }
+  ],
+  hasMore: false
+}
+
 const mocks = vi.hoisted(() => ({ launch: vi.fn() }))
 vi.mock('playwright-core', () => ({ chromium: { launchPersistentContext: mocks.launch } }))
 vi.mock('../src/availability', () => ({ resolveBrowserExecutable: () => '/usr/bin/google-chrome' }))
@@ -53,7 +67,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-function setup(auth = true, emitPosts = true, chat = false) {
+function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'messages') {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'vidbee-of-test-'))
   dirs.push(dir)
   const events = new EventEmitter()
@@ -70,13 +84,18 @@ function setup(auth = true, emitPosts = true, chat = false) {
     close: vi.fn(async () => undefined),
     cookies: vi.fn(async () => (auth ? [{ name: 'sess' }, { name: 'auth_id' }] : []))
   }
+  let currentUrl = chat
+    ? 'https://onlyfans.com/my/chats/chat/7'
+    : 'https://onlyfans.com/example/photos'
   const page = {
     waitForResponse: vi.fn(async (_predicate?: unknown) =>
       response(
         chat
-          ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+          ? chatRoute === 'messages'
+            ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+            : 'https://onlyfans.com/api2/v2/chats/7/media'
           : 'https://onlyfans.com/api2/v2/posts/100',
-        chat ? fixture : fixture.list[0]
+        chat ? (chatRoute === 'messages' ? fixture : galleryFixture) : fixture.list[0]
       )
     ),
     isClosed: () => closed,
@@ -87,20 +106,28 @@ function setup(auth = true, emitPosts = true, chat = false) {
     close: vi.fn(async () => {
       closed = true
     }),
-    url: () =>
-      chat ? 'https://onlyfans.com/my/chats/chat/7' : 'https://onlyfans.com/example/photos',
+    url: () => currentUrl,
     evaluate: vi.fn(),
-    goto: vi.fn(async () => {
+    goto: vi.fn(async (url: string) => {
+      currentUrl = url
       events.emit('response', response('https://onlyfans.com/api2/v2/users/example', { id: 7 }))
       await Promise.resolve()
       if (emitPosts) {
+        const galleryQuery =
+          chatRoute === 'opened' || chatRoute === 'purchased'
+            ? `?${chatRoute}=1`
+            : chatRoute === 'photos' || chatRoute === 'videos'
+              ? `?type=${chatRoute}`
+              : ''
         events.emit(
           'response',
           response(
             chat
-              ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+              ? chatRoute === 'messages'
+                ? 'https://onlyfans.com/api2/v2/chats/7/messages'
+                : `https://onlyfans.com/api2/v2/chats/7/media${galleryQuery}`
               : 'https://onlyfans.com/api2/v2/users/7/posts/medias',
-            fixture
+            chat && chatRoute !== 'messages' ? galleryFixture : fixture
           )
         )
         await Promise.resolve()
@@ -199,6 +226,42 @@ describe('OnlyFans browser mapping', () => {
     }
   })
 
+  it('matches only the selected chat gallery filter', () => {
+    const base = 'https://onlyfans.com/api2/v2/chats/7/media?limit=10'
+    for (const [route, query] of [
+      ['gallery', ''],
+      ['opened', '&opened=1'],
+      ['purchased', '&purchased=1'],
+      ['photos', '&type=photos'],
+      ['videos', '&type=videos']
+    ] as const) {
+      expect(onlyFansChatMediaResponse(new URL(`${base}${query}`), '7', route)).toBe(true)
+      expect(onlyFansChatMediaResponse(new URL(`${base}${query}`), '8', route)).toBe(false)
+    }
+    expect(onlyFansChatMediaResponse(new URL(`${base}&opened=1`), '7', 'gallery')).toBe(false)
+    expect(onlyFansChatMediaResponse(new URL(base), '7', 'purchased')).toBe(false)
+  })
+
+  it.each([
+    ['gallery', 'gallery'],
+    ['gallery/opened', 'opened'],
+    ['gallery/purchased', 'purchased'],
+    ['gallery/photos', 'photos'],
+    ['gallery/videos', 'videos']
+  ])('maps chat /%s and saves its own media references', async (suffix, route) => {
+    const { profiles, dir, page } = setup(true, true, true, route)
+    const url = `https://onlyfans.com/my/chats/chat/7/${suffix}`
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    expect(page.goto).toHaveBeenCalledWith(url, expect.anything())
+    expect(profiles.get(url).items.map((entry) => entry.id)).toEqual(['8', '9'])
+    expect(profiles.get(url).items[0]).toMatchObject({ postId: '100', state: 'available' })
+    expect(profiles.get('https://onlyfans.com/my/chats/chat/7').items).toHaveLength(0)
+    expect(readFileSync(path.join(dir, `7-${route}.json`), 'utf8')).not.toContain('Signature')
+    expect(new OnlyFansProfiles(dir, () => dir).list()[0].profileUrl).toBe(url)
+    await profiles.stop()
+  })
+
   it('maps mixed chat attachments, reopens saved chats, and refreshes the message before download', async () => {
     const { profiles, dir, page } = setup(true, true, true)
     const url = 'https://onlyfans.com/my/chats/chat/7'
@@ -242,6 +305,30 @@ describe('OnlyFans browser mapping', () => {
     await profiles.stop()
   })
 
+  it('refreshes a gallery attachment through its direct chat media route', async () => {
+    const { profiles, dir, page } = setup(true, true, true, 'gallery')
+    const url = 'https://onlyfans.com/my/chats/chat/7/gallery'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(new Uint8Array([255, 216, 255, 217]), {
+            headers: { 'content-type': 'image/jpeg' }
+          })
+      )
+    )
+    const output = await profiles.download(url, '8', dir, new AbortController().signal, vi.fn())
+    expect(output.size).toBe(4)
+    expect(page.goto).toHaveBeenLastCalledWith(
+      'https://onlyfans.com/my/chats/chat/7/media/8',
+      expect.anything()
+    )
+    expect(profiles.get(url).items[0].downloaded).toBe(true)
+    await profiles.stop()
+  })
+
   it('scrolls chat history upward and retains a partial map on stop', async () => {
     const { profiles, page } = setup(true, false, true)
     const url = 'https://onlyfans.com/my/chats/chat/7'
@@ -260,6 +347,27 @@ describe('OnlyFans browser mapping', () => {
     expect(onlyFansMediaUrl('https://cdn2.onlyfans.com.evil.test/files/a.jpg')).toBeNull()
     expect(onlyFansMediaUrl('http://cdn2.onlyfans.com/files/a.jpg')).toBeNull()
     expect(onlyFansMediaUrl('https://onlyfans.com/api2/v2/users/me')).toBeNull()
+  })
+
+  it('reads direct gallery media from alternate list envelopes without saving signed URLs', () => {
+    const items = onlyFansItems({
+      items: [
+        {
+          id: 11,
+          type: 'gif',
+          files: {
+            source: { url: 'https://cdn2.onlyfans.com/files/animation.gif?Signature=private' }
+          }
+        }
+      ]
+    })
+    expect(items[0].item).toMatchObject({
+      id: '11',
+      postId: '11',
+      category: 'photos',
+      state: 'available'
+    })
+    expect(items[0].mediaUrl).toContain('/files/animation.gif')
   })
 
   it('requires its own login without importing cookies or starting a map request', async () => {

@@ -3,6 +3,8 @@ import {
   type OnlyFansCommand,
   type OnlyFansDownload,
   type OnlyFansProfile,
+  onlyFansChatRoutes,
+  onlyFansChatUrl,
   onlyFansProfile
 } from '@vidbee/downloader-core/onlyfans-profile'
 import { useCallback, useEffect, useId, useState } from 'react'
@@ -25,6 +27,8 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
   const { t } = useTranslation()
   const isFansly = Boolean(fanslyProfile(url))
   const chatId = onlyFansProfile(url)?.chatId
+  const [targetUrl, setTargetUrl] = useState(url)
+  const chatRoute = onlyFansProfile(targetUrl)?.chatRoute ?? 'messages'
   const platform = isFansly ? 'Fansly' : 'OnlyFans'
   const [source, setSource] = useState<'posts' | 'media'>(
     url.endsWith('/posts') ? 'posts' : 'media'
@@ -38,9 +42,9 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const refresh = useCallback(async () => {
-    const value = await command({ url, action: 'get' })
+    const value = await command({ url: targetUrl, action: 'get' })
     setProfile(value)
-  }, [command, url])
+  }, [command, targetUrl])
   useEffect(() => {
     let disposed = false
     let pending = false
@@ -50,7 +54,7 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
       }
       pending = true
       try {
-        const value = await command({ url, action: 'get' })
+        const value = await command({ url: targetUrl, action: 'get' })
         if (!disposed) {
           setProfile(value)
         }
@@ -70,13 +74,13 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
       disposed = true
       clearInterval(timer)
     }
-  }, [command, url, t])
+  }, [command, targetUrl, t])
   const act = async (action: OnlyFansCommand['action']) => {
     setBusy(true)
     setError('')
     setNotice('')
     try {
-      setProfile(await command({ url, action, category: isFansly ? source : 'media' }))
+      setProfile(await command({ url: targetUrl, action, category: isFansly ? source : 'media' }))
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : t('notifications.downloadFailed'))
     } finally {
@@ -136,6 +140,24 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
               </Button>
             ))}
           </div>
+        )}
+        {chatId && (
+          <nav aria-label={t('onlyFans.chat', { id: chatId })} className="flex flex-wrap gap-2">
+            {onlyFansChatRoutes.map((route) => (
+              <Button
+                disabled={busy || mapping}
+                key={route}
+                onClick={() => {
+                  setTargetUrl(onlyFansChatUrl(chatId, route))
+                  setProfile(null)
+                  setSelected(new Set())
+                }}
+                variant={chatRoute === route ? 'default' : 'outline'}
+              >
+                {t(`onlyFans.routes.${route}`)}
+              </Button>
+            ))}
+          </nav>
         )}
         <div className="flex flex-wrap gap-2">
           <Button
@@ -273,7 +295,7 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
               setError('')
               try {
                 const result = await download({
-                  url,
+                  url: targetUrl,
                   itemIds: [...selected],
                   customDownloadPath: directory.trim() || undefined
                 })

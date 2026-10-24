@@ -34,6 +34,43 @@ Message text is not saved. Saved profiles and downloaded-item context menus reop
 chat maps as well as profile maps. Opening a conversation may mark messages read
 through the site's normal behavior.
 
+### Chat gallery targets
+
+The dialog lists six source routes for a chat. Each route has its own saved map,
+so a partial scan or an empty filter does not overwrite another route's items.
+The All, Photos, and Videos controls below them filter the current map by file
+kind. Opened and Purchased are access filters supplied by the site, not file
+kinds; they can contain either photos or videos.
+
+| Source | Page suffix | Observed API feed | Filter |
+| --- | --- | --- | --- |
+| Messages | none | `/messages` | none |
+| Gallery | `/gallery` | `/media` | none |
+| Opened | `/gallery/opened` | `/media` | `opened=1` |
+| Purchased | `/gallery/purchased` | `/media` | `purchased=1` |
+| Photos | `/gallery/photos` | `/media` | `type=photos` |
+| Videos | `/gallery/videos` | `/media` | `type=videos` |
+
+`onlyFansChatTargets` defines these paths, feeds, and filters in one place.
+`BrowserProfileAdapter` supplies each site's feed matcher, completion rule,
+scroll direction, queue URL, and authenticated refresh route. The shared
+browser mapper uses those functions for OnlyFans and Fansly; it does not copy
+credentials to the download worker. The Add URL router
+sends OnlyFans and Fansly profiles to that mapper. Instagram profiles use the
+native Instagram mapping workflow, while other supported single items and
+playlists continue through their registered downloaders, including yt-dlp.
+Adding a route means defining its URL and API filter and then testing both the
+shared dialog and the provider adapter. Adding another site means supplying a
+URL resolver and the appropriate mapper or downloader for its authentication
+and media capabilities.
+
+The six route fixtures and response filters are covered by offline tests. They
+do not prove the current site returns those responses for a signed-in account.
+Live acceptance requires opening each example route in the dedicated session,
+mapping it, checking that the selected route contains the expected items, and
+downloading one available item from a gallery route. Do not mark an empty or
+partial map as complete without the site's end marker.
+
 Desktop and web share the schemas, mapping service, executor and UI. A web/API
 host needs an installed Chrome-family browser and a graphical session accessible
 to the user. The browser opens on that host, not on a remote web client's device.

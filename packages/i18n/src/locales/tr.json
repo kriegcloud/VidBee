@@ -2016,6 +2016,14 @@
     "alreadySaved": "Zaten sırada veya indirildi"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Mesajlar",
+      "gallery": "Galeri",
+      "opened": "Açılanlar",
+      "purchased": "Satın Alınanlar",
+      "photos": "Fotoğraflar",
+      "videos": "Videolar"
+    },
     "chat": "Sohbet {{id}}",
     "chatHint": "Bu konuşmadaki fotoğraf ve videoları özel tarayıcıyla tarayın. Yalnızca erişilebilir ekler indirilebilir.",
     "sessionHint": "Bu cihazdaki özel VidBee tarayıcısında bir kez oturum açın. Normal Chrome çerezleriniz asla kopyalanmaz. Fotoğrafları veya videoları tarayın, ardından indirilebilir içerikleri seçin.",

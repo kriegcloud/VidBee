@@ -2,6 +2,30 @@ import { z } from 'zod'
 
 export const OnlyFansCategorySchema = z.enum(['photos', 'videos'])
 export const OnlyFansScanSchema = z.enum(['media', 'photos', 'videos', 'posts'])
+export const onlyFansChatRoutes = [
+  'messages',
+  'gallery',
+  'opened',
+  'purchased',
+  'photos',
+  'videos'
+] as const
+export type OnlyFansChatRoute = (typeof onlyFansChatRoutes)[number]
+export const onlyFansChatTargets: Record<
+  OnlyFansChatRoute,
+  { path: string; feed: 'messages' | 'media'; filter?: readonly [string, string] }
+> = {
+  messages: { path: '', feed: 'messages' },
+  gallery: { path: '/gallery', feed: 'media' },
+  opened: { path: '/gallery/opened', feed: 'media', filter: ['opened', '1'] },
+  purchased: { path: '/gallery/purchased', feed: 'media', filter: ['purchased', '1'] },
+  photos: { path: '/gallery/photos', feed: 'media', filter: ['type', 'photos'] },
+  videos: { path: '/gallery/videos', feed: 'media', filter: ['type', 'videos'] }
+}
+
+export function onlyFansChatUrl(chatId: string, route: OnlyFansChatRoute): string {
+  return `https://onlyfans.com/my/chats/chat/${chatId}${onlyFansChatTargets[route].path}`
+}
 export const OnlyFansItemSchema = z.object({
   id: z.string().regex(/^\d+$/),
   postId: z.string().regex(/^\d+$/),
@@ -16,6 +40,7 @@ export const OnlyFansProfileSchema = z.object({
     .string()
     .regex(/^\d{1,20}$/)
     .optional(),
+  chatRoute: z.enum(onlyFansChatRoutes).optional(),
   state: z.enum(['idle', 'mapping', 'partial', 'complete', 'auth-required', 'error']),
   category: OnlyFansScanSchema.optional(),
   updatedAt: z.number(),
@@ -54,7 +79,7 @@ const RESERVED = new Set([
 
 export function onlyFansProfile(
   value: string
-): { username: string; profileUrl: string; chatId?: string } | null {
+): { username: string; profileUrl: string; chatId?: string; chatRoute?: OnlyFansChatRoute } | null {
   try {
     const url = new URL(value)
     const parts = url.pathname.split('/').filter(Boolean)
@@ -69,16 +94,23 @@ export function onlyFansProfile(
     ) {
       return null
     }
-    if (
-      parts.length === 4 &&
-      parts.slice(0, 3).join('/') === 'my/chats/chat' &&
-      /^\d{1,20}$/.test(parts[3])
-    ) {
+    if (parts.slice(0, 3).join('/') === 'my/chats/chat' && /^\d{1,20}$/.test(parts[3] ?? '')) {
       const chatId = parts[3]
+      if (parts.length === 4) {
+        return { username: chatId, chatId, profileUrl: onlyFansChatUrl(chatId, 'messages') }
+      }
+      const suffix = `/${parts.slice(4).join('/')}`
+      const route = onlyFansChatRoutes.find(
+        (candidate) => candidate !== 'messages' && onlyFansChatTargets[candidate].path === suffix
+      )
+      if (!route) {
+        return null
+      }
       return {
         username: chatId,
         chatId,
-        profileUrl: `https://onlyfans.com/my/chats/chat/${chatId}`
+        chatRoute: route,
+        profileUrl: onlyFansChatUrl(chatId, route)
       }
     }
     if (

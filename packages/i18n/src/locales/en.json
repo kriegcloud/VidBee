@@ -2016,6 +2016,14 @@
     "alreadySaved": "Already queued or downloaded"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Messages",
+      "gallery": "Gallery",
+      "opened": "Opened",
+      "purchased": "Purchased",
+      "photos": "Photos",
+      "videos": "Videos"
+    },
     "chat": "Chat {{id}}",
     "chatHint": "Map the photos and videos in this conversation using the dedicated browser. Only available attachments can be downloaded.",
     "sessionHint": "Sign in once in the dedicated VidBee browser on this host. Your usual Chrome cookies are never copied. Map photos or videos, then select available media to download.",

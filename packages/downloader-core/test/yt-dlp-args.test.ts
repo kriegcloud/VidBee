@@ -53,6 +53,21 @@ describe('OnlyFans session isolation', () => {
     }
   })
 
+  it.each([
+    ['gallery', 'gallery'],
+    ['gallery/opened', 'opened'],
+    ['gallery/purchased', 'purchased'],
+    ['gallery/photos', 'photos'],
+    ['gallery/videos', 'videos']
+  ])('keeps chat /%s as a distinct map target', (suffix, chatRoute) => {
+    expect(onlyFansProfile(`https://onlyfans.com/my/chats/chat/172650280/${suffix}/`)).toEqual({
+      username: '172650280',
+      chatId: '172650280',
+      chatRoute,
+      profileUrl: `https://onlyfans.com/my/chats/chat/172650280/${suffix}`
+    })
+  })
+
   it('preserves non-OnlyFans extraction', () => {
     expect(buildVideoInfoArgs('https://youtube.com/watch?v=fixture', {})).toContain(
       '--ignore-config'

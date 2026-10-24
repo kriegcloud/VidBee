@@ -16,6 +16,7 @@ import { pipeline } from 'node:stream/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 import {
   isOnlyFansSite,
+  type OnlyFansChatRoute,
   type OnlyFansCommand,
   OnlyFansCommandSchema,
   type OnlyFansDownload,
@@ -23,6 +24,7 @@ import {
   type OnlyFansItem,
   type OnlyFansProfile,
   OnlyFansProfileSchema,
+  onlyFansChatTargets,
   onlyFansProfile
 } from '@vidbee/downloader-core/onlyfans-profile'
 import {
@@ -70,18 +72,26 @@ export function onlyFansMediaUrl(value: unknown): string | null {
 /** Extract references only. Signed CDN URLs live in memory and are not saved in profiles. */
 export function onlyFansItems(payload: unknown): { item: OnlyFansItem; mediaUrl: string | null }[] {
   const body = record(payload)
-  const posts = Array.isArray(body.list) ? body.list : [body]
+  const entries = ['list', 'items', 'data', 'media', 'messages', 'posts']
+    .map((key) => body[key])
+    .find(Array.isArray)
+  const posts = Array.isArray(payload)
+    ? payload
+    : id(body.id) && Array.isArray(body.media)
+      ? [body]
+      : (entries ?? [body])
   const output: { item: OnlyFansItem; mediaUrl: string | null }[] = []
   for (const value of posts) {
     const post = record(value)
     const postId = id(post.id)
-    if (!(postId && Array.isArray(post.media))) {
+    const mediaEntries = Array.isArray(post.media) ? post.media : [post]
+    if (!postId) {
       continue
     }
-    for (const raw of post.media) {
+    for (const raw of mediaEntries) {
       const media = record(raw)
       const mediaId = id(media.id)
-      if (!(mediaId && ['photo', 'video'].includes(String(media.type)))) {
+      if (!(mediaId && ['photo', 'gif', 'video'].includes(String(media.type)))) {
         continue
       }
       const files = record(media.files)
@@ -91,13 +101,18 @@ export function onlyFansItems(payload: unknown): { item: OnlyFansItem; mediaUrl:
         .sort(([a], [b]) => Number(b) - Number(a))
         .map(([, url]) => onlyFansMediaUrl(url))
         .find(Boolean)
-      const mediaUrl = onlyFansMediaUrl(full.url) ?? candidate ?? null
+      const mediaUrl =
+        onlyFansMediaUrl(full.url) ??
+        onlyFansMediaUrl(record(files.source).url) ??
+        onlyFansMediaUrl(media.src) ??
+        candidate ??
+        null
       const drm = Object.keys(record(files.drm)).length > 0
       output.push({
         item: {
           id: mediaId,
-          postId,
-          category: media.type === 'photo' ? 'photos' : 'videos',
+          postId: id(post.messageId) ?? id(post.postId) ?? postId,
+          category: media.type === 'video' ? 'videos' : 'photos',
           state:
             media.canView === false || post.canViewMedia === false
               ? 'locked'
@@ -197,8 +212,36 @@ export function onlyFansChatResponse(url: URL, chatId: string): boolean {
   )
 }
 
+export function onlyFansChatMediaResponse(
+  url: URL,
+  chatId: string,
+  route?: OnlyFansChatRoute
+): boolean {
+  if (url.origin !== 'https://onlyfans.com' || url.pathname !== `/api2/v2/chats/${chatId}/media`) {
+    return false
+  }
+  if (!route) {
+    return true
+  }
+  const target = onlyFansChatTargets[route]
+  if (target.feed !== 'media') {
+    return false
+  }
+  const filters = url.searchParams
+  if (target.filter) {
+    return filters.get(target.filter[0]) === target.filter[1]
+  }
+  return !(filters.has('opened') || filters.has('purchased') || filters.has('type'))
+}
+
 function onlyFansMessageUrl(item: OnlyFansItem, profile: OnlyFansProfile): string | null {
-  return profile.chatId ? `${profile.profileUrl}?firstId=${item.postId}` : null
+  if (!profile.chatId) {
+    return null
+  }
+  const base = `https://onlyfans.com/my/chats/chat/${profile.chatId}`
+  return profile.chatRoute && profile.chatRoute !== 'messages'
+    ? `${base}/media/${item.id}`
+    : `${base}?firstId=${item.postId}`
 }
 
 async function* readBody(body: ReadableStream<Uint8Array>): AsyncGenerator<Uint8Array> {
@@ -225,10 +268,12 @@ export interface BrowserProfileAdapter {
   items: typeof onlyFansItems
   ownerResponse: (url: URL, username: string) => boolean
   ownerId: (payload: unknown, username: string) => string | null
-  feedResponse: (url: URL, ownerId: string) => boolean
+  feedResponse: (url: URL, ownerId: string, profile: OnlyFansProfile) => boolean
   complete: (payload: unknown) => boolean
-  postUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
-  postResponse: (url: URL, item: OnlyFansItem) => boolean
+  queueUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
+  refreshUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
+  refreshResponse: (url: URL, item: OnlyFansItem, profile: OnlyFansProfile) => boolean
+  scrollMode: (profile: OnlyFansProfile) => { nested: boolean; chat: boolean }
   requiresCookies: boolean
 }
 
@@ -242,13 +287,33 @@ const onlyFansAdapter: BrowserProfileAdapter = {
   ownerResponse: (url, username) =>
     url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/users/${username}`,
   ownerId: (payload) => id(record(payload).id),
-  feedResponse: (url, ownerId) =>
-    url.origin === 'https://onlyfans.com' &&
-    url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
+  feedResponse: (url, ownerId, profile) =>
+    profile.chatId
+      ? profile.chatRoute && onlyFansChatTargets[profile.chatRoute].feed === 'media'
+        ? onlyFansChatMediaResponse(url, profile.chatId, profile.chatRoute)
+        : onlyFansChatResponse(url, profile.chatId)
+      : url.origin === 'https://onlyfans.com' &&
+        url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
   complete: (payload) => record(payload).hasMore === false,
-  postUrl: (item, profile) => `https://onlyfans.com/${item.postId}/${profile.username}`,
-  postResponse: (url, item) =>
-    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
+  queueUrl: (item, profile) =>
+    onlyFansMessageUrl(item, profile) ?? `https://onlyfans.com/${item.postId}/${profile.username}`,
+  refreshUrl: (item, profile) =>
+    onlyFansMessageUrl(item, profile) ?? `https://onlyfans.com/${item.postId}/${profile.username}`,
+  refreshResponse: (url, item, profile) =>
+    profile.chatId
+      ? onlyFansChatResponse(url, profile.chatId) ||
+        onlyFansChatMediaResponse(url, profile.chatId) ||
+        (url.origin === 'https://onlyfans.com' &&
+          (url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}` ||
+            url.pathname === `/api2/v2/chats/${profile.chatId}/media/${item.id}`))
+      : url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
+  scrollMode: (profile) => ({
+    nested: Boolean(profile.chatId),
+    chat: Boolean(
+      profile.chatId &&
+        (!profile.chatRoute || onlyFansChatTargets[profile.chatRoute].feed === 'messages')
+    )
+  }),
   requiresCookies: true
 }
 
@@ -257,7 +322,7 @@ export class OnlyFansProfiles {
   private context: BrowserContext | null = null
   private opening: Promise<BrowserContext> | null = null
   private page: Page | null = null
-  private active: { username: string; controller: AbortController; done: Promise<void> } | null =
+  private active: { profileUrl: string; controller: AbortController; done: Promise<void> } | null =
     null
   private downloading = false
   private readonly profiles = new Map<string, OnlyFansProfile>()
@@ -281,10 +346,16 @@ export class OnlyFansProfiles {
     return `${username}/${mediaId}`
   }
 
+  private profileKey(profile: Pick<OnlyFansProfile, 'username' | 'chatId' | 'chatRoute'>): string {
+    return profile.chatId && profile.chatRoute && profile.chatRoute !== 'messages'
+      ? `${profile.username}-${profile.chatRoute}`
+      : profile.username
+  }
+
   private save(profile: OnlyFansProfile): void {
     mkdirSync(this.storageDir, { recursive: true, mode: 0o700 })
     profile.updatedAt = Date.now()
-    const target = path.join(this.storageDir, `${profile.username}.json`)
+    const target = path.join(this.storageDir, `${this.profileKey(profile)}.json`)
     writeFileSync(`${target}.tmp`, JSON.stringify(profile), { mode: 0o600 })
     renameSync(`${target}.tmp`, target)
   }
@@ -294,15 +365,17 @@ export class OnlyFansProfiles {
     if (!normalized) {
       throw new Error(`Enter a ${this.adapter.name} profile URL.`)
     }
-    let profile = this.profiles.get(normalized.username)
+    const profileKey = this.profileKey(normalized)
+    let profile = this.profiles.get(profileKey)
     if (!profile) {
-      const filename = path.join(this.storageDir, `${normalized.username}.json`)
+      const filename = path.join(this.storageDir, `${profileKey}.json`)
       if (existsSync(filename)) {
         profile = OnlyFansProfileSchema.parse(JSON.parse(readFileSync(filename, 'utf8')))
         if (
           profile.username !== normalized.username ||
           profile.profileUrl !== normalized.profileUrl ||
-          profile.chatId !== normalized.chatId
+          profile.chatId !== normalized.chatId ||
+          profile.chatRoute !== normalized.chatRoute
         ) {
           throw new Error('Saved profile identity does not match.')
         }
@@ -312,7 +385,7 @@ export class OnlyFansProfiles {
       } else {
         profile = { ...normalized, state: 'idle', updatedAt: Date.now(), pages: 0, items: [] }
       }
-      this.profiles.set(normalized.username, profile)
+      this.profiles.set(profileKey, profile)
     }
     return structuredClone(profile)
   }
@@ -387,7 +460,7 @@ export class OnlyFansProfiles {
   async command(raw: OnlyFansCommand): Promise<OnlyFansProfile> {
     const input = OnlyFansCommandSchema.parse(raw)
     const snapshot = this.get(input.url)
-    const profile = this.profiles.get(snapshot.username)
+    const profile = this.profiles.get(this.profileKey(snapshot))
     if (!profile) {
       throw new Error('Saved profile is unavailable.')
     }
@@ -395,7 +468,7 @@ export class OnlyFansProfiles {
       return snapshot
     }
     if (input.action === 'stop') {
-      if (this.active?.username === profile.username) {
+      if (this.active?.profileUrl === profile.profileUrl) {
         this.active.controller.abort()
         await this.active.done
       }
@@ -453,7 +526,7 @@ export class OnlyFansProfiles {
     const done = this.map(profile, input.category, controller.signal).finally(() => {
       this.active = null
     })
-    this.active = { username: profile.username, controller, done }
+    this.active = { profileUrl: profile.profileUrl, controller, done }
     return this.get(input.url)
   }
 
@@ -503,9 +576,7 @@ export class OnlyFansProfiles {
         ownerId = this.adapter.ownerId(await response.json(), profile.username)
         return
       }
-      const isFeed = profile.chatId
-        ? onlyFansChatResponse(url, profile.chatId)
-        : Boolean(ownerId && this.adapter.feedResponse(url, ownerId))
+      const isFeed = Boolean(ownerId && this.adapter.feedResponse(url, ownerId, profile))
       if (!isFeed) {
         return
       }
@@ -562,40 +633,38 @@ export class OnlyFansProfiles {
       const deadline = Date.now() + 10 * 60 * 1000
       while (!finished && Date.now() < deadline && Date.now() - lastResponse < 20_000) {
         signal.throwIfAborted()
-        if (this.adapter.normalize(page.url())?.username !== profile.username) {
+        const current = this.adapter.normalize(page.url())
+        if (
+          current?.username !== profile.username ||
+          (profile.chatId && current.profileUrl !== profile.profileUrl)
+        ) {
           throw new Error('The browser left the mapped profile.')
         }
-        await page.evaluate(
-          ({ nested, chat }) => {
-            const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1)
-            if (!nested) {
-              window.scrollBy(0, step)
-              return
-            }
-            const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
-              .filter((element) => {
-                const bounds = element.getBoundingClientRect()
-                return (
-                  bounds.width > 300 &&
-                  bounds.height > 200 &&
-                  bounds.bottom > 0 &&
-                  bounds.top < window.innerHeight &&
-                  element.scrollHeight > element.clientHeight + 10 &&
-                  /auto|scroll/.test(getComputedStyle(element).overflowY)
-                )
-              })
-              .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))
-            if (candidates[0]) {
-              candidates[0].scrollBy(0, step)
-            } else {
-              window.scrollBy(0, step)
-            }
-          },
-          {
-            nested: this.adapter.key === 'fansly' || Boolean(profile.chatId),
-            chat: Boolean(profile.chatId)
+        await page.evaluate(({ nested, chat }) => {
+          const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1)
+          if (!nested) {
+            window.scrollBy(0, step)
+            return
           }
-        )
+          const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
+            .filter((element) => {
+              const bounds = element.getBoundingClientRect()
+              return (
+                bounds.width > 300 &&
+                bounds.height > 200 &&
+                bounds.bottom > 0 &&
+                bounds.top < window.innerHeight &&
+                element.scrollHeight > element.clientHeight + 10 &&
+                /auto|scroll/.test(getComputedStyle(element).overflowY)
+              )
+            })
+            .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))
+          if (candidates[0]) {
+            candidates[0].scrollBy(0, step)
+          } else {
+            window.scrollBy(0, step)
+          }
+        }, this.adapter.scrollMode(profile))
         await delay(1500, undefined, { signal })
       }
       if (profile.state === 'mapping') {
@@ -655,10 +724,7 @@ export class OnlyFansProfiles {
           groupKey: `${this.adapter.key}-browser`,
           input: {
             kind: item.category === 'videos' ? 'video' : 'social-media',
-            url:
-              this.adapter.key === 'fansly'
-                ? `${profile.profileUrl}/posts`
-                : (onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile)),
+            url: this.adapter.queueUrl(item, profile),
             title: `@${profile.username} · ${item.category} · ${item.id}`,
             options: {
               onlyFansProfile: profile.profileUrl,
@@ -684,7 +750,7 @@ export class OnlyFansProfiles {
       throw new Error(`Finish or stop ${this.adapter.name} mapping before downloading.`)
     }
     const snapshot = this.get(profileUrl)
-    const profile = this.profiles.get(snapshot.username)
+    const profile = this.profiles.get(this.profileKey(snapshot))
     if (!profile) {
       throw new Error('Saved profile is unavailable.')
     }
@@ -702,11 +768,7 @@ export class OnlyFansProfiles {
         const responsePromise = page.waitForResponse(
           async (candidate) => {
             const url = new URL(candidate.url())
-            const matches = profile.chatId
-              ? onlyFansChatResponse(url, profile.chatId) ||
-                (url.origin === this.adapter.origin &&
-                  url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}`)
-              : this.adapter.postResponse(url, item)
+            const matches = this.adapter.refreshResponse(url, item, profile)
             if (!(matches && profile.chatId && candidate.ok())) {
               return matches
             }
@@ -722,7 +784,7 @@ export class OnlyFansProfiles {
           (matched) => matched,
           () => null
         )
-        await page.goto(onlyFansMessageUrl(item, profile) ?? this.adapter.postUrl(item, profile), {
+        await page.goto(this.adapter.refreshUrl(item, profile), {
           waitUntil: 'domcontentloaded',
           timeout: 45_000
         })

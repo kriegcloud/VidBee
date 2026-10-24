@@ -2016,6 +2016,14 @@
     "alreadySaved": "Já na fila ou baixado"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Mensagens",
+      "gallery": "Galeria",
+      "opened": "Abertos",
+      "purchased": "Comprados",
+      "photos": "Fotos",
+      "videos": "Vídeos"
+    },
     "chat": "Conversa {{id}}",
     "chatHint": "Analise as fotos e os vídeos desta conversa no navegador dedicado. Apenas os anexos disponíveis podem ser baixados.",
     "sessionHint": "Inicie sessão uma vez no navegador dedicado do VidBee neste dispositivo. Os cookies do seu Chrome habitual nunca são copiados. Mapeie fotos ou vídeos e selecione os conteúdos disponíveis para baixar.",

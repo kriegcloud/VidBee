@@ -2016,6 +2016,14 @@
     "alreadySaved": "已排入佇列或已下載"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "訊息",
+      "gallery": "圖庫",
+      "opened": "已開啟",
+      "purchased": "已購買",
+      "photos": "照片",
+      "videos": "影片"
+    },
     "chat": "聊天 {{id}}",
     "chatHint": "使用專用瀏覽器掃描此對話中的照片和影片。只能下載可存取的附件。",
     "sessionHint": "請在此裝置的 VidBee 專用瀏覽器中登入一次。不會複製您平常使用的 Chrome Cookie。掃描相片或影片，然後選擇可下載的媒體。",

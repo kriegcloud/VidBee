@@ -2016,6 +2016,14 @@
     "alreadySaved": "Déjà en file ou téléchargé"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Messages",
+      "gallery": "Galerie",
+      "opened": "Ouverts",
+      "purchased": "Achetés",
+      "photos": "Photos",
+      "videos": "Vidéos"
+    },
     "chat": "Discussion {{id}}",
     "chatHint": "Analysez les photos et vidéos de cette discussion dans le navigateur dédié. Seules les pièces jointes accessibles peuvent être téléchargées.",
     "sessionHint": "Connectez-vous une fois dans le navigateur dédié à VidBee sur cet appareil. Les cookies de votre Chrome habituel ne sont jamais copiés. Répertoriez les photos ou vidéos, puis sélectionnez les médias disponibles à télécharger.",

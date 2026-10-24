@@ -2016,6 +2016,14 @@
     "alreadySaved": "Bereits eingereiht oder heruntergeladen"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Nachrichten",
+      "gallery": "Galerie",
+      "opened": "Geöffnet",
+      "purchased": "Gekauft",
+      "photos": "Fotos",
+      "videos": "Videos"
+    },
     "chat": "Chat {{id}}",
     "chatHint": "Erfasse die Fotos und Videos dieser Unterhaltung im eigenen Browser. Nur verfügbare Anhänge können heruntergeladen werden.",
     "sessionHint": "Melde dich einmal im separaten VidBee-Browser auf diesem Gerät an. Deine normalen Chrome-Cookies werden nie kopiert. Erfasse Fotos oder Videos und wähle verfügbare Medien zum Herunterladen aus.",

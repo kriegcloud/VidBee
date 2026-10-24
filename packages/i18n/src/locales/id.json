@@ -2016,6 +2016,14 @@
     "alreadySaved": "Sudah di antrean atau diunduh"
   },
   "onlyFans": {
+    "routes": {
+      "messages": "Pesan",
+      "gallery": "Galeri",
+      "opened": "Dibuka",
+      "purchased": "Dibeli",
+      "photos": "Foto",
+      "videos": "Video"
+    },
     "chat": "Percakapan {{id}}",
     "chatHint": "Pindai foto dan video dalam percakapan ini menggunakan browser khusus. Hanya lampiran yang tersedia yang dapat diunduh.",
     "sessionHint": "Masuk sekali di browser khusus VidBee pada perangkat ini. Cookie Chrome biasa Anda tidak pernah disalin. Petakan foto atau video, lalu pilih media yang tersedia untuk diunduh.",

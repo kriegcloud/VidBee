@@ -160,11 +160,13 @@ export const fanslyAdapter: BrowserProfileAdapter = {
       (Array.isArray(body.data) && body.data.length === 0)
     )
   },
-  postUrl: (item) => `https://fansly.com/post/${item.postId}`,
-  postResponse: (url, item) =>
+  queueUrl: (_item, profile) => `${profile.profileUrl}/posts`,
+  refreshUrl: (item) => `https://fansly.com/post/${item.postId}`,
+  refreshResponse: (url, item) =>
     api(url) &&
     url.pathname === '/api/v1/post' &&
     (url.searchParams.get('ids') ?? '').split(',').includes(item.postId),
+  scrollMode: () => ({ nested: true, chat: false }),
   requiresCookies: false
 }
 
