@@ -37,7 +37,7 @@ import {
   type TaskQueueAPI,
   virtualError
 } from '@vidbee/task-queue'
-import type { BrowserContext, Page, Response } from 'playwright-core'
+import type { BrowserContext, Locator, Page, Response } from 'playwright-core'
 import { resolveBrowserExecutable } from './availability'
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -764,6 +764,7 @@ export class OnlyFansProfiles {
       const page = await this.browserPage()
       // Refresh expiring CDN URLs through a normal site navigation in the same session.
       let response: Response | null = null
+      let payload: unknown = null
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const responsePromise = page.waitForResponse(
           async (candidate) => {
@@ -777,7 +778,7 @@ export class OnlyFansProfiles {
               .items(await candidate.json())
               .some(({ item: entry }) => entry.id === mediaId)
           },
-          { timeout: 30_000 }
+          { timeout: 8_000 }
         )
         // Register a rejection handler before navigation can fail.
         const responseResult = responsePromise.then(
@@ -789,6 +790,16 @@ export class OnlyFansProfiles {
           timeout: 45_000
         })
         response = await responseResult
+        payload = response?.ok() ? await response.json() : null
+        if (
+          !this.adapter.items(payload).some(({ item: entry, mediaUrl }) => entry.id === mediaId && mediaUrl)
+        ) {
+          const opened = await this.openCoveredMedia(page, item, profile, signal)
+          if (opened) {
+            response = opened
+            payload = await opened.json()
+          }
+        }
         if (response?.ok() || !response || response.status() === 429) {
           break
         }
@@ -810,7 +821,7 @@ export class OnlyFansProfiles {
         )
       }
       this.media.delete(this.key(profile.username, mediaId))
-      this.collect(profile, await response.json())
+      this.collect(profile, payload)
       const mediaUrl = this.media.get(this.key(profile.username, mediaId))
       if (!mediaUrl) {
         throw new Error('This media is locked or has no downloadable original.')
@@ -865,6 +876,56 @@ export class OnlyFansProfiles {
     } finally {
       this.downloading = false
     }
+  }
+
+  private async openCoveredMedia(
+    page: Page,
+    item: OnlyFansItem,
+    profile: OnlyFansProfile,
+    signal: AbortSignal
+  ): Promise<Response | null> {
+    if (!this.adapter.isSite(page.url())) {
+      return null
+    }
+    const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }))
+    const visibleCovers: Locator[] = []
+    for (const cover of await page.getByText('Click to open', { exact: true }).all()) {
+      if (!(await cover.isVisible())) {
+        continue
+      }
+      const box = await cover.boundingBox()
+      if (
+        box &&
+        box.x < viewport.width &&
+        box.x + box.width > 0 &&
+        box.y < viewport.height &&
+        box.y + box.height > 0
+      ) {
+        visibleCovers.push(cover)
+      }
+    }
+    if (visibleCovers.length !== 1) {
+      return null
+    }
+    signal.throwIfAborted()
+    const opened = page.waitForResponse(
+      async (candidate) => {
+        const url = new URL(candidate.url())
+        if (!(candidate.ok() && this.adapter.refreshResponse(url, item, profile))) {
+          return false
+        }
+        return this.adapter
+          .items(await candidate.json())
+          .some(({ item: entry, mediaUrl }) => entry.id === item.id && mediaUrl)
+      },
+      { timeout: 15_000 }
+    )
+    const result = opened.then(
+      (matched) => matched,
+      () => null
+    )
+    await visibleCovers[0].click({ timeout: 5_000 })
+    return result
   }
 
   async stop(): Promise<void> {

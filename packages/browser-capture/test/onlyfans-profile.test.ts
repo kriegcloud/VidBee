@@ -87,6 +87,12 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
   let currentUrl = chat
     ? 'https://onlyfans.com/my/chats/chat/7'
     : 'https://onlyfans.com/example/photos'
+  const cover = {
+    all: vi.fn(async () => [] as unknown[]),
+    isVisible: vi.fn(async () => false),
+    boundingBox: vi.fn(async () => ({ x: 100, y: 100, width: 100, height: 30 })),
+    click: vi.fn(async () => undefined)
+  }
   const page = {
     waitForResponse: vi.fn(async (_predicate?: unknown) =>
       response(
@@ -101,6 +107,7 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     isClosed: () => closed,
     context: () => context,
     bringToFront: vi.fn(),
+    getByText: vi.fn(() => cover),
     on: events.on.bind(events),
     off: events.off.bind(events),
     close: vi.fn(async () => {
@@ -135,7 +142,7 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     })
   }
   mocks.launch.mockResolvedValue(context)
-  return { dir, page, context, profiles: new OnlyFansProfiles(dir, () => dir) }
+  return { dir, page, cover, context, profiles: new OnlyFansProfiles(dir, () => dir) }
 }
 
 describe('chat video ordinal', () => {
@@ -349,6 +356,18 @@ describe('OnlyFans browser mapping', () => {
     expect(onlyFansMediaUrl('https://onlyfans.com/api2/v2/users/me')).toBeNull()
   })
 
+  it('does not open covered media when the mapped item is locked', async () => {
+    const { profiles, page, dir } = setup()
+    const url = 'https://onlyfans.com/example'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    await expect(
+      profiles.download(url, '3', dir, new AbortController().signal, vi.fn())
+    ).rejects.toThrow('Map this available media')
+    expect(page.getByText).not.toHaveBeenCalled()
+    await profiles.stop()
+  })
+
   it('reads direct gallery media from alternate list envelopes without saving signed URLs', () => {
     const items = onlyFansItems({
       items: [
@@ -428,6 +447,62 @@ describe('OnlyFans browser mapping', () => {
     expect(request[1].headers).toEqual({ Referer: 'https://onlyfans.com/' })
     expect(request[1].redirect).toBe('error')
     expect(profiles.get(url).items.find((item) => item.id === '1')?.downloaded).toBe(true)
+    await profiles.stop()
+  })
+
+  it('opens a covered mapped photo and accepts only its matching original response', async () => {
+    const { profiles, page, cover, dir } = setup()
+    const url = 'https://onlyfans.com/example'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    page.waitForResponse
+      .mockResolvedValueOnce({
+        url: () => 'https://onlyfans.com/api2/v2/posts/100',
+        ok: () => true,
+        status: () => 200,
+        json: async () => ({
+          id: 100,
+          media: [{ id: 1, type: 'photo', files: { preview: { url: 'https://cdn2.onlyfans.com/files/preview.jpg' } } }]
+        })
+      })
+      .mockResolvedValueOnce({
+        url: () => 'https://onlyfans.com/api2/v2/posts/100',
+        ok: () => true,
+        status: () => 200,
+        json: async () => fixture.list[0]
+      })
+    cover.all.mockResolvedValue([cover])
+    cover.isVisible.mockResolvedValue(true)
+    page.evaluate.mockResolvedValue({ width: 1920, height: 1080 })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(new Uint8Array([255, 216, 255, 217]), {
+        headers: { 'content-type': 'image/jpeg' }
+      }))
+    )
+
+    const result = await profiles.download(url, '1', dir, new AbortController().signal, vi.fn())
+    expect(result.size).toBe(4)
+    expect(page.getByText).toHaveBeenCalledWith('Click to open', { exact: true })
+    expect(cover.click).toHaveBeenCalledOnce()
+    const openedPredicate = page.waitForResponse.mock.calls[1]?.[0] as unknown as (
+      candidate: unknown
+    ) => Promise<boolean>
+    const openedResponse = (mediaId: number) => ({
+      url: () => 'https://onlyfans.com/api2/v2/posts/100',
+      ok: () => true,
+      json: async () => ({
+        id: 100,
+        media: [{
+          id: mediaId,
+          type: 'photo',
+          files: { full: { url: 'https://cdn2.onlyfans.com/files/photo.jpg' } }
+        }]
+      })
+    })
+    expect(await openedPredicate(openedResponse(2))).toBe(false)
+    expect(await openedPredicate(openedResponse(1))).toBe(true)
+    expect(profiles.get(url).items.find((entry) => entry.id === '1')?.downloaded).toBe(true)
     await profiles.stop()
   })
 
