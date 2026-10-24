@@ -43,7 +43,9 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
   }, [sourceKey, sources])
   const selectedSource = sources.options.find((option) => option.key === sourceKey)
   const targetUrl = selectedSource?.url ?? url
-  const targetIsChat = Boolean(onlyFansProfile(targetUrl)?.chatId)
+  const targetProfile = onlyFansProfile(targetUrl)
+  const targetIsChat = Boolean(targetProfile?.chatId)
+  const targetIsPurchased = Boolean(targetProfile?.purchasedUserId)
   const platform = isFansly ? 'Fansly' : 'OnlyFans'
   const inputId = useId()
   const [profile, setProfile] = useState<OnlyFansProfile | null>(null)
@@ -99,7 +101,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
       const mapped = await command({
         url: targetUrl,
         action,
-        category: isFansly ? selectedSource?.category ?? 'media' : targetIsChat ? 'media' : category
+        category: isFansly
+          ? (selectedSource?.category ?? 'media')
+          : targetIsChat || targetIsPurchased
+            ? 'media'
+            : category
       })
       setProfile(mapped)
       setCreatorUsername((current) => mapped.creatorUsername ?? current)
@@ -138,7 +144,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
         <DialogHeader>
           <DialogTitle>
             {platform} ·{' '}
-            {creatorUsername ? `@${creatorUsername}` : chatId ? t('onlyFans.chat', { id: chatId }) : `@${profile?.username ?? ''}`}
+            {creatorUsername
+              ? `@${creatorUsername}`
+              : chatId
+                ? t('onlyFans.chat', { id: chatId })
+                : `@${profile?.username ?? ''}`}
           </DialogTitle>
           <DialogDescription>
             {t(
@@ -213,7 +223,7 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
           {profile
             ? t(
                 stateLabels[
-                  !isFansly &&
+                  !(isFansly || targetIsPurchased) &&
                   profile.category &&
                   profile.category !== 'media' &&
                   profile.category !== category &&

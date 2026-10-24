@@ -10,9 +10,8 @@ export function savedOnlyFansProfiles(
   const groups = new Map<string, { entry: SavedProfile; mediaIds: Set<string> }>()
   const chatOwners = indexOnlyFansChatOwners(profiles)
   for (const profile of profiles) {
-    const owner = profile.chatId
-      ? (chatOwners.get(profile.chatId) ?? profile.username)
-      : profile.username
+    const userId = profile.chatId ?? profile.purchasedUserId
+    const owner = userId ? (chatOwners.get(userId) ?? profile.username) : profile.username
     const key = profile.chatId && !chatOwners.has(profile.chatId) ? `chat:${profile.chatId}` : owner
     let group = groups.get(key)
     if (!group) {

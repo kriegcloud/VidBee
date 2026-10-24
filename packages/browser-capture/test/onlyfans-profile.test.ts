@@ -11,7 +11,8 @@ import {
   onlyFansChatMediaResponse,
   onlyFansChatResponse,
   onlyFansItems,
-  onlyFansMediaUrl
+  onlyFansMediaUrl,
+  onlyFansPurchasedResponse
 } from '../src/onlyfans-profile'
 
 const fixture = {
@@ -67,7 +68,13 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'messages') {
+function setup(
+  auth = true,
+  emitPosts = true,
+  chat = false,
+  chatRoute = 'messages',
+  purchased = false
+) {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'vidbee-of-test-'))
   dirs.push(dir)
   const events = new EventEmitter()
@@ -86,7 +93,9 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
   }
   let currentUrl = chat
     ? 'https://onlyfans.com/my/chats/chat/7'
-    : 'https://onlyfans.com/example/photos'
+    : purchased
+      ? 'https://onlyfans.com/my/collections/user-lists/purchased/posts/7'
+      : 'https://onlyfans.com/example/photos'
   const cover = {
     all: vi.fn(async () => [] as unknown[]),
     isVisible: vi.fn(async () => false),
@@ -143,7 +152,9 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
               ? chatRoute === 'messages'
                 ? 'https://onlyfans.com/api2/v2/chats/7/messages'
                 : `https://onlyfans.com/api2/v2/chats/7/media${galleryQuery}`
-              : 'https://onlyfans.com/api2/v2/users/7/posts/medias',
+              : purchased
+                ? 'https://onlyfans.com/api2/v2/posts/paid?userId=7'
+                : 'https://onlyfans.com/api2/v2/users/7/posts/medias',
             chat && chatRoute !== 'messages' ? galleryFixture : fixture
           )
         )
@@ -258,6 +269,35 @@ describe('OnlyFans browser mapping', () => {
     expect(onlyFansChatMediaResponse(new URL(`${base}&mediaType=photo`), '7', 'photos')).toBe(true)
     expect(onlyFansChatMediaResponse(new URL(base), '7', 'purchased')).toBe(true)
     expect(onlyFansChatMediaResponse(new URL(base), '7', 'messages')).toBe(false)
+  })
+
+  it('keeps purchased feed responses scoped to the selected user', () => {
+    expect(
+      onlyFansPurchasedResponse(new URL('https://onlyfans.com/api2/v2/posts/paid?userId=7'), '7')
+    ).toBe(true)
+    expect(
+      onlyFansPurchasedResponse(new URL('https://onlyfans.com/api2/v2/posts/paid?userId=8'), '7')
+    ).toBe(false)
+    expect(onlyFansPurchasedResponse(new URL('https://onlyfans.com/api2/v2/posts/paid'), '7')).toBe(
+      false
+    )
+    expect(
+      onlyFansPurchasedResponse(new URL('https://evil.test/api2/v2/posts/paid?userId=7'), '7')
+    ).toBe(false)
+  })
+
+  it('saves a purchased photo filter separately from the chat and other purchases', async () => {
+    const { profiles, dir, page } = setup(true, true, false, 'messages', true)
+    const url = 'https://onlyfans.com/my/collections/user-lists/purchased/posts/7?postType=photos'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    expect(page.goto).toHaveBeenCalledWith(url, expect.anything())
+    expect(profiles.get(url).items.map((entry) => entry.id)).toEqual(['1', '3'])
+    expect(profiles.get('https://onlyfans.com/my/chats/chat/7').items).toHaveLength(0)
+    expect(readFileSync(path.join(dir, 'purchased-7-photos.json'), 'utf8')).not.toContain(
+      'Signature'
+    )
+    await profiles.stop()
   })
 
   it.each([

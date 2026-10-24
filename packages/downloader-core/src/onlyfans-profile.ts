@@ -26,6 +26,19 @@ export const onlyFansChatTargets: Record<
 export function onlyFansChatUrl(chatId: string, route: OnlyFansChatRoute): string {
   return `https://onlyfans.com/my/chats/chat/${chatId}${onlyFansChatTargets[route].path}`
 }
+export const onlyFansPurchasedRoutes = ['all', 'photos', 'videos', 'posts', 'messages'] as const
+export type OnlyFansPurchasedRoute = (typeof onlyFansPurchasedRoutes)[number]
+export const onlyFansPurchasedTargets: Record<OnlyFansPurchasedRoute, string> = {
+  all: '',
+  photos: '?postType=photos',
+  videos: '?postType=videos',
+  posts: '?entityType=posts',
+  messages: '?entityType=messages'
+}
+
+export function onlyFansPurchasedUrl(userId: string, route: OnlyFansPurchasedRoute): string {
+  return `https://onlyfans.com/my/collections/user-lists/purchased/posts/${userId}${onlyFansPurchasedTargets[route]}`
+}
 export const OnlyFansItemSchema = z.object({
   id: z.string().regex(/^\d+$/),
   postId: z.string().regex(/^\d+$/),
@@ -41,8 +54,19 @@ export const OnlyFansProfileSchema = z.object({
     .regex(/^\d{1,20}$/)
     .optional(),
   chatRoute: z.enum(onlyFansChatRoutes).optional(),
-  creatorUsername: z.string().regex(/^[a-z0-9._-]{1,64}$/).optional(),
-  linkedChatId: z.string().regex(/^\d{1,20}$/).optional(),
+  purchasedUserId: z
+    .string()
+    .regex(/^\d{1,20}$/)
+    .optional(),
+  purchasedRoute: z.enum(onlyFansPurchasedRoutes).optional(),
+  creatorUsername: z
+    .string()
+    .regex(/^[a-z0-9._-]{1,64}$/)
+    .optional(),
+  linkedChatId: z
+    .string()
+    .regex(/^\d{1,20}$/)
+    .optional(),
   state: z.enum(['idle', 'mapping', 'partial', 'complete', 'auth-required', 'error']),
   category: OnlyFansScanSchema.optional(),
   updatedAt: z.number(),
@@ -79,9 +103,14 @@ const RESERVED = new Set([
   'search'
 ])
 
-export function onlyFansProfile(
-  value: string
-): { username: string; profileUrl: string; chatId?: string; chatRoute?: OnlyFansChatRoute } | null {
+export function onlyFansProfile(value: string): {
+  username: string
+  profileUrl: string
+  chatId?: string
+  chatRoute?: OnlyFansChatRoute
+  purchasedUserId?: string
+  purchasedRoute?: OnlyFansPurchasedRoute
+} | null {
   try {
     const url = new URL(value)
     const parts = url.pathname.split('/').filter(Boolean)
@@ -113,6 +142,26 @@ export function onlyFansProfile(
         chatId,
         chatRoute: route,
         profileUrl: onlyFansChatUrl(chatId, route)
+      }
+    }
+    if (
+      parts.slice(0, 5).join('/') === 'my/collections/user-lists/purchased/posts' &&
+      parts.length === 6 &&
+      /^\d{1,20}$/.test(parts[5] ?? '')
+    ) {
+      const userId = parts[5]
+      const filters = url.searchParams
+      const route = onlyFansPurchasedRoutes.find(
+        (candidate) => onlyFansPurchasedTargets[candidate].slice(1) === filters.toString()
+      )
+      if (!route) {
+        return null
+      }
+      return {
+        username: userId,
+        purchasedUserId: userId,
+        purchasedRoute: route,
+        profileUrl: onlyFansPurchasedUrl(userId, route)
       }
     }
     if (

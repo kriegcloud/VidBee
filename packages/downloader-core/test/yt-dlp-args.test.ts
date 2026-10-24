@@ -68,6 +68,25 @@ describe('OnlyFans session isolation', () => {
     })
   })
 
+  it.each([
+    ['', 'all'],
+    ['?postType=photos', 'photos'],
+    ['?postType=videos', 'videos'],
+    ['?entityType=posts', 'posts'],
+    ['?entityType=messages', 'messages']
+  ])('keeps purchased collection %s as a distinct map target', (query, purchasedRoute) => {
+    expect(
+      onlyFansProfile(
+        `https://onlyfans.com/my/collections/user-lists/purchased/posts/172650280${query}`
+      )
+    ).toEqual({
+      username: '172650280',
+      purchasedUserId: '172650280',
+      purchasedRoute,
+      profileUrl: `https://onlyfans.com/my/collections/user-lists/purchased/posts/172650280${query}`
+    })
+  })
+
   it('preserves non-OnlyFans extraction', () => {
     expect(buildVideoInfoArgs('https://youtube.com/watch?v=fixture', {})).toContain(
       '--ignore-config'

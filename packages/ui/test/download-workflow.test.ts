@@ -22,6 +22,26 @@ test('every chat source stays in the dedicated browser profile workflow', () => 
   }
 })
 
+test('purchased collection filters use distinct dedicated browser sources', () => {
+  const base = 'https://onlyfans.com/my/collections/user-lists/purchased/posts/172650280'
+  for (const query of [
+    '',
+    '?postType=photos',
+    '?postType=videos',
+    '?entityType=posts',
+    '?entityType=messages'
+  ]) {
+    assert.equal(resolveDownloadWorkflow(`${base}${query}`).surface, 'browser-profile')
+  }
+  const sources = resolveProfileMappingSources(`${base}?entityType=messages`)
+  assert.equal(sources.selectedKey, 'messages')
+  assert.deepEqual(
+    sources.options.map((source) => source.key),
+    ['all', 'photos', 'videos', 'posts', 'messages']
+  )
+  assert.equal(sources.options[1].url, `${base}?postType=photos`)
+})
+
 test('profile and general downloader routes retain their own workflow', () => {
   assert.equal(
     resolveDownloadWorkflow('https://fansly.com/example/posts').surface,
@@ -47,20 +67,19 @@ test('the chat and Fansly dialogs expose their site-specific source routes', () 
     'https://onlyfans.com/my/chats/chat/172650280/gallery/purchased'
   )
 
-  const linked = resolveProfileMappingSources(
-    'https://onlyfans.com/babee.vip',
-    { chatId: '160988745' }
-  )
+  const linked = resolveProfileMappingSources('https://onlyfans.com/babee.vip', {
+    chatId: '160988745'
+  })
   assert.equal(linked.selectedKey, 'profile')
-  assert.deepEqual(linked.options.map((option) => option.key), [
-    'profile', 'messages', 'gallery', 'opened', 'purchased', 'photos', 'videos'
-  ])
+  assert.deepEqual(
+    linked.options.map((option) => option.key),
+    ['profile', 'messages', 'gallery', 'opened', 'purchased', 'photos', 'videos']
+  )
   assert.equal(linked.options[1].url, 'https://onlyfans.com/my/chats/chat/160988745')
 
-  const linkedChat = resolveProfileMappingSources(
-    'https://onlyfans.com/my/chats/chat/160988745',
-    { creatorUsername: 'babee.vip' }
-  )
+  const linkedChat = resolveProfileMappingSources('https://onlyfans.com/my/chats/chat/160988745', {
+    creatorUsername: 'babee.vip'
+  })
   assert.equal(linkedChat.options[0].url, 'https://onlyfans.com/babee.vip')
 
   const fansly = resolveProfileMappingSources('https://fansly.com/example/posts')

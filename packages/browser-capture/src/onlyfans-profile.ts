@@ -227,6 +227,17 @@ export function onlyFansChatMediaResponse(
   return target.feed === 'media'
 }
 
+export function onlyFansPurchasedResponse(url: URL, userId: string): boolean {
+  if (url.origin !== 'https://onlyfans.com' || url.pathname !== '/api2/v2/posts/paid') {
+    return false
+  }
+  const requestedUser =
+    url.searchParams.get('userId') ??
+    url.searchParams.get('user_id') ??
+    url.searchParams.get('user')
+  return requestedUser === userId
+}
+
 function onlyFansMessageUrl(item: OnlyFansItem, profile: OnlyFansProfile): string | null {
   if (!profile.chatId) {
     return null
@@ -285,13 +296,21 @@ const onlyFansAdapter: BrowserProfileAdapter = {
       ? profile.chatRoute && onlyFansChatTargets[profile.chatRoute].feed === 'media'
         ? onlyFansChatMediaResponse(url, profile.chatId, profile.chatRoute)
         : onlyFansChatResponse(url, profile.chatId)
-      : url.origin === 'https://onlyfans.com' &&
-        url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
+      : profile.purchasedUserId
+        ? onlyFansPurchasedResponse(url, profile.purchasedUserId)
+        : url.origin === 'https://onlyfans.com' &&
+          url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
   complete: (payload) => record(payload).hasMore === false,
   queueUrl: (item, profile) =>
-    onlyFansMessageUrl(item, profile) ?? `https://onlyfans.com/${item.postId}/${profile.username}`,
+    onlyFansMessageUrl(item, profile) ??
+    (profile.purchasedUserId
+      ? `${profile.profileUrl}#media=${item.id}`
+      : `https://onlyfans.com/${item.postId}/${profile.username}`),
   refreshUrl: (item, profile) =>
-    onlyFansMessageUrl(item, profile) ?? `https://onlyfans.com/${item.postId}/${profile.username}`,
+    onlyFansMessageUrl(item, profile) ??
+    (profile.purchasedUserId
+      ? profile.profileUrl
+      : `https://onlyfans.com/${item.postId}/${profile.username}`),
   refreshResponse: (url, item, profile) =>
     profile.chatId
       ? onlyFansChatResponse(url, profile.chatId) ||
@@ -299,9 +318,11 @@ const onlyFansAdapter: BrowserProfileAdapter = {
         (url.origin === 'https://onlyfans.com' &&
           (url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}` ||
             url.pathname === `/api2/v2/chats/${profile.chatId}/media/${item.id}`))
-      : url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
+      : profile.purchasedUserId
+        ? onlyFansPurchasedResponse(url, profile.purchasedUserId)
+        : url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
   scrollMode: (profile) => ({
-    nested: Boolean(profile.chatId),
+    nested: Boolean(profile.chatId || profile.purchasedUserId),
     chat: Boolean(
       profile.chatId &&
         (!profile.chatRoute || onlyFansChatTargets[profile.chatRoute].feed === 'messages')
@@ -339,7 +360,15 @@ export class OnlyFansProfiles {
     return `${username}/${mediaId}`
   }
 
-  private profileKey(profile: Pick<OnlyFansProfile, 'username' | 'chatId' | 'chatRoute'>): string {
+  private profileKey(
+    profile: Pick<
+      OnlyFansProfile,
+      'username' | 'chatId' | 'chatRoute' | 'purchasedUserId' | 'purchasedRoute'
+    >
+  ): string {
+    if (profile.purchasedUserId) {
+      return `purchased-${profile.purchasedUserId}-${profile.purchasedRoute ?? 'all'}`
+    }
     return profile.chatId && profile.chatRoute && profile.chatRoute !== 'messages'
       ? `${profile.username}-${profile.chatRoute}`
       : profile.username
@@ -423,7 +452,9 @@ export class OnlyFansProfiles {
           profile.username !== normalized.username ||
           profile.profileUrl !== normalized.profileUrl ||
           profile.chatId !== normalized.chatId ||
-          profile.chatRoute !== normalized.chatRoute
+          profile.chatRoute !== normalized.chatRoute ||
+          profile.purchasedUserId !== normalized.purchasedUserId ||
+          profile.purchasedRoute !== normalized.purchasedRoute
         ) {
           throw new Error('Saved profile identity does not match.')
         }
@@ -582,9 +613,10 @@ export class OnlyFansProfiles {
   private collect(profile: OnlyFansProfile, payload: unknown): void {
     const items = new Map(profile.items.map((item) => [item.id, item]))
     for (const { item, mediaUrl } of this.adapter.items(payload)) {
+      const routeCategory = profile.chatRoute ?? profile.purchasedRoute
       if (
-        (profile.chatRoute === 'photos' || profile.chatRoute === 'videos') &&
-        item.category !== profile.chatRoute
+        (routeCategory === 'photos' || routeCategory === 'videos') &&
+        item.category !== routeCategory
       ) {
         continue
       }
@@ -606,7 +638,8 @@ export class OnlyFansProfiles {
     let page: Page | null = null
     let finished = false
     let lastResponse = Date.now()
-    let ownerId: string | null = profile.chatId ?? null
+    let ownerId: string | null = profile.chatId ?? profile.purchasedUserId ?? null
+    const observedApiPaths = new Set<string>()
     let closing: Promise<void> | undefined
     const abort = (): void => {
       closing = page
@@ -622,6 +655,13 @@ export class OnlyFansProfiles {
     const pending = new Set<Promise<void>>()
     const handle = async (response: Response): Promise<void> => {
       const url = new URL(response.url())
+      if (
+        url.origin === this.adapter.origin &&
+        url.pathname.startsWith('/api2/v2/') &&
+        observedApiPaths.size < 12
+      ) {
+        observedApiPaths.add(url.pathname)
+      }
       if (
         profile.chatId &&
         this.adapter.key === 'onlyfans' &&
@@ -695,10 +735,15 @@ export class OnlyFansProfiles {
         return
       }
       page.on('response', listener)
-      await page.goto(profile.chatId ? profile.profileUrl : `${profile.profileUrl}/${category}`, {
-        waitUntil: 'domcontentloaded',
-        timeout: 45_000
-      })
+      await page.goto(
+        profile.chatId || profile.purchasedUserId
+          ? profile.profileUrl
+          : `${profile.profileUrl}/${category}`,
+        {
+          waitUntil: 'domcontentloaded',
+          timeout: 45_000
+        }
+      )
       await this.linkChatCreator(page, profile)
       const deadline = Date.now() + 10 * 60 * 1000
       while (!finished && Date.now() < deadline && Date.now() - lastResponse < 90_000) {
@@ -752,6 +797,11 @@ export class OnlyFansProfiles {
       }
       if (profile.state === 'mapping') {
         profile.state = finished ? 'complete' : 'partial'
+        if (profile.pages === 0 && !finished) {
+          profile.error = observedApiPaths.size
+            ? `No matching media response was captured. Observed API paths: ${[...observedApiPaths].join(', ')}`
+            : 'No media API response was captured. Check that the page loaded in the dedicated browser.'
+        }
       }
     } catch {
       if (profile.state === 'mapping') {

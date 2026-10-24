@@ -2,7 +2,9 @@ import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import {
   onlyFansChatRoutes,
   onlyFansChatUrl,
-  onlyFansProfile
+  onlyFansProfile,
+  onlyFansPurchasedRoutes,
+  onlyFansPurchasedUrl
 } from '@vidbee/downloader-core/onlyfans-profile'
 import { isInstagramProfileUrl, isPlaylistLikeUrl } from './url-kind'
 
@@ -66,19 +68,40 @@ export const resolveProfileMappingSources = (
   link?: { creatorUsername?: string; chatId?: string }
 ): ProfileMappingSources => {
   const onlyFans = onlyFansProfile(url)
+  if (onlyFans?.purchasedUserId) {
+    const userId = onlyFans.purchasedUserId
+    const labels = {
+      all: 'download.all',
+      photos: 'onlyFans.routes.photos',
+      videos: 'onlyFans.routes.videos',
+      posts: 'instagramProfile.categories.posts',
+      messages: 'onlyFans.routes.messages'
+    } as const
+    return {
+      selectedKey: onlyFans.purchasedRoute ?? 'all',
+      options: onlyFansPurchasedRoutes.map((route) => ({
+        key: route,
+        labelKey: labels[route],
+        url: onlyFansPurchasedUrl(userId, route),
+        category: 'media' as const
+      }))
+    }
+  }
   const chatId = onlyFans?.chatId ?? link?.chatId
   if (onlyFans && chatId) {
     const creatorUsername = onlyFans.chatId ? link?.creatorUsername : onlyFans.username
     return {
-      selectedKey: onlyFans.chatId ? onlyFans.chatRoute ?? 'messages' : 'profile',
+      selectedKey: onlyFans.chatId ? (onlyFans.chatRoute ?? 'messages') : 'profile',
       options: [
         ...(creatorUsername
-          ? [{
-              key: 'profile',
-              labelKey: 'instagramProfile.categories.posts',
-              url: `https://onlyfans.com/${creatorUsername}`,
-              category: 'media' as const
-            }]
+          ? [
+              {
+                key: 'profile',
+                labelKey: 'instagramProfile.categories.posts',
+                url: `https://onlyfans.com/${creatorUsername}`,
+                category: 'media' as const
+              }
+            ]
           : []),
         ...onlyFansChatRoutes.map((route) => ({
           key: route,
