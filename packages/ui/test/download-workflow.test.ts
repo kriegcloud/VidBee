@@ -47,6 +47,22 @@ test('the chat and Fansly dialogs expose their site-specific source routes', () 
     'https://onlyfans.com/my/chats/chat/172650280/gallery/purchased'
   )
 
+  const linked = resolveProfileMappingSources(
+    'https://onlyfans.com/babee.vip',
+    { chatId: '160988745' }
+  )
+  assert.equal(linked.selectedKey, 'profile')
+  assert.deepEqual(linked.options.map((option) => option.key), [
+    'profile', 'messages', 'gallery', 'opened', 'purchased', 'photos', 'videos'
+  ])
+  assert.equal(linked.options[1].url, 'https://onlyfans.com/my/chats/chat/160988745')
+
+  const linkedChat = resolveProfileMappingSources(
+    'https://onlyfans.com/my/chats/chat/160988745',
+    { creatorUsername: 'babee.vip' }
+  )
+  assert.equal(linkedChat.options[0].url, 'https://onlyfans.com/babee.vip')
+
   const fansly = resolveProfileMappingSources('https://fansly.com/example/posts')
   assert.equal(fansly.selectedKey, 'posts')
   assert.deepEqual(

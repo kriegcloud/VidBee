@@ -41,6 +41,8 @@ export const OnlyFansProfileSchema = z.object({
     .regex(/^\d{1,20}$/)
     .optional(),
   chatRoute: z.enum(onlyFansChatRoutes).optional(),
+  creatorUsername: z.string().regex(/^[a-z0-9._-]{1,64}$/).optional(),
+  linkedChatId: z.string().regex(/^\d{1,20}$/).optional(),
   state: z.enum(['idle', 'mapping', 'partial', 'complete', 'auth-required', 'error']),
   category: OnlyFansScanSchema.optional(),
   updatedAt: z.number(),

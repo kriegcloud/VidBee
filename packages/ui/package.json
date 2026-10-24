@@ -16,6 +16,7 @@
     "./lib/download-transfer-target": "./src/lib/download-transfer-target.ts",
     "./lib/list-marquee": "./src/lib/list-marquee.ts",
     "./lib/saved-social-profile-groups": "./src/lib/saved-social-profile-groups.ts",
+    "./lib/saved-onlyfans-profiles": "./src/lib/saved-onlyfans-profiles.ts",
     "./lib/use-list-marquee": "./src/lib/use-list-marquee.ts",
     "./lib/shape-context": "./src/lib/shape-context.tsx",
     "./lib/ingest": "./src/lib/ingest.ts",

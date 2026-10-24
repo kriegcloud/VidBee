@@ -93,6 +93,7 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     boundingBox: vi.fn(async () => ({ x: 100, y: 100, width: 100, height: 30 })),
     click: vi.fn(async () => undefined)
   }
+  const ownerLink = { getAttribute: vi.fn(async () => (chat ? '/babee.vip' : null)) }
   const page = {
     waitForResponse: vi.fn(async (_predicate?: unknown) =>
       response(
@@ -108,6 +109,7 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     context: () => context,
     bringToFront: vi.fn(),
     getByText: vi.fn(() => cover),
+    locator: vi.fn(() => ({ first: () => ownerLink })),
     on: events.on.bind(events),
     off: events.off.bind(events),
     close: vi.fn(async () => {
@@ -142,7 +144,7 @@ function setup(auth = true, emitPosts = true, chat = false, chatRoute = 'message
     })
   }
   mocks.launch.mockResolvedValue(context)
-  return { dir, page, cover, context, profiles: new OnlyFansProfiles(dir, () => dir) }
+  return { dir, page, cover, ownerLink, context, profiles: new OnlyFansProfiles(dir, () => dir) }
 }
 
 describe('chat video ordinal', () => {
@@ -276,6 +278,8 @@ describe('OnlyFans browser mapping', () => {
     await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
     expect(page.goto).toHaveBeenCalledWith(url, expect.anything())
     expect(profiles.get(url)).toMatchObject({ chatId: '7', category: 'media' })
+    expect(profiles.get(url).creatorUsername).toBe('babee.vip')
+    expect(profiles.get('https://onlyfans.com/babee.vip').linkedChatId).toBe('7')
     expect(profiles.get(url).items.map((item) => item.category)).toEqual([
       'photos',
       'videos',
@@ -285,6 +289,8 @@ describe('OnlyFans browser mapping', () => {
     expect(saved).not.toContain('Signature')
     const restored = new OnlyFansProfiles(dir, () => dir)
     expect(restored.list()[0]).toMatchObject({ profileUrl: url, chatId: '7' })
+    expect(restored.get(url).creatorUsername).toBe('babee.vip')
+    expect(restored.get('https://onlyfans.com/babee.vip').linkedChatId).toBe('7')
     expect(restored.get('https://onlyfans.com/example').items).toHaveLength(0)
     vi.stubGlobal(
       'fetch',

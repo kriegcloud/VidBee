@@ -5,7 +5,7 @@ import {
   type OnlyFansProfile,
   onlyFansProfile
 } from '@vidbee/downloader-core/onlyfans-profile'
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { resolveProfileMappingSources } from '../../lib/download-workflow'
 import { Button } from './button'
@@ -25,11 +25,25 @@ interface Props {
 export function OnlyFansProfileDialog({ url, destination, onClose, command, download }: Props) {
   const { t } = useTranslation()
   const isFansly = Boolean(fanslyProfile(url))
-  const chatId = onlyFansProfile(url)?.chatId
-  const sources = resolveProfileMappingSources(url)
+  const initialOnlyFans = onlyFansProfile(url)
+  const chatId = initialOnlyFans?.chatId
+  const [creatorUsername, setCreatorUsername] = useState(
+    chatId ? undefined : initialOnlyFans?.username
+  )
+  const [linkedChatId, setLinkedChatId] = useState(chatId)
+  const sources = useMemo(
+    () => resolveProfileMappingSources(url, { creatorUsername, chatId: linkedChatId }),
+    [url, creatorUsername, linkedChatId]
+  )
   const [sourceKey, setSourceKey] = useState(sources.selectedKey)
+  useEffect(() => {
+    if (sources.selectedKey && !sources.options.some((option) => option.key === sourceKey)) {
+      setSourceKey(sources.selectedKey)
+    }
+  }, [sourceKey, sources])
   const selectedSource = sources.options.find((option) => option.key === sourceKey)
   const targetUrl = selectedSource?.url ?? url
+  const targetIsChat = Boolean(onlyFansProfile(targetUrl)?.chatId)
   const platform = isFansly ? 'Fansly' : 'OnlyFans'
   const inputId = useId()
   const [profile, setProfile] = useState<OnlyFansProfile | null>(null)
@@ -42,6 +56,8 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
   const refresh = useCallback(async () => {
     const value = await command({ url: targetUrl, action: 'get' })
     setProfile(value)
+    setCreatorUsername((current) => value.creatorUsername ?? current)
+    setLinkedChatId((current) => value.linkedChatId ?? value.chatId ?? current)
   }, [command, targetUrl])
   useEffect(() => {
     let disposed = false
@@ -55,6 +71,8 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
         const value = await command({ url: targetUrl, action: 'get' })
         if (!disposed) {
           setProfile(value)
+          setCreatorUsername((current) => value.creatorUsername ?? current)
+          setLinkedChatId((current) => value.linkedChatId ?? value.chatId ?? current)
         }
       } catch (failure) {
         if (!disposed) {
@@ -78,9 +96,14 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
     setError('')
     setNotice('')
     try {
-      setProfile(
-        await command({ url: targetUrl, action, category: selectedSource?.category ?? 'media' })
-      )
+      const mapped = await command({
+        url: targetUrl,
+        action,
+        category: isFansly ? selectedSource?.category ?? 'media' : targetIsChat ? 'media' : category
+      })
+      setProfile(mapped)
+      setCreatorUsername((current) => mapped.creatorUsername ?? current)
+      setLinkedChatId((current) => mapped.linkedChatId ?? mapped.chatId ?? current)
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : t('notifications.downloadFailed'))
     } finally {
@@ -115,11 +138,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
         <DialogHeader>
           <DialogTitle>
             {platform} ·{' '}
-            {chatId ? t('onlyFans.chat', { id: chatId }) : `@${profile?.username ?? ''}`}
+            {creatorUsername ? `@${creatorUsername}` : chatId ? t('onlyFans.chat', { id: chatId }) : `@${profile?.username ?? ''}`}
           </DialogTitle>
           <DialogDescription>
             {t(
-              chatId
+              targetIsChat
                 ? 'onlyFans.chatHint'
                 : isFansly
                   ? 'fansly.sessionHint'

@@ -360,6 +360,41 @@ export class OnlyFansProfiles {
     renameSync(`${target}.tmp`, target)
   }
 
+  private async linkChatCreator(page: Page, profile: OnlyFansProfile): Promise<void> {
+    if (!(profile.chatId && this.adapter.key === 'onlyfans')) {
+      return
+    }
+    let href: string | null = null
+    try {
+      href = await page
+        .locator('h1.g-page-title a.g-user-name[href]')
+        .first()
+        .getAttribute('href', { timeout: 5_000 })
+    } catch {
+      return
+    }
+    if (!href) {
+      return
+    }
+    let owner: ReturnType<BrowserProfileAdapter['normalize']> = null
+    try {
+      owner = this.adapter.normalize(new URL(href, this.adapter.origin).href)
+    } catch {
+      return
+    }
+    if (!owner || owner.chatId) {
+      return
+    }
+    profile.creatorUsername = owner.username
+    this.save(profile)
+    const creator = this.get(owner.profileUrl)
+    const savedCreator = this.profiles.get(this.profileKey(creator))
+    if (savedCreator && savedCreator.linkedChatId !== profile.chatId) {
+      savedCreator.linkedChatId = profile.chatId
+      this.save(savedCreator)
+    }
+  }
+
   get(url: string): OnlyFansProfile {
     const normalized = this.adapter.normalize(url)
     if (!normalized) {
@@ -513,6 +548,7 @@ export class OnlyFansProfiles {
     if (input.action === 'open') {
       const page = await this.browserPage()
       await page.goto(profile.profileUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+      await this.linkChatCreator(page, profile)
       await page.bringToFront()
       this.save(profile)
       return this.get(input.url)
@@ -630,6 +666,7 @@ export class OnlyFansProfiles {
         waitUntil: 'domcontentloaded',
         timeout: 45_000
       })
+      await this.linkChatCreator(page, profile)
       const deadline = Date.now() + 10 * 60 * 1000
       while (!finished && Date.now() < deadline && Date.now() - lastResponse < 20_000) {
         signal.throwIfAborted()
@@ -725,7 +762,7 @@ export class OnlyFansProfiles {
           input: {
             kind: item.category === 'videos' ? 'video' : 'social-media',
             url: this.adapter.queueUrl(item, profile),
-            title: `@${profile.username} · ${item.category} · ${item.id}`,
+            title: `@${profile.creatorUsername ?? profile.username} · ${item.category} · ${item.id}`,
             options: {
               onlyFansProfile: profile.profileUrl,
               onlyFansMediaId: item.id,

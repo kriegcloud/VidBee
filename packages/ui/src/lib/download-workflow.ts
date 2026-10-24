@@ -61,18 +61,32 @@ export const resolveDownloadWorkflow = (url: string): DownloadWorkflow => {
 }
 
 /** Site source tabs select either a distinct URL or a category on the shared mapper. */
-export const resolveProfileMappingSources = (url: string): ProfileMappingSources => {
+export const resolveProfileMappingSources = (
+  url: string,
+  link?: { creatorUsername?: string; chatId?: string }
+): ProfileMappingSources => {
   const onlyFans = onlyFansProfile(url)
-  if (onlyFans?.chatId) {
-    const chatId = onlyFans.chatId
+  const chatId = onlyFans?.chatId ?? link?.chatId
+  if (onlyFans && chatId) {
+    const creatorUsername = onlyFans.chatId ? link?.creatorUsername : onlyFans.username
     return {
-      selectedKey: onlyFans.chatRoute ?? 'messages',
-      options: onlyFansChatRoutes.map((route) => ({
-        key: route,
-        labelKey: `onlyFans.routes.${route}`,
-        url: onlyFansChatUrl(chatId, route),
-        category: 'media'
-      }))
+      selectedKey: onlyFans.chatId ? onlyFans.chatRoute ?? 'messages' : 'profile',
+      options: [
+        ...(creatorUsername
+          ? [{
+              key: 'profile',
+              labelKey: 'instagramProfile.categories.posts',
+              url: `https://onlyfans.com/${creatorUsername}`,
+              category: 'media' as const
+            }]
+          : []),
+        ...onlyFansChatRoutes.map((route) => ({
+          key: route,
+          labelKey: `onlyFans.routes.${route}`,
+          url: onlyFansChatUrl(chatId, route),
+          category: 'media' as const
+        }))
+      ]
     }
   }
   const fansly = fanslyProfile(url)

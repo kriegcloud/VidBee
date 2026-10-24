@@ -41,6 +41,7 @@ import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog"
 import { SocialProfileDialog } from "@vidbee/ui/components/ui/social-profile-dialog";
 import { WebmThumbnailNotice } from "@vidbee/ui/components/ui/webm-thumbnail-notice";
 import { resolveDownloadWorkflow } from "@vidbee/ui/lib/download-workflow";
+import { savedOnlyFansProfiles } from "@vidbee/ui/lib/saved-onlyfans-profiles";
 import {
 	type CollectionProfile,
 	isPlaylistLikeUrl,
@@ -1070,22 +1071,10 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 									},
 									totalAssetCount: profile.items.length,
 								})),
-								...(await orpcClient.onlyFansProfile.list()).map((profile) => ({
-									inspectionId: profile.profileUrl,
-									platform: "onlyfans",
-									platformLabel: "OnlyFans",
-									mapping:
-										profile.state === "mapping"
-											? ({ state: "running" } as const)
-											: undefined,
-									profile: {
-										username: profile.chatId
-											? t("onlyFans.chat", { id: profile.chatId })
-											: profile.username,
-										profileUrl: profile.profileUrl,
-									},
-									totalAssetCount: profile.items.length,
-								})),
+								...savedOnlyFansProfiles(
+									await orpcClient.onlyFansProfile.list(),
+									(id) => t("onlyFans.chat", { id }),
+								),
 								...(await orpcClient.socialProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
 									platform: profile.platform,
