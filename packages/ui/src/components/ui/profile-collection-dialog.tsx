@@ -14,6 +14,7 @@ interface ProfileCollectionDialogProps {
   destination?: string
   onClose: () => void
   onDownload: (collection: ProfileCollection, destination: string) => Promise<unknown>
+  onMap?: (collection: ProfileCollection, destination: string) => Promise<unknown>
   onInspect?: (url: string) => Promise<{ preview: SocialMediaPreview }>
 }
 
@@ -23,6 +24,7 @@ export function ProfileCollectionDialog({
   destination,
   onClose,
   onDownload,
+  onMap,
   onInspect
 }: ProfileCollectionDialogProps) {
   const { t } = useTranslation()
@@ -158,6 +160,32 @@ export function ProfileCollectionDialog({
                         {t('socialMedia.previewCounts', { ...previews[item.key] })}
                       </p>
                     )}
+                  </div>
+                )}
+                {onMap && item.mapping === 'playlist' && (
+                  <div className="px-4 pb-3">
+                    <Button
+                      disabled={locked}
+                      onClick={async () => {
+                        setBusy(true)
+                        setError('')
+                        try {
+                          await onMap(item, path.trim())
+                        } catch (failure) {
+                          setError(
+                            failure instanceof Error
+                              ? failure.message
+                              : t('notifications.downloadFailed')
+                          )
+                        } finally {
+                          setBusy(false)
+                        }
+                      }}
+                      size="sm"
+                      variant="outline"
+                    >
+                      {t('instagramResume.map')}
+                    </Button>
                   </div>
                 )}
               </div>

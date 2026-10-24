@@ -20,9 +20,9 @@ class FacebookReelsIE(InfoExtractor):
         'only_matching': True,
     }]
     _ROOT = 'https://www.facebook.com'
-    # From Facebook's public Relay operation bundle, verified 2026-09-10.
+    # From Facebook's live profile Reels pagination request, verified 2026-10-23.
     _PAGINATION_QUERY = 'ProfileCometAppCollectionReelsRendererPaginationQuery'
-    _PAGINATION_DOC_ID = '28401661769429506'
+    _PAGINATION_DOC_ID = '28993930466939828'
     _PAGE_SIZE = 10
 
     @staticmethod
@@ -106,7 +106,7 @@ class FacebookReelsIE(InfoExtractor):
             data = self._parse_json(re.sub(r'^for\s*\(;;\);\s*', '', line), profile)
             if data.get('error') or data.get('errors'):
                 raise ExtractorError(
-                    'Facebook rejected reels pagination; refresh your cookies or try again later. '
+                    'Facebook rejected reels pagination; its query may have changed or your session may lack access. '
                     'The playlist is incomplete.', expected=True)
             collection = collection or self._find_collection(data)
         if collection is None:

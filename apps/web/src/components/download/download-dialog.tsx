@@ -142,6 +142,8 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 	const downloadTypeId = useId();
 	const advancedOptionsId = useId();
 	const [playlistUrl, setPlaylistUrl] = useState("");
+	const [playlistCustomDownloadPath, setPlaylistCustomDownloadPath] =
+		useState("");
 	const [downloadType, setDownloadType] = useState<"video" | "audio">("video");
 	const [playlistContainer, setPlaylistContainer] =
 		useState<OneClickContainerOption>();
@@ -363,6 +365,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 			setOpen(true);
 			setActiveTab("playlist");
 			setPlaylistUrl(trimmedUrl);
+			setPlaylistCustomDownloadPath("");
 			setPlaylistInfo(null);
 			setPlaylistPreviewError(null);
 			setSelectedEntryIds(new Set());
@@ -824,6 +827,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				startIndex: start,
 				endIndex: end,
 				entryIds,
+				customDownloadPath: playlistCustomDownloadPath || undefined,
 				containerFormat,
 				settings: readOrpcDownloadSettings(),
 			});
@@ -847,6 +851,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 		playlistInfo,
 		selectedEntryIds,
 		playlistContainer,
+		playlistCustomDownloadPath,
 		computePlaylistRange,
 		downloadType,
 		settings,
@@ -1389,6 +1394,11 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 					profile={collectionProfile}
 					destination={readWebSettings().downloadPath}
 					onClose={() => setCollectionProfile(null)}
+					onMap={async (collection, destination) => {
+						setCollectionProfile(null);
+						await handleParsePlaylistUrl(collection.url);
+						setPlaylistCustomDownloadPath(destination);
+					}}
 					onInspect={
 						collectionProfile.platform === "TikTok"
 							? (url) =>

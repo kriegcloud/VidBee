@@ -3,7 +3,10 @@
 ## Profile reels
 
 Paste `https://www.facebook.com/USERNAME/reels` into **Add URL** to open VidBee's
-playlist picker. Select the videos to download, or download all listed reels.
+profile collections dialog. Choose **Map** on Reels to open the playlist picker,
+then select individual videos or the full mapped list. The same Map action is
+available after pasting the profile root. The Photos and Albums collection
+actions continue to use gallery-dl's collection downloader.
 Named and numeric profiles on the `www`, `m`, `mbasic`, and `web` hosts are
 supported. Each selected reel becomes an ordinary video task with its own
 progress, retry controls, quality selection, and the configured cookie settings.
@@ -16,7 +19,9 @@ pagination, and deduplicates overlapping reel IDs. A failed or repeated page
 raises an error before the playlist is returned, so listing cannot silently
 report a partial collection as complete. Authentication tokens and feature flags
 are taken from the current page and kept only in memory. The pagination query ID
-is pinned to the public Facebook operation verified on 2026-09-10; changes on
+is pinned to the live Facebook operation verified on 2026-10-23. The previous
+operation ID was rejected by Facebook even with a working signed-in session.
+Further changes on
 Facebook may require an extractor update.
 
 Individual `/reel/ID` links now extract directly from their canonical reel page.

@@ -259,6 +259,7 @@ export interface ProfileCollection {
   url: string
   labelKey: string
   requiresAuth: boolean
+  mapping?: 'playlist'
 }
 
 export interface CollectionProfile {
@@ -364,7 +365,8 @@ export const resolveCollectionProfile = (value: string): CollectionProfile | nul
           key: 'reels',
           url: `${root}/reels`,
           labelKey: 'instagramProfile.categories.reels',
-          requiresAuth: true
+          requiresAuth: true,
+          mapping: 'playlist'
         }
       ]
     }

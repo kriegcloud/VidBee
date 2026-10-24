@@ -103,6 +103,7 @@ class TestFacebookReels(unittest.TestCase):
         self.assertEqual(body['fb_dtsg'], 'fixture-dtsg')
         self.assertEqual(body['__user'], '42')
         self.assertEqual(body['__hs'], 'fixture-haste')
+        self.assertEqual(body['doc_id'], '28993930466939828')
         self.assertIs(variables['__relay_internal__pv__Fixture'], True)
         self.assertEqual(body['jazoest'], '2' + str(sum(map(ord, 'fixture-dtsg'))))
 

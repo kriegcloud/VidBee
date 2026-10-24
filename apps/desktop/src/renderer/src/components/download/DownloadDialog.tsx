@@ -1565,6 +1565,11 @@ export function DownloadDialog({
               ? (url) => ipcServices.download.inspectSocialMedia(url)
               : undefined
           }
+          onMap={async (collection, destination) => {
+            setCollectionProfile(null)
+            await handleParsePlaylistUrl(collection.url)
+            setPlaylistCustomDownloadPath(destination)
+          }}
           profile={collectionProfile}
         />
       )}

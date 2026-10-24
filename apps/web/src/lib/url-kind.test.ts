@@ -282,6 +282,11 @@ describe("Profile collection picker", () => {
 			"https://www.facebook.com/creator/photos_albums",
 			"https://www.facebook.com/creator/reels",
 		]);
+		expect(
+			resolveCollectionProfile(
+				"https://facebook.com/creator",
+			)?.collections.find((collection) => collection.key === "reels")?.mapping,
+		).toBe("playlist");
 	});
 });
 
