@@ -2,14 +2,19 @@
   "schemaVersion": 1,
   "name": "yt-dlp",
   "upstream": "https://github.com/yt-dlp/yt-dlp",
-  "ref": "2026.08.19",
-  "commit": "3a08beaf031ab68f966401ead017ac81fe8486cf",
-  "importedAt": "2026-09-09",
+  "ref": "2026.10.21",
+  "commit": "6ccd977303412151ee23352c6257dd658ffc1987",
+  "importedAt": "2026-10-24",
   "license": "Unlicense",
   "localPatches": [
     "Facebook profile reels enumeration with Relay pagination",
     "Extract individual Facebook reels from their canonical page",
     "Deduplicate Dzen profile videos and reject incomplete feed pagination",
-    "Route Dzen shorts to video extraction using the canonical watch page"
+    "Route Dzen shorts to video extraction using the canonical watch page",
+    "OnlyFans extractor with request signing and browser-identity binding (utils/_leveldb.py)",
+    "OF.TV channel and video extractors",
+    "Keep DRM/unplayable formats listed by default (allow_unplayable_formats)",
+    "Drop the KnownDRM/KnownPiracy/KnownLiability unsupported-URL blocklist",
+    "VidBee build variant and update hint in version.py"
   ]
 }

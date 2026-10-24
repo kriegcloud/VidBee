@@ -50,3 +50,24 @@ Import a reviewed upstream tag as a plain source snapshot (without a nested
 `.git` directory), then update `VENDOR.json`. Keep VidBee-specific changes as
 ordinary repository commits so they remain visible and reviewable when the
 next snapshot is imported.
+
+The practical recipe (used for 2026.08.19 -> 2026.10.21):
+
+1. Clone upstream (`git clone --filter=blob:none --no-checkout`) and extract the
+   current `VENDOR.json` ref and the target tag with `git archive` into two
+   scratch directories (`base/` and `new/`).
+2. `diff -rq base vendor/yt-dlp` (ignoring `.venv`, `build`, `dist`,
+   `__pycache__`, `VENDOR.json`, `lazy_extractors.py`) lists VidBee's local
+   patches. Copy `new/` to `merged/`, overlay the files that exist only locally
+   or that upstream did not touch, and run
+   `git merge-file -p vendor/yt-dlp/<f> base/<f> new/<f>` for files changed on
+   both sides (typically `yt_dlp/extractor/_extractors.py`, `yt_dlp/YoutubeDL.py`
+   and `yt_dlp/version.py`, which keeps `VARIANT = 'vidbee'`).
+3. `rsync -a --delete` `merged/` into `vendor/yt-dlp/` with the same excludes,
+   update `VENDOR.json` (`ref`, `commit`, `importedAt`, `localPatches`) and
+   `apps/desktop/resources/THIRD_PARTY_NOTICES.md`, then run
+   `pnpm run build:ytdlp` and `pnpm run verify:ytdlp`.
+4. Run upstream's tests for the patched areas from `vendor/yt-dlp`:
+   `uv run --locked --no-default-groups --extra default --extra curl-cffi --group test python -m pytest test/test_YoutubeDL.py test/test_facebook_reels.py test/test_all_urls.py`.
+   Upstream's test harness runs with `verbose` on, so local patches must not
+   write to the screen inside `YoutubeDL.__init__`.

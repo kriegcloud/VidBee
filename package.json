@@ -1,7 +1,7 @@
 {
   "name": "vidbee-workspace",
   "private": true,
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@11.28.6",
   "scripts": {
     "check": "pnpm --filter ./apps/desktop run check",
     "check:i18n": "pnpm --filter ./apps/desktop run check:i18n",
@@ -38,12 +38,12 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.9",
+    "@biomejs/biome": "2.5.15",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
-    "electron": "^43.4.1",
+    "electron": "^43.8.3",
     "husky": "^9.1.7",
-    "tsx": "4.22.4",
-    "ultracite": "7.10.6"
+    "tsx": "4.23.15",
+    "ultracite": "8.0.2"
   }
 }

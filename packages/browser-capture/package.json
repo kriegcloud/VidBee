@@ -17,7 +17,7 @@
   "dependencies": {
     "@vidbee/downloader-core": "workspace:*",
     "@vidbee/task-queue": "workspace:*",
-    "playwright-core": "^1.56.1"
+    "playwright-core": "^1.64.1"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",

@@ -19,8 +19,8 @@
     "@vidbee/i18n": "workspace:*",
     "@vidbee/logger": "workspace:*",
     "@vidbee/task-queue": "workspace:*",
-    "opencc-js": "^1.4.1",
-    "sherpa-onnx-node": "1.13.6"
+    "opencc-js": "^1.4.2",
+    "sherpa-onnx-node": "1.13.8"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",

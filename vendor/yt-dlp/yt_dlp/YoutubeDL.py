@@ -675,7 +675,6 @@ class YoutubeDL:
         except Exception as e:
             self.write_debug(f'Failed to enable VT mode: {e}')
 
-        # hehe "immutable" namespace
         self._out_files.console = next(filter(supports_terminal_sequences, (sys.stderr, sys.stdout)), None)
 
         if self.params.get('no_color'):
@@ -712,12 +711,10 @@ class YoutubeDL:
             if outdated_warning := _get_outdated_warning():
                 self.report_warning(outdated_warning)
 
-        # VidBee: allow_unplayable_formats is on by default; skip upstream's
-        # one-shot developer warning so every download is not noisy.
-        if self.params.get('allow_unplayable_formats') and self.params.get('verbose'):
-            self.to_screen(
-                f'You have asked for {self._format_err("UNPLAYABLE", self.Styles.EMPHASIS)} formats to be listed/downloaded. '
-                'This is a developer option intended for debugging.')
+        # VidBee: allow_unplayable_formats is on by default, so upstream's
+        # one-shot "developer option" warning is intentionally not emitted.
+        # (Writing to the screen here is also unsafe: test doubles and API
+        # subclasses may not have finished initializing their output hooks.)
 
         if self.params.get('bidi_workaround', False):
             try:
@@ -2401,8 +2398,7 @@ class YoutubeDL:
             selectors = []
             current_selector = None
             for type_, string_, start, _, _ in tokens:
-                # ENCODING is only defined in Python 3.x
-                if type_ == getattr(tokenize, 'ENCODING', None):
+                if type_ == tokenize.ENCODING:
                     continue
                 elif type_ in [tokenize.NAME, tokenize.NUMBER]:
                     current_selector = FormatSelector(SINGLE, string_, [])

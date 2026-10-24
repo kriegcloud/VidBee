@@ -873,7 +873,9 @@ from .khanacademy import (
 )
 from .kick import (
     KickClipIE,
+    KickClipsIE,
     KickIE,
+    KickVideosIE,
     KickVODIE,
 )
 from .kicker import KickerIE
@@ -1222,6 +1224,7 @@ from .nhk import (
 from .nhl import NHLIE
 from .nick import NickIE
 from .niconico import (
+    NiconicoChannelIE,
     NiconicoHistoryIE,
     NiconicoIE,
     NiconicoLiveIE,

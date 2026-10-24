@@ -39,10 +39,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orpc/contract": "^1.15.0",
+    "@orpc/contract": "^1.16.1",
     "@vidbee/task-queue": "workspace:*",
     "yt-dlp-wrap-plus": "^2.3.20",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",

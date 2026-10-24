@@ -70,8 +70,8 @@ not enter the single-file transcription pipeline.
 
 ## Runtime and verification
 
-The adapter targets gallery-dl `1.32.12-dev:2026.09.10`, source commit
-`f93159c24ed0e26a141ff823a0ee3bd4587489a0`. The API Docker build uses the same
+The adapter targets gallery-dl `1.33.0-dev:2026.10.24`, source commit
+`3556e92dbf595d9c1d0cef0e98672f2fc0c80df1`. The API Docker build uses the same
 pinned source revision as the existing bundled Linux binary. Custom extractors
 are copied into both desktop resources and API build/container resources.
 

@@ -1,10 +1,13 @@
 """VidBee Instagram profile extraction on top of gallery-dl's Relay GraphQL API.
 
-Verified against gallery-dl 1.33.0-dev (gdl-org/builds 2026.10.22). Upstream now
+Verified against gallery-dl 1.33.0-dev (gdl-org/builds 2026.10.24). Upstream
 serves posts, reels, tagged posts, highlights, and stories through Instagram's
-persisted Relay queries with automatic doc_id discovery, so VidBee only adds
-mapping progress, saved-reference resume, incremental stops, and change
-detection on top of it. Session tokens stay inside gallery-dl.
+persisted Relay queries with automatic doc_id discovery and, since the
+2026.10.23 build, collects the Relay provided variables from the profile tab
+bundles itself (``InstagramAPI._prepare_graphql`` fills any provider it finds
+with ``setdefault``). VidBee only adds mapping progress, saved-reference
+resume, incremental stops, and change detection on top of it. Session tokens
+stay inside gallery-dl.
 """
 import json
 import sys
@@ -123,8 +126,10 @@ class InstagramWebMixin:
 
     # Instagram's Relay bundle (checked 2026-10-22) declares these provided
     # variables for the profile tab queries. Omitting any of them makes the
-    # server answer "missing_required_variable_value" with HTTP 200, which the
-    # stock extractor reports as KeyError: 'data'.
+    # server answer "missing_required_variable_value" with HTTP 200. gallery-dl
+    # 2026.10.23+ discovers the declared providers from the tab bundle and adds
+    # any missing one as True; the explicit values below keep the known flags
+    # pinned to the values the web client sends.
     _TAB_PROVIDERS = {
         "__relay_internal__pv__PolarisShortDramaEnabledrelayprovider": False,
         "__relay_internal__pv__PolarisSEOIsCrawlerrelayprovider": False,
@@ -156,8 +161,10 @@ class InstagramWebMixin:
             "first": 12, "id": user_id,
             **self._TAB_PROVIDERS,
         }
+        # The reels tab doc_id lives in the /<user>/reels bundle, not the main
+        # profile page (gallery-dl 2026.10.23 made the tab path a caller argument).
         return self.api._pagination_graphql(
-            "PolarisProfileReelsTabContentQuery_connection", variables, "fetch__XDTUserDict")
+            "PolarisProfileReelsTabContentQuery_connection", variables, "fetch__XDTUserDict", "/reels")
 
     def _user_tagged(self):
         variables = {
@@ -167,7 +174,7 @@ class InstagramWebMixin:
         }
         return self.api._pagination_graphql(
             "PolarisProfileTaggedTabContentQuery_connection", variables,
-            "xdt_api__v1__usertags__user_id__feed_connection")
+            "xdt_api__v1__usertags__user_id__feed_connection", "/tagged")
 
     def _validate_media(self, post):
         for media in post.get("carousel_media") or [post]:

@@ -7,6 +7,7 @@ import {
 import { Input } from '@renderer/components/ui/input'
 import { Label } from '@renderer/components/ui/label'
 import { Switch } from '@renderer/components/ui/switch'
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface AdvancedOptionsProps {
@@ -29,18 +30,23 @@ export function AdvancedOptions({
   showAccordion = true
 }: AdvancedOptionsProps) {
   const { t } = useTranslation()
+  const startTimeInputId = useId()
 
   const content = (
     <div className="space-y-6">
       {/* Time Range */}
       <div className="space-y-2">
-        <Label className="ml-1 font-medium text-muted-foreground text-xs">
+        <Label
+          className="ml-1 font-medium text-muted-foreground text-xs"
+          htmlFor={startTimeInputId}
+        >
           {t('advancedOptions.timeRange')}
         </Label>
         <div className="flex items-center gap-4">
           <div className="group relative flex-1">
             <Input
               className="h-9 text-center"
+              id={startTimeInputId}
               onChange={(e) => onStartTimeChange(e.target.value)}
               placeholder={t('advancedOptions.startPlaceholder')}
               title={t('advancedOptions.startHint')}
@@ -63,7 +69,9 @@ export function AdvancedOptions({
       {/* Subtitles */}
       <div className="flex items-center justify-between rounded-md border bg-muted/30 p-3">
         <div className="space-y-0.5">
-          <Label className="font-semibold text-sm">{t('advancedOptions.downloadSubs')}</Label>
+          <span className="font-semibold text-sm leading-none">
+            {t('advancedOptions.downloadSubs')}
+          </span>
           <p className="text-[11px] text-muted-foreground">
             {t('advancedOptions.downloadSubsHint')}
           </p>

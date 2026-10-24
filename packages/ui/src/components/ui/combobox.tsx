@@ -87,7 +87,7 @@ interface ComboboxContextValue {
   multiple: boolean;
   inputValue: string;
   open: boolean;
-  actionsRef: React.RefObject<{ unmount: () => void } | null>;
+  actionsRef: React.RefObject<ComboboxPrimitive.Root.Actions | null>;
   /** The field (input group or chips container) the popup anchors to. */
   anchorRef: React.RefObject<HTMLDivElement | null>;
   disabled: boolean;
@@ -204,7 +204,7 @@ function Combobox<
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState<Highlight | null>(null);
-  const actionsRef = useRef<{ unmount: () => void } | null>(null);
+  const actionsRef = useRef<ComboboxPrimitive.Root.Actions | null>(null);
   const anchorRef = useRef<HTMLDivElement | null>(null);
   // Memoized on the prop identity: a string value is stable by nature and a
   // consumer's array is state, so the derived array (and everything keyed on
