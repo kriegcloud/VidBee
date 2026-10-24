@@ -640,6 +640,15 @@ export class OnlyFansProfiles {
     let lastResponse = Date.now()
     let ownerId: string | null = profile.chatId ?? profile.purchasedUserId ?? null
     const observedApiPaths = new Set<string>()
+    let unreadableResponses = 0
+    const readJson = async (response: Response): Promise<unknown | undefined> => {
+      try {
+        return await response.json()
+      } catch {
+        unreadableResponses += 1
+        return undefined
+      }
+    }
     let closing: Promise<void> | undefined
     const abort = (): void => {
       closing = page
@@ -653,6 +662,7 @@ export class OnlyFansProfiles {
     }
     signal.addEventListener('abort', abort, { once: true })
     const pending = new Set<Promise<void>>()
+    let responseChain: Promise<void> = Promise.resolve()
     const handle = async (response: Response): Promise<void> => {
       const url = new URL(response.url())
       if (
@@ -669,7 +679,11 @@ export class OnlyFansProfiles {
         url.pathname === `/api2/v2/chats/${profile.chatId}` &&
         response.ok()
       ) {
-        const chat = record(await response.json())
+        const payload = await readJson(response)
+        if (payload === undefined) {
+          return
+        }
+        const chat = record(payload)
         const username = record(chat.withUser).username
         if (typeof username === 'string') {
           this.linkChatCreatorUsername(profile, username)
@@ -682,7 +696,10 @@ export class OnlyFansProfiles {
         return
       }
       if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && response.ok()) {
-        ownerId = this.adapter.ownerId(await response.json(), profile.username)
+        const payload = await readJson(response)
+        if (payload !== undefined) {
+          ownerId = this.adapter.ownerId(payload, profile.username)
+        }
         return
       }
       const isFeed = Boolean(ownerId && this.adapter.feedResponse(url, ownerId, profile))
@@ -698,7 +715,10 @@ export class OnlyFansProfiles {
         finished = true
         return
       }
-      const payload: unknown = await response.json()
+      const payload = await readJson(response)
+      if (payload === undefined) {
+        return
+      }
       if (record(payload).error || record(payload).success === false) {
         profile.state = 'auth-required'
         finished = true
@@ -707,17 +727,20 @@ export class OnlyFansProfiles {
       this.collect(profile, payload)
       profile.pages += 1
       lastResponse = Date.now()
-      finished = this.adapter.complete(payload)
+      finished = finished || this.adapter.complete(payload)
     }
     const listener = (response: Response): void => {
-      const work = handle(response)
-        .catch(() => {
+      const work = responseChain.then(() => handle(response))
+      responseChain = work.catch(() => undefined)
+      const settled = work
+        .catch((cause: unknown) => {
           profile.state = 'error'
-          profile.error = 'Could not read the profile response. The saved map has been retained.'
+          const errorKind = cause instanceof Error ? cause.name : 'UnknownError'
+          profile.error = `Mapping stopped while processing a response (${errorKind}). The saved map has been retained.`
           finished = true
         })
-        .finally(() => pending.delete(work))
-      pending.add(work)
+        .finally(() => pending.delete(settled))
+      pending.add(settled)
     }
     try {
       page = await this.browserPage()
@@ -745,8 +768,8 @@ export class OnlyFansProfiles {
         }
       )
       await this.linkChatCreator(page, profile)
-      const deadline = Date.now() + 10 * 60 * 1000
-      while (!finished && Date.now() < deadline && Date.now() - lastResponse < 90_000) {
+      const deadline = Date.now() + 2 * 60 * 60 * 1000
+      while (!finished && Date.now() < deadline && Date.now() - lastResponse < 8 * 60_000) {
         signal.throwIfAborted()
         const current = this.adapter.normalize(page.url())
         if (
@@ -755,11 +778,13 @@ export class OnlyFansProfiles {
         ) {
           throw new Error('The browser left the mapped profile.')
         }
-        await page.evaluate(({ nested, chat }) => {
+        const responseAtScroll = lastResponse
+        const moved = await page.evaluate(({ nested, chat }) => {
           const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1)
           if (!nested) {
+            const before = window.scrollY
             window.scrollBy(0, step)
-            return
+            return window.scrollY !== before
           }
           const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
             .map((element) => ({ element, bounds: element.getBoundingClientRect() }))
@@ -788,12 +813,20 @@ export class OnlyFansProfiles {
             const before = element.scrollTop
             element.scrollTop += step
             if (element.scrollTop !== before) {
-              return
+              return true
             }
           }
+          const before = window.scrollY
           window.scrollBy(0, step)
+          return window.scrollY !== before
         }, this.adapter.scrollMode(profile))
-        await delay(1500, undefined, { signal })
+        const pauseMs = moved ? 1500 : 4000
+        for (let waited = 0; waited < pauseMs && !finished; waited += 250) {
+          await delay(Math.min(250, pauseMs - waited), undefined, { signal })
+          if (lastResponse !== responseAtScroll) {
+            break
+          }
+        }
       }
       if (profile.state === 'mapping') {
         profile.state = finished ? 'complete' : 'partial'
@@ -801,6 +834,8 @@ export class OnlyFansProfiles {
           profile.error = observedApiPaths.size
             ? `No matching media response was captured. Observed API paths: ${[...observedApiPaths].join(', ')}`
             : 'No media API response was captured. Check that the page loaded in the dedicated browser.'
+        } else if (!finished && unreadableResponses > 0) {
+          profile.error = `The site did not finish loading older media. ${unreadableResponses} response bodies could not be read; mapped items were retained.`
         }
       }
     } catch {

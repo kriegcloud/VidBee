@@ -163,7 +163,16 @@ function setup(
     })
   }
   mocks.launch.mockResolvedValue(context)
-  return { dir, page, cover, ownerLink, context, profiles: new OnlyFansProfiles(dir, () => dir) }
+  return {
+    dir,
+    page,
+    cover,
+    ownerLink,
+    context,
+    events,
+    response,
+    profiles: new OnlyFansProfiles(dir, () => dir)
+  }
 }
 
 describe('chat video ordinal', () => {
@@ -379,6 +388,24 @@ describe('OnlyFans browser mapping', () => {
     await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
     expect(profiles.get(url).creatorUsername).toBe('babee.vip')
     expect(profiles.get('https://onlyfans.com/babee.vip').linkedChatId).toBe('7')
+    await profiles.stop()
+  })
+
+  it('skips an unreadable message response and continues to the next batch', async () => {
+    const { profiles, page, events, response } = setup(true, false, true)
+    const url = 'https://onlyfans.com/my/chats/chat/7'
+    await profiles.command({ url, action: 'map' })
+    await vi.waitFor(() => expect(page.goto).toHaveBeenCalled())
+    events.emit('response', {
+      ...response('https://onlyfans.com/api2/v2/chats/7/messages', fixture),
+      json: async () => {
+        throw new Error('Body was evicted')
+      }
+    })
+    events.emit('response', response('https://onlyfans.com/api2/v2/chats/7/messages', fixture))
+    await vi.waitFor(() => expect(profiles.get(url).state).toBe('complete'))
+    expect(profiles.get(url).items).toHaveLength(3)
+    expect(profiles.get(url).error).toBeUndefined()
     await profiles.stop()
   })
 
