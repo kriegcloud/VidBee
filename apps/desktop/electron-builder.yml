@@ -86,7 +86,6 @@ files:
   # pi-coding-agent stays external: retain jiti and pi-ai's provider SDK dependencies.
   - '!node_modules/opencc-js{,/**}'
   - '!node_modules/zod{,/**}'
-  - '!node_modules/drizzle-orm{,/**}'
   - '!node_modules/es-toolkit{,/**}'
   # better-sqlite3 ships its C sources and every platform prebuild.
   - '!node_modules/better-sqlite3/deps{,/**}'
