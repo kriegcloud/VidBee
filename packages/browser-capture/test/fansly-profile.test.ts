@@ -1,4 +1,5 @@
 import { FanslyCommandSchema, fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import type { OnlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { describe, expect, it } from 'vitest'
 import { fanslyAdapter, fanslyItems, fanslyMediaUrl } from '../src/fansly-profile'
 
@@ -14,6 +15,14 @@ const media = (id: string, access = true) => ({
     locations: [{ location: 'https://cdn.fansly.com/preview.jpg' }]
   }
 })
+const profile: OnlyFansProfile = {
+  username: 'example',
+  profileUrl: 'https://fansly.com/example',
+  state: 'idle',
+  updatedAt: 0,
+  pages: 0,
+  items: []
+}
 describe('Fansly profiles', () => {
   it('normalizes both supported tabs and rejects unrelated routes and hosts', () => {
     for (const tab of ['posts', 'media']) {
@@ -37,24 +46,38 @@ describe('Fansly profiles', () => {
   })
   it('matches only the selected creator feed, never recommendations or chat media', () => {
     expect(
-      fanslyAdapter.feedResponse(new URL('https://apiv3.fansly.com/api/v1/timeline/12'), '12')
+      fanslyAdapter.feedResponse(
+        new URL('https://apiv3.fansly.com/api/v1/timeline/12'),
+        '12',
+        profile
+      )
     ).toBe(true)
     expect(
-      fanslyAdapter.feedResponse(new URL('https://apiv3.fansly.com/api/v1/timeline/13'), '12')
+      fanslyAdapter.feedResponse(
+        new URL('https://apiv3.fansly.com/api/v1/timeline/13'),
+        '12',
+        profile
+      )
     ).toBe(false)
     expect(
-      fanslyAdapter.feedResponse(new URL('https://apiv3.fansly.com/api/v1/timelinenew/12'), '12')
+      fanslyAdapter.feedResponse(
+        new URL('https://apiv3.fansly.com/api/v1/timelinenew/12'),
+        '12',
+        profile
+      )
     ).toBe(true)
     expect(
       fanslyAdapter.feedResponse(
         new URL('https://apiv3.fansly.com/api/v1/mediaoffers/location?accountId=12'),
-        '12'
+        '12',
+        profile
       )
     ).toBe(true)
     expect(
       fanslyAdapter.feedResponse(
         new URL('https://apiv3.fansly.com/api/v1/message?accountId=12'),
-        '12'
+        '12',
+        profile
       )
     ).toBe(false)
     expect(

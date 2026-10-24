@@ -94,7 +94,7 @@ export const measureGrabOrigin = async (input: {
         'rgb24',
         '-'
       ],
-      { stdio: ['ignore', 'pipe', 'ignore'] }
+      { stdio: ['ignore', 'pipe', 'pipe'] }
     )
     const chunks: Buffer[] = []
     let stderr = ''
