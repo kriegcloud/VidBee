@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} rekaman",
     "groupCollapse": "Ciutkan",
     "groupErrors": "{{count}} gagal",
+    "groupRetryFailed": "Coba lagi {{count}} gagal",
+    "groupRetriedFailed": "Mencoba lagi {{count}} unduhan gagal",
     "groupExpand": "Perluas",
     "groupSummary": "{{completed}} / {{total}} selesai",
     "linkLabel": "URL Playlist",

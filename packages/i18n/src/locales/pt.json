@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} gravações",
     "groupCollapse": "Recolher",
     "groupErrors": "{{count}} falhou",
+    "groupRetryFailed": "Repetir {{count}} com falha",
+    "groupRetriedFailed": "Repetindo {{count}} downloads com falha",
     "groupExpand": "Expandir",
     "groupSummary": "{{completed}} / {{total}} concluído",
     "linkLabel": "URL da Playlist",

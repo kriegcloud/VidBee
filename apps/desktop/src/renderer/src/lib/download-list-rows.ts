@@ -69,7 +69,9 @@ const appendTasks = (
   }
   rows.push({
     depth,
-    key: `${record.entryType}:${record.id}`,
+    // Keyed by task, not entry type: retrying moves a row from history to active,
+    // and a key change there would drop its measured height and jump the list.
+    key: `task:${record.id}`,
     kind: 'task',
     record
   })

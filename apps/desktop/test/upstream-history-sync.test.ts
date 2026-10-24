@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { buildDownloadListModel } from '../src/renderer/src/lib/download-list-rows'
+import { locateDownloadTransferTarget } from '../src/renderer/src/lib/download-transfer-locate'
 import type { DownloadRecord } from '../src/renderer/src/store/downloads'
 
 const record = (id: string, fields: Partial<DownloadRecord> = {}): DownloadRecord =>
@@ -108,4 +109,45 @@ test('OnlyFans and Fansly media collapse under one profile header with its site 
     ]
   )
   assert.equal(model.locations.get('of-2')?.groupId, 'creator-profile:onlyfans:syd.babee')
+})
+
+test('a row keeps its key when a retry moves it from history to active', () => {
+  const failed = record('task', { status: 'error' })
+  const retried = { ...failed, entryType: 'active', status: 'pending' } as DownloadRecord
+  const keyOf = (records: DownloadRecord[]): string | undefined =>
+    buildDownloadListModel({
+      records,
+      filtered: records,
+      contexts: [],
+      isExpanded: () => true
+    }).rows[0]?.key
+  assert.equal(keyOf([failed]), keyOf([retried]))
+})
+
+test('returning to a row expands its collapsed group and centers it', async () => {
+  const expanded = new Set<string>()
+  const scrolled: [number, string][] = []
+  await locateDownloadTransferTarget({
+    downloadId: 'member',
+    expandGroup: (groupId) => {
+      expanded.add(groupId)
+    },
+    getLocation: () => ({ groupId: 'profile', expandedRowIndex: 7 }),
+    getRowIndex: () => (expanded.has('profile') ? 7 : undefined),
+    isGroupExpanded: (groupId) => expanded.has(groupId),
+    isRowMounted: () => true,
+    scrollToIndex: (index, align) => {
+      scrolled.push([index, align])
+    },
+    session: {
+      align: 'center',
+      deadline: Date.now() + 1000,
+      signal: new AbortController().signal
+    },
+    waitForFrame: async () => {
+      // Advance without a real frame so the test stays synchronous.
+    }
+  })
+  assert.deepEqual([...expanded], ['profile'])
+  assert.deepEqual(scrolled, [[7, 'center']])
 })

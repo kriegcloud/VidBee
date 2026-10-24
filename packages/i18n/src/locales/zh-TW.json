@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} 個錄製",
     "groupCollapse": "收合",
     "groupErrors": "{{count}} 失敗",
+    "groupRetryFailed": "重試 {{count}} 個失敗",
+    "groupRetriedFailed": "正在重試 {{count}} 個失敗的下載",
     "groupExpand": "展開",
     "groupSummary": "{{completed}} / {{total}} 已完成",
     "linkLabel": "播放清單連結",

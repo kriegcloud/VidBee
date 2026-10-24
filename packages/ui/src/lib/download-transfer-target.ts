@@ -2,6 +2,13 @@
 export interface DownloadTransferLocateSession {
   readonly deadline: number
   readonly signal: AbortSignal
+  /** How the revealed row is placed in the viewport. */
+  readonly align: 'auto' | 'center'
+}
+
+export interface DownloadTransferLocateOptions {
+  align?: 'auto' | 'center'
+  timeoutMs?: number
 }
 
 type DownloadTransferLocator = (
@@ -50,22 +57,31 @@ export const cancelDownloadTransferLocate = (): void => {
 
 /**
  * Ask the mounted list to reveal one download before the existing DOM lookup.
+ * Also used to return to a row after the detail page, with a longer deadline.
  * With no registration this returns immediately so the web list stays unchanged.
  */
-export const prepareDownloadTransferTarget = async (downloadId?: string): Promise<void> => {
+export const prepareDownloadTransferTarget = async (
+  downloadId?: string,
+  options?: DownloadTransferLocateOptions
+): Promise<void> => {
   const locate = locator
   if (!locate) {
     return
   }
   cancelDownloadTransferLocate()
   const controller = new AbortController()
-  const deadline = Date.now() + LOCATE_TIMEOUT_MS
+  const timeout = options?.timeoutMs ?? LOCATE_TIMEOUT_MS
+  const deadline = Date.now() + timeout
   activeController = controller
   activeTimer = window.setTimeout(() => {
     controller.abort()
-  }, LOCATE_TIMEOUT_MS)
+  }, timeout)
   try {
-    await locate(downloadId, { deadline, signal: controller.signal })
+    await locate(downloadId, {
+      align: options?.align ?? 'auto',
+      deadline,
+      signal: controller.signal
+    })
   } catch {
     // A failed locate still falls through to the existing DOM lookup.
   } finally {

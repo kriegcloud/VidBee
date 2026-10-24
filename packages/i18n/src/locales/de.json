@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} Aufnahmen",
     "groupCollapse": "Einklappen",
     "groupErrors": "{{count}} fehlgeschlagen",
+    "groupRetryFailed": "{{count}} fehlgeschlagene wiederholen",
+    "groupRetriedFailed": "{{count}} fehlgeschlagene Downloads werden wiederholt",
     "groupExpand": "Ausklappen",
     "groupSummary": "{{completed}} / {{total}} abgeschlossen",
     "linkLabel": "Playlist-URL",

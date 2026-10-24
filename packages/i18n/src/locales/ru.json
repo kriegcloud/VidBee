@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} записей",
     "groupCollapse": "Свернуть",
     "groupErrors": "{{count}} ошибок",
+    "groupRetryFailed": "Повторить {{count}} неудачных",
+    "groupRetriedFailed": "Повтор {{count}} неудачных загрузок",
     "groupExpand": "Развернуть",
     "groupSummary": "{{completed}} / {{total}} завершено",
     "linkLabel": "URL плейлиста",

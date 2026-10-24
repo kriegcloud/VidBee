@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} kayıt",
     "groupCollapse": "Küçült",
     "groupErrors": "{{count}} başarısız",
+    "groupRetryFailed": "{{count}} başarısızı yeniden dene",
+    "groupRetriedFailed": "{{count}} başarısız indirme yeniden deneniyor",
     "groupExpand": "Genişlet",
     "groupSummary": "{{completed}} / {{total}} tamamlandı",
     "linkLabel": "Oynatma listesi URL'i",

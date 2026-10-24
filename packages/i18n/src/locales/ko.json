@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "녹화 {{count}}개",
     "groupCollapse": "접기",
     "groupErrors": "{{count}}개 실패",
+    "groupRetryFailed": "실패한 {{count}}개 재시도",
+    "groupRetriedFailed": "실패한 다운로드 {{count}}개를 재시도합니다",
     "groupExpand": "펼치기",
     "groupSummary": "{{completed}} / {{total}} 완료",
     "linkLabel": "재생목록 URL",

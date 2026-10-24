@@ -32,7 +32,7 @@ export const locateDownloadTransferTarget = async (input: {
   getRowIndex: (downloadId: string) => number | undefined
   isGroupExpanded: (groupId: string) => boolean
   isRowMounted: (downloadId: string) => boolean
-  scrollToIndex: (index: number) => void
+  scrollToIndex: (index: number, align: 'auto' | 'center') => void
   session: DownloadTransferLocateSession
   waitForFrame?: (session: DownloadTransferLocateSession) => Promise<void>
 }): Promise<void> => {
@@ -60,7 +60,7 @@ export const locateDownloadTransferTarget = async (input: {
       await wait(input.session)
       continue
     }
-    input.scrollToIndex(rowIndex)
+    input.scrollToIndex(rowIndex, input.session.align)
     if (input.isRowMounted(downloadId)) {
       return
     }

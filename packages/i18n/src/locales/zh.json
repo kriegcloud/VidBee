@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} 个录制",
     "groupCollapse": "折叠",
     "groupErrors": "{{count}} 失败",
+    "groupRetryFailed": "重试 {{count}} 个失败",
+    "groupRetriedFailed": "正在重试 {{count}} 个失败的下载",
     "groupExpand": "展开",
     "groupSummary": "{{completed}} / {{total}}已完成",
     "linkLabel": "播放列表链接",

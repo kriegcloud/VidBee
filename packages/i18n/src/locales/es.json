@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} grabaciones",
     "groupCollapse": "Contraer",
     "groupErrors": "{{count}} fallido",
+    "groupRetryFailed": "Reintentar {{count}} fallidas",
+    "groupRetriedFailed": "Reintentando {{count}} descargas fallidas",
     "groupExpand": "Expandir",
     "groupSummary": "{{completed}} / {{total}} completado",
     "linkLabel": "URL de la Lista de Reproducción",

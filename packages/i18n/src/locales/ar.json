@@ -499,6 +499,8 @@
     "groupInProgressRecordings": "{{count}} تسجيلات",
     "groupCollapse": "طي",
     "groupErrors": "{{count}} فشل",
+    "groupRetryFailed": "إعادة محاولة {{count}} فاشلة",
+    "groupRetriedFailed": "إعادة محاولة {{count}} من التنزيلات الفاشلة",
     "groupExpand": "توسيع",
     "groupSummary": "{{completed}} / {{total}} مكتمل",
     "linkLabel": "رابط قائمة التشغيل",

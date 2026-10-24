@@ -31,6 +31,7 @@ import {
   matchesDownloadPlatformFilter
 } from '@vidbee/ui/lib/download-platform'
 import { getDownloadQueueProgress } from '@vidbee/ui/lib/download-queue-progress'
+import { prepareDownloadTransferTarget } from '@vidbee/ui/lib/download-transfer-target'
 import {
   indexSavedSocialProfileGroups,
   type SavedSocialProfileGroup
@@ -46,6 +47,7 @@ import {
 } from '../../../../shared/utils/download-file'
 import { useDownloadOriginContexts } from '../../hooks/use-download-origin-contexts'
 import { useExtensionCookieConnection } from '../../hooks/use-extension-cookie-connection'
+import { takeDownloadListFocus } from '../../lib/download-list-focus'
 import { buildDownloadListModel } from '../../lib/download-list-rows'
 import { ipcServices } from '../../lib/ipc'
 import { logger } from '../../lib/logger'
@@ -53,6 +55,7 @@ import { buildTranscriptPlaybackInput } from '../../lib/transcript-playback-sour
 import { flyCoverToPlaylistButton } from '../../lib/transcript-playlist-fly'
 import type { DownloadRecord } from '../../store/downloads'
 import {
+  addDownloadAtom,
   downloadsArrayAtom,
   removeHistoryRecordsAtom,
   removeHistoryRecordsByPlaylistAtom
@@ -102,6 +105,9 @@ const getSavedFileExtension = (fileName?: string): string | undefined => {
   return ext?.toLowerCase()
 }
 
+/** A returning list may mount before its rows settle, so the reveal gets more than a frame. */
+const FOCUS_RESTORE_TIMEOUT_MS = 2000
+
 const resolveDownloadExtension = (download: DownloadRecord): string => {
   const savedExt = getSavedFileExtension(download.savedFileName)
   if (savedExt) {
@@ -140,6 +146,7 @@ export function UnifiedDownloadHistory({
 }: UnifiedDownloadHistoryProps) {
   const { t } = useTranslation()
   const allRecords = useAtomValue(downloadsArrayAtom)
+  const addDownload = useSetAtom(addDownloadAtom)
   const removeHistoryRecords = useSetAtom(removeHistoryRecordsAtom)
   const removeHistoryRecordsByPlaylist = useSetAtom(removeHistoryRecordsByPlaylistAtom)
   const addPlaylistItems = useSetAtom(addPlaybackPlaylistItemsAtom)
@@ -237,6 +244,24 @@ export function UnifiedDownloadHistory({
       }),
     [allRecords, filteredRecords, isExpanded, originContexts, savedProfileGroups]
   )
+
+  const restoredFocusRef = useRef(false)
+  const hasRows = listModel.rows.length > 0
+  // Returning from a detail page: reveal the row it was opened from, once.
+  useEffect(() => {
+    if (restoredFocusRef.current || !(viewport && hasRows)) {
+      return
+    }
+    restoredFocusRef.current = true
+    const downloadId = takeDownloadListFocus()
+    if (!downloadId) {
+      return
+    }
+    void prepareDownloadTransferTarget(downloadId, {
+      align: 'center',
+      timeoutMs: FOCUS_RESTORE_TIMEOUT_MS
+    })
+  }, [hasRows, viewport])
 
   const visibleHistoryIds = useMemo(
     () =>
@@ -398,6 +423,33 @@ export function UnifiedDownloadHistory({
     }
     toast.success(t('transcript.player.playlist.addedCount', { count: selectedInOrder.length }))
     setSelectedIds(new Set())
+  }
+
+  /**
+   * Retry every failed download in one profile or playlist group.
+   */
+  const handleRetryGroupFailed = async (records: DownloadRecord[]) => {
+    const failed = records.filter((record) => record.status === 'error' && record.url)
+    if (failed.length === 0) {
+      return
+    }
+    let retried = 0
+    for (const record of failed) {
+      try {
+        if (!(await ipcServices.download.retryDownload(record.id))) {
+          continue
+        }
+        addDownload({ ...record, error: undefined, progress: { percent: 0 }, status: 'pending' })
+        retried += 1
+      } catch (error) {
+        logger.error('Failed to retry download:', error)
+      }
+    }
+    if (retried === 0) {
+      toast.info(t('notifications.downloadAlreadyQueued'))
+      return
+    }
+    toast.success(t('playlist.groupRetriedFailed', { count: retried }))
   }
 
   const handleRequestDeletePlaylist = (playlistId: string, title: string, ids: string[]) => {
@@ -694,6 +746,9 @@ export function UnifiedDownloadHistory({
               listRef={listRef}
               model={listModel}
               onDeletePlaylist={originFilter === 'all' ? handleRequestDeletePlaylist : undefined}
+              onRetryGroupFailed={(records) => {
+                void handleRetryGroupFailed(records)
+              }}
               onSelectIds={(ids) => {
                 setSelectedIds(new Set(ids))
               }}

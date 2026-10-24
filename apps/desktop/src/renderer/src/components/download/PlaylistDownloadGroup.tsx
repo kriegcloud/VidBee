@@ -1,7 +1,7 @@
 import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import { useAtomValue } from 'jotai'
 import { selectAtom } from 'jotai/utils'
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronRight, RotateCw, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type DownloadLivePatch, downloadLivePatchesAtom } from '../../store/download-live-patch'
@@ -14,6 +14,7 @@ interface PlaylistDownloadGroupProps {
   groupId: string
   isPlaylist?: boolean
   onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void
+  onRetryFailed?: (records: DownloadRecord[]) => void
   onToggle: () => void
   platformDomain?: string | null
   platformLabel?: string | null
@@ -53,6 +54,7 @@ export function PlaylistDownloadGroup({
   expanded,
   groupId,
   onDeletePlaylist,
+  onRetryFailed,
   onToggle,
   platformDomain,
   platformLabel,
@@ -149,6 +151,23 @@ export function PlaylistDownloadGroup({
           </div>
         </button>
         <div className="flex shrink-0 items-center gap-1 pr-3">
+          {errorCount > 0 && onRetryFailed && (
+            <Button
+              aria-label={t('playlist.groupRetryFailed', { count: errorCount })}
+              className="h-6 gap-1 rounded-full px-2 text-xs"
+              onClick={(event) => {
+                event.stopPropagation()
+                onRetryFailed(records)
+              }}
+              size="sm"
+              title={t('playlist.groupRetryFailed', { count: errorCount })}
+              type="button"
+              variant="ghost"
+            >
+              <RotateCw className="h-3.5 w-3.5" />
+              {t('playlist.groupRetryFailed', { count: errorCount })}
+            </Button>
+          )}
           {canDeletePlaylist && (
             <Button
               aria-label={t('history.deletePlaylist')}

@@ -54,6 +54,7 @@ import {
 } from '../../../../shared/utils/download-file'
 import { useCachedThumbnail } from '../../hooks/use-cached-thumbnail'
 import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
+import { rememberDownloadListFocus } from '../../lib/download-list-focus'
 import { ipcServices } from '../../lib/ipc'
 import { logger } from '../../lib/logger'
 import { openContextMenuFromClick } from '../../lib/open-context-menu'
@@ -485,6 +486,8 @@ export function DownloadItem({
    * Open the transcript page. Captions vs ASR is decided after the page loads.
    */
   const handleOpenTranscript = () => {
+    // Remembered so the back button returns to this row instead of the top of the list.
+    rememberDownloadListFocus(download.id)
     void navigate({
       to: '/downloads/$downloadId/transcript',
       params: { downloadId: download.id }

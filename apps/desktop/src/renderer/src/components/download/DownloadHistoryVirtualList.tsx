@@ -8,6 +8,7 @@ import { downloadListGeometryRows, downloadListRowOffset } from '../../lib/downl
 import type { DownloadListModel } from '../../lib/download-list-rows'
 import { readDownloadListScrollMargin } from '../../lib/download-list-scroll-margin'
 import { locateDownloadTransferTarget } from '../../lib/download-transfer-locate'
+import type { DownloadRecord } from '../../store/downloads'
 import { DownloadTaskTree } from './DownloadTaskTree'
 import { PlaylistDownloadGroup } from './PlaylistDownloadGroup'
 
@@ -21,6 +22,7 @@ interface DownloadHistoryVirtualListProps {
   listRef: RefObject<HTMLDivElement | null>
   model: DownloadListModel
   onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void
+  onRetryGroupFailed?: (records: DownloadRecord[]) => void
   onSelectIds: (ids: string[]) => void
   onTogglePlaylist: (groupId: string) => void
   onToggleSelect: (id: string) => void
@@ -52,6 +54,7 @@ export function DownloadHistoryVirtualList({
   listRef,
   model,
   onDeletePlaylist,
+  onRetryGroupFailed,
   onSelectIds,
   onTogglePlaylist,
   onToggleSelect,
@@ -120,8 +123,8 @@ export function DownloadHistoryVirtualList({
         isGroupExpanded: (groupId) => expandedRef.current(groupId),
         isRowMounted: (id) =>
           Boolean(listRef.current?.querySelector(`[data-download-id="${CSS.escape(id)}"]`)),
-        scrollToIndex: (index) => {
-          virtualizerRef.current.scrollToIndex(index, { align: 'auto' })
+        scrollToIndex: (index, align) => {
+          virtualizerRef.current.scrollToIndex(index, { align })
         },
         session
       })
@@ -188,6 +191,7 @@ export function DownloadHistoryVirtualList({
                 groupId={row.groupId}
                 isPlaylist={row.isPlaylist}
                 onDeletePlaylist={row.isPlaylist ? onDeletePlaylist : undefined}
+                onRetryFailed={onRetryGroupFailed}
                 onToggle={() => onTogglePlaylist(row.groupId)}
                 platformDomain={row.platformDomain}
                 platformLabel={row.platformLabel}
