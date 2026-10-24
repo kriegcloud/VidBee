@@ -1,4 +1,7 @@
-import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
+import {
+  MAPPED_PROFILE_SITE_LABELS,
+  resolveMappedProfileSource
+} from '@vidbee/downloader-core/mapped-profile-source'
 import type { SocialMappedProfile } from '@vidbee/downloader-core/social-media-service'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +24,20 @@ interface Props {
     ids: string[],
     destination?: string
   ) => Promise<{ count: number }>
+}
+
+/** Platforms whose mapper reads cookies from the dedicated browser session. */
+const NEEDS_BROWSER_SESSION: ReadonlySet<string> = new Set(['x', 'tiktok', 'threads'])
+
+/** Category names live in three i18n namespaces, by the platform that owns them. */
+const categoryLabelKey = (platform: string | undefined, key: string): string => {
+  if (key === 'reels') {
+    return 'instagramProfile.categories.reels'
+  }
+  if (platform === 'facebook' || platform === 'vsco') {
+    return `profileCollections.${key}`
+  }
+  return `socialMedia.categories.${key}`
 }
 
 /** Saved post references are mapped before any media download is queued. */
@@ -116,24 +133,18 @@ export function SocialProfileDialog({
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {source?.platform === 'x'
-              ? 'X'
-              : source?.platform === 'redgifs'
-                ? 'Redgifs'
-                : source?.platform === 'facebook'
-                  ? 'Facebook'
-                  : 'TikTok'}{' '}
-            · {profile?.owner ?? source?.owner}
+            {source ? MAPPED_PROFILE_SITE_LABELS[source.platform] : ''} ·{' '}
+            {profile?.owner ?? source?.owner}
           </DialogTitle>
           <DialogDescription>{t('socialMedia.categoriesLabel')}</DialogDescription>
         </DialogHeader>
-        {source?.platform !== 'redgifs' && (
+        {source?.platform !== 'redgifs' && source?.platform !== 'vsco' && (
           <p className="text-muted-foreground text-sm">
             {t(openLogin ? 'socialMedia.profileSessionHint' : 'socialMedia.auth')}
           </p>
         )}
         <div className="flex flex-wrap gap-2">
-          {openLogin && source?.platform !== 'redgifs' && source?.platform !== 'facebook' && (
+          {openLogin && NEEDS_BROWSER_SESSION.has(source?.platform ?? '') && (
             <Button disabled={busy || mapping} onClick={() => void act('open')} variant="outline">
               {t('onlyFans.openBrowser')}
             </Button>
@@ -157,13 +168,7 @@ export function SocialProfileDialog({
               size="sm"
               variant={category === entry.key ? 'default' : 'outline'}
             >
-              {t(
-                source?.platform === 'facebook'
-                  ? entry.key === 'reels'
-                    ? 'instagramProfile.categories.reels'
-                    : `profileCollections.${entry.key}`
-                  : `socialMedia.categories.${entry.key}`
-              )}
+              {t(categoryLabelKey(source?.platform, entry.key))}
             </Button>
           ))}
         </div>

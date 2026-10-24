@@ -28,7 +28,8 @@ import {
   type InstagramProfileInspection,
   planPlaylistDownloadOrder,
   playlistEntryGroupKey,
-  resolveDownloadTaskKind
+  resolveDownloadTaskKind,
+  shouldUseGalleryDl
 } from '@vidbee/downloader-core'
 import { FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
 import { isMappedProfilePostUrl } from '@vidbee/downloader-core/mapped-profile-source'
@@ -263,7 +264,9 @@ class DownloadFacade extends EventEmitter {
     }
     const batchId = `social_profile_${randomUUID()}`
     const batchTitle = `@${profile.owner}`
-    if (profile.platform === 'redgifs' || profile.platform === 'facebook') {
+    // Only X and TikTok posts are `social-media` tasks; every other platform's
+    // post URL routes itself through the host executor.
+    if (profile.platform !== 'x' && profile.platform !== 'tiktok') {
       this.subscribeOnce()
       await startDesktopTaskQueue()
       for (const [index, item] of items.entries()) {
@@ -273,7 +276,7 @@ class DownloadFacade extends EventEmitter {
           input: buildTaskInput(id, {
             url: item.url,
             type: 'video',
-            singleVideo: item.videos > 0,
+            singleVideo: !shouldUseGalleryDl(item.url) && item.videos > 0,
             title: item.title,
             customDownloadPath: destination,
             batchId,

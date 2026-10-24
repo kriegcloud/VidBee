@@ -1,7 +1,9 @@
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { resolveSocialSource } from './social-media'
+import { normalizeThreadsUrl } from './threads'
+import { normalizeVscoUrl } from './vsco'
 
-export type MappedProfilePlatform = 'x' | 'tiktok' | 'redgifs' | 'facebook'
+export type MappedProfilePlatform = 'x' | 'tiktok' | 'redgifs' | 'facebook' | 'vsco' | 'threads'
 
 export interface MappedProfileSource {
   platform: MappedProfilePlatform
@@ -11,6 +13,16 @@ export interface MappedProfileSource {
   categories: { key: string; url: string; requiresAuth: boolean }[]
 }
 
+/** Site name shown wherever a mapped profile is named to the user. */
+export const MAPPED_PROFILE_SITE_LABELS: Record<MappedProfilePlatform, string> = {
+  x: 'X',
+  tiktok: 'TikTok',
+  redgifs: 'Redgifs',
+  facebook: 'Facebook',
+  vsco: 'VSCO',
+  threads: 'Threads'
+}
+
 const REDGIFS_USER = /^[A-Za-z0-9._-]{1,64}$/
 const REDGIFS_POST = /^[A-Za-z0-9-]{2,100}$/
 
@@ -18,6 +30,14 @@ export const redGifsWatchUrl = (id: string): string | null =>
   REDGIFS_POST.test(id) ? `https://www.redgifs.com/watch/${id.toLowerCase()}` : null
 
 export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: string): boolean => {
+  if (platform === 'vsco') {
+    const vsco = normalizeVscoUrl(value)
+    return (vsco?.kind === 'media' || vsco?.kind === 'video') && vsco.url === value
+  }
+  if (platform === 'threads') {
+    const threads = normalizeThreadsUrl(value)
+    return threads?.kind === 'post' && threads.url === value
+  }
   if (platform === 'facebook') {
     try {
       const parsed = new URL(value)
@@ -61,6 +81,26 @@ export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: s
 }
 
 export const resolveMappedProfileSource = (value: string): MappedProfileSource | null => {
+  const vsco = normalizeVscoUrl(value)
+  if (vsco?.kind === 'gallery') {
+    return {
+      platform: 'vsco',
+      owner: vsco.username,
+      profileUrl: vsco.url,
+      category: 'gallery',
+      categories: [{ key: 'gallery', url: vsco.url, requiresAuth: false }]
+    }
+  }
+  const threads = normalizeThreadsUrl(value)
+  if (threads?.kind === 'profile') {
+    return {
+      platform: 'threads',
+      owner: threads.username,
+      profileUrl: threads.url,
+      category: 'media',
+      categories: [{ key: 'media', url: threads.url, requiresAuth: true }]
+    }
+  }
   try {
     const parsed = new URL(value)
     const host = parsed.hostname.toLowerCase()

@@ -15,7 +15,6 @@ import {
 } from "@vidbee/downloader-core/format-preferences";
 import { buildSingleVideoFormatSelector } from "@vidbee/downloader-core/format-selector";
 import { resolveMappedProfileSource } from "@vidbee/downloader-core/mapped-profile-source";
-import { onlyFansProfile } from "@vidbee/downloader-core/onlyfans-profile";
 import {
 	resolveSocialSource,
 	SocialMediaOptionsSchema,

@@ -299,7 +299,8 @@ export const resolveCollectionProfile = (value: string): CollectionProfile | nul
             key: 'media',
             url: threads.url,
             labelKey: 'socialMedia.categories.media',
-            requiresAuth: false
+            requiresAuth: true,
+            mapping: 'profile'
           }
         ]
       }
@@ -319,7 +320,8 @@ export const resolveCollectionProfile = (value: string): CollectionProfile | nul
             key: 'gallery',
             url: `https://vsco.co/${owner}/gallery`,
             labelKey: 'profileCollections.gallery',
-            requiresAuth: false
+            requiresAuth: false,
+            mapping: 'profile'
           }
         ]
       }

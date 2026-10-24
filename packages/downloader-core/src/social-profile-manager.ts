@@ -11,6 +11,8 @@ import path from 'node:path'
 import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
 import { mapFacebookProfile } from './facebook-profile-map'
 import type { GalleryDlExecutorOptions } from './gallery-dl-executor'
+import type { GalleryDlProfileMapRuntime } from './gallery-dl-json-run'
+import type { MappedProfilePlatform } from './mapped-profile-source'
 import { resolveMappedProfileSource } from './mapped-profile-source'
 import { mapRedGifsProfile } from './redgifs-profile-service'
 import {
@@ -20,7 +22,9 @@ import {
   SocialMappedProfileSchema,
   type SocialProfileCategory
 } from './social-media-service'
+import { mapThreadsProfile } from './threads-profile-map'
 import type { DownloadRuntimeSettings } from './types'
+import { mapVscoProfile } from './vsco-profile-map'
 
 export interface SocialProfileManagerOptions {
   storageDir: string
@@ -28,10 +32,20 @@ export interface SocialProfileManagerOptions {
   resolveYtDlpPath: () => string
 }
 
+/**
+ * Mappers that already accumulate a post's assets before emitting it; their
+ * repeat events replace the saved item instead of adding to it.
+ */
+const PRE_AGGREGATED: ReadonlySet<MappedProfilePlatform> = new Set<MappedProfilePlatform>([
+  'facebook',
+  'vsco',
+  'threads'
+])
+
 const profileSource = (value: string) => {
   const source = resolveMappedProfileSource(value)
   if (!source) {
-    throw new Error('Enter a Facebook, X, TikTok, or Redgifs profile URL.')
+    throw new Error('Enter a Facebook, X, TikTok, Redgifs, VSCO, or Threads profile URL.')
   }
   return source
 }
@@ -123,6 +137,46 @@ export class SocialProfileManager {
     return this.get(url)
   }
 
+  /** Each platform's traversal; all of them stream post references only. */
+  private startMapping(
+    platform: MappedProfilePlatform,
+    url: string,
+    category: string,
+    owner: string,
+    runtime: GalleryDlProfileMapRuntime,
+    settings: DownloadRuntimeSettings | undefined,
+    signal: AbortSignal,
+    onItem: (item: SocialMappedItem) => void
+  ): Promise<{ complete: boolean; error?: string }> {
+    if (platform === 'facebook') {
+      return mapFacebookProfile(
+        url,
+        category as 'photos' | 'albums' | 'reels',
+        owner,
+        runtime,
+        settings,
+        signal,
+        onItem
+      )
+    }
+    if (platform === 'vsco') {
+      return mapVscoProfile(url, owner, runtime, settings, signal, onItem)
+    }
+    if (platform === 'threads') {
+      return mapThreadsProfile(url, owner, runtime, settings, signal, onItem)
+    }
+    if (platform === 'redgifs') {
+      return mapRedGifsProfile(
+        url,
+        this.options.resolveYtDlpPath,
+        this.options.runtime.admission,
+        signal,
+        onItem
+      )
+    }
+    return mapSocialMediaProfile(url, this.options.runtime, settings, signal, onItem)
+  }
+
   map(url: string, category: string, settings?: DownloadRuntimeSettings): SocialMappedProfile {
     const source = profileSource(url)
     const selected = source.categories.find((entry) => entry.key === category)
@@ -144,7 +198,7 @@ export class SocialProfileManager {
     const onItem = (entry: SocialMappedItem) => {
       const current = seenThisRun.get(entry.id)
       const next =
-        current && source.platform !== 'facebook'
+        current && !PRE_AGGREGATED.has(source.platform)
           ? {
               ...current,
               url: entry.images ? entry.url : current.url,
@@ -157,37 +211,22 @@ export class SocialProfileManager {
       mapped.items = [...items.values()]
       this.save(profile)
     }
-    const mapping =
-      source.platform === 'facebook'
-        ? mapFacebookProfile(
-            selected.url,
-            category as 'photos' | 'albums' | 'reels',
-            source.owner,
-            {
-              admission: this.options.runtime.admission,
-              resolveGalleryDlPath: this.options.runtime.resolveBinaryPath,
-              resolveYtDlpPath: this.options.resolveYtDlpPath,
-              resolveGalleryDlArgs: this.options.runtime.resolveExtraArgs
-            },
-            settings,
-            controller.signal,
-            onItem
-          )
-        : source.platform === 'redgifs'
-          ? mapRedGifsProfile(
-              selected.url,
-              this.options.resolveYtDlpPath,
-              this.options.runtime.admission,
-              controller.signal,
-              onItem
-            )
-          : mapSocialMediaProfile(
-              selected.url,
-              this.options.runtime,
-              settings,
-              controller.signal,
-              onItem
-            )
+    const mapperRuntime = {
+      admission: this.options.runtime.admission,
+      resolveGalleryDlPath: this.options.runtime.resolveBinaryPath,
+      resolveYtDlpPath: this.options.resolveYtDlpPath,
+      resolveGalleryDlArgs: this.options.runtime.resolveExtraArgs
+    }
+    const mapping = this.startMapping(
+      source.platform,
+      selected.url,
+      category,
+      source.owner,
+      mapperRuntime,
+      settings,
+      controller.signal,
+      onItem
+    )
     const done = mapping
       .then((result) => {
         mapped.state = result.complete

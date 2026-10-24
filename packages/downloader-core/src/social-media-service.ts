@@ -6,6 +6,7 @@ import type { ExecutorFinishEvent, TaskQueueAPI } from '@vidbee/task-queue'
 import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
 import { z } from 'zod'
 import { GalleryDlExecutor, type GalleryDlExecutorOptions } from './gallery-dl-executor'
+import type { MappedProfilePlatform } from './mapped-profile-source'
 import type { SocialMediaOptions, SocialSource } from './social-media'
 import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
 import { expandTikTokShortLink } from './tiktok-short-link'
@@ -29,7 +30,7 @@ export interface SocialProfileCategory {
 
 export interface SocialMappedProfile {
   profileUrl: string
-  platform: 'x' | 'tiktok' | 'redgifs' | 'facebook'
+  platform: MappedProfilePlatform
   owner: string
   categories: Record<string, SocialProfileCategory>
   updatedAt: number
@@ -53,7 +54,7 @@ export const SocialProfileCategorySchema = z.object({
 
 export const SocialMappedProfileSchema = z.object({
   profileUrl: z.url(),
-  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook']),
+  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook', 'vsco', 'threads']),
   owner: z.string(),
   categories: z.record(z.string(), SocialProfileCategorySchema),
   updatedAt: z.number()

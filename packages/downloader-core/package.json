@@ -31,7 +31,8 @@
     "./social-profile-manager": "./src/social-profile-manager.ts",
     "./mapped-profile-source": "./src/mapped-profile-source.ts",
     "./onlyfans-profile": "./src/onlyfans-profile.ts",
-    "./fansly-profile": "./src/fansly-profile.ts"
+    "./fansly-profile": "./src/fansly-profile.ts",
+    "./vsco": "./src/vsco.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

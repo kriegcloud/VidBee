@@ -2,6 +2,8 @@ import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
 import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
+import { normalizeThreadsUrl } from '@vidbee/downloader-core/threads'
+import { normalizeVscoUrl } from '@vidbee/downloader-core/vsco'
 import { resolveDownloadPlatform } from './download-platform'
 
 export interface ProfileMapperTarget {
@@ -49,6 +51,18 @@ export const resolveProfileMapperTarget = (sourceUrl?: string): ProfileMapperTar
     return null
   }
   const label = (url: string): string => resolveDownloadPlatform(url).label
+  // VSCO and Threads posts name their owner in the path, so a post row resolves
+  // to the gallery or media tab its mapper traverses.
+  const vsco = normalizeVscoUrl(sourceUrl)
+  if (vsco) {
+    const profileUrl = `https://vsco.co/${vsco.username}/gallery`
+    return { profileUrl, siteLabel: label(profileUrl) }
+  }
+  const threads = normalizeThreadsUrl(sourceUrl)
+  if (threads) {
+    const profileUrl = `https://www.threads.com/@${threads.username}/media`
+    return { profileUrl, siteLabel: label(profileUrl) }
+  }
   const creator = creatorProfileUrl(sourceUrl)
   if (creator) {
     return { profileUrl: creator, siteLabel: label(creator) }

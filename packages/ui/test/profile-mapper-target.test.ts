@@ -22,6 +22,30 @@ test('any post row can name the profile its mapper should open', () => {
   })
 })
 
+test('VSCO and Threads rows reach the gallery and media tab their mapper traverses', () => {
+  for (const row of [
+    'https://vsco.co/allybari/media/65a1b2c3d4e5f6',
+    'https://vsco.co/allybari/video/aa11bb22-cc33',
+    'https://vsco.co/allybari/gallery',
+    'https://vsco.co/allybari'
+  ]) {
+    assert.deepEqual(resolveProfileMapperTarget(row), {
+      profileUrl: 'https://vsco.co/allybari/gallery',
+      siteLabel: 'VSCO'
+    })
+  }
+  for (const row of [
+    'https://www.threads.com/@benoppold/post/DAbCdEf',
+    'https://www.threads.com/@benoppold/media',
+    'https://threads.net/@benoppold'
+  ]) {
+    assert.deepEqual(resolveProfileMapperTarget(row), {
+      profileUrl: 'https://www.threads.com/@benoppold/media',
+      siteLabel: 'Threads'
+    })
+  }
+})
+
 test('URLs that cannot name an owner get no mapper entry', () => {
   assert.equal(resolveProfileMapperTarget(undefined), null)
   assert.equal(resolveProfileMapperTarget('not a url'), null)

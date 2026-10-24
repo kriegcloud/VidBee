@@ -306,6 +306,12 @@ const KNOWN_PLATFORMS: readonly KnownPlatform[] = [
     suffixes: ['threads.net', 'threads.com']
   },
   {
+    key: 'vsco',
+    label: 'VSCO',
+    domain: 'vsco.co',
+    suffixes: ['vsco.co']
+  },
+  {
     key: 'bluesky',
     label: 'Bluesky',
     domain: 'bsky.app',
