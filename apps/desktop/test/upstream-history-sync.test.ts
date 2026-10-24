@@ -76,3 +76,36 @@ test('virtual history preserves batch order and distinguishes playlists from soc
     ]
   )
 })
+
+test('OnlyFans and Fansly media collapse under one profile header with its site label', () => {
+  const records = [
+    record('of-1', {
+      url: 'https://onlyfans.com/2214255537/syd.babee',
+      title: '@syd.babee · photos · 2214255537'
+    }),
+    record('of-2', {
+      url: 'https://onlyfans.com/2215175806/syd.babee',
+      title: '@syd.babee · photos · 2215175806'
+    }),
+    record('of-chat', {
+      url: 'https://onlyfans.com/my/chats/chat/160988745?firstId=7',
+      title: '@160988745 · photos · 7'
+    }),
+    record('fansly-1', { url: 'https://fansly.com/creator/posts', title: '@creator · photos · 1' })
+  ]
+  const model = buildDownloadListModel({
+    records,
+    filtered: records,
+    contexts: [],
+    isExpanded: () => false
+  })
+  assert.deepEqual(
+    model.rows.map((row) => (row.kind === 'playlist' ? [row.title, row.platformLabel] : row.key)),
+    [
+      ['@syd.babee', 'OnlyFans'],
+      ['@160988745', 'OnlyFans'],
+      ['@creator', 'Fansly']
+    ]
+  )
+  assert.equal(model.locations.get('of-2')?.groupId, 'creator-profile:onlyfans:syd.babee')
+})

@@ -1,4 +1,5 @@
 import { Button } from "@vidbee/ui/components/ui/button";
+import { DownloadPlatformIcon } from "@vidbee/ui/components/ui/download-platform-icon";
 import { Progress } from "@vidbee/ui/components/ui/progress";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,6 +13,8 @@ interface PlaylistDownloadGroupProps {
 	title: string;
 	records: DownloadRecord[];
 	totalCount: number;
+	platformDomain?: string | null;
+	platformLabel?: string | null;
 	isPlaylist?: boolean;
 	selectedIds?: Set<string>;
 	selectionActive?: boolean;
@@ -54,6 +57,8 @@ export function PlaylistDownloadGroup({
 	title,
 	records,
 	totalCount,
+	platformDomain,
+	platformLabel,
 	isPlaylist = true,
 	selectedIds,
 	selectionActive = false,
@@ -135,9 +140,20 @@ export function PlaylistDownloadGroup({
 						)}
 					</div>
 					<div className="min-w-0 flex-1 text-left">
-						<p className="truncate font-medium text-foreground text-sm">
-							{displayTitle}
-						</p>
+						<div className="flex min-w-0 items-center gap-1.5">
+							<p className="truncate font-medium text-foreground text-sm">
+								{displayTitle}
+							</p>
+							{platformLabel && (
+								<span className="flex shrink-0 items-center gap-1 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground">
+									<DownloadPlatformIcon
+										className="size-3 rounded-[2px]"
+										domain={platformDomain}
+									/>
+									{platformLabel}
+								</span>
+							)}
+						</div>
 						<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
 							<span>
 								{t(

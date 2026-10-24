@@ -288,6 +288,18 @@ const KNOWN_PLATFORMS: readonly KnownPlatform[] = [
     suffixes: ['snapchat.com']
   },
   {
+    key: 'onlyfans',
+    label: 'OnlyFans',
+    domain: 'onlyfans.com',
+    suffixes: ['onlyfans.com']
+  },
+  {
+    key: 'redgifs',
+    label: 'Redgifs',
+    domain: 'redgifs.com',
+    suffixes: ['redgifs.com']
+  },
+  {
     key: 'threads',
     label: 'Threads',
     domain: 'threads.net',

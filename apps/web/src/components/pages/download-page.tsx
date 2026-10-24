@@ -29,10 +29,12 @@ import {
 	downloadPlatformDisplayLabel,
 	listDownloadPlatformCounts,
 	matchesDownloadPlatformFilter,
+	resolveDownloadPlatform,
 } from "@vidbee/ui/lib/download-platform";
 import { getDownloadQueueProgress } from "@vidbee/ui/lib/download-queue-progress";
 import {
 	indexSavedSocialProfileGroups,
+	resolveCreatorProfileGroup,
 	type SavedSocialProfileGroup,
 } from "@vidbee/ui/lib/saved-social-profile-groups";
 import { useListMarqueeSelection } from "@vidbee/ui/lib/use-list-marquee";
@@ -545,6 +547,8 @@ export const DownloadPage = () => {
 			{
 				id: string;
 				title: string;
+				platformLabel: string | null;
+				platformDomain: string | null;
 				totalCount: number;
 				isPlaylist: boolean;
 				records: DownloadRecord[];
@@ -555,13 +559,18 @@ export const DownloadPage = () => {
 		> = [];
 
 		for (const record of filteredRecords) {
-			const savedGroup = savedProfileGroups.get(record.url);
+			const savedGroup =
+				savedProfileGroups.get(record.url) ??
+				resolveCreatorProfileGroup(record);
 			const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId;
 			if (groupId) {
 				let group = groups.get(groupId);
 				if (!group) {
+					const platform = resolveDownloadPlatform(record.url);
 					group = {
 						id: groupId,
+						platformDomain: platform.domain,
+						platformLabel: platform.domain ? platform.label : null,
 						title:
 							savedGroup?.title ||
 							record.batchTitle ||
@@ -857,6 +866,8 @@ export const DownloadPage = () => {
 											onResume={handleResumeDownload}
 											onRetry={handleRetryDownload}
 											onToggleSelect={handleToggleSelect}
+											platformDomain={group.platformDomain}
+											platformLabel={group.platformLabel}
 											records={group.records}
 											selectedIds={selectedIds}
 											selectionActive={selectedCount > 0}

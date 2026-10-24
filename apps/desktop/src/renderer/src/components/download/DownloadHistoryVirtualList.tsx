@@ -189,6 +189,8 @@ export function DownloadHistoryVirtualList({
                 isPlaylist={row.isPlaylist}
                 onDeletePlaylist={row.isPlaylist ? onDeletePlaylist : undefined}
                 onToggle={() => onTogglePlaylist(row.groupId)}
+                platformDomain={row.platformDomain}
+                platformLabel={row.platformLabel}
                 records={row.records}
                 title={row.title}
                 totalCount={row.totalCount}

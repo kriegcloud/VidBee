@@ -1,3 +1,4 @@
+import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import { useAtomValue } from 'jotai'
 import { selectAtom } from 'jotai/utils'
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
@@ -14,6 +15,8 @@ interface PlaylistDownloadGroupProps {
   isPlaylist?: boolean
   onDeletePlaylist?: (playlistId: string, title: string, ids: string[]) => void
   onToggle: () => void
+  platformDomain?: string | null
+  platformLabel?: string | null
   records: DownloadRecord[]
   title: string
   totalCount: number
@@ -51,6 +54,8 @@ export function PlaylistDownloadGroup({
   groupId,
   onDeletePlaylist,
   onToggle,
+  platformDomain,
+  platformLabel,
   records,
   title,
   totalCount,
@@ -96,7 +101,15 @@ export function PlaylistDownloadGroup({
             {expanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
           </div>
           <div className="min-w-0 flex-1 text-left">
-            <p className="truncate font-medium text-foreground text-sm">{displayTitle}</p>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <p className="truncate font-medium text-foreground text-sm">{displayTitle}</p>
+              {platformLabel && (
+                <span className="flex shrink-0 items-center gap-1 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground">
+                  <DownloadPlatformIcon className="size-3 rounded-[2px]" domain={platformDomain} />
+                  {platformLabel}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
               <span>
                 {t(isPlaylist ? 'playlist.collapsedProgress' : 'playlist.groupSummary', {

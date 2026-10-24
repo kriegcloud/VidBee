@@ -1,4 +1,8 @@
-import type { SavedSocialProfileGroup } from '@vidbee/ui/lib/saved-social-profile-groups'
+import { resolveDownloadPlatform } from '@vidbee/ui/lib/download-platform'
+import {
+  resolveCreatorProfileGroup,
+  type SavedSocialProfileGroup
+} from '@vidbee/ui/lib/saved-social-profile-groups'
 import type { DownloadRecord } from '../store/downloads'
 import { buildDownloadTaskTree } from './download-task-tree'
 
@@ -15,6 +19,9 @@ export interface DownloadListPlaylistRow {
   key: string
   groupId: string
   title: string
+  /** Site the group belongs to, shown beside the title. */
+  platformLabel: string | null
+  platformDomain: string | null
   totalCount: number
   records: DownloadRecord[]
 }
@@ -39,6 +46,8 @@ interface PlaylistGroup {
   isPlaylist: boolean
   id: string
   title: string
+  platformLabel: string | null
+  platformDomain: string | null
   totalCount: number
   records: DownloadRecord[]
 }
@@ -84,14 +93,17 @@ const groupRoots = (
   const order: Array<{ type: 'group'; id: string } | { type: 'single'; record: DownloadRecord }> =
     []
   for (const record of roots) {
-    const savedGroup = savedProfileGroups?.get(record.url)
+    const savedGroup = savedProfileGroups?.get(record.url) ?? resolveCreatorProfileGroup(record)
     const groupId = savedGroup?.id ?? record.batchId ?? record.playlistId
     if (groupId) {
       let group = groups.get(groupId)
       if (!group) {
+        const platform = resolveDownloadPlatform(record.url)
         group = {
           id: groupId,
           isPlaylist: !(savedGroup || record.batchId),
+          platformDomain: platform.domain,
+          platformLabel: platform.domain ? platform.label : null,
           records: [],
           title: savedGroup?.title || record.batchTitle || record.playlistTitle || record.title,
           totalCount: savedGroup || record.batchId ? 0 : record.playlistSize || 0
@@ -161,6 +173,8 @@ export const buildDownloadListModel = (input: {
         key: `group:${group.id}`,
         kind: 'playlist',
         isPlaylist: group.isPlaylist,
+        platformDomain: group.platformDomain,
+        platformLabel: group.platformLabel,
         records: group.records,
         title: group.title,
         totalCount: group.totalCount

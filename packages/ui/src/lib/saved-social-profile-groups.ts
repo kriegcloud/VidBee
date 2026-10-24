@@ -27,3 +27,52 @@ export const indexSavedSocialProfileGroups = (
   }
   return groups
 }
+
+/** Leading `@handle` of a queued profile task title, e.g. `@creator · photos · 42`. */
+const titleHandle = (title: string | undefined): string | null => {
+  const handle = title?.split('·')[0]?.trim()
+  return handle?.startsWith('@') ? handle : null
+}
+
+/**
+ * Group creator-site posts that are queued one task per media item.
+ * OnlyFans and Fansly enqueue without a batch id, so the profile is read back
+ * from the queued URL and the saved tasks still collapse under one profile.
+ */
+export const resolveCreatorProfileGroup = (record: {
+  url: string
+  title?: string
+}): SavedSocialProfileGroup | null => {
+  let parsed: URL
+  try {
+    parsed = new URL(record.url)
+  } catch {
+    return null
+  }
+  const host = parsed.hostname.toLocaleLowerCase().replace(/^www\./, '')
+  const segments = parsed.pathname.split('/').filter(Boolean)
+  if (host === 'onlyfans.com') {
+    if (segments[0] === 'my' && segments[1] === 'chats' && segments[2] === 'chat' && segments[3]) {
+      return {
+        id: `creator-profile:onlyfans:chat:${segments[3]}`,
+        title: titleHandle(record.title) ?? `@${segments[3]}`
+      }
+    }
+    // Post permalinks are `/<postId>/<username>`.
+    const username = segments.length === 2 && /^\d+$/.test(segments[0]) ? segments[1] : null
+    if (username) {
+      return {
+        id: `creator-profile:onlyfans:${username.toLocaleLowerCase()}`,
+        title: `@${username}`
+      }
+    }
+    return null
+  }
+  if (host === 'fansly.com' && segments[0] && segments[0] !== 'post') {
+    return {
+      id: `creator-profile:fansly:${segments[0].toLocaleLowerCase()}`,
+      title: `@${segments[0]}`
+    }
+  }
+  return null
+}
