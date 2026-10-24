@@ -55,10 +55,11 @@ kinds; they can contain either photos or videos.
 `BrowserProfileAdapter` supplies each site's feed matcher, completion rule,
 scroll direction, queue URL, and authenticated refresh route. The shared
 browser mapper uses those functions for OnlyFans and Fansly; it does not copy
-credentials to the download worker. The Add URL router
-sends OnlyFans and Fansly profiles to that mapper. Instagram profiles use the
-native Instagram mapping workflow, while other supported single items and
-playlists continue through their registered downloaders, including yt-dlp.
+credentials to the download worker. `resolveDownloadWorkflow` is the shared
+Add URL decision table: OnlyFans and Fansly profiles use the dedicated browser
+mapper, Instagram profiles use the native Instagram mapper, and general single
+items and playlists continue through their registered downloaders, including
+yt-dlp. Desktop and web use the same resolver and dialog.
 Adding a route means defining its URL and API filter and then testing both the
 shared dialog and the provider adapter. Adding another site means supplying a
 URL resolver and the appropriate mapper or downloader for its authentication

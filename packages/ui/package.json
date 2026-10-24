@@ -11,6 +11,7 @@
     "./components/ui/*": "./src/components/ui/*.tsx",
     "./lib/cn": "./src/lib/cn.ts",
     "./lib/download-platform": "./src/lib/download-platform.ts",
+    "./lib/download-workflow": "./src/lib/download-workflow.ts",
     "./lib/download-queue-progress": "./src/lib/download-queue-progress.ts",
     "./lib/download-transfer-target": "./src/lib/download-transfer-target.ts",
     "./lib/list-marquee": "./src/lib/list-marquee.ts",

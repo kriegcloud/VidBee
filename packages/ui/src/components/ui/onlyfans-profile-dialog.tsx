@@ -3,12 +3,11 @@ import {
   type OnlyFansCommand,
   type OnlyFansDownload,
   type OnlyFansProfile,
-  onlyFansChatRoutes,
-  onlyFansChatUrl,
   onlyFansProfile
 } from '@vidbee/downloader-core/onlyfans-profile'
 import { useCallback, useEffect, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { resolveProfileMappingSources } from '../../lib/download-workflow'
 import { Button } from './button'
 import { Checkbox } from './checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog'
@@ -27,12 +26,11 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
   const { t } = useTranslation()
   const isFansly = Boolean(fanslyProfile(url))
   const chatId = onlyFansProfile(url)?.chatId
-  const [targetUrl, setTargetUrl] = useState(url)
-  const chatRoute = onlyFansProfile(targetUrl)?.chatRoute ?? 'messages'
+  const sources = resolveProfileMappingSources(url)
+  const [sourceKey, setSourceKey] = useState(sources.selectedKey)
+  const selectedSource = sources.options.find((option) => option.key === sourceKey)
+  const targetUrl = selectedSource?.url ?? url
   const platform = isFansly ? 'Fansly' : 'OnlyFans'
-  const [source, setSource] = useState<'posts' | 'media'>(
-    url.endsWith('/posts') ? 'posts' : 'media'
-  )
   const inputId = useId()
   const [profile, setProfile] = useState<OnlyFansProfile | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -80,7 +78,9 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
     setError('')
     setNotice('')
     try {
-      setProfile(await command({ url: targetUrl, action, category: isFansly ? source : 'media' }))
+      setProfile(
+        await command({ url: targetUrl, action, category: selectedSource?.category ?? 'media' })
+      )
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : t('notifications.downloadFailed'))
     } finally {
@@ -127,34 +127,23 @@ export function OnlyFansProfileDialog({ url, destination, onClose, command, down
             )}
           </DialogDescription>
         </DialogHeader>
-        {isFansly && (
-          <div className="flex gap-2">
-            {(['posts', 'media'] as const).map((value) => (
+        {sources.options.length > 0 && (
+          <nav
+            aria-label={chatId ? t('onlyFans.chat', { id: chatId }) : platform}
+            className="flex flex-wrap gap-2"
+          >
+            {sources.options.map((option) => (
               <Button
                 disabled={busy || mapping}
-                key={value}
-                onClick={() => setSource(value)}
-                variant={source === value ? 'default' : 'outline'}
-              >
-                {t(value === 'posts' ? 'fansly.posts' : 'fansly.media')}
-              </Button>
-            ))}
-          </div>
-        )}
-        {chatId && (
-          <nav aria-label={t('onlyFans.chat', { id: chatId })} className="flex flex-wrap gap-2">
-            {onlyFansChatRoutes.map((route) => (
-              <Button
-                disabled={busy || mapping}
-                key={route}
+                key={option.key}
                 onClick={() => {
-                  setTargetUrl(onlyFansChatUrl(chatId, route))
+                  setSourceKey(option.key)
                   setProfile(null)
                   setSelected(new Set())
                 }}
-                variant={chatRoute === route ? 'default' : 'outline'}
+                variant={sourceKey === option.key ? 'default' : 'outline'}
               >
-                {t(`onlyFans.routes.${route}`)}
+                {t(option.labelKey)}
               </Button>
             ))}
           </nav>

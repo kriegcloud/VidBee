@@ -1,14 +1,11 @@
-import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
-import { onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { isTikTokShortLink } from '@vidbee/downloader-core/tiktok-short-link'
 import { useCallback, useRef, useState } from 'react'
+import { resolveDownloadWorkflow } from './download-workflow'
 import { classifyIngestText } from './ingest'
 import {
   isFacebookGalleryUrl,
-  isInstagramProfileUrl,
-  isPlaylistLikeUrl,
   isThreadsUrl,
   isTikTokPhotoUrl,
   isVscoGalleryUrl,
@@ -183,17 +180,14 @@ export const useAddUrlInteraction = ({
         return
       }
 
-      if (
-        isInstagramProfileUrl(trimmedUrl) ||
-        onlyFansProfile(trimmedUrl) ||
-        fanslyProfile(trimmedUrl)
-      ) {
+      const workflow = resolveDownloadWorkflow(trimmedUrl)
+      if (workflow.surface === 'browser-profile' || workflow.surface === 'native-profile') {
         setAddUrlPopoverOpen(false)
         await onParseProfile(trimmedUrl)
         return
       }
 
-      if (isPlaylistLikeUrl(trimmedUrl)) {
+      if (workflow.surface === 'playlist') {
         if (isPlaylistBusy) {
           return
         }

@@ -37,6 +37,7 @@ import { SavedInstagramProfiles } from "@vidbee/ui/components/ui/saved-instagram
 import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
 import { SocialProfileDialog } from "@vidbee/ui/components/ui/social-profile-dialog";
 import { WebmThumbnailNotice } from "@vidbee/ui/components/ui/webm-thumbnail-notice";
+import { resolveDownloadWorkflow } from "@vidbee/ui/lib/download-workflow";
 import {
 	type CollectionProfile,
 	isPlaylistLikeUrl,
@@ -527,7 +528,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 				setSocialProfileUrl(trimmedUrl);
 				return;
 			}
-			if (onlyFansProfile(trimmedUrl) || fanslyProfile(trimmedUrl)) {
+			if (resolveDownloadWorkflow(trimmedUrl).surface === "browser-profile") {
 				setOpen(false);
 				setOnlyFansUrl(trimmedUrl);
 				return;
