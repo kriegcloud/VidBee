@@ -1,6 +1,6 @@
 import {
+  isDedicatedSessionPlatform,
   MAPPED_PROFILE_SITE_LABELS,
-  type MappedProfilePlatform,
   resolveMappedProfileSource
 } from '@vidbee/downloader-core/mapped-profile-source'
 import type { SocialMappedProfile } from '@vidbee/downloader-core/social-media-service'
@@ -26,15 +26,6 @@ interface Props {
     destination?: string
   ) => Promise<{ count: number }>
 }
-
-/**
- * Platforms whose mapper reads cookies from the dedicated VidBee browser session.
- * Must match `SocialSessionSite` in apps/desktop/src/main/lib/social-session-manager.ts,
- * which rejects any other site. Every other platform uses the browser cookies
- * configured in Settings.
- */
-export const DEDICATED_SESSION_PLATFORMS: ReadonlySet<MappedProfilePlatform> =
-  new Set<MappedProfilePlatform>(['x', 'tiktok'])
 
 /** Category names live in three i18n namespaces, by the platform that owns them. */
 const categoryLabelKey = (platform: string | undefined, key: string): string => {
@@ -63,9 +54,7 @@ export function SocialProfileDialog({
   const getProfileRef = useRef(getProfile)
   getProfileRef.current = getProfile
   const source = resolveMappedProfileSource(url)
-  const usesDedicatedSession = Boolean(
-    openLogin && source && DEDICATED_SESSION_PLATFORMS.has(source.platform)
-  )
+  const usesDedicatedSession = Boolean(openLogin && isDedicatedSessionPlatform(source?.platform))
   const [profile, setProfile] = useState<SocialMappedProfile | null>(null)
   const [category, setCategory] = useState(
     source?.categories.find((entry) => entry.key === source.category)?.key ??

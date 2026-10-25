@@ -2,15 +2,19 @@ import { type ChildProcess, spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { resolveBrowserExecutable } from '@vidbee/browser-capture'
+import {
+  type DedicatedSessionPlatform,
+  isDedicatedSessionPlatform
+} from '@vidbee/downloader-core/mapped-profile-source'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { app } from 'electron'
 import { resolveSocialSessionKeyring } from './social-session-keyring'
 
-type SocialSessionSite = 'x' | 'tiktok'
+type SocialSessionSite = DedicatedSessionPlatform
 
 const site = (url: string): SocialSessionSite | null => {
   const platform = resolveSocialSource(url)?.platform
-  return platform === 'x' || platform === 'tiktok' ? platform : null
+  return isDedicatedSessionPlatform(platform) ? platform : null
 }
 
 class SocialSessionManager {

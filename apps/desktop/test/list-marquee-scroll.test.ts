@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
+  LIST_MARQUEE_ARM_PX,
   LIST_MARQUEE_EDGE_PX,
   listItemIdsInMarquee,
   listMarqueeGatedScrollStep,
@@ -82,11 +83,15 @@ test('edge auto-scroll only runs inside the edge bands, and ramps toward the edg
   assert.equal(listMarqueeScrollStep(1200, bounds), atBottom)
 })
 
-/** Feed pointer samples through the gate the way the auto-scroll loop does. */
+/**
+ * Feed pointer samples through the gate the way the auto-scroll loop does. The
+ * first sample is where the gesture started.
+ */
 const replayGate = (samples: number[], bounds: { bottom: number; top: number }) => {
   let armed = false
+  const start = samples[0] ?? 0
   return samples.map((clientY) => {
-    const result = listMarqueeGatedScrollStep(armed, clientY, bounds)
+    const result = listMarqueeGatedScrollStep(armed, clientY, start, bounds)
     armed = result.armed
     return result.step
   })
@@ -113,7 +118,36 @@ test('after leaving the edge band, re-entering it scrolls', () => {
 
 test('a gesture that starts outside the bands arms immediately', () => {
   const bounds = { bottom: 900, top: 100 }
-  const first = listMarqueeGatedScrollStep(false, 500, bounds)
+  const first = listMarqueeGatedScrollStep(false, 500, 500, bounds)
   assert.deepEqual(first, { armed: true, step: 0 })
-  assert.ok(listMarqueeGatedScrollStep(first.armed, 890, bounds).step > 0)
+  assert.ok(listMarqueeGatedScrollStep(first.armed, 890, 500, bounds).step > 0)
+})
+
+test('pressing a bottom row and dragging down past the edge scrolls', () => {
+  const bounds = { bottom: 800, top: 100 }
+  const steps = replayGate([780, 790, 780 + LIST_MARQUEE_ARM_PX, 850], bounds)
+  assert.equal(steps[1], 0, 'a few pixels of travel is still a held press')
+  assert.ok((steps[2] ?? 0) > 0, 'travelling the arm distance toward the edge scrolls')
+  assert.ok((steps[3] ?? 0) > 0, 'past the edge keeps scrolling')
+})
+
+test('pressing a top row and dragging up past the edge scrolls up', () => {
+  const bounds = { bottom: 800, top: 100 }
+  const steps = replayGate([120, 120 - LIST_MARQUEE_ARM_PX, 60], bounds)
+  assert.ok((steps[1] ?? 0) < 0)
+  assert.ok((steps[2] ?? 0) < 0)
+})
+
+test('dragging away from the edge a press started in does not scroll toward it', () => {
+  const bounds = { bottom: 900, top: 100 }
+  // Started on the last row, moving up but still inside the bottom band.
+  assert.deepEqual(replayGate([890, 880, 870, 860], bounds), [0, 0, 0, 0])
+})
+
+test('a scroller shorter than both edge bands still scrolls once the pointer leaves it', () => {
+  // 100px tall: the two bands cover all of it, so there is no neutral middle.
+  const bounds = { bottom: 200, top: 100 }
+  const steps = replayGate([150, 160, 210], bounds)
+  assert.equal(steps[1], 0)
+  assert.ok((steps[2] ?? 0) > 0)
 })

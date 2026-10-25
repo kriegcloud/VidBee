@@ -5,6 +5,7 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 import type { ShareCardPayload } from '@shared/types/share-card'
+import { isBrowserOpenableUrl } from '@vidbee/ui/lib/url-kind'
 import { BrowserWindow, clipboard, dialog, Notification, ShareMenu, shell } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import { mediaFileDialogFilters } from '../../lib/import-local-media'
@@ -479,6 +480,11 @@ class FileSystemService extends IpcService {
 
   @IpcMethod()
   async openExternal(_context: IpcContext, url: string): Promise<boolean> {
+    // The renderer is not trusted to have checked: only web URLs go to the OS.
+    if (!isBrowserOpenableUrl(url)) {
+      scopedLoggers.system.warn('Refused to open a non-web URL externally')
+      return false
+    }
     try {
       await shell.openExternal(url)
       return true

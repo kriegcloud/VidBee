@@ -42,6 +42,7 @@ import {
 	downloadPlatformDisplayLabel,
 	resolveDownloadPlatform,
 } from "@vidbee/ui/lib/download-platform";
+import { isBrowserOpenableUrl } from "@vidbee/ui/lib/url-kind";
 import {
 	AlertCircle,
 	Copy,
@@ -72,19 +73,6 @@ interface DownloadItemProps {
 	onRemove?: (id: string) => void;
 	onCopyUrl?: (url: string) => void;
 }
-
-/** Only hand http(s) source URLs to `window.open`. */
-const isBrowserOpenableUrl = (url: string | undefined): url is string => {
-	if (!url) {
-		return false;
-	}
-	try {
-		const { protocol } = new URL(url);
-		return protocol === "http:" || protocol === "https:";
-	} catch {
-		return false;
-	}
-};
 
 interface MetadataDetail {
 	label: string;

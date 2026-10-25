@@ -18,7 +18,7 @@ import {
 } from './list-marquee'
 
 interface ListMarqueePointer {
-  /** Set once the pointer has been outside the edge bands; gates auto-scroll. */
+  /** Set once the gesture shows intent to reach an edge; gates auto-scroll. */
   armed: boolean
   baseIds: string[]
   lastClientX: number
@@ -152,6 +152,7 @@ export const useListMarqueeSelection = ({
         pointer.armed = listMarqueeGatedScrollStep(
           false,
           clientY,
+          pointer.startClientY,
           scroller.getBoundingClientRect()
         ).armed
       }
@@ -190,6 +191,7 @@ export const useListMarqueeSelection = ({
     const { armed, step } = listMarqueeGatedScrollStep(
       pointer.armed,
       pointer.lastClientY,
+      pointer.startClientY,
       scroller.getBoundingClientRect()
     )
     pointer.armed = armed

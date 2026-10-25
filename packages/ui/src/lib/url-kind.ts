@@ -378,3 +378,21 @@ export const resolveCollectionProfile = (value: string): CollectionProfile | nul
     return null
   }
 }
+
+/**
+ * True for the only URLs a browser should be asked to open: http and https.
+ * Record URLs often come from extractor output rather than the user, so a
+ * `file:`, `javascript:` or custom-scheme value must never reach
+ * `window.open` or Electron's `shell.openExternal`.
+ */
+export const isBrowserOpenableUrl = (url: string | null | undefined): url is string => {
+  if (!url) {
+    return false
+  }
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
+}

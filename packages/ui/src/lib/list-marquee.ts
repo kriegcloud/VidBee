@@ -101,24 +101,33 @@ export const listMarqueeScrollStep = (
   return 0
 }
 
+/** Distance a gesture must travel toward an edge before that edge may scroll. */
+export const LIST_MARQUEE_ARM_PX = 16
+
 /**
- * Gated auto-scroll for one marquee pointer sample. A gesture that starts inside
- * an edge band (a long-press on the last visible row, say) must not scroll the
- * list on its own, so the gate arms only once the pointer has been outside both
- * bands. After that, re-entering a band scrolls as usual.
+ * Gated auto-scroll for one marquee pointer sample. A long-press held still on
+ * the last visible row sits inside an edge band, and must not scroll the list on
+ * its own. The gate arms once the gesture shows intent: the pointer has crossed
+ * the middle of the scroller, left the scroller box, or travelled
+ * `LIST_MARQUEE_ARM_PX` toward the edge whose band it is in. Once armed, either
+ * band scrolls as usual.
  *
- * @param armed Whether this gesture has already left the edge bands.
+ * @param armed Whether this gesture is already armed.
  * @param clientY Pointer position.
+ * @param startClientY Where the gesture began.
  * @param bounds Scroller box in client coordinates.
  * @returns The updated armed flag and the step to apply this frame.
  */
 export const listMarqueeGatedScrollStep = (
   armed: boolean,
   clientY: number,
+  startClientY: number,
   bounds: { bottom: number; top: number }
 ): { armed: boolean; step: number } => {
   const step = listMarqueeScrollStep(clientY, bounds)
-  const nextArmed = armed || step === 0
+  const leftScroller = clientY < bounds.top || clientY > bounds.bottom
+  const towardEdge = step > 0 ? clientY - startClientY : startClientY - clientY
+  const nextArmed = armed || step === 0 || leftScroller || towardEdge >= LIST_MARQUEE_ARM_PX
   return { armed: nextArmed, step: nextArmed ? step : 0 }
 }
 

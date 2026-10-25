@@ -31,6 +31,7 @@ import {
   resolveDownloadPlatform
 } from '@vidbee/ui/lib/download-platform'
 import { isListIgnoreTarget } from '@vidbee/ui/lib/list-marquee'
+import { isBrowserOpenableUrl } from '@vidbee/ui/lib/url-kind'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
   AlertCircle,
@@ -395,7 +396,7 @@ export function DownloadItem({
 
   /** Open the post's source page in the system browser. */
   const handleOpenInBrowser = async () => {
-    if (!download.url) {
+    if (!isBrowserOpenableUrl(download.url)) {
       return
     }
     try {
@@ -1290,9 +1291,13 @@ export function DownloadItem({
           onOpenFolder={() => {
             void handleOpenFolder()
           }}
-          onOpenInBrowser={() => {
-            void handleOpenInBrowser()
-          }}
+          onOpenInBrowser={
+            isBrowserOpenableUrl(download.url)
+              ? () => {
+                  void handleOpenInBrowser()
+                }
+              : undefined
+          }
           onPause={() => {
             void handlePause()
           }}

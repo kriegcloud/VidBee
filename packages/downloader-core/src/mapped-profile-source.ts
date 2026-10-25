@@ -32,6 +32,25 @@ export const MAPPED_PROFILE_SITE_LABELS: Record<MappedProfilePlatform, string> =
   pinterest: 'Pinterest'
 }
 
+/**
+ * Platforms whose mapper reads cookies from a dedicated VidBee browser session.
+ * Every other platform uses the browser cookies configured in Settings. The
+ * desktop session manager and the mapper dialog both read this list, so the
+ * dialog can never offer a login window the main process would refuse.
+ */
+export const DEDICATED_SESSION_PLATFORMS = [
+  'x',
+  'tiktok'
+] as const satisfies readonly MappedProfilePlatform[]
+
+export type DedicatedSessionPlatform = (typeof DEDICATED_SESSION_PLATFORMS)[number]
+
+/** True when this platform signs in through its own dedicated browser session. */
+export const isDedicatedSessionPlatform = (
+  platform: string | null | undefined
+): platform is DedicatedSessionPlatform =>
+  (DEDICATED_SESSION_PLATFORMS as readonly string[]).includes(platform ?? '')
+
 const REDGIFS_USER = /^[A-Za-z0-9._-]{1,64}$/
 const REDGIFS_POST = /^[A-Za-z0-9-]{2,100}$/
 
