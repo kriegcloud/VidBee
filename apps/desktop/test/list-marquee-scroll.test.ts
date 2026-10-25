@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import {
   LIST_MARQUEE_EDGE_PX,
   listItemIdsInMarquee,
+  listMarqueeGatedScrollStep,
   listMarqueeRect,
   listMarqueeScrollStep,
   listRectToLocal
@@ -79,4 +80,40 @@ test('edge auto-scroll only runs inside the edge bands, and ramps toward the edg
   // Past the edge entirely (the pointer left the window) stays clamped.
   assert.equal(listMarqueeScrollStep(40, bounds), atTop)
   assert.equal(listMarqueeScrollStep(1200, bounds), atBottom)
+})
+
+/** Feed pointer samples through the gate the way the auto-scroll loop does. */
+const replayGate = (samples: number[], bounds: { bottom: number; top: number }) => {
+  let armed = false
+  return samples.map((clientY) => {
+    const result = listMarqueeGatedScrollStep(armed, clientY, bounds)
+    armed = result.armed
+    return result.step
+  })
+}
+
+test('a long-press inside the bottom edge band does not auto-scroll until it leaves the band', () => {
+  const bounds = { bottom: 900, top: 100 }
+  // Held still on the last visible row, then a small wiggle that stays in the band.
+  assert.deepEqual(replayGate([880, 880, 880, 870, 890], bounds), [0, 0, 0, 0, 0])
+  // Same for the top band.
+  assert.deepEqual(replayGate([110, 110, 120], bounds), [0, 0, 0])
+})
+
+test('after leaving the edge band, re-entering it scrolls', () => {
+  const bounds = { bottom: 900, top: 100 }
+  const steps = replayGate([880, 500, 880, 895], bounds)
+  assert.equal(steps[0], 0, 'still disarmed while the press starts inside the band')
+  assert.equal(steps[1], 0, 'outside the band there is nothing to scroll, but the gate arms')
+  assert.equal(steps[2], listMarqueeScrollStep(880, bounds))
+  assert.ok((steps[2] ?? 0) > 0 && (steps[3] ?? 0) > (steps[2] ?? 0))
+  // Arming carries over to the opposite band too.
+  assert.ok((replayGate([880, 500, 105], bounds)[2] ?? 0) < 0)
+})
+
+test('a gesture that starts outside the bands arms immediately', () => {
+  const bounds = { bottom: 900, top: 100 }
+  const first = listMarqueeGatedScrollStep(false, 500, bounds)
+  assert.deepEqual(first, { armed: true, step: 0 })
+  assert.ok(listMarqueeGatedScrollStep(first.armed, 890, bounds).step > 0)
 })

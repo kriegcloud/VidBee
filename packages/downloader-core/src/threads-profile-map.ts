@@ -70,7 +70,8 @@ const mapThreadsProfileUnchecked = async (
   if (result.error && AUTH_FAILURE.test(result.error)) {
     return {
       complete: false,
-      error: 'AuthRequired: sign in with the dedicated browser and retry mapping.'
+      error:
+        'AuthRequired: sign in to Threads in the browser set for cookies in Settings, then retry mapping.'
     }
   }
   if (result.complete && posts.size === 0) {

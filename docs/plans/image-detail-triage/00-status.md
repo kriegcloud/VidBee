@@ -15,7 +15,7 @@
 | 3 | ~~Clean engine~~ | ~~LaMa through `onnxruntime-node`~~ — **superseded by 13.** The npm `onnxruntime-node` ships CPU, CUDA and DirectML providers only; there is no ROCm build, so on this workstation it meant CPU-only while two R9700s sat idle. The mask detector ported from `~/ai/lib/watermark_clean.py` still stands. |
 | 4 | Mask authoring | Teach once: box the watermark on one image, match the patch across the haul, review the matches, save the template against the profile. |
 | 5 | Output of a clean | Sibling `<stem>_clean.<ext>`; original untouched; the clean rendition becomes the face everywhere, with a before/after toggle. |
-| 6 | Verdicts | Persisted in sqlite keyed by path + mtime. Nothing moves on disk until an explicit apply. |
+| 6 | Verdicts | Persisted in sqlite keyed by ~~path + mtime~~ path + mtime + size — **key amended by 20**, so verdicts and `image_enrichment` share one key and a file edited outside VidBee misses its row. Nothing moves on disk until an explicit apply. |
 | 7 | Session scope | The profile group, not the download record. |
 | 8 | Default surface | One-up image with a filmstrip; `G` switches to the grid. |
 | 9 | Batch operations | Watermark clean, crop to aspect, resize/cap long edge, convert format + strip metadata — all four. |
@@ -37,7 +37,7 @@ Prompted by: images open the video player and the Whisper transcript, because
 | 17 | Rail tabs | Tag · EXIF · Quality · Similar · People · Caption · Info. |
 | 18 | Write policy | **In place only for lossless tag writes** — EXIF orientation and metadata strip rewrite container tags, leaving the image stream byte-identical, journalled for undo. Anything that changes pixels writes a sibling or an export. |
 | 19 | Editor | **Konva directly, no Filerobot.** Konva is the engine under Filerobot anyway; taking the primitive avoids `@scaleflex/ui`, `@scaleflex/icons` and `styled-components` landing in a Tailwind/Radix app, and fits the batch model Filerobot has no hook for. `ZoomPanImage` is still the viewer, per decision 1. |
-| 20 | Enrichment storage | VidBee sqlite, one `image_enrichment` table keyed by path + mtime + size — the same key as the verdicts table in decision 6. Export presets may bake tags into XMP; the original is never written for a tag change. |
+| 20 | Enrichment storage | VidBee sqlite, one `image_enrichment` table keyed by path + mtime + size; decision 6's verdicts table takes the same key (amended above). Export presets may bake tags into XMP; the original is never written for a tag change. |
 | 21 | Build order | CPU rail first, bridge spike beside it. Same shape as decision 12, new spike. |
 
 ## Slices (revised 2026-10-24)
@@ -55,4 +55,4 @@ Prompted by: images open the video player and the Whisper transcript, because
 - The unmerged branch is checked out at `~/YeeBois/workstation-apps/VidBee-media-detail`; `git merge-tree` reports no textual conflicts with `main` as of 2026-10-24, but it is a parts bin by decision, not a merge candidate.
 - The reference watermark remover is `~/ai/lib/watermark_clean.py` with profiles in `~/ai/manifests/watermark-*.json` and `big-lama.pt` (torchscript, 205 MB) at `~/ai/ComfyUI/models/lama/`. It is the behavioural spec for mask detection.
 - Omoide holds the prior art for the editor dialog, `BatchCropDialog`, `BeforeAfterCompare` and the library survey at `docs/workstation-ux/grok-editor-research.md`; its ComfyUI repair bridge is designed, not built.
-- Transcription already downloads 390 MB of models into `~/.config/vidbee/models/`; copy that flow for the inpainting model rather than inventing one.
+- No model downloads (decision 13): VidBee ships no weights. GPU models such as LaMa stay in `~/ai/ComfyUI/models` and are reached only through the ComfyUI bridge. The transcription model-download flow in `~/.config/vidbee/models/` is not a template for this feature.

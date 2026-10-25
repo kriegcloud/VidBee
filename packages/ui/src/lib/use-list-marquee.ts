@@ -12,12 +12,14 @@ import {
   LIST_MARQUEE_MOVE_PX,
   type ListMarquee,
   listItemIdsInMarquee,
+  listMarqueeGatedScrollStep,
   listMarqueeRect,
-  listMarqueeScrollStep,
   listRectToLocal
 } from './list-marquee'
 
 interface ListMarqueePointer {
+  /** Set once the pointer has been outside the edge bands; gates auto-scroll. */
+  armed: boolean
   baseIds: string[]
   lastClientX: number
   lastClientY: number
@@ -145,6 +147,14 @@ export const useListMarqueeSelection = ({
       }
       pointer.lastClientX = clientX
       pointer.lastClientY = clientY
+      const scroller = getScrollElementRef.current?.()
+      if (scroller && !pointer.armed) {
+        pointer.armed = listMarqueeGatedScrollStep(
+          false,
+          clientY,
+          scroller.getBoundingClientRect()
+        ).armed
+      }
       const listRect = container.getBoundingClientRect()
       const origin = { left: listRect.left, top: listRect.top }
       const currentX = clientX - origin.left
@@ -177,8 +187,12 @@ export const useListMarqueeSelection = ({
     if (!(pointer?.selecting && scroller)) {
       return
     }
-    const bounds = scroller.getBoundingClientRect()
-    const step = listMarqueeScrollStep(pointer.lastClientY, bounds)
+    const { armed, step } = listMarqueeGatedScrollStep(
+      pointer.armed,
+      pointer.lastClientY,
+      scroller.getBoundingClientRect()
+    )
+    pointer.armed = armed
     if (step !== 0) {
       const before = scroller.scrollTop
       scroller.scrollTop = before + step
@@ -270,6 +284,7 @@ export const useListMarqueeSelection = ({
     }
     clearHoldTimer()
     pointerRef.current = {
+      armed: false,
       baseIds: Array.from(selectedIdsRef.current),
       lastClientX: event.clientX,
       lastClientY: event.clientY,

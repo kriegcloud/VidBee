@@ -111,9 +111,11 @@ export const DownloadPage = () => {
 	const [stopAllOpen, setStopAllOpen] = useState(false);
 	const [stoppingAll, setStoppingAll] = useState(false);
 	const listRef = useRef<HTMLDivElement>(null);
+	const scrollViewportRef = useRef<HTMLDivElement>(null);
 	const { finishPointer, marquee, onPointerDown, onPointerMove } =
 		useListMarqueeSelection({
 			containerRef: listRef,
+			getScrollElement: () => scrollViewportRef.current,
 			onSelectIds: (ids) => {
 				setSelectedIds(new Set(ids));
 			},
@@ -721,6 +723,37 @@ export const DownloadPage = () => {
 		}
 	};
 
+	/**
+	 * Retry every failed download in one profile or playlist group.
+	 *
+	 * @param records The group's records; only errored ones with a URL retry.
+	 */
+	const handleRetryGroupFailed = async (records: DownloadRecord[]) => {
+		const failed = records.filter(
+			(record) => record.status === "error" && record.url,
+		);
+		if (failed.length === 0) {
+			return;
+		}
+		let retried = 0;
+		for (const record of failed) {
+			try {
+				const result = await orpcClient.downloads.retry({ id: record.id });
+				if (result.retried) {
+					retried += 1;
+				}
+			} catch (error) {
+				logger.error("Failed to retry download:", error);
+			}
+		}
+		if (retried === 0) {
+			toast.info(t("notifications.downloadAlreadyQueued"));
+			return;
+		}
+		await refreshData();
+		toast.success(t("playlist.groupRetriedFailed", { count: retried }));
+	};
+
 	const handleRemoveHistoryRecord = async (id: string) => {
 		try {
 			await orpcClient.history.removeItems({ ids: [id] });
@@ -779,7 +812,10 @@ export const DownloadPage = () => {
 					) : null}
 				</CardHeader>
 
-				<ScrollArea className="flex-1 overflow-y-auto">
+				<ScrollArea
+					className="flex-1 overflow-y-auto"
+					viewportRef={scrollViewportRef}
+				>
 					<CardContent
 						className="w-full space-y-3 overflow-x-hidden p-0"
 						data-download-transfer-list=""
@@ -872,6 +908,9 @@ export const DownloadPage = () => {
 											onRemove={handleRemoveHistoryRecord}
 											onResume={handleResumeDownload}
 											onRetry={handleRetryDownload}
+											onRetryFailed={(records) => {
+												void handleRetryGroupFailed(records);
+											}}
 											onToggleSelect={handleToggleSelect}
 											platformDomain={group.platformDomain}
 											platformLabel={group.platformLabel}

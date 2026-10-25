@@ -102,6 +102,27 @@ export const listMarqueeScrollStep = (
 }
 
 /**
+ * Gated auto-scroll for one marquee pointer sample. A gesture that starts inside
+ * an edge band (a long-press on the last visible row, say) must not scroll the
+ * list on its own, so the gate arms only once the pointer has been outside both
+ * bands. After that, re-entering a band scrolls as usual.
+ *
+ * @param armed Whether this gesture has already left the edge bands.
+ * @param clientY Pointer position.
+ * @param bounds Scroller box in client coordinates.
+ * @returns The updated armed flag and the step to apply this frame.
+ */
+export const listMarqueeGatedScrollStep = (
+  armed: boolean,
+  clientY: number,
+  bounds: { bottom: number; top: number }
+): { armed: boolean; step: number } => {
+  const step = listMarqueeScrollStep(clientY, bounds)
+  const nextArmed = armed || step === 0
+  return { armed: nextArmed, step: nextArmed ? step : 0 }
+}
+
+/**
  * Shift a client-space box into coordinates local to the list element, so a
  * marquee anchored at the drag origin keeps pointing at the same rows while the
  * list scrolls underneath the pointer.

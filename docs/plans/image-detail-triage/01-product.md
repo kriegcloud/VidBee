@@ -63,7 +63,8 @@ remembers where you were.
 
 Watermarks you teach once. Draw a box around it on the first image; VidBee finds
 the same mark on every other image in the haul, shows you what it found, and
-repaints it out with a local inpainting model while you carry on judging. The
+repaints it out locally (LaMa through the ComfyUI bridge, decision 13) while you
+carry on judging. The
 original file is never touched — the repaired copy sits beside it and becomes the
 one VidBee shows you, with a key to flip back and compare.
 
@@ -76,8 +77,10 @@ except where you send them.
 
 ## Open questions for Gate 2
 
-- Which LaMa ONNX export do we trust, and do we convert `big-lama.pt` ourselves
-  and host the artefact, or depend on a published one?
+- ~~Which LaMa ONNX export do we trust, and do we convert `big-lama.pt` ourselves
+  and host the artefact, or depend on a published one?~~ Superseded by decision
+  13: no ONNX export and no hosted artefact; LaMa runs from
+  `~/ai/ComfyUI/models/lama` through the ComfyUI bridge. Gate 2 revision pending.
 - Does the clean queue share the download queue's concurrency budget or get its
   own, given downloads are usually running at the same time?
 - Do verdicts belong to the file path or to the download record when both exist?

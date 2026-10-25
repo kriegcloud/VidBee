@@ -46,12 +46,16 @@ routes to the transcript page. A group with no images never opens this surface.
 
 ## Data
 
-Two new tables. Verdicts are keyed by path **and** mtime, so an edited or
-replaced file loses its verdict rather than inheriting a stale one.
+Two new tables. Verdicts are keyed by path, mtime **and** size, so an edited or
+replaced file loses its verdict rather than inheriting a stale one. This is the
+same key as `image_enrichment` (decision 20, `03-enrichment.md`); decision 6
+was amended to match.
 
 ```
-media_verdict(path TEXT PRIMARY KEY, mtime_ms INTEGER, verdict TEXT,
-              group_id TEXT, decided_at INTEGER)
+media_verdict(path TEXT NOT NULL, mtime_ms INTEGER NOT NULL,
+              size_bytes INTEGER NOT NULL, verdict TEXT,
+              group_id TEXT, decided_at INTEGER,
+              PRIMARY KEY (path, mtime_ms, size_bytes))
             -- verdict: 'keep' | 'drop'   (absent row = undecided)
 
 watermark_template(group_id TEXT PRIMARY KEY, patch BLOB, patch_w, patch_h,
@@ -66,6 +70,13 @@ never orphans pixels.
 
 ## Clean pipeline
 
+> **Superseded in part by decisions 13 and 20 — Gate 2 revision pending.** The
+> repair stage, the in-app model download and the CPU spike below describe the
+> withdrawn decision 3 (LaMa through `onnxruntime-node`). Repair now runs LaMa
+> through the ComfyUI bridge on models already in `~/ai/ComfyUI/models`; VidBee
+> ships and downloads no weights. See `03-enrichment.md`. Match and mask still
+> stand.
+
 Ported from `~/ai/lib/watermark_clean.py`, which stays the behavioural spec.
 Three stages, all in the main process:
 
@@ -74,21 +85,24 @@ Three stages, all in the main process:
    but matching the lifted patch instead of re-rendering text in a font, so no
    font or string has to be known. Output: a score and a placement, or nothing.
 2. **Mask.** Placement → binary mask, dilated by `dilate_px`, feathered.
-3. **Repair.** LaMa through `onnxruntime-node`; the result is composited back
+3. **Repair.** ~~LaMa through `onnxruntime-node`~~ (superseded by 13: LaMa via the ComfyUI bridge); the result is composited back
    **only inside the mask**, so untouched pixels stay byte-identical to the
    source. Encode beside the original as `<stem>_clean.<ext>`.
 
-The model lives at `~/.config/vidbee/models/inpaint/`, downloaded on first use
-through the same status/progress flow the transcription models already use. No
-model, no watermark tool — the rest of the page works.
+~~The model lives at `~/.config/vidbee/models/inpaint/`, downloaded on first use
+through the same status/progress flow the transcription models already use.~~
+(Superseded by 13: no download; the model stays in ComfyUI.) No reachable
+ComfyUI, no watermark tool — the rest of the page works (decision 14).
 
 Jobs run through the existing task queue (`groupKey: 'image-repair'`, low
 concurrency so downloads keep moving), which gives cancellation, resumability and
 survival across navigation for free.
 
-**The spike must answer this before Slice 3 starts:** ms per 3000px image on CPU
+~~**The spike must answer this before Slice 3 starts:** ms per 3000px image on CPU
 for a real file from the haul. If it is minutes rather than seconds, the engine
-decision reopens (ComfyUI bridge, or shelling out to the Python tool).
+decision reopens (ComfyUI bridge, or shelling out to the Python tool).~~
+(Superseded by 13 and 21: the engine is the ComfyUI bridge; the spike now
+measures the pinned WD-EVA02 graph on `:8188`, see `00-status.md`.)
 
 ## Edits as a recipe
 
@@ -121,6 +135,6 @@ a deliberate second action, never a keystroke.
 | From | Taken |
 | --- | --- |
 | `feat/media-aware-detail` | `media-inventory`, `media-thumbnails`, `media-files` (main), `image-edit.ts`, `ZoomPanImage`, the local-file CSP + mtime-versioned URL trick |
-| `main` today | task queue, model download/status flow, profile grouping keys, delete-with-files, `DownloadPlatformIcon` |
+| `main` today | task queue, ~~model download/status flow~~ (superseded by 13), profile grouping keys, delete-with-files, `DownloadPlatformIcon` |
 | `~/ai` | the mask-detection algorithm, the profile manifest fields, the composite-inside-the-mask rule |
 | Omoide | interaction prior art: batch crop review, before/after compare |

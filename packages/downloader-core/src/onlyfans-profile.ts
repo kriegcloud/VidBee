@@ -11,16 +11,18 @@ export const onlyFansChatRoutes = [
   'videos'
 ] as const
 export type OnlyFansChatRoute = (typeof onlyFansChatRoutes)[number]
+// Every gallery route shares the chat's /media feed; photos and videos are
+// split by item category while collecting, not by a server-side filter.
 export const onlyFansChatTargets: Record<
   OnlyFansChatRoute,
-  { path: string; feed: 'messages' | 'media'; filter?: readonly [string, string] }
+  { path: string; feed: 'messages' | 'media' }
 > = {
   messages: { path: '', feed: 'messages' },
   gallery: { path: '/gallery', feed: 'media' },
-  opened: { path: '/gallery/opened', feed: 'media', filter: ['opened', '1'] },
-  purchased: { path: '/gallery/purchased', feed: 'media', filter: ['purchased', '1'] },
-  photos: { path: '/gallery/photos', feed: 'media', filter: ['type', 'photos'] },
-  videos: { path: '/gallery/videos', feed: 'media', filter: ['type', 'videos'] }
+  opened: { path: '/gallery/opened', feed: 'media' },
+  purchased: { path: '/gallery/purchased', feed: 'media' },
+  photos: { path: '/gallery/photos', feed: 'media' },
+  videos: { path: '/gallery/videos', feed: 'media' }
 }
 
 export function onlyFansChatUrl(chatId: string, route: OnlyFansChatRoute): string {

@@ -73,6 +73,19 @@ interface DownloadItemProps {
 	onCopyUrl?: (url: string) => void;
 }
 
+/** Only hand http(s) source URLs to `window.open`. */
+const isBrowserOpenableUrl = (url: string | undefined): url is string => {
+	if (!url) {
+		return false;
+	}
+	try {
+		const { protocol } = new URL(url);
+		return protocol === "http:" || protocol === "https:";
+	} catch {
+		return false;
+	}
+};
+
 interface MetadataDetail {
 	label: string;
 	value: ReactNode;
@@ -492,9 +505,21 @@ export function DownloadItem({
 		onRemove?.(download.id);
 	};
 
+	/** Open the post's source page in a new browser tab (http(s) only). */
+	const handleOpenInBrowser = () => {
+		if (!isBrowserOpenableUrl(download.url)) {
+			return;
+		}
+		window.open(download.url, "_blank", "noopener,noreferrer");
+	};
+
+	// yt-dlp reports a chosen format; gallery-dl routes only ever report what
+	// actually landed on disk, so fall back to that rather than showing nothing.
 	const selectedFormatSize =
-		download.selectedFormat?.filesize ??
-		download.selectedFormat?.filesizeApprox;
+		download.selectedFormat?.filesize ||
+		download.selectedFormat?.filesizeApprox ||
+		download.fileSize ||
+		download.totalSize;
 	const inlineFileSize = selectedFormatSize
 		? formatFileSize(selectedFormatSize)
 		: undefined;
@@ -847,6 +872,12 @@ export function DownloadItem({
 		metaItems.push({
 			key: "size",
 			node: inlineFileSize,
+		});
+	}
+	if (download.fileCount && download.fileCount > 1 && !isInProgressStatus) {
+		metaItems.push({
+			key: "file-count",
+			node: t("history.fileCount", { count: download.fileCount }),
 		});
 	}
 
@@ -1278,6 +1309,9 @@ export function DownloadItem({
 					onOpenFolder={() => {
 						void handleCopyServerPath();
 					}}
+					onOpenInBrowser={
+						isBrowserOpenableUrl(download.url) ? handleOpenInBrowser : undefined
+					}
 					onPause={handlePause}
 					onResume={handleResume}
 					onRetry={handleRetryDownload}

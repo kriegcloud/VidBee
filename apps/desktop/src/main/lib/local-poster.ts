@@ -1,5 +1,4 @@
 import { execFile } from 'node:child_process'
-import crypto from 'node:crypto'
 import fs from 'node:fs'
 import fsPromises from 'node:fs/promises'
 import path from 'node:path'
@@ -7,61 +6,38 @@ import { promisify } from 'node:util'
 import { APP_PROTOCOL_SCHEME } from '@shared/constants'
 import { app } from 'electron'
 import { scopedLoggers } from '../utils/logger'
+import { createLimiter, type Limiter } from './concurrency-limiter'
 import { ffmpegManager } from './ffmpeg-manager'
 import {
   buildPosterArgs,
-  isPosterSource,
-  isVideoSource,
-  VIDEO_SEEK_SECONDS
+  type LocalPosterRequest,
+  type PosterSource,
+  posterSeekPlan,
+  resolvePosterSource
 } from './local-poster-args'
+
+export type { LocalPosterRequest } from './local-poster-args'
 
 const execFileAsync = promisify(execFile)
 
 /** A still frame should take well under a second; a stuck probe must not pile up. */
 const POSTER_TIMEOUT_MS = 20_000
-
 /**
- * The first media file in a collection's output directory, in name order, so a
- * multi-file post shows its own first asset rather than nothing.
- *
- * @param directory Directory the task wrote into.
+ * ffmpeg renders allowed at once. A history list mounts a screenful of rows
+ * plus overscan, each of which may want a poster; this keeps that from
+ * becoming dozens of concurrent ffmpeg processes.
  */
-const firstMediaInDirectory = async (directory: string): Promise<string | null> => {
-  let entries: string[]
-  try {
-    entries = await fsPromises.readdir(directory)
-  } catch {
-    return null
-  }
-  const names: string[] = []
-  for (const entry of entries) {
-    if (!isPosterSource(entry)) {
-      continue
-    }
-    const info = await fsPromises.stat(path.join(directory, entry)).catch(() => null)
-    if (info?.isFile()) {
-      names.push(entry)
-    }
-  }
-  names.sort((left, right) => left.localeCompare(right))
-  const first = names[0]
-  return first ? path.join(directory, first) : null
-}
-
-export interface LocalPosterRequest {
-  /** The task's own saved file, when the renderer managed to resolve one. */
-  filePath?: string | null
-  /** A collection's output directory, used when there is no single file. */
-  directory?: string | null
-}
+const MAX_CONCURRENT_RENDERS = 2
 
 export class LocalPosterCache {
   private cacheDir?: string
   private readonly pending: Map<string, Promise<string | null>> = new Map()
   private readonly userDataOverride?: string
+  private readonly limit: Limiter
 
-  constructor(userDataOverride?: string) {
+  constructor(userDataOverride?: string, maxConcurrentRenders = MAX_CONCURRENT_RENDERS) {
     this.userDataOverride = userDataOverride
+    this.limit = createLimiter(maxConcurrentRenders)
   }
 
   private userDataPath(): string {
@@ -90,7 +66,7 @@ export class LocalPosterCache {
    * null when there is nothing on disk to render from.
    */
   async getPosterUrl(request: LocalPosterRequest): Promise<string | null> {
-    const source = await this.resolveSource(request)
+    const source = await resolvePosterSource(request)
     if (!source) {
       return null
     }
@@ -98,63 +74,32 @@ export class LocalPosterCache {
     if (pending) {
       return pending
     }
-    const task = this.render(source).finally(() => {
+    const task = this.produce(source).finally(() => {
       this.pending.delete(source.key)
     })
     this.pending.set(source.key, task)
     return task
   }
 
-  /**
-   * Pick the file to render from and key it by identity plus mtime, so a
-   * re-downloaded file replaces its poster instead of reusing a stale one.
-   */
-  private async resolveSource(
-    request: LocalPosterRequest
-  ): Promise<{ key: string; path: string } | null> {
-    const candidate =
-      request.filePath && isPosterSource(request.filePath)
-        ? request.filePath
-        : request.directory
-          ? await firstMediaInDirectory(request.directory)
-          : null
-    if (!candidate) {
-      return null
+  /** Serve a cached poster immediately; only real renders wait for a slot. */
+  private async produce(source: PosterSource): Promise<string | null> {
+    const target = path.join(this.ensureCacheDir(), `poster-${source.key}.jpg`)
+    const existing = await fsPromises.stat(target).catch(() => null)
+    if (existing?.isFile() && existing.size > 0) {
+      return this.toAppProtocolUrl(target)
     }
-    try {
-      const info = await fsPromises.stat(candidate)
-      if (!(info.isFile() && info.size > 0)) {
-        return null
-      }
-      const key = crypto
-        .createHash('sha1')
-        .update(`${candidate}:${info.mtimeMs}:${info.size}`)
-        .digest('hex')
-      return { key, path: candidate }
-    } catch {
-      return null
-    }
+    return this.limit(() => this.render(source.path, target))
   }
 
-  private async render(source: { key: string; path: string }): Promise<string | null> {
-    const target = path.join(this.ensureCacheDir(), `poster-${source.key}.jpg`)
-    try {
-      const existing = await fsPromises.stat(target)
-      if (existing.isFile() && existing.size > 0) {
-        return this.toAppProtocolUrl(target)
-      }
-    } catch {
-      // Not rendered yet.
-    }
+  private async render(sourcePath: string, target: string): Promise<string | null> {
+    // Write to a unique temp name so two rows racing on the same file cannot
+    // leave a half-written JPEG behind for the next launch to read.
+    const temporary = `${target}.${process.pid}.tmp`
     try {
       const ffmpeg = await ffmpegManager.ensureInitialized()
-      // Write to a unique temp name so two rows racing on the same file cannot
-      // leave a half-written JPEG behind for the next launch to read.
-      const temporary = `${target}.${process.pid}.tmp`
-      // A clip shorter than the seek yields no frame, so fall back to frame one.
-      for (const seek of isVideoSource(source.path) ? [VIDEO_SEEK_SECONDS, 0] : [0]) {
+      for (const seek of posterSeekPlan(sourcePath)) {
         try {
-          await execFileAsync(ffmpeg, buildPosterArgs(source.path, temporary, seek), {
+          await execFileAsync(ffmpeg, buildPosterArgs(sourcePath, temporary, seek), {
             timeout: POSTER_TIMEOUT_MS,
             windowsHide: true
           })
@@ -171,6 +116,7 @@ export class LocalPosterCache {
       return null
     } catch (error) {
       scopedLoggers.thumbnail.debug('Failed to render local poster:', error)
+      await fsPromises.rm(temporary, { force: true }).catch(() => undefined)
       return null
     }
   }

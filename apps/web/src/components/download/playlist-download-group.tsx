@@ -1,7 +1,7 @@
 import { Button } from "@vidbee/ui/components/ui/button";
 import { DownloadPlatformIcon } from "@vidbee/ui/components/ui/download-platform-icon";
 import { Progress } from "@vidbee/ui/components/ui/progress";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, RotateCw, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { logger } from "../../lib/logger";
@@ -24,6 +24,8 @@ interface PlaylistDownloadGroupProps {
 	onPause?: (id: string) => void;
 	onResume?: (id: string) => void;
 	onRetry?: (download: DownloadRecord) => void;
+	/** Retry every failed record in the group. */
+	onRetryFailed?: (records: DownloadRecord[]) => void;
 	onRemove?: (id: string) => void;
 	onCopyUrl?: (url: string) => void;
 }
@@ -68,6 +70,7 @@ export function PlaylistDownloadGroup({
 	onPause,
 	onResume,
 	onRetry,
+	onRetryFailed,
 	onRemove,
 	onCopyUrl,
 }: PlaylistDownloadGroupProps) {
@@ -205,6 +208,23 @@ export function PlaylistDownloadGroup({
 					</div>
 				</button>
 				<div className="flex shrink-0 items-center gap-1 pr-3">
+					{errorCount > 0 && onRetryFailed && (
+						<Button
+							aria-label={t("playlist.groupRetryFailed", { count: errorCount })}
+							className="h-6 gap-1 rounded-full px-2 text-xs"
+							onClick={(event) => {
+								event.stopPropagation();
+								onRetryFailed(records);
+							}}
+							size="sm"
+							title={t("playlist.groupRetryFailed", { count: errorCount })}
+							type="button"
+							variant="ghost"
+						>
+							<RotateCw className="h-3.5 w-3.5" />
+							{t("playlist.groupRetryFailed", { count: errorCount })}
+						</Button>
+					)}
 					{canDeletePlaylist && (
 						<Button
 							aria-label={t("history.deletePlaylist")}

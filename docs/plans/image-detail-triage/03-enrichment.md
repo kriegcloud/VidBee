@@ -6,9 +6,10 @@ the amendment, not a second plan.
 ## Why not in-process inference
 
 The workstation has two **AMD Radeon AI PRO R9700**, gfx1201 (RDNA4), 32 GB each
-(`~/ai/docs/reference/workstation-specs.md`). The published `onnxruntime-node`
-package ships CPU, CUDA and DirectML execution providers. There is no ROCm
-provider, so decision 3 would have run LaMa on the CPU while both cards idled.
+(`~/ai/docs/reference/workstation-specs.md`). Superseded decision 3 chose
+`onnxruntime-node` (superseded by 13); the published package ships CPU, CUDA
+and DirectML execution providers. There is no ROCm provider, so decision 3
+would have run LaMa on the CPU while both cards idled.
 `~/ai/lib/watermark_gpu_benchmark.py` already runs the same model on ROCm through
 PyTorch, so a GPU path exists — just not inside Node.
 
@@ -108,7 +109,8 @@ CREATE TABLE image_enrichment (
 );
 ```
 
-Same key as the verdicts table in decision 6, so a file edited outside VidBee
+Same key as the verdicts table (decision 6 as amended by 20; `media_verdict` in
+`02-architecture.md` uses it too), so a file edited outside VidBee
 simply misses its row and is re-enriched rather than showing stale truth.
 `graph_rev` is what lets a model upgrade invalidate exactly the rows it should.
 

@@ -14,8 +14,8 @@ in **Saved profiles**. Reopening or refreshing merges media by ID. A refresh
 starts at the top of the current site feed; it does not replay an API cursor.
 
 Mapping reports complete only when the site explicitly returns no more pages.
-A quiet page or the ten-minute scan limit produces a partial map, not a claim
-that every post was found. Closing the dialog leaves mapping running; the stop
+Eight minutes without a matching feed response, or the two-hour scan deadline,
+produces a partial map, not a claim that every post was found. Closing the dialog leaves mapping running; the stop
 button or exiting VidBee stops it.
 
 Select available originals and choose **Download selected**. Downloads appear
@@ -29,7 +29,8 @@ are saved independently of creator profiles, with All/Photos/Videos filters.
 Mapping observes the selected conversation's message responses and scrolls upward
 through older messages. Downloads revisit the attachment's message using its
 `firstId` link to refresh access before transferring an available original.
-Locked messages remain unselectable; the mapper does not purchase or unlock them.
+Gallery routes revisit `/media/<id>` instead. Locked messages remain
+unselectable; the mapper does not purchase or unlock them.
 Message text is not saved. Saved profiles and downloaded-item context menus reopen
 chat maps as well as profile maps. Opening a conversation may mark messages read
 through the site's normal behavior.
@@ -39,19 +40,26 @@ through the site's normal behavior.
 The dialog lists six source routes for a chat. Each route has its own saved map,
 so a partial scan or an empty filter does not overwrite another route's items.
 The All, Photos, and Videos controls below them filter the current map by file
-kind. Opened and Purchased are access filters supplied by the site, not file
+kind. Opened and Purchased are access views chosen by the site page, not file
 kinds; they can contain either photos or videos.
 
-| Source | Page suffix | Observed API feed | Filter |
-| --- | --- | --- | --- |
-| Messages | none | `/messages` | none |
-| Gallery | `/gallery` | `/media` | none |
-| Opened | `/gallery/opened` | `/media` | `opened=1` |
-| Purchased | `/gallery/purchased` | `/media` | `purchased=1` |
-| Photos | `/gallery/photos` | `/media` | `type=photos` |
-| Videos | `/gallery/videos` | `/media` | `type=videos` |
+The mapper does not check the site's query string. Any
+`/api2/v2/chats/<id>/media` response for the selected chat counts for every
+gallery route, so a change to the site's filter parameters does not break
+matching. The page itself decides what Opened and Purchased load. Photos and
+Videos also drop any item whose category differs from the route.
 
-`onlyFansChatTargets` defines these paths, feeds, and filters in one place.
+| Source | Page suffix | Observed API feed | Items kept |
+| --- | --- | --- | --- |
+| Messages | none | `/messages` | every attachment |
+| Gallery | `/gallery` | `/media` | every item |
+| Opened | `/gallery/opened` | `/media` | every item the page loads |
+| Purchased | `/gallery/purchased` | `/media` | every item the page loads |
+| Photos | `/gallery/photos` | `/media` | photos only, filtered by VidBee |
+| Videos | `/gallery/videos` | `/media` | videos only, filtered by VidBee |
+
+`onlyFansChatTargets` (downloader-core) defines each route's page suffix and
+feed. The browser mapper's `collect()` applies the photo/video category check.
 `BrowserProfileAdapter` supplies each site's feed matcher, completion rule,
 scroll direction, queue URL, and authenticated refresh route. The shared
 browser mapper uses those functions for OnlyFans and Fansly; it does not copy
@@ -60,17 +68,62 @@ Add URL decision table: OnlyFans and Fansly profiles use the dedicated browser
 mapper, Instagram profiles use the native Instagram mapper, and general single
 items and playlists continue through their registered downloaders, including
 yt-dlp. Desktop and web use the same resolver and dialog.
-Adding a route means defining its URL and API filter and then testing both the
+Adding a route means defining its URL and feed and then testing both the
 shared dialog and the provider adapter. Adding another site means supplying a
 URL resolver and the appropriate mapper or downloader for its authentication
 and media capabilities.
 
-The six route fixtures and response filters are covered by offline tests. They
+The six route fixtures and response matchers are covered by offline tests. They
 do not prove the current site returns those responses for a signed-in account.
 Live acceptance requires opening each example route in the dedicated session,
 mapping it, checking that the selected route contains the expected items, and
 downloading one available item from a gallery route. Do not mark an empty or
 partial map as complete without the site's end marker.
+
+### Chat and creator links
+
+When a chat map opens or maps, VidBee reads the creator link in the chat page
+header. If it finds one, every saved route for that chat records the creator's
+username (`creatorUsername`), and the creator's saved profile records the chat
+(`linkedChatId`). After that the dialog shows the creator's **Posts** as an extra
+source before the chat routes, and the creator's profile dialog lists the chat
+routes too. The dialog title shows `@creator`, not the numeric chat id. Queued
+chat downloads are titled with the creator's handle.
+
+Download history groups OnlyFans and Fansly tasks by creator, reading the creator
+from each task's queued URL, because these tasks have no batch id. Chat tasks
+join the linked creator's group. A chat with no recorded link stays in its own
+group, keyed by chat id.
+
+### Purchased collections
+
+Purchased collection links
+(`/my/collections/user-lists/purchased/posts/<userId>`) open the same dialog.
+There are five sources, and each has its own saved map:
+
+| Source | Query |
+| --- | --- |
+| All | none |
+| Photos | `?postType=photos` |
+| Videos | `?postType=videos` |
+| Posts | `?entityType=posts` |
+| Messages | `?entityType=messages` |
+
+Any other query is rejected. Mapping watches `/api2/v2/posts/paid` responses whose
+`userId` (or `user_id` / `user`) matches the collection, and scrolls the page's
+inner pane. Photos and Videos also keep only items of that category. Downloads
+reopen the collection page to refresh access; no post permalink is used.
+
+### Refreshing covered media
+
+Before a download, the mapper reopens the item's post, message, or collection
+page and waits for a response that contains the item's original URL. If that
+response has no URL, the media may still be behind the site's **Click to open**
+cover. When exactly one such cover is visible in the viewport, VidBee clicks it
+and waits up to 15 seconds for a response carrying that item's original. If no
+cover, or more than one, is visible, it does not click and the normal retry and
+lock handling apply. VidBee never opens a cover it cannot attribute to a single
+item.
 
 Desktop and web share the schemas, mapping service, executor and UI. A web/API
 host needs an installed Chrome-family browser and a graphical session accessible

@@ -14,7 +14,10 @@ import {
 	resolvePlaylistContainerFormat,
 } from "@vidbee/downloader-core/format-preferences";
 import { buildSingleVideoFormatSelector } from "@vidbee/downloader-core/format-selector";
-import { resolveMappedProfileSource } from "@vidbee/downloader-core/mapped-profile-source";
+import {
+	MAPPED_PROFILE_SITE_LABELS,
+	resolveMappedProfileSource,
+} from "@vidbee/downloader-core/mapped-profile-source";
 import {
 	resolveSocialSource,
 	SocialMediaOptionsSchema,
@@ -32,10 +35,7 @@ import { Label } from "@vidbee/ui/components/ui/label";
 import { OnlyFansProfileDialog } from "@vidbee/ui/components/ui/onlyfans-profile-dialog";
 import { ProfileCollectionDialog } from "@vidbee/ui/components/ui/profile-collection-dialog";
 import { RemoteImage } from "@vidbee/ui/components/ui/remote-image";
-import {
-	SavedInstagramProfiles,
-	socialPlatformLabels,
-} from "@vidbee/ui/components/ui/saved-instagram-profiles";
+import { SavedInstagramProfiles } from "@vidbee/ui/components/ui/saved-instagram-profiles";
 import { SocialMediaDialog } from "@vidbee/ui/components/ui/social-media-dialog";
 import { SocialProfileDialog } from "@vidbee/ui/components/ui/social-profile-dialog";
 import { WebmThumbnailNotice } from "@vidbee/ui/components/ui/webm-thumbnail-notice";
@@ -1078,8 +1078,7 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 								...(await orpcClient.socialProfile.list()).map((profile) => ({
 									inspectionId: profile.profileUrl,
 									platform: profile.platform,
-									platformLabel:
-										socialPlatformLabels[profile.platform] ?? profile.platform,
+									platformLabel: MAPPED_PROFILE_SITE_LABELS[profile.platform],
 									mapping: Object.values(profile.categories).some(
 										(category) => category.state === "mapping",
 									)

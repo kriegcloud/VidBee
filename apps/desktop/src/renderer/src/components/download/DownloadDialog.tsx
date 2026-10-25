@@ -22,7 +22,10 @@ import {
   buildSingleVideoFormatSelector,
   isMuxedVideoFormat
 } from '@vidbee/downloader-core/format-selector'
-import { resolveMappedProfileSource } from '@vidbee/downloader-core/mapped-profile-source'
+import {
+  MAPPED_PROFILE_SITE_LABELS,
+  resolveMappedProfileSource
+} from '@vidbee/downloader-core/mapped-profile-source'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { useDownloadTransfer } from '@vidbee/ui/components/ui/download-transfer'
@@ -30,10 +33,7 @@ import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'
 import { InstagramProfilePreview } from '@vidbee/ui/components/ui/instagram-profile-preview'
 import { OnlyFansProfileDialog } from '@vidbee/ui/components/ui/onlyfans-profile-dialog'
 import { ProfileCollectionDialog } from '@vidbee/ui/components/ui/profile-collection-dialog'
-import {
-  SavedInstagramProfiles,
-  socialPlatformLabels
-} from '@vidbee/ui/components/ui/saved-instagram-profiles'
+import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram-profiles'
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
 import { SocialProfileDialog } from '@vidbee/ui/components/ui/social-profile-dialog'
 import { WebmThumbnailNotice } from '@vidbee/ui/components/ui/webm-thumbnail-notice'
@@ -1146,7 +1146,7 @@ export function DownloadDialog({
                 ...(await ipcServices.download.listSocialProfiles()).map((profile) => ({
                   inspectionId: profile.profileUrl,
                   platform: profile.platform,
-                  platformLabel: socialPlatformLabels[profile.platform] ?? profile.platform,
+                  platformLabel: MAPPED_PROFILE_SITE_LABELS[profile.platform],
                   mapping: Object.values(profile.categories).some(
                     (category) => category.state === 'mapping'
                   )

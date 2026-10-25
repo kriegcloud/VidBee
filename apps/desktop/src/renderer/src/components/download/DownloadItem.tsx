@@ -57,6 +57,7 @@ import { useLocalPoster } from '../../hooks/use-local-poster'
 import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
 import { rememberDownloadListFocus } from '../../lib/download-list-focus'
 import { ipcServices } from '../../lib/ipc'
+import { selectLocalPosterInput } from '../../lib/local-poster-input'
 import { logger } from '../../lib/logger'
 import { openContextMenuFromClick } from '../../lib/open-context-menu'
 import { isNowPlayingLibraryItem } from '../../lib/transcript-playback'
@@ -201,7 +202,8 @@ export function DownloadItem({
   const contents = resolveDownloadContents({ download, t, transcript })
   // Track if the file exists
   const [fileExists, setFileExists] = useState(false)
-  const [existingFilePath, setExistingFilePath] = useState<string | null>(null)
+  // undefined while the existence check runs, null when nothing was found.
+  const [existingFilePath, setExistingFilePath] = useState<string | null | undefined>()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [logAutoScroll, setLogAutoScroll] = useState(true)
   // Saved yt-dlp log fetched on demand for terminal items (live stream is gone).
@@ -214,9 +216,13 @@ export function DownloadItem({
   // Sites reached through gallery-dl report no thumbnail URL, so the saved
   // media is the only poster source those rows will ever have.
   const localPoster = useLocalPoster(
-    download.thumbnail
-      ? null
-      : { directory: download.outputDirectory ?? null, filePath: existingFilePath }
+    selectLocalPosterInput({
+      collectionSummary: download.collectionSummary,
+      existingFilePath,
+      fileCount: download.fileCount,
+      outputDirectory: download.outputDirectory,
+      thumbnail: download.thumbnail
+    })
   )
   const playbackInput = buildTranscriptPlaybackInput({
     cachedThumbnail,
@@ -228,6 +234,7 @@ export function DownloadItem({
 
   // Check if file exists when download data changes
   useEffect(() => {
+    setExistingFilePath(undefined)
     const checkFileExists = async () => {
       if (!(download.title && download.downloadPath)) {
         setExistingFilePath(null)
@@ -392,7 +399,11 @@ export function DownloadItem({
       return
     }
     try {
-      await ipcServices.fs.openExternal(download.url)
+      // Main logs and returns false on failure rather than throwing.
+      const opened = await ipcServices.fs.openExternal(download.url)
+      if (!opened) {
+        toast.error(t('notifications.openInBrowserFailed'))
+      }
     } catch (error) {
       logger.error('Failed to open the source URL:', error)
       toast.error(t('notifications.openInBrowserFailed'))
@@ -532,7 +543,7 @@ export function DownloadItem({
 
   const playableInput = {
     ...playbackInput,
-    filePath: contents.media ? (playbackInput.filePath ?? existingFilePath) : null
+    filePath: contents.media ? (playbackInput.filePath ?? existingFilePath ?? null) : null
   }
 
   /**

@@ -20,14 +20,6 @@ export interface SavedProfile {
   totalAssetCount: number
 }
 
-/** Display names for the saved social profile platforms. */
-export const socialPlatformLabels: Record<string, string> = {
-  facebook: 'Facebook',
-  redgifs: 'Redgifs',
-  tiktok: 'TikTok',
-  x: 'X'
-}
-
 const isActive = (profile: SavedProfile) => profile.mapping !== undefined
 
 export function SavedInstagramProfiles({

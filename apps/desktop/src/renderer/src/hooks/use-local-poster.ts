@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ipcServices } from '../lib/ipc'
-
-interface LocalPosterInput {
-  /** The task's own saved file, when one was resolved on disk. */
-  filePath?: string | null
-  /** A collection's output directory, used when there is no single file. */
-  directory?: string | null
-}
+import type { LocalPosterInput } from '../lib/local-poster-input'
 
 /**
  * Poster rendered from the media a task saved. gallery-dl routes (OnlyFans,
