@@ -107,10 +107,10 @@ export const LIST_MARQUEE_ARM_PX = 16
 /**
  * Gated auto-scroll for one marquee pointer sample. A long-press held still on
  * the last visible row sits inside an edge band, and must not scroll the list on
- * its own. The gate arms once the gesture shows intent: the pointer has crossed
- * the middle of the scroller, left the scroller box, or travelled
- * `LIST_MARQUEE_ARM_PX` toward the edge whose band it is in. Once armed, either
- * band scrolls as usual.
+ * its own. The gate arms once the gesture shows intent: the pointer has been in
+ * the neutral area between the two bands, has left the scroller box, or has
+ * travelled `LIST_MARQUEE_ARM_PX` toward the edge whose band it is in. Once
+ * armed, either band scrolls as usual.
  *
  * @param armed Whether this gesture is already armed.
  * @param clientY Pointer position.

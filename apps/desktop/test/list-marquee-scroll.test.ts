@@ -151,3 +151,12 @@ test('a scroller shorter than both edge bands still scrolls once the pointer lea
   assert.equal(steps[1], 0)
   assert.ok((steps[2] ?? 0) > 0)
 })
+
+test('leaving the scroller box arms the gate even before the arm distance is travelled', () => {
+  // Pressed 5px above the bottom edge and pushed 10px past it: less than the
+  // arm distance, inside no neutral area, so only leaving the box can arm it.
+  const bounds = { bottom: 200, top: 100 }
+  const steps = replayGate([195, 210], bounds)
+  assert.ok(210 - 195 < LIST_MARQUEE_ARM_PX)
+  assert.ok((steps[1] ?? 0) > 0)
+})
