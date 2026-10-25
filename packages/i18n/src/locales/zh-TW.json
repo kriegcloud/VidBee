@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "忽略積壓的項目並僅從此源中獲取最新上傳的內容。",
       "enabled": "啟用",
       "disabled": "殘疾人",
-      "onlyLatestShort": "僅最新"
+      "onlyLatestShort": "僅最新",
+      "checkInterval": "檢查間隔",
+      "checkIntervalDefault": "預設（{{count}} 小時）",
+      "checkIntervalHours": "{{count}} 小時"
     },
     "actions": {
       "add": "添加",
@@ -1309,7 +1312,9 @@
       "idle": "閒置的",
       "tooltip": {
         "updatedAt": "更新時間：{{time}}"
-      }
+      },
+      "rate-limited": "已達請求上限",
+      "auth-required": "需要登入"
     },
     "rssHub": {
       "title": "使用 RSSHub 自動訂閱",
@@ -1317,6 +1322,26 @@
       "learnMore": "了解有關 RSSHub 的更多信息",
       "openDocs": "打開 RSSHub 文檔",
       "hint": "沒有訂閱連結？使用 RSSHub 為 YouTube、Twitter 和數千個其他平台產生訂閱來源。"
+    },
+    "profile": {
+      "all": "全部",
+      "noCategories": "請至少選擇一個要追蹤的分類。",
+      "desktopOnly": "個人檔案訂閱由 VidBee 桌面版檢查。",
+      "storiesHint": "限時動態會在 24 小時後消失。請至少每 12 小時檢查一次，以免錯過。",
+      "nextCheck": "下次檢查：{{time}}",
+      "subscribe": "訂閱",
+      "subscribed": "已訂閱",
+      "readOnly": "由 VidBee 桌面版檢查",
+      "categories": {
+        "stories": "限時動態",
+        "highlights": "精選動態",
+        "posts": "貼文",
+        "reels": "Reels",
+        "tagged": "被標記的貼文",
+        "media": "媒體",
+        "posts-with-media": "含媒體的貼文",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "反對票",
       "reposts": "轉發",
       "stories": "限時動態",
-      "timeline": "時間軸"
+      "timeline": "時間軸",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

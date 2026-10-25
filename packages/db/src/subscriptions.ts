@@ -42,7 +42,14 @@ export const subscriptionsTable = sqliteTable('subscriptions', {
   namingTemplate: text('naming_template'),
   downloadType: text('download_type'),
   downloadQuality: text('download_quality'),
-  downloadContainer: text('download_container')
+  downloadContainer: text('download_container'),
+  /** 'feed' (RSS) or 'profile' (checked through a profile mapper). */
+  sourceKind: text('source_kind').notNull().default('feed'),
+  profileOwner: text('profile_owner'),
+  /** JSON array of followed profile categories; '[]' for feeds. */
+  categories: text('categories').notNull().default('[]'),
+  checkIntervalMs: integer('check_interval_ms', { mode: 'number' }),
+  nextCheckAt: integer('next_check_at', { mode: 'number' })
 })
 
 export const subscriptionItemsTable = sqliteTable(
@@ -191,4 +198,19 @@ export const applySubscriptionsMigrations = (
       exec(`ALTER TABLE subscriptions ADD COLUMN ${column} TEXT;`)
     }
   }
+  // V3: profile subscriptions. Existing rows are RSS feeds on the default interval.
+  for (const [column, definition] of SUBSCRIPTIONS_V3_COLUMNS) {
+    if (!columns.includes(column)) {
+      exec(`ALTER TABLE subscriptions ADD COLUMN ${column} ${definition};`)
+    }
+  }
 }
+
+/** Additive V3 columns for profile subscriptions and per-subscription scheduling. */
+export const SUBSCRIPTIONS_V3_COLUMNS = [
+  ['source_kind', "TEXT NOT NULL DEFAULT 'feed'"],
+  ['profile_owner', 'TEXT'],
+  ['categories', "TEXT NOT NULL DEFAULT '[]'"],
+  ['check_interval_ms', 'INTEGER'],
+  ['next_check_at', 'INTEGER']
+] as const

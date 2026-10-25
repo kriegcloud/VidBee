@@ -66,6 +66,7 @@ import {
   videoInfoErrorAtom,
   videoInfoLoadingAtom
 } from '../../store/video'
+import { useProfileSubscribe } from '../subscription/useProfileSubscribe'
 import { PlaylistDownload } from './PlaylistDownload'
 import { SingleVideoDownload, type SingleVideoState } from './SingleVideoDownload'
 
@@ -101,6 +102,8 @@ export function DownloadDialog({
   const [socialUrl, setSocialUrl] = useState<string | null>(null)
   const [socialProfileUrl, setSocialProfileUrl] = useState<string | null>(null)
   const [socialProfileDestination, setSocialProfileDestination] = useState('')
+  const profileSubscribe = useProfileSubscribe()
+  const socialProfileSource = socialProfileUrl ? resolveMappedProfileSource(socialProfileUrl) : null
   const [collectionProfile, setCollectionProfile] = useState<CollectionProfile | null>(null)
   const [videoInfo, _setVideoInfo] = useAtom(currentVideoInfoAtom)
   const [videoInfoSourceUrl] = useAtom(currentVideoInfoSourceUrlAtom)
@@ -1478,6 +1481,11 @@ export function DownloadDialog({
             onStopMapping={() => {
               void stopProfileMapping()
             }}
+            onSubscribe={
+              profileInspection
+                ? () => profileSubscribe.openSubscribe(profileInspection.profile.profileUrl)
+                : undefined
+            }
             onToggleCategory={(category, selected) => {
               setSelectedProfileCategories((previous) => {
                 const next = new Set(previous)
@@ -1535,6 +1543,10 @@ export function DownloadDialog({
             selectedCategories={selectedProfileCategories}
             selectedItems={selectedProfileItems}
             stopping={profileMappingStopping}
+            subscribed={profileSubscribe.isSubscribed(
+              'instagram',
+              profileInspection?.profile.username
+            )}
           />
         }
         profileTabLabel={t('instagramProfile.tab')}
@@ -1624,11 +1636,17 @@ export function DownloadDialog({
             setSocialProfileUrl(null)
             setSocialProfileDestination('')
           }}
+          onSubscribe={(profileUrl) => profileSubscribe.openSubscribe(profileUrl)}
           openLogin={(profileUrl) => ipcServices.download.openSocialProfileLogin(profileUrl)}
           stopProfile={(profileUrl) => ipcServices.download.stopSocialProfile(profileUrl)}
+          subscribed={profileSubscribe.isSubscribed(
+            socialProfileSource?.platform,
+            socialProfileSource?.owner
+          )}
           url={socialProfileUrl}
         />
       )}
+      {profileSubscribe.dialog}
       <IngestDropOverlay
         description={t('download.ingestDropDescription')}
         kind={dropKind}

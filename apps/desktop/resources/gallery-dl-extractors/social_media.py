@@ -31,6 +31,22 @@ LINKED_CATEGORIES = {
 }
 GRAPH_CATEGORIES = {"following", "followers", "list-members"}
 
+# Incremental refresh: stop after this many consecutive already-mapped posts.
+KNOWN_RUN_STOP = 12
+
+
+def load_known_items(path):
+    """Post ids from a previous map, written by VidBee to a JSON array file."""
+    if not path:
+        return frozenset()
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError):
+        return frozenset()
+    return frozenset(str(item) for item in data if isinstance(item, (str, int))) \
+        if isinstance(data, list) else frozenset()
+
 
 def safe(value):
     value = re.sub(r"[^\w.-]", "_", str(value or "unknown"), flags=re.ASCII).strip(". ")
@@ -216,6 +232,9 @@ class VidBeeSocialExtractor(Extractor):
                         "manifestPath": self.manifest.path, "startedAt": int(time.time() * 1000)}
         self.extraction_error = False
         self.limit_reached = False
+        self.known_items = load_known_items(self.config("known-items-file"))
+        self.known_run = 0
+        self.known_counted = set()
         self.asset_done = False
         self.root_author = None
         self.request_sequence = 0
@@ -477,8 +496,17 @@ class VidBeeSocialExtractor(Extractor):
                         else:
                             post_type = "photo" if kind == "image" else "video"
                             post_url = f"https://www.tiktok.com/@{author}/{post_type}/{post_id}"
-                        print(PREFIX + json.dumps({"type": "item", "item": {
-                            "id": post_id, "url": post_url, "kind": kind, "author": author}}), flush=True)
+                        item = {"id": post_id, "url": post_url, "kind": kind, "author": author}
+                        date = data.get("date")
+                        if isinstance(date, datetime.datetime):
+                            item["date"] = int(date.replace(tzinfo=datetime.timezone.utc).timestamp() * 1000)
+                        print(PREFIX + json.dumps({"type": "item", "item": item}), flush=True)
+                        if self.known_items and post_id not in self.known_counted:
+                            self.known_counted.add(post_id)
+                            self.known_run = self.known_run + 1 if post_id in self.known_items else 0
+                            if self.known_run >= KNOWN_RUN_STOP:
+                                self.limit_reached = True
+                                return
                     self.event("progress")
                     continue
                 if verified_path := self.manifest.verified(

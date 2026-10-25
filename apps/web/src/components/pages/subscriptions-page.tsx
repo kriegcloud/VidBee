@@ -467,6 +467,7 @@ export const SubscriptionsPage = () => {
 					onSelectDirectory={pickDirectory}
 					onlyLatestDefault={settings.subscriptionOnlyLatestDefault}
 					open={addDialogOpen}
+					profileSourcesSupported={false}
 				/>
 				<ServerDirectoryDialog
 					description={t("subscriptions.fields.customDirectory")}
@@ -521,9 +522,13 @@ const SubscriptionTab = ({
 		subscription.enabled,
 	);
 	const statusDescription =
-		subscription.status === "failed" && subscription.lastError
+		subscription.status !== "up-to-date" &&
+		subscription.status !== "checking" &&
+		subscription.lastError
 			? subscription.lastError
 			: t(statusMeta.label);
+	// Desktop checks profile accounts; the web app only lists them.
+	const desktopManaged = subscription.sourceKind === "profile";
 	const lastUpdatedTimestamp =
 		subscription.lastCheckedAt ??
 		subscription.updatedAt ??
@@ -575,6 +580,11 @@ const SubscriptionTab = ({
 						<p className="font-semibold text-sm">
 							{subscription.title || t("subscriptions.labels.unknown")}
 						</p>
+						{desktopManaged && (
+							<p className="text-muted-foreground text-xs">
+								{t("subscriptions.profile.readOnly")}
+							</p>
+						)}
 						<p className="text-xs">{statusDescription}</p>
 						<p className="text-xs">
 							{t("subscriptions.status.tooltip.updatedAt", {
@@ -584,14 +594,18 @@ const SubscriptionTab = ({
 					</HoverCardContent>
 				</HoverCard>
 				<ContextMenuContent>
-					<ContextMenuItem onClick={() => void onRefresh()}>
-						<RefreshCw className="h-4 w-4" />
-						{t("subscriptions.actions.refresh")}
-					</ContextMenuItem>
-					<ContextMenuItem onClick={() => setEditOpen(true)}>
-						<Edit className="h-4 w-4" />
-						{t("subscriptions.actions.edit")}
-					</ContextMenuItem>
+					{!desktopManaged && (
+						<>
+							<ContextMenuItem onClick={() => void onRefresh()}>
+								<RefreshCw className="h-4 w-4" />
+								{t("subscriptions.actions.refresh")}
+							</ContextMenuItem>
+							<ContextMenuItem onClick={() => setEditOpen(true)}>
+								<Edit className="h-4 w-4" />
+								{t("subscriptions.actions.edit")}
+							</ContextMenuItem>
+						</>
+					)}
 					<ContextMenuItem
 						onClick={() => void onUpdate({ enabled: !subscription.enabled })}
 					>

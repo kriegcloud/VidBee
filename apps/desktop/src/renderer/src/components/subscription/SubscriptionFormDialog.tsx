@@ -19,6 +19,8 @@ interface SubscriptionFormDialogProps {
   mode: 'add' | 'edit'
   subscription?: SubscriptionRule
   open: boolean
+  initialUrl?: string
+  initialCategories?: string[]
   onSave: (data: SubscriptionFormData) => Promise<void>
   onClose: () => void
 }
@@ -30,6 +32,8 @@ export function SubscriptionFormDialog({
   mode,
   subscription,
   open,
+  initialUrl,
+  initialCategories,
   onSave,
   onClose
 }: SubscriptionFormDialogProps) {
@@ -64,6 +68,8 @@ export function SubscriptionFormDialog({
         downloadContainer: settings.oneClickContainer
       }}
       downloadPath={settings.downloadPath}
+      initialCategories={initialCategories}
+      initialUrl={initialUrl}
       mode={mode}
       onClose={onClose}
       onlyLatestDefault={settings.subscriptionOnlyLatestDefault}

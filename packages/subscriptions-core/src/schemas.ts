@@ -11,6 +11,7 @@ import {
   OneClickQualityPresetSchema
 } from '@vidbee/downloader-core/schemas'
 import { z } from 'zod'
+import { MAX_CHECK_INTERVAL_MS, MIN_CHECK_INTERVAL_MS } from './types'
 
 const subscriptionDownloadPreferences = {
   downloadType: DownloadTypeSchema.or(z.literal('subtitles')).optional(),
@@ -18,14 +19,36 @@ const subscriptionDownloadPreferences = {
   downloadContainer: OneClickContainerOptionSchema.optional()
 }
 
-export const SubscriptionPlatformSchema = z.enum(['youtube', 'bilibili', 'custom'])
-export const SubscriptionStatusSchema = z.enum(['idle', 'checking', 'up-to-date', 'failed'])
+export const SubscriptionPlatformSchema = z.enum([
+  'youtube',
+  'bilibili',
+  'custom',
+  'instagram',
+  'threads',
+  'x',
+  'tiktok',
+  'snapchat'
+])
+export const SubscriptionSourceKindSchema = z.enum(['feed', 'profile'])
+export const SubscriptionStatusSchema = z.enum([
+  'idle',
+  'checking',
+  'up-to-date',
+  'failed',
+  'rate-limited',
+  'auth-required'
+])
+const CheckIntervalSchema = z.number().int().min(MIN_CHECK_INTERVAL_MS).max(MAX_CHECK_INTERVAL_MS)
+const CategoriesSchema = z.array(z.string().regex(/^[a-z][a-z-]*$/)).max(16)
 export const LeaderKindSchema = z.enum(['desktop', 'api'])
 
 export const ResolvedFeedSchema = z.object({
   sourceUrl: z.string().min(1),
   feedUrl: z.string().min(1),
-  platform: SubscriptionPlatformSchema
+  platform: SubscriptionPlatformSchema,
+  sourceKind: SubscriptionSourceKindSchema,
+  profileOwner: z.string().optional(),
+  availableCategories: z.array(z.string())
 })
 
 export const SubscriptionRuleSchema = z.object({
@@ -50,7 +73,12 @@ export const SubscriptionRuleSchema = z.object({
   createdAt: z.number().int(),
   updatedAt: z.number().int(),
   downloadDirectory: z.string().optional(),
-  namingTemplate: z.string().optional()
+  namingTemplate: z.string().optional(),
+  sourceKind: SubscriptionSourceKindSchema,
+  profileOwner: z.string().optional(),
+  categories: z.array(z.string()),
+  checkIntervalMs: z.number().int().optional(),
+  nextCheckAt: z.number().int().optional()
 })
 
 export const SubscriptionFeedItemSchema = z.object({
@@ -79,7 +107,11 @@ export const SubscriptionCreateInputSchema = z.object({
   autoDownload: z.boolean().optional(),
   downloadDirectory: z.string().optional(),
   namingTemplate: z.string().optional(),
-  enabled: z.boolean().optional()
+  enabled: z.boolean().optional(),
+  sourceKind: SubscriptionSourceKindSchema.optional(),
+  profileOwner: z.string().optional(),
+  categories: CategoriesSchema.optional(),
+  checkIntervalMs: CheckIntervalSchema.optional()
 })
 
 export const SubscriptionUpdateInputSchema = z.object({
@@ -94,7 +126,9 @@ export const SubscriptionUpdateInputSchema = z.object({
   autoDownload: z.boolean().optional(),
   enabled: z.boolean().optional(),
   downloadDirectory: z.string().optional(),
-  namingTemplate: z.string().optional()
+  namingTemplate: z.string().optional(),
+  categories: CategoriesSchema.optional(),
+  checkIntervalMs: CheckIntervalSchema.nullable().optional()
 })
 
 export const SubscriptionIdInputSchema = z.object({ id: z.string().min(1) })

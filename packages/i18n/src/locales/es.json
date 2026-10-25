@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Ignorar elementos del backlog y obtener solo la última carga de este feed.",
       "enabled": "Habilitado",
       "disabled": "Deshabilitado",
-      "onlyLatestShort": "Solo último"
+      "onlyLatestShort": "Solo último",
+      "checkInterval": "Comprobar cada",
+      "checkIntervalDefault": "Predeterminado ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Agregar",
@@ -1309,7 +1312,9 @@
       "idle": "Inactivo",
       "tooltip": {
         "updatedAt": "Actualizado: {{time}}"
-      }
+      },
+      "rate-limited": "Limitado",
+      "auth-required": "Inicio de sesión requerido"
     },
     "rssHub": {
       "title": "Suscripciones Automatizadas con RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Aprende más sobre RSSHub",
       "openDocs": "Abrir Documentación de RSSHub",
       "hint": "¿No tienes una URL de feed? Usa RSSHub para generar feeds de YouTube, Twitter y miles de otras plataformas."
+    },
+    "profile": {
+      "all": "Todo",
+      "noCategories": "Elige al menos una categoría.",
+      "desktopOnly": "VidBee Desktop comprueba las suscripciones a perfiles.",
+      "storiesHint": "Las historias desaparecen a las 24 horas. Comprueba al menos cada 12 horas para no perder ninguna.",
+      "nextCheck": "Próxima comprobación: {{time}}",
+      "subscribe": "Suscribirse",
+      "subscribed": "Suscrito",
+      "readOnly": "Comprobado por VidBee Desktop",
+      "categories": {
+        "stories": "Historias",
+        "highlights": "Destacadas",
+        "posts": "Publicaciones",
+        "reels": "Reels",
+        "tagged": "Publicaciones etiquetadas",
+        "media": "Multimedia",
+        "posts-with-media": "Publicaciones con multimedia",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Votos negativos",
       "reposts": "Republicaciones",
       "stories": "Historias",
-      "timeline": "Cronología"
+      "timeline": "Cronología",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

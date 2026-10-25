@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Ignora gli elementi del backlog e recupera solo il caricamento più recente da questo feed.",
       "enabled": "Abilitato",
       "disabled": "Disabilitato",
-      "onlyLatestShort": "Solo più recente"
+      "onlyLatestShort": "Solo più recente",
+      "checkInterval": "Controlla ogni",
+      "checkIntervalDefault": "Predefinito ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Aggiungere",
@@ -1309,7 +1312,9 @@
       "idle": "Oziare",
       "tooltip": {
         "updatedAt": "Aggiornato: {{time}}"
-      }
+      },
+      "rate-limited": "Limitato",
+      "auth-required": "Accesso richiesto"
     },
     "rssHub": {
       "title": "Abbonamenti automatizzati con RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Ulteriori informazioni su RSSHub",
       "openDocs": "Apri la documentazione RSSHub",
       "hint": "Non hai un URL del feed? Usa RSSHub per generare feed per YouTube, Twitter e migliaia di altre piattaforme."
+    },
+    "profile": {
+      "all": "Tutto",
+      "noCategories": "Scegli almeno una categoria.",
+      "desktopOnly": "Gli abbonamenti ai profili vengono controllati da VidBee Desktop.",
+      "storiesHint": "Le storie scompaiono dopo 24 ore. Controlla almeno ogni 12 ore per non perderne nessuna.",
+      "nextCheck": "Prossimo controllo: {{time}}",
+      "subscribe": "Iscriviti",
+      "subscribed": "Iscritto",
+      "readOnly": "Controllato da VidBee Desktop",
+      "categories": {
+        "stories": "Storie",
+        "highlights": "In evidenza",
+        "posts": "Post",
+        "reels": "Reel",
+        "tagged": "Post taggati",
+        "media": "Media",
+        "posts-with-media": "Post con media",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Voti negativi",
       "reposts": "Ripubblicazioni",
       "stories": "Storie",
-      "timeline": "Cronologia"
+      "timeline": "Cronologia",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

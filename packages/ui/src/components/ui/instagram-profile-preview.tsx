@@ -55,6 +55,9 @@ interface InstagramProfilePreviewProps {
   stopping?: boolean
   selectedItems?: ReadonlySet<string>
   onToggleItem?: (category: InstagramProfileCategory, id: string, selected: boolean) => void
+  /** Offer a profile subscription that keeps downloading new items. */
+  onSubscribe?: () => void
+  subscribed?: boolean
 }
 
 const CATEGORY_KEYS: Record<InstagramProfileCategory, string> = {
@@ -77,7 +80,9 @@ export const InstagramProfilePreview = ({
   onStopMapping,
   stopping,
   selectedItems,
-  onToggleItem
+  onToggleItem,
+  onSubscribe,
+  subscribed = false
 }: InstagramProfilePreviewProps) => {
   const { t } = useTranslation()
   const categoryInputPrefix = useId()
@@ -158,6 +163,16 @@ export const InstagramProfilePreview = ({
           <p>{t('instagramProfile.sourceTotal', { count: inspection.totalSourceCount })}</p>
           <p>{t('instagramProfile.assetTotal', { count: inspection.totalAssetCount })}</p>
         </div>
+        {onSubscribe && (
+          <Button
+            disabled={subscribed}
+            onClick={onSubscribe}
+            size="sm"
+            variant={subscribed ? 'secondary' : 'outline'}
+          >
+            {t(subscribed ? 'subscriptions.profile.subscribed' : 'subscriptions.profile.subscribe')}
+          </Button>
+        )}
       </div>
 
       <p className="mb-3 text-muted-foreground text-sm">{t('instagramResume.savedHint')}</p>

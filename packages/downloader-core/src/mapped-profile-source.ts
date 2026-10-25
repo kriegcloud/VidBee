@@ -1,5 +1,6 @@
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { normalizePinterestUrl } from './pinterest'
+import { normalizeSnapchatUrl, snapchatCategoryUrl } from './snapchat'
 import { resolveSocialSource } from './social-media'
 import { normalizeThreadsUrl } from './threads'
 import { normalizeVscoUrl } from './vsco'
@@ -12,6 +13,7 @@ export type MappedProfilePlatform =
   | 'vsco'
   | 'threads'
   | 'pinterest'
+  | 'snapchat'
 
 export interface MappedProfileSource {
   platform: MappedProfilePlatform
@@ -29,7 +31,8 @@ export const MAPPED_PROFILE_SITE_LABELS: Record<MappedProfilePlatform, string> =
   facebook: 'Facebook',
   vsco: 'VSCO',
   threads: 'Threads',
-  pinterest: 'Pinterest'
+  pinterest: 'Pinterest',
+  snapchat: 'Snapchat'
 }
 
 /**
@@ -58,6 +61,10 @@ export const redGifsWatchUrl = (id: string): string | null =>
   REDGIFS_POST.test(id) ? `https://www.redgifs.com/watch/${id.toLowerCase()}` : null
 
 export const isMappedProfilePostUrl = (platform: MappedProfilePlatform, value: string): boolean => {
+  if (platform === 'snapchat') {
+    const snap = normalizeSnapchatUrl(value)
+    return (snap?.kind === 'story-snap' || snap?.kind === 'spotlight') && snap.url === value
+  }
   if (platform === 'pinterest') {
     const pin = normalizePinterestUrl(value)
     return pin?.kind === 'pin' && pin.url === value
@@ -131,6 +138,27 @@ export const resolveMappedProfileSource = (value: string): MappedProfileSource |
       profileUrl: vsco.url,
       category: 'gallery',
       categories: [{ key: 'gallery', url: vsco.url, requiresAuth: false }]
+    }
+  }
+  const snapchat = normalizeSnapchatUrl(value)
+  if (snapchat && ['profile', 'stories', 'spotlights'].includes(snapchat.kind)) {
+    return {
+      platform: 'snapchat',
+      owner: snapchat.username,
+      profileUrl: `https://www.snapchat.com/@${snapchat.username}`,
+      category: snapchat.kind === 'spotlights' ? 'spotlight' : 'stories',
+      categories: [
+        {
+          key: 'stories',
+          url: snapchatCategoryUrl(snapchat.username, 'stories'),
+          requiresAuth: false
+        },
+        {
+          key: 'spotlight',
+          url: snapchatCategoryUrl(snapchat.username, 'spotlight'),
+          requiresAuth: false
+        }
+      ]
     }
   }
   const threads = normalizeThreadsUrl(value)

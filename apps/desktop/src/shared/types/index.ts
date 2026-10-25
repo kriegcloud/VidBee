@@ -307,9 +307,17 @@ export interface PlaylistDownloadResult {
 }
 
 // Subscription types
-export type SubscriptionPlatform = 'youtube' | 'bilibili' | 'custom'
+export type {
+  SubscriptionPlatform,
+  SubscriptionSourceKind,
+  SubscriptionStatus
+} from '@vidbee/subscriptions-core/types'
 
-export type SubscriptionStatus = 'idle' | 'checking' | 'up-to-date' | 'failed'
+import type {
+  SubscriptionPlatform,
+  SubscriptionSourceKind,
+  SubscriptionStatus
+} from '@vidbee/subscriptions-core/types'
 
 export const SUBSCRIPTION_DUPLICATE_FEED_ERROR = 'SUBSCRIPTION_DUPLICATE_FEED_URL'
 
@@ -336,6 +344,11 @@ export interface SubscriptionRule extends SubscriptionDownloadPreferences {
   updatedAt: number
   downloadDirectory?: string
   namingTemplate?: string
+  sourceKind: SubscriptionSourceKind
+  profileOwner?: string
+  categories: string[]
+  checkIntervalMs?: number
+  nextCheckAt?: number
   items: SubscriptionFeedItem[]
 }
 
@@ -343,6 +356,9 @@ export interface SubscriptionResolvedFeed {
   sourceUrl: string
   feedUrl: string
   platform: SubscriptionPlatform
+  sourceKind: SubscriptionSourceKind
+  profileOwner?: string
+  availableCategories: string[]
 }
 
 export interface SubscriptionCreatePayload extends SubscriptionDownloadPreferences {
@@ -356,6 +372,10 @@ export interface SubscriptionCreatePayload extends SubscriptionDownloadPreferenc
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
+  sourceKind?: SubscriptionSourceKind
+  profileOwner?: string
+  categories?: string[]
+  checkIntervalMs?: number
 }
 
 export interface SubscriptionUpdatePayload extends SubscriptionDownloadPreferences {
@@ -370,6 +390,9 @@ export interface SubscriptionUpdatePayload extends SubscriptionDownloadPreferenc
   enabled?: boolean
   downloadDirectory?: string
   namingTemplate?: string
+  categories?: string[]
+  /** Null clears the override back to the default interval. */
+  checkIntervalMs?: number | null
   items?: SubscriptionFeedItem[]
 }
 

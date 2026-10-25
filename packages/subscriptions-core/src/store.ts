@@ -64,6 +64,9 @@ const parseStringArray = (value: string | null | undefined): string[] => {
 const stringifyArray = (values: string[]): string => JSON.stringify(sanitizeList(values))
 
 const boolToInt = (value: boolean): number => (value ? 1 : 0)
+
+/** Newest profile items attached per subscription by `list()`. */
+export const LIST_PROFILE_ITEM_LIMIT = 300
 const intToBool = (value: number | null | undefined): boolean => value === 1
 
 const rowToSubscription = (row: SubscriptionRow): SubscriptionRule => {
@@ -80,7 +83,18 @@ const rowToSubscription = (row: SubscriptionRow): SubscriptionRule => {
     enabled: intToBool(row.enabled),
     status: row.status as SubscriptionRule['status'],
     createdAt: row.createdAt,
-    updatedAt: row.updatedAt
+    updatedAt: row.updatedAt,
+    sourceKind: row.sourceKind === 'profile' ? 'profile' : 'feed',
+    categories: parseStringArray(row.categories)
+  }
+  if (row.profileOwner) {
+    rule.profileOwner = row.profileOwner
+  }
+  if (row.checkIntervalMs !== null && row.checkIntervalMs !== undefined) {
+    rule.checkIntervalMs = row.checkIntervalMs
+  }
+  if (row.nextCheckAt !== null && row.nextCheckAt !== undefined) {
+    rule.nextCheckAt = row.nextCheckAt
   }
   if (row.coverUrl) {
     rule.coverUrl = row.coverUrl
@@ -149,7 +163,13 @@ const subscriptionToInsert = (rule: SubscriptionRule, now: number): Subscription
     enabled: boolToInt(rule.enabled),
     status: rule.status,
     createdAt: rule.createdAt,
-    updatedAt: rule.updatedAt ?? now
+    updatedAt: rule.updatedAt ?? now,
+    sourceKind: rule.sourceKind,
+    categories: stringifyArray(rule.categories),
+    // Written as null when absent so clearing an override sticks on upsert.
+    profileOwner: rule.profileOwner ?? null,
+    checkIntervalMs: rule.checkIntervalMs ?? null,
+    nextCheckAt: rule.nextCheckAt ?? null
   }
   if (rule.coverUrl !== undefined) {
     payload.coverUrl = rule.coverUrl
@@ -200,6 +220,12 @@ export interface SubscriptionsStore {
   remove(id: string): Promise<boolean>
   /** Replace the entire `subscription_items` snapshot for one subscription. */
   replaceItems(subscriptionId: string, items: NormalizedFeedItem[]): Promise<void>
+  /**
+   * Upsert items without dropping rows that are missing from `items`. Profile
+   * subscriptions use this: a failed category or an expired story must stay
+   * in the seen-history so the next check does not queue it again.
+   */
+  mergeItems(subscriptionId: string, items: NormalizedFeedItem[]): Promise<void>
   /**
    * Mark an item as `added` and link the spawned task id. Idempotent — if
    * the row already records the same taskId nothing changes.
@@ -294,7 +320,10 @@ export const createSqliteSubscriptionsStore = ({
   now = () => Date.now(),
   generateId = () => randomUUID()
 }: CreateSqliteStoresOptions): SubscriptionsStore => {
-  const attachItems = (rules: SubscriptionRule[]): SubscriptionWithItems[] => {
+  const attachItems = (
+    rules: SubscriptionRule[],
+    profileItemLimit?: number
+  ): SubscriptionWithItems[] => {
     if (rules.length === 0) {
       return []
     }
@@ -315,7 +344,18 @@ export const createSqliteSubscriptionsStore = ({
         grouped.set(row.subscriptionId, [item])
       }
     }
-    return rules.map((rule) => ({ ...rule, items: grouped.get(rule.id) ?? [] }))
+    return rules.map((rule) => {
+      const items = grouped.get(rule.id) ?? []
+      // Profile backlogs can reach thousands of rows; list() feeds a polled UI,
+      // while get() keeps the full history for the download policy.
+      return {
+        ...rule,
+        items:
+          profileItemLimit !== undefined && rule.sourceKind === 'profile'
+            ? items.slice(0, profileItemLimit)
+            : items
+      }
+    })
   }
 
   return {
@@ -325,7 +365,7 @@ export const createSqliteSubscriptionsStore = ({
         .from(subscriptionsTable)
         .orderBy(desc(subscriptionsTable.updatedAt))
         .all()
-      return attachItems(rows.map(rowToSubscription))
+      return attachItems(rows.map(rowToSubscription), LIST_PROFILE_ITEM_LIMIT)
     },
 
     async get(id) {
@@ -367,7 +407,15 @@ export const createSqliteSubscriptionsStore = ({
         enabled: input.enabled ?? true,
         status: 'idle',
         createdAt: ts,
-        updatedAt: ts
+        updatedAt: ts,
+        sourceKind: input.sourceKind ?? 'feed',
+        categories: sanitizeList(input.categories)
+      }
+      if (input.profileOwner) {
+        rule.profileOwner = input.profileOwner
+      }
+      if (input.checkIntervalMs !== undefined) {
+        rule.checkIntervalMs = input.checkIntervalMs
       }
       if (input.downloadDirectory) {
         rule.downloadDirectory = input.downloadDirectory
@@ -401,6 +449,7 @@ export const createSqliteSubscriptionsStore = ({
         enabled: patch.enabled ?? existing.enabled,
         keywords: patch.keywords ? sanitizeList(patch.keywords) : existing.keywords,
         tags: patch.tags ? sanitizeList(patch.tags) : existing.tags,
+        categories: patch.categories ? sanitizeList(patch.categories) : existing.categories,
         updatedAt: now()
       }
       if (patch.sourceUrl && !patch.title && patch.sourceUrl !== existing.sourceUrl) {
@@ -454,6 +503,56 @@ export const createSqliteSubscriptionsStore = ({
             insert.taskId = prev.taskId
           }
           tx.insert(subscriptionItemsTable).values(insert).run()
+        }
+      })
+    },
+
+    async mergeItems(subscriptionId, items) {
+      if (items.length === 0) {
+        return
+      }
+      const ts = now()
+      db.transaction((tx) => {
+        const existing = new Set(
+          tx
+            .select({ itemId: subscriptionItemsTable.itemId })
+            .from(subscriptionItemsTable)
+            .where(eq(subscriptionItemsTable.subscriptionId, subscriptionId))
+            .all()
+            .map((row) => row.itemId)
+        )
+        for (const item of items) {
+          if (existing.has(item.id)) {
+            tx.update(subscriptionItemsTable)
+              .set({
+                title: item.title,
+                url: item.url,
+                publishedAt: item.publishedAt,
+                thumbnail: item.thumbnail ?? null,
+                updatedAt: ts
+              })
+              .where(
+                and(
+                  eq(subscriptionItemsTable.subscriptionId, subscriptionId),
+                  eq(subscriptionItemsTable.itemId, item.id)
+                )
+              )
+              .run()
+            continue
+          }
+          tx.insert(subscriptionItemsTable)
+            .values({
+              subscriptionId,
+              itemId: item.id,
+              title: item.title,
+              url: item.url,
+              publishedAt: item.publishedAt,
+              thumbnail: item.thumbnail ?? null,
+              added: 0,
+              createdAt: ts,
+              updatedAt: ts
+            })
+            .run()
         }
       })
     },

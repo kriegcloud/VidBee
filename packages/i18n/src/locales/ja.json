@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "バックログ項目を無視し、このフィードから最新のアップロードのみを取得します。",
       "enabled": "有効",
       "disabled": "無効",
-      "onlyLatestShort": "最新のもののみ"
+      "onlyLatestShort": "最新のもののみ",
+      "checkInterval": "チェック間隔",
+      "checkIntervalDefault": "既定（{{count}} 時間）",
+      "checkIntervalHours": "{{count}} 時間"
     },
     "actions": {
       "add": "追加",
@@ -1309,7 +1312,9 @@
       "idle": "アイドル状態",
       "tooltip": {
         "updatedAt": "更新日: {{time}}"
-      }
+      },
+      "rate-limited": "レート制限中",
+      "auth-required": "ログインが必要"
     },
     "rssHub": {
       "title": "RSSHub による自動サブスクリプション",
@@ -1317,6 +1322,26 @@
       "learnMore": "RSSHub について詳しく見る",
       "openDocs": "RSSHub ドキュメントを開く",
       "hint": "フィード URL がありませんか？RSSHub で YouTube、Twitter など数千のプラットフォーム用フィードを生成できます。"
+    },
+    "profile": {
+      "all": "すべて",
+      "noCategories": "フォローするカテゴリを1つ以上選んでください。",
+      "desktopOnly": "プロフィールの購読は VidBee Desktop がチェックします。",
+      "storiesHint": "ストーリーは24時間で消えます。取りこぼさないよう12時間以内の間隔でチェックしてください。",
+      "nextCheck": "次回チェック: {{time}}",
+      "subscribe": "購読",
+      "subscribed": "購読中",
+      "readOnly": "VidBee Desktop がチェック",
+      "categories": {
+        "stories": "ストーリー",
+        "highlights": "ハイライト",
+        "posts": "投稿",
+        "reels": "リール",
+        "tagged": "タグ付けされた投稿",
+        "media": "メディア",
+        "posts-with-media": "メディア付きの投稿",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "低評価",
       "reposts": "再投稿",
       "stories": "ストーリー",
-      "timeline": "タイムライン"
+      "timeline": "タイムライン",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Игнорировать элементы из очереди и загружать только последнюю загрузку из этого канала.",
       "enabled": "Включено",
       "disabled": "Отключено",
-      "onlyLatestShort": "Только последнее"
+      "onlyLatestShort": "Только последнее",
+      "checkInterval": "Проверять каждые",
+      "checkIntervalDefault": "По умолчанию ({{count}} ч)",
+      "checkIntervalHours": "{{count}} ч"
     },
     "actions": {
       "add": "Добавить",
@@ -1309,7 +1312,9 @@
       "idle": "Простой",
       "tooltip": {
         "updatedAt": "Обновлено: {{time}}"
-      }
+      },
+      "rate-limited": "Лимит запросов",
+      "auth-required": "Требуется вход"
     },
     "rssHub": {
       "title": "Автоматические подписки с RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Узнать больше о RSSHub",
       "openDocs": "Открыть документацию RSSHub",
       "hint": "Нет URL ленты? Используйте RSSHub, чтобы создать ленты для YouTube, Twitter и тысяч других платформ."
+    },
+    "profile": {
+      "all": "Все",
+      "noCategories": "Выберите хотя бы одну категорию.",
+      "desktopOnly": "Подписки на профили проверяет VidBee Desktop.",
+      "storiesHint": "Истории исчезают через 24 часа. Проверяйте хотя бы раз в 12 часов, чтобы не пропустить ни одной.",
+      "nextCheck": "Следующая проверка: {{time}}",
+      "subscribe": "Подписаться",
+      "subscribed": "Подписка оформлена",
+      "readOnly": "Проверяется в VidBee Desktop",
+      "categories": {
+        "stories": "Истории",
+        "highlights": "Актуальное",
+        "posts": "Публикации",
+        "reels": "Reels",
+        "tagged": "Отметки",
+        "media": "Медиа",
+        "posts-with-media": "Публикации с медиа",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Отрицательные голоса",
       "reposts": "Репосты",
       "stories": "Истории",
-      "timeline": "Лента"
+      "timeline": "Лента",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

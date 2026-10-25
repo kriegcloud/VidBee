@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "忽略积压的项目并仅从此源中获取最新上传的内容。",
       "enabled": "启用",
       "disabled": "残疾人",
-      "onlyLatestShort": "仅最新"
+      "onlyLatestShort": "仅最新",
+      "checkInterval": "检查间隔",
+      "checkIntervalDefault": "默认（{{count}} 小时）",
+      "checkIntervalHours": "{{count}} 小时"
     },
     "actions": {
       "add": "添加",
@@ -1309,7 +1312,9 @@
       "idle": "闲置的",
       "tooltip": {
         "updatedAt": "更新时间：{{time}}"
-      }
+      },
+      "rate-limited": "已被限流",
+      "auth-required": "需要登录"
     },
     "rssHub": {
       "title": "使用 RSSHub 自动订阅",
@@ -1317,6 +1322,26 @@
       "learnMore": "了解有关 RSSHub 的更多信息",
       "openDocs": "打开 RSSHub 文档",
       "hint": "没有订阅链接？使用 RSSHub 为 YouTube、Twitter 和数千个其他平台生成订阅源。"
+    },
+    "profile": {
+      "all": "全部",
+      "noCategories": "请至少选择一个要关注的分类。",
+      "desktopOnly": "个人主页订阅由 VidBee 桌面版检查。",
+      "storiesHint": "快拍会在 24 小时后消失。请至少每 12 小时检查一次，以免错过。",
+      "nextCheck": "下次检查：{{time}}",
+      "subscribe": "订阅",
+      "subscribed": "已订阅",
+      "readOnly": "由 VidBee 桌面版检查",
+      "categories": {
+        "stories": "快拍",
+        "highlights": "精选",
+        "posts": "帖子",
+        "reels": "Reels",
+        "tagged": "被标记的帖子",
+        "media": "媒体",
+        "posts-with-media": "含媒体的帖子",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "反对票",
       "reposts": "转发",
       "stories": "快拍",
-      "timeline": "时间线"
+      "timeline": "时间线",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

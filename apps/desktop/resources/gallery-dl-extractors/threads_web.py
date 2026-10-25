@@ -54,6 +54,8 @@ _PROVIDER_DEFAULTS = {
 _PROFILE_QUERY = ("38191639027147618", "BarcelonaProfileMediaTabDirectQuery")
 _USER_QUERY = ("28437261742627184", "BarcelonaUsernameHovercardImplDirectQuery")
 _POST_QUERY = ("28766445266306569", "BarcelonaPostPageStrongIdTargetQuery")
+# Incremental refresh: stop after this many consecutive already-mapped posts.
+KNOWN_RUN_STOP = 12
 _PATTERN = (r"https?://(?:www\.)?threads\.(?:com|net)/@"
             r"([A-Za-z0-9_][A-Za-z0-9._]{0,29})")
 
@@ -285,8 +287,24 @@ class ThreadsWebExtractor(Extractor):
                 extension = "mp4" if videos else "jpg"
             yield url, extension
 
+    def _known_items(self):
+        """Post ids from a previous map, written by VidBee to a JSON array file."""
+        if self.subcategory != "profile":
+            return frozenset()
+        path = self.config("known-items-file")
+        if not path:
+            return frozenset()
+        try:
+            with open(path, encoding="utf-8") as handle:
+                data = json.load(handle)
+        except (OSError, ValueError):
+            return frozenset()
+        return frozenset(str(item) for item in data) if isinstance(data, list) else frozenset()
+
     def items(self):
         self._bootstrap()
+        known = self._known_items()
+        known_run = 0
         count = 0
         for post in self._posts():
             media_id = str(post.get("pk") or "")
@@ -300,10 +318,16 @@ class ThreadsWebExtractor(Extractor):
                 continue
             metadata = {"id": media_id, "shortcode": shortcode, "username": self.username,
                         "count": len(assets)}
+            if isinstance(post.get("taken_at"), int):
+                metadata["taken_at"] = post["taken_at"]
             yield Message.Directory, f"{self.root}/@{self.username}/post/{shortcode}", metadata
             for num, (url, extension) in enumerate(assets, 1):
                 count += 1
                 yield Message.Url, url, {**metadata, "num": num, "extension": extension}
+            if known:
+                known_run = known_run + 1 if media_id in known else 0
+                if known_run >= KNOWN_RUN_STOP:
+                    return
         if not count:
             raise self.exc.AbortExtraction("No downloadable media found in this Threads post or Media tab.")
 

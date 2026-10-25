@@ -21,13 +21,23 @@ import { dedupeFeedItems } from './feed-items'
 import type { FeedFetcher } from './feed-parser'
 import { resolveFeedFromInput } from './feed-resolver'
 import { LeaderElection, type LeaderElectionOptions, type MetaStore } from './leader'
+import {
+  decideProfileDownloads,
+  isSubscriptionDue,
+  nextProfileCheckAt,
+  summarizeProfileStatus
+} from './profile-policy'
 import { FeedCheckScheduler, type FeedCheckSchedulerOptions } from './scheduler'
 import type { SubscriptionsStore } from './store'
 import {
   type AutoDownloadDecision,
+  DEFAULT_SCHEDULER_TICK_MS,
+  isProfilePlatform,
   type LeaderKind,
   type LeaderState,
   type NormalizedFeedItem,
+  PROFILE_SUBSCRIPTION_CATEGORIES,
+  type ProfileSourceFetcher,
   type ResolvedFeed,
   SUBSCRIPTION_DUPLICATE_FEED_ERROR,
   type SubscriptionCreateInput,
@@ -43,6 +53,8 @@ export interface EnqueueItemContext {
   item: NormalizedFeedItem
   /** Why we're enqueuing — 'auto' for scheduled feed-check, 'manual' for user. */
   trigger: 'auto' | 'manual'
+  /** Items queued by one profile check share a queue batch. */
+  batch?: { id: string; title: string }
 }
 
 /**
@@ -58,6 +70,12 @@ export interface SubscriptionsApiOptions {
   store: SubscriptionsStore
   metaStore: MetaStore
   fetcher: FeedFetcher
+  /**
+   * Checks profile subscriptions through the host's profile mappers. Hosts
+   * without one (the API server) list profile subscriptions but never check
+   * them; Desktop owns those checks regardless of the RSS leader lease.
+   */
+  profileFetcher?: ProfileSourceFetcher
   enqueueItem: EnqueueItem
   /** Optional: returns true if a URL is already in download history. */
   isHistoryDup?: (url: string) => boolean
@@ -83,12 +101,16 @@ export interface SubscriptionsApiOptions {
 
 export { SUBSCRIPTION_DUPLICATE_FEED_ERROR }
 
+/** Profile subscriptions are checked by VidBee Desktop; other hosts cannot create them. */
+export const SUBSCRIPTION_PROFILE_DESKTOP_ONLY_ERROR = 'SUBSCRIPTION_PROFILE_DESKTOP_ONLY'
+
 export type SubscriptionsApiEvent = 'changed'
 export type SubscriptionsApiListener = (kind: SubscriptionsApiEvent) => void
 
 export class SubscriptionsApi {
   private readonly store: SubscriptionsStore
   private readonly fetcher: FeedFetcher
+  private readonly profileFetcher: ProfileSourceFetcher | null
   private readonly enqueueItem: EnqueueItem
   private readonly isHistoryDup: (url: string) => boolean
   private readonly taskExists: ((taskId: string) => boolean | Promise<boolean>) | null
@@ -99,10 +121,14 @@ export class SubscriptionsApi {
   private readonly listeners = new Set<SubscriptionsApiListener>()
   private readonly pendingRemovedTaskIds = new Set<string>()
   private removedTaskFlush: Promise<void> | null = null
+  /** One check per subscription at a time; a second caller awaits the first. */
+  private readonly inFlight = new Map<string, Promise<void>>()
+  private readonly checkControllers = new Map<string, AbortController>()
 
   constructor(opts: SubscriptionsApiOptions) {
     this.store = opts.store
     this.fetcher = opts.fetcher
+    this.profileFetcher = opts.profileFetcher ?? null
     this.enqueueItem = opts.enqueueItem
     this.isHistoryDup = opts.isHistoryDup ?? (() => false)
     this.taskExists = opts.taskExists ?? null
@@ -117,10 +143,14 @@ export class SubscriptionsApi {
       log: this.log
     })
     this.scheduler = new FeedCheckScheduler({
+      // Ticks are cheap: each one checks only the subscriptions that are due.
+      intervalMs: DEFAULT_SCHEDULER_TICK_MS,
       ...(opts.scheduler ?? {}),
       runAll: () => this.refreshAll(),
       runOne: (id) => this.refreshOne(id),
-      isLeader: () => this.election.isLeader(),
+      // Leader gating is per subscription in `refreshAll`: feeds need the
+      // lease, profile checks need a profile fetcher.
+      isLeader: () => true,
       log: this.log,
       now: this.now
     })
@@ -197,6 +227,10 @@ export class SubscriptionsApi {
   }
 
   async add(input: SubscriptionCreateInput): Promise<SubscriptionWithItems> {
+    input = normalizeProfileInput(input)
+    if (input.sourceKind === 'profile' && !this.profileFetcher) {
+      throw new Error(SUBSCRIPTION_PROFILE_DESKTOP_ONLY_ERROR)
+    }
     const dup = await this.store.findDuplicateFeed(input.feedUrl)
     if (dup) {
       const err = new Error(SUBSCRIPTION_DUPLICATE_FEED_ERROR)
@@ -218,7 +252,24 @@ export class SubscriptionsApi {
         throw err
       }
     }
-    const next = await this.store.update(id, patch)
+    const existing = await this.store.get(id)
+    if (!existing) {
+      throw new Error(`Subscription not found: ${id}`)
+    }
+    if (patch.categories) {
+      patch.categories = validateCategories(existing.platform, patch.categories)
+    }
+    const { checkIntervalMs, ...rest } = patch
+    const storePatch: SubscriptionUpdateInput & Partial<SubscriptionRule> = rest
+    if (checkIntervalMs !== undefined) {
+      // null clears the override; the store writes the absent value as NULL.
+      storePatch.checkIntervalMs = checkIntervalMs ?? undefined
+    }
+    if (checkIntervalMs !== undefined || patch.categories || patch.enabled === true) {
+      // Re-plan from the new settings instead of a stale retry/interval time.
+      storePatch.nextCheckAt = undefined
+    }
+    const next = await this.store.update(id, storePatch)
     if (!next) {
       throw new Error(`Subscription not found: ${id}`)
     }
@@ -227,6 +278,7 @@ export class SubscriptionsApi {
   }
 
   async remove(input: { id: string }): Promise<Record<string, never>> {
+    this.checkControllers.get(input.id)?.abort()
     await this.store.remove(input.id)
     this.emitChanged()
     return {}
@@ -376,13 +428,18 @@ export class SubscriptionsApi {
   // ---------- Feed-check pass ----------
 
   /**
-   * Run a feed-check pass over every enabled subscription. Errors in one
-   * subscription don't prevent others from being checked.
+   * Check every enabled subscription that is due, or all of them when
+   * forced. Errors in one subscription don't prevent others from being checked.
    */
-  async refreshAll(): Promise<void> {
+  async refreshAll(options: { force?: boolean } = {}): Promise<void> {
     const all = await this.store.list()
+    // A forced (user-initiated) pass checks feeds even without the lease.
+    const feedLeader = options.force === true || this.election.isLeader()
     for (const sub of all) {
-      if (!sub.enabled) {
+      if (!(sub.enabled && this.canCheck(sub, feedLeader))) {
+        continue
+      }
+      if (!(options.force || isSubscriptionDue(sub, this.now()))) {
         continue
       }
       try {
@@ -398,8 +455,29 @@ export class SubscriptionsApi {
    * scheduler tick (for each enabled sub) and by manual `refresh(id)` calls.
    */
   async refreshOne(subscriptionId: string): Promise<void> {
+    const running = this.inFlight.get(subscriptionId)
+    if (running) {
+      return running
+    }
+    const check = this.checkSubscription(subscriptionId).finally(() => {
+      this.inFlight.delete(subscriptionId)
+    })
+    this.inFlight.set(subscriptionId, check)
+    return check
+  }
+
+  /** Feeds follow the RSS leader lease; profile checks need a profile fetcher. */
+  private canCheck(sub: SubscriptionRule, feedLeader: boolean): boolean {
+    return sub.sourceKind === 'profile' ? this.profileFetcher !== null : feedLeader
+  }
+
+  private async checkSubscription(subscriptionId: string): Promise<void> {
     const sub = await this.store.get(subscriptionId)
     if (!sub) {
+      return
+    }
+    if (sub.sourceKind === 'profile') {
+      await this.checkProfile(sub)
       return
     }
     const startedAt = this.now()
@@ -476,5 +554,139 @@ export class SubscriptionsApi {
       })
     }
     this.emitChanged()
+  }
+
+  /**
+   * Check one profile subscription through the host's mappers. Categories
+   * that fail keep their previous items; the rest are merged and new items
+   * are queued. Hosts without a profile fetcher leave the row untouched.
+   */
+  private async checkProfile(sub: SubscriptionWithItems): Promise<void> {
+    const fetcher = this.profileFetcher
+    if (!fetcher) {
+      return
+    }
+    const controller = new AbortController()
+    this.checkControllers.set(sub.id, controller)
+    const startedAt = this.now()
+    await this.store.update(sub.id, {
+      status: 'checking',
+      lastCheckedAt: startedAt,
+      lastError: undefined
+    })
+    this.emitChanged()
+    try {
+      const result = await fetcher.fetch(sub, controller.signal)
+      // The subscription may have been edited or removed while mapping ran.
+      const current = await this.store.get(sub.id)
+      if (!current || controller.signal.aborted) {
+        return
+      }
+      const decision = decideProfileDownloads({
+        subscription: current,
+        knownItems: current.items,
+        result,
+        isHistoryDup: this.isHistoryDup,
+        now: this.now
+      })
+      await this.store.mergeItems(sub.id, decision.itemsToPersist)
+      // A new subscription's title is its URL until the first check names it.
+      const fetchedTitle =
+        result.title?.trim() && (!current.title.trim() || current.title === current.sourceUrl)
+          ? result.title.trim()
+          : undefined
+      const batch = {
+        id: `subscription_${sub.id}_${startedAt}`,
+        title: fetchedTitle ?? current.title
+      }
+      for (const item of decision.items) {
+        try {
+          const taskId = await this.enqueueItem({
+            subscription: current,
+            item,
+            trigger: 'auto',
+            batch
+          })
+          if (taskId) {
+            await this.store.markItemQueued(sub.id, item.id, taskId)
+          }
+        } catch (err) {
+          this.log('warn', 'subscriptions: enqueueItem failed', {
+            subscriptionId: sub.id,
+            itemId: item.id,
+            err
+          })
+        }
+      }
+      const status = summarizeProfileStatus(current, result)
+      const finishedAt = this.now()
+      const patch: SubscriptionUpdateInput & Partial<SubscriptionRule> = {
+        status,
+        lastError: status === 'up-to-date' ? undefined : (result.error ?? status),
+        nextCheckAt: nextProfileCheckAt(current, finishedAt, result.retryAfter)
+      }
+      if (status === 'up-to-date') {
+        patch.lastSuccessAt = finishedAt
+      }
+      if (decision.latest) {
+        patch.latestVideoTitle = decision.latest.title
+        patch.latestVideoPublishedAt = decision.latest.publishedAt
+      }
+      if (result.avatarUrl) {
+        patch.coverUrl = result.avatarUrl
+      }
+      if (fetchedTitle) {
+        patch.title = fetchedTitle
+      }
+      await this.store.update(sub.id, patch)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      this.log('warn', 'subscriptions: profile check failed', { id: sub.id, err })
+      if (await this.store.get(sub.id)) {
+        const failedAt = this.now()
+        await this.store.update(sub.id, {
+          status: 'failed',
+          lastError: message,
+          lastCheckedAt: failedAt,
+          nextCheckAt: nextProfileCheckAt(sub, failedAt)
+        })
+      }
+    } finally {
+      if (this.checkControllers.get(sub.id) === controller) {
+        this.checkControllers.delete(sub.id)
+      }
+    }
+    this.emitChanged()
+  }
+}
+
+/** Keep only categories the platform offers, in catalog order. */
+const validateCategories = (platform: string, categories: string[]): string[] => {
+  if (!isProfilePlatform(platform)) {
+    return []
+  }
+  const offered: readonly string[] = PROFILE_SUBSCRIPTION_CATEGORIES[platform]
+  const picked = offered.filter((category) => categories.includes(category))
+  if (picked.length === 0) {
+    throw new Error('Choose at least one category to follow.')
+  }
+  return picked
+}
+
+/** Profile subscriptions skip RSS-only options; feeds never carry categories. */
+const normalizeProfileInput = (input: SubscriptionCreateInput): SubscriptionCreateInput => {
+  const { platform } = input
+  if (!isProfilePlatform(platform)) {
+    return { ...input, sourceKind: 'feed', categories: [] }
+  }
+  return {
+    ...input,
+    sourceKind: 'profile',
+    categories: validateCategories(
+      platform,
+      input.categories ?? [...PROFILE_SUBSCRIPTION_CATEGORIES[platform]]
+    ),
+    onlyDownloadLatest: false,
+    keywords: []
   }
 }

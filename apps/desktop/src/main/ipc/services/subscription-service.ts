@@ -26,6 +26,9 @@ interface CreateSubscriptionOptions extends SubscriptionDownloadPreferences {
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
+  /** Profile subscriptions only: followed categories and check interval. */
+  categories?: string[]
+  checkIntervalMs?: number
 }
 
 class SubscriptionService extends IpcService {
@@ -54,6 +57,10 @@ class SubscriptionService extends IpcService {
         sourceUrl: resolved.sourceUrl,
         feedUrl: resolved.feedUrl,
         platform: resolved.platform,
+        sourceKind: resolved.sourceKind,
+        profileOwner: resolved.profileOwner,
+        categories: options.categories,
+        checkIntervalMs: options.checkIntervalMs,
         keywords: options.keywords,
         tags: options.tags,
         onlyDownloadLatest:
@@ -114,11 +121,19 @@ class SubscriptionService extends IpcService {
 
   @IpcMethod()
   async refresh(_context: IpcContext, id?: string): Promise<void> {
-    if (id) {
-      await getDesktopSubscriptions().refresh({ id })
-    } else {
-      await getDesktopSubscriptions().refreshAll()
+    const subscriptions = getDesktopSubscriptions()
+    if (!id) {
+      // A manual "refresh all" checks every subscription, due or not. Profile
+      // checks can take minutes, so the renderer follows progress by status.
+      void subscriptions.refreshAll({ force: true }).catch(() => undefined)
+      return
     }
+    const subscription = await subscriptions.get({ id })
+    if (subscription.sourceKind === 'profile') {
+      void subscriptions.refresh({ id }).catch(() => undefined)
+      return
+    }
+    await subscriptions.refresh({ id })
   }
 
   @IpcMethod()

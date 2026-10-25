@@ -18,6 +18,7 @@ import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
 import { normalizePinterestUrl, PINTEREST_EXTRACTOR_ARGS } from './pinterest'
 import { SocialCollectionSummarySchema } from './schemas'
+import { normalizeSnapchatUrl } from './snapchat'
 import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
 import { normalizeThreadsUrl } from './threads'
 import { normalizeTikTokPhotoUrl } from './tiktok-photo'
@@ -121,6 +122,9 @@ export const resolveDownloadTaskKind = (
   if (threads) {
     return threads.kind === 'post' ? 'threads-post' : 'threads-profile'
   }
+  if (normalizeSnapchatUrl(url)) {
+    return 'snapchat-media'
+  }
   if (normalizeFacebookGalleryUrl(url)) {
     return 'facebook-gallery'
   }
@@ -146,6 +150,10 @@ const createTailBuffer = (maxBytes: number): TailBuffer => {
 }
 
 export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => {
+  if (normalizeSnapchatUrl(url)) {
+    // Snap file ids are unique per asset; the date keeps folders chronological.
+    return '{date:%Y-%m-%d}_{file_id}.{extension}'
+  }
   if (normalizeThreadsUrl(url) || normalizePinterestUrl(url)) {
     return '{id}_{num:>02}.{extension}'
   }
@@ -167,7 +175,8 @@ export const resolveGalleryDlFilenameTemplate = (
     normalizeVscoUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
     normalizeTikTokPhotoUrl(url) ||
-    normalizeThreadsUrl(url)
+    normalizeThreadsUrl(url) ||
+    normalizeSnapchatUrl(url)
   ) {
     return resolveDefaultGalleryDlFilenameTemplate(url)
   }
@@ -358,9 +367,11 @@ export class GalleryDlExecutor implements Executor {
     const facebookGallery = normalizeFacebookGalleryUrl(ctx.input.url)
     const tiktokPhoto = normalizeTikTokPhotoUrl(ctx.input.url)
     const threads = normalizeThreadsUrl(ctx.input.url)
+    const snapchat = normalizeSnapchatUrl(ctx.input.url)
     const galleryDirectorySegments =
       pinterest?.directorySegments ??
       threads?.directorySegments ??
+      snapchat?.directorySegments ??
       facebookGallery?.directorySegments ??
       tiktokPhoto?.directorySegments ??
       vsco?.directorySegments ??
@@ -387,11 +398,13 @@ export class GalleryDlExecutor implements Executor {
       facebookGallery,
       tiktokPhoto,
       vsco,
-      threads
+      threads,
+      snapchat
     })
     const args = buildArgs(
       pinterest?.url ??
         threads?.url ??
+        snapchat?.url ??
         facebookGallery?.url ??
         tiktokPhoto?.url ??
         vsco?.url ??
@@ -445,6 +458,12 @@ export class GalleryDlExecutor implements Executor {
         `extractor.vidbee-social.inspect=${ctx.input.options?.socialInspect === true}`,
         '-o',
         `extractor.vidbee-social.map-items=${ctx.input.options?.socialMap === true}`,
+        ...(typeof ctx.input.options?.socialKnownItemsFile === 'string'
+          ? [
+              '-o',
+              `extractor.vidbee-social.known-items-file=${JSON.stringify(ctx.input.options.socialKnownItemsFile)}`
+            ]
+          : []),
         `vidbee-social:${socialCollectionUrl(socialSource)}`
       )
     }
@@ -932,6 +951,7 @@ const resolveExtractorArgs = (galleries: {
   facebookGallery: unknown
   tiktokPhoto: unknown
   vsco: unknown
+  snapchat: unknown
 }): readonly string[] => {
   if (galleries.pinterest) {
     return [
@@ -944,7 +964,7 @@ const resolveExtractorArgs = (galleries: {
       '3'
     ]
   }
-  if (galleries.threads) {
+  if (galleries.threads || galleries.snapchat) {
     return ['--sleep-request', '1', '--sleep-429', '60', '--retries', '3']
   }
   if (galleries.facebookGallery) {
@@ -979,7 +999,8 @@ export const shouldUseGalleryDl = (url: string): boolean => {
     normalizeVscoUrl(url) ||
     normalizeFacebookGalleryUrl(url) ||
     normalizeTikTokPhotoUrl(url) ||
-    normalizeThreadsUrl(url)
+    normalizeThreadsUrl(url) ||
+    normalizeSnapchatUrl(url)
   ) {
     return true
   }

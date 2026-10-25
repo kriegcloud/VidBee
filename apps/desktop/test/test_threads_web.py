@@ -1,10 +1,13 @@
 """Run with Python and gallery-dl 1.32.11 installed."""
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
+from gallery_dl.extractor.common import Message
 from requests.cookies import RequestsCookieJar
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'resources/gallery-dl-extractors'))
@@ -163,6 +166,18 @@ class TestThreadsWeb(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'refresh your login cookies'):
             ThreadsWebExtractor._query(ie, _POST_QUERY, {})
         self.assertEqual(ie.request.call_count, 1)
+
+    def test_known_run_stops_an_incremental_profile_map(self):
+        posts = [media(str(1234567890 + index)) for index in range(20)]
+        with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as handle:
+            json.dump([post['pk'] for post in posts[2:]], handle)
+        ie = Harness([page(posts)])
+        ie.subcategory = 'profile'
+        ie.config = Mock(return_value=handle.name)
+        urls = [message for message in ie.items() if message[0] == Message.Url]
+        # Two new posts, then twelve known ones before the walk stops.
+        self.assertEqual(len(urls), 14)
+        Path(handle.name).unlink()
 
 
 if __name__ == '__main__':

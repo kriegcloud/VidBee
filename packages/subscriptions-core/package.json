@@ -15,6 +15,7 @@
     "./feed-parser": "./src/feed-parser.ts",
     "./feed-items": "./src/feed-items.ts",
     "./auto-download": "./src/auto-download.ts",
+    "./profile-policy": "./src/profile-policy.ts",
     "./scheduler": "./src/scheduler.ts",
     "./leader": "./src/leader.ts",
     "./store": "./src/store.ts",
@@ -22,7 +23,8 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
     "@orpc/contract": "^1.16.1",

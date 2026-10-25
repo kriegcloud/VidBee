@@ -19,6 +19,8 @@
  * `subscription-manager.ts` / `subscription-scheduler.ts` modules they
  * superseded have been removed.
  */
+
+import path from 'node:path'
 import { applySubscriptionsMigrations } from '@vidbee/db/subscriptions'
 import {
   createSqliteMetaStore,
@@ -30,11 +32,26 @@ import {
 import type { SubscriptionFeedItem, SubscriptionRule } from '../../shared/types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
+import { toSharedSettings } from './command-utils'
 import { getDatabaseConnection } from './database'
 import { hydrateDownloadMetadata } from './download-metadata'
 import { historyManager } from './history-manager'
+import {
+  createDesktopProfileFetcher,
+  type DesktopProfileSubscriptionDeps,
+  enqueueProfileSubscriptionItem
+} from './profile-subscriptions'
+import { getSocialProfileManager } from './social-profile-manager'
 import { buildDesktopSubscriptionTaskInput } from './subscription-enqueue'
-import { getDesktopTaskQueue } from './task-queue-host'
+import { getDesktopInstagramProfileInspector, getDesktopTaskQueue } from './task-queue-host'
+
+const profileDeps: DesktopProfileSubscriptionDeps = {
+  socialProfiles: getSocialProfileManager,
+  instagram: getDesktopInstagramProfileInspector,
+  queue: getDesktopTaskQueue,
+  settings: () => toSharedSettings(settingsManager.getAll()),
+  defaultDownloadDir: () => path.join(settingsManager.getAll().downloadPath, 'Subscriptions')
+}
 
 const logger = scopedLoggers.engine
 
@@ -97,11 +114,17 @@ export const getDesktopSubscriptions = (): SubscriptionsApi => {
     store,
     metaStore,
     fetcher: new RssParserFeedFetcher(),
+    profileFetcher: createDesktopProfileFetcher(profileDeps),
     isHistoryDup: (url) => historyManager.hasHistoryForUrl(url),
     // `get` is this process's startup snapshot. A task the API wrote to the
     // shared database after that is still a real download.
     taskExists: (taskId) => getDesktopTaskQueue().hasTask(taskId),
-    enqueueItem: async ({ subscription, item, trigger, creation }) => {
+    enqueueItem: async (context) => {
+      const { subscription, item, trigger, creation } = context
+      if (subscription.sourceKind === 'profile') {
+        ensureDirectoryExists(subscription.downloadDirectory)
+        return await enqueueProfileSubscriptionItem(profileDeps, context)
+      }
       const { task, downloadDirectory } = buildDesktopSubscriptionTaskInput({
         settings: settingsManager.getAll(),
         subscription,
@@ -153,25 +176,43 @@ export const stopDesktopSubscriptions = async (): Promise<void> => {
   started = false
 }
 
+const ACTIVE_STATUSES: ReadonlySet<string> = new Set([
+  'queued',
+  'running',
+  'processing',
+  'paused',
+  'retry-scheduled'
+])
+
 /**
  * Remove a subscription and cancel any non-terminal tasks the queue still
  * holds for it. See NEX-132 regression checklist: "用户暂停 / 删除订阅后，
  * 已经入队但未开始的 subscription-item 任务被自动取消".
  */
 export const removeDesktopSubscription = async (id: string): Promise<void> => {
+  // Profile items can queue outside the subscription's group (Instagram and
+  // X/TikTok keep per-site groups), so cancel their linked tasks by id too.
+  const linked = await getDesktopSubscriptions()
+    .get({ id })
+    .then((sub) => sub.items.flatMap((item) => (item.taskId ? [item.taskId] : [])))
+    .catch(() => [] as string[])
   await getDesktopSubscriptions().remove({ id })
   const queue = getDesktopTaskQueue()
+  for (const taskId of linked) {
+    const task = queue.get(taskId)
+    if (task && ACTIVE_STATUSES.has(task.status)) {
+      try {
+        await queue.cancel(taskId)
+      } catch {
+        // Best-effort: the task may have finished meanwhile.
+      }
+    }
+  }
   let cursor: string | null = null
   do {
     const page = queue.list({ groupKey: id, limit: 200, cursor })
     for (const task of page.tasks) {
-      if (
-        task.status === 'queued' ||
-        task.status === 'running' ||
-        task.status === 'processing' ||
-        task.status === 'paused' ||
-        task.status === 'retry-scheduled'
-      ) {
+      if (ACTIVE_STATUSES.has(task.status)) {
         try {
           await queue.cancel(task.id)
         } catch {
@@ -222,7 +263,18 @@ export const projectSubscriptionForRenderer = (sub: SubscriptionWithItems): Subs
     status: sub.status,
     createdAt: sub.createdAt,
     updatedAt: sub.updatedAt,
+    sourceKind: sub.sourceKind,
+    categories: sub.categories,
     items
+  }
+  if (sub.profileOwner !== undefined) {
+    projected.profileOwner = sub.profileOwner
+  }
+  if (sub.checkIntervalMs !== undefined) {
+    projected.checkIntervalMs = sub.checkIntervalMs
+  }
+  if (sub.nextCheckAt !== undefined) {
+    projected.nextCheckAt = sub.nextCheckAt
   }
   if (sub.coverUrl !== undefined) {
     projected.coverUrl = sub.coverUrl

@@ -28,6 +28,16 @@ const enabledStatusMeta: Record<SubscriptionStatus, SubscriptionStatusMeta> = {
     textClass: 'text-red-600',
     label: 'subscriptions.status.failed'
   },
+  'rate-limited': {
+    dotClass: 'bg-amber-500',
+    textClass: 'text-amber-600',
+    label: 'subscriptions.status.rate-limited'
+  },
+  'auth-required': {
+    dotClass: 'bg-amber-500',
+    textClass: 'text-amber-600',
+    label: 'subscriptions.status.auth-required'
+  },
   idle: fallbackStatusMeta
 }
 

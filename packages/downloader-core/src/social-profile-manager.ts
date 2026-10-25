@@ -16,8 +16,10 @@ import type { MappedProfilePlatform } from './mapped-profile-source'
 import { resolveMappedProfileSource } from './mapped-profile-source'
 import { mapPinterestProfile } from './pinterest-profile-map'
 import { mapRedGifsProfile } from './redgifs-profile-service'
+import { mapSnapchatProfile } from './snapchat-profile-map'
 import {
   mapSocialMediaProfile,
+  type ProfileMapOptions,
   type SocialMappedItem,
   type SocialMappedProfile,
   SocialMappedProfileSchema,
@@ -41,14 +43,15 @@ const PRE_AGGREGATED: ReadonlySet<MappedProfilePlatform> = new Set<MappedProfile
   'facebook',
   'vsco',
   'threads',
-  'pinterest'
+  'pinterest',
+  'snapchat'
 ])
 
 const profileSource = (value: string) => {
   const source = resolveMappedProfileSource(value)
   if (!source) {
     throw new Error(
-      'Enter a Facebook, X, TikTok, Redgifs, VSCO, Threads, or Pinterest profile URL.'
+      'Enter a Facebook, X, TikTok, Redgifs, VSCO, Threads, Pinterest, or Snapchat profile URL.'
     )
   }
   return source
@@ -150,7 +153,8 @@ export class SocialProfileManager {
     runtime: GalleryDlProfileMapRuntime,
     settings: DownloadRuntimeSettings | undefined,
     signal: AbortSignal,
-    onItem: (item: SocialMappedItem) => void
+    onItem: (item: SocialMappedItem) => void,
+    options: ProfileMapOptions
   ): Promise<{ complete: boolean; error?: string }> {
     if (platform === 'facebook') {
       return mapFacebookProfile(
@@ -170,7 +174,17 @@ export class SocialProfileManager {
       return mapVscoProfile(url, owner, runtime, settings, signal, onItem)
     }
     if (platform === 'threads') {
-      return mapThreadsProfile(url, owner, runtime, settings, signal, onItem)
+      return mapThreadsProfile(url, owner, runtime, settings, signal, onItem, options)
+    }
+    if (platform === 'snapchat') {
+      return mapSnapchatProfile(
+        owner,
+        category === 'spotlight' ? 'spotlight' : 'stories',
+        runtime,
+        settings,
+        signal,
+        onItem
+      )
     }
     if (platform === 'redgifs') {
       return mapRedGifsProfile(
@@ -181,10 +195,42 @@ export class SocialProfileManager {
         onItem
       )
     }
-    return mapSocialMediaProfile(url, this.options.runtime, settings, signal, onItem)
+    return mapSocialMediaProfile(url, this.options.runtime, settings, signal, onItem, options)
   }
 
-  map(url: string, category: string, settings?: DownloadRuntimeSettings): SocialMappedProfile {
+  /**
+   * Map a category and resolve once the traversal settles. `incremental` stops
+   * X, TikTok and Threads after a run of already-saved posts; subscription
+   * checks use it so each check reads only the newest part of a timeline.
+   */
+  async mapAndWait(
+    url: string,
+    category: string,
+    settings?: DownloadRuntimeSettings,
+    options: { incremental?: boolean; signal?: AbortSignal } = {}
+  ): Promise<SocialMappedProfile> {
+    const source = profileSource(url)
+    const filename = this.filename(source.platform, source.owner)
+    // A mapping the user started from the dialog finishes first.
+    await this.active.get(filename)?.done
+    this.map(url, category, settings, { incremental: options.incremental })
+    const active = this.active.get(filename)
+    const stop = () => active?.controller.abort()
+    options.signal?.addEventListener('abort', stop, { once: true })
+    try {
+      await active?.done
+    } finally {
+      options.signal?.removeEventListener('abort', stop)
+    }
+    return this.get(url)
+  }
+
+  map(
+    url: string,
+    category: string,
+    settings?: DownloadRuntimeSettings,
+    options: { incremental?: boolean } = {}
+  ): SocialMappedProfile {
     const source = profileSource(url)
     const selected = source.categories.find((entry) => entry.key === category)
     if (!selected) {
@@ -196,6 +242,9 @@ export class SocialProfileManager {
     }
     const profile = this.get(url)
     const mapped = profile.categories[category] as SocialProfileCategory
+    // Stopping early is only safe once a full traversal has completed;
+    // otherwise an interrupted first map would never reach older posts.
+    const canStopEarly = options.incremental === true && mapped.state === 'complete'
     mapped.state = 'mapping'
     mapped.error = undefined
     this.save(profile)
@@ -224,6 +273,8 @@ export class SocialProfileManager {
       resolveYtDlpPath: this.options.resolveYtDlpPath,
       resolveGalleryDlArgs: this.options.runtime.resolveExtraArgs
     }
+    const knownIds =
+      canStopEarly && mapped.items.length > 0 ? mapped.items.map((item) => item.id) : undefined
     const mapping = this.startMapping(
       source.platform,
       selected.url,
@@ -232,7 +283,8 @@ export class SocialProfileManager {
       mapperRuntime,
       settings,
       controller.signal,
-      onItem
+      onItem,
+      { knownIds }
     )
     const done = mapping
       .then((result) => {

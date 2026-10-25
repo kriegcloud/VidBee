@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { ExecutorFinishEvent, TaskQueueAPI } from '@vidbee/task-queue'
@@ -20,6 +20,8 @@ export interface SocialMappedItem {
   images: number
   videos: number
   downloaded?: boolean
+  /** Epoch ms of the post when the mapper can read it. */
+  publishedAt?: number
 }
 
 export interface SocialProfileCategory {
@@ -43,7 +45,8 @@ export const SocialMappedItemSchema = z.object({
   title: z.string().optional(),
   images: z.number().int().nonnegative(),
   videos: z.number().int().nonnegative(),
-  downloaded: z.boolean().optional()
+  downloaded: z.boolean().optional(),
+  publishedAt: z.number().int().nonnegative().optional()
 })
 
 export const SocialProfileCategorySchema = z.object({
@@ -54,11 +57,44 @@ export const SocialProfileCategorySchema = z.object({
 
 export const SocialMappedProfileSchema = z.object({
   profileUrl: z.url(),
-  platform: z.enum(['x', 'tiktok', 'redgifs', 'facebook', 'vsco', 'threads', 'pinterest']),
+  platform: z.enum([
+    'x',
+    'tiktok',
+    'redgifs',
+    'facebook',
+    'vsco',
+    'threads',
+    'pinterest',
+    'snapchat'
+  ]),
   owner: z.string(),
   categories: z.record(z.string(), SocialProfileCategorySchema),
   updatedAt: z.number()
 })
+
+/** Shared by the X/TikTok and Threads mappers when a refresh may stop early. */
+export interface ProfileMapOptions {
+  /**
+   * Post ids already in the saved map. The extractor stops after a run of
+   * consecutive known posts instead of walking the whole timeline again.
+   */
+  knownIds?: readonly string[]
+}
+
+/** Write known post ids where the gallery-dl module can read them. */
+export const writeKnownItemsFile = async (
+  directory: string,
+  knownIds: readonly string[] | undefined
+): Promise<string | undefined> => {
+  if (!knownIds?.length) {
+    return
+  }
+  const file = path.join(directory, 'known-items.json')
+  await writeFile(file, JSON.stringify(knownIds), { mode: 0o600 })
+  return file
+}
+
+const RATE_LIMIT_DIAGNOSTIC = /\b429\b|Too Many Requests|rate.?limit/i
 
 /** Map post references only; signed media URLs never enter the saved profile. */
 export const mapSocialMediaProfile = async (
@@ -66,7 +102,8 @@ export const mapSocialMediaProfile = async (
   runtime: Omit<GalleryDlExecutorOptions, 'defaultDownloadDir'> & { admission?: SourceAdmission },
   settings: DownloadRuntimeSettings | undefined,
   signal: AbortSignal,
-  onItem: (item: SocialMappedItem) => void
+  onItem: (item: SocialMappedItem) => void,
+  options: ProfileMapOptions = {}
 ): Promise<{ complete: boolean; error?: string }> => {
   const source = await inspectSocialMedia(url)
   if (!(['x', 'tiktok'].includes(source.platform) && ['profile', 'feed'].includes(source.kind))) {
@@ -80,6 +117,7 @@ export const mapSocialMediaProfile = async (
     if (signal.aborted) {
       return { complete: false }
     }
+    const knownItemsFile = await writeKnownItemsFile(directory, options.knownIds)
     const executor = new GalleryDlExecutor({ ...runtime, defaultDownloadDir: directory })
     const result = await new Promise<ExecutorFinishEvent>((resolve) => {
       const run = executor.run(
@@ -95,6 +133,7 @@ export const mapSocialMediaProfile = async (
               customDownloadPath: directory,
               socialInspect: true,
               socialMap: true,
+              ...(knownItemsFile ? { socialKnownItemsFile: knownItemsFile } : {}),
               socialMedia: { linkedMedia: false }
             }
           }
@@ -135,13 +174,17 @@ export const mapSocialMediaProfile = async (
                 return
               }
               discoveredItems += 1
-              onItem({
+              const item: SocialMappedItem = {
                 id: entry.id,
                 url: post.url,
                 author: entry.author,
                 images: entry.kind === 'image' ? 1 : 0,
                 videos: entry.kind === 'video' ? 1 : 0
-              })
+              }
+              if (typeof entry.date === 'number' && Number.isFinite(entry.date) && entry.date > 0) {
+                item.publishedAt = Math.trunc(entry.date)
+              }
+              onItem(item)
             } catch {
               // Malformed item events cannot become persisted references.
             }
@@ -174,7 +217,9 @@ export const mapSocialMediaProfile = async (
           ? source.platform === 'x'
             ? 'AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping.'
             : 'AuthRequired: sign in with the dedicated browser and retry mapping.'
-          : 'Profile mapping stopped before traversal completed. Saved items were retained.'
+          : RATE_LIMIT_DIAGNOSTIC.test(diagnostic)
+            ? 'RateLimited: the site is limiting requests from this network. Saved items were retained; retry later.'
+            : 'Profile mapping stopped before traversal completed. Saved items were retained.'
     }
   } finally {
     release?.()

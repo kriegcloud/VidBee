@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Birikmiş öğeleri yok say ve bu beslemeden sadece en yeni yüklemeleri al.",
       "enabled": "Etkinleştirildi",
       "disabled": "Devre dışı Bırakıldı",
-      "onlyLatestShort": "Sadece en son"
+      "onlyLatestShort": "Sadece en son",
+      "checkInterval": "Kontrol sıklığı",
+      "checkIntervalDefault": "Varsayılan ({{count}} sa)",
+      "checkIntervalHours": "{{count}} sa"
     },
     "actions": {
       "add": "Ekle",
@@ -1309,7 +1312,9 @@
       "idle": "Boşta",
       "tooltip": {
         "updatedAt": "Güncellendi: {{time}}"
-      }
+      },
+      "rate-limited": "Hız sınırı",
+      "auth-required": "Giriş gerekli"
     },
     "rssHub": {
       "title": "RSSHub ile Otomatik Abonelikler",
@@ -1317,6 +1322,26 @@
       "learnMore": "RSSHub hakkında daha fazla bilgi edinin",
       "openDocs": "RSSHub Dökümantasyonunu Aç",
       "hint": "Besleme URL’niz yok mu? RSSHub ile YouTube, Twitter ve binlerce başka platform için besleme oluşturun."
+    },
+    "profile": {
+      "all": "Tümü",
+      "noCategories": "En az bir kategori seçin.",
+      "desktopOnly": "Profil abonelikleri VidBee Desktop tarafından kontrol edilir.",
+      "storiesHint": "Hikâyeler 24 saat sonra kaybolur. Hiçbirini kaçırmamak için en az 12 saatte bir kontrol edin.",
+      "nextCheck": "Sonraki kontrol: {{time}}",
+      "subscribe": "Abone ol",
+      "subscribed": "Abone olundu",
+      "readOnly": "VidBee Desktop kontrol eder",
+      "categories": {
+        "stories": "Hikâyeler",
+        "highlights": "Öne çıkanlar",
+        "posts": "Gönderiler",
+        "reels": "Reels",
+        "tagged": "Etiketlenen gönderiler",
+        "media": "Medya",
+        "posts-with-media": "Medyalı gönderiler",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Olumsuz oylar",
       "reposts": "Yeniden paylaşımlar",
       "stories": "Hikâyeler",
-      "timeline": "Zaman akışı"
+      "timeline": "Zaman akışı",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

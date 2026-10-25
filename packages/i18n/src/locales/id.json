@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Abaikan item backlog dan ambil hanya unggahan terbaru dari feed ini.",
       "enabled": "Diaktifkan",
       "disabled": "Dinonaktifkan",
-      "onlyLatestShort": "Hanya terbaru"
+      "onlyLatestShort": "Hanya terbaru",
+      "checkInterval": "Periksa setiap",
+      "checkIntervalDefault": "Bawaan ({{count}} jam)",
+      "checkIntervalHours": "{{count}} jam"
     },
     "actions": {
       "add": "Tambah",
@@ -1309,7 +1312,9 @@
       "idle": "Menganggur",
       "tooltip": {
         "updatedAt": "Diperbarui: {{time}}"
-      }
+      },
+      "rate-limited": "Dibatasi",
+      "auth-required": "Perlu masuk"
     },
     "rssHub": {
       "title": "Berlangganan Otomatis dengan RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Pelajari lebih lanjut tentang RSSHub",
       "openDocs": "Buka Dokumentasi RSSHub",
       "hint": "Tidak punya URL umpan? Gunakan RSSHub untuk membuat umpan YouTube, Twitter, dan ribuan platform lain."
+    },
+    "profile": {
+      "all": "Semua",
+      "noCategories": "Pilih setidaknya satu kategori.",
+      "desktopOnly": "Langganan profil diperiksa oleh VidBee Desktop.",
+      "storiesHint": "Story hilang setelah 24 jam. Periksa setidaknya setiap 12 jam agar tidak ada yang terlewat.",
+      "nextCheck": "Pemeriksaan berikutnya: {{time}}",
+      "subscribe": "Langganan",
+      "subscribed": "Berlangganan",
+      "readOnly": "Diperiksa oleh VidBee Desktop",
+      "categories": {
+        "stories": "Story",
+        "highlights": "Sorotan",
+        "posts": "Postingan",
+        "reels": "Reels",
+        "tagged": "Postingan yang ditandai",
+        "media": "Media",
+        "posts-with-media": "Postingan dengan media",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Suara negatif",
       "reposts": "Posting ulang",
       "stories": "Cerita",
-      "timeline": "Linimasa"
+      "timeline": "Linimasa",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

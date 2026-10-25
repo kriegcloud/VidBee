@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import {
   GALLERY_DL_MAP_ARGS,
   type GalleryDlProfileMapRuntime,
@@ -5,7 +8,11 @@ import {
   runGalleryDlJson
 } from './gallery-dl-json-run'
 import { buildGalleryDlRuntimeArgs } from './instagram-profile'
-import type { SocialMappedItem } from './social-media-service'
+import {
+  type ProfileMapOptions,
+  type SocialMappedItem,
+  writeKnownItemsFile
+} from './social-media-service'
 import { normalizeThreadsUrl } from './threads'
 import type { DownloadRuntimeSettings } from './types'
 
@@ -25,7 +32,8 @@ const mapThreadsProfileUnchecked = async (
   runtime: GalleryDlProfileMapRuntime,
   settings: DownloadRuntimeSettings | undefined,
   signal: AbortSignal,
-  onItem: (item: SocialMappedItem) => void
+  onItem: (item: SocialMappedItem) => void,
+  knownItemsFile: string | undefined
 ): Promise<{ complete: boolean; error?: string }> => {
   const posts = new Map<string, SocialMappedItem>()
   const onLine = (line: string) => {
@@ -50,10 +58,13 @@ const mapThreadsProfileUnchecked = async (
       images: 0,
       videos: 0
     }
-    const next = {
+    const next: SocialMappedItem = {
       ...current,
       images: current.images + (video ? 0 : 1),
       videos: current.videos + (video ? 1 : 0)
+    }
+    if (typeof metadata.taken_at === 'number' && metadata.taken_at > 0) {
+      next.publishedAt = metadata.taken_at * 1000
     }
     posts.set(id, next)
     onItem(next)
@@ -62,7 +73,14 @@ const mapThreadsProfileUnchecked = async (
     runtime.resolveGalleryDlArgs?.(settings, url) ?? buildGalleryDlRuntimeArgs(settings)
   const result = await runGalleryDlJson(
     runtime.resolveGalleryDlPath(),
-    [...GALLERY_DL_MAP_ARGS, ...extraArgs, url],
+    [
+      ...GALLERY_DL_MAP_ARGS,
+      ...extraArgs,
+      ...(knownItemsFile
+        ? ['-o', `extractor.threads.known-items-file=${JSON.stringify(knownItemsFile)}`]
+        : []),
+      url
+    ],
     signal,
     'Threads',
     onLine
@@ -89,12 +107,30 @@ export const mapThreadsProfile = async (
   runtime: GalleryDlProfileMapRuntime,
   settings: DownloadRuntimeSettings | undefined,
   signal: AbortSignal,
-  onItem: (item: SocialMappedItem) => void
+  onItem: (item: SocialMappedItem) => void,
+  options: ProfileMapOptions = {}
 ): Promise<{ complete: boolean; error?: string }> => {
   const release = await runtime.admission?.acquire(url, signal)
+  const directory = options.knownIds?.length
+    ? await mkdtemp(path.join(tmpdir(), 'vidbee-threads-map-'))
+    : undefined
   try {
-    return await mapThreadsProfileUnchecked(url, owner, runtime, settings, signal, onItem)
+    const knownItemsFile = directory
+      ? await writeKnownItemsFile(directory, options.knownIds)
+      : undefined
+    return await mapThreadsProfileUnchecked(
+      url,
+      owner,
+      runtime,
+      settings,
+      signal,
+      onItem,
+      knownItemsFile
+    )
   } finally {
     release?.()
+    if (directory) {
+      await rm(directory, { recursive: true, force: true })
+    }
   }
 }

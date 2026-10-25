@@ -34,7 +34,8 @@ export function isOutputComplete(
     kind === 'facebook-gallery' ||
     kind === 'tiktok-photo' ||
     kind === 'threads-post' ||
-    kind === 'threads-profile'
+    kind === 'threads-profile' ||
+    kind === 'snapchat-media'
   ) {
     return Boolean(
       output.outputDirectory &&

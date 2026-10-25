@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Ignorez les éléments du backlog et récupérez uniquement le téléchargement le plus récent à partir de ce flux.",
       "enabled": "Activé",
       "disabled": "Désactivé",
-      "onlyLatestShort": "Seulement le dernier"
+      "onlyLatestShort": "Seulement le dernier",
+      "checkInterval": "Vérifier toutes les",
+      "checkIntervalDefault": "Par défaut ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Ajouter",
@@ -1309,7 +1312,9 @@
       "idle": "Inactif",
       "tooltip": {
         "updatedAt": "Mise à jour : {{time}}"
-      }
+      },
+      "rate-limited": "Limité",
+      "auth-required": "Connexion requise"
     },
     "rssHub": {
       "title": "Abonnements automatisés avec RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "En savoir plus sur RSSHub",
       "openDocs": "Ouvrir la documentation RSSHub",
       "hint": "Pas d'URL de flux ? Utilisez RSSHub pour générer des flux pour YouTube, Twitter et des milliers d'autres plateformes."
+    },
+    "profile": {
+      "all": "Tout",
+      "noCategories": "Choisissez au moins une catégorie.",
+      "desktopOnly": "Les abonnements aux profils sont vérifiés par VidBee Desktop.",
+      "storiesHint": "Les stories disparaissent après 24 heures. Vérifiez au moins toutes les 12 heures pour n'en manquer aucune.",
+      "nextCheck": "Prochaine vérification : {{time}}",
+      "subscribe": "S'abonner",
+      "subscribed": "Abonné",
+      "readOnly": "Vérifié par VidBee Desktop",
+      "categories": {
+        "stories": "Stories",
+        "highlights": "À la une",
+        "posts": "Publications",
+        "reels": "Reels",
+        "tagged": "Publications identifiées",
+        "media": "Médias",
+        "posts-with-media": "Publications avec médias",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Votes négatifs",
       "reposts": "Republications",
       "stories": "Stories",
-      "timeline": "Fil chronologique"
+      "timeline": "Fil chronologique",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

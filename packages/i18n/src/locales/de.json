@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Backlog-Elemente ignorieren und nur den neuesten Upload aus diesem Feed abrufen.",
       "enabled": "Aktiviert",
       "disabled": "Deaktiviert",
-      "onlyLatestShort": "Nur neueste"
+      "onlyLatestShort": "Nur neueste",
+      "checkInterval": "Prüfen alle",
+      "checkIntervalDefault": "Standard ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Hinzufügen",
@@ -1309,7 +1312,9 @@
       "idle": "Leerlauf",
       "tooltip": {
         "updatedAt": "Aktualisiert: {{time}}"
-      }
+      },
+      "rate-limited": "Ratenbegrenzt",
+      "auth-required": "Anmeldung erforderlich"
     },
     "rssHub": {
       "title": "Automatische Abonnements mit RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Mehr über RSSHub erfahren",
       "openDocs": "RSSHub-Dokumentation öffnen",
       "hint": "Keine Feed-URL? Mit RSSHub erzeugen Sie Feeds für YouTube, Twitter und tausende weitere Plattformen."
+    },
+    "profile": {
+      "all": "Alle",
+      "noCategories": "Wähle mindestens eine Kategorie aus.",
+      "desktopOnly": "Profil-Abos werden von VidBee Desktop geprüft.",
+      "storiesHint": "Storys verschwinden nach 24 Stunden. Prüfe mindestens alle 12 Stunden, um keine zu verpassen.",
+      "nextCheck": "Nächste Prüfung: {{time}}",
+      "subscribe": "Abonnieren",
+      "subscribed": "Abonniert",
+      "readOnly": "Von VidBee Desktop geprüft",
+      "categories": {
+        "stories": "Storys",
+        "highlights": "Highlights",
+        "posts": "Beiträge",
+        "reels": "Reels",
+        "tagged": "Markierte Beiträge",
+        "media": "Medien",
+        "posts-with-media": "Beiträge mit Medien",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Heruntergewertet",
       "reposts": "Reposts",
       "stories": "Storys",
-      "timeline": "Chronik"
+      "timeline": "Chronik",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

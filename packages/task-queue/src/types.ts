@@ -19,6 +19,7 @@ export type TaskKind =
   | 'tiktok-photo'
   | 'threads-post'
   | 'threads-profile'
+  | 'snapchat-media'
   | 'subscription-item'
   | 'yt-dlp-forward'
   | 'transcription'

@@ -58,6 +58,8 @@ export interface CreateSubscriptionForm extends SubscriptionDownloadPreferences 
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
+  categories?: string[]
+  checkIntervalMs?: number
 }
 
 export const createSubscriptionAtom = atom(
@@ -74,7 +76,9 @@ export const createSubscriptionAtom = atom(
       downloadContainer: payload.downloadContainer,
       downloadDirectory: payload.downloadDirectory,
       namingTemplate: payload.namingTemplate,
-      enabled: payload.enabled
+      enabled: payload.enabled,
+      categories: payload.categories,
+      checkIntervalMs: payload.checkIntervalMs
     })
   }
 )

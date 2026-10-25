@@ -294,6 +294,18 @@ export async function listAgentSubscriptions(input: {
 /** Fetch and parse without saving configuration or invoking the auto-download scheduler. */
 async function probeSubscription(url: string, signal?: AbortSignal) {
   const resolved = getDesktopSubscriptions().resolve({ rawUrl: webUrl(url) })
+  if (resolved.sourceKind === 'profile') {
+    // Profile accounts have no feed to fetch; the first check maps them.
+    return {
+      resolved,
+      discovered: false,
+      corrected: false,
+      title: `@${resolved.profileOwner ?? ''}`,
+      parsedItems: 0,
+      usableItems: 0,
+      samples: []
+    }
+  }
   webUrl(resolved.feedUrl)
   const timeout = AbortSignal.timeout(30_000)
   const probeSignal = signal ? AbortSignal.any([signal, timeout]) : timeout
@@ -431,6 +443,7 @@ export async function manageAgentSubscription(
   }
   const created = await api.add({
     ...patch,
+    checkIntervalMs: patch.checkIntervalMs ?? undefined,
     ...probe.resolved,
     title: input.title ?? probe.title,
     autoDownload: input.autoDownload ?? false,

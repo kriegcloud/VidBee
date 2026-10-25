@@ -4,6 +4,7 @@ import {
   resolveMappedProfileSource
 } from '@vidbee/downloader-core/mapped-profile-source'
 import type { SocialMappedProfile } from '@vidbee/downloader-core/social-media-service'
+import { isProfilePlatform } from '@vidbee/subscriptions-core/types'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from './button'
@@ -25,6 +26,9 @@ interface Props {
     ids: string[],
     destination?: string
   ) => Promise<{ count: number }>
+  /** Subscribe to this account; receives the profile URL and the open category. */
+  onSubscribe?: (profileUrl: string, category: string) => void
+  subscribed?: boolean
 }
 
 /** Category names live in three i18n namespaces, by the platform that owns them. */
@@ -47,7 +51,9 @@ export function SocialProfileDialog({
   openLogin,
   mapProfile,
   stopProfile,
-  downloadItems
+  downloadItems,
+  onSubscribe,
+  subscribed = false
 }: Props) {
   const { t } = useTranslation()
   const inputId = useId()
@@ -155,6 +161,17 @@ export function SocialProfileDialog({
           >
             {t(mapping ? 'instagramResume.stop' : 'instagramResume.map')}
           </Button>
+          {onSubscribe && source && isProfilePlatform(source.platform) && (
+            <Button
+              disabled={subscribed}
+              onClick={() => onSubscribe(source.profileUrl, category)}
+              variant={subscribed ? 'secondary' : 'default'}
+            >
+              {t(
+                subscribed ? 'subscriptions.profile.subscribed' : 'subscriptions.profile.subscribe'
+              )}
+            </Button>
+          )}
         </div>
         <div className="flex flex-wrap gap-1.5">
           {source?.categories.map((entry) => (

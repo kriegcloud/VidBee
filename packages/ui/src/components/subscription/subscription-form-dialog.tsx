@@ -4,7 +4,12 @@ import {
   sanitizeTemplateInput
 } from '@vidbee/subscriptions-core/form'
 import {
+  CHECK_INTERVAL_PRESETS_MS,
+  DEFAULT_FEED_CHECK_INTERVAL_MS,
   DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE,
+  isProfilePlatform,
+  PROFILE_SUBSCRIPTION_CATEGORIES,
+  type ProfilePlatform,
   type SubscriptionDownloadPreferences,
   type SubscriptionRule
 } from '@vidbee/subscriptions-core/types'
@@ -47,6 +52,51 @@ export interface SubscriptionFormData extends SubscriptionDownloadPreferences {
   downloadDirectory?: string
   namingTemplate?: string
   enabled?: boolean
+  /** Profile subscriptions: followed categories. */
+  categories?: string[]
+  /** Null resets an edited subscription to the default interval. */
+  checkIntervalMs?: number | null
+}
+
+/** Profile account detected from the URL by the host's resolver. */
+interface DetectedProfile {
+  platform: ProfilePlatform
+  owner: string
+  availableCategories: string[]
+}
+
+export const PROFILE_PLATFORM_LABELS: Record<ProfilePlatform, string> = {
+  instagram: 'Instagram',
+  threads: 'Threads',
+  x: 'X',
+  tiktok: 'TikTok',
+  snapchat: 'Snapchat'
+}
+
+const DEFAULT_INTERVAL = 'default'
+const HOUR_MS = 60 * 60 * 1000
+
+/** Narrow the host's resolve result to a profile account, if it is one. */
+const detectProfile = (resolved: unknown): DetectedProfile | null => {
+  if (!resolved || typeof resolved !== 'object') {
+    return null
+  }
+  const value = resolved as Record<string, unknown>
+  if (
+    value.sourceKind !== 'profile' ||
+    typeof value.platform !== 'string' ||
+    !isProfilePlatform(value.platform) ||
+    !Array.isArray(value.availableCategories)
+  ) {
+    return null
+  }
+  return {
+    platform: value.platform,
+    owner: typeof value.profileOwner === 'string' ? value.profileOwner : '',
+    availableCategories: value.availableCategories.filter(
+      (entry): entry is string => typeof entry === 'string'
+    )
+  }
 }
 
 interface SubscriptionFormDialogProps {
@@ -65,8 +115,19 @@ interface SubscriptionFormDialogProps {
     | 'downloadType'
     | 'downloadQuality'
     | 'downloadContainer'
-  >
+  > &
+    Partial<
+      Pick<
+        SubscriptionRule,
+        'sourceUrl' | 'sourceKind' | 'platform' | 'profileOwner' | 'categories' | 'checkIntervalMs'
+      >
+    >
   open: boolean
+  /** Prefill an add dialog, e.g. from a profile mapper's Subscribe button. */
+  initialUrl?: string
+  initialCategories?: string[]
+  /** False on hosts that cannot check profile accounts (the web app). */
+  profileSourcesSupported?: boolean
   downloadPath: string
   downloadDefaults?: SubscriptionDownloadPreferences
   onlyLatestDefault: boolean
@@ -85,6 +146,9 @@ export function SubscriptionFormDialog({
   mode,
   subscription,
   open,
+  initialUrl,
+  initialCategories,
+  profileSourcesSupported = true,
   downloadPath,
   downloadDefaults,
   onlyLatestDefault,
@@ -110,6 +174,9 @@ export function SubscriptionFormDialog({
   const [downloadDirectory, setDownloadDirectory] = useState('')
   const [namingTemplate, setNamingTemplate] = useState('')
   const [detectingFeed, setDetectingFeed] = useState(false)
+  const [profile, setProfile] = useState<DetectedProfile | null>(null)
+  const [categories, setCategories] = useState<string[]>([])
+  const [checkInterval, setCheckInterval] = useState<string>(DEFAULT_INTERVAL)
   const [saving, setSaving] = useState(false)
   const savingRef = useRef(false)
   const feedResolutionRef = useRef<{ url: string; promise: Promise<unknown> } | null>(null)
@@ -125,7 +192,27 @@ export function SubscriptionFormDialog({
   const defaultDownloadType = downloadDefaults?.downloadType ?? 'video'
   const defaultDownloadQuality = downloadDefaults?.downloadQuality ?? 'best'
   const defaultDownloadContainer = downloadDefaults?.downloadContainer ?? 'auto'
-  const feedUrl = subscription?.feedUrl
+  const isProfileSubscription = subscription?.sourceKind === 'profile'
+  // Profile subscriptions store a synthetic feed URL; editing shows the account URL.
+  const feedUrl = isProfileSubscription ? subscription?.sourceUrl : subscription?.feedUrl
+  const intervalId = useId()
+  const categoriesId = useId()
+  const intervalChoices = [...CHECK_INTERVAL_PRESETS_MS].map(String)
+  if (checkInterval !== DEFAULT_INTERVAL && !intervalChoices.includes(checkInterval)) {
+    // Keep an interval set elsewhere (automation API) selectable.
+    intervalChoices.push(checkInterval)
+  }
+
+  /** Toggle one category, keeping the platform's display order. */
+  const toggleCategory = (category: string, checked: boolean) => {
+    setCategories((current) =>
+      checked
+        ? (profile?.availableCategories ?? []).filter(
+            (entry) => entry === category || current.includes(entry)
+          )
+        : current.filter((entry) => entry !== category)
+    )
+  }
 
   /** Share detection and save validation for the same URL during one form session. */
   const resolveFeedOnce = useCallback(
@@ -168,8 +255,34 @@ export function SubscriptionFormDialog({
       (mode === 'edit' ? subscription?.downloadContainer : undefined) ?? defaultDownloadContainer
     )
 
+    setCheckInterval(
+      mode === 'edit' && subscription?.checkIntervalMs
+        ? String(subscription.checkIntervalMs)
+        : DEFAULT_INTERVAL
+    )
+    if (mode === 'edit' && subscription?.sourceKind === 'profile' && subscription.platform) {
+      setProfile(
+        detectProfile({
+          sourceKind: 'profile',
+          platform: subscription.platform,
+          profileOwner: subscription.profileOwner,
+          availableCategories: isProfilePlatform(subscription.platform)
+            ? [...PROFILE_SUBSCRIPTION_CATEGORIES[subscription.platform]]
+            : []
+        })
+      )
+      setCategories(subscription.categories ?? [])
+    } else {
+      setProfile(null)
+      setCategories(initialCategories ?? [])
+    }
+
     if (mode === 'edit' && subscription) {
-      setUrl(subscription.feedUrl)
+      setUrl(
+        subscription.sourceKind === 'profile'
+          ? (subscription.sourceUrl ?? '')
+          : subscription.feedUrl
+      )
       setKeywords(subscription.keywords.join(', '))
       setTags(subscription.tags.join(', '))
       setOnlyLatest(subscription.onlyDownloadLatest)
@@ -179,7 +292,7 @@ export function SubscriptionFormDialog({
       return
     }
 
-    setUrl('')
+    setUrl(initialUrl ?? '')
     setKeywords('')
     setTags('')
     setOnlyLatest(onlyLatestDefault)
@@ -194,7 +307,9 @@ export function SubscriptionFormDialog({
     downloadPath,
     defaultDownloadType,
     defaultDownloadQuality,
-    defaultDownloadContainer
+    defaultDownloadContainer,
+    initialUrl,
+    initialCategories
   ])
 
   useEffect(() => {
@@ -235,8 +350,20 @@ export function SubscriptionFormDialog({
     detectTimeout.current = setTimeout(async () => {
       setDetectingFeed(true)
       try {
-        await resolveFeedOnce(url.trim())
+        const detected = detectProfile(await resolveFeedOnce(url.trim()))
+        if (!cancelled) {
+          setProfile(detected)
+          setCategories((current) => {
+            const offered = detected?.availableCategories ?? []
+            const kept = current.filter((category) => offered.includes(category))
+            // Follow everything until the user narrows it down.
+            return kept.length > 0 ? kept : offered
+          })
+        }
       } catch {
+        if (!cancelled) {
+          setProfile(null)
+        }
         // Detection is best-effort; save still validates.
       } finally {
         if (!cancelled) {
@@ -290,6 +417,15 @@ export function SubscriptionFormDialog({
       return
     }
 
+    if (profile && categories.length === 0) {
+      toast.error(t('subscriptions.profile.noCategories'))
+      return
+    }
+    if (profile && !profileSourcesSupported) {
+      toast.error(t('subscriptions.profile.desktopOnly'))
+      return
+    }
+
     const formData: SubscriptionFormData = {
       keywords: sanitizeCommaList(keywords),
       tags: sanitizeCommaList(tags),
@@ -300,6 +436,14 @@ export function SubscriptionFormDialog({
       downloadContainer,
       downloadDirectory: downloadDirectory || undefined,
       namingTemplate: namingTemplate || undefined
+    }
+    if (profile) {
+      formData.categories = categories
+    }
+    if (checkInterval !== DEFAULT_INTERVAL) {
+      formData.checkIntervalMs = Number(checkInterval)
+    } else if (mode === 'edit' && subscription?.checkIntervalMs) {
+      formData.checkIntervalMs = null
     }
 
     savingRef.current = true
@@ -349,7 +493,8 @@ export function SubscriptionFormDialog({
             <Input
               id={urlInputId}
               onChange={(event) => setUrl(event.target.value)}
-              placeholder="https://docs.rsshub.app/routes/youtube/user/@FKJ"
+              placeholder="https://www.instagram.com/username"
+              readOnly={mode === 'edit' && isProfileSubscription}
               value={url}
             />
             {mode === 'add' && !url.trim() && (
@@ -368,6 +513,71 @@ export function SubscriptionFormDialog({
                 </Button>
               </div>
             )}
+          </div>
+          {profile && (
+            <fieldset className="space-y-3 rounded-md border px-3 py-3">
+              <legend className="px-1 font-medium text-sm">
+                {t('subscriptions.profile.account', {
+                  platform: PROFILE_PLATFORM_LABELS[profile.platform],
+                  owner: profile.owner
+                })}
+              </legend>
+              {!profileSourcesSupported && (
+                <p className="text-amber-600 text-xs">{t('subscriptions.profile.desktopOnly')}</p>
+              )}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <Button
+                  onClick={() => setCategories(profile.availableCategories)}
+                  size="sm"
+                  variant={
+                    categories.length === profile.availableCategories.length
+                      ? 'secondary'
+                      : 'outline'
+                  }
+                >
+                  {t('subscriptions.profile.all')}
+                </Button>
+                {profile.availableCategories.map((category) => (
+                  <div className="flex items-center gap-2" key={category}>
+                    <Checkbox
+                      checked={categories.includes(category)}
+                      id={`${categoriesId}-${category}`}
+                      onCheckedChange={(checked) => toggleCategory(category, checked === true)}
+                    />
+                    <Label className="cursor-pointer" htmlFor={`${categoriesId}-${category}`}>
+                      {t(`subscriptions.profile.categories.${category}`)}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {categories.includes('stories') && (
+                <p className="text-muted-foreground text-xs">
+                  {t('subscriptions.profile.storiesHint')}
+                </p>
+              )}
+            </fieldset>
+          )}
+          <div className="flex items-center justify-between gap-4 rounded-md border px-3 py-2">
+            <Label htmlFor={intervalId}>{t('subscriptions.fields.checkInterval')}</Label>
+            <Select onValueChange={setCheckInterval} value={checkInterval}>
+              <SelectTrigger className="w-48" id={intervalId}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={DEFAULT_INTERVAL}>
+                  {t('subscriptions.fields.checkIntervalDefault', {
+                    count: DEFAULT_FEED_CHECK_INTERVAL_MS / HOUR_MS
+                  })}
+                </SelectItem>
+                {intervalChoices.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t('subscriptions.fields.checkIntervalHours', {
+                      count: Math.round((Number(value) / HOUR_MS) * 10) / 10
+                    })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>{t('subscriptions.fields.customDirectory')}</Label>
@@ -391,7 +601,7 @@ export function SubscriptionFormDialog({
                 onToggle={() => setAutoDownload((current) => !current)}
               />
             </div>
-            {autoDownload ? (
+            {autoDownload && !profile ? (
               <div className="flex items-center justify-between gap-4 rounded-md border px-3 py-2">
                 <p className="text-sm">{t('subscriptions.fields.onlyLatest')}</p>
                 <Switch
@@ -413,133 +623,138 @@ export function SubscriptionFormDialog({
           >
             <div className={cn('min-h-0', !advancedOptionsOpen && 'pointer-events-none')}>
               <div className="space-y-3 border-t pt-4">
-                <ItemGroup>
-                  <Item variant="muted">
-                    <ItemContent className="min-w-48">
-                      <ItemTitle>
-                        <Label htmlFor={downloadTypeId}>
-                          {t('subscriptions.downloadOptions.type')}
-                        </Label>
-                      </ItemTitle>
-                      <ItemDescription className="line-clamp-none">
-                        {t(
-                          downloadType === 'subtitles'
-                            ? 'subscriptions.downloadOptions.subtitlesDescription'
-                            : 'subscriptions.downloadOptions.typeDescription'
-                        )}
-                      </ItemDescription>
-                    </ItemContent>
-                    <ItemActions className="ml-auto">
-                      <Select
-                        onValueChange={(value) => setDownloadType(value as typeof downloadType)}
-                        value={downloadType}
-                      >
-                        <SelectTrigger className="w-44" id={downloadTypeId}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="video">{t('download.video')}</SelectItem>
-                          <SelectItem value="audio">{t('download.audio')}</SelectItem>
-                          {supportsSubtitleDownloads && (
-                            <SelectItem value="subtitles">
-                              {t('advancedOptions.subtitles')}
-                            </SelectItem>
+                {/* Profile items download in their original format; only tags apply. */}
+                {!profile && (
+                  <ItemGroup>
+                    <Item variant="muted">
+                      <ItemContent className="min-w-48">
+                        <ItemTitle>
+                          <Label htmlFor={downloadTypeId}>
+                            {t('subscriptions.downloadOptions.type')}
+                          </Label>
+                        </ItemTitle>
+                        <ItemDescription className="line-clamp-none">
+                          {t(
+                            downloadType === 'subtitles'
+                              ? 'subscriptions.downloadOptions.subtitlesDescription'
+                              : 'subscriptions.downloadOptions.typeDescription'
                           )}
-                        </SelectContent>
-                      </Select>
-                    </ItemActions>
-                  </Item>
-                  {downloadType !== 'subtitles' && (
-                    <>
-                      <ItemSeparator />
-                      <Item variant="muted">
-                        <ItemContent className="min-w-48">
-                          <ItemTitle>
-                            <Label htmlFor={downloadQualityId}>
-                              {t('subscriptions.downloadOptions.quality')}
-                            </Label>
-                          </ItemTitle>
-                          <ItemDescription className="line-clamp-none">
-                            {t('subscriptions.downloadOptions.qualityDescription')}
-                          </ItemDescription>
-                        </ItemContent>
-                        <ItemActions className="ml-auto">
-                          <Select
-                            onValueChange={(value) =>
-                              setDownloadQuality(value as typeof downloadQuality)
-                            }
-                            value={downloadQuality}
-                          >
-                            <SelectTrigger className="w-44" id={downloadQualityId}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {(['best', 'good', 'normal', 'bad', 'worst'] as const).map(
-                                (quality) => (
-                                  <SelectItem key={quality} value={quality}>
-                                    {t(
-                                      downloadType === 'audio'
-                                        ? `subscriptions.downloadOptions.audioQualityOptions.${quality}`
-                                        : `settings.oneClickQualityOptions.${quality}`
-                                    )}
-                                  </SelectItem>
-                                )
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </ItemActions>
-                      </Item>
-                    </>
-                  )}
-                  {downloadType === 'video' && (
-                    <>
-                      <ItemSeparator />
-                      <Item variant="muted">
-                        <ItemContent className="min-w-48">
-                          <ItemTitle>
-                            <Label htmlFor={downloadContainerId}>
-                              {t('subscriptions.downloadOptions.container')}
-                            </Label>
-                          </ItemTitle>
-                          <ItemDescription className="line-clamp-none">
-                            {t('subscriptions.downloadOptions.containerDescription')}
-                          </ItemDescription>
-                          <WebmThumbnailNotice container={downloadContainer} />
-                        </ItemContent>
-                        <ItemActions className="ml-auto">
-                          <Select
-                            onValueChange={(value) =>
-                              setDownloadContainer(value as typeof downloadContainer)
-                            }
-                            value={downloadContainer}
-                          >
-                            <SelectTrigger className="w-44" id={downloadContainerId}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {(['auto', 'mp4', 'mkv', 'webm', 'original'] as const).map(
-                                (container) => (
-                                  <SelectItem key={container} value={container}>
-                                    {t(`settings.oneClickContainerOptions.${container}`)}
-                                  </SelectItem>
-                                )
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </ItemActions>
-                      </Item>
-                    </>
-                  )}
-                </ItemGroup>
-                <div className="space-y-2">
-                  <Label>{t('subscriptions.fields.keywords')}</Label>
-                  <Input onChange={(event) => setKeywords(event.target.value)} value={keywords} />
-                </div>
+                        </ItemDescription>
+                      </ItemContent>
+                      <ItemActions className="ml-auto">
+                        <Select
+                          onValueChange={(value) => setDownloadType(value as typeof downloadType)}
+                          value={downloadType}
+                        >
+                          <SelectTrigger className="w-44" id={downloadTypeId}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="video">{t('download.video')}</SelectItem>
+                            <SelectItem value="audio">{t('download.audio')}</SelectItem>
+                            {supportsSubtitleDownloads && (
+                              <SelectItem value="subtitles">
+                                {t('advancedOptions.subtitles')}
+                              </SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </ItemActions>
+                    </Item>
+                    {downloadType !== 'subtitles' && (
+                      <>
+                        <ItemSeparator />
+                        <Item variant="muted">
+                          <ItemContent className="min-w-48">
+                            <ItemTitle>
+                              <Label htmlFor={downloadQualityId}>
+                                {t('subscriptions.downloadOptions.quality')}
+                              </Label>
+                            </ItemTitle>
+                            <ItemDescription className="line-clamp-none">
+                              {t('subscriptions.downloadOptions.qualityDescription')}
+                            </ItemDescription>
+                          </ItemContent>
+                          <ItemActions className="ml-auto">
+                            <Select
+                              onValueChange={(value) =>
+                                setDownloadQuality(value as typeof downloadQuality)
+                              }
+                              value={downloadQuality}
+                            >
+                              <SelectTrigger className="w-44" id={downloadQualityId}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(['best', 'good', 'normal', 'bad', 'worst'] as const).map(
+                                  (quality) => (
+                                    <SelectItem key={quality} value={quality}>
+                                      {t(
+                                        downloadType === 'audio'
+                                          ? `subscriptions.downloadOptions.audioQualityOptions.${quality}`
+                                          : `settings.oneClickQualityOptions.${quality}`
+                                      )}
+                                    </SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </ItemActions>
+                        </Item>
+                      </>
+                    )}
+                    {downloadType === 'video' && (
+                      <>
+                        <ItemSeparator />
+                        <Item variant="muted">
+                          <ItemContent className="min-w-48">
+                            <ItemTitle>
+                              <Label htmlFor={downloadContainerId}>
+                                {t('subscriptions.downloadOptions.container')}
+                              </Label>
+                            </ItemTitle>
+                            <ItemDescription className="line-clamp-none">
+                              {t('subscriptions.downloadOptions.containerDescription')}
+                            </ItemDescription>
+                            <WebmThumbnailNotice container={downloadContainer} />
+                          </ItemContent>
+                          <ItemActions className="ml-auto">
+                            <Select
+                              onValueChange={(value) =>
+                                setDownloadContainer(value as typeof downloadContainer)
+                              }
+                              value={downloadContainer}
+                            >
+                              <SelectTrigger className="w-44" id={downloadContainerId}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(['auto', 'mp4', 'mkv', 'webm', 'original'] as const).map(
+                                  (container) => (
+                                    <SelectItem key={container} value={container}>
+                                      {t(`settings.oneClickContainerOptions.${container}`)}
+                                    </SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </ItemActions>
+                        </Item>
+                      </>
+                    )}
+                  </ItemGroup>
+                )}
+                {!profile && (
+                  <div className="space-y-2">
+                    <Label>{t('subscriptions.fields.keywords')}</Label>
+                    <Input onChange={(event) => setKeywords(event.target.value)} value={keywords} />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label>{t('subscriptions.fields.tags')}</Label>
                   <Input onChange={(event) => setTags(event.target.value)} value={tags} />
                 </div>
-                {downloadType !== 'subtitles' && (
+                {downloadType !== 'subtitles' && !profile && (
                   <div className="space-y-2">
                     <Label>{t('subscriptions.fields.namingTemplate')}</Label>
                     <Input

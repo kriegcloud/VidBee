@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "백로그 항목을 무시하고 이 피드에서 최신 업로드만 가져옵니다.",
       "enabled": "활성화됨",
       "disabled": "장애가 있는",
-      "onlyLatestShort": "최신만"
+      "onlyLatestShort": "최신만",
+      "checkInterval": "확인 주기",
+      "checkIntervalDefault": "기본값 ({{count}}시간)",
+      "checkIntervalHours": "{{count}}시간"
     },
     "actions": {
       "add": "추가하다",
@@ -1309,7 +1312,9 @@
       "idle": "게으른",
       "tooltip": {
         "updatedAt": "업데이트됨: {{time}}"
-      }
+      },
+      "rate-limited": "요청 제한됨",
+      "auth-required": "로그인 필요"
     },
     "rssHub": {
       "title": "RSSHub를 통한 자동 구독",
@@ -1317,6 +1322,26 @@
       "learnMore": "RSSHub에 대해 자세히 알아보기",
       "openDocs": "RSSHub 문서 열기",
       "hint": "피드 URL이 없나요? RSSHub로 YouTube, Twitter 등 수천 개 플랫폼의 피드를 만들 수 있습니다."
+    },
+    "profile": {
+      "all": "전체",
+      "noCategories": "팔로우할 카테고리를 하나 이상 선택하세요.",
+      "desktopOnly": "프로필 구독은 VidBee Desktop에서 확인합니다.",
+      "storiesHint": "스토리는 24시간 후 사라집니다. 놓치지 않으려면 최소 12시간마다 확인하세요.",
+      "nextCheck": "다음 확인: {{time}}",
+      "subscribe": "구독",
+      "subscribed": "구독 중",
+      "readOnly": "VidBee Desktop에서 확인",
+      "categories": {
+        "stories": "스토리",
+        "highlights": "하이라이트",
+        "posts": "게시물",
+        "reels": "릴스",
+        "tagged": "태그된 게시물",
+        "media": "미디어",
+        "posts-with-media": "미디어가 있는 게시물",
+        "spotlight": "스포트라이트"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "비추천",
       "reposts": "재게시",
       "stories": "스토리",
-      "timeline": "타임라인"
+      "timeline": "타임라인",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

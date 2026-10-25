@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Ignore os itens do backlog e busque apenas o upload mais recente deste feed.",
       "enabled": "Habilitado",
       "disabled": "Desabilitado",
-      "onlyLatestShort": "Apenas o mais recente"
+      "onlyLatestShort": "Apenas o mais recente",
+      "checkInterval": "Verificar a cada",
+      "checkIntervalDefault": "Padrão ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Adicionar",
@@ -1309,7 +1312,9 @@
       "idle": "Parado",
       "tooltip": {
         "updatedAt": "Atualizado: {{time}}"
-      }
+      },
+      "rate-limited": "Limitado",
+      "auth-required": "Login necessário"
     },
     "rssHub": {
       "title": "Assinaturas automatizadas com RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Saiba mais sobre RSSHub",
       "openDocs": "Abra a documentação do RSSHub",
       "hint": "Não tem um URL de feed? Use o RSSHub para gerar feeds do YouTube, Twitter e milhares de outras plataformas."
+    },
+    "profile": {
+      "all": "Tudo",
+      "noCategories": "Escolha pelo menos uma categoria.",
+      "desktopOnly": "As assinaturas de perfis são verificadas pelo VidBee Desktop.",
+      "storiesHint": "Os stories somem após 24 horas. Verifique pelo menos a cada 12 horas para não perder nenhum.",
+      "nextCheck": "Próxima verificação: {{time}}",
+      "subscribe": "Assinar",
+      "subscribed": "Assinado",
+      "readOnly": "Verificado pelo VidBee Desktop",
+      "categories": {
+        "stories": "Stories",
+        "highlights": "Destaques",
+        "posts": "Publicações",
+        "reels": "Reels",
+        "tagged": "Publicações marcadas",
+        "media": "Mídia",
+        "posts-with-media": "Publicações com mídia",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Votos negativos",
       "reposts": "Republicações",
       "stories": "Stories",
-      "timeline": "Linha do tempo"
+      "timeline": "Linha do tempo",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

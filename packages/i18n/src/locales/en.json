@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "Ignore backlog items and fetch just the newest upload from this feed.",
       "enabled": "Enabled",
       "disabled": "Disabled",
-      "onlyLatestShort": "Only latest"
+      "onlyLatestShort": "Only latest",
+      "checkInterval": "Check every",
+      "checkIntervalDefault": "Default ({{count}} h)",
+      "checkIntervalHours": "{{count}} h"
     },
     "actions": {
       "add": "Add",
@@ -1309,7 +1312,9 @@
       "idle": "Idle",
       "tooltip": {
         "updatedAt": "Updated: {{time}}"
-      }
+      },
+      "rate-limited": "Rate limited",
+      "auth-required": "Sign-in required"
     },
     "rssHub": {
       "title": "Automated Subscriptions with RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "Learn more about RSSHub",
       "openDocs": "Open RSSHub Documentation",
       "hint": "Don't have a feed URL? Use RSSHub to generate feeds for YouTube, Twitter, and thousands of other platforms."
+    },
+    "profile": {
+      "all": "All",
+      "noCategories": "Choose at least one category to follow.",
+      "desktopOnly": "Profile subscriptions are checked by VidBee Desktop.",
+      "storiesHint": "Stories disappear after 24 hours. Check at least every 12 hours to catch each one.",
+      "nextCheck": "Next check: {{time}}",
+      "subscribe": "Subscribe",
+      "subscribed": "Subscribed",
+      "readOnly": "Checked by VidBee Desktop",
+      "categories": {
+        "stories": "Stories",
+        "highlights": "Highlights",
+        "posts": "Posts",
+        "reels": "Reels",
+        "tagged": "Tagged posts",
+        "media": "Media",
+        "posts-with-media": "Posts with media",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "Downvoted",
       "reposts": "Reposts",
       "stories": "Stories",
-      "timeline": "Timeline"
+      "timeline": "Timeline",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

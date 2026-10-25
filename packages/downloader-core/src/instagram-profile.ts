@@ -2,9 +2,10 @@ import { spawn } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { PRIORITY_USER, type TaskQueueAPI } from '@vidbee/task-queue'
+import { PRIORITY_USER, type TaskPriority, type TaskQueueAPI } from '@vidbee/task-queue'
 import { killProcessTree } from '@vidbee/task-queue/process'
 import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
+import { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl } from './instagram-url'
 import { InstagramProfileInspectionSchema } from './schemas'
 import type {
   DownloadRuntimeSettings,
@@ -18,48 +19,15 @@ import type {
 } from './types'
 import { normalizeBrowserCookiesSettingForYtDlp } from './yt-dlp-args'
 
+export { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl }
+
 const DEFAULT_MAX_CACHE_ENTRIES = 20
 // Instagram blocks the whole network or account for a while after a throttle;
 // further requests only extend it, so every profile scan waits this long.
 export const INSTAGRAM_RATE_LIMIT_COOLDOWN_MS = 15 * 60 * 1000
 const INSTAGRAM_PROFILE_GROUP_PREFIX = 'instagram_profile_group_'
 const INSTAGRAM_PROFILE_GROUP_KEY = 'instagram-profile'
-const INSTAGRAM_USERNAME_PATTERN = /^[A-Za-z0-9._]{1,30}$/
 const INVALID_PATH_CHARACTERS = new Set('<>:"/\\|?*')
-const INSTAGRAM_HOSTS = new Set([
-  'instagram.com',
-  'www.instagram.com',
-  'm.instagram.com',
-  'instagr.am',
-  'www.instagr.am'
-])
-const RESERVED_PROFILE_PATHS = new Set([
-  'accounts',
-  'about',
-  'developer',
-  'direct',
-  'directory',
-  'emails',
-  'explore',
-  'legal',
-  'p',
-  'press',
-  'privacy',
-  'reel',
-  'reels',
-  'share',
-  'stories',
-  'tv',
-  'web'
-])
-
-export const INSTAGRAM_PROFILE_CATEGORIES: readonly InstagramProfileCategory[] = [
-  'highlights',
-  'posts',
-  'reels',
-  'tagged',
-  'stories'
-]
 
 const CATEGORY_LABELS: Record<InstagramProfileCategory, string> = {
   posts: 'Posts',
@@ -129,7 +97,15 @@ export interface EnqueueInstagramProfileOptions {
   inspector: InstagramProfileInspector
   input: InstagramProfileDownloadInput
   defaultDownloadDir: string
+  /** Join an existing queue batch (one subscription check) instead of a new one. */
+  batch?: { id: string; title: string }
+  /** Defaults to `PRIORITY_USER`. */
+  priority?: TaskPriority
 }
+
+/** Saved inspections are keyed by username, so callers can address one without scanning. */
+export const instagramInspectionId = (username: string): string =>
+  `instagram_${createHash('sha256').update(username.toLowerCase()).digest('hex')}`
 
 const asRecord = (value: unknown): Record<string, unknown> | null => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -462,52 +438,6 @@ const toCategorySummary = (
   }
 }
 
-export const normalizeInstagramProfileUrl = (
-  value: string
-): { username: string; profileUrl: string } | null => {
-  try {
-    const parsed = new URL(value)
-    if (
-      !['http:', 'https:'].includes(parsed.protocol) ||
-      parsed.username ||
-      parsed.password ||
-      parsed.port
-    ) {
-      return null
-    }
-    if (!INSTAGRAM_HOSTS.has(parsed.hostname.toLowerCase())) {
-      return null
-    }
-    let segments = parsed.pathname.split('/').filter(Boolean)
-    if (segments.length === 2 && segments[0] === 'stories' && segments[1] !== 'highlights') {
-      segments = [segments[1]]
-    }
-    if (
-      segments.length === 2 &&
-      INSTAGRAM_PROFILE_CATEGORIES.includes(segments[1] as InstagramProfileCategory)
-    ) {
-      segments = [segments[0]]
-    }
-    if (segments.length !== 1) {
-      return null
-    }
-    const username = segments[0]
-    if (
-      !username ||
-      RESERVED_PROFILE_PATHS.has(username.toLowerCase()) ||
-      !INSTAGRAM_USERNAME_PATTERN.test(username)
-    ) {
-      return null
-    }
-    return {
-      username: username.toLowerCase(),
-      profileUrl: `https://www.instagram.com/${username.toLowerCase()}/`
-    }
-  } catch {
-    return null
-  }
-}
-
 export const buildInstagramCategoryUrl = (
   username: string,
   category: InstagramProfileCategory
@@ -730,7 +660,7 @@ export class InstagramProfileInspector {
       throw new Error('Enter a valid Instagram profile URL.')
     }
 
-    const inspectionId = `instagram_${createHash('sha256').update(normalized.username).digest('hex')}`
+    const inspectionId = instagramInspectionId(normalized.username)
     const cached = this.get(inspectionId)
     const categoryUrls = Object.fromEntries(
       INSTAGRAM_PROFILE_CATEGORIES.map((category) => [
@@ -1022,7 +952,9 @@ export const enqueueInstagramProfileDownload = async ({
   queue,
   inspector,
   input,
-  defaultDownloadDir
+  defaultDownloadDir,
+  batch,
+  priority = PRIORITY_USER
 }: EnqueueInstagramProfileOptions): Promise<InstagramProfileDownloadResult> => {
   const cached = inspector.get(input.inspectionId)
   if (!cached) {
@@ -1049,7 +981,8 @@ export const enqueueInstagramProfileDownload = async ({
         DOWNLOAD_CATEGORY_ORDERS[left.category] - DOWNLOAD_CATEGORY_ORDERS[right.category]
     )
 
-  const groupId = `${INSTAGRAM_PROFILE_GROUP_PREFIX}${Date.now()}_${randomUUID().slice(0, 8)}`
+  const groupId =
+    batch?.id ?? `${INSTAGRAM_PROFILE_GROUP_PREFIX}${Date.now()}_${randomUUID().slice(0, 8)}`
   const groupKey = INSTAGRAM_PROFILE_GROUP_KEY
   await queue.setMaxPerGroup(groupKey, 1)
 
@@ -1118,7 +1051,7 @@ export const enqueueInstagramProfileDownload = async ({
             expectedAssetCount: reference.assetCount,
             batchId: groupId,
             batchKind: 'instagram-profile',
-            batchTitle: `@${cached.inspection.profile.username}`,
+            batchTitle: batch?.title ?? `@${cached.inspection.profile.username}`,
             batchCategory: summary.category,
             batchOrder: CATEGORY_ORDERS[summary.category],
             batchSourceCount: 1,
@@ -1126,7 +1059,7 @@ export const enqueueInstagramProfileDownload = async ({
             downloadPath: outputDirectory
           }
         },
-        priority: PRIORITY_USER,
+        priority,
         groupKey,
         maxAttempts: 3
       })

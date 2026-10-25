@@ -1233,7 +1233,10 @@
       "onlyLatestDescription": "تجاهل عناصر المتراكمة وجلب أحدث تحميل من هذه التغذية فقط.",
       "enabled": "مفعل",
       "disabled": "معطل",
-      "onlyLatestShort": "الأحدث فقط"
+      "onlyLatestShort": "الأحدث فقط",
+      "checkInterval": "التحقق كل",
+      "checkIntervalDefault": "الافتراضي ({{count}} س)",
+      "checkIntervalHours": "{{count}} س"
     },
     "actions": {
       "add": "إضافة",
@@ -1309,7 +1312,9 @@
       "idle": "خامل",
       "tooltip": {
         "updatedAt": "محدث: {{time}}"
-      }
+      },
+      "rate-limited": "تم تقييد الطلبات",
+      "auth-required": "يلزم تسجيل الدخول"
     },
     "rssHub": {
       "title": "الاشتراكات الآلية مع RSSHub",
@@ -1317,6 +1322,26 @@
       "learnMore": "تعرف على المزيد حول RSSHub",
       "openDocs": "فتح وثائق RSSHub",
       "hint": "ليس لديك رابط موجز؟ استخدم RSSHub لإنشاء موجزات لـ YouTube وTwitter وآلاف المنصات الأخرى."
+    },
+    "profile": {
+      "all": "الكل",
+      "noCategories": "اختر فئة واحدة على الأقل.",
+      "desktopOnly": "يتحقق VidBee Desktop من اشتراكات الملفات الشخصية.",
+      "storiesHint": "تختفي القصص بعد 24 ساعة. تحقق كل 12 ساعة على الأقل حتى لا تفوتك أي قصة.",
+      "nextCheck": "الفحص التالي: {{time}}",
+      "subscribe": "اشتراك",
+      "subscribed": "مشترك",
+      "readOnly": "يتحقق منه VidBee Desktop",
+      "categories": {
+        "stories": "القصص",
+        "highlights": "الأبرز",
+        "posts": "المنشورات",
+        "reels": "Reels",
+        "tagged": "المنشورات المُشار إليها",
+        "media": "الوسائط",
+        "posts-with-media": "منشورات تحتوي على وسائط",
+        "spotlight": "Spotlight"
+      }
     }
   },
   "kernelPreparation": {
@@ -2020,7 +2045,8 @@
       "downvoted": "التصويت السلبي",
       "reposts": "إعادات النشر",
       "stories": "القصص",
-      "timeline": "الخط الزمني"
+      "timeline": "الخط الزمني",
+      "spotlight": "Spotlight"
     }
   },
   "profileCollections": {

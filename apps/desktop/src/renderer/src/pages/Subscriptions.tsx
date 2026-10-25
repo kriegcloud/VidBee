@@ -46,6 +46,8 @@ import {
   getSubscriptionStatusMeta,
   resolveSubscriptionItemStatus
 } from '@vidbee/subscriptions-core/status'
+import { isProfilePlatform } from '@vidbee/subscriptions-core/types'
+import { PROFILE_PLATFORM_LABELS } from '@vidbee/ui/components/subscription/subscription-form-dialog'
 import { SubscriptionAllTab } from '@vidbee/ui/components/ui/subscription-all-tab'
 import { SubscriptionVirtualGrid } from '@vidbee/ui/components/ui/subscription-virtual-grid'
 import dayjs from 'dayjs'
@@ -101,6 +103,9 @@ const getErrorMessage = (error: unknown): string | undefined => {
   return undefined
 }
 
+/** Statuses whose stored error text explains more than the status label. */
+const PROBLEM_STATUSES: ReadonlySet<string> = new Set(['failed', 'rate-limited', 'auth-required'])
+
 const isDuplicateFeedError = (error: unknown) => {
   const message = getErrorMessage(error)
   return Boolean(message?.includes(SUBSCRIPTION_DUPLICATE_FEED_ERROR))
@@ -119,9 +124,10 @@ function SubscriptionTab({
   const [editOpen, setEditOpen] = useState(false)
   const statusMeta = getSubscriptionStatusMeta(subscription.status, subscription.enabled)
   const statusDescription =
-    subscription.status === 'failed' && subscription.lastError
+    PROBLEM_STATUSES.has(subscription.status) && subscription.lastError
       ? subscription.lastError
       : t(statusMeta.label)
+  const isProfile = subscription.sourceKind === 'profile'
   const lastUpdatedTimestamp =
     subscription.lastCheckedAt ?? subscription.updatedAt ?? subscription.createdAt ?? null
   const lastUpdatedLabel = lastUpdatedTimestamp
@@ -186,10 +192,25 @@ function SubscriptionTab({
             <p className="font-semibold text-sm">
               {subscription.title || t('subscriptions.labels.unknown')}
             </p>
+            {isProfile && isProfilePlatform(subscription.platform) && (
+              <p className="text-muted-foreground text-xs">
+                {PROFILE_PLATFORM_LABELS[subscription.platform]} ·{' '}
+                {subscription.categories
+                  .map((category) => t(`subscriptions.profile.categories.${category}`))
+                  .join(', ')}
+              </p>
+            )}
             <p className="text-xs">{statusDescription}</p>
             <p className="text-xs">
               {t('subscriptions.status.tooltip.updatedAt', { time: lastUpdatedLabel })}
             </p>
+            {subscription.enabled && subscription.nextCheckAt ? (
+              <p className="text-xs">
+                {t('subscriptions.profile.nextCheck', {
+                  time: dayjs(subscription.nextCheckAt).format('YYYY-MM-DD HH:mm')
+                })}
+              </p>
+            ) : null}
           </HoverCardContent>
         </HoverCard>
         <ContextMenuContent>
@@ -275,7 +296,9 @@ export function Subscriptions() {
         downloadContainer: data.downloadContainer,
         downloadDirectory: data.downloadDirectory,
         namingTemplate: data.namingTemplate,
-        enabled: data.enabled
+        enabled: data.enabled,
+        categories: data.categories,
+        checkIntervalMs: data.checkIntervalMs
       }
 
       // If feed URL is provided, resolve it and include sourceUrl, feedUrl, and platform
@@ -334,7 +357,9 @@ export function Subscriptions() {
           downloadContainer: data.downloadContainer,
           downloadDirectory: data.downloadDirectory,
           namingTemplate: data.namingTemplate,
-          enabled: data.enabled
+          enabled: data.enabled,
+          categories: data.categories,
+          checkIntervalMs: data.checkIntervalMs ?? undefined
         })
         toast.success(t('subscriptions.notifications.created'))
         setAddDialogOpen(false)
