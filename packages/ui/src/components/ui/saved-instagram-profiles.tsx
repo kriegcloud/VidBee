@@ -219,10 +219,9 @@ export function SavedInstagramProfiles({
           />
         </div>
         {sites.length > 1 || activeCount > 0 ? (
-          <div
+          <fieldset
             aria-label={t('instagramResume.filterBySite')}
-            className="flex flex-wrap gap-1 px-1 pb-1"
-            role="group"
+            className="m-0 flex min-w-0 flex-wrap gap-1 border-0 px-1 pt-0 pb-1"
           >
             <button
               aria-pressed={siteFilter === ALL_FILTER}
@@ -262,7 +261,7 @@ export function SavedInstagramProfiles({
                 {site.label} {site.count}
               </button>
             ))}
-          </div>
+          </fieldset>
         ) : null}
         <div
           aria-label={t('instagramResume.savedProfiles')}
