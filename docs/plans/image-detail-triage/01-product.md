@@ -81,6 +81,8 @@ except where you send them.
   and host the artefact, or depend on a published one?~~ Superseded by decision
   13: no ONNX export and no hosted artefact; LaMa runs from
   `~/ai/ComfyUI/models/lama` through the ComfyUI bridge. Gate 2 revision pending.
-- Does the clean queue share the download queue's concurrency budget or get its
-  own, given downloads are usually running at the same time?
-- Do verdicts belong to the file path or to the download record when both exist?
+- ~~Does the clean queue share the download queue's concurrency budget or get its
+  own, given downloads are usually running at the same time?~~ Settled by
+  decision 24: its own `comfy` group, capped at 1.
+- ~~Do verdicts belong to the file path or to the download record when both exist?~~
+  Settled by decision 25: the file (path + mtime + size).
