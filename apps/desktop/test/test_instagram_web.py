@@ -1,4 +1,4 @@
-"""Run with Python and gallery-dl 1.32.11 or the pinned nightly source installed."""
+"""Run with Python and the pinned gallery-dl 2026.10.24 source installed."""
 import re
 import io
 import json
@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'resources/gallery-dl-extractors'))
-from instagram_web import (VidBeeInstagramPostExtractor, InstagramWebMixin, VidBeeInstagramPostsExtractor, VidBeeInstagramReelsExtractor,
+from instagram_web import (VidBeeInstagramAPI, VidBeeInstagramPostExtractor, InstagramWebMixin, VidBeeInstagramPostsExtractor, VidBeeInstagramReelsExtractor,
     VidBeeInstagramStoriesExtractor, VidBeeInstagramHighlightsExtractor, VidBeeInstagramTaggedExtractor)
 from requests.cookies import RequestsCookieJar
 
@@ -21,20 +21,27 @@ def media(pk, video=False):
             'video_versions': [{'url': 'https://example.com/video.mp4'}] if video else []}
 
 
-def page(ids, cursor=None, more=False, reels=False):
-    edges = [{'node': {'media': media(pk)} if reels else media(pk)} for pk in ids]
-    connection = {'edges': edges, 'page_info': {'has_next_page': more, 'end_cursor': cursor}}
-    return {'fetch__XDTUserDict': {'clips_connection': connection}} if reels else {
-        'xdt_api__v1__feed__user_timeline_graphql_connection': connection}
-
-
 class Harness(InstagramWebMixin):
     item = 'fixture'
     exc = SimpleNamespace(AbortExtraction=RuntimeError)
 
-    def __init__(self, pages):
-        self._web_query = Mock(side_effect=pages)
-        self.api = SimpleNamespace(user_id=Mock(return_value='123'), media=Mock(return_value=[media('1', True)]))
+    def __init__(self):
+        self._saved_mapping_cache = {}
+        self.api = SimpleNamespace(user=Mock(return_value={'id': '123', 'username': 'fixture'}),
+                                   media=Mock(return_value=[media('1', True)]),
+                                   _pagination_graphql=Mock(return_value=[]))
+
+
+def highlight_api(reels):
+    api = object.__new__(VidBeeInstagramAPI)
+    api.exc = SimpleNamespace(AbortExtraction=RuntimeError)
+    api._pagination_graphql = Mock(return_value=iter(reels))
+    return api
+
+
+def highlight(identifier='1'):
+    return {'id': 'highlight:' + identifier, 'items': [media('101')],
+            'user': {'pk': '42', 'username': 'fixture'}}
 
 
 class TestInstagramWeb(unittest.TestCase):
@@ -79,112 +86,127 @@ class TestInstagramWeb(unittest.TestCase):
                 self.assertEqual(list(ie.items()), records)
         self.assertEqual(stream.getvalue(), '')
 
-    def test_highlights_falls_back_only_for_home_redirect(self):
+    def test_highlight_query_includes_story_viewer_provider(self):
+        reel = highlight()
+        api = highlight_api([reel])
+        self.assertEqual(list(api.reels_media(['highlight:1'])), [reel])
+        operation, variables, field = api._pagination_graphql.call_args.args
+        self.assertEqual(operation, 'PolarisStoriesV3ReelPageGalleryQuery')
+        self.assertEqual(field, 'xdt_api__v1__feed__reels_media__connection')
+        self.assertEqual(variables['reel_ids'], ['highlight:1'])
+        self.assertTrue(variables['__relay_internal__pv__PolarisCommunityNoteStoriesLabelEnabledrelayprovider'])
+
+    def test_empty_highlight_shell_is_not_a_successful_empty_map(self):
+        for changes in [{'items': [], 'user': None}, {'items': []}, {'user': None}]:
+            with self.subTest(changes=changes):
+                api = highlight_api([{**highlight(), **changes}])
+                with self.assertRaisesRegex(RuntimeError, 'incomplete highlight'):
+                    list(api.reels_media(['highlight:1']))
+
+    def test_missing_highlight_preserves_progress_then_reports_incomplete(self):
+        reel = highlight()
+        api = highlight_api([reel])
+        stream = api.reels_media(['highlight:1', 'highlight:2'])
+        self.assertEqual(next(stream), reel)
+        with self.assertRaisesRegex(RuntimeError, 'all requested highlights'):
+            next(stream)
+
+    def test_no_returned_highlights_is_not_success(self):
+        with self.assertRaisesRegex(RuntimeError, 'all requested highlights'):
+            list(highlight_api([]).reels_media(['highlight:1']))
+
+    def test_expired_ordinary_stories_can_still_be_empty(self):
+        self.assertEqual(list(highlight_api([]).reels_media(['42'])), [])
+
+    def test_saved_highlight_download_uses_fixed_api(self):
+        cls = VidBeeInstagramStoriesExtractor
+        ie = cls(re.match(cls.pattern, 'https://www.instagram.com/stories/highlights/1/'))
+        ie.cookies = RequestsCookieJar()
+        ie._init()
+        self.assertIsInstance(ie.api, VidBeeInstagramAPI)
+        reel = highlight()
+        ie.api._pagination_graphql = Mock(return_value=iter([reel]))
+        self.assertEqual(ie.posts(), [reel])
+        variables = ie.api._pagination_graphql.call_args.args[1]
+        self.assertTrue(variables['__relay_internal__pv__PolarisCommunityNoteStoriesLabelEnabledrelayprovider'])
+
+    def test_highlights_chunk_and_skip_only_proven_unchanged_collections(self):
         ie = object.__new__(VidBeeInstagramHighlightsExtractor)
-        ie.exc = SimpleNamespace(AbortExtraction=RuntimeError)
+        ie.item = 'fixture'
+        ie._saved_mapping_cache = {'state': 'ready', 'items': [{
+            'url': 'https://www.instagram.com/stories/highlights/1/',
+            'sourceVersion': '10:2', 'assetCount': 2}]}
+        unchanged = {'id': 'highlight:1', 'latest_reel_media': 10, 'media_count': 2}
+        tray = [unchanged] + [{'id': f'highlight:{i}'} for i in range(2, 9)]
+        ie.api = SimpleNamespace(highlights_tray=Mock(return_value=tray), reels_media=Mock(return_value=[]))
+        self.assertEqual(list(ie.posts()), [])
+        self.assertEqual([c.args[0] for c in ie.api.reels_media.call_args_list], [
+            [f'highlight:{i}' for i in range(2, 7)], ['highlight:7', 'highlight:8']])
+        for changes in [{'media_count': 3}, {'latest_reel_media': None}]:
+            ie.api.highlights_tray.return_value = [{**unchanged, **changes}]
+            ie.api.reels_media.reset_mock()
+            list(ie.posts())
+            ie.api.reels_media.assert_called_once_with(['highlight:1'])
+
+    def test_empty_highlight_tray_needs_no_media_requests(self):
+        ie = object.__new__(VidBeeInstagramHighlightsExtractor)
+        ie.item = 'fixture'
         ie._saved_mapping_cache = {}
-        ie._rest_highlights_tray = Mock(side_effect=RuntimeError('HTTP redirect to home page'))
-        with patch('instagram_web.InstagramGraphqlAPI') as graphql:
-            graphql.return_value._call.return_value = {'user': {'edge_highlight_reels': {'edges': [{'node': {'id': '123'}}]}}}
-            self.assertEqual(ie._highlights_tray('42'), [{'id': 'highlight:123'}])
-            self.assertEqual(graphql.return_value._call.call_args.args[1]['user_id'], '42')
-            self.assertFalse(graphql.return_value._call.call_args.args[1]['include_logged_out_extras'])
-        ie._rest_highlights_tray.side_effect = RuntimeError('HTTP redirect to login page')
-        with patch('instagram_web.InstagramGraphqlAPI') as graphql:
-            with self.assertRaisesRegex(RuntimeError, 'login'):
-                ie._highlights_tray('42')
-            graphql.assert_not_called()
+        ie.api = SimpleNamespace(highlights_tray=Mock(return_value=[]), reels_media=Mock())
+        self.assertEqual(list(ie.posts()), [])
+        ie.api.reels_media.assert_not_called()
 
-    def test_posts_paginate_deduplicate_and_use_rest_shape(self):
-        ie = Harness([page(['1', '2'], 'next', True), page(['2', '3'])])
-        self.assertEqual([p['pk'] for p in ie._web_pages()], ['1', '2', '3'])
-        operation, variables = ie._web_query.call_args.args
-        self.assertEqual(operation, ie._POSTS_PAGE)
-        self.assertEqual(variables['after'], 'next')
-        self.assertEqual(variables['username'], 'fixture')
+    def test_posts_deduplicate_current_api_nodes(self):
+        ie = Harness()
+        self.assertEqual([p['pk'] for p in ie._web_posts([media('1'), media('2'), media('1')])], ['1', '2'])
 
-    def test_reels_resolve_video_details_and_paginate(self):
-        ie = Harness([page(['1'], 'next', True, True), page(['2'], reels=True)])
-        posts = list(ie._web_pages(True))
+    def test_reels_resolve_video_details(self):
+        ie = Harness()
+        posts = list(ie._web_posts([media('1'), media('2')], resolve=ie.api.media))
         self.assertEqual(len(posts), 2)
         self.assertTrue(all(p['video_versions'] for p in posts))
-        self.assertTrue(all('__typename' not in p for p in posts))
         self.assertEqual(ie.api.media.call_count, 2)
-        operation, variables = ie._web_query.call_args.args
-        self.assertEqual(operation, ie._REELS_PAGE)
-        self.assertEqual(variables['id'], '123')
 
-    def test_tagged_uses_web_query_and_resolves_grid_media(self):
-        grid_video = {**media('2', True), 'video_versions': None}
-        def tagged(nodes, cursor=None, more=False):
-            return {'xdt_api__v1__usertags__user_id__feed_connection': {
-                'edges': [{'node': node} for node in nodes],
-                'page_info': {'has_next_page': more, 'end_cursor': cursor}}}
-        ie = Harness([tagged([media('1')], 'next', True), tagged([grid_video])])
-        ie.user_id = '456'
-        posts = list(ie._web_pages(tagged=True))
-        self.assertEqual(len(posts), 2)
-        self.assertTrue(posts[1]['video_versions'])
-        self.assertEqual(ie.api.media.call_count, 2)
-        ie.api.user_id.assert_not_called()
-        first, second = (call.args for call in ie._web_query.call_args_list)
-        self.assertEqual((first[0], first[1]['after'], first[1]['user_id']), (ie._TAGGED_PAGE, None, '456'))
-        self.assertEqual(second[1]['after'], 'next')
-
-    def test_missing_collection_does_not_look_empty(self):
-        with self.assertRaisesRegex(RuntimeError, 'no profile collection'):
-            list(Harness([{}])._web_pages())
-
-    def test_repeated_cursor_fails(self):
-        with self.assertRaisesRegex(RuntimeError, 'did not advance'):
-            list(Harness([page(['1'], 'same', True), page(['2'], 'same', True)])._web_pages())
-
-    def test_failed_page_is_not_success(self):
-        ie = Harness([page(['1'], 'next', True), RuntimeError('query failed')])
-        with self.assertRaisesRegex(RuntimeError, 'query failed'):
-            list(ie._web_pages())
-
-    def test_missing_video_never_downloads_a_thumbnail_as_a_reel(self):
-        ie = Harness([page(['1'], reels=True)])
+    def test_missing_media_never_looks_like_success(self):
+        ie = Harness()
+        with self.assertRaisesRegex(RuntimeError, 'unreadable media'):
+            list(ie._web_posts([{}]))
+        ie.api.media.return_value = []
+        with self.assertRaisesRegex(RuntimeError, 'details are unavailable'):
+            list(ie._web_posts([media('1')], resolve=ie.api.media))
         bad = media('1', True)
         bad['video_versions'] = []
         ie.api.media.return_value = [bad]
         with self.assertRaisesRegex(RuntimeError, 'video formats'):
-            list(ie._web_pages(True))
+            list(ie._web_posts([media('1')], resolve=ie.api.media))
 
-    def test_incremental_posts_stop_at_known_history_without_fetching_older_pages(self):
-        ie = Harness([page(['2', '1'], 'older', True)])
-        ie._COUNT = 1
+    def test_incremental_posts_stop_before_older_history(self):
+        ie = Harness()
         ie._saved_mapping_cache = {'state': 'ready', 'items': [{'url': 'https://www.instagram.com/p/B/'}]}
-        self.assertEqual([post['pk'] for post in ie._web_pages()], ['2'])
-        self.assertEqual(ie._web_query.call_count, 1)
+        def nodes():
+            yield media('2')
+            for i in range(1, 13):
+                yield {**media(str(100 + i)), 'code': 'B'}
+            raise AssertionError('Older history must not be fetched')
+        self.assertEqual([p['pk'] for p in ie._web_posts(nodes())], ['2'])
 
-    def test_cancelled_posts_resume_from_saved_cursor(self):
-        ie = Harness([page(['3'])])
+    def test_cancelled_posts_restore_cursor_before_lazy_pagination(self):
+        ie = Harness()
         ie._saved_mapping_cache = {'state': 'cancelled', 'cursor': 'saved-page', 'items': []}
-        self.assertEqual([post['pk'] for post in ie._web_pages()], ['3'])
-        operation, variables = ie._web_query.call_args.args
-        self.assertEqual(operation, ie._POSTS_PAGE)
-        self.assertEqual(variables['after'], 'saved-page')
+        def nodes():
+            self.assertEqual(ie._init_cursor(), 'saved-page')
+            self.assertIsNone(ie._vidbee_resume_cursor)
+            yield media('3')
+        self.assertEqual([p['pk'] for p in ie._web_posts(nodes())], ['3'])
 
-    def test_highlights_skip_unchanged_collections_but_keep_updated_ones(self):
-        ie = object.__new__(VidBeeInstagramHighlightsExtractor)
-        ie.exc = SimpleNamespace(AbortExtraction=RuntimeError)
-        ie._saved_mapping_cache = {'state': 'ready', 'items': [{'url': 'https://www.instagram.com/stories/highlights/1/', 'sourceVersion': '10:2', 'assetCount': 2}]}
-        unchanged = {'id': 'highlight:1', 'latest_reel_media': 10, 'media_count': 2}
-        ie._rest_highlights_tray = Mock(return_value=[unchanged])
-        self.assertEqual(ie._highlights_tray('42'), [])
-        changed = {**unchanged, 'media_count': 3}
-        ie._rest_highlights_tray.return_value = [changed]
-        self.assertEqual(ie._highlights_tray('42'), [changed])
-        # Missing freshness fields cannot safely prove that a collection is unchanged.
-        ie._rest_highlights_tray.return_value = [{'id': 'highlight:1'}]
-        self.assertEqual(ie._highlights_tray('42'), [{'id': 'highlight:1'}])
-
-    def test_empty_collection_requires_valid_pagination(self):
-        self.assertEqual(list(Harness([page([])])._web_pages()), [])
-        with self.assertRaisesRegex(RuntimeError, 'invalid profile pagination'):
-            list(Harness([{'xdt_api__v1__feed__user_timeline_graphql_connection': {'edges': []}}])._web_pages())
+    def test_profile_tabs_keep_query_routes_and_providers(self):
+        for method, path in [('_user_feed', ''), ('_user_reels', '/reels'), ('_user_tagged', '/tagged')]:
+            with self.subTest(method=method):
+                ie = Harness()
+                getattr(ie, method)()
+                args = ie.api._pagination_graphql.call_args.args
+                self.assertEqual(args[3] if len(args) == 4 else '', path)
+                self.assertFalse(args[1]['__relay_internal__pv__PolarisSEOIsCrawlerrelayprovider'])
 
 
 if __name__ == '__main__':

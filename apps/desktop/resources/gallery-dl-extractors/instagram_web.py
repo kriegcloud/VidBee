@@ -6,14 +6,14 @@ persisted Relay queries with automatic doc_id discovery and, since the
 2026.10.23 build, collects the Relay provided variables from the profile tab
 bundles itself (``InstagramAPI._prepare_graphql`` fills any provider it finds
 with ``setdefault``). VidBee only adds mapping progress, saved-reference
-resume, incremental stops, and change detection on top of it. Session tokens
-stay inside gallery-dl.
+resume, incremental stops, change detection, and the story-viewer provider
+missing from profile bundles on top of it. Session tokens stay inside gallery-dl.
 """
 import json
 import sys
 
 from gallery_dl.extractor.instagram import (
-    InstagramPostExtractor, InstagramPostsExtractor, InstagramReelsExtractor, InstagramStoriesExtractor,
+    InstagramAPI, InstagramPostExtractor, InstagramPostsExtractor, InstagramReelsExtractor, InstagramStoriesExtractor,
     InstagramHighlightsExtractor, InstagramTaggedExtractor, shortcode_from_id,
 )
 
@@ -25,6 +25,33 @@ PINNED_KEYS = ("pinned_for_users", "is_pinned", "timeline_pinned_user_ids", "cli
 
 def emit_map(payload):
     print("VIDBEE_MAP:" + json.dumps(payload, default=str), file=sys.stderr, flush=True)
+
+
+class VidBeeInstagramAPI(InstagramAPI):
+    def reels_media(self, reel_ids):
+        variables = {
+            "initial_reel_id": reel_ids[0],
+            "reel_ids": reel_ids,
+            "first": 3,
+            "last": 2,
+            # The story viewer declares this provider in its own bundle. The
+            # profile bundle lookup misses it; Instagram then returns highlight
+            # shells with items=[] and user=null instead of a query error.
+            "__relay_internal__pv__PolarisCommunityNoteStoriesLabelEnabledrelayprovider": True,
+        }
+        pending = {reel_id for reel_id in reel_ids if str(reel_id).startswith("highlight:")}
+        for reel in self._pagination_graphql(
+                "PolarisStoriesV3ReelPageGalleryQuery", variables,
+                "xdt_api__v1__feed__reels_media__connection"):
+            if reel.get("id") in pending:
+                if not reel.get("items") or not reel.get("user"):
+                    raise self.exc.AbortExtraction(
+                        "Instagram returned an incomplete highlight; mapping is incomplete.")
+                pending.remove(reel["id"])
+            yield reel
+        if pending:
+            raise self.exc.AbortExtraction(
+                "Instagram did not return all requested highlights; mapping is incomplete.")
 
 
 class InstagramWebMixin:
@@ -65,6 +92,7 @@ class InstagramWebMixin:
     def _init(self):
         csrf = self.cookies.get("csrftoken", domain=".instagram.com")
         super()._init()
+        self.api = VidBeeInstagramAPI(self)
         if csrf:
             # Keep the browser's CSRF token instead of gallery-dl's generated one.
             self.csrf_token = csrf
