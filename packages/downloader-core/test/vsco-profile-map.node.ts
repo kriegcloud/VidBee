@@ -6,6 +6,7 @@ import { test } from 'node:test'
 import { resolveDownloadTaskKind } from '../src/gallery-dl-executor'
 import { isMappedProfilePostUrl, resolveMappedProfileSource } from '../src/mapped-profile-source'
 import { SocialProfileManager } from '../src/social-profile-manager'
+import { mapVscoProfile } from '../src/vsco-profile-map'
 
 const settled = async (manager: SocialProfileManager, url: string, category: string) => {
   let profile = manager.get(url)
@@ -90,6 +91,57 @@ test('mapped VSCO posts stay on the gallery-dl route', () => {
   )
   assert.equal(isMappedProfilePostUrl('vsco', 'https://vsco.co/allybari/gallery'), false)
   assert.equal(isMappedProfilePostUrl('vsco', 'https://image.vsco.co/signed/asset.jpg'), false)
+})
+
+test('an empty VSCO response suggests refreshing the session without declaring the gallery private', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-empty-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const bin = path.join(root, 'fake-gallery-dl')
+  await writeFile(
+    bin,
+    `#!${process.execPath}
+console.log(JSON.stringify([2, { user: 'public-profile', category: 'vsco', subcategory: 'gallery' }]));
+`,
+    { mode: 0o755 }
+  )
+  const manager = new SocialProfileManager({
+    storageDir: path.join(root, 'profiles'),
+    resolveYtDlpPath: () => bin,
+    runtime: { resolveBinaryPath: () => bin }
+  })
+  const url = 'https://vsco.co/public-profile/gallery'
+  manager.map(url, 'gallery')
+  const profile = await settled(manager, url, 'gallery')
+  const gallery = profile.categories.gallery
+  assert.equal(gallery?.state, 'partial')
+  assert.equal(gallery?.items.length, 0)
+  assert.match(gallery?.error ?? '', /refresh your VSCO session/)
+  assert.match(gallery?.error ?? '', /import fresh VSCO cookies/)
+  assert.doesNotMatch(gallery?.error ?? '', /profile is public|private/)
+})
+
+test('VSCO extractor failures retain the underlying error instead of reporting an empty gallery', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-error-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const bin = path.join(root, 'fake-gallery-dl')
+  await writeFile(
+    bin,
+    `#!${process.execPath}
+console.error('HTTP 429: Too Many Requests');
+process.exitCode = 1;
+`,
+    { mode: 0o755 }
+  )
+  const result = await mapVscoProfile(
+    'https://vsco.co/public-profile/gallery',
+    'public-profile',
+    { resolveGalleryDlPath: () => bin, resolveYtDlpPath: () => bin },
+    undefined,
+    new AbortController().signal,
+    () => assert.fail('A failed extractor must not emit posts')
+  )
+  assert.equal(result.complete, false)
+  assert.equal(result.error, 'HTTP 429: Too Many Requests')
 })
 
 test('VSCO site routes are not read as usernames', () => {

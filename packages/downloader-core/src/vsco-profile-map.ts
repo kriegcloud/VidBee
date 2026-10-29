@@ -66,7 +66,8 @@ const mapVscoProfileUnchecked = async (
   if (result.complete && mappedCount === 0) {
     return {
       complete: false,
-      error: 'No posts were found in this VSCO gallery. Check that the profile is public.'
+      error:
+        'VSCO returned no posts for this session. If the gallery is visible in your browser, connect or refresh your VSCO session in VidBee, or import fresh VSCO cookies, then map again.'
     }
   }
   return { complete: result.complete, error: result.error }
