@@ -1,4 +1,5 @@
 import {
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
   useCallback,
@@ -8,7 +9,6 @@ import {
 } from 'react'
 import {
   isListIgnoreTarget,
-  LIST_MARQUEE_HOLD_MS,
   LIST_MARQUEE_MOVE_PX,
   type ListMarquee,
   listItemIdsInMarquee,
@@ -47,11 +47,14 @@ interface UseListMarqueeSelectionOptions {
   selectableAttr?: string
   selectedIds: ReadonlySet<string>
   onSelectIds: (ids: string[]) => void
+  /** Static alternative to `getScrollElement`. */
+  scrollElement?: HTMLElement | null
 }
 
 /**
- * Finder-style drag rectangle over a list. Hold or move to select; a plain
- * click is left to the item (so rows can navigate instead of selecting).
+ * Finder-style drag rectangle over a list. Drag rows or background to replace
+ * the selection, or hold Cmd/Ctrl to add to it; a plain click is left to the
+ * item (so rows can navigate instead of selecting).
  *
  * The rectangle is anchored in coordinates local to the list element, which
  * scrolls with the rows. A drag that runs off the edge therefore keeps growing
@@ -65,31 +68,28 @@ export const useListMarqueeSelection = ({
   itemAttr = 'data-download-id',
   selectableAttr = 'data-download-selectable',
   selectedIds,
-  onSelectIds
+  onSelectIds,
+  scrollElement
 }: UseListMarqueeSelectionOptions) => {
   const [marquee, setMarquee] = useState<ListMarquee | null>(null)
   const pointerRef = useRef<ListMarqueePointer | null>(null)
-  const holdTimerRef = useRef<number | null>(null)
   const autoScrollFrameRef = useRef<number | null>(null)
-  const selectedIdsRef = useRef(selectedIds)
+  const suppressClickRef = useRef(false)
+  const controlPointerRef = useRef(false)
   const onSelectIdsRef = useRef(onSelectIds)
   const geometryRowsRef = useRef(geometryRows)
   const getScrollElementRef = useRef(getScrollElement)
-  selectedIdsRef.current = selectedIds
+  const scrollElementRef = useRef(scrollElement)
   onSelectIdsRef.current = onSelectIds
   geometryRowsRef.current = geometryRows
   getScrollElementRef.current = getScrollElement
+  scrollElementRef.current = scrollElement
 
-  /**
-   * Cancel a pending long-press timer.
-   */
-  const clearHoldTimer = useCallback((): void => {
-    if (holdTimerRef.current === null) {
-      return
-    }
-    window.clearTimeout(holdTimerRef.current)
-    holdTimerRef.current = null
-  }, [])
+  /** Resolve the scrolling ancestor used for edge auto-scroll. */
+  const resolveScroller = useCallback(
+    (): HTMLElement | null => getScrollElementRef.current?.() ?? scrollElementRef.current ?? null,
+    []
+  )
 
   /**
    * Stop the edge auto-scroll loop.
@@ -102,13 +102,8 @@ export const useListMarqueeSelection = ({
     autoScrollFrameRef.current = null
   }, [])
 
-  /**
-   * Collect selectable row boxes in viewport coordinates.
-   */
-  const measureSelectableRows = useCallback((): Array<{
-    id: string
-    rect: { bottom: number; left: number; right: number; top: number }
-  }> => {
+  /** Collect selectable row boxes in viewport coordinates. */
+  const measureSelectableRows = useCallback((): ListMarqueeGeometryRow[] => {
     const provided = geometryRowsRef.current?.()
     if (provided) {
       return [...provided]
@@ -117,7 +112,7 @@ export const useListMarqueeSelection = ({
     if (!container) {
       return []
     }
-    return [...container.querySelectorAll(`[${selectableAttr}]`)].flatMap((node) => {
+    return [...container.querySelectorAll(`[${selectableAttr}="true"]`)].flatMap((node) => {
       if (!(node instanceof HTMLElement)) {
         return []
       }
@@ -127,17 +122,12 @@ export const useListMarqueeSelection = ({
       }
       const rect = node.getBoundingClientRect()
       return [
-        {
-          id,
-          rect: { bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top }
-        }
+        { id, rect: { bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top } }
       ]
     })
   }, [containerRef, itemAttr, selectableAttr])
 
-  /**
-   * Highlight rows whose boxes intersect the pointer marquee.
-   */
+  /** Keep the rectangle and hit-testing anchored to the same content position while scrolling. */
   const updateMarqueeSelection = useCallback(
     (clientX: number, clientY: number): void => {
       const pointer = pointerRef.current
@@ -147,7 +137,7 @@ export const useListMarqueeSelection = ({
       }
       pointer.lastClientX = clientX
       pointer.lastClientY = clientY
-      const scroller = getScrollElementRef.current?.()
+      const scroller = resolveScroller()
       if (scroller && !pointer.armed) {
         pointer.armed = listMarqueeGatedScrollStep(
           false,
@@ -168,13 +158,10 @@ export const useListMarqueeSelection = ({
         id: row.id,
         rect: listRectToLocal(row.rect, origin)
       }))
-      const next = new Set(pointer.baseIds)
-      for (const id of listItemIdsInMarquee(rows, box)) {
-        next.add(id)
-      }
-      onSelectIdsRef.current(Array.from(next))
+      const hits = listItemIdsInMarquee(rows, box)
+      onSelectIdsRef.current([...new Set([...pointer.baseIds, ...hits])])
     },
-    [containerRef, measureSelectableRows]
+    [containerRef, measureSelectableRows, resolveScroller]
   )
 
   /**
@@ -184,7 +171,7 @@ export const useListMarqueeSelection = ({
   const runAutoScroll = useCallback((): void => {
     autoScrollFrameRef.current = null
     const pointer = pointerRef.current
-    const scroller = getScrollElementRef.current?.()
+    const scroller = resolveScroller()
     if (!(pointer?.selecting && scroller)) {
       return
     }
@@ -203,25 +190,24 @@ export const useListMarqueeSelection = ({
       }
     }
     autoScrollFrameRef.current = window.requestAnimationFrame(runAutoScroll)
-  }, [updateMarqueeSelection])
+  }, [resolveScroller, updateMarqueeSelection])
 
-  /**
-   * Start the Finder-style selection rectangle.
-   */
+  /** Capture an actual drag; holding the mouse still never starts selection. */
   const beginMarquee = useCallback(
     (clientX: number, clientY: number): void => {
       const pointer = pointerRef.current
       const container = containerRef.current
-      if (!pointer || pointer.selecting) {
+      if (!(pointer && container) || pointer.selecting) {
         return
       }
       pointer.selecting = true
-      pointer.baseIds = Array.from(selectedIdsRef.current)
-      if (container && typeof container.setPointerCapture === 'function') {
+      suppressClickRef.current = true
+      container.focus({ preventScroll: true })
+      if (typeof container.setPointerCapture === 'function') {
         try {
           container.setPointerCapture(pointer.pointerId)
         } catch {
-          // The pointer may already have been released.
+          // Window listeners still clean up when pointer capture is unavailable.
         }
       }
       updateMarqueeSelection(clientX, clientY)
@@ -231,25 +217,39 @@ export const useListMarqueeSelection = ({
     [clearAutoScroll, containerRef, runAutoScroll, updateMarqueeSelection]
   )
 
-  /**
-   * Commit or cancel the current list pointer gesture.
-   */
+  /** Finish a drag while retaining its click guard until the synthesized click is consumed. */
   const finishPointer = useCallback((): void => {
-    clearHoldTimer()
     clearAutoScroll()
     const pointer = pointerRef.current
     const container = containerRef.current
-    if (
-      container &&
-      pointer &&
-      typeof container.hasPointerCapture === 'function' &&
-      container.hasPointerCapture(pointer.pointerId)
-    ) {
-      container.releasePointerCapture(pointer.pointerId)
+    if (!pointer) {
+      return
     }
     pointerRef.current = null
+    if (container?.hasPointerCapture?.(pointer.pointerId)) {
+      container.releasePointerCapture(pointer.pointerId)
+    }
     setMarquee(null)
-  }, [clearAutoScroll, clearHoldTimer, containerRef])
+  }, [clearAutoScroll, containerRef])
+
+  useEffect(() => {
+    /** A fresh pointer gesture must not inherit an unconsumed release click guard. */
+    const resetClickGuard = (): void => {
+      suppressClickRef.current = false
+      controlPointerRef.current = false
+    }
+    window.addEventListener('pointerdown', resetClickGuard, true)
+    window.addEventListener('pointerup', finishPointer)
+    window.addEventListener('pointercancel', finishPointer)
+    window.addEventListener('blur', finishPointer)
+    return () => {
+      window.removeEventListener('pointerdown', resetClickGuard, true)
+      window.removeEventListener('pointerup', finishPointer)
+      window.removeEventListener('pointercancel', finishPointer)
+      window.removeEventListener('blur', finishPointer)
+      finishPointer()
+    }
+  }, [finishPointer])
 
   // A wheel or trackpad scroll fires no pointermove, so re-run the hit test
   // against the rows that just moved under the anchored rectangle.
@@ -257,7 +257,7 @@ export const useListMarqueeSelection = ({
     if (!marquee) {
       return
     }
-    const onScroll = () => {
+    const onScroll = (): void => {
       const pointer = pointerRef.current
       if (pointer?.selecting) {
         updateMarqueeSelection(pointer.lastClientX, pointer.lastClientY)
@@ -269,25 +269,24 @@ export const useListMarqueeSelection = ({
 
   useEffect(() => clearAutoScroll, [clearAutoScroll])
 
-  /**
-   * Start a potential marquee unless the pointer landed on a control.
-   */
+  /** Prepare a mouse drag over rows or background without hijacking controls or touch scrolling. */
   const onPointerDown = (event: ReactPointerEvent<HTMLElement>): void => {
-    if (!enabled || event.button !== 0) {
+    if (
+      !enabled ||
+      event.button !== 0 ||
+      event.pointerType === 'touch' ||
+      isListIgnoreTarget(event.target)
+    ) {
       return
     }
-    if (isListIgnoreTarget(event.target)) {
-      return
-    }
-    const container = containerRef.current
-    const listRect = container?.getBoundingClientRect()
+    const listRect = containerRef.current?.getBoundingClientRect()
     if (!listRect) {
       return
     }
-    clearHoldTimer()
+    controlPointerRef.current = event.ctrlKey
     pointerRef.current = {
       armed: false,
-      baseIds: Array.from(selectedIdsRef.current),
+      baseIds: event.metaKey || event.ctrlKey ? Array.from(selectedIds) : [],
       lastClientX: event.clientX,
       lastClientY: event.clientY,
       originX: event.clientX - listRect.left,
@@ -297,22 +296,17 @@ export const useListMarqueeSelection = ({
       startClientX: event.clientX,
       startClientY: event.clientY
     }
-    const startX = event.clientX
-    const startY = event.clientY
-    holdTimerRef.current = window.setTimeout(() => {
-      beginMarquee(startX, startY)
-    }, LIST_MARQUEE_HOLD_MS)
   }
 
-  /**
-   * Grow the selection rectangle after the pointer moves past the slop.
-   */
+  /** Grow the selection after deliberate movement and prevent native text dragging. */
   const onPointerMove = (event: ReactPointerEvent<HTMLElement>): void => {
     const pointer = pointerRef.current
-    if (!(pointer && enabled)) {
+    if (!(pointer && enabled) || event.pointerId !== pointer.pointerId) {
       return
     }
-    if (!pointer.selecting) {
+    if (pointer.selecting) {
+      updateMarqueeSelection(event.clientX, event.clientY)
+    } else {
       const distance = Math.hypot(
         event.clientX - pointer.startClientX,
         event.clientY - pointer.startClientY
@@ -320,23 +314,38 @@ export const useListMarqueeSelection = ({
       if (distance < LIST_MARQUEE_MOVE_PX) {
         return
       }
-      clearHoldTimer()
       beginMarquee(event.clientX, event.clientY)
-      return
     }
-    updateMarqueeSelection(event.clientX, event.clientY)
+    event.preventDefault()
   }
 
-  /**
-   * True when the current gesture became a marquee (so the row click should not fire).
-   */
-  const didSelectWithMarquee = (): boolean => Boolean(pointerRef.current?.selecting)
+  /** Prevent the release click from navigating a row or clearing the completed selection. */
+  const onClickCapture = (event: ReactMouseEvent<HTMLElement>): void => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  /** Keep native Control-click menus from taking over a primary-button selection gesture. */
+  const onContextMenuCapture = (event: ReactMouseEvent<HTMLElement>): void => {
+    if ((event.ctrlKey && controlPointerRef.current) || pointerRef.current?.selecting) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  /** Report a completed drag independently of pointerup cleanup. */
+  const didSelectWithMarquee = (): boolean => suppressClickRef.current
 
   return {
     beginMarquee,
     didSelectWithMarquee,
     finishPointer,
     marquee,
+    onClickCapture,
+    onContextMenuCapture,
     onPointerDown,
     onPointerMove
   }

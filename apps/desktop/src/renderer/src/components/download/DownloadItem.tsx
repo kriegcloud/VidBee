@@ -35,7 +35,6 @@ import { isBrowserOpenableUrl } from '@vidbee/ui/lib/url-kind'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
   AlertCircle,
-  AudioLines,
   Captions,
   Copy,
   FileAudio,
@@ -54,6 +53,7 @@ import {
   normalizeSavedFileName
 } from '../../../../shared/utils/download-file'
 import { useCachedThumbnail } from '../../hooks/use-cached-thumbnail'
+import type { DownloadSelectionModifiers } from '../../hooks/use-download-selection'
 import { useLocalPoster } from '../../hooks/use-local-poster'
 import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
 import { rememberDownloadListFocus } from '../../lib/download-list-focus'
@@ -83,6 +83,7 @@ import { useAppInfo } from '../feedback/FeedbackLinks'
 import { TranscriptAudioEqualizer } from '../transcript/TranscriptAudioEqualizer'
 import { AgentTaskIndicator } from './AgentTaskIndicator'
 import { DownloadRecordContextMenuItems } from './DownloadRecordContextMenuItems'
+import { DownloadTroubleshootButton } from './DownloadTroubleshootButton'
 import { resolveDownloadContents } from './download-contents'
 import { canRetryDownload, getQualityLabel } from './download-item-utils'
 
@@ -147,9 +148,12 @@ const didFallbackFromPick = (download: DownloadRecord): boolean => {
 
 interface DownloadItemProps {
   download: DownloadRecord
+  compact?: boolean
   isSelected?: boolean
+  isTabStop?: boolean
   selectionActive?: boolean
-  onToggleSelect?: (id: string) => void
+  selectionContextMenu?: ReactNode
+  onToggleSelect?: (id: string, modifiers?: DownloadSelectionModifiers) => void
 }
 
 const formatFileSize = (bytes?: number) => {
@@ -174,10 +178,14 @@ const formatDateShort = (timestamp?: number) => {
   })
 }
 
+/** Render the shared library row, with a compact details link for Agent Chat cards. */
 export function DownloadItem({
   download,
+  compact = false,
   isSelected = false,
+  isTabStop = true,
   selectionActive = false,
+  selectionContextMenu,
   onToggleSelect
 }: DownloadItemProps) {
   const { t } = useTranslation()
@@ -787,17 +795,6 @@ export function DownloadItem({
       node: <AgentTaskIndicator aiSnapshot={agentTaskAiSnapshot} tasks={agentTasks} />
     })
   }
-  if (isNowPlaying) {
-    metaItems.push({
-      key: 'now-playing',
-      node: (
-        <span className="inline-flex items-center gap-1 font-medium text-primary">
-          <AudioLines className="h-3.5 w-3.5" />
-          {t('transcript.player.nowPlaying')}
-        </span>
-      )
-    })
-  }
   if (timestamp && !showInlineProgress) {
     metaItems.push({ key: 'date', node: formatDateShort(timestamp) })
   }
@@ -838,28 +835,57 @@ export function DownloadItem({
 
   return (
     <ContextMenu onOpenChange={setIsContextMenuOpen}>
-      <ContextMenuTrigger asChild>
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: composite row with nested controls; click opens transcript */}
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: nested buttons and checkbox own keyboard focus */}
+      <ContextMenuTrigger asChild disabled={compact}>
+        {/* biome-ignore lint/a11y/useSemanticElements: composite row contains independent buttons and selection controls */}
         <div
           aria-current={isNowPlaying ? 'true' : undefined}
-          className={`group relative w-full max-w-full overflow-hidden px-6 py-2 text-left transition-colors ${
+          aria-label={download.title}
+          aria-pressed={selectionEnabled ? isSelected : undefined}
+          className={`group relative w-full max-w-full overflow-hidden text-left transition-colors focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 ${compact ? 'cursor-pointer rounded-xl px-3 py-3 hover:bg-accent/50' : 'px-6 py-2'} ${
             isSelectedHistory || isContextMenuOpen ? 'bg-primary/10' : ''
           }`}
           data-download-id={download.id}
           data-download-selectable={selectionEnabled ? 'true' : undefined}
           data-now-playing={isNowPlaying ? 'true' : undefined}
           onClick={(event) => {
-            if (isListIgnoreTarget(event.target)) {
+            if (
+              !(event.target instanceof Node && event.currentTarget.contains(event.target)) ||
+              isListIgnoreTarget(event.target)
+            ) {
+              return
+            }
+            event.currentTarget.focus({ preventScroll: true })
+            if (selectionEnabled && (event.metaKey || event.ctrlKey || event.shiftKey)) {
+              onToggleSelect?.(download.id, {
+                range: event.shiftKey,
+                toggle: event.metaKey || event.ctrlKey
+              })
               return
             }
             // Only the cover and the title open the item; the empty run of row
             // beside them is dead space so a stray click cannot navigate away.
-            if (!(event.target instanceof Element && event.target.closest(ACTIVATE_SELECTOR))) {
+            // Compact Agent Chat cards stay fully clickable.
+            if (
+              !(
+                compact ||
+                (event.target instanceof Element && event.target.closest(ACTIVATE_SELECTOR))
+              )
+            ) {
               return
             }
             handleOpenDetail()
           }}
+          onKeyDown={(event) => {
+            if (event.target !== event.currentTarget) {
+              return
+            }
+            if (event.key === 'Enter' || (!selectionEnabled && event.key === ' ')) {
+              event.preventDefault()
+              handleOpenDetail()
+            }
+          }}
+          role="button"
+          tabIndex={selectionEnabled && !isTabStop ? -1 : 0}
         >
           <div className="flex w-full items-start gap-3">
             {/* Thumbnail */}
@@ -880,8 +906,22 @@ export function DownloadItem({
                   <Checkbox
                     aria-label={t('history.selectItem')}
                     checked={Boolean(isSelected)}
-                    onCheckedChange={() => onToggleSelect?.(download.id)}
-                    onClick={(event) => event.stopPropagation()}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onToggleSelect?.(download.id, {
+                        range: event.shiftKey,
+                        toggle: !event.shiftKey || event.metaKey || event.ctrlKey
+                      })
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === ' ') {
+                        event.preventDefault()
+                        onToggleSelect?.(download.id, {
+                          range: event.shiftKey,
+                          toggle: !event.shiftKey || event.metaKey || event.ctrlKey
+                        })
+                      }
+                    }}
                     onPointerDown={(event) => event.stopPropagation()}
                   />
                 </div>
@@ -912,7 +952,7 @@ export function DownloadItem({
             </div>
 
             {/* Content */}
-            <div className="pointer-events-none min-w-0 flex-1 overflow-hidden">
+            <div className="min-w-0 flex-1 overflow-hidden">
               <div className="flex min-h-14 items-center gap-2">
                 <div className="min-w-0 flex-1 space-y-1.5">
                   {download.collectionSummary && (
@@ -934,20 +974,16 @@ export function DownloadItem({
                       role="img"
                       title={platformLabel}
                     >
-                      <DownloadPlatformIcon
-                        className={`block size-4 ${isNowPlaying ? 'text-primary' : ''}`}
-                        domain={platform.domain}
-                      />
+                      <DownloadPlatformIcon className="block size-4" domain={platform.domain} />
                     </span>
                     <p
-                      className="pointer-events-auto min-w-0 cursor-pointer truncate font-medium text-sm hover:underline"
+                      className="min-w-0 cursor-pointer truncate font-medium text-sm hover:underline"
                       data-download-activate=""
                     >
                       {download.title}
                     </p>
                   </div>
                   <DownloadItemMeta
-                    accented={isNowPlaying}
                     items={metaItems}
                     leading={
                       contents.parts.length > 0 ? (
@@ -956,7 +992,13 @@ export function DownloadItem({
                     }
                   />
                 </div>
-                <div className="pointer-events-auto relative z-20 flex shrink-0 items-center justify-end gap-0.5 text-muted-foreground">
+                <div
+                  className={
+                    compact
+                      ? 'hidden'
+                      : 'pointer-events-auto relative z-20 flex shrink-0 items-center justify-end gap-0.5 text-muted-foreground'
+                  }
+                >
                   {transcriptListState === 'failed' ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -1105,7 +1147,11 @@ export function DownloadItem({
                 download.status !== 'completed' &&
                 download.status !== 'error' && (
                   <div className="mt-1.5 w-full overflow-hidden rounded-full bg-background/60">
-                    <Progress className="h-1 w-full" value={download.progress.percent} />
+                    <Progress
+                      aria-label={t('agentChat.ui.progress')}
+                      className="h-1 w-full"
+                      value={download.progress.percent}
+                    />
                   </div>
                 )}
 
@@ -1126,11 +1172,13 @@ export function DownloadItem({
               )}
 
               {/* Error message */}
-              {download.status === 'error' && download.error && (
+              {download.status === 'error' && (
                 <div className="flex flex-col gap-1.5">
-                  <p className="line-clamp-2 w-full overflow-hidden text-destructive text-xs">
-                    {displayErrorMessage}
-                  </p>
+                  {displayErrorMessage ? (
+                    <p className="line-clamp-2 w-full overflow-hidden text-destructive text-xs">
+                      {displayErrorMessage}
+                    </p>
+                  ) : null}
                   {cookieFailureKind ? (
                     <div className="pointer-events-auto">
                       <Button
@@ -1149,9 +1197,7 @@ export function DownloadItem({
                     </div>
                   ) : null}
                   <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 text-muted-foreground text-xs">
-                    <span className="shrink-0 font-medium text-muted-foreground text-xs">
-                      {t('download.feedback.title')}:
-                    </span>
+                    <DownloadTroubleshootButton taskId={download.id} />
                     {canShowSheet && (
                       <Button
                         className="h-6 px-1.5 text-[10px]"
@@ -1167,7 +1213,7 @@ export function DownloadItem({
                     )}
                     <FeedbackLinkButtons
                       appInfo={appInfo}
-                      buttonClassName="h-6 gap-1 px-1.5 text-[10px]"
+                      buttonClassName="h-6 gap-1 px-1.5 text-[10px] [&_svg]:size-3"
                       buttonSize="sm"
                       buttonVariant="outline"
                       error={download.error}
@@ -1175,7 +1221,7 @@ export function DownloadItem({
                       includeAppInfo
                       issueTitle={DOWNLOAD_FEEDBACK_ISSUE_TITLE}
                       onLinkClick={(event) => event.stopPropagation()}
-                      showGroupSeparator={canShowSheet}
+                      showGroupSeparator
                       sourceUrl={download.url}
                       stage="download"
                       task={download}
@@ -1257,62 +1303,66 @@ export function DownloadItem({
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <DownloadRecordContextMenuItems
-          canCopyLink={canCopyLink}
-          canCopyToClipboard={canCopyToClipboard()}
-          canDeleteFile={canDeleteFile}
-          canDeleteRecord={!isInProgressStatus}
-          canOpenFile={canOpenFile}
-          canPauseDownload={canPauseDownload}
-          canResumeDownload={canResumeDownload}
-          canRetry={canRetry}
-          canShowOpenFolder={showOpenFolderAction}
-          isInProgressStatus={isInProgressStatus}
-          onAddToPlaylist={handleAddToPlaylist}
-          onCancel={() => {
-            void handleCancel()
-          }}
-          onCopyLink={() => {
-            void handleCopyLink()
-          }}
-          onCopyToClipboard={() => {
-            void handleCopyToClipboard()
-          }}
-          onDeleteFile={() => {
-            void handleDeleteFile()
-          }}
-          onDeleteRecord={() => {
-            void handleDeleteRecord()
-          }}
-          onOpenDetail={handleOpenDetail}
-          onOpenFile={() => {
-            void handleOpenFile()
-          }}
-          onOpenFolder={() => {
-            void handleOpenFolder()
-          }}
-          onOpenInBrowser={
-            isBrowserOpenableUrl(download.url)
-              ? () => {
-                  void handleOpenInBrowser()
-                }
-              : undefined
-          }
-          onPause={() => {
-            void handlePause()
-          }}
-          onResume={() => {
-            void handleResume()
-          }}
-          onRetry={() => {
-            void handleRetryDownload()
-          }}
-          onTranscriptRetry={() => {
-            void ipcServices.transcript.retry(download.id)
-          }}
-          showTranscriptRetry={transcriptListState === 'failed'}
-          sourceUrl={download.url}
-        />
+        {isSelected && selectionContextMenu ? (
+          selectionContextMenu
+        ) : (
+          <DownloadRecordContextMenuItems
+            canCopyLink={canCopyLink}
+            canCopyToClipboard={canCopyToClipboard()}
+            canDeleteFile={canDeleteFile}
+            canDeleteRecord={!isInProgressStatus}
+            canOpenFile={canOpenFile}
+            canPauseDownload={canPauseDownload}
+            canResumeDownload={canResumeDownload}
+            canRetry={canRetry}
+            canShowOpenFolder={showOpenFolderAction}
+            isInProgressStatus={isInProgressStatus}
+            onAddToPlaylist={handleAddToPlaylist}
+            onCancel={() => {
+              void handleCancel()
+            }}
+            onCopyLink={() => {
+              void handleCopyLink()
+            }}
+            onCopyToClipboard={() => {
+              void handleCopyToClipboard()
+            }}
+            onDeleteFile={() => {
+              void handleDeleteFile()
+            }}
+            onDeleteRecord={() => {
+              void handleDeleteRecord()
+            }}
+            onOpenDetail={handleOpenDetail}
+            onOpenFile={() => {
+              void handleOpenFile()
+            }}
+            onOpenFolder={() => {
+              void handleOpenFolder()
+            }}
+            onOpenInBrowser={
+              isBrowserOpenableUrl(download.url)
+                ? () => {
+                    void handleOpenInBrowser()
+                  }
+                : undefined
+            }
+            onPause={() => {
+              void handlePause()
+            }}
+            onResume={() => {
+              void handleResume()
+            }}
+            onRetry={() => {
+              void handleRetryDownload()
+            }}
+            onTranscriptRetry={() => {
+              void ipcServices.transcript.retry(download.id)
+            }}
+            showTranscriptRetry={transcriptListState === 'failed'}
+            sourceUrl={download.url}
+          />
+        )}
       </ContextMenuContent>
     </ContextMenu>
   )
@@ -1321,16 +1371,13 @@ export function DownloadItem({
 /**
  * One metadata line, with dots between the parts that are present.
  *
- * @param accented Use the now-playing primary tone instead of muted gray.
  * @param items Metadata fragments to join.
  * @param leading Fixed-width part shown first, separated by the same dot.
  */
 function DownloadItemMeta({
-  accented,
   items,
   leading
 }: {
-  accented?: boolean
   items: { key: string; node: ReactNode }[]
   leading?: ReactNode
 }) {
@@ -1339,9 +1386,7 @@ function DownloadItemMeta({
   }
   return (
     <div
-      className={`flex h-5 min-w-0 items-center overflow-hidden text-[12px] leading-none [&_img]:block [&_svg]:block ${
-        accented ? 'text-primary' : 'text-muted-foreground'
-      }`}
+      className="flex h-5 min-w-0 items-center overflow-hidden text-[12px] text-muted-foreground leading-none [&_img]:block [&_svg]:block"
       data-testid="download-item-meta"
     >
       {leading}
@@ -1350,9 +1395,7 @@ function DownloadItemMeta({
           {index > 0 || leading ? (
             <span
               aria-hidden="true"
-              className={`mx-1.5 shrink-0 leading-none ${
-                accented ? 'text-primary/40' : 'text-muted-foreground/40'
-              }`}
+              className="mx-1.5 shrink-0 text-muted-foreground/40 leading-none"
             >
               ·
             </span>

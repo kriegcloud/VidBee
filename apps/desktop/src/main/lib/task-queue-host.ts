@@ -11,6 +11,8 @@
  * desktop. The `historyManager` and `downloadEngine` exports are thin
  * facades over this API.
  */
+
+import { EventEmitter, once } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -49,6 +51,7 @@ import { scopedLoggers } from '../utils/logger'
 import { AsrModelExecutor } from './asr-model-executor'
 import { resolveBrowserCaptureSidecarScript } from './browser-capture-sidecar-path'
 import { resolveBundledResourcesPath } from './bundled-resources-path'
+import { runDesktopCloudTranscription } from './cloud-transcription'
 import { getDatabaseConnection } from './database'
 import { startDownloadPowerSaveGuard } from './download-power-save'
 import { applyExtensionCookieSettings } from './extension-cookies'
@@ -102,6 +105,8 @@ const resolveFfmpegLocation = (): string | undefined => {
 
 let taskQueueInstance: TaskQueueAPI | null = null
 let started = false
+let starting: Promise<void> | undefined
+const queueLifecycle = new EventEmitter()
 let dbPath: string | null = null
 let persistent = false
 let stopPowerSaveGuard: (() => void) | null = null
@@ -257,6 +262,7 @@ const buildTranscriptionExecutor = (): TranscriptionExecutor => {
     bundledNodePath: resolveBundledNodePath([resourcesDir]),
     workDir: path.join(app.getPath('userData'), 'transcript-work'),
     resolveGpuKinds: resolveTranscriptionGpuKinds,
+    runCloud: runDesktopCloudTranscription,
     onPartial: ({ downloadTaskId, segments }) => {
       broadcastTranscriptPartials(downloadTaskId, segments)
     },
@@ -308,10 +314,27 @@ export const applyDesktopQueueConcurrency = (): void => {
   })
 }
 
-export const startDesktopTaskQueue = async (): Promise<void> => {
-  if (started) {
-    return
+/** Await the normal application startup without dispatching work before kernel preparation. */
+export async function waitForDesktopTaskQueueReady(signal: AbortSignal): Promise<void> {
+  signal.throwIfAborted()
+  if (!started) {
+    await once(queueLifecycle, 'ready', { signal })
   }
+}
+
+/** Share initialization so concurrent callers cannot observe a partially recovered task index. */
+export const startDesktopTaskQueue = (): Promise<void> => {
+  if (started) {
+    return Promise.resolve()
+  }
+  starting ??= initializeDesktopTaskQueue().finally(() => {
+    starting = undefined
+  })
+  return starting
+}
+
+/** Recover persisted tasks after the application's existing kernel preparation has finished. */
+async function initializeDesktopTaskQueue(): Promise<void> {
   const queue = getDesktopTaskQueue()
   await queue.start()
   await restoreInstagramProfileGroupCaps(queue)
@@ -336,6 +359,7 @@ export const startDesktopTaskQueue = async (): Promise<void> => {
   }
   stopPowerSaveGuard = startDownloadPowerSaveGuard(queue, powerSaveBlocker)
   started = true
+  queueLifecycle.emit('ready')
 }
 
 export const stopDesktopTaskQueue = async (): Promise<void> => {

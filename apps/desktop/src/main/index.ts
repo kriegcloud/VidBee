@@ -24,6 +24,7 @@ import { configureLogger } from './config/logger-config'
 import { services } from './ipc'
 import { registerAgentArtifactProtocol } from './lib/agent-artifacts'
 import { isAppQuitPrepared, isAppQuitting, prepareAppQuit } from './lib/app-quit'
+import { canUseAppAutoUpdater } from './lib/app-update-policy'
 import {
   AUTH_PROTOCOL,
   handleDesktopAuthCallback,
@@ -70,6 +71,7 @@ import {
   startIdleMinimalModelFill,
   subscribeTranscriptBroadcasts
 } from './lib/transcript-host'
+import { getMainWindowState, rememberMainWindowState } from './lib/window-state'
 import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdlp-kernel-host'
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
 import { isPortableMode } from './portable'
@@ -548,9 +550,9 @@ export function createWindow(): void {
   isMainWindowReadyToShow = false
   isRendererReady = false
 
+  const { maximized, ...windowSize } = getMainWindowState()
   const windowOptions: BrowserWindowConstructorOptions = {
-    width: 1200,
-    height: 800,
+    ...windowSize,
     show: false,
     autoHideMenuBar: true,
     icon: appIcon, // Set application icon
@@ -576,6 +578,7 @@ export function createWindow(): void {
 
   // Create the browser window
   mainWindow = new BrowserWindow(windowOptions)
+  rememberMainWindowState(mainWindow, maximized)
 
   mainWindow.on('close', (event) => {
     if (isAppQuitting()) {
@@ -1113,8 +1116,8 @@ function initAutoUpdater(): void {
     log.info('Vendored build is managed from source, skipping automatic app updates')
     return
   }
-  if (isPortableMode) {
-    log.info('Portable mode is active, skipping auto-updater initialization')
+  if (!canUseAppAutoUpdater) {
+    log.info('App auto-updates are disabled for portable and Microsoft Store distributions')
     return
   }
 

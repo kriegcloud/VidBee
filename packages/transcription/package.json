@@ -7,6 +7,8 @@
     ".": "./src/index.ts",
     "./asr": "./src/asr-tiers.ts",
     "./concurrency": "./src/concurrency.ts",
+    "./cloud": "./src/cloud.ts",
+    "./cloud-runner": "./src/cloud-runner.ts",
     "./download-mirrors": "./src/download-mirrors.ts",
     "./worker": "./src/worker/entry.ts"
   },

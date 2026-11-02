@@ -152,7 +152,7 @@ export interface SocialCollectionSummary {
 
 /** Cookie acquisition method, without cookie values, file paths, or browser profiles. */
 export interface DownloadCookieSource {
-  type: 'extension' | 'browser' | 'file'
+  type: 'extension' | 'browser' | 'file' | 'config'
   browser?: string
 }
 

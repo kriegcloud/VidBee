@@ -89,7 +89,7 @@ export const SocialCollectionSummarySchema = z.object({
 })
 
 export const DownloadCookieSourceSchema = z.object({
-  type: z.enum(['extension', 'browser', 'file']),
+  type: z.enum(['extension', 'browser', 'file', 'config']),
   browser: z.string().optional()
 })
 

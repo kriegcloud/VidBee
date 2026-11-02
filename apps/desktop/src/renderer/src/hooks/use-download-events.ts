@@ -126,6 +126,7 @@ export function useDownloadEvents() {
       updateDownload({ id, changes: { ytDlpLog: appendCappedLog(current, chunk) } })
     }
 
+    /** Update a completed download and reuse its shared completion toast. */
     const handleCompleted = (rawId: unknown) => {
       const id = typeof rawId === 'string' ? rawId : ''
       if (!id) {

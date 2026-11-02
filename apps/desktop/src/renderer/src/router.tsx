@@ -17,6 +17,7 @@ import { Home } from './pages/Home'
 // pages pull in the markdown, math, and diagram renderers, so they load on
 // first navigation instead of at every launch.
 const About = lazyRouteComponent(() => import('./pages/About'), 'About')
+const Chat = lazyRouteComponent(() => import('./pages/Chat'), 'Chat')
 const Settings = lazyRouteComponent(() => import('./pages/Settings'), 'Settings')
 const Subscriptions = lazyRouteComponent(() => import('./pages/Subscriptions'), 'Subscriptions')
 const TranscriptPage = lazyRouteComponent(() => import('./pages/Transcript'), 'TranscriptPage')
@@ -30,20 +31,19 @@ export type SettingsTab =
   | 'prompts'
   | 'providers'
   | 'transcribe'
-  | 'mcp'
 
 export interface DesktopRouterContext {
   platform: string
 }
 
 /**
- * Parse the Settings `tab` search param and ignore unknown values.
+ * Parse the Settings tab, map legacy MCP links to Advanced, and ignore unknown values.
  *
  * @param search Raw search params from the URL hash.
  * @returns A typed Settings tab when present.
  */
 const validateSettingsSearch = (search: Record<string, unknown>): { tab?: SettingsTab } => {
-  const tab = search.tab
+  const tab = search.tab === 'mcp' ? 'advanced' : search.tab
   if (
     tab === 'account' ||
     tab === 'advanced' ||
@@ -52,8 +52,7 @@ const validateSettingsSearch = (search: Record<string, unknown>): { tab?: Settin
     tab === 'metadata' ||
     tab === 'prompts' ||
     tab === 'providers' ||
-    tab === 'transcribe' ||
-    tab === 'mcp'
+    tab === 'transcribe'
   ) {
     return { tab }
   }
@@ -95,6 +94,17 @@ const subscriptionsRoute = createRoute({
   component: Subscriptions
 })
 
+const chatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/chat',
+  /** Keep only a valid conversation id when opening saved chats. */
+  validateSearch: (search: Record<string, unknown>): { thread?: string } =>
+    typeof search.thread === 'string' && /^[0-9a-f-]{36}$/i.test(search.thread)
+      ? { thread: search.thread }
+      : {},
+  component: Chat
+})
+
 export const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/settings',
@@ -134,6 +144,7 @@ const notFoundRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   subscriptionsRoute,
+  chatRoute,
   settingsRoute,
   aboutRoute,
   transcriptsRoute,
