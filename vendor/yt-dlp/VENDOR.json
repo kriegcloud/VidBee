@@ -7,6 +7,7 @@
   "importedAt": "2026-10-24",
   "license": "Unlicense",
   "localPatches": [
+    "Resolve Spotify podcast episodes through public passthrough audio or verified publisher RSS matches",
     "Facebook profile reels enumeration with Relay pagination",
     "Extract individual Facebook reels from their canonical page",
     "Deduplicate Dzen profile videos and reject incomplete feed pagination",

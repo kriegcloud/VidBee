@@ -1815,6 +1815,7 @@ from .spiegel import SpiegelIE
 from .sport5 import Sport5IE
 from .sportbox import SportBoxIE
 from .sportdeutschland import SportDeutschlandIE
+from .spotify import SpotifyEpisodeIE
 from .spreaker import (
     SpreakerIE,
     SpreakerShowIE,
