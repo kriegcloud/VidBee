@@ -1015,6 +1015,7 @@
       "deletePrompt": "Hapus Skill",
       "restorePresets": "Pulihkan bawaan",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

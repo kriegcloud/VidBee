@@ -1079,7 +1079,10 @@ export const startPromptRun = (
     apiKey: active.apiKey,
     model,
     systemPrompt: `${SYSTEM_PROMPT}\n\nInstruction:\n${instruction}`,
-    thinkingLevel: clampThinkingLevel(model, 'max')
+    thinkingLevel: clampThinkingLevel(
+      model,
+      active.provider.presetId === 'cliproxy' ? 'medium' : 'max'
+    )
   })
   return startAgentPromptRun(input, transcriptText, agent, deps)
 }

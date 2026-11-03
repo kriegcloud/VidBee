@@ -108,6 +108,7 @@ import { createVidbeeCloudModel, resolvePiModel, thinkingOptionsFromProvider } f
 import { aiStore } from './ai-store'
 import { loadCloudCapabilities } from './cloud-capabilities'
 import { getDesktopTaskQueueRef, peekDesktopTaskQueueRef } from './queue-ref'
+import { saveVideoAgentResults } from './video-library-host'
 
 interface ActiveAgentRun {
   analyticsOrigin: 'manual' | 'automatic'
@@ -1231,6 +1232,9 @@ function settleRun(entry: ActiveAgentRun, failure?: AgentFailure): void {
         })}`
       )
     }
+  }
+  if (entry.run.status === 'completed') {
+    void saveVideoAgentResults(entry.thread)
   }
   log.info(
     `Agent run settled: ${JSON.stringify({

@@ -1005,6 +1005,7 @@
       "skillFailed": "Skill failed",
       "restorePresets": "Restore defaults",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "alibaba": "Alibaba Cloud",
         "anthropic": "Anthropic",
         "azure": "Azure",

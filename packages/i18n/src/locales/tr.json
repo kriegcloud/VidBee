@@ -1015,6 +1015,7 @@
       "deletePrompt": "Skill’i sil",
       "restorePresets": "Varsayılanları geri yükle",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

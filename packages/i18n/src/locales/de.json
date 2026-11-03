@@ -1015,6 +1015,7 @@
       "deletePrompt": "Skill löschen",
       "restorePresets": "Standard wiederherstellen",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

@@ -6,6 +6,13 @@ import type { AiProviderPreset, AiProviderPresetId } from './ai-types'
  */
 export const AI_PROVIDER_PRESETS: readonly AiProviderPreset[] = [
   {
+    id: 'cliproxy',
+    defaultModel: 'gpt-6.1-sol',
+    needsApiKey: false,
+    requiresBaseUrl: false,
+    baseUrl: 'http://127.0.0.1:8317/v1'
+  },
+  {
     id: 'custom',
     defaultModel: '',
     needsApiKey: true,

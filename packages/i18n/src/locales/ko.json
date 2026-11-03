@@ -1015,6 +1015,7 @@
       "deletePrompt": "Skill 삭제",
       "restorePresets": "기본값 복원",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

@@ -1103,6 +1103,7 @@
       "deletePrompt": "删除 Skill",
       "restorePresets": "恢复默认",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

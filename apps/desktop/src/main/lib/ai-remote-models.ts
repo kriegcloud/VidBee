@@ -3,6 +3,7 @@ import type { AiProviderPresetId } from '../../shared/ai-types'
 import { scopedLoggers } from '../utils/logger'
 import type { CatalogModelOption } from './ai-model'
 import { aiStore } from './ai-store'
+import { readCliProxyToken } from './cliproxy'
 
 const log = scopedLoggers.ai
 const REMOTE_MODELS_TIMEOUT_MS = 15_000
@@ -25,6 +26,9 @@ export interface ListRemoteModelsDeps {
  * @param input Dialog values.
  */
 const defaultResolveApiKey = (input: AiRemoteModelsInput): string => {
+  if (input.presetId === 'cliproxy') {
+    return readCliProxyToken()
+  }
   const typed = input.apiKey?.trim()
   if (typed) {
     return typed

@@ -71,6 +71,7 @@ import {
   startIdleMinimalModelFill,
   subscribeTranscriptBroadcasts
 } from './lib/transcript-host'
+import { startVideoLibraryFiles } from './lib/video-library-host'
 import { getMainWindowState, rememberMainWindowState } from './lib/window-state'
 import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdlp-kernel-host'
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
@@ -1351,6 +1352,11 @@ app.whenReady().then(async () => {
 
   try {
     await startDesktopTaskQueue()
+    try {
+      await startVideoLibraryFiles()
+    } catch (error) {
+      log.warn('Video library grouping/backfill failed:', error)
+    }
     startAutoTranscription()
     subscribeTranscriptBroadcasts()
     startIdleMinimalModelFill()

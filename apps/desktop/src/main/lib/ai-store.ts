@@ -33,6 +33,7 @@ import {
 } from './agent-skill-migration'
 import { AGENT_SKILLS } from './agent-skills'
 import { openAiSecret, sealAiSecret } from './ai-secrets'
+import { readCliProxyToken } from './cliproxy'
 import { getDatabaseConnection } from './database'
 
 const ElectronStore = require('electron-store')
@@ -54,6 +55,7 @@ const PRESET_NAMES: Record<AiProviderPresetId, string> = {
   alibaba: 'Alibaba Cloud',
   anthropic: 'Anthropic',
   azure: 'Azure',
+  cliproxy: 'CLIProxyAPI',
   custom: 'Custom',
   deepseek: 'Deepseek',
   fireworks: 'Fireworks',
@@ -351,9 +353,12 @@ class AiStore {
       ? (state.providers.find((provider) => provider.id === input.copyApiKeyFromId)?.apiKeySealed ??
         '')
       : ''
-    const nextKey = input.apiKey?.trim()
-      ? sealAiSecret(input.apiKey, safeStorage)
-      : (existing?.apiKeySealed ?? copiedKey)
+    const nextKey =
+      input.presetId === 'cliproxy'
+        ? ''
+        : input.apiKey?.trim()
+          ? sealAiSecret(input.apiKey, safeStorage)
+          : (existing?.apiKeySealed ?? copiedKey)
     if (aiProviderNeedsApiKey(input.presetId) && !nextKey) {
       throw new Error('API key is required')
     }
@@ -464,7 +469,10 @@ class AiStore {
     }
     return {
       provider: toPublicProvider(provider),
-      apiKey: openAiSecret(provider.apiKeySealed, safeStorage)
+      apiKey:
+        provider.presetId === 'cliproxy'
+          ? readCliProxyToken()
+          : openAiSecret(provider.apiKeySealed, safeStorage)
     }
   }
 
@@ -475,6 +483,9 @@ class AiStore {
    */
   getProviderSecret(id: string): string {
     const provider = this.readState().providers.find((entry) => entry.id === id)
+    if (provider?.presetId === 'cliproxy') {
+      return readCliProxyToken()
+    }
     return provider ? openAiSecret(provider.apiKeySealed, safeStorage) : ''
   }
 

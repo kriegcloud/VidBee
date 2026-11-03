@@ -7,6 +7,7 @@ import type {
 } from '../../shared/ai-types'
 import { scopedLoggers } from '../utils/logger'
 import { getDatabaseConnection } from './database'
+import { saveVideoPromptResult } from './video-library-host'
 
 const log = scopedLoggers.ai
 
@@ -238,6 +239,7 @@ export const savePersistedPromptRun = (snapshot: AiPromptRunSnapshot): void => {
   }
   try {
     getAiPromptRunStore().save(snapshot)
+    void saveVideoPromptResult(snapshot)
   } catch (error) {
     log.warn('failed to persist prompt run', {
       downloadId: snapshot.downloadId,

@@ -1015,6 +1015,7 @@
       "deletePrompt": "Skill を削除",
       "restorePresets": "デフォルトに戻す",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",

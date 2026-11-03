@@ -19,6 +19,7 @@ import {
   type PromptAgentLike
 } from './ai-prompt-runner'
 import { aiStore } from './ai-store'
+import { readCliProxyToken } from './cliproxy'
 
 const log = scopedLoggers.ai
 const TEST_SYSTEM_PROMPT = 'Reply with one short word only. Do not add punctuation or explanation.'
@@ -54,6 +55,9 @@ const fail = (error: string, errorCode: AiPromptErrorCode): AiProviderTestResult
  * @param input Dialog values.
  */
 const defaultResolveApiKey = (input: AiProviderWriteInput): string => {
+  if (input.presetId === 'cliproxy') {
+    return readCliProxyToken()
+  }
   const typed = input.apiKey?.trim()
   if (typed) {
     return typed

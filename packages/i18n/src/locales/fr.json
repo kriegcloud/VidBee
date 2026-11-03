@@ -1015,6 +1015,7 @@
       "deletePrompt": "Supprimer le Skill",
       "restorePresets": "Restaurer les défauts",
       "presets": {
+        "cliproxy": "CLIProxyAPI",
         "anthropic": "Anthropic",
         "azure": "Azure",
         "custom": "Custom",
