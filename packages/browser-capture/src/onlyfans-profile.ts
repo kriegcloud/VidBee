@@ -502,7 +502,7 @@ export class OnlyFansProfiles {
         const executablePath = resolveBrowserExecutable('chrome')
         if (!executablePath) {
           throw new Error(
-            `Install Chrome or Chromium on the VidBee host to open its ${this.adapter.name} session.`
+            `Install Chrome or Chromium on the VidBeep host to open its ${this.adapter.name} session.`
           )
         }
         const { chromium } = await import('playwright-core')
@@ -1142,7 +1142,7 @@ export class OnlyFansBrowserExecutor implements Executor {
           typeof options.onlyFansMediaId !== 'string'
         ) {
           throw new Error(
-            `Open this ${this.profiles.adapter.name} profile in VidBee and map it using the dedicated browser session.`
+            `Open this ${this.profiles.adapter.name} profile in VidBeep and map it using the dedicated browser session.`
           )
         }
         const output = await this.profiles.download(

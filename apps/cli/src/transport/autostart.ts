@@ -1,5 +1,5 @@
 /**
- * Auto-launch VidBee Desktop in background mode when the descriptor is
+ * Auto-launch VidBeep Desktop in background mode when the descriptor is
  * missing or stale. Reference:
  *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §5.4
  *
@@ -100,11 +100,11 @@ function descriptorIsReady(descriptorOpts: ResolveDescriptorOptions | undefined)
  * `--from-cli`; both forms are forwarded for forward-compat.
  *
  * Some flow notes:
- *   - macOS: `open -ga VidBee --args --background --from-cli`
+ *   - macOS: `open -ga VidBeep --args --background --from-cli`
  *   - Linux: relies on `vidbee-desktop` desktop entry on PATH; the AppImage
  *     install instructions create a symlink to the AppImage, which we then
  *     invoke directly with `--background`.
- *   - Windows: `start "" VidBee --background` via cmd /c so it goes
+ *   - Windows: `start "" VidBeep --background` via cmd /c so it goes
  *     through the shell start verb (handles the .lnk in Start Menu).
  *
  * For Phase B we ship the macOS path as the well-tested reference; Linux
@@ -115,12 +115,12 @@ function launcherForPlatform(
   platform: NodeJS.Platform
 ): { cmd: string; args: readonly string[] } | null {
   if (platform === 'darwin') {
-    return { cmd: 'open', args: ['-ga', 'VidBee', '--args', '--background', '--from-cli'] }
+    return { cmd: 'open', args: ['-ga', 'VidBeep', '--args', '--background', '--from-cli'] }
   }
   if (platform === 'win32') {
     return {
       cmd: 'cmd',
-      args: ['/c', 'start', '""', 'VidBee', '--background', '--from-cli']
+      args: ['/c', 'start', '""', 'VidBeep', '--background', '--from-cli']
     }
   }
   if (platform === 'linux') {

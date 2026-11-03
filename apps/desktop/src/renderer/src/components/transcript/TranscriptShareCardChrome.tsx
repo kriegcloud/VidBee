@@ -116,7 +116,7 @@ export function TranscriptShareCardChrome({
                 data-testid="transcript-share-card-cover"
               >
                 <RemoteImage
-                  alt={title || 'VidBee'}
+                  alt={title || 'VidBeep'}
                   className="h-full w-auto"
                   imgClassName="block h-full w-auto object-contain"
                   src={cover}

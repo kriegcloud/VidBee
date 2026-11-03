@@ -49,7 +49,7 @@ export interface FeedbackDiagnostics {
 export const FEEDBACK_REPORT_FILENAME = 'vidbee-diagnostics.txt'
 export const FEEDBACK_GITHUB_URL = 'https://github.com/nexmoe/VidBee/issues/new/choose'
 export const FEEDBACK_EMAIL = 'team@vidbee.org'
-const MAILTO_PREFIX = `mailto:${FEEDBACK_EMAIL}?subject=VidBee%20feedback&body=`
+const MAILTO_PREFIX = `mailto:${FEEDBACK_EMAIL}?subject=VidBeep%20feedback&body=`
 const MAX_MAILTO_LENGTH = 1900
 const SENSITIVE_QUERY_KEY =
   /token|password|secret|signature|credential|api.?key|authorization|cookie|session|^(?:sig|key|jwt|auth)$/i
@@ -140,7 +140,7 @@ export function buildFeedbackReport(options: FeedbackDiagnostics, now = new Date
 
   return redactFeedbackText(
     [
-      'VidBee diagnostic report',
+      'VidBeep diagnostic report',
       `Generated at: ${now.toISOString()}`,
       `Stage: ${options.stage ?? (task ? 'download' : 'general')}`,
       task ? `Task ID: ${task.id}` : null,
@@ -168,7 +168,7 @@ export function buildFeedbackMail(report: string): { href: string; needsAttachme
   }
 
   const instructions = `${intro}Please paste the full diagnostic report below or attach ${FEEDBACK_REPORT_FILENAME} before sending.\n\nDiagnostic summary:\n`
-  const suffix = '\n\n[Summary shortened. The complete report is available in VidBee.]'
+  const suffix = '\n\n[Summary shortened. The complete report is available in VidBeep.]'
   const characters = Array.from(report)
   let length = Math.min(characters.length, 1200)
   let href = encodeBody(instructions + characters.slice(0, length).join('') + suffix)

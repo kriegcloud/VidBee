@@ -18,6 +18,6 @@ export async function libraryExportPath(
       .map((character) => (character.charCodeAt(0) < 32 ? '_' : character))
       .join('')
       .replace(/[. ]+$/g, '')
-      .slice(0, 80) || 'VidBee'
+      .slice(0, 80) || 'VidBeep'
   return path.join(directory, `${name}-${randomUUID()}.${extension}`)
 }

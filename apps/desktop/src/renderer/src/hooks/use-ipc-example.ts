@@ -86,7 +86,7 @@ export function useIpcExample() {
     try {
       const version = await ipcServices?.app.getVersion()
       const platform = await ipcServices?.app.getPlatform()
-      const info = { name: 'VidBee', version, platform }
+      const info = { name: 'VidBeep', version, platform }
       setResponse(`App: ${info.name} v${info.version} (${info.platform})`)
       toast.success(`应用: ${info.name} v${info.version}`)
       return info

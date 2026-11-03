@@ -26,7 +26,7 @@ function configureWebAccess(directory: string): void {
   const previous = existsSync(file) ? readFileSync(file, 'utf8') : undefined
   const saved: unknown = previous ? JSON.parse(previous) : {}
   if (!saved || typeof saved !== 'object' || Array.isArray(saved)) {
-    throw new Error('VidBee web-search.json must contain a JSON object')
+    throw new Error('VidBeep web-search.json must contain a JSON object')
   }
   const config = {
     provider: 'exa',
@@ -47,7 +47,7 @@ function configureWebAccess(directory: string): void {
   }
 }
 
-/** Restrict the web reader to URLs; local media remains owned by VidBee's media tools. */
+/** Restrict the web reader to URLs; local media remains owned by VidBeep's media tools. */
 function assertWebUrls(params: Record<string, unknown>): void {
   const urls = Array.isArray(params.urls) ? params.urls : [params.url]
   for (const value of urls) {

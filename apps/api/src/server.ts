@@ -138,10 +138,10 @@ export const createApiServer = async () => {
         docsProvider: 'swagger',
         docsPath: '/docs',
         specPath: '/openapi.json',
-        docsTitle: 'VidBee API Reference',
+        docsTitle: 'VidBeep API Reference',
         specGenerateOptions: {
           info: {
-            title: 'VidBee API',
+            title: 'VidBeep API',
             version: '1.0.0'
           },
           servers: [{ url: '/openapi' }]

@@ -4,7 +4,7 @@
 // below bound the accumulated output so the process can keep running.
 
 const DEFAULT_MAX_BYTES = 8 * 1024 * 1024
-const TRUNCATION_NOTICE = '\n[VidBee] Output truncated to keep memory usage bounded.\n'
+const TRUNCATION_NOTICE = '\n[VidBeep] Output truncated to keep memory usage bounded.\n'
 
 export interface BoundedTextBuffer {
   append(chunk: string | Buffer | undefined | null): void

@@ -3,7 +3,7 @@ import logoSrc from '../assets/vidbee-logo.png?inline'
 /** Shared attribution artwork and proportions for share cards and standalone diagram exports. */
 export const EXPORT_BRAND = {
   prefix: 'Made with',
-  name: 'VidBee',
+  name: 'VidBeep',
   logoSrc,
   fontSize: 20,
   fontWeight: 600,

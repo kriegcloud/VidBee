@@ -298,7 +298,7 @@ const PRINT_STYLES = `
 `.replaceAll(/\s+/g, ' ')
 
 export const VIDBEE_EXPORT_URL = 'https://vidbee.org'
-export const VIDBEE_EXPORT_NAME = 'VidBee'
+export const VIDBEE_EXPORT_NAME = 'VidBeep'
 
 /** Append the original video's public URL below the exported document. */
 export const withVideoSourceLink = (markdown: string, source?: ExportVideoSource): string => {
@@ -314,7 +314,7 @@ export const withVideoSourceLink = (markdown: string, source?: ExportVideoSource
 }
 
 /**
- * Place VidBee attribution directly below the opening heading, or before untitled content.
+ * Place VidBeep attribution directly below the opening heading, or before untitled content.
  * A finished thinking duration follows that attribution when one was recorded.
  *
  * @param markdown Reply body after images have been inlined.

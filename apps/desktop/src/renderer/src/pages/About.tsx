@@ -276,7 +276,7 @@ export function About() {
           <CardContent className="p-0">
             <div className="space-y-4 px-6 pt-6 pb-4">
               <div className="flex items-center gap-4">
-                <img alt="VidBee" className="h-18 w-18 rounded-2xl" src="./app-icon.png" />
+                <img alt="VidBeep" className="h-18 w-18 rounded-2xl" src="./app-icon.png" />
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">

@@ -31,7 +31,7 @@ export function buildKernelErrorReport(
 ): string {
   const errorText = status.error?.trim() || 'No detailed error was recorded.'
   return [
-    '=== VidBee download engine error ===',
+    '=== VidBeep download engine error ===',
     `Timestamp: ${new Date().toISOString()}`,
     `App version: ${appInfo.appVersion.trim() || UNKNOWN_VALUE}`,
     `OS: ${appInfo.osVersion.trim() || UNKNOWN_VALUE}`,
@@ -55,9 +55,11 @@ export function buildKernelIssueUrl(report: string, appInfo: KernelErrorAppInfo)
     template: GITHUB_ISSUE_TEMPLATE,
     title: KERNEL_PREPARATION_ISSUE_TITLE,
     actual:
-      'VidBee could not prepare a working download engine. Diagnostic details are in the logs field.',
+      'VidBeep could not prepare a working download engine. Diagnostic details are in the logs field.',
     logs: truncateLogs(report),
-    app_version: appInfo.appVersion.trim() ? `VidBee v${appInfo.appVersion.trim()}` : UNKNOWN_VALUE,
+    app_version: appInfo.appVersion.trim()
+      ? `VidBeep v${appInfo.appVersion.trim()}`
+      : UNKNOWN_VALUE,
     os_version: appInfo.osVersion.trim() || UNKNOWN_VALUE
   })
   return `${GITHUB_ISSUE_BASE}?${issueParams.toString()}`

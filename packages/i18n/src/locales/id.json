@@ -10,7 +10,7 @@
       "view": "Lihat",
       "visit": "Kunjungi"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "Unduh dan instal rilis baru secara otomatis di latar belakang.",
     "microsoftStoreUpdateDescription": "Pembaruan aplikasi dikelola oleh Microsoft Store. Buka Store untuk memeriksa pembaruan.",
     "autoUpdateTitle": "Pembaruan otomatis",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "Ikuti @nexmoe"
     },
-    "followAuthorDescription": "Tetap update dengan berita dan pembaruan VidBee terbaru.",
-    "followAuthorSupport": "Ikuti pengembang di X (Twitter) untuk mendapatkan pembaruan dan berita terbaru tentang VidBee.",
+    "followAuthorDescription": "Tetap update dengan berita dan pembaruan VidBeep terbaru.",
+    "followAuthorSupport": "Ikuti pengembang di X (Twitter) untuk mendapatkan pembaruan dan berita terbaru tentang VidBeep.",
     "followAuthorTitle": "Ikuti Pengembang",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "Situs web resmi",
       "websiteDescription": "Sorotan produk, roadmap, dan berita komunitas."
     },
-    "resourcesDescription": "Tautan berguna untuk mempelajari lebih lanjut tentang VidBee dan tetap terhubung.",
+    "resourcesDescription": "Tautan berguna untuk mempelajari lebih lanjut tentang VidBeep dan tetap terhubung.",
     "resourcesTitle": "Sumber Daya",
     "shareActions": {
       "copy": "Salin tautan",
       "facebook": "Bagikan di Facebook",
       "twitter": "Bagikan di X (Twitter)"
     },
-    "shareDescription": "Bagikan VidBee dengan komunitas Anda dalam satu klik.",
-    "shareSupport": "Rekomendasikan VidBee kepada teman-teman Anda untuk mendukung pertumbuhan dan pembaruan kami.",
+    "shareDescription": "Bagikan VidBeep dengan komunitas Anda dalam satu klik.",
+    "shareSupport": "Rekomendasikan VidBeep kepada teman-teman Anda untuk mendukung pertumbuhan dan pembaruan kami.",
     "shareTitle": "Sebarkan berita",
     "sourceCode": "Kode Sumber tersedia",
     "title": "Tentang",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "Unduh media, transkripsikan secara lokal, dan tanya AI",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "Keluar dari VidBee?",
+      "title": "Keluar dari VidBeep?",
       "message": "{{count}} tugas masih berjalan. Keluar akan menghentikannya.",
       "messagePlural": "{{count}} tugas masih berjalan. Keluar akan menghentikannya.",
       "quit": "Keluar",
@@ -279,12 +279,12 @@
       "subscription": "Berlangganan"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "formatFallbackHint": "Your pick was not deliverable, so VidBeep fell back to best available ({{resolved}}).",
     "cookiesSetupAction": "Atur cookie",
     "cookiesSetupDialogTitle": "Atur cookie",
     "cookiesSetupNeeded": "Unduhan ini memerlukan sesi yang sudah masuk. Atur cookie, lalu coba lagi.",
     "cookiesSetupLocked": "Chrome mengunci basis data cookie-nya. Gunakan Firefox, impor file cookie, atau tutup Chrome sepenuhnya.",
-    "cookiesSetupMacFiles": "macOS memblokir VidBee agar tidak membaca cookie browser ini. Buka Pengaturan Sistem → Privasi & Keamanan → File dan Folder, izinkan VidBee mengakses browser ini, lalu coba lagi. Jika sudah diizinkan, keluar sepenuhnya dari VidBee lalu buka lagi.",
+    "cookiesSetupMacFiles": "macOS memblokir VidBeep agar tidak membaca cookie browser ini. Buka Pengaturan Sistem → Privasi & Keamanan → File dan Folder, izinkan VidBeep mengakses browser ini, lalu coba lagi. Jika sudah diizinkan, keluar sepenuhnya dari VidBeep lalu buka lagi.",
     "cookiesSetupOpenFilesSettings": "Buka pengaturan File dan Folder",
     "cookiesSetupDecrypt": "Windows tidak dapat mendekripsi cookie Chrome. Gunakan Firefox atau impor file cookie.",
     "cookiesSetupFileInvalid": "File cookie yang dipilih bukan ekspor yang valid. Ekspor cookies.txt lalu coba lagi.",
@@ -467,12 +467,12 @@
     "emptyTitle": "Unduh profil Instagram",
     "partialHint": "Beberapa kategori tidak dapat dipindai. Cookie masuk Instagram mungkin diperlukan untuk profil privat, cerita, sorotan, atau postingan bertanda.",
     "rateLimitedHint": "Instagram untuk sementara membatasi permintaan dari jaringan atau akun ini. Ini bukan masalah cookie. Tunggu sekitar 15–30 menit sebelum memetakan lagi; percobaan berulang memperpanjang pemblokiran.",
-    "unavailableHint": "Beberapa kategori tidak dapat dipindai. Instagram mungkin telah mengubah API-nya atau konten sedang tidak tersedia. Coba lagi nanti; jika terus gagal, perbarui VidBee.",
+    "unavailableHint": "Beberapa kategori tidak dapat dipindai. Instagram mungkin telah mengubah API-nya atau konten sedang tidak tersedia. Coba lagi nanti; jika terus gagal, perbarui VidBeep.",
     "retryAfter": "Coba lagi setelah {{time}}",
     "scan": "Pindai profil",
     "scanFailed": "Gagal memindai profil Instagram",
     "scanning": "Memindai profil Instagram",
-    "scanningHint": "VidBee sedang memetakan setiap kategori. Proses ini mungkin memerlukan waktu karena permintaan diberi jeda untuk mengurangi pembatasan laju.",
+    "scanningHint": "VidBeep sedang memetakan setiap kategori. Proses ini mungkin memerlukan waktu karena permintaan diberi jeda untuk mengurangi pembatasan laju.",
     "selectAtLeastOne": "Pilih setidaknya satu kategori yang tersedia",
     "sourceTotal": "{{count}} item",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "{{used}} dari {{total}} digunakan",
       "grantedCredits": "Kredit bonus",
       "purchasedCredits": "Kredit yang dibeli",
-      "description": "Masuk dengan GitHub untuk menghubungkan akun VidBee.",
+      "description": "Masuk dengan GitHub untuk menghubungkan akun VidBeep.",
       "error": "Autentikasi tidak dapat diselesaikan. Coba lagi.",
       "loading": "Memeriksa akun…",
       "signedOut": "Belum masuk",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "Pilih browser Anda di atas untuk menggunakan kembali sesi masuk secara otomatis.",
     "cookiesHelpFile": "Ekspor file cookie Netscape (lihat FAQ yt-dlp) dan pilih di sini saat diperlukan.",
     "cookiesGuideTitle": "Butuh panduan?",
-    "cookiesGuideDescription": "Lihat panduan langkah demi langkah untuk menggunakan cookie di VidBee",
+    "cookiesGuideDescription": "Lihat panduan langkah demi langkah untuk menggunakan cookie di VidBeep",
     "cookiesGuideLink": "Buka panduan cookie",
     "openLinkError": "Gagal membuka tautan",
     "browserOptions": {
@@ -674,9 +674,9 @@
     "hideDockIcon": "Sembunyikan ikon Dock saat ditutup",
     "hideDockIconDescription": "Secara otomatis menyembunyikan ikon Dock saat jendela ditutup. Gunakan menu bar atau ikon tray untuk membuka kembali",
     "launchAtLogin": "Luncurkan saat startup",
-    "launchAtLoginDescription": "Buka VidBee secara otomatis setelah Anda masuk ke komputer Anda",
+    "launchAtLoginDescription": "Buka VidBeep secara otomatis setelah Anda masuk ke komputer Anda",
     "launchAtLoginUnsupported": "Peluncuran otomatis hanya tersedia di macOS dan Windows",
-    "enableAnalytics": "Bantu tingkatkan VidBee",
+    "enableAnalytics": "Bantu tingkatkan VidBeep",
     "enableAnalyticsDescription": "Bagikan data penggunaan anonim untuk membantu kami memahami bagaimana aplikasi digunakan dan memprioritaskan peningkatan",
     "enableDownloadNotifications": "Notifikasi unduhan",
     "enableDownloadNotificationsDescription": "Tampilkan notifikasi sistem saat unduhan selesai",
@@ -685,7 +685,7 @@
     "downloadSubtitles": "Unduh subtitle",
     "downloadSubtitlesDescription": "Hanya unduh subtitle dalam bahasa yang dipilih jika tersedia",
     "subtitleLanguages": "Bahasa subtitle",
-    "subtitleLanguagesDescription": "Pilih bahasa subtitle yang harus diminta VidBee untuk setiap video",
+    "subtitleLanguagesDescription": "Pilih bahasa subtitle yang harus diminta VidBeep untuk setiap video",
     "subtitleLanguageSearch": "Cari bahasa subtitle",
     "subtitleLanguageEmpty": "Tidak ada bahasa yang cocok",
     "subtitleLanguageLimit": "Pilih hingga {{count}} bahasa untuk mengurangi pembatasan permintaan platform",
@@ -700,10 +700,10 @@
     "writeAutoSubsDescription": "Gunakan subtitle otomatis saat subtitle dari kreator tidak tersedia dalam bahasa yang dipilih",
     "embedThumbnail": "Sematkan thumbnail",
     "embedThumbnailDescription": "Tambahkan thumbnail sebagai sampul",
-    "embedThumbnailWebmUnsupported": "WebM tidak dapat menyematkan thumbnail sebagai sampul. Jika sampul diaktifkan, VidBee menyimpan thumbnail sebagai file terpisah. Pilih MP4 atau MKV untuk menyematkannya.",
+    "embedThumbnailWebmUnsupported": "WebM tidak dapat menyematkan thumbnail sebagai sampul. Jika sampul diaktifkan, VidBeep menyimpan thumbnail sebagai file terpisah. Pilih MP4 atau MKV untuk menyematkannya.",
     "filenameStyle": "Gaya nama file",
-    "filenameStyleDescription": "Pilih cara VidBee menamai file video dan audio yang disimpan",
-    "filenameStyleNote": "Digunakan untuk file yang disimpan VidBee. Template kustom dari langganan atau playlist tetap diutamakan",
+    "filenameStyleDescription": "Pilih cara VidBeep menamai file video dan audio yang disimpan",
+    "filenameStyleNote": "Digunakan untuk file yang disimpan VidBeep. Template kustom dari langganan atau playlist tetap diutamakan",
     "filenameStyleOptions": {
       "basic": "dasar",
       "classic": "klasik",
@@ -712,8 +712,8 @@
     },
     "filenameStylePreviewAudio": "pratinjau file audio",
     "filenameStylePreviewVideo": "pratinjau file video",
-    "filenameViaVidBee": "Tambahkan via VidBee",
-    "filenameViaVidBeeDescription": "Secara otomatis menambahkan via VidBee ke nama file video dan audio yang disimpan",
+    "filenameViaVidBeep": "Tambahkan via VidBeep",
+    "filenameViaVidBeeDescription": "Secara otomatis menambahkan via VidBeep ke nama file video dan audio yang disimpan",
     "metadataTab": "Metadata",
     "navGroup": {
       "app": "Aplikasi",
@@ -722,7 +722,7 @@
       "ai": "AI"
     },
     "shareWatermark": "Tanda air berbagi",
-    "shareWatermarkDescription": "Tambahkan tanda air dengan judul asli, pembuat, dan merek VidBee",
+    "shareWatermarkDescription": "Tambahkan tanda air dengan judul asli, pembuat, dan merek VidBeep",
     "maxConcurrentDownloads": "Jumlah maksimum unduhan aktif",
     "maxConcurrentDownloadsDescription": "Jumlah maksimum unduhan bersamaan",
     "none": "Tidak ada",
@@ -759,7 +759,7 @@
     },
     "system": "Sistem",
     "theme": "Tema",
-    "themeDescription": "Pilih tema terang, gelap, atau sistem untuk VidBee",
+    "themeDescription": "Pilih tema terang, gelap, atau sistem untuk VidBeep",
     "title": "Pengaturan",
     "tray": {
       "quit": "Keluar",
@@ -1047,8 +1047,8 @@
       "loadingModels": "Memuat model dari penyedia…",
       "skillHelp": "Skill menggunakan berkas SKILL.md. Agen menemukannya melalui deskripsi dan membaca instruksinya saat diperlukan. Gunakan $skill-name dalam obrolan untuk meminta Skill.",
       "addSkill": "Tambah Skill",
-      "createSkillWithVidbee": "Buat Skill dengan VidBee",
-      "createSkillRequest": "Bantu saya membuat Skill yang dapat digunakan kembali. Tanyakan tugas, waktu penggunaan, dan hasil yang diharapkan. Setelah kebutuhannya jelas, buat dan simpan Skill di VidBee.",
+      "createSkillWithVidbee": "Buat Skill dengan VidBeep",
+      "createSkillRequest": "Bantu saya membuat Skill yang dapat digunakan kembali. Tanyakan tugas, waktu penggunaan, dan hasil yang diharapkan. Setelah kebutuhannya jelas, buat dan simpan Skill di VidBeep.",
       "uploadSkill": "Unggah Skill",
       "importGitHubSkill": "Impor Skill dari GitHub",
       "githubSkillDescription": "Tempel tautan repositori GitHub publik atau folder Skill, lalu pilih Skill untuk dipasang beserta file pendukungnya.",
@@ -1108,7 +1108,7 @@
         },
         "diagnose-task": {
           "name": "Diagnosis tugas",
-          "description": "Menyelidiki tugas gagal atau macet melalui status, kesalahan, dan log. Untuk menyarankan pemulihan atau menyiapkan umpan balik atas dugaan cacat VidBee."
+          "description": "Menyelidiki tugas gagal atau macet melalui status, kesalahan, dan log. Untuk menyarankan pemulihan atau menyiapkan umpan balik atas dugaan cacat VidBeep."
         },
         "video-localization": {
           "name": "Lokalisasi video",
@@ -1125,23 +1125,23 @@
       "statusExpired": "Kedaluwarsa",
       "statusEmpty": "Login tidak ditemukan",
       "statusInvalid": "Perlu perhatian",
-      "healthOkBrowser": "VidBee dapat membaca cookie dari {{browser}}. Tetap masuk ke situs di sana",
+      "healthOkBrowser": "VidBeep dapat membaca cookie dari {{browser}}. Tetap masuk ke situs di sana",
       "healthOkFile": "Cookie login ditemukan untuk {{sites}}",
       "healthOkFileGeneric": "File cookie ini tampak valid",
       "healthExpired": "Cookie ini sudah kedaluwarsa. Masuk lagi dan impor file baru",
       "healthEmpty": "File ini tidak memiliki cookie login untuk situs yang didukung. Ekspor saat sudah masuk, lalu coba lagi",
       "healthInvalidFile": "File cookie hilang atau bukan ekspor yang valid",
-      "healthInvalidBrowser": "VidBee tidak dapat membaca cookie dari profil browser ini",
-      "healthMacosFilesPermission": "macOS memblokir akses cookie. Izinkan VidBee mengakses browser ini di Pengaturan Sistem → Privasi & Keamanan → File dan Folder, lalu periksa lagi.",
+      "healthInvalidBrowser": "VidBeep tidak dapat membaca cookie dari profil browser ini",
+      "healthMacosFilesPermission": "macOS memblokir akses cookie. Izinkan VidBeep mengakses browser ini di Pengaturan Sistem → Privasi & Keamanan → File dan Folder, lalu periksa lagi.",
       "healthUnsupportedBrowser": "Browser ini tidak dapat digunakan untuk cookie di sistem Anda",
       "sitesLabel": "Situs: {{sites}}",
       "recommendedTitle": "Disarankan",
       "recommendedUseBrowser": "Gunakan {{browser}}",
       "recommendedUseBrowserHint": "Gunakan ulang akun yang sudah Anda masuki di {{browser}}",
       "recommendedImportFile": "Impor file cookie",
-      "recommendedImportFileWindowsHint": "Di Windows, Chrome dan Edge tidak dapat berbagi cookie dengan VidBee. Ekspor file cookie dari browser",
+      "recommendedImportFileWindowsHint": "Di Windows, Chrome dan Edge tidak dapat berbagi cookie dengan VidBeep. Ekspor file cookie dari browser",
       "recommendedImportFileHint": "Ekspor cookie dari browser, lalu pilih file itu di sini",
-      "recommendedFirefoxHint": "Di Windows, Firefox adalah satu-satunya browser yang dapat dibaca VidBee secara langsung",
+      "recommendedFirefoxHint": "Di Windows, Firefox adalah satu-satunya browser yang dapat dibaca VidBeep secara langsung",
       "useThisBrowser": "Gunakan {{browser}}",
       "importFile": "Pilih file cookie",
       "clearSetup": "Hapus cookie",
@@ -1159,23 +1159,23 @@
       "applied": "Cookie diperbarui",
       "profileMissingDb": "Profil Firefox ini tidak memiliki basis data cookie. Buka Firefox sekali, lalu coba lagi.",
       "statusUsingExtension": "Memakai ekstensi {{browser}}",
-      "healthOkExtension": "Ekstensi VidBee akan mengirim cookie terbaru dari {{browser}} untuk setiap unduhan",
+      "healthOkExtension": "Ekstensi VidBeep akan mengirim cookie terbaru dari {{browser}} untuk setiap unduhan",
       "healthEmptyExtension": "Ekstensi terhubung, tetapi cookie login untuk situs yang didukung tidak ditemukan. Masuk ke situs tersebut di browser itu",
       "statusHeading": "Status cookie",
       "methodRecommended": "Disarankan",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "Ekstensi browser",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "Terhubung",
       "extensionDisconnected": "Tidak terhubung",
       "extensionConnectedHint": "{{browser}} terhubung. Unduhan baru akan memakai cookie dari browser ini",
-      "extensionDisconnectedHint": "Biarkan VidBee Desktop terbuka, pasang ekstensi, lalu masuk ke situs di browser itu",
+      "extensionDisconnectedHint": "Biarkan VidBeep Desktop terbuka, pasang ekstensi, lalu masuk ke situs di browser itu",
       "extensionInstallChrome": "Tambahkan ke Chrome",
       "extensionInstallEdge": "Tambahkan ke Edge",
       "extensionInstallFirefox": "Tambahkan ke Firefox",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "Biarkan VidBee Desktop berjalan agar ekstensi bisa terhubung",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "Biarkan VidBeep Desktop berjalan agar ekstensi bisa terhubung",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "Sumber cookie",
       "sourceInUse": "Dipakai",
       "sourceFallback": "Cadangan",
@@ -1188,7 +1188,7 @@
       "browserShortHint": "Pilih browser yang sudah masuk ke akun",
       "fileShortHint": "Ekspor cookies.txt lalu pilih. Ulangi saat kedaluwarsa",
       "whyTitle": "Atur cookie agar unduhan lebih stabil",
-      "whyDescription": "VidBee mengunduh dengan akun yang sudah masuk, jadi unduhan lebih stabil dan lebih jarang gagal",
+      "whyDescription": "VidBeep mengunduh dengan akun yang sudah masuk, jadi unduhan lebih stabil dan lebih jarang gagal",
       "extensionPriority": "Prioritas browser untuk cookie",
       "extensionPriorityHint": "Gunakan browser pertama yang terhubung sesuai urutan ini. Browser yang terputus akan dilewati secara otomatis.",
       "extensionUse": "Gunakan",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "Aktifkan akses MCP",
-      "description": "Izinkan agen eksternal menggunakan unduhan, langganan, transkrip, dan percakapan AI VidBee.",
+      "description": "Izinkan agen eksternal menggunakan unduhan, langganan, transkrip, dan percakapan AI VidBeep.",
       "running": "Berjalan · {{count}} alat tersedia",
       "stopped": "MCP saat ini tidak tersedia",
-      "accessNote": "Biarkan VidBee berjalan selama terhubung. Hanya komputer ini yang dapat terhubung. Lindungi konfigurasi HTTP seperti kata sandi. Mengganti token membatalkan konfigurasi HTTP yang tersimpan.",
+      "accessNote": "Biarkan VidBeep berjalan selama terhubung. Hanya komputer ini yang dapat terhubung. Lindungi konfigurasi HTTP seperti kata sandi. Mengganti token membatalkan konfigurasi HTTP yang tersimpan.",
       "copy": "Salin konfigurasi {{transport}}",
       "copied": "Konfigurasi MCP disalin",
       "rotate": "Ganti token akses",
@@ -1323,15 +1323,15 @@
     "description": "Pantau saluran secara otomatis dan antre unduhan baru tanpa pekerjaan manual.",
     "defaults": {
       "title": "Default otomatisasi",
-      "description": "Kontrol di mana unduhan berlangganan disimpan dan seberapa sering VidBee memeriksa video baru.",
+      "description": "Kontrol di mana unduhan berlangganan disimpan dan seberapa sering VidBeep memeriksa video baru.",
       "downloadDirectory": "Direktori unduhan",
       "filenameTemplate": "Template nama file (hanya file)",
       "onlyLatest": "Unduh hanya video terbaru",
-      "onlyLatestDescription": "Saat diaktifkan, VidBee melewati item backlog lama dan hanya mengambil unggahan terbaru."
+      "onlyLatestDescription": "Saat diaktifkan, VidBeep melewati item backlog lama dan hanya mengambil unggahan terbaru."
     },
     "add": {
       "title": "Tambah langganan",
-      "description": "Tempel tautan saluran atau umpan. VidBee akan mendeteksinya secara otomatis."
+      "description": "Tempel tautan saluran atau umpan. VidBeep akan mendeteksinya secara otomatis."
     },
     "fields": {
       "url": "URL Feed",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "Berlangganan Otomatis dengan RSSHub",
-      "description": "Gabungkan VidBee dengan RSSHub untuk mengaktifkan berlangganan dan unduhan otomatis dari berbagai platform. Setelah disetel, VidBee berjalan di latar belakang dan secara otomatis mengunduh video dan konten terbaru.",
+      "description": "Gabungkan VidBeep dengan RSSHub untuk mengaktifkan berlangganan dan unduhan otomatis dari berbagai platform. Setelah disetel, VidBeep berjalan di latar belakang dan secara otomatis mengunduh video dan konten terbaru.",
       "learnMore": "Pelajari lebih lanjut tentang RSSHub",
       "openDocs": "Buka Dokumentasi RSSHub",
       "hint": "Tidak punya URL umpan? Gunakan RSSHub untuk membuat umpan YouTube, Twitter, dan ribuan platform lain."
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "Semua",
       "noCategories": "Pilih setidaknya satu kategori.",
-      "desktopOnly": "Langganan profil diperiksa oleh VidBee Desktop.",
+      "desktopOnly": "Langganan profil diperiksa oleh VidBeep Desktop.",
       "storiesHint": "Story hilang setelah 24 jam. Periksa setidaknya setiap 12 jam agar tidak ada yang terlewat.",
       "nextCheck": "Pemeriksaan berikutnya: {{time}}",
       "subscribe": "Langganan",
       "subscribed": "Berlangganan",
-      "readOnly": "Diperiksa oleh VidBee Desktop",
+      "readOnly": "Diperiksa oleh VidBeep Desktop",
       "categories": {
         "stories": "Story",
         "highlights": "Sorotan",
@@ -1459,8 +1459,8 @@
     "copied": "Disalin",
     "copying": "Menyalin mesin unduhan…",
     "copyLog": "Salin log",
-    "description": "VidBee sedang menyiapkan mesin unduhannya. Proses ini hanya memerlukan waktu sebentar.",
-    "errorDescription": "VidBee tidak dapat menyiapkan mesin unduhan yang berfungsi. Periksa akses penyimpanan lokal, lalu coba lagi.",
+    "description": "VidBeep sedang menyiapkan mesin unduhannya. Proses ini hanya memerlukan waktu sebentar.",
+    "errorDescription": "VidBeep tidak dapat menyiapkan mesin unduhan yang berfungsi. Periksa akses penyimpanan lokal, lalu coba lagi.",
     "errorDetails": "Detail kesalahan",
     "errorTitle": "Mesin unduhan tidak tersedia",
     "finalizing": "Menyelesaikan penyiapan…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "Laporkan di GitHub",
     "retry": "Coba lagi",
     "retrying": "Mencoba lagi…",
-    "title": "Menyiapkan VidBee",
+    "title": "Menyiapkan VidBeep",
     "validating": "Memverifikasi mesin unduhan…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "Daftar lengkap yt-dlp terus diperbarui oleh komunitas.",
     "moreTitle": "Perlu situs lain?",
     "openFullList": "Buka daftar lengkap situs yang didukung",
-    "pageDescription": "VidBee menggunakan yt-dlp di balik layar untuk mencapai ratusan sumber.",
+    "pageDescription": "VidBeep menggunakan yt-dlp di balik layar untuk mencapai ratusan sumber.",
     "pageIntro": "Berikut adalah layanan utama yang paling sering diunduh orang.",
     "pageTitle": "Situs yang Didukung",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "Tidak dapat menyiapkan gambar berbagi.",
     "promptShareSaveFailed": "Tidak dapat menyimpan gambar berbagi.",
     "promptShareNativeFailed": "Tidak dapat membuka menu berbagi.",
-    "promptShareFooter": "Dibuat dengan VidBee",
+    "promptShareFooter": "Dibuat dengan VidBeep",
     "promptShareTagline": "Unduh. Transkripsikan secara lokal. Tanya AI.",
     "captionShareSaid": "{{name}} berkata",
     "promptOutput": "Hasil Skill",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "Transkrip video otomatis",
-        "description": "Setelah unduhan selesai, VidBee secara otomatis membuat transkrip untuk video di komputer ini. Tidak ada yang diunggah."
+        "description": "Setelah unduhan selesai, VidBeep secara otomatis membuat transkrip untuk video di komputer ini. Tidak ada yang diunggah."
       },
       "speakers": {
         "title": "Label pembicara",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "Asisten terbaik Anda untuk mengolah audio dan video",
-      "description": "Saya VidBee. Beri tahu saya apa yang ingin Anda lakukan, atau pilih salah satu opsi di bawah untuk memulai.",
+      "description": "Saya VidBeep. Beri tahu saya apa yang ingin Anda lakukan, atau pilih salah satu opsi di bawah untuk memulai.",
       "download": {
         "label": "Unduh video",
-        "prompt": "Bantu saya mengunduh video dengan VidBee. Tanyakan URL video dan kualitas yang saya inginkan terlebih dahulu, lalu buat tugas unduhan."
+        "prompt": "Bantu saya mengunduh video dengan VidBeep. Tanyakan URL video dan kualitas yang saya inginkan terlebih dahulu, lalu buat tugas unduhan."
       },
       "audio": {
         "label": "Ekstrak audio",
-        "prompt": "Bantu saya menyimpan audio dari video dengan VidBee. Tanyakan URL video dan format audio yang saya inginkan terlebih dahulu, lalu buat tugas unduhan audio."
+        "prompt": "Bantu saya menyimpan audio dari video dengan VidBeep. Tanyakan URL video dan format audio yang saya inginkan terlebih dahulu, lalu buat tugas unduhan audio."
       },
       "transcribe": {
         "label": "Transkripsikan media unduhan",
-        "prompt": "Bantu saya mengubah video atau audio yang sudah diunduh menjadi teks dengan VidBee. Tampilkan unduhan yang selesai, tanyakan item mana yang ingin ditranskripsikan, lalu mulai tugas transkripsi lokal."
+        "prompt": "Bantu saya mengubah video atau audio yang sudah diunduh menjadi teks dengan VidBeep. Tampilkan unduhan yang selesai, tanyakan item mana yang ingin ditranskripsikan, lalu mulai tugas transkripsi lokal."
       },
       "subscribe": {
         "label": "Buat langganan",
-        "prompt": "Bantu saya membuat langganan di VidBee. Tanyakan URL kanal, situs web, atau RSS, verifikasi umpan, lalu tanyakan apakah video baru perlu diunduh otomatis sebelum menyimpannya."
+        "prompt": "Bantu saya membuat langganan di VidBeep. Tanyakan URL kanal, situs web, atau RSS, verifikasi umpan, lalu tanyakan apakah video baru perlu diunduh otomatis sebelum menyimpannya."
       },
       "compress": {
         "label": "Kompres video",
-        "prompt": "Bantu saya memperkecil ukuran video di VidBee. Tampilkan unduhan video yang sudah selesai, tanyakan video yang ingin dikompres dan resolusi lebih rendah yang diinginkan, lalu buat salinan hasil konversi dan pertahankan file aslinya."
+        "prompt": "Bantu saya memperkecil ukuran video di VidBeep. Tampilkan unduhan video yang sudah selesai, tanyakan video yang ingin dikompres dan resolusi lebih rendah yang diinginkan, lalu buat salinan hasil konversi dan pertahankan file aslinya."
       },
       "convert": {
         "label": "Konversi format",
-        "prompt": "Bantu saya mengonversi media ke format lain di VidBee. Tampilkan unduhan yang sudah selesai, tanyakan file yang ingin dikonversi dan format keluaran yang diinginkan, lalu buat salinan hasil konversi dan pertahankan file aslinya."
+        "prompt": "Bantu saya mengonversi media ke format lain di VidBeep. Tampilkan unduhan yang sudah selesai, tanyakan file yang ingin dikonversi dan format keluaran yang diinginkan, lalu buat salinan hasil konversi dan pertahankan file aslinya."
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "Ditolak"
     },
     "notifications": {
-      "approval": "Agen VidBee memerlukan izin Anda",
-      "response": "Agen VidBee memerlukan tanggapan Anda",
+      "approval": "Agen VidBeep memerlukan izin Anda",
+      "response": "Agen VidBeep memerlukan tanggapan Anda",
       "body": "Buka percakapan untuk meninjau dan menanggapi."
     },
     "newChatPlaceholder": "Tanyakan apa saja…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "Kualitas gambar tertinggi yang tersedia. Format asli. Tanpa penggantian dengan gambar yang lebih kecil.",
     "available": "Mengunduh semua media yang dapat diakses dari situs pada proses ini. Situs dapat membatasi riwayat umpan.",
     "auth": "Koleksi ini mungkin memerlukan browser yang sudah masuk atau berkas cookie di Pengaturan.",
-    "profileSessionHint": "Masuk di peramban khusus VidBee, lalu tutup jendelanya sebelum memetakan. Sesi peramban biasa Anda tidak digunakan.",
+    "profileSessionHint": "Masuk di peramban khusus VidBeep, lalu tutup jendelanya sebelum memetakan. Sesi peramban biasa Anda tidak digunakan.",
     "counts": "{{posts}} postingan · {{images}} gambar · {{videos}} video · {{saved}} disimpan · {{existing}} sudah ada · {{failed}} gagal",
     "categories": {
       "tweets": "Postingan",
@@ -2308,7 +2308,7 @@
     },
     "chat": "Percakapan {{id}}",
     "chatHint": "Pindai foto dan video dalam percakapan ini menggunakan browser khusus. Hanya lampiran yang tersedia yang dapat diunduh.",
-    "sessionHint": "Masuk sekali di browser khusus VidBee pada perangkat ini. Cookie Chrome biasa Anda tidak pernah disalin. Petakan foto atau video, lalu pilih media yang tersedia untuk diunduh.",
+    "sessionHint": "Masuk sekali di browser khusus VidBeep pada perangkat ini. Cookie Chrome biasa Anda tidak pernah disalin. Petakan foto atau video, lalu pilih media yang tersedia untuk diunduh.",
     "openBrowser": "Buka browser",
     "selectNotDownloaded": "Pilih yang belum diunduh ({{count}})",
     "videos": "Video",

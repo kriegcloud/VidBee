@@ -64,7 +64,7 @@ function sourceMetadata(downloadId: string) {
   }
   const history = historyManager.getHistory().find((item) => item.id === downloadId)
   return {
-    title: task.input.title ?? history?.title ?? 'VidBee',
+    title: task.input.title ?? history?.title ?? 'VidBeep',
     coverSrc: task.input.thumbnail ?? history?.thumbnail,
     source: { url: task.input.url },
     byline: shareCardSourceByline(undefined, history?.channel ?? history?.uploader),

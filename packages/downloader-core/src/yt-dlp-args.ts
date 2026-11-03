@@ -542,7 +542,7 @@ export const resolveVideoFormatSelector = (options: YtDlpDownloadOptions): strin
 const UNSUPPORTED_THUMBNAIL_EMBED_ERROR = /supported filetypes for thumbnail embedding are/i
 
 export const THUMBNAIL_EMBED_UNSUPPORTED_LOG =
-  '[VidBee] Thumbnail embedding is unsupported for this container. The video was saved. Choose MP4 or MKV to embed cover art.'
+  '[VidBeep] Thumbnail embedding is unsupported for this container. The video was saved. Choose MP4 or MKV to embed cover art.'
 
 /**
  * Thumbnail flags for one download.
@@ -922,7 +922,7 @@ function assertBrowserProfileSession(url: string): void {
   assertOnlyFansBrowserSession(url)
   if (isFanslySite(url)) {
     throw new Error(
-      'Open the Fansly profile in VidBee and map it using the dedicated browser session.'
+      'Open the Fansly profile in VidBeep and map it using the dedicated browser session.'
     )
   }
 }

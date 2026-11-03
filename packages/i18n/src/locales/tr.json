@@ -10,7 +10,7 @@
       "view": "Görüntüle",
       "visit": "Ziyaret Et"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "Yeni sürümleri arka planda otomatik olarak indir ve yükleyin.",
     "microsoftStoreUpdateDescription": "Uygulama güncellemeleri Microsoft Store tarafından yönetilir. Güncellemeleri denetlemek için Store’u açın.",
     "autoUpdateTitle": "Otomatik güncellemeler",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "@nexmoe'i takip edin"
     },
-    "followAuthorDescription": "VidBee ile ilgili en son haberleri ve güncellemeleri takip edin.",
-    "followAuthorSupport": "VidBee ile ilgili en son güncellemeleri ve haberleri almak için geliştiriciyi X (Twitter) üzerinden takip edin.",
+    "followAuthorDescription": "VidBeep ile ilgili en son haberleri ve güncellemeleri takip edin.",
+    "followAuthorSupport": "VidBeep ile ilgili en son güncellemeleri ve haberleri almak için geliştiriciyi X (Twitter) üzerinden takip edin.",
     "followAuthorTitle": "Geliştiriciyi takip edin",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "Resmi web sitesi",
       "websiteDescription": "Ürün özellikleri, yol haritası ve topluluk haberleri."
     },
-    "resourcesDescription": "VidBee hakkında daha fazla bilgi edinmek ve bağlantıda kalmak için faydalı bağlantılar.",
+    "resourcesDescription": "VidBeep hakkında daha fazla bilgi edinmek ve bağlantıda kalmak için faydalı bağlantılar.",
     "resourcesTitle": "Kaynaklar",
     "shareActions": {
       "copy": "Bağlantıyı kopyala",
       "facebook": "Facebook'ta paylaş",
       "twitter": "X'te paylaş (Twitter)"
     },
-    "shareDescription": "VidBee'yi tek bir tıklama ile topluluğunuzla paylaşın.",
-    "shareSupport": "VidBee'yi arkadaşlarınıza tavsiye ederek büyümemizi ve güncellemelerimizi destekleyin.",
+    "shareDescription": "VidBeep'yi tek bir tıklama ile topluluğunuzla paylaşın.",
+    "shareSupport": "VidBeep'yi arkadaşlarınıza tavsiye ederek büyümemizi ve güncellemelerimizi destekleyin.",
     "shareTitle": "Haberi yayın",
     "sourceCode": "Kaynak kodu mevcuttur",
     "title": "Hakkında",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "Medya indirin, yerel olarak deşifre edin ve yapay zekâya sorun",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "VidBee'den çıkılsın mı?",
+      "title": "VidBeep'den çıkılsın mı?",
       "message": "{{count}} görev hâlâ devam ediyor. Çıkmak bunu yarıda keser.",
       "messagePlural": "{{count}} görev hâlâ devam ediyor. Çıkmak bunları yarıda keser.",
       "quit": "Çık",
@@ -279,12 +279,12 @@
       "subscription": "Abonelik"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "formatFallbackHint": "Your pick was not deliverable, so VidBeep fell back to best available ({{resolved}}).",
     "cookiesSetupAction": "Çerezleri ayarla",
     "cookiesSetupDialogTitle": "Çerezleri ayarla",
     "cookiesSetupNeeded": "Bu indirme oturum açmış bir oturum gerektirir. Çerezleri ayarlayın, sonra yeniden deneyin.",
     "cookiesSetupLocked": "Chrome çerez veritabanını kilitliyor. Firefox kullanın, bir çerez dosyası içe aktarın veya Chrome’u tamamen kapatın.",
-    "cookiesSetupMacFiles": "macOS, VidBee’nin bu tarayıcının çerezlerini okumasını engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBee’ye bu tarayıcıya erişim verin, ardından yeniden deneyin. Zaten izin verdiyseniz VidBee’yi tamamen kapatıp yeniden açın.",
+    "cookiesSetupMacFiles": "macOS, VidBeep’nin bu tarayıcının çerezlerini okumasını engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBeep’ye bu tarayıcıya erişim verin, ardından yeniden deneyin. Zaten izin verdiyseniz VidBeep’yi tamamen kapatıp yeniden açın.",
     "cookiesSetupOpenFilesSettings": "Dosyalar ve Klasörler ayarlarını aç",
     "cookiesSetupDecrypt": "Windows, Chrome çerezlerini çözemez. Firefox kullanın veya bir çerez dosyası içe aktarın.",
     "cookiesSetupFileInvalid": "Seçilen çerez dosyası geçerli bir dışa aktarma değil. Bir cookies.txt dışa aktarıp yeniden deneyin.",
@@ -467,12 +467,12 @@
     "emptyTitle": "Instagram profili indir",
     "partialHint": "Bazı kategoriler taranamadı. Gizli profiller, hikâyeler, öne çıkanlar veya etiketli gönderiler için Instagram oturum çerezleri gerekebilir.",
     "rateLimitedHint": "Instagram bu ağdan veya hesaptan gelen istekleri geçici olarak sınırlıyor. Bu bir çerez sorunu değildir. Yeniden eşlemeden önce yaklaşık 15–30 dakika bekleyin; tekrarlanan denemeler engeli uzatır.",
-    "unavailableHint": "Bazı kategoriler taranamadı. Instagram API'sini değiştirmiş olabilir veya içerik şu anda kullanılamıyor. Daha sonra tekrar deneyin; sorun devam ederse VidBee'yi güncelleyin.",
+    "unavailableHint": "Bazı kategoriler taranamadı. Instagram API'sini değiştirmiş olabilir veya içerik şu anda kullanılamıyor. Daha sonra tekrar deneyin; sorun devam ederse VidBeep'yi güncelleyin.",
     "retryAfter": "{{time}} sonra yeniden dene",
     "scan": "Profili tara",
     "scanFailed": "Instagram profili taranamadı",
     "scanning": "Instagram profili taranıyor",
-    "scanningHint": "VidBee her kategoriyi eşliyor. Hız sınırlamasını azaltmak için istekler aralıklı gönderildiğinden bu işlem biraz sürebilir.",
+    "scanningHint": "VidBeep her kategoriyi eşliyor. Hız sınırlamasını azaltmak için istekler aralıklı gönderildiğinden bu işlem biraz sürebilir.",
     "selectAtLeastOne": "En az bir kullanılabilir kategori seçin",
     "sourceTotal": "{{count}} öğe",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "{{total}} kredinin {{used}} kadarı kullanıldı",
       "grantedCredits": "Hediye krediler",
       "purchasedCredits": "Satın alınan krediler",
-      "description": "VidBee hesabını bağlamak için GitHub ile giriş yap.",
+      "description": "VidBeep hesabını bağlamak için GitHub ile giriş yap.",
       "error": "Kimlik doğrulama tamamlanamadı. Lütfen tekrar dene.",
       "loading": "Hesabın kontrol ediliyor…",
       "signedOut": "Giriş yapılmadı",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "Yukarıdan tarayıcınızı seçin, oturum bilgilerinizi otomatik yeniden kullanın.",
     "cookiesHelpFile": "Netscape çerez dosyasını dışa aktarın (yt-dlp SSS bölümüne bakın) ve gerektiğinde buradan seçin.",
     "cookiesGuideTitle": "Bir rehbere mi ihtiyacınız var?",
-    "cookiesGuideDescription": "VidBee'de çerezleri kullanmak için adım adım kılavuzu inceleyin",
+    "cookiesGuideDescription": "VidBeep'de çerezleri kullanmak için adım adım kılavuzu inceleyin",
     "cookiesGuideLink": "Çerez kılavuzunu aç",
     "openLinkError": "Bağlantı açılamadı",
     "browserOptions": {
@@ -674,9 +674,9 @@
     "hideDockIcon": "Kapatıldığında Dock simgesini gizle",
     "hideDockIconDescription": "Pencere kapatıldığında Dock simgesini otomatik olarak gizler. Yeniden açmak için menü çubuğu veya tepsi simgesini kullanın",
     "launchAtLogin": "Başlangıçta başlat",
-    "launchAtLoginDescription": "Oturumunuza giriş yaptıktan sonra VidBee'yi otomatik olarak açın",
+    "launchAtLoginDescription": "Oturumunuza giriş yaptıktan sonra VidBeep'yi otomatik olarak açın",
     "launchAtLoginUnsupported": "Otomatik başlatma yalnızca macOS ve Windows'ta kullanılabilir",
-    "enableAnalytics": "VidBee'yi geliştirmeye yardımcı olun",
+    "enableAnalytics": "VidBeep'yi geliştirmeye yardımcı olun",
     "enableAnalyticsDescription": "Uygulamanın nasıl kullanıldığını anlamamıza ve iyileştirmelere öncelik vermemize yardımcı olmak için anonim kullanım verilerini paylaşın",
     "enableDownloadNotifications": "İndirme bildirimleri",
     "enableDownloadNotificationsDescription": "Bir indirme tamamlandığında sistem bildirimi göster",
@@ -685,7 +685,7 @@
     "downloadSubtitles": "Altyazıları indir",
     "downloadSubtitlesDescription": "Kullanılabilir olduğunda yalnızca seçilen dillerdeki altyazıları indir",
     "subtitleLanguages": "Altyazı dilleri",
-    "subtitleLanguagesDescription": "VidBee'nin her video için isteyeceği altyazı dillerini seçin",
+    "subtitleLanguagesDescription": "VidBeep'nin her video için isteyeceği altyazı dillerini seçin",
     "subtitleLanguageSearch": "Altyazı dillerinde ara",
     "subtitleLanguageEmpty": "Eşleşen dil yok",
     "subtitleLanguageLimit": "Platform istek sınırlarını azaltmak için en fazla {{count}} dil seçin",
@@ -700,10 +700,10 @@
     "writeAutoSubsDescription": "Seçilen dillerde içerik üreticisi altyazısı yoksa otomatik altyazıları kullan",
     "embedThumbnail": "Küçük resmi gömün",
     "embedThumbnailDescription": "Küçük resmi, kapak resmi olarak ekle",
-    "embedThumbnailWebmUnsupported": "WebM küçük resmi kapak olarak gömemez. Kapak açıkken VidBee küçük resmi ayrı bir dosya olarak kaydeder. Gömmek için MP4 veya MKV seçin.",
+    "embedThumbnailWebmUnsupported": "WebM küçük resmi kapak olarak gömemez. Kapak açıkken VidBeep küçük resmi ayrı bir dosya olarak kaydeder. Gömmek için MP4 veya MKV seçin.",
     "filenameStyle": "Dosya adı stili",
-    "filenameStyleDescription": "VidBee'nin kaydedilen video ve ses dosyalarını nasıl adlandıracağını seçin",
-    "filenameStyleNote": "VidBee tarafından kaydedilen dosyalar için kullanılır. Abonelik veya oynatma listesi özel şablonları önceliklidir",
+    "filenameStyleDescription": "VidBeep'nin kaydedilen video ve ses dosyalarını nasıl adlandıracağını seçin",
+    "filenameStyleNote": "VidBeep tarafından kaydedilen dosyalar için kullanılır. Abonelik veya oynatma listesi özel şablonları önceliklidir",
     "filenameStyleOptions": {
       "basic": "temel",
       "classic": "klasik",
@@ -712,8 +712,8 @@
     },
     "filenameStylePreviewAudio": "ses dosyası önizlemesi",
     "filenameStylePreviewVideo": "video dosyası önizlemesi",
-    "filenameViaVidBee": "via VidBee ekle",
-    "filenameViaVidBeeDescription": "Kaydedilen video ve ses dosyası adlarına otomatik olarak via VidBee ekler",
+    "filenameViaVidBeep": "via VidBeep ekle",
+    "filenameViaVidBeeDescription": "Kaydedilen video ve ses dosyası adlarına otomatik olarak via VidBeep ekler",
     "metadataTab": "Meta veri",
     "navGroup": {
       "app": "Uygulama",
@@ -722,7 +722,7 @@
       "ai": "Yapay zeka"
     },
     "shareWatermark": "Filigranı paylaş",
-    "shareWatermarkDescription": "Orijinal başlık, yazar ve VidBee markasını içeren bir filigran ekleyin",
+    "shareWatermarkDescription": "Orijinal başlık, yazar ve VidBeep markasını içeren bir filigran ekleyin",
     "maxConcurrentDownloads": "Aktif indirme sayısı sınırı",
     "maxConcurrentDownloadsDescription": "Eşzamanlı indirme sayısı sınırı",
     "none": "Hiçbiri",
@@ -759,7 +759,7 @@
     },
     "system": "Sistem",
     "theme": "Tema",
-    "themeDescription": "VidBee için açık, koyu veya sistem teması seçin",
+    "themeDescription": "VidBeep için açık, koyu veya sistem teması seçin",
     "title": "Ayarlar",
     "tray": {
       "quit": "Çık",
@@ -1047,8 +1047,8 @@
       "loadingModels": "Sağlayıcıdan modeller yükleniyor…",
       "skillHelp": "Skills, SKILL.md dosyalarını kullanır. Aracı, açıklamalarından Skill’leri bulur ve gerektiğinde talimatlarını okur. Belirli bir Skill kullanmak için sohbette $skill-name yazın.",
       "addSkill": "Skill ekle",
-      "createSkillWithVidbee": "VidBee ile Skill oluştur",
-      "createSkillRequest": "Yeniden kullanılabilir bir Skill oluşturmama yardım et. Görevini, ne zaman kullanılacağını ve beklenen çıktıyı sor. Gereksinimler netleşince Skill’i VidBee’de oluştur ve kaydet.",
+      "createSkillWithVidbee": "VidBeep ile Skill oluştur",
+      "createSkillRequest": "Yeniden kullanılabilir bir Skill oluşturmama yardım et. Görevini, ne zaman kullanılacağını ve beklenen çıktıyı sor. Gereksinimler netleşince Skill’i VidBeep’de oluştur ve kaydet.",
       "uploadSkill": "Skill yükle",
       "importGitHubSkill": "GitHub’dan Skill içe aktar",
       "githubSkillDescription": "Herkese açık bir GitHub deposunun veya Skill klasörünün bağlantısını yapıştırın, ardından destek dosyalarıyla kurulacak Skill’i seçin.",
@@ -1108,7 +1108,7 @@
         },
         "diagnose-task": {
           "name": "Görev sorunlarını incele",
-          "description": "Başarısız veya takılmış görevleri durum, hata ve günlüklerle inceler. Kurtarma adımları önermek veya olası VidBee kusurları için geri bildirim hazırlamak üzere kullanılır."
+          "description": "Başarısız veya takılmış görevleri durum, hata ve günlüklerle inceler. Kurtarma adımları önermek veya olası VidBeep kusurları için geri bildirim hazırlamak üzere kullanılır."
         },
         "video-localization": {
           "name": "Video yerelleştirme",
@@ -1125,23 +1125,23 @@
       "statusExpired": "Süresi doldu",
       "statusEmpty": "Oturum bulunamadı",
       "statusInvalid": "Dikkat gerekli",
-      "healthOkBrowser": "VidBee, {{browser}} uygulamasından çerez okuyabilir. Sitede orada oturum açık tutun",
+      "healthOkBrowser": "VidBeep, {{browser}} uygulamasından çerez okuyabilir. Sitede orada oturum açık tutun",
       "healthOkFile": "{{sites}} için oturum çerezleri bulundu",
       "healthOkFileGeneric": "Bu çerez dosyası geçerli görünüyor",
       "healthExpired": "Bu çerezlerin süresi doldu. Yeniden oturum açın ve yeni bir dosya içe aktarın",
       "healthEmpty": "Bu dosyada desteklenen siteler için oturum çerezi yok. Oturum açıkken dışa aktarıp yeniden deneyin",
       "healthInvalidFile": "Çerez dosyası eksik veya geçerli bir dışa aktarma değil",
-      "healthInvalidBrowser": "VidBee bu tarayıcı profilindeki çerezleri okuyamıyor",
-      "healthMacosFilesPermission": "macOS çerez erişimini engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBee’ye bu tarayıcıya erişim verin, sonra yeniden kontrol edin.",
+      "healthInvalidBrowser": "VidBeep bu tarayıcı profilindeki çerezleri okuyamıyor",
+      "healthMacosFilesPermission": "macOS çerez erişimini engelliyor. Sistem Ayarları → Gizlilik ve Güvenlik → Dosyalar ve Klasörler’de VidBeep’ye bu tarayıcıya erişim verin, sonra yeniden kontrol edin.",
       "healthUnsupportedBrowser": "Bu tarayıcı sisteminizde çerez için kullanılamaz",
       "sitesLabel": "Siteler: {{sites}}",
       "recommendedTitle": "Önerilen",
       "recommendedUseBrowser": "{{browser}} kullan",
       "recommendedUseBrowserHint": "{{browser}} içinde zaten oturum açtığınız hesabı yeniden kullanın",
       "recommendedImportFile": "Bir çerez dosyası içe aktar",
-      "recommendedImportFileWindowsHint": "Windows’ta Chrome ve Edge, çerezleri VidBee ile paylaşamaz. Bunun yerine tarayıcıdan bir çerez dosyası dışa aktarın",
+      "recommendedImportFileWindowsHint": "Windows’ta Chrome ve Edge, çerezleri VidBeep ile paylaşamaz. Bunun yerine tarayıcıdan bir çerez dosyası dışa aktarın",
       "recommendedImportFileHint": "Tarayıcınızdan çerezleri dışa aktarın, sonra dosyayı burada seçin",
-      "recommendedFirefoxHint": "Windows’ta VidBee’nin doğrudan okuyabildiği tek tarayıcı Firefox’tur",
+      "recommendedFirefoxHint": "Windows’ta VidBeep’nin doğrudan okuyabildiği tek tarayıcı Firefox’tur",
       "useThisBrowser": "{{browser}} kullan",
       "importFile": "Çerez dosyası seç",
       "clearSetup": "Çerezleri temizle",
@@ -1159,23 +1159,23 @@
       "applied": "Çerezler güncellendi",
       "profileMissingDb": "Bu Firefox profilinde çerez veritabanı yok. Firefox’u bir kez açın, sonra yeniden deneyin.",
       "statusUsingExtension": "{{browser}} uzantısı kullanılıyor",
-      "healthOkExtension": "VidBee uzantısı her indirmede {{browser}} tarayıcısındaki güncel çerezleri gönderir",
+      "healthOkExtension": "VidBeep uzantısı her indirmede {{browser}} tarayıcısındaki güncel çerezleri gönderir",
       "healthEmptyExtension": "Uzantı bağlı ama desteklenen siteler için oturum çerezi bulunamadı. O tarayıcıda siteye giriş yapın",
       "statusHeading": "Çerez durumu",
       "methodRecommended": "Önerilen",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "Tarayıcı uzantısı",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "Bağlı",
       "extensionDisconnected": "Bağlı değil",
       "extensionConnectedHint": "{{browser}} bağlı. Yeni indirmeler bu tarayıcının çerezlerini kullanır",
-      "extensionDisconnectedHint": "VidBee Desktop’u açık tutun, uzantıyı yükleyin ve o tarayıcıda siteye giriş yapın",
+      "extensionDisconnectedHint": "VidBeep Desktop’u açık tutun, uzantıyı yükleyin ve o tarayıcıda siteye giriş yapın",
       "extensionInstallChrome": "Chrome’a ekle",
       "extensionInstallEdge": "Edge’e ekle",
       "extensionInstallFirefox": "Firefox’a ekle",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "Uzantının bağlanabilmesi için VidBee Desktop’u çalışır durumda tutun",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "Uzantının bağlanabilmesi için VidBeep Desktop’u çalışır durumda tutun",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "Çerez kaynağı",
       "sourceInUse": "Kullanımda",
       "sourceFallback": "Yedek",
@@ -1188,7 +1188,7 @@
       "browserShortHint": "Oturum açtığınız bir tarayıcı seçin",
       "fileShortHint": "Bir cookies.txt dışa aktarıp seçin. Süresi dolunca yeniden aktarın",
       "whyTitle": "Daha güvenilir indirmeler için çerezleri ayarlayın",
-      "whyDescription": "VidBee oturum açmış hesabınızla indirir; böylece indirmeler daha kararlı olur ve daha sık başarılı olur",
+      "whyDescription": "VidBeep oturum açmış hesabınızla indirir; böylece indirmeler daha kararlı olur ve daha sık başarılı olur",
       "extensionPriority": "Çerezler için tarayıcı önceliği",
       "extensionPriorityHint": "Bu sıradaki ilk bağlı tarayıcı kullanılır. Bağlantısı kesilen tarayıcılar otomatik olarak atlanır.",
       "extensionUse": "Kullan",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "MCP erişimini etkinleştir",
-      "description": "Harici ajanların VidBee indirmelerini, aboneliklerini, transkriptlerini ve yapay zekâ sohbetlerini kullanmasına izin verin.",
+      "description": "Harici ajanların VidBeep indirmelerini, aboneliklerini, transkriptlerini ve yapay zekâ sohbetlerini kullanmasına izin verin.",
       "running": "Çalışıyor · {{count}} araç kullanılabilir",
       "stopped": "MCP şu anda kullanılamıyor",
-      "accessNote": "Bağlantı sırasında VidBee açık kalsın. Yalnızca bu bilgisayardan bağlanılabilir. HTTP yapılandırmasını parola gibi koruyun. Token yenileme, kaydedilmiş HTTP yapılandırmalarını geçersiz kılar.",
+      "accessNote": "Bağlantı sırasında VidBeep açık kalsın. Yalnızca bu bilgisayardan bağlanılabilir. HTTP yapılandırmasını parola gibi koruyun. Token yenileme, kaydedilmiş HTTP yapılandırmalarını geçersiz kılar.",
       "copy": "{{transport}} yapılandırmasını kopyala",
       "copied": "MCP yapılandırması kopyalandı",
       "rotate": "Erişim tokenini yenile",
@@ -1323,15 +1323,15 @@
     "description": "Kanalları otomatik izleyin ve yeni indirmeleri elle iş yapmadan sıraya alın.",
     "defaults": {
       "title": "Otomasyon varsayılanları",
-      "description": "Abonelik indirmelerinin nerede depolanacağını ve VidBee'nin yeni videoları ne sıklıkla kontrol edeceğini kontrol edin.",
+      "description": "Abonelik indirmelerinin nerede depolanacağını ve VidBeep'nin yeni videoları ne sıklıkla kontrol edeceğini kontrol edin.",
       "downloadDirectory": "İndirme dizini",
       "filenameTemplate": "Dosya adı şablonu",
       "onlyLatest": "Yalnızca en son videoyu indirin",
-      "onlyLatestDescription": "Etkinleştirildiğinde, VidBee eski bekleyen öğeleri atlar ve yalnızca en yeni yüklemeleri alır."
+      "onlyLatestDescription": "Etkinleştirildiğinde, VidBeep eski bekleyen öğeleri atlar ve yalnızca en yeni yüklemeleri alır."
     },
     "add": {
       "title": "Abonelik ekle",
-      "description": "Bir kanal veya besleme bağlantısı yapıştırın. VidBee otomatik olarak algılar."
+      "description": "Bir kanal veya besleme bağlantısı yapıştırın. VidBeep otomatik olarak algılar."
     },
     "fields": {
       "url": "Besleme URL'i",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "RSSHub ile Otomatik Abonelikler",
-      "description": "VidBee'yi RSSHub ile birleştirerek çeşitli platformlardan otomatik abonelik ve indirme özelliğini etkinleştirin. Kurulum tamamlandıktan sonra VidBee arka planda çalışır ve en son videoları ve içerikleri otomatik olarak indirir.",
+      "description": "VidBeep'yi RSSHub ile birleştirerek çeşitli platformlardan otomatik abonelik ve indirme özelliğini etkinleştirin. Kurulum tamamlandıktan sonra VidBeep arka planda çalışır ve en son videoları ve içerikleri otomatik olarak indirir.",
       "learnMore": "RSSHub hakkında daha fazla bilgi edinin",
       "openDocs": "RSSHub Dökümantasyonunu Aç",
       "hint": "Besleme URL’niz yok mu? RSSHub ile YouTube, Twitter ve binlerce başka platform için besleme oluşturun."
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "Tümü",
       "noCategories": "En az bir kategori seçin.",
-      "desktopOnly": "Profil abonelikleri VidBee Desktop tarafından kontrol edilir.",
+      "desktopOnly": "Profil abonelikleri VidBeep Desktop tarafından kontrol edilir.",
       "storiesHint": "Hikâyeler 24 saat sonra kaybolur. Hiçbirini kaçırmamak için en az 12 saatte bir kontrol edin.",
       "nextCheck": "Sonraki kontrol: {{time}}",
       "subscribe": "Abone ol",
       "subscribed": "Abone olundu",
-      "readOnly": "VidBee Desktop kontrol eder",
+      "readOnly": "VidBeep Desktop kontrol eder",
       "categories": {
         "stories": "Hikâyeler",
         "highlights": "Öne çıkanlar",
@@ -1459,8 +1459,8 @@
     "copied": "Kopyalandı",
     "copying": "İndirme motoru kopyalanıyor…",
     "copyLog": "Günlüğü kopyala",
-    "description": "VidBee indirme motorunu hazırlıyor. Bu işlem yalnızca kısa bir süre alır.",
-    "errorDescription": "VidBee çalışan bir indirme motoru hazırlayamadı. Yerel depolama erişimini kontrol edip yeniden deneyin.",
+    "description": "VidBeep indirme motorunu hazırlıyor. Bu işlem yalnızca kısa bir süre alır.",
+    "errorDescription": "VidBeep çalışan bir indirme motoru hazırlayamadı. Yerel depolama erişimini kontrol edip yeniden deneyin.",
     "errorDetails": "Hata ayrıntıları",
     "errorTitle": "İndirme motoru kullanılamıyor",
     "finalizing": "Kurulum tamamlanıyor…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "GitHub’da bildir",
     "retry": "Yeniden dene",
     "retrying": "Yeniden deneniyor…",
-    "title": "VidBee hazırlanıyor",
+    "title": "VidBeep hazırlanıyor",
     "validating": "İndirme motoru doğrulanıyor…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "yt-dlp listesinin tamamı topluluk tarafından sürekli güncellenmektedir.",
     "moreTitle": "Başka bir siteye mi ihtiyacınız var?",
     "openFullList": "Tam desteklenen sitelerin listesini aç",
-    "pageDescription": "VidBee, yüzlerce kaynağa ulaşmak için arka planda yt-dlp kullanır.",
+    "pageDescription": "VidBeep, yüzlerce kaynağa ulaşmak için arka planda yt-dlp kullanır.",
     "pageIntro": "İşte insanların en sık indirdiği ana akış hizmetleri.",
     "pageTitle": "Desteklenen Siteler",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "Paylaşım görseli hazırlanamadı.",
     "promptShareSaveFailed": "Paylaşım görseli kaydedilemedi.",
     "promptShareNativeFailed": "Paylaşım menüsü açılamadı.",
-    "promptShareFooter": "VidBee ile oluşturuldu",
+    "promptShareFooter": "VidBeep ile oluşturuldu",
     "promptShareTagline": "İndir. Yerel olarak deşifre et. Yapay zekâya sor.",
     "captionShareSaid": "{{name}} dedi",
     "promptOutput": "Skill sonucu",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "Otomatik video transkripti",
-        "description": "İndirme bitince VidBee bu videonun transkriptini bu bilgisayarda otomatik oluşturur. Hiçbir şey yüklenmez."
+        "description": "İndirme bitince VidBeep bu videonun transkriptini bu bilgisayarda otomatik oluşturur. Hiçbir şey yüklenmez."
       },
       "speakers": {
         "title": "Konuşmacı etiketleri",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "Ses ve video işlemek için en iyi yardımcın",
-      "description": "Ben VidBee. Ne yapmak istediğini söyle ya da başlamak için aşağıdan bir seçenek seç.",
+      "description": "Ben VidBeep. Ne yapmak istediğini söyle ya da başlamak için aşağıdan bir seçenek seç.",
       "download": {
         "label": "Video indir",
-        "prompt": "VidBee ile bir video indirmeme yardım et. Önce videonun URL’sini ve istediğim kaliteyi sor, ardından bir indirme görevi oluştur."
+        "prompt": "VidBeep ile bir video indirmeme yardım et. Önce videonun URL’sini ve istediğim kaliteyi sor, ardından bir indirme görevi oluştur."
       },
       "audio": {
         "label": "Ses çıkar",
-        "prompt": "VidBee ile bir videonun sesini kaydetmeme yardım et. Önce videonun URL’sini ve istediğim ses biçimini sor, ardından bir ses indirme görevi oluştur."
+        "prompt": "VidBeep ile bir videonun sesini kaydetmeme yardım et. Önce videonun URL’sini ve istediğim ses biçimini sor, ardından bir ses indirme görevi oluştur."
       },
       "transcribe": {
         "label": "İndirilen medyayı yazıya dök",
-        "prompt": "VidBee ile indirdiğim bir video veya sesi metne dönüştürmeme yardım et. Tamamlanan indirmelerimi göster, hangisini yazıya dökmek istediğimi sor, ardından yerel bir yazıya dökme görevi başlat."
+        "prompt": "VidBeep ile indirdiğim bir video veya sesi metne dönüştürmeme yardım et. Tamamlanan indirmelerimi göster, hangisini yazıya dökmek istediğimi sor, ardından yerel bir yazıya dökme görevi başlat."
       },
       "subscribe": {
         "label": "Abonelik oluştur",
-        "prompt": "VidBee’de bir abonelik oluşturmama yardım et. Kanal, web sitesi veya RSS URL’sini sor, akışı doğrula ve kaydetmeden önce yeni videoları otomatik indirmek isteyip istemediğimi sor."
+        "prompt": "VidBeep’de bir abonelik oluşturmama yardım et. Kanal, web sitesi veya RSS URL’sini sor, akışı doğrula ve kaydetmeden önce yeni videoları otomatik indirmek isteyip istemediğimi sor."
       },
       "compress": {
         "label": "Videoyu sıkıştır",
-        "prompt": "VidBee’de bir videonun dosya boyutunu küçültmeme yardım et. Tamamlanan video indirmelerimi göster, hangi videoyu sıkıştıracağımı ve hangi daha düşük çözünürlüğü istediğimi sor, ardından orijinali koruyarak dönüştürülmüş bir kopya oluştur."
+        "prompt": "VidBeep’de bir videonun dosya boyutunu küçültmeme yardım et. Tamamlanan video indirmelerimi göster, hangi videoyu sıkıştıracağımı ve hangi daha düşük çözünürlüğü istediğimi sor, ardından orijinali koruyarak dönüştürülmüş bir kopya oluştur."
       },
       "convert": {
         "label": "Biçimi dönüştür",
-        "prompt": "VidBee’de bir medya dosyasını başka bir biçime dönüştürmeme yardım et. Tamamlanan indirmelerimi göster, hangi dosyayı dönüştüreceğimi ve istediğim çıktı biçimini sor, ardından orijinali koruyarak dönüştürülmüş bir kopya oluştur."
+        "prompt": "VidBeep’de bir medya dosyasını başka bir biçime dönüştürmeme yardım et. Tamamlanan indirmelerimi göster, hangi dosyayı dönüştüreceğimi ve istediğim çıktı biçimini sor, ardından orijinali koruyarak dönüştürülmüş bir kopya oluştur."
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "Reddedildi"
     },
     "notifications": {
-      "approval": "VidBee Agent izninizi bekliyor",
-      "response": "VidBee Agent yanıtınızı bekliyor",
+      "approval": "VidBeep Agent izninizi bekliyor",
+      "response": "VidBeep Agent yanıtınızı bekliyor",
       "body": "İsteği incelemek ve yanıtlamak için konuşmayı açın."
     },
     "newChatPlaceholder": "İstediğinizi sorun…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "Mevcut en yüksek görsel kalitesi. Özgün biçim. Daha küçük görsellerle değiştirilmez.",
     "available": "Bu çalıştırmada sitenin erişime açtığı tüm medyayı indirir. Site, akış geçmişini sınırlayabilir.",
     "auth": "Bu koleksiyon için Ayarlar’da oturum açılmış bir tarayıcı veya çerez dosyası gerekebilir.",
-    "profileSessionHint": "Özel VidBee tarayıcısında oturum açın, ardından eşlemeden önce pencereyi kapatın. Normal tarayıcı oturumunuz kullanılmaz.",
+    "profileSessionHint": "Özel VidBeep tarayıcısında oturum açın, ardından eşlemeden önce pencereyi kapatın. Normal tarayıcı oturumunuz kullanılmaz.",
     "counts": "{{posts}} gönderi · {{images}} görsel · {{videos}} video · {{saved}} kaydedildi · {{existing}} mevcut · {{failed}} başarısız",
     "categories": {
       "tweets": "Gönderiler",
@@ -2308,7 +2308,7 @@
     },
     "chat": "Sohbet {{id}}",
     "chatHint": "Bu konuşmadaki fotoğraf ve videoları özel tarayıcıyla tarayın. Yalnızca erişilebilir ekler indirilebilir.",
-    "sessionHint": "Bu cihazdaki özel VidBee tarayıcısında bir kez oturum açın. Normal Chrome çerezleriniz asla kopyalanmaz. Fotoğrafları veya videoları tarayın, ardından indirilebilir içerikleri seçin.",
+    "sessionHint": "Bu cihazdaki özel VidBeep tarayıcısında bir kez oturum açın. Normal Chrome çerezleriniz asla kopyalanmaz. Fotoğrafları veya videoları tarayın, ardından indirilebilir içerikleri seçin.",
     "openBrowser": "Tarayıcıyı aç",
     "selectNotDownloaded": "İndirilmemişleri seç ({{count}})",
     "videos": "Videolar",

@@ -1,5 +1,5 @@
 appId: com.vidbee
-productName: VidBee
+productName: VidBeep
 compression: maximum
 directories:
   buildResources: build
@@ -7,10 +7,10 @@ beforeBuild: build/before-build.cjs
 beforePack: build/before-pack.cjs
 afterPack: build/after-pack.cjs
 protocols:
-  - name: VidBee
+  - name: VidBeep
     schemes:
       - vidbee
-  - name: VidBee Authentication
+  - name: VidBeep Authentication
     schemes:
       - com.vidbee
 files:
@@ -105,7 +105,7 @@ extraResources:
       - '!deno'
       - '!deno.exe'
   # §11: official Node LTS binary (resources/node) also serves yt-dlp EJS.
-  # NOTE: VidBee CLI is now distributed standalone via npm / brew / shell
+  # NOTE: VidBeep CLI is now distributed standalone via npm / brew / shell
   # installer (NEX-148). Desktop no longer bundles `@vidbee/cli` and no
   # longer ships a `vidbee` shim. Users install the CLI explicitly with
   # `npm install -g @vidbee/cli` (or one of the other channels).
@@ -131,6 +131,7 @@ mac:
     - zip
     - dmg
 linux:
+  executableName: vidbee
   target:
     - AppImage
     - deb

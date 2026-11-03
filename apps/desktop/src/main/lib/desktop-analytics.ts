@@ -43,7 +43,7 @@ export function initializeDesktopAnalytics(
           ad_personalization: 'denied'
         },
         config: {
-          app_name: 'VidBee',
+          app_name: 'VidBeep',
           // Also keep event-default params; user_properties alone is not enough for
           // event-scoped custom dimensions already registered in GA4 Admin.
           app_version: appVersion,

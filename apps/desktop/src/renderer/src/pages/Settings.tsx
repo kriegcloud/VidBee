@@ -1061,23 +1061,23 @@ export function Settings() {
 }
 
 /**
- * Insert `via VidBee` before the preview file extension.
+ * Insert `via VidBeep` before the preview file extension.
  *
  * @param fileName Preview filename with an extension.
- * @param enabled Whether the via VidBee suffix should be applied.
- * @returns The original preview, or the same name with `via VidBee` added.
+ * @param enabled Whether the via VidBeep suffix should be applied.
+ * @returns The original preview, or the same name with `via VidBeep` added.
  */
 const formatFilenamePreview = (fileName: string, enabled: boolean): string => {
-  if (!enabled || fileName.includes('via VidBee')) {
+  if (!enabled || fileName.includes('via VidBeep')) {
     return fileName
   }
 
   const lastDot = fileName.lastIndexOf('.')
   if (lastDot <= 0) {
-    return `${fileName} via VidBee`
+    return `${fileName} via VidBeep`
   }
 
-  return `${fileName.slice(0, lastDot)} via VidBee${fileName.slice(lastDot)}`
+  return `${fileName.slice(0, lastDot)} via VidBeep${fileName.slice(lastDot)}`
 }
 
 /**
@@ -1085,8 +1085,8 @@ const formatFilenamePreview = (fileName: string, enabled: boolean): string => {
  *
  * @param props.value Current filename style from settings.
  * @param props.onChange Persist the selected style.
- * @param props.filenameViaVidBee Whether via VidBee is appended to filenames.
- * @param props.onFilenameViaVidBeeChange Persist the via VidBee toggle.
+ * @param props.filenameViaVidBee Whether via VidBeep is appended to filenames.
+ * @param props.onFilenameViaVidBeeChange Persist the via VidBeep toggle.
  */
 const FilenameStylePicker = ({
   filenameViaVidBee,

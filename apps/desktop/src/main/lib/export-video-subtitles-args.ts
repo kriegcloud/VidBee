@@ -79,7 +79,7 @@ export const buildSoftSubtitleMuxArgs = (input: BuildVideoSubtitleArgsInput): st
   '-metadata:s:s:0',
   'language=und',
   '-metadata:s:s:0',
-  'title=VidBee',
+  'title=VidBeep',
   '-f',
   'matroska',
   input.outputPath

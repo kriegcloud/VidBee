@@ -165,7 +165,7 @@ class FileSystemService extends IpcService {
       source?: ExportVideoSource
     }
   ): Promise<{ path: string } | null> {
-    let fileName = path.basename(options.defaultFileName || 'VidBee.pdf')
+    let fileName = path.basename(options.defaultFileName || 'VidBeep.pdf')
     if (!fileName.toLowerCase().endsWith('.pdf')) {
       fileName = `${fileName}.pdf`
     }
@@ -199,7 +199,7 @@ class FileSystemService extends IpcService {
     _context: IpcContext,
     options: { data: ArrayBuffer; defaultFileName: string }
   ): Promise<{ path: string } | null> {
-    let fileName = path.basename(options.defaultFileName || 'VidBee.png')
+    let fileName = path.basename(options.defaultFileName || 'VidBeep.png')
     if (!fileName.toLowerCase().endsWith('.png')) {
       fileName = `${fileName}.png`
     }
@@ -254,7 +254,7 @@ class FileSystemService extends IpcService {
       return false
     }
 
-    const fileName = path.basename(options.fileName || 'VidBee.png').replace(/[<>:"/\\|?*]+/g, '_')
+    const fileName = path.basename(options.fileName || 'VidBeep.png').replace(/[<>:"/\\|?*]+/g, '_')
     const tempPath = path.join(os.tmpdir(), `vidbee-share-${process.pid}-${Date.now()}-${fileName}`)
 
     try {

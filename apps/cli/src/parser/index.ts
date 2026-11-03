@@ -8,12 +8,12 @@
  *   - Tokens that look like `--vidbee-*` / `--vidbee:*` but are NOT in the
  *     reserved table cause an error with exit code 2 — never silently
  *     passed through to yt-dlp.
- *   - The first positional token starting with `:` selects a VidBee
+ *   - The first positional token starting with `:` selects a VidBeep
  *     subcommand; subsequent positional tokens after a subcommand are the
  *     subcommand's own args (NOT yt-dlp args).
  *   - Everything else is order-preserved and handed to yt-dlp.
  *   - `--` is honored: every token after `--` is yt-dlp passthrough,
- *     including ones that would otherwise look like VidBee flags.
+ *     including ones that would otherwise look like VidBeep flags.
  */
 
 import { findProbeFlag } from './probe-flags'
@@ -109,7 +109,7 @@ export function parseArgv(argv: readonly string[]): ParsedArgv {
       if (!def) {
         throw new ParseError(
           'UNKNOWN_VIDBEE_FLAG',
-          `unknown VidBee flag: ${name}`
+          `unknown VidBeep flag: ${name}`
         )
       }
       const consumed = consumeReserved(flags, def, argv, i, inlineValue)
@@ -212,7 +212,7 @@ function applySwitch(flags: VidbeeFlags, name: string): void {
     default:
       throw new ParseError(
         'UNKNOWN_VIDBEE_FLAG',
-        `unknown VidBee switch: ${name}`
+        `unknown VidBeep switch: ${name}`
       )
   }
 }
@@ -272,7 +272,7 @@ function applyValue(flags: VidbeeFlags, name: string, value: string): void {
     default:
       throw new ParseError(
         'UNKNOWN_VIDBEE_FLAG',
-        `unknown VidBee value flag: ${name}`
+        `unknown VidBeep value flag: ${name}`
       )
   }
 }

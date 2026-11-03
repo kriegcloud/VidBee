@@ -63,7 +63,7 @@ export async function handleMcpRequest(
     return
   }
   if (!authorizeMcp(request.headers.authorization)) {
-    response.setHeader('WWW-Authenticate', 'Bearer realm="VidBee Desktop MCP"')
+    response.setHeader('WWW-Authenticate', 'Bearer realm="VidBeep Desktop MCP"')
     rejectRequest(response, 401, 'Unauthorized')
     return
   }

@@ -82,5 +82,5 @@ export function Sidebar({
     }
   ]
 
-  return <AppSidebar appName="VidBee" bottomItems={bottomItems} items={items} logoAlt="VidBee" />
+  return <AppSidebar appName="VidBeep" bottomItems={bottomItems} items={items} logoAlt="VidBeep" />
 }

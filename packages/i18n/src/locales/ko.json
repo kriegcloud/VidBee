@@ -10,7 +10,7 @@
       "view": "보기",
       "visit": "방문"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "백그라운드에서 새 릴리스를 자동으로 다운로드하고 설치합니다.",
     "microsoftStoreUpdateDescription": "앱 업데이트는 Microsoft Store에서 관리합니다. 스토어를 열어 업데이트를 확인하세요.",
     "autoUpdateTitle": "자동 업데이트",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "@nexmoe 팔로우"
     },
-    "followAuthorDescription": "VidBee의 최신 뉴스와 업데이트를 받아보세요.",
-    "followAuthorSupport": "X (Twitter)에서 개발자를 팔로우하여 VidBee의 최신 업데이트와 뉴스를 받아보세요.",
+    "followAuthorDescription": "VidBeep의 최신 뉴스와 업데이트를 받아보세요.",
+    "followAuthorSupport": "X (Twitter)에서 개발자를 팔로우하여 VidBeep의 최신 업데이트와 뉴스를 받아보세요.",
     "followAuthorTitle": "개발자 팔로우",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "공식 웹사이트",
       "websiteDescription": "제품 하이라이트, 로드맵 및 커뮤니티 뉴스."
     },
-    "resourcesDescription": "VidBee에 대해 더 알아보고 연결을 유지하는 유용한 링크입니다.",
+    "resourcesDescription": "VidBeep에 대해 더 알아보고 연결을 유지하는 유용한 링크입니다.",
     "resourcesTitle": "리소스",
     "shareActions": {
       "copy": "링크 복사",
       "facebook": "Facebook에서 공유",
       "twitter": "X (Twitter)에서 공유"
     },
-    "shareDescription": "한 번의 클릭으로 커뮤니티와 VidBee를 공유하세요.",
-    "shareSupport": "우리의 성장과 업데이트를 지원하기 위해 친구들에게 VidBee를 추천하세요.",
+    "shareDescription": "한 번의 클릭으로 커뮤니티와 VidBeep를 공유하세요.",
+    "shareSupport": "우리의 성장과 업데이트를 지원하기 위해 친구들에게 VidBeep를 추천하세요.",
     "shareTitle": "소문을 퍼뜨리세요",
     "sourceCode": "소스 코드 사용 가능",
     "title": "정보",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "미디어를 다운로드하고 로컬에서 전사한 뒤 AI에게 질문하세요",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "VidBee를 종료할까요?",
+      "title": "VidBeep를 종료할까요?",
       "message": "진행 중인 작업이 {{count}}개 있습니다. 종료하면 작업이 중단됩니다.",
       "messagePlural": "진행 중인 작업이 {{count}}개 있습니다. 종료하면 작업이 중단됩니다.",
       "quit": "종료",
@@ -279,12 +279,12 @@
       "subscription": "신청"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "formatFallbackHint": "Your pick was not deliverable, so VidBeep fell back to best available ({{resolved}}).",
     "cookiesSetupAction": "쿠키 설정",
     "cookiesSetupDialogTitle": "쿠키 설정",
     "cookiesSetupNeeded": "이 다운로드에는 로그인된 세션이 필요합니다. 쿠키를 설정한 뒤 다시 시도하세요.",
     "cookiesSetupLocked": "Chrome이 쿠키 데이터베이스를 잠그고 있습니다. Firefox를 사용하거나 쿠키 파일을 가져오거나 Chrome을 완전히 종료한 뒤 다시 시도하세요.",
-    "cookiesSetupMacFiles": "macOS가 이 브라우저의 쿠키 읽기를 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBee가 이 브라우저에 접근하도록 허용한 뒤 다시 시도하세요. 이미 허용했다면 VidBee를 완전히 종료한 다음 다시 여세요.",
+    "cookiesSetupMacFiles": "macOS가 이 브라우저의 쿠키 읽기를 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBeep가 이 브라우저에 접근하도록 허용한 뒤 다시 시도하세요. 이미 허용했다면 VidBeep를 완전히 종료한 다음 다시 여세요.",
     "cookiesSetupOpenFilesSettings": "파일 및 폴더 설정 열기",
     "cookiesSetupDecrypt": "Windows에서는 Chrome 쿠키를 복호화할 수 없습니다. Firefox를 사용하거나 쿠키 파일을 가져오세요.",
     "cookiesSetupFileInvalid": "선택한 쿠키 파일이 올바른 내보내기가 아닙니다. cookies.txt를 내보낸 뒤 다시 시도하세요.",
@@ -467,12 +467,12 @@
     "emptyTitle": "Instagram 프로필 다운로드",
     "partialHint": "일부 카테고리를 확인하지 못했습니다. 비공개 프로필, 스토리, 하이라이트 또는 태그된 게시물에는 Instagram 로그인 쿠키가 필요할 수 있습니다.",
     "rateLimitedHint": "Instagram이 이 네트워크 또는 계정의 요청을 일시적으로 제한하고 있습니다. 쿠키 문제가 아닙니다. 다시 매핑하기 전에 15~30분 정도 기다리세요. 반복해서 재시도하면 제한이 연장됩니다.",
-    "unavailableHint": "일부 카테고리를 스캔할 수 없습니다. Instagram이 API를 변경했거나 콘텐츠를 현재 사용할 수 없을 수 있습니다. 나중에 다시 시도하세요. 계속 실패하면 VidBee를 업데이트하세요.",
+    "unavailableHint": "일부 카테고리를 스캔할 수 없습니다. Instagram이 API를 변경했거나 콘텐츠를 현재 사용할 수 없을 수 있습니다. 나중에 다시 시도하세요. 계속 실패하면 VidBeep를 업데이트하세요.",
     "retryAfter": "{{time}} 이후에 다시 시도",
     "scan": "프로필 확인",
     "scanFailed": "Instagram 프로필을 확인하지 못했습니다",
     "scanning": "Instagram 프로필 확인 중",
-    "scanningHint": "VidBee가 각 카테고리를 확인하고 있습니다. 요청 제한을 줄이기 위해 요청 간격을 두므로 시간이 조금 걸릴 수 있습니다.",
+    "scanningHint": "VidBeep가 각 카테고리를 확인하고 있습니다. 요청 제한을 줄이기 위해 요청 간격을 두므로 시간이 조금 걸릴 수 있습니다.",
     "selectAtLeastOne": "사용 가능한 카테고리를 하나 이상 선택하세요",
     "sourceTotal": "항목 {{count}}개",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "{{total}} 중 {{used}} 사용",
       "grantedCredits": "보너스 크레딧",
       "purchasedCredits": "구매한 크레딧",
-      "description": "GitHub로 로그인하여 VidBee 계정을 연결하세요.",
+      "description": "GitHub로 로그인하여 VidBeep 계정을 연결하세요.",
       "error": "인증을 완료할 수 없습니다. 다시 시도해 주세요.",
       "loading": "계정을 확인하는 중…",
       "signedOut": "로그인하지 않음",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "로그인된 세션을 자동으로 재사용하려면 위에서 브라우저를 선택하세요.",
     "cookiesHelpFile": "Netscape 쿠키 파일을 내보내고(yt-dlp FAQ 참조) 필요할 때 여기에서 선택하세요.",
     "cookiesGuideTitle": "가이드가 필요하신가요?",
-    "cookiesGuideDescription": "VidBee에서 쿠키를 사용하는 단계별 안내를 확인하세요",
+    "cookiesGuideDescription": "VidBeep에서 쿠키를 사용하는 단계별 안내를 확인하세요",
     "cookiesGuideLink": "Cookies 가이드 열기",
     "openLinkError": "링크를 열지 못했습니다.",
     "browserOptions": {
@@ -674,9 +674,9 @@
     "hideDockIcon": "창을 닫으면 Dock 아이콘 숨기기",
     "hideDockIconDescription": "창이 닫히면 자동으로 Dock 아이콘을 숨깁니다. 메뉴 바 또는 트레이 아이콘으로 다시 열 수 있습니다",
     "launchAtLogin": "시작 시 실행",
-    "launchAtLoginDescription": "컴퓨터에 로그인한 후 자동으로 VidBee를 엽니다",
+    "launchAtLoginDescription": "컴퓨터에 로그인한 후 자동으로 VidBeep를 엽니다",
     "launchAtLoginUnsupported": "자동 실행은 macOS 및 Windows에서만 사용할 수 있습니다",
-    "enableAnalytics": "VidBee 개선에 참여해주세요",
+    "enableAnalytics": "VidBeep 개선에 참여해주세요",
     "enableAnalyticsDescription": "익명의 사용 데이터를 공유하면 앱이 어떻게 사용되는지 이해하고 개선 우선순위를 정하는 데 도움이 됩니다",
     "enableDownloadNotifications": "다운로드 알림",
     "enableDownloadNotificationsDescription": "다운로드가 완료되면 시스템 알림을 표시합니다",
@@ -685,7 +685,7 @@
     "downloadSubtitles": "자막 다운로드",
     "downloadSubtitlesDescription": "사용 가능한 경우 선택한 언어의 자막만 다운로드합니다",
     "subtitleLanguages": "자막 언어",
-    "subtitleLanguagesDescription": "각 동영상에서 VidBee가 요청할 자막 언어를 선택하세요",
+    "subtitleLanguagesDescription": "각 동영상에서 VidBeep가 요청할 자막 언어를 선택하세요",
     "subtitleLanguageSearch": "자막 언어 검색",
     "subtitleLanguageEmpty": "일치하는 언어 없음",
     "subtitleLanguageLimit": "플랫폼 요청 제한을 줄이려면 최대 {{count}}개 언어를 선택하세요",
@@ -700,10 +700,10 @@
     "writeAutoSubsDescription": "선택한 언어의 제작자 자막이 없을 때 자동 자막을 사용합니다",
     "embedThumbnail": "썸네일 포함",
     "embedThumbnailDescription": "썸네일을 커버 아트로 추가",
-    "embedThumbnailWebmUnsupported": "WebM은 썸네일을 커버 아트로 포함할 수 없습니다. 커버 아트가 켜져 있으면 VidBee가 썸네일을 별도 파일로 저장합니다. 포함하려면 MP4 또는 MKV를 선택하세요.",
+    "embedThumbnailWebmUnsupported": "WebM은 썸네일을 커버 아트로 포함할 수 없습니다. 커버 아트가 켜져 있으면 VidBeep가 썸네일을 별도 파일로 저장합니다. 포함하려면 MP4 또는 MKV를 선택하세요.",
     "filenameStyle": "파일 이름 스타일",
     "filenameStyleDescription": "저장된 동영상과 오디오 파일의 이름 지정 방식을 선택합니다",
-    "filenameStyleNote": "VidBee가 저장하는 파일에 사용됩니다. 구독 또는 재생목록의 사용자 지정 템플릿이 우선합니다",
+    "filenameStyleNote": "VidBeep가 저장하는 파일에 사용됩니다. 구독 또는 재생목록의 사용자 지정 템플릿이 우선합니다",
     "filenameStyleOptions": {
       "basic": "기본",
       "classic": "클래식",
@@ -712,8 +712,8 @@
     },
     "filenameStylePreviewAudio": "오디오 파일 미리보기",
     "filenameStylePreviewVideo": "동영상 파일 미리보기",
-    "filenameViaVidBee": "파일 이름에 via VidBee 추가",
-    "filenameViaVidBeeDescription": "저장하는 동영상과 오디오 파일 이름에 via VidBee를 자동으로 붙입니다",
+    "filenameViaVidBeep": "파일 이름에 via VidBeep 추가",
+    "filenameViaVidBeeDescription": "저장하는 동영상과 오디오 파일 이름에 via VidBeep를 자동으로 붙입니다",
     "metadataTab": "메타데이터",
     "navGroup": {
       "app": "앱",
@@ -722,7 +722,7 @@
       "ai": "AI"
     },
     "shareWatermark": "공유 워터마크",
-    "shareWatermarkDescription": "원본 제목, 작성자, VidBee 브랜드명을 포함한 워터마크를 추가합니다",
+    "shareWatermarkDescription": "원본 제목, 작성자, VidBeep 브랜드명을 포함한 워터마크를 추가합니다",
     "maxConcurrentDownloads": "최대 활성 다운로드 수",
     "maxConcurrentDownloadsDescription": "최대 동시 다운로드 수",
     "none": "없음",
@@ -759,7 +759,7 @@
     },
     "system": "시스템",
     "theme": "테마",
-    "themeDescription": "VidBee용 라이트, 다크 또는 시스템 테마 선택",
+    "themeDescription": "VidBeep용 라이트, 다크 또는 시스템 테마 선택",
     "title": "설정",
     "tray": {
       "quit": "종료",
@@ -1047,8 +1047,8 @@
       "loadingModels": "제공자에서 모델을 불러오는 중…",
       "skillHelp": "Skill은 SKILL.md 파일로 관리됩니다. Agent는 설명을 통해 Skill을 찾고 필요할 때 지침을 읽습니다. 채팅에서 $skill-name을 입력하여 Skill을 지정하세요.",
       "addSkill": "Skill 추가",
-      "createSkillWithVidbee": "VidBee로 Skill 만들기",
-      "createSkillRequest": "재사용할 수 있는 Skill을 만들어 주세요. 작업 목표, 사용 상황, 원하는 출력 형식을 먼저 물어보고, 요구 사항이 명확해지면 VidBee에 만들고 저장해 주세요.",
+      "createSkillWithVidbee": "VidBeep로 Skill 만들기",
+      "createSkillRequest": "재사용할 수 있는 Skill을 만들어 주세요. 작업 목표, 사용 상황, 원하는 출력 형식을 먼저 물어보고, 요구 사항이 명확해지면 VidBeep에 만들고 저장해 주세요.",
       "uploadSkill": "Skill 업로드",
       "importGitHubSkill": "GitHub에서 Skill 가져오기",
       "githubSkillDescription": "공개 GitHub 저장소 또는 Skill 폴더 링크를 붙여 넣고, 관련 파일과 함께 설치할 Skill을 선택하세요.",
@@ -1108,7 +1108,7 @@
         },
         "diagnose-task": {
           "name": "작업 문제 해결",
-          "description": "상태, 오류, 로그를 확인하여 실패하거나 멈춘 작업을 조사합니다. 복구 방법을 제안하거나 VidBee 결함이 의심될 때 피드백을 정리합니다."
+          "description": "상태, 오류, 로그를 확인하여 실패하거나 멈춘 작업을 조사합니다. 복구 방법을 제안하거나 VidBeep 결함이 의심될 때 피드백을 정리합니다."
         },
         "video-localization": {
           "name": "동영상 현지화",
@@ -1125,23 +1125,23 @@
       "statusExpired": "만료됨",
       "statusEmpty": "로그인 없음",
       "statusInvalid": "확인 필요",
-      "healthOkBrowser": "VidBee가 {{browser}}에서 쿠키를 읽을 수 있습니다. 해당 브라우저에서 사이트에 로그인한 상태를 유지하세요",
+      "healthOkBrowser": "VidBeep가 {{browser}}에서 쿠키를 읽을 수 있습니다. 해당 브라우저에서 사이트에 로그인한 상태를 유지하세요",
       "healthOkFile": "{{sites}}의 로그인 쿠키를 찾았습니다",
       "healthOkFileGeneric": "이 쿠키 파일은 유효해 보입니다",
       "healthExpired": "이 쿠키는 만료되었습니다. 다시 로그인한 뒤 새 파일을 가져오세요",
       "healthEmpty": "이 파일에는 지원 사이트의 로그인 쿠키가 없습니다. 로그인한 상태에서 내보낸 뒤 다시 시도하세요",
       "healthInvalidFile": "쿠키 파일이 없거나 올바른 내보내기가 아닙니다",
       "healthInvalidBrowser": "이 브라우저 프로필의 쿠키를 읽을 수 없습니다",
-      "healthMacosFilesPermission": "macOS가 쿠키 접근을 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBee가 이 브라우저에 접근하도록 허용한 뒤 다시 확인하세요.",
+      "healthMacosFilesPermission": "macOS가 쿠키 접근을 차단하고 있습니다. 시스템 설정 → 개인 정보 보호 및 보안 → 파일 및 폴더에서 VidBeep가 이 브라우저에 접근하도록 허용한 뒤 다시 확인하세요.",
       "healthUnsupportedBrowser": "현재 시스템에서는 이 브라우저로 쿠키를 사용할 수 없습니다",
       "sitesLabel": "사이트: {{sites}}",
       "recommendedTitle": "권장",
       "recommendedUseBrowser": "{{browser}} 사용",
       "recommendedUseBrowserHint": "{{browser}}에 이미 로그인한 계정을 재사용합니다",
       "recommendedImportFile": "쿠키 파일 가져오기",
-      "recommendedImportFileWindowsHint": "Windows에서는 Chrome과 Edge가 VidBee와 쿠키를 공유할 수 없습니다. 브라우저에서 쿠키 파일을 내보내세요",
+      "recommendedImportFileWindowsHint": "Windows에서는 Chrome과 Edge가 VidBeep와 쿠키를 공유할 수 없습니다. 브라우저에서 쿠키 파일을 내보내세요",
       "recommendedImportFileHint": "브라우저에서 쿠키를 내보낸 다음 여기에서 파일을 선택하세요",
-      "recommendedFirefoxHint": "Windows에서 VidBee가 직접 읽을 수 있는 브라우저는 Firefox뿐입니다",
+      "recommendedFirefoxHint": "Windows에서 VidBeep가 직접 읽을 수 있는 브라우저는 Firefox뿐입니다",
       "useThisBrowser": "{{browser}} 사용",
       "importFile": "쿠키 파일 선택",
       "clearSetup": "쿠키 지우기",
@@ -1159,23 +1159,23 @@
       "applied": "쿠키가 업데이트되었습니다",
       "profileMissingDb": "이 Firefox 프로필에는 쿠키 데이터베이스가 없습니다. Firefox를 한 번 연 다음 다시 시도하세요.",
       "statusUsingExtension": "{{browser}} 확장 프로그램 사용 중",
-      "healthOkExtension": "VidBee 확장 프로그램이 다운로드할 때마다 {{browser}}의 최신 쿠키를 보냅니다",
+      "healthOkExtension": "VidBeep 확장 프로그램이 다운로드할 때마다 {{browser}}의 최신 쿠키를 보냅니다",
       "healthEmptyExtension": "확장 프로그램은 연결되었지만 지원되는 로그인 쿠키를 찾지 못했습니다. 해당 브라우저에서 사이트에 로그인하세요",
       "statusHeading": "쿠키 상태",
       "methodRecommended": "추천",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "브라우저 확장 프로그램",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "연결됨",
       "extensionDisconnected": "연결 안 됨",
       "extensionConnectedHint": "{{browser}}이(가) 연결되었습니다. 새 다운로드는 이 브라우저의 쿠키를 사용합니다",
-      "extensionDisconnectedHint": "VidBee Desktop을 열어 둔 채 확장 프로그램을 설치한 다음 해당 브라우저에서 사이트에 로그인하세요",
+      "extensionDisconnectedHint": "VidBeep Desktop을 열어 둔 채 확장 프로그램을 설치한 다음 해당 브라우저에서 사이트에 로그인하세요",
       "extensionInstallChrome": "Chrome에 추가",
       "extensionInstallEdge": "Edge에 추가",
       "extensionInstallFirefox": "Firefox에 추가",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "확장 프로그램이 연결되도록 VidBee Desktop을 계속 실행해 두세요",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "확장 프로그램이 연결되도록 VidBeep Desktop을 계속 실행해 두세요",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "쿠키 소스",
       "sourceInUse": "사용 중",
       "sourceFallback": "대체",
@@ -1188,7 +1188,7 @@
       "browserShortHint": "로그인된 브라우저를 선택하세요",
       "fileShortHint": "cookies.txt를 내보내 선택하세요. 만료되면 다시 내보내야 합니다",
       "whyTitle": "쿠키를 설정해 더 안정적으로 다운로드하기",
-      "whyDescription": "VidBee가 로그인한 계정으로 다운로드하므로 더 안정적이고 성공률이 높아집니다",
+      "whyDescription": "VidBeep가 로그인한 계정으로 다운로드하므로 더 안정적이고 성공률이 높아집니다",
       "extensionPriority": "쿠키를 가져올 브라우저 우선순위",
       "extensionPriorityHint": "이 순서에서 처음으로 연결된 브라우저를 사용합니다. 연결이 끊긴 브라우저는 자동으로 건너뜁니다.",
       "extensionUse": "사용",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "MCP 접근 활성화",
-      "description": "외부 에이전트가 VidBee의 다운로드, 구독, 전사 및 AI 대화를 사용할 수 있습니다.",
+      "description": "외부 에이전트가 VidBeep의 다운로드, 구독, 전사 및 AI 대화를 사용할 수 있습니다.",
       "running": "실행 중 · 도구 {{count}}개 사용 가능",
       "stopped": "현재 MCP를 사용할 수 없습니다",
-      "accessNote": "연결 중에는 VidBee를 실행 상태로 유지하세요. 이 컴퓨터에서만 연결할 수 있습니다. HTTP 설정을 비밀번호처럼 보관하세요. 토큰을 갱신하면 저장된 HTTP 설정이 무효화됩니다.",
+      "accessNote": "연결 중에는 VidBeep를 실행 상태로 유지하세요. 이 컴퓨터에서만 연결할 수 있습니다. HTTP 설정을 비밀번호처럼 보관하세요. 토큰을 갱신하면 저장된 HTTP 설정이 무효화됩니다.",
       "copy": "{{transport}} 설정 복사",
       "copied": "MCP 설정을 복사했습니다",
       "rotate": "접근 토큰 갱신",
@@ -1323,15 +1323,15 @@
     "description": "채널을 자동으로 확인하고 새 다운로드를 수동 작업 없이 대기열에 넣습니다.",
     "defaults": {
       "title": "자동화 기본값",
-      "description": "구독 다운로드가 저장되는 위치와 VidBee가 새 비디오를 확인하는 빈도를 제어합니다.",
+      "description": "구독 다운로드가 저장되는 위치와 VidBeep가 새 비디오를 확인하는 빈도를 제어합니다.",
       "downloadDirectory": "디렉토리 다운로드",
       "filenameTemplate": "파일 이름 템플릿(파일만)",
       "onlyLatest": "최신 영상만 다운로드하세요",
-      "onlyLatestDescription": "활성화되면 VidBee는 이전 백로그 항목을 건너뛰고 최신 업로드만 가져옵니다."
+      "onlyLatestDescription": "활성화되면 VidBeep는 이전 백로그 항목을 건너뛰고 최신 업로드만 가져옵니다."
     },
     "add": {
       "title": "구독 추가",
-      "description": "채널 또는 피드 링크를 붙여넣으세요. VidBee가 자동으로 감지합니다."
+      "description": "채널 또는 피드 링크를 붙여넣으세요. VidBeep가 자동으로 감지합니다."
     },
     "fields": {
       "url": "피드 URL",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "RSSHub를 통한 자동 구독",
-      "description": "VidBee를 RSSHub와 결합하면 다양한 플랫폼에서 자동 구독 및 다운로드가 가능해집니다. \n일단 설정되면 VidBee는 백그라운드에서 실행되어 최신 비디오와 콘텐츠를 자동으로 다운로드합니다.",
+      "description": "VidBeep를 RSSHub와 결합하면 다양한 플랫폼에서 자동 구독 및 다운로드가 가능해집니다. \n일단 설정되면 VidBeep는 백그라운드에서 실행되어 최신 비디오와 콘텐츠를 자동으로 다운로드합니다.",
       "learnMore": "RSSHub에 대해 자세히 알아보기",
       "openDocs": "RSSHub 문서 열기",
       "hint": "피드 URL이 없나요? RSSHub로 YouTube, Twitter 등 수천 개 플랫폼의 피드를 만들 수 있습니다."
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "전체",
       "noCategories": "팔로우할 카테고리를 하나 이상 선택하세요.",
-      "desktopOnly": "프로필 구독은 VidBee Desktop에서 확인합니다.",
+      "desktopOnly": "프로필 구독은 VidBeep Desktop에서 확인합니다.",
       "storiesHint": "스토리는 24시간 후 사라집니다. 놓치지 않으려면 최소 12시간마다 확인하세요.",
       "nextCheck": "다음 확인: {{time}}",
       "subscribe": "구독",
       "subscribed": "구독 중",
-      "readOnly": "VidBee Desktop에서 확인",
+      "readOnly": "VidBeep Desktop에서 확인",
       "categories": {
         "stories": "스토리",
         "highlights": "하이라이트",
@@ -1459,8 +1459,8 @@
     "copied": "복사됨",
     "copying": "다운로드 엔진을 복사하는 중…",
     "copyLog": "로그 복사",
-    "description": "VidBee가 다운로드 엔진을 준비하고 있습니다. 잠시만 기다려 주세요.",
-    "errorDescription": "VidBee가 작동하는 다운로드 엔진을 준비하지 못했습니다. 로컬 저장소 접근 권한을 확인한 후 다시 시도하세요.",
+    "description": "VidBeep가 다운로드 엔진을 준비하고 있습니다. 잠시만 기다려 주세요.",
+    "errorDescription": "VidBeep가 작동하는 다운로드 엔진을 준비하지 못했습니다. 로컬 저장소 접근 권한을 확인한 후 다시 시도하세요.",
     "errorDetails": "오류 세부정보",
     "errorTitle": "다운로드 엔진을 사용할 수 없음",
     "finalizing": "설정을 마무리하는 중…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "GitHub에 보고",
     "retry": "다시 시도",
     "retrying": "다시 시도하는 중…",
-    "title": "VidBee 준비 중",
+    "title": "VidBeep 준비 중",
     "validating": "다운로드 엔진을 확인하는 중…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "완전한 yt-dlp 목록은 커뮤니티에 의해 지속적으로 업데이트됩니다.",
     "moreTitle": "다른 사이트가 필요하신가요?",
     "openFullList": "지원되는 모든 사이트 목록 열기",
-    "pageDescription": "VidBee는 수백 개의 소스에 도달하기 위해 yt-dlp를 백그라운드에서 사용합니다.",
+    "pageDescription": "VidBeep는 수백 개의 소스에 도달하기 위해 yt-dlp를 백그라운드에서 사용합니다.",
     "pageIntro": "사람들이 가장 자주 다운로드하는 주요 서비스들입니다.",
     "pageTitle": "지원되는 사이트",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "공유 이미지를 만들지 못했습니다.",
     "promptShareSaveFailed": "공유 이미지를 저장하지 못했습니다.",
     "promptShareNativeFailed": "공유 시트를 열 수 없습니다.",
-    "promptShareFooter": "VidBee로 제작",
+    "promptShareFooter": "VidBeep로 제작",
     "promptShareTagline": "다운로드. 로컬 전사. AI에게 질문.",
     "captionShareSaid": "{{name}}에서",
     "promptOutput": "Skill 결과",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "영상 자동 전사",
-        "description": "다운로드가 끝나면 VidBee가 이 컴퓨터에서 영상에 대한 전사를 자동으로 만듭니다. 아무것도 업로드하지 않습니다."
+        "description": "다운로드가 끝나면 VidBeep가 이 컴퓨터에서 영상에 대한 전사를 자동으로 만듭니다. 아무것도 업로드하지 않습니다."
       },
       "speakers": {
         "title": "화자 라벨",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "최고의 오디오·비디오 처리 도우미",
-      "description": "저는 VidBee입니다. 무엇을 하고 싶은지 알려 주세요. 아래에서 하나를 골라 시작해도 좋아요.",
+      "description": "저는 VidBeep입니다. 무엇을 하고 싶은지 알려 주세요. 아래에서 하나를 골라 시작해도 좋아요.",
       "download": {
         "label": "동영상 다운로드",
-        "prompt": "VidBee로 동영상을 다운로드하도록 도와주세요. 먼저 동영상 URL과 원하는 화질을 물어본 다음 다운로드 작업을 만들어 주세요."
+        "prompt": "VidBeep로 동영상을 다운로드하도록 도와주세요. 먼저 동영상 URL과 원하는 화질을 물어본 다음 다운로드 작업을 만들어 주세요."
       },
       "audio": {
         "label": "오디오 추출",
-        "prompt": "VidBee로 동영상의 오디오를 저장하도록 도와주세요. 먼저 동영상 URL과 원하는 오디오 형식을 물어본 다음 오디오 다운로드 작업을 만들어 주세요."
+        "prompt": "VidBeep로 동영상의 오디오를 저장하도록 도와주세요. 먼저 동영상 URL과 원하는 오디오 형식을 물어본 다음 오디오 다운로드 작업을 만들어 주세요."
       },
       "transcribe": {
         "label": "다운로드한 미디어 받아쓰기",
-        "prompt": "VidBee로 다운로드한 동영상이나 오디오를 텍스트로 바꾸도록 도와주세요. 완료된 다운로드 목록을 보여 주고 받아쓸 항목을 물어본 다음 로컬 받아쓰기 작업을 시작해 주세요."
+        "prompt": "VidBeep로 다운로드한 동영상이나 오디오를 텍스트로 바꾸도록 도와주세요. 완료된 다운로드 목록을 보여 주고 받아쓸 항목을 물어본 다음 로컬 받아쓰기 작업을 시작해 주세요."
       },
       "subscribe": {
         "label": "구독 만들기",
-        "prompt": "VidBee에서 구독을 만들도록 도와주세요. 채널, 웹사이트 또는 RSS URL을 물어보고 피드를 검증한 뒤 저장하기 전에 새 동영상을 자동으로 다운로드할지 물어봐 주세요."
+        "prompt": "VidBeep에서 구독을 만들도록 도와주세요. 채널, 웹사이트 또는 RSS URL을 물어보고 피드를 검증한 뒤 저장하기 전에 새 동영상을 자동으로 다운로드할지 물어봐 주세요."
       },
       "compress": {
         "label": "동영상 압축",
-        "prompt": "VidBee로 동영상 파일 크기를 줄이고 싶어요. 다운로드가 완료된 동영상 목록을 보여 주고, 압축할 동영상과 낮출 해상도를 물어본 다음 원본을 유지하면서 변환된 사본을 만들어 주세요."
+        "prompt": "VidBeep로 동영상 파일 크기를 줄이고 싶어요. 다운로드가 완료된 동영상 목록을 보여 주고, 압축할 동영상과 낮출 해상도를 물어본 다음 원본을 유지하면서 변환된 사본을 만들어 주세요."
       },
       "convert": {
         "label": "형식 변환",
-        "prompt": "VidBee로 미디어 형식을 변환하고 싶어요. 다운로드가 완료된 파일 목록을 보여 주고, 변환할 파일과 원하는 출력 형식을 물어본 다음 원본을 유지하면서 변환된 사본을 만들어 주세요."
+        "prompt": "VidBeep로 미디어 형식을 변환하고 싶어요. 다운로드가 완료된 파일 목록을 보여 주고, 변환할 파일과 원하는 출력 형식을 물어본 다음 원본을 유지하면서 변환된 사본을 만들어 주세요."
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "거절됨"
     },
     "notifications": {
-      "approval": "VidBee Agent가 권한을 요청합니다",
-      "response": "VidBee Agent가 입력을 기다리고 있습니다",
+      "approval": "VidBeep Agent가 권한을 요청합니다",
+      "response": "VidBeep Agent가 입력을 기다리고 있습니다",
       "body": "대화를 열어 내용을 확인하고 응답하세요."
     },
     "newChatPlaceholder": "무엇이든 물어보세요…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "제공되는 최고 이미지 품질과 원본 형식을 유지합니다. 더 작은 이미지로 대체하지 않습니다.",
     "available": "이번 실행에서 사이트가 제공하는 모든 미디어를 다운로드합니다. 사이트에서 피드 기록을 제한할 수 있습니다.",
     "auth": "이 컬렉션은 설정에서 로그인된 브라우저 또는 쿠키 파일을 지정해야 할 수 있습니다.",
-    "profileSessionHint": "VidBee 전용 브라우저에서 로그인한 다음 매핑하기 전에 창을 닫으세요. 일반 브라우저 세션은 사용하지 않습니다.",
+    "profileSessionHint": "VidBeep 전용 브라우저에서 로그인한 다음 매핑하기 전에 창을 닫으세요. 일반 브라우저 세션은 사용하지 않습니다.",
     "counts": "게시물 {{posts}}개 · 이미지 {{images}}개 · 동영상 {{videos}}개 · 저장 {{saved}}개 · 기존 {{existing}}개 · 실패 {{failed}}개",
     "categories": {
       "tweets": "게시물",
@@ -2308,7 +2308,7 @@
     },
     "chat": "채팅 {{id}}",
     "chatHint": "전용 브라우저로 이 대화의 사진과 동영상을 스캔합니다. 접근 가능한 첨부 파일만 다운로드할 수 있습니다.",
-    "sessionHint": "이 기기의 VidBee 전용 브라우저에서 한 번 로그인하세요. 평소 사용하는 Chrome 쿠키는 복사되지 않습니다. 사진이나 동영상을 탐색한 후 다운로드할 수 있는 미디어를 선택하세요.",
+    "sessionHint": "이 기기의 VidBeep 전용 브라우저에서 한 번 로그인하세요. 평소 사용하는 Chrome 쿠키는 복사되지 않습니다. 사진이나 동영상을 탐색한 후 다운로드할 수 있는 미디어를 선택하세요.",
     "openBrowser": "브라우저 열기",
     "selectNotDownloaded": "다운로드 안 된 항목 선택 ({{count}})",
     "videos": "동영상",

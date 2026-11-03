@@ -22,14 +22,14 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
     // `secretstorage` module, so reading Chromium-family cookies fails even
     // though the rest of the cookie pipeline works.
     message:
-      'VidBee cannot read Chrome/Chromium cookies on this Linux build because the system keyring (secretstorage) is unavailable. Switch to Firefox cookies in Settings, or export a Netscape cookies file and select it there.',
+      'VidBeep cannot read Chrome/Chromium cookies on this Linux build because the system keyring (secretstorage) is unavailable. Switch to Firefox cookies in Settings, or export a Netscape cookies file and select it there.',
     patterns: ['secretstorage not available']
   },
   {
     // macOS TCC Files & Folders: yt-dlp reports "could not find" when it
     // cannot stat another app's Cookies DB. The file is often present.
     message:
-      "macOS is blocking VidBee from reading this browser's cookies. Open System Settings → Privacy & Security → Files & Folders, enable VidBee for this browser, then retry. If you already allowed it, quit VidBee fully and open it again.",
+      "macOS is blocking VidBeep from reading this browser's cookies. Open System Settings → Privacy & Security → Files & Folders, enable VidBeep for this browser, then retry. If you already allowed it, quit VidBeep fully and open it again.",
     patterns: ['macos files & folders permission is required']
   },
   {
@@ -37,7 +37,7 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
     // #107 / #210 / #349 / #353) all surface as Chrome holding the cookies
     // database open on Windows.
     message:
-      'VidBee could not copy the Chrome cookies database while Chrome is running. Quit Chrome completely (including background/tray processes) and retry, or switch to Firefox cookies or an exported Netscape cookies file in Settings.',
+      'VidBeep could not copy the Chrome cookies database while Chrome is running. Quit Chrome completely (including background/tray processes) and retry, or switch to Firefox cookies or an exported Netscape cookies file in Settings.',
     patterns: [
       'could not copy chrome cookie database',
       'could not find chrome cookies database',
@@ -68,7 +68,7 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
     // GitHub issues #355 and #325: DNS resolution failures almost always
     // mean a proxy/DNS misconfiguration on the user's side.
     message:
-      'VidBee could not resolve the host name for this download. Check your network connection, DNS, or proxy settings — if you have a proxy configured, verify it is reachable.',
+      'VidBeep could not resolve the host name for this download. Check your network connection, DNS, or proxy settings — if you have a proxy configured, verify it is reachable.',
     patterns: [
       'name or service not known',
       'name (or service) not known',
@@ -115,12 +115,12 @@ const DOWNLOAD_ERROR_GUIDANCE_RULES: DownloadErrorGuidanceRule[] = [
   {
     // GitHub issue #352 is DRM protected and should be explained directly.
     message:
-      'This source is DRM protected. VidBee will try to record in-browser playback when Xvfb and Chrome/Brave are available; otherwise it cannot decode the file.',
+      'This source is DRM protected. VidBeep will try to record in-browser playback when Xvfb and Chrome/Brave are available; otherwise it cannot decode the file.',
     patterns: ['this video is drm protected', 'requested site is known to use drm protection']
   },
   {
     message:
-      'VidBee could not find downloadable media at this link. Check that it points to a public audio or video page, then try again.',
+      'VidBeep could not find downloadable media at this link. Check that it points to a public audio or video page, then try again.',
     patterns: ['unable to extract video info', 'unsupported url']
   }
 ]

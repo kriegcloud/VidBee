@@ -5,7 +5,7 @@ export type FilenameStyle = (typeof FILENAME_STYLES)[number]
 export const DEFAULT_FILENAME_STYLE: FilenameStyle = 'pretty'
 export const DEFAULT_FILENAME_VIA_VIDBEE = true
 
-export const VIA_VIDBEE_LABEL = 'via VidBee'
+export const VIA_VIDBEE_LABEL = 'via VidBeep'
 export const DEFAULT_FILENAME_TEMPLATE = '%(title)s.%(ext)s'
 export const SHARED_FILENAME_TEMPLATE = `%(title)s ${VIA_VIDBEE_LABEL}.%(ext)s`
 
@@ -61,14 +61,14 @@ export const isFilenameStyle = (value: unknown): value is FilenameStyle =>
   typeof value === 'string' && (FILENAME_STYLES as readonly string[]).includes(value)
 
 /**
- * Insert `via VidBee` before the file extension when the setting is on.
+ * Insert `via VidBeep` before the file extension when the setting is on.
  *
  * Already branded names are left unchanged so share-watermark templates and
  * repeated calls do not double the suffix.
  *
  * @param value yt-dlp template or preview filename.
- * @param enabled Whether the via VidBee suffix should be applied.
- * @returns The original value, or the same name with `via VidBee` added.
+ * @param enabled Whether the via VidBeep suffix should be applied.
+ * @returns The original value, or the same name with `via VidBeep` added.
  */
 export const applyViaVidBeeFilename = (
   value: string,
@@ -94,13 +94,13 @@ export const applyViaVidBeeFilename = (
  * Resolve the yt-dlp output template for a filename style and download type.
  *
  * Custom caller templates still win. Share-watermark mode always uses the
- * branded title template. An unset style uses pretty. An unset via VidBee
+ * branded title template. An unset style uses pretty. An unset via VidBeep
  * flag defaults to on.
  *
  * @param style Saved filename style, or undefined for the pretty default.
  * @param type Video or audio download.
  * @param shareWatermark Whether the share-watermark filename should be used.
- * @param filenameViaVidBee Whether to append via VidBee before the extension.
+ * @param filenameViaVidBee Whether to append via VidBeep before the extension.
  * @returns A yt-dlp `-o` template without the download directory.
  */
 export const resolveFilenameTemplate = (

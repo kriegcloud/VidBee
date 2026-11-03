@@ -74,7 +74,7 @@ export async function exportExtensionChatReply(
   }
   const task = peekDesktopTaskQueueRef()?.get(thread.downloadId)
   const history = historyManager.getHistory().find((item) => item.id === thread.downloadId)
-  const title = task?.input.title ?? history?.title ?? 'VidBee'
+  const title = task?.input.title ?? history?.title ?? 'VidBeep'
   const prompt = aiStore.getSnapshot().prompts.find((item) => item.name === thread.promptId)
   const promptTitle = prompt
     ? aiPromptLabel(prompt, translate)

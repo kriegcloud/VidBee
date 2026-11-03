@@ -108,7 +108,7 @@ export function KernelPreparationScreen({ onRetry, status }: KernelPreparationSc
           </>
         ) : (
           <>
-            <img alt="VidBee" className="mb-5 h-14 w-14 rounded-xl" src="./app-icon.png" />
+            <img alt="VidBeep" className="mb-5 h-14 w-14 rounded-xl" src="./app-icon.png" />
             <output aria-live="polite" className="block">
               <h1 className="font-medium text-base text-foreground">{t(phaseKey)}</h1>
             </output>

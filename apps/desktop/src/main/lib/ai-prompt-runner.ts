@@ -36,7 +36,7 @@ const STREAM_FLUSH_MS = 50
 /** OpenAI SDK needs a base URL; Cookie-authenticated Cloud HTTP still uses getDesktopAuthApiUrl(). */
 const VIDBEE_CLOUD_MODEL_ORIGIN = 'https://api.vidbee.org'
 const SYSTEM_PROMPT = [
-  "You are VidBee's transcript assistant. Follow the instruction exactly.",
+  "You are VidBeep's transcript assistant. Follow the instruction exactly.",
   'Reply in Markdown. Use the same language as the transcript unless the instruction says otherwise.',
   'Keep each list marker on the same line as the item text.',
   'Do not wrap the whole reply in a code fence unless the instruction asks for a mermaid diagram. Do not add a preamble or closing remarks.'

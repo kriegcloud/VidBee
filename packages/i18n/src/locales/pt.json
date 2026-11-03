@@ -10,7 +10,7 @@
       "view": "Ver",
       "visit": "Visitar"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "Baixar e instalar novas versões automaticamente em segundo plano.",
     "microsoftStoreUpdateDescription": "As atualizações do aplicativo são gerenciadas pela Microsoft Store. Abra a Store para verificar se há atualizações.",
     "autoUpdateTitle": "Atualizações automáticas",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "Seguir @nexmoe"
     },
-    "followAuthorDescription": "Mantenha-se atualizado com as últimas notícias e atualizações do VidBee.",
-    "followAuthorSupport": "Siga o desenvolvedor no X (Twitter) para obter as últimas atualizações e notícias sobre VidBee.",
+    "followAuthorDescription": "Mantenha-se atualizado com as últimas notícias e atualizações do VidBeep.",
+    "followAuthorSupport": "Siga o desenvolvedor no X (Twitter) para obter as últimas atualizações e notícias sobre VidBeep.",
     "followAuthorTitle": "Seguir o Desenvolvedor",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "Site oficial",
       "websiteDescription": "Destaques do produto, roadmap e notícias da comunidade."
     },
-    "resourcesDescription": "Links úteis para aprender mais sobre VidBee e manter-se conectado.",
+    "resourcesDescription": "Links úteis para aprender mais sobre VidBeep e manter-se conectado.",
     "resourcesTitle": "Recursos",
     "shareActions": {
       "copy": "Copiar link",
       "facebook": "Compartilhar no Facebook",
       "twitter": "Compartilhar no X (Twitter)"
     },
-    "shareDescription": "Compartilhe VidBee com sua comunidade em um clique.",
-    "shareSupport": "Recomende VidBee aos seus amigos para apoiar nosso crescimento e atualizações.",
+    "shareDescription": "Compartilhe VidBeep com sua comunidade em um clique.",
+    "shareSupport": "Recomende VidBeep aos seus amigos para apoiar nosso crescimento e atualizações.",
     "shareTitle": "Espalhe a palavra",
     "sourceCode": "Código fonte disponível",
     "title": "Sobre",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "Baixe mídias, transcreva localmente e pergunte à IA",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "Sair do VidBee?",
+      "title": "Sair do VidBeep?",
       "message": "{{count}} tarefa ainda está em andamento. Sair a interromperá.",
       "messagePlural": "{{count}} tarefas ainda estão em andamento. Sair as interromperá.",
       "quit": "Sair",
@@ -279,12 +279,12 @@
       "subscription": "Subscrição"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "formatFallbackHint": "Your pick was not deliverable, so VidBeep fell back to best available ({{resolved}}).",
     "cookiesSetupAction": "Configurar cookies",
     "cookiesSetupDialogTitle": "Configurar cookies",
     "cookiesSetupNeeded": "Este download precisa de uma sessão iniciada. Configure os cookies e tente novamente.",
     "cookiesSetupLocked": "O Chrome está bloqueando o banco de cookies. Use o Firefox, importe um arquivo de cookies ou feche o Chrome por completo.",
-    "cookiesSetupMacFiles": "O macOS está impedindo o VidBee de ler os cookies deste navegador. Abra Ajustes do Sistema → Privacidade e segurança → Arquivos e pastas, permita que o VidBee acesse este navegador e tente de novo. Se já permitiu, saia completamente do VidBee e abra-o novamente.",
+    "cookiesSetupMacFiles": "O macOS está impedindo o VidBeep de ler os cookies deste navegador. Abra Ajustes do Sistema → Privacidade e segurança → Arquivos e pastas, permita que o VidBeep acesse este navegador e tente de novo. Se já permitiu, saia completamente do VidBeep e abra-o novamente.",
     "cookiesSetupOpenFilesSettings": "Abrir ajustes de Arquivos e pastas",
     "cookiesSetupDecrypt": "O Windows não consegue descriptografar cookies do Chrome. Use o Firefox ou importe um arquivo de cookies.",
     "cookiesSetupFileInvalid": "O arquivo de cookies não é uma exportação válida. Exporte um cookies.txt e tente de novo.",
@@ -467,12 +467,12 @@
     "emptyTitle": "Baixar um perfil do Instagram",
     "partialHint": "Algumas categorias não puderam ser verificadas. Cookies de login do Instagram podem ser necessários para perfis privados, stories, destaques ou publicações marcadas.",
     "rateLimitedHint": "O Instagram está limitando temporariamente as solicitações desta rede ou conta. Não é um problema de cookies. Aguarde cerca de 15–30 minutos antes de mapear novamente; novas tentativas prolongam o bloqueio.",
-    "unavailableHint": "Algumas categorias não puderam ser verificadas. O Instagram pode ter alterado sua API ou o conteúdo está indisponível no momento. Tente novamente mais tarde; se continuar falhando, atualize o VidBee.",
+    "unavailableHint": "Algumas categorias não puderam ser verificadas. O Instagram pode ter alterado sua API ou o conteúdo está indisponível no momento. Tente novamente mais tarde; se continuar falhando, atualize o VidBeep.",
     "retryAfter": "Tentar novamente após {{time}}",
     "scan": "Verificar perfil",
     "scanFailed": "Não foi possível verificar o perfil do Instagram",
     "scanning": "Verificando perfil do Instagram",
-    "scanningHint": "O VidBee está mapeando cada categoria. Isso pode levar algum tempo, pois as solicitações são espaçadas para reduzir limitações.",
+    "scanningHint": "O VidBeep está mapeando cada categoria. Isso pode levar algum tempo, pois as solicitações são espaçadas para reduzir limitações.",
     "selectAtLeastOne": "Selecione pelo menos uma categoria disponível",
     "sourceTotal": "{{count}} itens",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "{{used}} de {{total}} usados",
       "grantedCredits": "Créditos de bônus",
       "purchasedCredits": "Créditos comprados",
-      "description": "Entre com o GitHub para conectar sua conta VidBee.",
+      "description": "Entre com o GitHub para conectar sua conta VidBeep.",
       "error": "Não foi possível concluir a autenticação. Tente novamente.",
       "loading": "Verificando sua conta…",
       "signedOut": "Não conectado",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "Escolha seu navegador acima para reutilizar automaticamente a sessão de login.",
     "cookiesHelpFile": "Exporte um arquivo de cookies do Netscape (consulte as perguntas frequentes do yt-dlp) e selecione-o aqui quando necessário.",
     "cookiesGuideTitle": "Precisa de um guia?",
-    "cookiesGuideDescription": "Veja um passo a passo para usar cookies no VidBee",
+    "cookiesGuideDescription": "Veja um passo a passo para usar cookies no VidBeep",
     "cookiesGuideLink": "Abrir guia de cookies",
     "openLinkError": "Falha ao abrir o link",
     "browserOptions": {
@@ -674,9 +674,9 @@
     "hideDockIcon": "Ocultar ícone do Dock ao fechar",
     "hideDockIconDescription": "Oculta automaticamente o ícone do Dock quando a janela é fechada. Use a barra de menu ou o ícone da bandeja para reabrir",
     "launchAtLogin": "Lançar na inicialização",
-    "launchAtLoginDescription": "Abra o VidBee automaticamente depois de fazer login no seu computador",
+    "launchAtLoginDescription": "Abra o VidBeep automaticamente depois de fazer login no seu computador",
     "launchAtLoginUnsupported": "A inicialização automática está disponível apenas no macOS e no Windows",
-    "enableAnalytics": "Ajude a melhorar o VidBee",
+    "enableAnalytics": "Ajude a melhorar o VidBeep",
     "enableAnalyticsDescription": "Compartilhe dados de uso anônimos para nos ajudar a entender como o aplicativo é usado e priorizar melhorias",
     "enableDownloadNotifications": "Notificações de download",
     "enableDownloadNotificationsDescription": "Mostra uma notificação do sistema quando um download for concluído",
@@ -685,7 +685,7 @@
     "downloadSubtitles": "Baixar legendas",
     "downloadSubtitlesDescription": "Baixe apenas legendas nos idiomas selecionados quando disponíveis",
     "subtitleLanguages": "Idiomas das legendas",
-    "subtitleLanguagesDescription": "Escolha os idiomas de legenda que o VidBee deve solicitar para cada vídeo",
+    "subtitleLanguagesDescription": "Escolha os idiomas de legenda que o VidBeep deve solicitar para cada vídeo",
     "subtitleLanguageSearch": "Pesquisar idiomas de legendas",
     "subtitleLanguageEmpty": "Nenhum idioma correspondente",
     "subtitleLanguageLimit": "Selecione até {{count}} idiomas para reduzir os limites de requisição da plataforma",
@@ -700,10 +700,10 @@
     "writeAutoSubsDescription": "Usar legendas automáticas quando não houver legendas do criador nos idiomas selecionados",
     "embedThumbnail": "Incorporar miniatura",
     "embedThumbnailDescription": "Adicionar a miniatura como arte de capa",
-    "embedThumbnailWebmUnsupported": "O WebM não incorpora a miniatura como capa. Com a capa ativada, o VidBee salva a miniatura em um arquivo separado. Escolha MP4 ou MKV para incorporá-la.",
+    "embedThumbnailWebmUnsupported": "O WebM não incorpora a miniatura como capa. Com a capa ativada, o VidBeep salva a miniatura em um arquivo separado. Escolha MP4 ou MKV para incorporá-la.",
     "filenameStyle": "Estilo do nome do arquivo",
-    "filenameStyleDescription": "Escolha como o VidBee nomeia os arquivos de vídeo e áudio salvos",
-    "filenameStyleNote": "Usado nos arquivos salvos pelo VidBee. Modelos personalizados de assinaturas ou playlists ainda têm prioridade",
+    "filenameStyleDescription": "Escolha como o VidBeep nomeia os arquivos de vídeo e áudio salvos",
+    "filenameStyleNote": "Usado nos arquivos salvos pelo VidBeep. Modelos personalizados de assinaturas ou playlists ainda têm prioridade",
     "filenameStyleOptions": {
       "basic": "básico",
       "classic": "clássico",
@@ -712,8 +712,8 @@
     },
     "filenameStylePreviewAudio": "prévia do arquivo de áudio",
     "filenameStylePreviewVideo": "prévia do arquivo de vídeo",
-    "filenameViaVidBee": "Adicionar via VidBee",
-    "filenameViaVidBeeDescription": "Adiciona automaticamente via VidBee aos nomes dos arquivos de vídeo e áudio salvos",
+    "filenameViaVidBeep": "Adicionar via VidBeep",
+    "filenameViaVidBeeDescription": "Adiciona automaticamente via VidBeep aos nomes dos arquivos de vídeo e áudio salvos",
     "metadataTab": "Metadados",
     "navGroup": {
       "app": "Aplicativo",
@@ -722,7 +722,7 @@
       "ai": "IA"
     },
     "shareWatermark": "Marca-d'água de compartilhamento",
-    "shareWatermarkDescription": "Adiciona uma marca-d'água com o título original, o autor e a marca VidBee",
+    "shareWatermarkDescription": "Adiciona uma marca-d'água com o título original, o autor e a marca VidBeep",
     "maxConcurrentDownloads": "Número máximo de downloads ativos",
     "maxConcurrentDownloadsDescription": "Número máximo de downloads simultâneos",
     "none": "Nenhum",
@@ -759,7 +759,7 @@
     },
     "system": "Sistema",
     "theme": "Tema",
-    "themeDescription": "Escolha um tema claro, escuro ou sistema para VidBee",
+    "themeDescription": "Escolha um tema claro, escuro ou sistema para VidBeep",
     "title": "Configurações",
     "tray": {
       "quit": "Sair",
@@ -1047,8 +1047,8 @@
       "loadingModels": "Carregando modelos do provedor…",
       "skillHelp": "Os Skills usam arquivos SKILL.md. O agente os encontra pela descrição e lê suas instruções quando necessário. Use $skill-name na conversa para solicitar um Skill.",
       "addSkill": "Adicionar Skill",
-      "createSkillWithVidbee": "Criar Skill com VidBee",
-      "createSkillRequest": "Ajude-me a criar um Skill reutilizável. Pergunte o que deve fazer, quando usar e qual resultado espero. Quando os requisitos estiverem claros, crie e salve o Skill no VidBee.",
+      "createSkillWithVidbee": "Criar Skill com VidBeep",
+      "createSkillRequest": "Ajude-me a criar um Skill reutilizável. Pergunte o que deve fazer, quando usar e qual resultado espero. Quando os requisitos estiverem claros, crie e salve o Skill no VidBeep.",
       "uploadSkill": "Enviar um Skill",
       "importGitHubSkill": "Importar Skill do GitHub",
       "githubSkillDescription": "Cole o link de um repositório público do GitHub ou de uma pasta de Skill e escolha o Skill para instalar com seus arquivos de apoio.",
@@ -1108,7 +1108,7 @@
         },
         "diagnose-task": {
           "name": "Diagnosticar uma tarefa",
-          "description": "Investiga tarefas falhadas ou bloqueadas através do estado, erros e registos. Para recomendar soluções ou preparar comentários sobre um possível defeito do VidBee."
+          "description": "Investiga tarefas falhadas ou bloqueadas através do estado, erros e registos. Para recomendar soluções ou preparar comentários sobre um possível defeito do VidBeep."
         },
         "video-localization": {
           "name": "Localização de vídeo",
@@ -1125,23 +1125,23 @@
       "statusExpired": "Expirado",
       "statusEmpty": "Nenhum login encontrado",
       "statusInvalid": "Precisa de atenção",
-      "healthOkBrowser": "O VidBee consegue ler cookies do {{browser}}. Permaneça conectado ao site nele",
+      "healthOkBrowser": "O VidBeep consegue ler cookies do {{browser}}. Permaneça conectado ao site nele",
       "healthOkFile": "Cookies de login encontrados para {{sites}}",
       "healthOkFileGeneric": "Este arquivo de cookies parece válido",
       "healthExpired": "Estes cookies expiraram. Entre novamente e importe um arquivo novo",
       "healthEmpty": "Este arquivo não tem cookies de login dos sites compatíveis. Exporte enquanto estiver conectado e tente de novo",
       "healthInvalidFile": "O arquivo de cookies está ausente ou não é uma exportação válida",
-      "healthInvalidBrowser": "O VidBee não consegue ler cookies deste perfil do navegador",
-      "healthMacosFilesPermission": "O macOS está bloqueando o acesso aos cookies. Permita que o VidBee acesse este navegador em Ajustes do Sistema → Privacidade e segurança → Arquivos e pastas e verifique novamente.",
+      "healthInvalidBrowser": "O VidBeep não consegue ler cookies deste perfil do navegador",
+      "healthMacosFilesPermission": "O macOS está bloqueando o acesso aos cookies. Permita que o VidBeep acesse este navegador em Ajustes do Sistema → Privacidade e segurança → Arquivos e pastas e verifique novamente.",
       "healthUnsupportedBrowser": "Este navegador não pode ser usado para cookies no seu sistema",
       "sitesLabel": "Sites: {{sites}}",
       "recommendedTitle": "Recomendado",
       "recommendedUseBrowser": "Usar {{browser}}",
       "recommendedUseBrowserHint": "Reutilize a conta em que você já está conectado no {{browser}}",
       "recommendedImportFile": "Importar um arquivo de cookies",
-      "recommendedImportFileWindowsHint": "No Windows, o Chrome e o Edge não podem compartilhar cookies com o VidBee. Exporte um arquivo de cookies do navegador",
+      "recommendedImportFileWindowsHint": "No Windows, o Chrome e o Edge não podem compartilhar cookies com o VidBeep. Exporte um arquivo de cookies do navegador",
       "recommendedImportFileHint": "Exporte os cookies do navegador e escolha o arquivo aqui",
-      "recommendedFirefoxHint": "No Windows, o Firefox é o único navegador que o VidBee consegue ler diretamente",
+      "recommendedFirefoxHint": "No Windows, o Firefox é o único navegador que o VidBeep consegue ler diretamente",
       "useThisBrowser": "Usar {{browser}}",
       "importFile": "Escolher arquivo de cookies",
       "clearSetup": "Limpar cookies",
@@ -1159,23 +1159,23 @@
       "applied": "Cookies atualizados",
       "profileMissingDb": "Este perfil do Firefox não tem banco de cookies. Abra o Firefox uma vez e tente novamente.",
       "statusUsingExtension": "Usando a extensão do {{browser}}",
-      "healthOkExtension": "A extensão do VidBee enviará cookies atuais do {{browser}} a cada download",
+      "healthOkExtension": "A extensão do VidBeep enviará cookies atuais do {{browser}} a cada download",
       "healthEmptyExtension": "A extensão está conectada, mas não encontrou cookies de login de sites compatíveis. Entre no site por esse navegador",
       "statusHeading": "Status dos cookies",
       "methodRecommended": "Recomendado",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "Extensão do navegador",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "Conectada",
       "extensionDisconnected": "Não conectada",
       "extensionConnectedHint": "{{browser}} está conectado. Os novos downloads usarão os cookies deste navegador",
-      "extensionDisconnectedHint": "Mantenha o VidBee Desktop aberto, instale a extensão e entre no site por esse navegador",
+      "extensionDisconnectedHint": "Mantenha o VidBeep Desktop aberto, instale a extensão e entre no site por esse navegador",
       "extensionInstallChrome": "Adicionar ao Chrome",
       "extensionInstallEdge": "Adicionar ao Edge",
       "extensionInstallFirefox": "Adicionar ao Firefox",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "Mantenha o VidBee Desktop aberto para que a extensão possa se conectar",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "Mantenha o VidBeep Desktop aberto para que a extensão possa se conectar",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "Origem dos cookies",
       "sourceInUse": "Em uso",
       "sourceFallback": "Reserva",
@@ -1188,7 +1188,7 @@
       "browserShortHint": "Escolha um navegador em que você esteja conectado",
       "fileShortHint": "Exporte um cookies.txt e selecione-o. Refaça quando expirar",
       "whyTitle": "Configure os cookies para downloads mais confiáveis",
-      "whyDescription": "O VidBee baixa com a sua conta conectada, então os downloads ficam mais estáveis e falham menos",
+      "whyDescription": "O VidBeep baixa com a sua conta conectada, então os downloads ficam mais estáveis e falham menos",
       "extensionPriority": "Prioridade dos navegadores para cookies",
       "extensionPriorityHint": "É usado o primeiro navegador conectado nesta ordem. Navegadores desconectados são ignorados automaticamente.",
       "extensionUse": "Usar",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "Ativar acesso MCP",
-      "description": "Permita que agentes externos usem os downloads, assinaturas, transcrições e conversas de IA do VidBee.",
+      "description": "Permita que agentes externos usem os downloads, assinaturas, transcrições e conversas de IA do VidBeep.",
       "running": "Em execução · {{count}} ferramentas disponíveis",
       "stopped": "O MCP está indisponível no momento",
-      "accessNote": "Mantenha o VidBee aberto durante a conexão. Somente este computador pode se conectar. Proteja a configuração HTTP como uma senha. A renovação do token invalida as configurações HTTP salvas.",
+      "accessNote": "Mantenha o VidBeep aberto durante a conexão. Somente este computador pode se conectar. Proteja a configuração HTTP como uma senha. A renovação do token invalida as configurações HTTP salvas.",
       "copy": "Copiar configuração {{transport}}",
       "copied": "Configuração MCP copiada",
       "rotate": "Renovar token de acesso",
@@ -1323,15 +1323,15 @@
     "description": "Monitore canais automaticamente e enfileire novos downloads sem trabalho manual.",
     "defaults": {
       "title": "Padrões de automação",
-      "description": "Controle onde os downloads de assinaturas são armazenados e com que frequência o VidBee verifica novos vídeos.",
+      "description": "Controle onde os downloads de assinaturas são armazenados e com que frequência o VidBeep verifica novos vídeos.",
       "downloadDirectory": "Baixar diretório",
       "filenameTemplate": "Modelo de nome de arquivo (somente arquivo)",
       "onlyLatest": "Baixe apenas o vídeo mais recente",
-      "onlyLatestDescription": "Quando ativado, o VidBee ignora os itens mais antigos do backlog e captura apenas o upload mais recente."
+      "onlyLatestDescription": "Quando ativado, o VidBeep ignora os itens mais antigos do backlog e captura apenas o upload mais recente."
     },
     "add": {
       "title": "Adicionar assinatura",
-      "description": "Cole um link de canal ou feed. O VidBee detectará automaticamente."
+      "description": "Cole um link de canal ou feed. O VidBeep detectará automaticamente."
     },
     "fields": {
       "url": "URL do feed",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "Assinaturas automatizadas com RSSHub",
-      "description": "Combine VidBee com RSSHub para permitir assinaturas e downloads automatizados de várias plataformas. \nDepois de configurado, o VidBee é executado em segundo plano e baixa automaticamente os vídeos e conteúdos mais recentes.",
+      "description": "Combine VidBeep com RSSHub para permitir assinaturas e downloads automatizados de várias plataformas. \nDepois de configurado, o VidBeep é executado em segundo plano e baixa automaticamente os vídeos e conteúdos mais recentes.",
       "learnMore": "Saiba mais sobre RSSHub",
       "openDocs": "Abra a documentação do RSSHub",
       "hint": "Não tem um URL de feed? Use o RSSHub para gerar feeds do YouTube, Twitter e milhares de outras plataformas."
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "Tudo",
       "noCategories": "Escolha pelo menos uma categoria.",
-      "desktopOnly": "As assinaturas de perfis são verificadas pelo VidBee Desktop.",
+      "desktopOnly": "As assinaturas de perfis são verificadas pelo VidBeep Desktop.",
       "storiesHint": "Os stories somem após 24 horas. Verifique pelo menos a cada 12 horas para não perder nenhum.",
       "nextCheck": "Próxima verificação: {{time}}",
       "subscribe": "Assinar",
       "subscribed": "Assinado",
-      "readOnly": "Verificado pelo VidBee Desktop",
+      "readOnly": "Verificado pelo VidBeep Desktop",
       "categories": {
         "stories": "Stories",
         "highlights": "Destaques",
@@ -1459,8 +1459,8 @@
     "copied": "Copiado",
     "copying": "Copiando o mecanismo de download…",
     "copyLog": "Copiar registro",
-    "description": "O VidBee está preparando seu mecanismo de download. Isso leva apenas um momento.",
-    "errorDescription": "O VidBee não conseguiu preparar um mecanismo de download funcional. Verifique o acesso ao armazenamento local e tente novamente.",
+    "description": "O VidBeep está preparando seu mecanismo de download. Isso leva apenas um momento.",
+    "errorDescription": "O VidBeep não conseguiu preparar um mecanismo de download funcional. Verifique o acesso ao armazenamento local e tente novamente.",
     "errorDetails": "Detalhes do erro",
     "errorTitle": "Mecanismo de download indisponível",
     "finalizing": "Finalizando a configuração…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "Relatar no GitHub",
     "retry": "Tentar novamente",
     "retrying": "Tentando novamente…",
-    "title": "Preparando o VidBee",
+    "title": "Preparando o VidBeep",
     "validating": "Verificando o mecanismo de download…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "A lista completa do yt-dlp é atualizada constantemente pela comunidade.",
     "moreTitle": "Precisa de outro site?",
     "openFullList": "Abrir lista completa de sites suportados",
-    "pageDescription": "VidBee usa yt-dlp nos bastidores para alcançar centenas de fontes.",
+    "pageDescription": "VidBeep usa yt-dlp nos bastidores para alcançar centenas de fontes.",
     "pageIntro": "Aqui estão os serviços principais que as pessoas mais baixam.",
     "pageTitle": "Sites Suportados",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "Não foi possível preparar a imagem.",
     "promptShareSaveFailed": "Não foi possível salvar a imagem.",
     "promptShareNativeFailed": "Não foi possível abrir o menu de compartilhamento.",
-    "promptShareFooter": "Feito com VidBee",
+    "promptShareFooter": "Feito com VidBeep",
     "promptShareTagline": "Baixe. Transcreva localmente. Pergunte à IA.",
     "captionShareSaid": "{{name}} disse",
     "promptOutput": "Resultado do Skill",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "Transcrições automáticas de vídeo",
-        "description": "Quando o download termina, o VidBee gera automaticamente uma transcrição do vídeo neste computador. Nada é enviado."
+        "description": "Quando o download termina, o VidBeep gera automaticamente uma transcrição do vídeo neste computador. Nada é enviado."
       },
       "speakers": {
         "title": "Rótulos de falantes",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "Seu melhor assistente para processar áudio e vídeo",
-      "description": "Sou o VidBee. Diga o que você gostaria de fazer ou escolha uma opção abaixo para começar.",
+      "description": "Sou o VidBeep. Diga o que você gostaria de fazer ou escolha uma opção abaixo para começar.",
       "download": {
         "label": "Baixar um vídeo",
-        "prompt": "Ajude-me a baixar um vídeo com o VidBee. Primeiro pergunte a URL do vídeo e a qualidade desejada, depois crie uma tarefa de download."
+        "prompt": "Ajude-me a baixar um vídeo com o VidBeep. Primeiro pergunte a URL do vídeo e a qualidade desejada, depois crie uma tarefa de download."
       },
       "audio": {
         "label": "Extrair áudio",
-        "prompt": "Ajude-me a salvar o áudio de um vídeo com o VidBee. Primeiro pergunte a URL do vídeo e o formato de áudio desejado, depois crie uma tarefa de download de áudio."
+        "prompt": "Ajude-me a salvar o áudio de um vídeo com o VidBeep. Primeiro pergunte a URL do vídeo e o formato de áudio desejado, depois crie uma tarefa de download de áudio."
       },
       "transcribe": {
         "label": "Transcrever mídia baixada",
-        "prompt": "Ajude-me a transformar em texto um vídeo ou áudio baixado com o VidBee. Mostre meus downloads concluídos, pergunte qual item quero transcrever e depois inicie uma transcrição local."
+        "prompt": "Ajude-me a transformar em texto um vídeo ou áudio baixado com o VidBeep. Mostre meus downloads concluídos, pergunte qual item quero transcrever e depois inicie uma transcrição local."
       },
       "subscribe": {
         "label": "Criar uma assinatura",
-        "prompt": "Ajude-me a criar uma assinatura no VidBee. Pergunte a URL de um canal, site ou feed RSS, verifique o feed e pergunte se quero baixar novos vídeos automaticamente antes de salvar."
+        "prompt": "Ajude-me a criar uma assinatura no VidBeep. Pergunte a URL de um canal, site ou feed RSS, verifique o feed e pergunte se quero baixar novos vídeos automaticamente antes de salvar."
       },
       "compress": {
         "label": "Comprimir um vídeo",
-        "prompt": "Ajude-me a reduzir o tamanho de um vídeo no VidBee. Mostre meus downloads de vídeo concluídos, pergunte qual vídeo comprimir e qual resolução menor usar, depois crie uma cópia convertida e mantenha o original."
+        "prompt": "Ajude-me a reduzir o tamanho de um vídeo no VidBeep. Mostre meus downloads de vídeo concluídos, pergunte qual vídeo comprimir e qual resolução menor usar, depois crie uma cópia convertida e mantenha o original."
       },
       "convert": {
         "label": "Converter formato",
-        "prompt": "Ajude-me a converter uma mídia para outro formato no VidBee. Mostre meus downloads concluídos, pergunte qual arquivo converter e o formato de saída desejado, depois crie uma cópia convertida e mantenha o original."
+        "prompt": "Ajude-me a converter uma mídia para outro formato no VidBeep. Mostre meus downloads concluídos, pergunte qual arquivo converter e o formato de saída desejado, depois crie uma cópia convertida e mantenha o original."
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "Recusado"
     },
     "notifications": {
-      "approval": "O agente VidBee precisa da sua permissão",
-      "response": "O agente VidBee precisa da sua resposta",
+      "approval": "O agente VidBeep precisa da sua permissão",
+      "response": "O agente VidBeep precisa da sua resposta",
       "body": "Abra a conversa para analisar a solicitação e responder."
     },
     "newChatPlaceholder": "Pergunte o que quiser…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "Maior qualidade de imagem disponível. Formato original. Sem substituição por imagens menores.",
     "available": "Baixa todo o conteúdo que o site disponibiliza nesta execução. O site pode limitar o histórico do feed.",
     "auth": "Esta coleção pode exigir um navegador conectado ou um arquivo de cookies nas configurações.",
-    "profileSessionHint": "Entre no navegador dedicado do VidBee e feche a janela antes de mapear. Sua sessão normal do navegador não será usada.",
+    "profileSessionHint": "Entre no navegador dedicado do VidBeep e feche a janela antes de mapear. Sua sessão normal do navegador não será usada.",
     "counts": "{{posts}} publicações · {{images}} imagens · {{videos}} vídeos · {{saved}} salvos · {{existing}} existentes · {{failed}} falhas",
     "categories": {
       "tweets": "Publicações",
@@ -2308,7 +2308,7 @@
     },
     "chat": "Conversa {{id}}",
     "chatHint": "Analise as fotos e os vídeos desta conversa no navegador dedicado. Apenas os anexos disponíveis podem ser baixados.",
-    "sessionHint": "Inicie sessão uma vez no navegador dedicado do VidBee neste dispositivo. Os cookies do seu Chrome habitual nunca são copiados. Mapeie fotos ou vídeos e selecione os conteúdos disponíveis para baixar.",
+    "sessionHint": "Inicie sessão uma vez no navegador dedicado do VidBeep neste dispositivo. Os cookies do seu Chrome habitual nunca são copiados. Mapeie fotos ou vídeos e selecione os conteúdos disponíveis para baixar.",
     "openBrowser": "Abrir navegador",
     "selectNotDownloaded": "Selecionar não baixados ({{count}})",
     "videos": "Vídeos",

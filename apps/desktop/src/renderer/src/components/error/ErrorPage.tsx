@@ -156,7 +156,7 @@ export function ErrorPage({ errorInfo, onReload, onGoHome }: ErrorPageProps) {
 function generateErrorReport(errorInfo: ErrorInfo): string {
   const lines: string[] = []
 
-  lines.push('=== VidBee Error Report ===')
+  lines.push('=== VidBeep Error Report ===')
   lines.push(`Timestamp: ${new Date(errorInfo.timestamp).toISOString()}`)
   lines.push('')
 

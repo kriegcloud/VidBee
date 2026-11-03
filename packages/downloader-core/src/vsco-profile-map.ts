@@ -67,7 +67,7 @@ const mapVscoProfileUnchecked = async (
     return {
       complete: false,
       error:
-        'VSCO returned no posts for this session. If the gallery is visible in your browser, connect or refresh your VSCO session in VidBee, or import fresh VSCO cookies, then map again.'
+        'VSCO returned no posts for this session. If the gallery is visible in your browser, connect or refresh your VSCO session in VidBeep, or import fresh VSCO cookies, then map again.'
     }
   }
   return { complete: result.complete, error: result.error }

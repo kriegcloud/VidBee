@@ -75,7 +75,7 @@ class UpdateService extends IpcService {
     if (isVendoredYtDlpBuild()) {
       return {
         success: false,
-        error: 'This build is managed from source. Rebuild VidBee to update it.'
+        error: 'This build is managed from source. Rebuild VidBeep to update it.'
       }
     }
     if (!canUseAppAutoUpdater) {

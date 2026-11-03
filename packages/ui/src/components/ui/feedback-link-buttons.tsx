@@ -133,7 +133,7 @@ export const FeedbackLinkButtons = ({
           FEEDBACK_COMMAND_LABEL
         )
       : null
-    const appVersionValue = appVersion ? `VidBee v${appVersion}` : FEEDBACK_UNKNOWN_VALUE
+    const appVersionValue = appVersion ? `VidBeep v${appVersion}` : FEEDBACK_UNKNOWN_VALUE
     const osVersionValue = osVersion || FEEDBACK_UNKNOWN_VALUE
 
     let githubUrl: string

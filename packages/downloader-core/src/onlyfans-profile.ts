@@ -196,7 +196,7 @@ export function isOnlyFansSite(value: string): boolean {
 export function assertOnlyFansBrowserSession(value: string): void {
   if (isOnlyFansSite(value)) {
     throw new Error(
-      'OnlyFans requires the dedicated browser session. Open the OnlyFans profile in VidBee, choose Open browser, sign in there, and map its photos or videos. Imported Chrome cookies are not used for OnlyFans.'
+      'OnlyFans requires the dedicated browser session. Open the OnlyFans profile in VidBeep, choose Open browser, sign in there, and map its photos or videos. Imported Chrome cookies are not used for OnlyFans.'
     )
   }
 }

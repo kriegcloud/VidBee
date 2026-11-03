@@ -10,7 +10,7 @@
       "view": "عرض",
       "visit": "زيارة"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "تنزيل وتثبيت الإصدارات الجديدة تلقائياً في الخلفية.",
     "microsoftStoreUpdateDescription": "تتم إدارة تحديثات التطبيق عبر Microsoft Store. افتح المتجر للتحقق من وجود تحديثات.",
     "autoUpdateTitle": "التحديثات التلقائية",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "متابعة @nexmoe"
     },
-    "followAuthorDescription": "ابق على اطلاع بآخر أخبار وتحديثات VidBee.",
-    "followAuthorSupport": "تابع المطور على X (Twitter) للحصول على آخر التحديثات والأخبار حول VidBee.",
+    "followAuthorDescription": "ابق على اطلاع بآخر أخبار وتحديثات VidBeep.",
+    "followAuthorSupport": "تابع المطور على X (Twitter) للحصول على آخر التحديثات والأخبار حول VidBeep.",
     "followAuthorTitle": "متابعة المطور",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "الموقع الرسمي",
       "websiteDescription": "أبرز المنتجات، خارطة الطريق، وأخبار المجتمع."
     },
-    "resourcesDescription": "روابط مفيدة لمعرفة المزيد عن VidBee والبقاء على اتصال.",
+    "resourcesDescription": "روابط مفيدة لمعرفة المزيد عن VidBeep والبقاء على اتصال.",
     "resourcesTitle": "الموارد",
     "shareActions": {
       "copy": "نسخ الرابط",
       "facebook": "مشاركة على Facebook",
       "twitter": "مشاركة على X (Twitter)"
     },
-    "shareDescription": "شارك VidBee مع مجتمعك بنقرة واحدة.",
-    "shareSupport": "أوصِ VidBee لأصدقائك لدعم نمونا وتحديثاتنا.",
+    "shareDescription": "شارك VidBeep مع مجتمعك بنقرة واحدة.",
+    "shareSupport": "أوصِ VidBeep لأصدقائك لدعم نمونا وتحديثاتنا.",
     "shareTitle": "انشر الكلمة",
     "sourceCode": "الكود المصدري متاح",
     "title": "حول",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "نزّل الوسائط، وفرّغها نصيًا محليًا، واسأل الذكاء الاصطناعي",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "هل تريد إنهاء VidBee؟",
+      "title": "هل تريد إنهاء VidBeep؟",
       "message": "هناك {{count}} مهمة قيد التنفيذ. سيؤدي الإنهاء إلى مقاطعتها.",
       "messagePlural": "هناك {{count}} مهام قيد التنفيذ. سيؤدي الإنهاء إلى مقاطعتها.",
       "quit": "إنهاء",
@@ -279,12 +279,12 @@
       "subscription": "الاشتراك"
     },
     "formatFallbackTitle": "Selected format unavailable",
-    "formatFallbackHint": "Your pick was not deliverable, so VidBee fell back to best available ({{resolved}}).",
+    "formatFallbackHint": "Your pick was not deliverable, so VidBeep fell back to best available ({{resolved}}).",
     "cookiesSetupAction": "إعداد ملفات تعريف الارتباط",
     "cookiesSetupDialogTitle": "إعداد ملفات تعريف الارتباط",
     "cookiesSetupNeeded": "يحتاج هذا التنزيل إلى جلسة مسجّل الدخول. أعد ملفات تعريف الارتباط ثم أعد المحاولة.",
     "cookiesSetupLocked": "Chrome يقفل قاعدة ملفات تعريف الارتباط. استخدم Firefox أو استورد ملفًا أو أغلق Chrome بالكامل ثم أعد المحاولة.",
-    "cookiesSetupMacFiles": "نظام macOS يمنع VidBee من قراءة ملفات تعريف الارتباط لهذا المتصفح. افتح إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات، واسمح لـ VidBee بالوصول إلى هذا المتصفح ثم أعد المحاولة. إذا كنت قد سمحت بذلك بالفعل، أغلق VidBee بالكامل ثم افتحه مرة أخرى.",
+    "cookiesSetupMacFiles": "نظام macOS يمنع VidBeep من قراءة ملفات تعريف الارتباط لهذا المتصفح. افتح إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات، واسمح لـ VidBeep بالوصول إلى هذا المتصفح ثم أعد المحاولة. إذا كنت قد سمحت بذلك بالفعل، أغلق VidBeep بالكامل ثم افتحه مرة أخرى.",
     "cookiesSetupOpenFilesSettings": "فتح إعدادات الملفات والمجلدات",
     "cookiesSetupDecrypt": "يتعذر على Windows فك تشفير ملفات تعريف ارتباط Chrome. استخدم Firefox أو استورد ملفًا.",
     "cookiesSetupFileInvalid": "ملف ملفات تعريف الارتباط المحدد ليس تصديرًا صالحًا. صدّر cookies.txt ثم أعد المحاولة.",
@@ -467,12 +467,12 @@
     "emptyTitle": "تنزيل ملف Instagram شخصي",
     "partialHint": "تعذر فحص بعض الفئات. قد تكون ملفات تعريف الارتباط لتسجيل الدخول إلى Instagram مطلوبة للملفات الخاصة أو القصص أو القصص المميزة أو المنشورات المشار إليها.",
     "rateLimitedHint": "يقوم Instagram مؤقتًا بتقييد الطلبات من هذه الشبكة أو هذا الحساب. هذه ليست مشكلة في ملفات تعريف الارتباط. انتظر حوالي 15–30 دقيقة قبل إعادة التعيين؛ المحاولات المتكررة تطيل الحظر.",
-    "unavailableHint": "تعذّر فحص بعض الفئات. ربما غيّر Instagram واجهته البرمجية أو أن المحتوى غير متاح حاليًا. حاول مرة أخرى لاحقًا؛ وإذا استمر الفشل فحدّث VidBee.",
+    "unavailableHint": "تعذّر فحص بعض الفئات. ربما غيّر Instagram واجهته البرمجية أو أن المحتوى غير متاح حاليًا. حاول مرة أخرى لاحقًا؛ وإذا استمر الفشل فحدّث VidBeep.",
     "retryAfter": "أعد المحاولة بعد {{time}}",
     "scan": "فحص الملف الشخصي",
     "scanFailed": "تعذر فحص ملف Instagram الشخصي",
     "scanning": "جارٍ فحص ملف Instagram الشخصي",
-    "scanningHint": "يقوم VidBee بحصر كل فئة. قد يستغرق ذلك بعض الوقت لأن الطلبات متباعدة لتقليل قيود المعدل.",
+    "scanningHint": "يقوم VidBeep بحصر كل فئة. قد يستغرق ذلك بعض الوقت لأن الطلبات متباعدة لتقليل قيود المعدل.",
     "selectAtLeastOne": "حدد فئة متاحة واحدة على الأقل",
     "sourceTotal": "{{count}} عناصر",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "تم استخدام {{used}} من {{total}}",
       "grantedCredits": "رصيد مجاني",
       "purchasedCredits": "رصيد تم شراؤه",
-      "description": "سجّل الدخول باستخدام GitHub لربط حساب VidBee.",
+      "description": "سجّل الدخول باستخدام GitHub لربط حساب VidBeep.",
       "error": "تعذر إكمال المصادقة. حاول مرة أخرى.",
       "loading": "جارٍ التحقق من حسابك…",
       "signedOut": "لم يتم تسجيل الدخول",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "اختر متصفحك أعلاه لإعادة استخدام جلسته الموقعة تلقائياً.",
     "cookiesHelpFile": "قم بتصدير ملف ملفات تعريف الارتباط Netscape (راجع الأسئلة الشائعة لـ yt-dlp) واختره هنا عند الحاجة.",
     "cookiesGuideTitle": "هل تحتاج إلى شرح؟",
-    "cookiesGuideDescription": "اطّلع على دليل خطوة بخطوة لاستخدام ملفات تعريف الارتباط في VidBee",
+    "cookiesGuideDescription": "اطّلع على دليل خطوة بخطوة لاستخدام ملفات تعريف الارتباط في VidBeep",
     "cookiesGuideLink": "فتح دليل Cookies",
     "openLinkError": "فشل في فتح الرابط",
     "browserOptions": {
@@ -674,9 +674,9 @@
     "hideDockIcon": "إخفاء أيقونة Dock عند الإغلاق",
     "hideDockIconDescription": "إخفاء أيقونة Dock تلقائيًا عند إغلاق النافذة. استخدم شريط القائمة أو أيقونة الدرج لإعادة الفتح",
     "launchAtLogin": "بدء التشغيل عند تسجيل الدخول",
-    "launchAtLoginDescription": "فتح VidBee تلقائياً بعد تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك",
+    "launchAtLoginDescription": "فتح VidBeep تلقائياً بعد تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك",
     "launchAtLoginUnsupported": "البدء التلقائي متاح فقط على macOS و Windows",
-    "enableAnalytics": "مساعدة في تحسين VidBee",
+    "enableAnalytics": "مساعدة في تحسين VidBeep",
     "enableAnalyticsDescription": "مشاركة بيانات الاستخدام المجهولة لمساعدتنا في فهم كيفية استخدام التطبيق وأولويات التحسينات",
     "enableDownloadNotifications": "إشعارات التنزيل",
     "enableDownloadNotificationsDescription": "اعرض إشعار نظام عند اكتمال التنزيل",
@@ -685,7 +685,7 @@
     "downloadSubtitles": "تنزيل الترجمة",
     "downloadSubtitlesDescription": "نزّل الترجمة باللغات المحددة فقط عند توفرها",
     "subtitleLanguages": "لغات الترجمة",
-    "subtitleLanguagesDescription": "اختر لغات الترجمة التي ينبغي أن يطلبها VidBee لكل فيديو",
+    "subtitleLanguagesDescription": "اختر لغات الترجمة التي ينبغي أن يطلبها VidBeep لكل فيديو",
     "subtitleLanguageSearch": "البحث في لغات الترجمة",
     "subtitleLanguageEmpty": "لا توجد لغات مطابقة",
     "subtitleLanguageLimit": "اختر ما يصل إلى {{count}} لغات لتقليل قيود معدل الطلبات على المنصة",
@@ -700,10 +700,10 @@
     "writeAutoSubsDescription": "استخدم الترجمة التلقائية عندما لا تتوفر ترجمة المنشئ باللغات المحددة",
     "embedThumbnail": "تضمين الصورة المصغرة",
     "embedThumbnailDescription": "إضافة الصورة المصغرة كغلاف",
-    "embedThumbnailWebmUnsupported": "لا يدعم WebM تضمين الصورة المصغرة كغلاف. عند تفعيل الغلاف، يحفظ VidBee الصورة المصغرة في ملف منفصل. اختر MP4 أو MKV لتضمينها.",
+    "embedThumbnailWebmUnsupported": "لا يدعم WebM تضمين الصورة المصغرة كغلاف. عند تفعيل الغلاف، يحفظ VidBeep الصورة المصغرة في ملف منفصل. اختر MP4 أو MKV لتضمينها.",
     "filenameStyle": "نمط اسم الملف",
-    "filenameStyleDescription": "اختر كيف يسمّي VidBee ملفات الفيديو والصوت المحفوظة",
-    "filenameStyleNote": "يُستخدم للملفات التي يحفظها VidBee. قوالب الاشتراكات أو قوائم التشغيل المخصصة تبقى لها الأولوية",
+    "filenameStyleDescription": "اختر كيف يسمّي VidBeep ملفات الفيديو والصوت المحفوظة",
+    "filenameStyleNote": "يُستخدم للملفات التي يحفظها VidBeep. قوالب الاشتراكات أو قوائم التشغيل المخصصة تبقى لها الأولوية",
     "filenameStyleOptions": {
       "basic": "أساسي",
       "classic": "كلاسيكي",
@@ -712,8 +712,8 @@
     },
     "filenameStylePreviewAudio": "معاينة ملف الصوت",
     "filenameStylePreviewVideo": "معاينة ملف الفيديو",
-    "filenameViaVidBee": "إضافة via VidBee",
-    "filenameViaVidBeeDescription": "يُضيف via VidBee تلقائيًا إلى أسماء ملفات الفيديو والصوت المحفوظة",
+    "filenameViaVidBeep": "إضافة via VidBeep",
+    "filenameViaVidBeeDescription": "يُضيف via VidBeep تلقائيًا إلى أسماء ملفات الفيديو والصوت المحفوظة",
     "metadataTab": "البيانات الوصفية",
     "navGroup": {
       "app": "التطبيق",
@@ -722,7 +722,7 @@
       "ai": "الذكاء الاصطناعي"
     },
     "shareWatermark": "علامة مائية للمشاركة",
-    "shareWatermarkDescription": "أضف علامة مائية تتضمن العنوان الأصلي والمؤلف وعلامة VidBee التجارية",
+    "shareWatermarkDescription": "أضف علامة مائية تتضمن العنوان الأصلي والمؤلف وعلامة VidBeep التجارية",
     "maxConcurrentDownloads": "العدد الأقصى للتحميلات النشطة",
     "maxConcurrentDownloadsDescription": "العدد الأقصى للتحميلات المتزامنة",
     "none": "لا شيء",
@@ -759,7 +759,7 @@
     },
     "system": "النظام",
     "theme": "المظهر",
-    "themeDescription": "اختر مظهراً فاتحاً أو داكناً أو نظامياً لـ VidBee",
+    "themeDescription": "اختر مظهراً فاتحاً أو داكناً أو نظامياً لـ VidBeep",
     "title": "الإعدادات",
     "tray": {
       "quit": "إنهاء",
@@ -1047,8 +1047,8 @@
       "loadingModels": "جارٍ تحميل النماذج من المزوّد…",
       "skillHelp": "تستخدم Skills ملفات SKILL.md. يكتشفها الوكيل من وصفها ويقرأ تعليماتها عند الحاجة. استخدم $skill-name في المحادثة لطلب Skill محدد.",
       "addSkill": "إضافة Skill",
-      "createSkillWithVidbee": "إنشاء Skill باستخدام VidBee",
-      "createSkillRequest": "ساعدني في إنشاء Skill قابل لإعادة الاستخدام. اسألني عن مهمته ومتى يُستخدم والنتيجة المطلوبة. بعد توضيح المتطلبات، أنشئ Skill واحفظه في VidBee.",
+      "createSkillWithVidbee": "إنشاء Skill باستخدام VidBeep",
+      "createSkillRequest": "ساعدني في إنشاء Skill قابل لإعادة الاستخدام. اسألني عن مهمته ومتى يُستخدم والنتيجة المطلوبة. بعد توضيح المتطلبات، أنشئ Skill واحفظه في VidBeep.",
       "uploadSkill": "رفع Skill",
       "importGitHubSkill": "استيراد Skill من GitHub",
       "githubSkillDescription": "ألصق رابط مستودع GitHub عام أو مجلد Skill، ثم اختر Skill لتثبيته مع ملفاته المساعدة.",
@@ -1108,7 +1108,7 @@
         },
         "diagnose-task": {
           "name": "تشخيص مشكلات المهمة",
-          "description": "يفحص المهام الفاشلة أو المتوقفة باستخدام الحالة والأخطاء والسجلات. لاقتراح خطوات استعادة أو إعداد ملاحظات حول خلل محتمل في VidBee."
+          "description": "يفحص المهام الفاشلة أو المتوقفة باستخدام الحالة والأخطاء والسجلات. لاقتراح خطوات استعادة أو إعداد ملاحظات حول خلل محتمل في VidBeep."
         },
         "video-localization": {
           "name": "توطين الفيديو",
@@ -1125,23 +1125,23 @@
       "statusExpired": "منتهٍ",
       "statusEmpty": "لا يوجد تسجيل دخول",
       "statusInvalid": "يحتاج إلى انتباه",
-      "healthOkBrowser": "يستطيع VidBee قراءة ملفات تعريف الارتباط من {{browser}}. ابقَ مسجّل الدخول إلى الموقع هناك",
+      "healthOkBrowser": "يستطيع VidBeep قراءة ملفات تعريف الارتباط من {{browser}}. ابقَ مسجّل الدخول إلى الموقع هناك",
       "healthOkFile": "تم العثور على ملفات تعريف ارتباط تسجيل الدخول لـ {{sites}}",
       "healthOkFileGeneric": "يبدو ملف ملفات تعريف الارتباط هذا صالحًا",
       "healthExpired": "انتهت صلاحية ملفات تعريف الارتباط هذه. سجّل الدخول مجددًا واستورد ملفًا جديدًا",
       "healthEmpty": "لا يحتوي هذا الملف على ملفات تعريف ارتباط تسجيل الدخول للمواقع المدعومة. صدّره أثناء تسجيل الدخول ثم أعد المحاولة",
       "healthInvalidFile": "ملف ملفات تعريف الارتباط مفقود أو ليس تصديرًا صالحًا",
-      "healthInvalidBrowser": "لا يستطيع VidBee قراءة ملفات تعريف الارتباط من ملف تعريف هذا المتصفح",
-      "healthMacosFilesPermission": "نظام macOS يمنع الوصول إلى ملفات تعريف الارتباط. اسمح لـ VidBee بالوصول إلى هذا المتصفح من إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات ثم تحقق مرة أخرى.",
+      "healthInvalidBrowser": "لا يستطيع VidBeep قراءة ملفات تعريف الارتباط من ملف تعريف هذا المتصفح",
+      "healthMacosFilesPermission": "نظام macOS يمنع الوصول إلى ملفات تعريف الارتباط. اسمح لـ VidBeep بالوصول إلى هذا المتصفح من إعدادات النظام → الخصوصية والأمان → الملفات والمجلدات ثم تحقق مرة أخرى.",
       "healthUnsupportedBrowser": "لا يمكن استخدام هذا المتصفح لملفات تعريف الارتباط على نظامك",
       "sitesLabel": "المواقع: {{sites}}",
       "recommendedTitle": "موصى به",
       "recommendedUseBrowser": "استخدم {{browser}}",
       "recommendedUseBrowserHint": "أعد استخدام الحساب الذي سجّلت الدخول إليه بالفعل في {{browser}}",
       "recommendedImportFile": "استيراد ملف ملفات تعريف الارتباط",
-      "recommendedImportFileWindowsHint": "على Windows لا يستطيع Chrome وEdge مشاركة ملفات تعريف الارتباط مع VidBee. صدّر ملفًا من المتصفح بدلًا من ذلك",
+      "recommendedImportFileWindowsHint": "على Windows لا يستطيع Chrome وEdge مشاركة ملفات تعريف الارتباط مع VidBeep. صدّر ملفًا من المتصفح بدلًا من ذلك",
       "recommendedImportFileHint": "صدّر ملفات تعريف الارتباط من متصفحك ثم اختر الملف هنا",
-      "recommendedFirefoxHint": "على Windows، Firefox هو المتصفح الوحيد الذي يستطيع VidBee قراءته مباشرة",
+      "recommendedFirefoxHint": "على Windows، Firefox هو المتصفح الوحيد الذي يستطيع VidBeep قراءته مباشرة",
       "useThisBrowser": "استخدم {{browser}}",
       "importFile": "اختر ملف ملفات تعريف الارتباط",
       "clearSetup": "مسح ملفات تعريف الارتباط",
@@ -1159,23 +1159,23 @@
       "applied": "تم تحديث ملفات تعريف الارتباط",
       "profileMissingDb": "لا يحتوي ملف تعريف Firefox هذا على قاعدة ملفات تعريف الارتباط. افتح Firefox مرة ثم أعد المحاولة.",
       "statusUsingExtension": "يتم استخدام إضافة {{browser}}",
-      "healthOkExtension": "سترسل إضافة VidBee ملفات تعريف الارتباط الحالية من {{browser}} مع كل تنزيل",
+      "healthOkExtension": "سترسل إضافة VidBeep ملفات تعريف الارتباط الحالية من {{browser}} مع كل تنزيل",
       "healthEmptyExtension": "الإضافة متصلة، لكن لم يُعثر على ملفات تعريف ارتباط لتسجيل الدخول في المواقع المدعومة. سجّل الدخول إلى الموقع في ذلك المتصفح",
       "statusHeading": "حالة ملفات تعريف الارتباط",
       "methodRecommended": "موصى به",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "إضافة المتصفح",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "متصلة",
       "extensionDisconnected": "غير متصلة",
       "extensionConnectedHint": "{{browser}} متصل. ستستخدم التنزيلات الجديدة ملفات تعريف الارتباط من هذا المتصفح",
-      "extensionDisconnectedHint": "أبقِ VidBee Desktop مفتوحًا، وثبّت الإضافة، ثم سجّل الدخول إلى الموقع في ذلك المتصفح",
+      "extensionDisconnectedHint": "أبقِ VidBeep Desktop مفتوحًا، وثبّت الإضافة، ثم سجّل الدخول إلى الموقع في ذلك المتصفح",
       "extensionInstallChrome": "إضافة إلى Chrome",
       "extensionInstallEdge": "إضافة إلى Edge",
       "extensionInstallFirefox": "إضافة إلى Firefox",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "أبقِ VidBee Desktop قيد التشغيل حتى تتمكن الإضافة من الاتصال",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "أبقِ VidBeep Desktop قيد التشغيل حتى تتمكن الإضافة من الاتصال",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "مصدر ملفات تعريف الارتباط",
       "sourceInUse": "قيد الاستخدام",
       "sourceFallback": "احتياطي",
@@ -1188,7 +1188,7 @@
       "browserShortHint": "اختر متصفحًا سجّلت الدخول فيه",
       "fileShortHint": "صدّر ملف cookies.txt واختره، وأعد التصدير عند انتهاء صلاحيته",
       "whyTitle": "اضبط ملفات تعريف الارتباط لتنزيلات أكثر ثباتًا",
-      "whyDescription": "يُنزّل VidBee باستخدام حسابك المسجّل، فتصبح التنزيلات أكثر استقرارًا وتنجح أكثر",
+      "whyDescription": "يُنزّل VidBeep باستخدام حسابك المسجّل، فتصبح التنزيلات أكثر استقرارًا وتنجح أكثر",
       "extensionPriority": "أولوية المتصفحات لملفات تعريف الارتباط",
       "extensionPriorityHint": "يُستخدم أول متصفح متصل حسب هذا الترتيب. تُتخطى المتصفحات غير المتصلة تلقائيًا.",
       "extensionUse": "استخدام",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "تفعيل الوصول عبر MCP",
-      "description": "اسمح للوكلاء الخارجيين باستخدام التنزيلات والاشتراكات والنصوص والمحادثات بالذكاء الاصطناعي في VidBee.",
+      "description": "اسمح للوكلاء الخارجيين باستخدام التنزيلات والاشتراكات والنصوص والمحادثات بالذكاء الاصطناعي في VidBeep.",
       "running": "قيد التشغيل · {{count}} أداة متاحة",
       "stopped": "MCP غير متاح حاليًا",
-      "accessNote": "اترك VidBee قيد التشغيل أثناء الاتصال. يمكن الاتصال من هذا الكمبيوتر فقط. احمِ إعدادات HTTP مثل كلمة المرور؛ يؤدي تجديد الرمز إلى إبطال إعدادات HTTP المحفوظة.",
+      "accessNote": "اترك VidBeep قيد التشغيل أثناء الاتصال. يمكن الاتصال من هذا الكمبيوتر فقط. احمِ إعدادات HTTP مثل كلمة المرور؛ يؤدي تجديد الرمز إلى إبطال إعدادات HTTP المحفوظة.",
       "copy": "نسخ إعدادات {{transport}}",
       "copied": "تم نسخ إعدادات MCP",
       "rotate": "تجديد رمز الوصول",
@@ -1323,15 +1323,15 @@
     "description": "راقب القنوات تلقائياً وضع التنزيلات الجديدة في قائمة الانتظار دون عمل يدوي.",
     "defaults": {
       "title": "الإعدادات الافتراضية للأتمتة",
-      "description": "التحكم في مكان تخزين تحميلات الاشتراكات وعدد مرات فحص VidBee للفيديوهات الجديدة.",
+      "description": "التحكم في مكان تخزين تحميلات الاشتراكات وعدد مرات فحص VidBeep للفيديوهات الجديدة.",
       "downloadDirectory": "مجلد التحميل",
       "filenameTemplate": "قالب اسم الملف (الملف فقط)",
       "onlyLatest": "تحميل أحدث فيديو فقط",
-      "onlyLatestDescription": "عند التفعيل، يتخطى VidBee عناصر المتراكمة القديمة ويأخذ فقط آخر تحميل."
+      "onlyLatestDescription": "عند التفعيل، يتخطى VidBeep عناصر المتراكمة القديمة ويأخذ فقط آخر تحميل."
     },
     "add": {
       "title": "إضافة اشتراك",
-      "description": "الصق رابط قناة أو موجز. سيكتشفه VidBee تلقائياً."
+      "description": "الصق رابط قناة أو موجز. سيكتشفه VidBeep تلقائياً."
     },
     "fields": {
       "url": "رابط التغذية",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "الاشتراكات الآلية مع RSSHub",
-      "description": "اجمع VidBee مع RSSHub لتمكين الاشتراكات والتحميلات الآلية من منصات مختلفة. بمجرد الإعداد، يعمل VidBee في الخلفية ويحمل تلقائياً أحدث الفيديوهات والمحتوى.",
+      "description": "اجمع VidBeep مع RSSHub لتمكين الاشتراكات والتحميلات الآلية من منصات مختلفة. بمجرد الإعداد، يعمل VidBeep في الخلفية ويحمل تلقائياً أحدث الفيديوهات والمحتوى.",
       "learnMore": "تعرف على المزيد حول RSSHub",
       "openDocs": "فتح وثائق RSSHub",
       "hint": "ليس لديك رابط موجز؟ استخدم RSSHub لإنشاء موجزات لـ YouTube وTwitter وآلاف المنصات الأخرى."
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "الكل",
       "noCategories": "اختر فئة واحدة على الأقل.",
-      "desktopOnly": "يتحقق VidBee Desktop من اشتراكات الملفات الشخصية.",
+      "desktopOnly": "يتحقق VidBeep Desktop من اشتراكات الملفات الشخصية.",
       "storiesHint": "تختفي القصص بعد 24 ساعة. تحقق كل 12 ساعة على الأقل حتى لا تفوتك أي قصة.",
       "nextCheck": "الفحص التالي: {{time}}",
       "subscribe": "اشتراك",
       "subscribed": "مشترك",
-      "readOnly": "يتحقق منه VidBee Desktop",
+      "readOnly": "يتحقق منه VidBeep Desktop",
       "categories": {
         "stories": "القصص",
         "highlights": "الأبرز",
@@ -1459,8 +1459,8 @@
     "copied": "تم النسخ",
     "copying": "جارٍ نسخ محرك التنزيل…",
     "copyLog": "نسخ السجل",
-    "description": "يقوم VidBee بإعداد محرك التنزيل. لن يستغرق ذلك سوى لحظات.",
-    "errorDescription": "تعذّر على VidBee إعداد محرك تنزيل يعمل. تحقق من إمكانية الوصول إلى التخزين المحلي، ثم حاول مجددًا.",
+    "description": "يقوم VidBeep بإعداد محرك التنزيل. لن يستغرق ذلك سوى لحظات.",
+    "errorDescription": "تعذّر على VidBeep إعداد محرك تنزيل يعمل. تحقق من إمكانية الوصول إلى التخزين المحلي، ثم حاول مجددًا.",
     "errorDetails": "تفاصيل الخطأ",
     "errorTitle": "محرك التنزيل غير متاح",
     "finalizing": "جارٍ إنهاء الإعداد…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "الإبلاغ على GitHub",
     "retry": "حاول مجددًا",
     "retrying": "جارٍ المحاولة مجددًا…",
-    "title": "جارٍ إعداد VidBee",
+    "title": "جارٍ إعداد VidBeep",
     "validating": "جارٍ التحقق من محرك التنزيل…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "يتم تحديث قائمة yt-dlp الكاملة باستمرار من قبل المجتمع.",
     "moreTitle": "تحتاج موقعاً آخر؟",
     "openFullList": "فتح قائمة المواقع المدعومة الكاملة",
-    "pageDescription": "يستخدم VidBee yt-dlp تحت الغطاء للوصول إلى مئات المصادر.",
+    "pageDescription": "يستخدم VidBeep yt-dlp تحت الغطاء للوصول إلى مئات المصادر.",
     "pageIntro": "إليك الخدمات الرئيسية التي يقوم الناس بتحميلها منها في أغلب الأحيان.",
     "pageTitle": "المواقع المدعومة",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "تعذر تجهيز صورة المشاركة.",
     "promptShareSaveFailed": "تعذر حفظ صورة المشاركة.",
     "promptShareNativeFailed": "تعذر فتح قائمة المشاركة.",
-    "promptShareFooter": "صنع باستخدام VidBee",
+    "promptShareFooter": "صنع باستخدام VidBeep",
     "promptShareTagline": "نزّل. فرّغ محليًا. اسأل الذكاء الاصطناعي.",
     "captionShareSaid": "{{name}} قال",
     "promptOutput": "نتيجة Skill",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "تفريغ تلقائي للفيديو",
-        "description": "بعد انتهاء التنزيل، يُنشئ VidBee تلقائيًا نصًا للفيديو على هذا الجهاز. لا يُرفع أي شيء."
+        "description": "بعد انتهاء التنزيل، يُنشئ VidBeep تلقائيًا نصًا للفيديو على هذا الجهاز. لا يُرفع أي شيء."
       },
       "speakers": {
         "title": "تسميات المتحدثين",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "أفضل مساعد لك لمعالجة الصوت والفيديو",
-      "description": "أنا VidBee. أخبرني بما تريد فعله، أو اختر أحد الخيارات أدناه للبدء.",
+      "description": "أنا VidBeep. أخبرني بما تريد فعله، أو اختر أحد الخيارات أدناه للبدء.",
       "download": {
         "label": "تنزيل فيديو",
-        "prompt": "ساعدني في تنزيل فيديو باستخدام VidBee. اسألني أولًا عن رابط الفيديو والجودة التي أفضلها، ثم أنشئ مهمة تنزيل."
+        "prompt": "ساعدني في تنزيل فيديو باستخدام VidBeep. اسألني أولًا عن رابط الفيديو والجودة التي أفضلها، ثم أنشئ مهمة تنزيل."
       },
       "audio": {
         "label": "استخراج الصوت",
-        "prompt": "ساعدني في حفظ الصوت من فيديو باستخدام VidBee. اسألني أولًا عن رابط الفيديو وتنسيق الصوت الذي أفضله، ثم أنشئ مهمة لتنزيل الصوت."
+        "prompt": "ساعدني في حفظ الصوت من فيديو باستخدام VidBeep. اسألني أولًا عن رابط الفيديو وتنسيق الصوت الذي أفضله، ثم أنشئ مهمة لتنزيل الصوت."
       },
       "transcribe": {
         "label": "تفريغ وسيط تم تنزيله",
-        "prompt": "ساعدني في تحويل فيديو أو صوت تم تنزيله إلى نص باستخدام VidBee. اعرض التنزيلات المكتملة واسألني عن العنصر الذي أريد تفريغه، ثم ابدأ مهمة تفريغ محلية."
+        "prompt": "ساعدني في تحويل فيديو أو صوت تم تنزيله إلى نص باستخدام VidBeep. اعرض التنزيلات المكتملة واسألني عن العنصر الذي أريد تفريغه، ثم ابدأ مهمة تفريغ محلية."
       },
       "subscribe": {
         "label": "إنشاء اشتراك",
-        "prompt": "ساعدني في إنشاء اشتراك في VidBee. اسألني عن رابط قناة أو موقع أو موجز RSS، وتحقق من الموجز، ثم اسألني إن كنت أريد تنزيل الفيديوهات الجديدة تلقائيًا قبل حفظ الاشتراك."
+        "prompt": "ساعدني في إنشاء اشتراك في VidBeep. اسألني عن رابط قناة أو موقع أو موجز RSS، وتحقق من الموجز، ثم اسألني إن كنت أريد تنزيل الفيديوهات الجديدة تلقائيًا قبل حفظ الاشتراك."
       },
       "compress": {
         "label": "ضغط فيديو",
-        "prompt": "ساعدني في تقليل حجم ملف فيديو في VidBee. اعرض تنزيلات الفيديو المكتملة، واسألني عن الفيديو المراد ضغطه والدقة الأقل التي أريدها، ثم أنشئ نسخة محوّلة مع الاحتفاظ بالملف الأصلي."
+        "prompt": "ساعدني في تقليل حجم ملف فيديو في VidBeep. اعرض تنزيلات الفيديو المكتملة، واسألني عن الفيديو المراد ضغطه والدقة الأقل التي أريدها، ثم أنشئ نسخة محوّلة مع الاحتفاظ بالملف الأصلي."
       },
       "convert": {
         "label": "تحويل الصيغة",
-        "prompt": "ساعدني في تحويل ملف وسائط إلى صيغة أخرى في VidBee. اعرض التنزيلات المكتملة، واسألني عن الملف المراد تحويله وصيغة الإخراج المطلوبة، ثم أنشئ نسخة محوّلة مع الاحتفاظ بالملف الأصلي."
+        "prompt": "ساعدني في تحويل ملف وسائط إلى صيغة أخرى في VidBeep. اعرض التنزيلات المكتملة، واسألني عن الملف المراد تحويله وصيغة الإخراج المطلوبة، ثم أنشئ نسخة محوّلة مع الاحتفاظ بالملف الأصلي."
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "مرفوض"
     },
     "notifications": {
-      "approval": "يحتاج وكيل VidBee إلى إذنك",
-      "response": "يحتاج وكيل VidBee إلى ردك",
+      "approval": "يحتاج وكيل VidBeep إلى إذنك",
+      "response": "يحتاج وكيل VidBeep إلى ردك",
       "body": "افتح المحادثة للمراجعة والرد."
     },
     "newChatPlaceholder": "اسأل عن أي شيء…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "أعلى جودة صور متاحة بالتنسيق الأصلي، دون استبدالها بصور أصغر.",
     "available": "ينزّل كل الوسائط التي يتيح الموقع الوصول إليها أثناء هذا التشغيل. قد يحد الموقع من سجل الموجز.",
     "auth": "قد تتطلب هذه المجموعة متصفحًا مسجّل الدخول أو ملف تعريف ارتباط في الإعدادات.",
-    "profileSessionHint": "سجّل الدخول في متصفح VidBee المخصص، ثم أغلق نافذته قبل بدء تعيين المحتوى. لن تُستخدم جلسة متصفحك المعتاد.",
+    "profileSessionHint": "سجّل الدخول في متصفح VidBeep المخصص، ثم أغلق نافذته قبل بدء تعيين المحتوى. لن تُستخدم جلسة متصفحك المعتاد.",
     "counts": "{{posts}} منشورات · {{images}} صور · {{videos}} فيديوهات · {{saved}} محفوظة · {{existing}} موجودة · {{failed}} فاشلة",
     "categories": {
       "tweets": "المنشورات",
@@ -2308,7 +2308,7 @@
     },
     "chat": "المحادثة {{id}}",
     "chatHint": "افحص الصور ومقاطع الفيديو في هذه المحادثة باستخدام المتصفح المخصص. يمكن تنزيل المرفقات المتاحة فقط.",
-    "sessionHint": "سجّل الدخول مرة واحدة في متصفح VidBee المخصص على هذا الجهاز. لن تُنسخ ملفات تعريف الارتباط من Chrome المعتاد. افحص الصور أو الفيديوهات ثم اختر الوسائط المتاحة للتنزيل.",
+    "sessionHint": "سجّل الدخول مرة واحدة في متصفح VidBeep المخصص على هذا الجهاز. لن تُنسخ ملفات تعريف الارتباط من Chrome المعتاد. افحص الصور أو الفيديوهات ثم اختر الوسائط المتاحة للتنزيل.",
     "openBrowser": "فتح المتصفح",
     "selectNotDownloaded": "تحديد غير المُنزّلة ({{count}})",
     "videos": "فيديوهات",

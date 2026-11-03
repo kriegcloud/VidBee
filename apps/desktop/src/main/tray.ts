@@ -51,7 +51,7 @@ export function createTray(): void {
 
   tray = new Tray(trayIconImage)
 
-  tray.setToolTip('VidBee')
+  tray.setToolTip('VidBeep')
   refreshAppIconMenus()
   // Ignore the synthesized double-click so every single click shows the window.
   if (process.platform === 'darwin') {

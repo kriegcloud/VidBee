@@ -178,9 +178,9 @@ export const saveSplitShareImageFiles = async (
   }
   const name =
     path
-      .basename(options.defaultFileName || 'VidBee.png', '.png')
+      .basename(options.defaultFileName || 'VidBeep.png', '.png')
       .replace(/[<>:"/\\|?*]+/g, '_')
-      .slice(0, 80) || 'VidBee'
+      .slice(0, 80) || 'VidBeep'
   const output = await fs.mkdtemp(path.join(directory, `${name}-`))
   try {
     for (const [index, png] of options.images.entries()) {

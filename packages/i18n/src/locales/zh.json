@@ -10,7 +10,7 @@
       "view": "查看",
       "visit": "访问"
     },
-    "appName": "VidBee",
+    "appName": "VidBeep",
     "autoUpdateDescription": "在后台自动下载并安装新版本。",
     "microsoftStoreUpdateDescription": "应用更新由 Microsoft Store 管理。请打开商店检查更新。",
     "autoUpdateTitle": "自动更新",
@@ -36,8 +36,8 @@
     "followAuthorActions": {
       "follow": "关注 @nexmoe"
     },
-    "followAuthorDescription": "获取 VidBee 的最新消息和更新。",
-    "followAuthorSupport": "在 X (Twitter) 上关注开发者，获取 VidBee 的最新更新和消息。",
+    "followAuthorDescription": "获取 VidBeep 的最新消息和更新。",
+    "followAuthorSupport": "在 X (Twitter) 上关注开发者，获取 VidBeep 的最新更新和消息。",
     "followAuthorTitle": "关注开发者",
     "otherProducts": {
       "lmspeed": {
@@ -89,15 +89,15 @@
       "website": "官方网站",
       "websiteDescription": "产品亮点、路线图与社区动态。"
     },
-    "resourcesDescription": "了解 VidBee 并保持关注的实用链接。",
+    "resourcesDescription": "了解 VidBeep 并保持关注的实用链接。",
     "resourcesTitle": "资源",
     "shareActions": {
       "copy": "复制链接",
       "facebook": "在 Facebook 上分享",
       "twitter": "在 X 上分享（推特）"
     },
-    "shareDescription": "一键与您的社区分享 VidBee。",
-    "shareSupport": "向您的朋友推荐VidBee，以支持我们的成长和更新。",
+    "shareDescription": "一键与您的社区分享 VidBeep。",
+    "shareSupport": "向您的朋友推荐VidBeep，以支持我们的成长和更新。",
     "shareTitle": "分享这个应用",
     "sourceCode": "源代码已开放",
     "title": "关于",
@@ -133,9 +133,9 @@
   },
   "app": {
     "description": "下载媒体、本地转写，再问 AI",
-    "title": "VidBee",
+    "title": "VidBeep",
     "quitConfirm": {
-      "title": "确定退出 VidBee？",
+      "title": "确定退出 VidBeep？",
       "message": "还有 {{count}} 个任务正在进行。退出会中断该任务。",
       "messagePlural": "还有 {{count}} 个任务正在进行。退出会中断这些任务。",
       "quit": "退出",
@@ -228,7 +228,7 @@
     "cookiesSetupDialogTitle": "设置 Cookies",
     "cookiesSetupNeeded": "这次下载需要登录会话。请先设置 Cookies，然后再试。",
     "cookiesSetupLocked": "Chrome 正在占用 Cookies 数据库。请改用 Firefox、导入 Cookies 文件，或完全退出 Chrome 后再试。",
-    "cookiesSetupMacFiles": "macOS 正在阻止 VidBee 读取此浏览器的 Cookies。请打开“系统设置 → 隐私与安全性 → 文件和文件夹”，允许 VidBee 访问该浏览器，然后重试。如果已经允许，请完全退出并重新打开 VidBee。",
+    "cookiesSetupMacFiles": "macOS 正在阻止 VidBeep 读取此浏览器的 Cookies。请打开“系统设置 → 隐私与安全性 → 文件和文件夹”，允许 VidBeep 访问该浏览器，然后重试。如果已经允许，请完全退出并重新打开 VidBeep。",
     "cookiesSetupOpenFilesSettings": "打开“文件和文件夹”设置",
     "cookiesSetupDecrypt": "Windows 无法解密 Chrome 的 Cookies。请改用 Firefox，或导入 Cookies 文件。",
     "cookiesSetupFileInvalid": "所选 Cookies 文件不是有效导出。请导出 cookies.txt 后再试。",
@@ -448,7 +448,7 @@
     "transcriptionStartedMany": "已开始转写 {{count}} 个文件",
     "transcriptionStartFailed": "无法开始转写",
     "unsupportedDrop": "请粘贴链接，或拖入音视频文件",
-    "localMediaDesktopOnly": "本地文件转写请使用桌面版 VidBee"
+    "localMediaDesktopOnly": "本地文件转写请使用桌面版 VidBeep"
   },
   "instagramProfile": {
     "assetTotal": "{{count}} 个文件",
@@ -467,12 +467,12 @@
     "emptyTitle": "下载 Instagram 个人主页",
     "partialHint": "部分分类无法扫描。私密主页、快拍、精选动态或被标记的帖子可能需要 Instagram 登录 Cookie。",
     "rateLimitedHint": "Instagram 正在临时限制来自此网络或账号的请求。这不是 Cookie 问题。请等待约 15–30 分钟后再重新映射；反复重试会延长限制。",
-    "unavailableHint": "部分分类无法扫描。Instagram 可能更改了其 API，或内容目前不可用。请稍后重试；如果持续失败，请更新 VidBee。",
+    "unavailableHint": "部分分类无法扫描。Instagram 可能更改了其 API，或内容目前不可用。请稍后重试；如果持续失败，请更新 VidBeep。",
     "retryAfter": "{{time}} 后重试",
     "scan": "扫描个人主页",
     "scanFailed": "无法扫描 Instagram 个人主页",
     "scanning": "正在扫描 Instagram 个人主页",
-    "scanningHint": "VidBee 正在整理各个分类。为减少触发访问频率限制，请求会间隔发送，因此可能需要一些时间。",
+    "scanningHint": "VidBeep 正在整理各个分类。为减少触发访问频率限制，请求会间隔发送，因此可能需要一些时间。",
     "selectAtLeastOne": "请至少选择一个可用分类",
     "sourceTotal": "{{count}} 个项目",
     "states": {
@@ -570,7 +570,7 @@
       "creditsUsage": "已使用 {{used}} / {{total}}",
       "grantedCredits": "赠送积分",
       "purchasedCredits": "充值积分",
-      "description": "使用 GitHub 登录以连接你的 VidBee 账户。",
+      "description": "使用 GitHub 登录以连接你的 VidBeep 账户。",
       "error": "无法完成身份验证，请重试。",
       "loading": "正在检查账户…",
       "signedOut": "尚未登录",
@@ -643,7 +643,7 @@
     "cookiesHelpBrowser": "选择上面的浏览器以自动重用其登录会话。",
     "cookiesHelpFile": "导出 Netscape Cookies 文件（请参阅 yt-dlp FAQ）并在需要时在此处选择它。",
     "cookiesGuideTitle": "需要指引吗？",
-    "cookiesGuideDescription": "查看在 VidBee 中使用 Cookies 的分步指南",
+    "cookiesGuideDescription": "查看在 VidBeep 中使用 Cookies 的分步指南",
     "cookiesGuideLink": "打开 Cookies 指南",
     "cookiesSetup": {
       "statusNotConfigured": "尚未设置",
@@ -654,23 +654,23 @@
       "statusExpired": "已过期",
       "statusEmpty": "未找到登录",
       "statusInvalid": "需要处理",
-      "healthOkBrowser": "VidBee 可以从 {{browser}} 读取 Cookies。请保持在该浏览器中已登录网站",
+      "healthOkBrowser": "VidBeep 可以从 {{browser}} 读取 Cookies。请保持在该浏览器中已登录网站",
       "healthOkFile": "已找到这些站点的登录 Cookies：{{sites}}",
       "healthOkFileGeneric": "这个 Cookies 文件看起来有效",
       "healthExpired": "这些 Cookies 已过期。请重新登录并导入新文件",
       "healthEmpty": "该文件没有受支持站点的登录 Cookies。请在已登录时导出后再试",
       "healthInvalidFile": "Cookies 文件缺失，或不是有效的导出文件",
-      "healthInvalidBrowser": "VidBee 无法读取此浏览器配置文件中的 Cookies",
-      "healthMacosFilesPermission": "macOS 正在阻止读取 Cookies。请在“系统设置 → 隐私与安全性 → 文件和文件夹”中允许 VidBee 访问该浏览器，然后重新检查。",
+      "healthInvalidBrowser": "VidBeep 无法读取此浏览器配置文件中的 Cookies",
+      "healthMacosFilesPermission": "macOS 正在阻止读取 Cookies。请在“系统设置 → 隐私与安全性 → 文件和文件夹”中允许 VidBeep 访问该浏览器，然后重新检查。",
       "healthUnsupportedBrowser": "当前系统无法使用这个浏览器读取 Cookies",
       "sitesLabel": "站点：{{sites}}",
       "recommendedTitle": "推荐",
       "recommendedUseBrowser": "使用 {{browser}}",
       "recommendedUseBrowserHint": "复用你已经在 {{browser}} 中登录的账号",
       "recommendedImportFile": "导入 Cookies 文件",
-      "recommendedImportFileWindowsHint": "在 Windows 上，Chrome 和 Edge 无法把 Cookies 分享给 VidBee。请改为从浏览器导出 Cookies 文件",
+      "recommendedImportFileWindowsHint": "在 Windows 上，Chrome 和 Edge 无法把 Cookies 分享给 VidBeep。请改为从浏览器导出 Cookies 文件",
       "recommendedImportFileHint": "从浏览器导出 Cookies，然后在这里选择该文件",
-      "recommendedFirefoxHint": "在 Windows 上，Firefox 是 VidBee 能直接读取的唯一浏览器",
+      "recommendedFirefoxHint": "在 Windows 上，Firefox 是 VidBeep 能直接读取的唯一浏览器",
       "useThisBrowser": "使用 {{browser}}",
       "importFile": "选择 Cookies 文件",
       "clearSetup": "清除 Cookies",
@@ -688,23 +688,23 @@
       "applied": "Cookies 已更新",
       "profileMissingDb": "这个 Firefox 配置文件没有 Cookies 数据库。请先打开一次 Firefox，然后再试。",
       "statusUsingExtension": "正在使用 {{browser}} 扩展",
-      "healthOkExtension": "VidBee 扩展会在每次下载时发送 {{browser}} 中的实时 Cookies",
+      "healthOkExtension": "VidBeep 扩展会在每次下载时发送 {{browser}} 中的实时 Cookies",
       "healthEmptyExtension": "扩展已连接，但没有找到受支持站点的登录 Cookies。请在该浏览器中登录对应站点",
       "statusHeading": "Cookies 状态",
       "methodRecommended": "推荐",
       "methodExtensionWhy": "Best option. Desktop uses live cookies for each download, including Chrome and Edge on Windows.",
       "extensionTitle": "浏览器扩展",
-      "extensionDescription": "Install the VidBee extension so Desktop can use your live signed-in cookies when downloading",
+      "extensionDescription": "Install the VidBeep extension so Desktop can use your live signed-in cookies when downloading",
       "extensionConnected": "已连接",
       "extensionDisconnected": "未连接",
       "extensionConnectedHint": "{{browser}} 已连接，新的下载会使用该浏览器的 Cookies",
-      "extensionDisconnectedHint": "保持 VidBee Desktop 打开，安装扩展，然后在该浏览器中登录对应站点",
+      "extensionDisconnectedHint": "保持 VidBeep Desktop 打开，安装扩展，然后在该浏览器中登录对应站点",
       "extensionInstallChrome": "添加到 Chrome",
       "extensionInstallEdge": "添加到 Edge",
       "extensionInstallFirefox": "添加到 Firefox",
-      "extensionInstallStep1": "Install the VidBee extension in Chrome, Edge, or Firefox",
-      "extensionInstallStep2": "保持 VidBee Desktop 运行，扩展才能连接",
-      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBee toolbar icon once",
+      "extensionInstallStep1": "Install the VidBeep extension in Chrome, Edge, or Firefox",
+      "extensionInstallStep2": "保持 VidBeep Desktop 运行，扩展才能连接",
+      "extensionInstallStep3": "Sign in to YouTube, Bilibili, or other sites in that browser, then open the VidBeep toolbar icon once",
       "sourceHeading": "Cookies 来源",
       "sourceInUse": "使用中",
       "sourceFallback": "备用",
@@ -717,7 +717,7 @@
       "browserShortHint": "选择一个已登录的浏览器",
       "fileShortHint": "导出 cookies.txt 后选择，过期需重新导出",
       "whyTitle": "设置 Cookies，下载更稳定",
-      "whyDescription": "VidBee 会用你的登录身份下载，下载更稳定，成功率更高",
+      "whyDescription": "VidBeep 会用你的登录身份下载，下载更稳定，成功率更高",
       "extensionPriority": "Cookie 浏览器优先级",
       "extensionPriorityHint": "按此顺序使用第一个在线浏览器，离线浏览器会自动跳过。",
       "extensionUse": "使用",
@@ -762,9 +762,9 @@
     "hideDockIcon": "关闭窗口后隐藏 Dock 图标",
     "hideDockIconDescription": "当窗口关闭时自动隐藏 Dock 图标。使用菜单栏或托盘图标重新打开",
     "launchAtLogin": "启动时启动",
-    "launchAtLoginDescription": "登录计算机后自动打开 VidBee",
+    "launchAtLoginDescription": "登录计算机后自动打开 VidBeep",
     "launchAtLoginUnsupported": "自动启动仅适用于 macOS 和 Windows",
-    "enableAnalytics": "帮助改进 VidBee",
+    "enableAnalytics": "帮助改进 VidBeep",
     "enableAnalyticsDescription": "共享匿名使用数据，帮助我们了解应用程序的使用情况并确定改进的优先顺序",
     "enableDownloadNotifications": "下载通知",
     "enableDownloadNotificationsDescription": "下载完成时显示系统通知",
@@ -773,7 +773,7 @@
     "downloadSubtitles": "下载字幕",
     "downloadSubtitlesDescription": "可用时仅下载所选语言的字幕",
     "subtitleLanguages": "字幕语言",
-    "subtitleLanguagesDescription": "选择 VidBee 为每个视频请求的字幕语言",
+    "subtitleLanguagesDescription": "选择 VidBeep 为每个视频请求的字幕语言",
     "subtitleLanguageSearch": "搜索字幕语言",
     "subtitleLanguageEmpty": "没有匹配的语言",
     "subtitleLanguageLimit": "最多选择 {{count}} 种语言，以降低平台限流风险",
@@ -788,10 +788,10 @@
     "writeAutoSubsDescription": "所选语言没有创作者字幕时使用自动字幕",
     "embedThumbnail": "嵌入缩略图",
     "embedThumbnailDescription": "将缩略图作为封面图",
-    "embedThumbnailWebmUnsupported": "WebM 无法将缩略图嵌入为封面。启用封面时，VidBee 会另存缩略图文件。若要嵌入封面，请选择 MP4 或 MKV。",
+    "embedThumbnailWebmUnsupported": "WebM 无法将缩略图嵌入为封面。启用封面时，VidBeep 会另存缩略图文件。若要嵌入封面，请选择 MP4 或 MKV。",
     "filenameStyle": "文件名样式",
-    "filenameStyleDescription": "选择 VidBee 如何命名保存的视频和音频文件",
-    "filenameStyleNote": "仅用于 VidBee 保存的文件。订阅或播放列表的自定义模板仍优先",
+    "filenameStyleDescription": "选择 VidBeep 如何命名保存的视频和音频文件",
+    "filenameStyleNote": "仅用于 VidBeep 保存的文件。订阅或播放列表的自定义模板仍优先",
     "filenameStyleOptions": {
       "basic": "简洁",
       "classic": "经典",
@@ -800,8 +800,8 @@
     },
     "filenameStylePreviewAudio": "音频文件预览",
     "filenameStylePreviewVideo": "视频文件预览",
-    "filenameViaVidBee": "文件名加上 via VidBee",
-    "filenameViaVidBeeDescription": "自动在保存的视频和音频文件名中加入 via VidBee",
+    "filenameViaVidBeep": "文件名加上 via VidBeep",
+    "filenameViaVidBeeDescription": "自动在保存的视频和音频文件名中加入 via VidBeep",
     "metadataTab": "元数据",
     "navGroup": {
       "app": "应用",
@@ -810,7 +810,7 @@
       "ai": "AI"
     },
     "shareWatermark": "分享水印",
-    "shareWatermarkDescription": "添加包含原视频标题、作者和 VidBee 品牌的水印",
+    "shareWatermarkDescription": "添加包含原视频标题、作者和 VidBeep 品牌的水印",
     "maxConcurrentDownloads": "最大活动下载数",
     "maxConcurrentDownloadsDescription": "最大同时下载数量",
     "none": "无",
@@ -856,7 +856,7 @@
     },
     "system": "系统",
     "theme": "主题",
-    "themeDescription": "为 VidBee 选择浅色、深色或系统主题",
+    "themeDescription": "为 VidBeep 选择浅色、深色或系统主题",
     "title": "设置",
     "tray": {
       "quit": "退出",
@@ -1135,8 +1135,8 @@
       "loadingModels": "正在从服务商加载模型…",
       "skillHelp": "Skill 使用 SKILL.md 文件。Agent 会根据描述发现 Skill，并在需要时读取指令。在聊天中输入 $skill-name 可指定使用某个 Skill。",
       "addSkill": "添加 Skill",
-      "createSkillWithVidbee": "用 VidBee 创建 Skill",
-      "createSkillRequest": "帮我创建可重复使用的 Skill。先询问任务目标、使用时机和期望的输出。需求明确后，在 VidBee 中创建并保存 Skill。",
+      "createSkillWithVidbee": "用 VidBeep 创建 Skill",
+      "createSkillRequest": "帮我创建可重复使用的 Skill。先询问任务目标、使用时机和期望的输出。需求明确后，在 VidBeep 中创建并保存 Skill。",
       "uploadSkill": "上传 Skill",
       "importGitHubSkill": "从 GitHub 导入 Skill",
       "githubSkillDescription": "粘贴公开 GitHub 仓库或 Skill 目录链接，选择要安装的 Skill，附带资源会一起导入。",
@@ -1196,7 +1196,7 @@
         },
         "diagnose-task": {
           "name": "任务排查",
-          "description": "根据任务状态、错误和日志排查失败或停滞的任务，给出恢复建议；疑似 VidBee 缺陷时协助整理反馈。"
+          "description": "根据任务状态、错误和日志排查失败或停滞的任务，给出恢复建议；疑似 VidBeep 缺陷时协助整理反馈。"
         },
         "video-localization": {
           "name": "视频本地化",
@@ -1214,10 +1214,10 @@
     "mcp": {
       "tab": "MCP",
       "enable": "启用 MCP 访问",
-      "description": "允许外部 agent 使用 VidBee 下载、订阅、转写和 AI 对话功能。",
+      "description": "允许外部 agent 使用 VidBeep 下载、订阅、转写和 AI 对话功能。",
       "running": "运行中 · {{count}} 个工具可用",
       "stopped": "MCP 当前不可用",
-      "accessNote": "连接时请保持 VidBee 运行，仅本机可访问。请像密码一样保管 HTTP 配置；轮换令牌会使已保存的 HTTP 配置失效。",
+      "accessNote": "连接时请保持 VidBeep 运行，仅本机可访问。请像密码一样保管 HTTP 配置；轮换令牌会使已保存的 HTTP 配置失效。",
       "copy": "复制 {{transport}} 配置",
       "copied": "MCP 配置已复制",
       "rotate": "轮换访问令牌",
@@ -1323,15 +1323,15 @@
     "description": "自动关注订阅源并将新内容加入下载队列，无需手动操作。",
     "defaults": {
       "title": "自动化默认值",
-      "description": "控制订阅下载的存储位置以及 VidBee 检查新视频的频率。",
+      "description": "控制订阅下载的存储位置以及 VidBeep 检查新视频的频率。",
       "downloadDirectory": "下载目录",
       "filenameTemplate": "文件名模板（仅限文件）",
       "onlyLatest": "仅下载最新视频",
-      "onlyLatestDescription": "启用后，VidBee 会跳过较旧的积压项目，仅获取最新上传的项目。"
+      "onlyLatestDescription": "启用后，VidBeep 会跳过较旧的积压项目，仅获取最新上传的项目。"
     },
     "add": {
       "title": "添加订阅",
-      "description": "粘贴频道或订阅链接。VidBee 会自动识别。"
+      "description": "粘贴频道或订阅链接。VidBeep 会自动识别。"
     },
     "fields": {
       "url": "提要网址",
@@ -1429,7 +1429,7 @@
     },
     "rssHub": {
       "title": "使用 RSSHub 自动订阅",
-      "description": "将 VidBee 与 RSSHub 结合起来，可以从各种平台实现自动订阅和下载。\n设置完成后，VidBee 将在后台运行并自动下载最新的视频和内容。",
+      "description": "将 VidBeep 与 RSSHub 结合起来，可以从各种平台实现自动订阅和下载。\n设置完成后，VidBeep 将在后台运行并自动下载最新的视频和内容。",
       "learnMore": "了解有关 RSSHub 的更多信息",
       "openDocs": "打开 RSSHub 文档",
       "hint": "没有订阅链接？使用 RSSHub 为 YouTube、Twitter 和数千个其他平台生成订阅源。"
@@ -1437,12 +1437,12 @@
     "profile": {
       "all": "全部",
       "noCategories": "请至少选择一个要关注的分类。",
-      "desktopOnly": "个人主页订阅由 VidBee 桌面版检查。",
+      "desktopOnly": "个人主页订阅由 VidBeep 桌面版检查。",
       "storiesHint": "快拍会在 24 小时后消失。请至少每 12 小时检查一次，以免错过。",
       "nextCheck": "下次检查：{{time}}",
       "subscribe": "订阅",
       "subscribed": "已订阅",
-      "readOnly": "由 VidBee 桌面版检查",
+      "readOnly": "由 VidBeep 桌面版检查",
       "categories": {
         "stories": "快拍",
         "highlights": "精选",
@@ -1459,8 +1459,8 @@
     "copied": "已复制",
     "copying": "正在复制下载引擎…",
     "copyLog": "复制日志",
-    "description": "VidBee 正在准备下载引擎，这只需要一点时间。",
-    "errorDescription": "VidBee 无法准备可用的下载引擎。请检查本地存储访问权限，然后重试。",
+    "description": "VidBeep 正在准备下载引擎，这只需要一点时间。",
+    "errorDescription": "VidBeep 无法准备可用的下载引擎。请检查本地存储访问权限，然后重试。",
     "errorDetails": "错误详情",
     "errorTitle": "下载引擎不可用",
     "finalizing": "正在完成设置…",
@@ -1469,7 +1469,7 @@
     "reportIssue": "在 GitHub 上反馈",
     "retry": "重试",
     "retrying": "正在重试…",
-    "title": "正在准备 VidBee",
+    "title": "正在准备 VidBeep",
     "validating": "正在验证下载引擎…"
   },
   "sites": {
@@ -1477,7 +1477,7 @@
     "moreDescription": "完整的 yt-dlp 列表由社区持续更新。",
     "moreTitle": "需要其他网站？",
     "openFullList": "打开全部支持网站列表",
-    "pageDescription": "VidBee 使用 yt-dlp 覆盖数百个资源。",
+    "pageDescription": "VidBeep 使用 yt-dlp 覆盖数百个资源。",
     "pageIntro": "以下是大家最常下载的主流服务。",
     "pageTitle": "支持的网站",
     "popular": {
@@ -1804,7 +1804,7 @@
     "promptShareFailed": "无法生成分享图。",
     "promptShareSaveFailed": "无法保存分享图。",
     "promptShareNativeFailed": "无法打开系统分享。",
-    "promptShareFooter": "由 VidBee 生成",
+    "promptShareFooter": "由 VidBeep 生成",
     "promptShareTagline": "下载。本地转写。问 AI。",
     "captionShareSaid": "{{name}} 说到",
     "promptOutput": "Skill 结果",
@@ -1973,7 +1973,7 @@
     "features": {
       "transcript": {
         "title": "自动生成文稿",
-        "description": "下载完成后，VidBee 会自动为视频生成文稿。全程在这台电脑上完成，内容不会上传。"
+        "description": "下载完成后，VidBeep 会自动为视频生成文稿。全程在这台电脑上完成，内容不会上传。"
       },
       "speakers": {
         "title": "说话人标记",
@@ -2059,30 +2059,30 @@
     },
     "suggestions": {
       "title": "你最佳的音视频媒体处理助手",
-      "description": "我是 VidBee。告诉我你想做什么，也可以从下面选一项开始。",
+      "description": "我是 VidBeep。告诉我你想做什么，也可以从下面选一项开始。",
       "download": {
         "label": "下载视频",
-        "prompt": "帮我用 VidBee 下载一个视频。先询问视频链接和我想要的画质，再创建下载任务。"
+        "prompt": "帮我用 VidBeep 下载一个视频。先询问视频链接和我想要的画质，再创建下载任务。"
       },
       "audio": {
         "label": "提取音频",
-        "prompt": "帮我用 VidBee 保存视频中的音频。先询问视频链接和我想要的音频格式，再创建音频下载任务。"
+        "prompt": "帮我用 VidBeep 保存视频中的音频。先询问视频链接和我想要的音频格式，再创建音频下载任务。"
       },
       "transcribe": {
         "label": "转写已下载媒体",
-        "prompt": "帮我用 VidBee 把已下载的视频或音频转成文字。先列出已完成的下载，询问我要转写哪一项，再启动本地转写任务。"
+        "prompt": "帮我用 VidBeep 把已下载的视频或音频转成文字。先列出已完成的下载，询问我要转写哪一项，再启动本地转写任务。"
       },
       "subscribe": {
         "label": "创建订阅",
-        "prompt": "帮我在 VidBee 中创建一个订阅。先询问频道、网站或 RSS 链接并验证订阅源，保存前询问是否自动下载新视频。"
+        "prompt": "帮我在 VidBeep 中创建一个订阅。先询问频道、网站或 RSS 链接并验证订阅源，保存前询问是否自动下载新视频。"
       },
       "compress": {
         "label": "压缩视频",
-        "prompt": "帮我用 VidBee 缩小视频文件。先列出已完成的视频下载，询问我要压缩哪一项以及降低到什么分辨率，再生成转换后的副本并保留原文件。"
+        "prompt": "帮我用 VidBeep 缩小视频文件。先列出已完成的视频下载，询问我要压缩哪一项以及降低到什么分辨率，再生成转换后的副本并保留原文件。"
       },
       "convert": {
         "label": "转换格式",
-        "prompt": "帮我用 VidBee 转换媒体格式。先列出已完成的下载，询问要转换的文件和目标格式，再生成转换后的副本并保留原文件。"
+        "prompt": "帮我用 VidBeep 转换媒体格式。先列出已完成的下载，询问要转换的文件和目标格式，再生成转换后的副本并保留原文件。"
       }
     },
     "eventStream": "Event Stream",
@@ -2094,8 +2094,8 @@
       "denied": "已拒绝"
     },
     "notifications": {
-      "approval": "VidBee Agent 需要你的授权",
-      "response": "VidBee Agent 等待你的回复",
+      "approval": "VidBeep Agent 需要你的授权",
+      "response": "VidBeep Agent 等待你的回复",
       "body": "打开对话以查看请求并回复。"
     },
     "newChatPlaceholder": "有什么想聊的…",
@@ -2208,10 +2208,10 @@
     "saveToThisComputer": "Save to this computer",
     "copyServerPath": "Copy server path",
     "serverPathCopied": "Server path copied",
-    "downloadPathDescription": "Where the VidBee server saves files. In Docker this is usually /data/downloads.",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBee server. Already queued jobs keep running if you turn this off.",
+    "downloadPathDescription": "Where the VidBeep server saves files. In Docker this is usually /data/downloads.",
+    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a transcript on the VidBeep server. Already queued jobs keep running if you turn this off.",
     "maxConcurrentTranscriptionsDescription": "How many transcripts can run at once on the server.",
-    "transcriptModelsDescription": "Speech models are stored on the VidBee server. The first transcript downloads them there.",
+    "transcriptModelsDescription": "Speech models are stored on the VidBeep server. The first transcript downloads them there.",
     "cookiesFileOnly": "The server cannot read browsers on your computer. Export a Netscape cookies.txt and upload it.",
     "storageTitle": "Server storage",
     "storageDownloadDir": "Download directory",
@@ -2248,7 +2248,7 @@
     "quality": "使用可获得的最高图片质量并保留原始格式，不会降级为较小的图片。",
     "available": "下载本次运行中网站允许访问的所有媒体。网站可能限制信息流的历史记录。",
     "auth": "此收藏集可能需要在设置中选择已登录的浏览器或 Cookie 文件。",
-    "profileSessionHint": "请在 VidBee 专用浏览器中登录，然后在映射前关闭该窗口。不会使用您平常的浏览器会话。",
+    "profileSessionHint": "请在 VidBeep 专用浏览器中登录，然后在映射前关闭该窗口。不会使用您平常的浏览器会话。",
     "counts": "{{posts}} 个帖子 · {{images}} 张图片 · {{videos}} 个视频 · 已保存 {{saved}} · 已存在 {{existing}} · 失败 {{failed}}",
     "categories": {
       "tweets": "帖子",
@@ -2308,7 +2308,7 @@
     },
     "chat": "聊天 {{id}}",
     "chatHint": "使用专用浏览器扫描此对话中的照片和视频。只能下载可访问的附件。",
-    "sessionHint": "请在此设备的 VidBee 专用浏览器中登录一次。不会复制您日常使用的 Chrome Cookie。扫描照片或视频，然后选择可下载的媒体。",
+    "sessionHint": "请在此设备的 VidBeep 专用浏览器中登录一次。不会复制您日常使用的 Chrome Cookie。扫描照片或视频，然后选择可下载的媒体。",
     "openBrowser": "打开浏览器",
     "selectNotDownloaded": "选择未下载项 ({{count}})",
     "videos": "视频",

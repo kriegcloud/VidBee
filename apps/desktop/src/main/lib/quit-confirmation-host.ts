@@ -11,7 +11,7 @@ import {
 } from './quit-confirmation'
 
 const FALLBACK_COPY: QuitConfirmStrings = {
-  title: 'Quit VidBee?',
+  title: 'Quit VidBeep?',
   message: '{{count}} task is still in progress. Quitting will interrupt it.',
   messagePlural: '{{count}} tasks are still in progress. Quitting will interrupt them.',
   quit: 'Quit',

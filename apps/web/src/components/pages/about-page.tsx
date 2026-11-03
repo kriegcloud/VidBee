@@ -298,7 +298,7 @@ export const AboutPage = () => {
 							<div className="space-y-4 px-6 pt-6 pb-4">
 								<div className="flex items-center gap-4">
 									<img
-										alt="VidBee"
+										alt="VidBeep"
 										className="h-18 w-18 rounded-2xl"
 										src="/app-icon.png"
 									/>

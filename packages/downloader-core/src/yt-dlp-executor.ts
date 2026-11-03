@@ -165,7 +165,7 @@ const SUBTITLE_TOGGLE_OPTIONS = new Set([
   '--write-subs'
 ])
 const SUBTITLE_FALLBACK_LOG =
-  '[VidBee] Subtitle download failed; retrying the video without subtitles.'
+  '[VidBeep] Subtitle download failed; retrying the video without subtitles.'
 
 const FFMPEG_NOT_FOUND_ERROR =
   'ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.'

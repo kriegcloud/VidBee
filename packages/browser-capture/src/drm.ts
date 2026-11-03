@@ -56,7 +56,7 @@ export const playbackPageUrl = (value: string): string => {
 const DRM_PATTERNS = ['drm protected', 'known to use drm protection'] as const
 
 export const DRM_FALLBACK_MESSAGE =
-  '[VidBee] Source is DRM protected; recording in-browser playback on a virtual display.'
+  '[VidBeep] Source is DRM protected; recording in-browser playback on a virtual display.'
 
 /** True when a yt-dlp finish event is the expected CDM/DRM failure. */
 export const isDrmProtectedMessage = (text: string): boolean => {

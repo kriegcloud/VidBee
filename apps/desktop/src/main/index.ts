@@ -83,6 +83,10 @@ import { applyDockVisibility } from './utils/dock'
 
 // NEX-131 §5.4: tray-only mode. Set when launched via the CLI / autostart so
 // the main window stays hidden until the user clicks the tray icon.
+// Keep the existing profile when changing the public application name.
+app.setPath('userData', app.getPath('userData'))
+app.setName('VidBeep')
+
 const isBackgroundLaunch = (argv: string[]): boolean =>
   argv.some((arg) => arg === '--background' || arg === '--from-cli')
 

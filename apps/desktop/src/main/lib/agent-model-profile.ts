@@ -27,7 +27,7 @@ export class CloudAgentProfileError extends Error {
   readonly code = 'CLIENT_UPDATE_REQUIRED' as const
 
   constructor(
-    message = 'This Cloud model profile needs a newer VidBee Desktop. Please update the app.'
+    message = 'This Cloud model profile needs a newer VidBeep Desktop. Please update the app.'
   ) {
     super(message)
     this.name = 'CloudAgentProfileError'
@@ -81,7 +81,7 @@ export const throwIfCloudProfileUnsupported = (status: number, payload: unknown)
   throw new CloudAgentProfileError(
     typeof body.error === 'string' && body.error.trim()
       ? body.error
-      : 'This Cloud model profile needs a newer VidBee Desktop. Please update the app.'
+      : 'This Cloud model profile needs a newer VidBeep Desktop. Please update the app.'
   )
 }
 

@@ -48,7 +48,7 @@ export function createAgentModels(options: {
     id: options.model.provider,
     name: options.model.provider,
     auth: {
-      apiKey: { name: 'VidBee', resolve: async () => ({ auth: { apiKey: options.apiKey } }) }
+      apiKey: { name: 'VidBeep', resolve: async () => ({ auth: { apiKey: options.apiKey } }) }
     },
     getModels: () => [options.model],
     stream: (model, context, streamOptions) =>

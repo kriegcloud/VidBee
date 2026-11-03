@@ -137,7 +137,7 @@ const LEGACY_BUILTIN_DESCRIPTIONS: Record<string, string[]> = {
   ],
   faq: ['Build a FAQ from the current video transcript without turning it into an essay.'],
   'diagnose-task': [
-    'Use when troubleshooting failed or stuck tasks, suggesting recovery, or preparing feedback for a suspected VidBee bug.'
+    'Use when troubleshooting failed or stuck tasks, suggesting recovery, or preparing feedback for a suspected VidBeep bug.'
   ]
 }
 

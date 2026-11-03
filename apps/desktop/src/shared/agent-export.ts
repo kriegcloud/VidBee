@@ -6,19 +6,19 @@ import { applyViaVidBeeFilename } from '@vidbee/downloader-core/filename-style'
  * @param title Source title shown on the share card or export dialog.
  */
 export const exportBaseFileName = (title?: string | null): string => {
-  const cleaned = (title?.trim() || 'VidBee')
+  const cleaned = (title?.trim() || 'VidBeep')
     .replace(/[<>:"/\\|?*]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
     .replace(/[. ]+$/g, '')
     .slice(0, 80)
-  return cleaned || 'VidBee'
+  return cleaned || 'VidBeep'
 }
 
 /**
  * Build a filesystem-safe PNG name from a media title.
  *
- * The name ends with `via VidBee` before the extension.
+ * The name ends with `via VidBeep` before the extension.
  *
  * @param title Source title shown on the share card.
  */
@@ -28,7 +28,7 @@ export const shareImageFileName = (title?: string | null): string =>
 /**
  * Build a filesystem-safe export name with the given extension.
  *
- * The name ends with `via VidBee` before the extension.
+ * The name ends with `via VidBeep` before the extension.
  *
  * @param title Source title used as the default file name.
  * @param extension File extension without a leading dot.

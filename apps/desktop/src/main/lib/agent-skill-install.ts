@@ -149,7 +149,7 @@ export function readSkillUpload(name: string, bytes: Uint8Array): SkillFile[] {
 /** Read bounded GitHub responses without following redirects to unrelated hosts. */
 async function githubBytes(url: string, limit: number): Promise<Buffer> {
   const response = await fetch(url, {
-    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'VidBee' },
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'VidBeep' },
     redirect: 'error',
     signal: AbortSignal.timeout(20_000)
   })

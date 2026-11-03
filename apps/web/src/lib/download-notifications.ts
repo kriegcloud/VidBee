@@ -41,7 +41,7 @@ export const notifyDownloadCompleted = (
 		return;
 	}
 	try {
-		new Notification(title || "VidBee", {
+		new Notification(title || "VidBeep", {
 			body: title,
 		});
 	} catch {

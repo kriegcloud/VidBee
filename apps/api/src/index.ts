@@ -11,7 +11,7 @@ const server = await createApiServer()
 
 try {
   await server.listen({ host, port })
-  server.log.info(`VidBee API server listening on http://${host}:${port}`)
+  server.log.info(`VidBeep API server listening on http://${host}:${port}`)
 } catch (error) {
   server.log.error(error)
   process.exit(1)

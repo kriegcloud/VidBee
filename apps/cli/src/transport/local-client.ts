@@ -66,7 +66,7 @@ export async function createLocalClient(opts: LocalClientOptions = {}): Promise<
   const downloaderCore = await import('@vidbee/downloader-core')
   const tqDb = await import('@vidbee/db/task-queue')
 
-  const defaultDir = opts.defaultDownloadDir ?? join(homedir(), 'Downloads', 'VidBee')
+  const defaultDir = opts.defaultDownloadDir ?? join(homedir(), 'Downloads', 'VidBeep')
 
   let tempDir: string | null = null
   let sqliteDb: { close: () => void } | null = null
