@@ -65,12 +65,20 @@ const setActionIcon = (status: 'default' | 'loading' | 'success', tabId?: number
   void browser.action.setIcon(options)
 }
 
-const fetchJson = async <T>(url: string, timeoutMs: number): Promise<T> => {
+const fetchJson = async <T>(
+  url: string,
+  timeoutMs: number,
+  method: 'GET' | 'POST' = 'GET'
+): Promise<T> => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort('timeout'), timeoutMs)
 
   try {
-    const response = await fetch(url, { signal: controller.signal })
+    const response = await fetch(url, {
+      method,
+      headers: { 'X-VidBee-Extension': browser.runtime.getURL('').replace(/\/$/, '') },
+      signal: controller.signal
+    })
     const data = (await response.json().catch(() => null)) as (T & { error?: string }) | null
     if (!response.ok) {
       const message = data && typeof data === 'object' && 'error' in data ? data.error : null
@@ -87,7 +95,7 @@ const fetchJson = async <T>(url: string, timeoutMs: number): Promise<T> => {
       throw new Error('Request timed out.')
     }
     if (error instanceof Error && error.message.includes('Failed to fetch')) {
-      throw new Error('VidBee app not responding on this port.')
+      throw new Error('VidBeep app not responding on this port.')
     }
     throw error
   } finally {
@@ -111,13 +119,17 @@ const findAvailablePort = async (): Promise<number | null> => {
 const requestVideoInfo = async (targetUrl: string): Promise<VideoInfo> => {
   const port = await findAvailablePort()
   if (!port) {
-    throw new Error('VidBee app not found on localhost.')
+    throw new Error('VidBeep app not found on localhost.')
   }
 
   const baseUrl = `http://127.0.0.1:${port}`
-  const tokenResponse = await fetchJson<{ token?: string }>(`${baseUrl}/token`, STATUS_TIMEOUT_MS)
+  const tokenResponse = await fetchJson<{ token?: string }>(
+    `${baseUrl}/token`,
+    STATUS_TIMEOUT_MS,
+    'POST'
+  )
   if (!tokenResponse.token) {
-    throw new Error('Failed to acquire token from VidBee.')
+    throw new Error('Failed to acquire token from VidBeep.')
   }
 
   return fetchJson<VideoInfo>(

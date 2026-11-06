@@ -317,12 +317,12 @@ function App() {
   const errorTitle = isInvalidPageError
     ? 'Open a video page'
     : isClientConnectionError
-      ? 'Connect the VidBee app'
+      ? 'Connect the VidBeep app'
       : 'Something went wrong'
   const errorDescription = isInvalidPageError
     ? 'Navigate to a supported video page, then try again.'
     : isClientConnectionError
-      ? 'The extension needs the VidBee desktop app to be running.'
+      ? 'The extension needs the VidBeep desktop app to be running.'
       : 'Try again in a moment.'
 
   const renderStatus = () => {
@@ -357,7 +357,10 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>VidBee</h1>
+        <div className="brand">
+          <img alt="" className="brand-icon" height={32} src="/icon/128.png" width={32} />
+          <h1>VidBeep</h1>
+        </div>
         {renderStatus()}
       </header>
       {loading && (
@@ -379,7 +382,7 @@ function App() {
               <div className="action-card">
                 <p className="action-title">Client installed</p>
                 <p className="action-text">
-                  Start VidBee and keep it running, then we will retry automatically.
+                  Start VidBeep and keep it running, then we will retry automatically.
                 </p>
                 <button
                   className="secondary-button"
@@ -392,7 +395,7 @@ function App() {
               <div className="action-card">
                 <p className="action-title">Need the app?</p>
                 <p className="action-text">
-                  Download VidBee once, install it, then come back here to try again.
+                  Download VidBeep once, install it, then come back here to try again.
                 </p>
                 <a
                   className="secondary-button"
@@ -400,7 +403,7 @@ function App() {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Download VidBee
+                  Download VidBeep
                 </a>
               </div>
             </div>
@@ -435,7 +438,7 @@ function App() {
           </section>
 
           <button className="primary-button" onClick={handleOpenClient} type="button">
-            Download with VidBee
+            Download with VidBeep
           </button>
 
           <section className="formats-section">
