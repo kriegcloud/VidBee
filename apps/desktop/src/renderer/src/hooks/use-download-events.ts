@@ -149,7 +149,8 @@ export function useDownloadEvents() {
           historyItem.downloadPath,
           historyItem.title,
           format,
-          historyItem.savedFileName
+          historyItem.savedFileName,
+          historyItem.filePath
         )
         void ipcServices.fs.showDownloadCompletedNotification(
           historyItem.title,

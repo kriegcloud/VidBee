@@ -42,16 +42,25 @@ export const buildFileNameCandidates = (
       ]
 }
 
+/**
+ * Paths a download's media may live at, most likely first. `filePath` is the
+ * absolute path main recorded; gallery and social runs save below
+ * `downloadPath`, so only that path finds their media.
+ */
 export const buildFilePathCandidates = (
   downloadPath: string,
   title: string,
   format: string,
-  savedFileName?: string
+  savedFileName?: string,
+  filePath?: string
 ): string[] => {
   const normalizedDownloadPath = downloadPath.replace(/\\/g, '/')
   const candidateFileNames = buildFileNameCandidates(title, format, savedFileName)
   return Array.from(
-    new Set(candidateFileNames.map((fileName) => `${normalizedDownloadPath}/${fileName}`))
+    new Set([
+      ...(filePath ? [filePath] : []),
+      ...candidateFileNames.map((fileName) => `${normalizedDownloadPath}/${fileName}`)
+    ])
   )
 }
 

@@ -85,6 +85,13 @@ export interface LegacyTaskProjection {
   downloadPath?: string
   savedFileName?: string
   /**
+   * Absolute path of the media this task saved (the first file for galleries).
+   * Never a collection manifest. Prefer it over `downloadPath` + `savedFileName`:
+   * gallery and social runs write below their output directory, so joining the
+   * two does not name a real file.
+   */
+  filePath?: string
+  /**
    * yt-dlp's resolved format id (e.g. `30080+30280`). Hosts compare against
    * the user's pick to detect that the chain fell back to best-available.
    */
@@ -283,7 +290,20 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
       proj.cookieSources = out.cookieSources.map((source) => ({ ...source }))
     }
     proj.fileSize = out.size
-    proj.savedFileName = task.kind === 'social-media' ? undefined : basenameOf(out.filePath)
+    // Social runs report the shared collection manifest when no single media
+    // file was recorded (runs before per-asset reporting, empty inspections).
+    const manifestPath = proj.collectionSummary?.manifestPath
+    const mediaFilePath =
+      out.filePath && !(task.kind === 'social-media' && out.filePath === manifestPath)
+        ? out.filePath
+        : undefined
+    proj.filePath = mediaFilePath
+    proj.savedFileName =
+      task.kind === 'social-media'
+        ? mediaFilePath
+          ? basenameOf(mediaFilePath)
+          : undefined
+        : basenameOf(out.filePath)
     proj.downloadPath = out.outputDirectory ?? dirnameOf(out.filePath)
     proj.outputDirectory = out.outputDirectory
     proj.fileCount = out.fileCount

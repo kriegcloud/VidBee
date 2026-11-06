@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { resolveDownloadTaskKind, shouldUseGalleryDl } from '../src/gallery-dl-executor'
 import {
+  readSocialAsset,
   resolveSocialSource,
   SocialMediaOptionsSchema,
-  socialCollectionUrl
+  selectPrimarySocialFile,
+  socialCollectionUrl,
+  socialManifestPostKeyPrefix
 } from '../src/social-media'
 
 describe('social collection routing', () => {
@@ -118,5 +121,46 @@ describe('social collection routing', () => {
     expect(
       SocialMediaOptionsSchema.safeParse({ since: '2026-09-16', until: '2026-09-15' }).success
     ).toBe(false)
+  })
+})
+
+describe('social post media', () => {
+  it('prefers video, then audio, then images', () => {
+    expect(
+      selectPrimarySocialFile([
+        { path: '/a.jpg', kind: 'image' },
+        { path: '/b.m4a', kind: 'audio' },
+        { path: '/c.mp4', kind: 'video' }
+      ])
+    ).toBe('/c.mp4')
+    expect(
+      selectPrimarySocialFile([
+        { path: '/a.jpg', kind: 'image' },
+        { path: '/b.m4a', kind: 'audio' }
+      ])
+    ).toBe('/b.m4a')
+    expect(selectPrimarySocialFile([{ path: '/a.jpg', kind: 'image' }])).toBe('/a.jpg')
+    expect(selectPrimarySocialFile([])).toBeNull()
+  })
+
+  it('accepts only well-formed asset events', () => {
+    expect(readSocialAsset({ type: 'asset', path: '/a.mp4', kind: 'video' })).toEqual({
+      path: '/a.mp4',
+      kind: 'video'
+    })
+    expect(readSocialAsset({ type: 'asset', path: '', kind: 'video' })).toBeNull()
+    expect(readSocialAsset({ type: 'asset', path: '/a', kind: 'unknown' })).toBeNull()
+    expect(readSocialAsset(null)).toBeNull()
+  })
+
+  it.each([
+    ['https://x.com/i/web/status/2118661127462850821', 'twitter:2118661127462850821:'],
+    ['https://twitter.com/fixture/status/123/photo/2', 'twitter:123:'],
+    ['https://www.reddit.com/r/pics/comments/abc123/title/', 'reddit:abc123:'],
+    ['https://www.tiktok.com/@fixture/video/7300000000000000000', 'tiktok:7300000000000000000:'],
+    ['https://x.com/fixture/tweets', null],
+    ['https://www.youtube.com/watch?v=x', null]
+  ])('derives the manifest post key for %s', (url, expected) => {
+    expect(socialManifestPostKeyPrefix(url)).toBe(expected)
   })
 })

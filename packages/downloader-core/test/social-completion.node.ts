@@ -80,3 +80,71 @@ for (const scenario of [
     }
   })
 }
+
+for (const scenario of ['video-after-image', 'images-only', 'no-assets'] as const) {
+  test(`social run output points at its own media: ${scenario}`, async (t) => {
+    const root = await mkdtemp(path.join(tmpdir(), 'vidbee-social-asset-'))
+    t.after(() => rm(root, { recursive: true, force: true }))
+    const manifest = path.join(root, '.vidbee', 'social-media.sqlite')
+    await mkdir(path.dirname(manifest))
+    await writeFile(manifest, 'manifest')
+    const image = path.join(root, 'X', 'fixture', '1_1.jpg')
+    const video = path.join(root, 'X', 'fixture', '1_2.mp4')
+    const assets =
+      scenario === 'no-assets'
+        ? []
+        : scenario === 'images-only'
+          ? [{ type: 'asset', path: image, kind: 'image' }]
+          : [
+              { type: 'asset', path: image, kind: 'image' },
+              { type: 'asset', path: video, kind: 'video' },
+              { type: 'asset', path: video, kind: 'video' }
+            ]
+    const summary = {
+      posts: 1,
+      images: 1,
+      videos: 1,
+      downloaded: 2,
+      existing: 0,
+      failed: 0,
+      totalSize: 123,
+      reason: 'exhausted',
+      manifestPath: manifest,
+      startedAt: 1,
+      finishedAt: 2
+    }
+    const lines = [...assets, { type: 'complete', summary }]
+      .map((event) => `__VIDBEE_SOCIAL__\t${JSON.stringify(event)}\n`)
+      .join('')
+    const bin = path.join(root, 'fake-gallery')
+    await writeFile(
+      bin,
+      `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(lines)})\n`,
+      {
+        mode: 0o755
+      }
+    )
+    const executor = new GalleryDlExecutor({
+      resolveBinaryPath: () => bin,
+      defaultDownloadDir: root
+    })
+    const result = await new Promise<ExecutorFinishEvent>((resolve) => {
+      executor.run(
+        {
+          taskId: 'social',
+          attemptId: 'one',
+          attemptNumber: 1,
+          input: { kind: 'social-media', url: 'https://x.com/i/web/status/1' }
+        },
+        { onSpawn() {}, onProgress() {}, onStd() {}, onFinish: resolve }
+      )
+    })
+    assert.equal(result.result.type, 'success')
+    if (result.result.type === 'success') {
+      const expected =
+        scenario === 'video-after-image' ? video : scenario === 'images-only' ? image : manifest
+      assert.equal(result.result.output.filePath, expected)
+      assert.equal(result.result.output.collectionSummary?.manifestPath, manifest)
+    }
+  })
+}

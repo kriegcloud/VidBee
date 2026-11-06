@@ -34,9 +34,11 @@ export const buildTranscriptPlaybackInput = (input: {
       ? null
       : snapshot?.sourceFilePath
         ? snapshot.sourceFilePath
-        : download?.savedFileName && download.downloadPath
-          ? `${download.downloadPath}/${download.savedFileName}`
-          : null
+        : download?.filePath
+          ? download.filePath
+          : download?.savedFileName && download.downloadPath
+            ? `${download.downloadPath}/${download.savedFileName}`
+            : null
   const isAudio =
     sourceMediaKind({
       type: download?.type,

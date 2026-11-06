@@ -271,6 +271,10 @@ class VidBeeSocialExtractor(Extractor):
         self.manifest.summary(self.summary)
         print(PREFIX + json.dumps({"type": kind, "summary": self.summary}), flush=True)
 
+    def asset(self, path, kind):
+        """Report one verified file so the host can open this post's own media."""
+        print(PREFIX + json.dumps({"type": "asset", "path": path, "kind": kind}), flush=True)
+
     def record(self, data, filename):
         filename = os.path.realpath(filename)
         if os.path.commonpath((filename, self.root_directory)) != self.root_directory:
@@ -293,12 +297,14 @@ class VidBeeSocialExtractor(Extractor):
             if duplicate:
                 os.remove(filename)
                 self.manifest.alias(data["vb_key"], duplicate)
+                self.asset(duplicate, data["vb_kind"])
                 self.asset_done = True
                 self.summary["existing"] += 1
                 self.summary["totalSize"] += os.path.getsize(duplicate)
                 self.event("progress")
                 return
         size = self.manifest.record(data["vb_key"], filename, width, height)
+        self.asset(filename, data["vb_kind"])
         self.asset_done = True
         self.summary["downloaded"] += 1
         self.summary["totalSize"] += size
@@ -513,6 +519,7 @@ class VidBeeSocialExtractor(Extractor):
                         key, filename, width, height, child.category == "twitter"):
                     self.summary["existing"] += 1
                     self.summary["totalSize"] += os.path.getsize(verified_path)
+                    self.asset(verified_path, kind)
                     self.event("progress")
                     continue
                 self.asset_done = False

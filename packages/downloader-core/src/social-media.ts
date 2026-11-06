@@ -390,3 +390,79 @@ export const SocialMediaPreviewSchema = z.object({
   limited: z.boolean()
 })
 export type SocialMediaPreview = z.infer<typeof SocialMediaPreviewSchema>
+
+/** One file a social collection run saved or verified on disk. */
+export interface SocialAssetFile {
+  readonly path: string
+  readonly kind: 'image' | 'video' | 'audio'
+}
+
+const SOCIAL_ASSET_KINDS = new Set<SocialAssetFile['kind']>(['image', 'video', 'audio'])
+
+/** Narrow one `asset` protocol event from the social extractor; anything else is ignored. */
+export const readSocialAsset = (event: unknown): SocialAssetFile | null => {
+  if (!event || typeof event !== 'object') {
+    return null
+  }
+  const record = event as Record<string, unknown>
+  const kind = record.kind as SocialAssetFile['kind']
+  if (
+    typeof record.path !== 'string' ||
+    record.path.length === 0 ||
+    !SOCIAL_ASSET_KINDS.has(kind)
+  ) {
+    return null
+  }
+  return { path: record.path, kind }
+}
+
+const PRIMARY_KIND_ORDER: readonly SocialAssetFile['kind'][] = ['video', 'audio', 'image']
+
+/**
+ * Pick the file a details page should open for a social run: the first video,
+ * else the first audio track, else the first image. `null` when nothing was saved.
+ */
+export const selectPrimarySocialFile = (assets: readonly SocialAssetFile[]): string | null => {
+  for (const kind of PRIMARY_KIND_ORDER) {
+    const match = assets.find((asset) => asset.kind === kind)
+    if (match) {
+      return match.path
+    }
+  }
+  return null
+}
+
+/** gallery-dl extractor category the social manifest keys assets by. */
+const MANIFEST_CATEGORY: Record<string, string> = {
+  x: 'twitter',
+  reddit: 'reddit',
+  tiktok: 'tiktok',
+  instagram: 'instagram'
+}
+
+const X_STATUS_ID = /\/status\/(\d+)/
+const REDDIT_POST_ID = /\/comments\/([a-z0-9]+)/i
+const TIKTOK_POST_ID = /\/(?:video|photo)\/(\d+)/
+
+/**
+ * Manifest asset-key prefix (`<category>:<postId>:`) for a single-post source,
+ * used to find media saved by runs that predate per-asset reporting.
+ * `null` for profiles, feeds and platforms whose post id is not in the URL.
+ */
+export const socialManifestPostKeyPrefix = (url: string): string | null => {
+  const source = resolveSocialSource(url)
+  if (source?.kind !== 'post') {
+    return null
+  }
+  const category = MANIFEST_CATEGORY[source.platform]
+  const pattern =
+    source.platform === 'x'
+      ? X_STATUS_ID
+      : source.platform === 'reddit'
+        ? REDDIT_POST_ID
+        : source.platform === 'tiktok'
+          ? TIKTOK_POST_ID
+          : null
+  const postId = pattern ? pattern.exec(new URL(source.url).pathname)?.[1] : undefined
+  return category && postId ? `${category}:${postId}:` : null
+}

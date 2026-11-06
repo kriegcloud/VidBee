@@ -102,6 +102,8 @@ export interface DownloadItem {
   duration?: number
   fileSize?: number
   savedFileName?: string
+  /** Absolute path of the saved media; preferred over `downloadPath` + `savedFileName`. */
+  filePath?: string
   // Timestamps
   createdAt: number
   startedAt?: number
@@ -184,6 +186,8 @@ export interface DownloadHistoryItem {
   status: DownloadStatus
   downloadPath?: string
   savedFileName?: string
+  /** Absolute path of the saved media; preferred over `downloadPath` + `savedFileName`. */
+  filePath?: string
   resolvedFormatId?: string
   subtitleStatus?: 'downloaded' | 'unavailable' | 'skipped-auth' | 'failed'
   subtitleLanguages?: string[]

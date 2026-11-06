@@ -245,6 +245,11 @@ export function DownloadItem({
   useEffect(() => {
     setExistingFilePath(undefined)
     const checkFileExists = async () => {
+      if (download.filePath && (await ipcServices.fs.fileExists(download.filePath))) {
+        setExistingFilePath(download.filePath)
+        setFileExists(true)
+        return
+      }
       if (!(download.title && download.downloadPath)) {
         setExistingFilePath(null)
         setFileExists(false)
@@ -257,7 +262,8 @@ export function DownloadItem({
           download.downloadPath,
           download.title,
           formatForPath,
-          download.savedFileName
+          download.savedFileName,
+          download.filePath
         )
         for (const filePath of filePaths) {
           const exists = await ipcServices.fs.fileExists(filePath)
@@ -277,7 +283,13 @@ export function DownloadItem({
     }
 
     checkFileExists()
-  }, [download.title, download.downloadPath, download.savedFileName, resolvedExtension])
+  }, [
+    download.filePath,
+    download.title,
+    download.downloadPath,
+    download.savedFileName,
+    resolvedExtension
+  ])
 
   /** Cancel the task and remove its row only after the main process confirms persistence. */
   const handleCancel = async (): Promise<void> => {
@@ -350,7 +362,8 @@ export function DownloadItem({
 
   const handleOpenFolder = async () => {
     try {
-      if (download.collectionSummary && download.outputDirectory) {
+      // Social collections share the download root; reveal their own media instead.
+      if (download.collectionSummary && download.outputDirectory && !download.filePath) {
         await ipcServices.fs.openFile(download.outputDirectory)
         return
       }
@@ -360,7 +373,8 @@ export function DownloadItem({
         downloadPath,
         download.title,
         format,
-        download.savedFileName
+        download.savedFileName,
+        download.filePath
       )
 
       const success = await tryFileOperation(filePaths, (filePath) =>
@@ -387,7 +401,8 @@ export function DownloadItem({
         downloadPath,
         download.title,
         format,
-        download.savedFileName
+        download.savedFileName,
+        download.filePath
       )
 
       const success = await tryFileOperation(filePaths, (filePath) =>
@@ -461,7 +476,13 @@ export function DownloadItem({
 
     try {
       // Generate file path using downloadPath + title + ext
-      const filePaths = buildFilePathCandidates(downloadPath, title, format, download.savedFileName)
+      const filePaths = buildFilePathCandidates(
+        downloadPath,
+        title,
+        format,
+        download.savedFileName,
+        download.filePath
+      )
       const success = await tryFileOperation(filePaths, (filePath) =>
         ipcServices.fs.copyFileToClipboard(filePath)
       )

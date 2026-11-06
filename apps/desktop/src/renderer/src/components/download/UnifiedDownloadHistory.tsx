@@ -515,7 +515,8 @@ export function UnifiedDownloadHistory({
         downloadPath,
         record.title,
         formatForPath,
-        record.savedFileName
+        record.savedFileName,
+        record.filePath
       )
       const deleted = await tryFileOperation(filePaths, (filePath) =>
         ipcServices.fs.deleteFile(filePath)

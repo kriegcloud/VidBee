@@ -19,7 +19,14 @@ import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from '
 import { normalizePinterestUrl, PINTEREST_EXTRACTOR_ARGS } from './pinterest'
 import { SocialCollectionSummarySchema } from './schemas'
 import { normalizeSnapchatUrl } from './snapchat'
-import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
+import {
+  readSocialAsset,
+  resolveSocialSource,
+  type SocialAssetFile,
+  SocialMediaOptionsSchema,
+  selectPrimarySocialFile,
+  socialCollectionUrl
+} from './social-media'
 import { normalizeThreadsUrl } from './threads'
 import { normalizeTikTokPhotoUrl } from './tiktok-photo'
 import type { DownloadRuntimeSettings } from './types'
@@ -338,6 +345,9 @@ export class GalleryDlExecutor implements Executor {
     let ticks = 0
     let socialSummary: SocialCollectionSummary | undefined
     let socialComplete = false
+    // Files this run saved or verified, in traversal order, so a single post
+    // can point at its own media instead of the shared collection manifest.
+    const socialAssets: SocialAssetFile[] = []
     let protocolError = false
 
     const finishOnce = (event: Parameters<ExecutorEvents['onFinish']>[0]): void => {
@@ -551,6 +561,13 @@ export class GalleryDlExecutor implements Executor {
             if (event && typeof event === 'object' && 'type' in event && event.type === 'item') {
               return
             }
+            if (event && typeof event === 'object' && 'type' in event && event.type === 'asset') {
+              const asset = readSocialAsset(event)
+              if (asset && !socialAssets.some((known) => known.path === asset.path)) {
+                socialAssets.push(asset)
+              }
+              return
+            }
             if (
               !event ||
               typeof event !== 'object' ||
@@ -741,7 +758,7 @@ export class GalleryDlExecutor implements Executor {
           result: {
             type: 'success',
             output: {
-              filePath: manifest,
+              filePath: selectPrimarySocialFile(socialAssets) ?? manifest,
               size: summary.totalSize,
               durationMs: null,
               sha256: null,

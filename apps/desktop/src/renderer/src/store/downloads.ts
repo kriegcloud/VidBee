@@ -103,6 +103,7 @@ const toHistoryRecord = (item: DownloadHistoryItem): DownloadRecord => ({
   failedCount: item.failedCount,
   totalSize: item.totalSize,
   savedFileName: item.savedFileName,
+  filePath: item.filePath,
   resolvedFormatId: item.resolvedFormatId,
   subtitleStatus: item.subtitleStatus,
   subtitleLanguages: item.subtitleLanguages,

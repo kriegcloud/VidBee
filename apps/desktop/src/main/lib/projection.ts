@@ -13,17 +13,18 @@
  * new component contract.
  */
 
+import { basename } from 'node:path'
 import type { DownloadRuntimeSettings } from '@vidbee/downloader-core'
 import { cookieSourcesFromArgs } from '@vidbee/downloader-core/yt-dlp-args'
 import type { Task, TaskCreationMetadata } from '@vidbee/task-queue'
 import { projectTaskToLegacy } from '@vidbee/task-queue'
-
 import type {
   DownloadHistoryItem,
   DownloadItem,
   DownloadProgress,
   VideoFormat
 } from '../../shared/types'
+import { resolveLegacySocialMediaFile } from './social-media-file'
 
 interface RendererTaskOptions {
   origin: TaskCreationMetadata['origin']
@@ -105,6 +106,23 @@ const readConfiguredCookieSources = (
   return cookieSourcesFromArgs(args, settings)
 }
 
+/**
+ * Expose the task's own media path. Social runs recorded before per-asset
+ * reporting only kept the shared manifest, so look their post up in it.
+ */
+const applyMediaFilePath = (
+  item: { filePath?: string; savedFileName?: string },
+  task: Readonly<Task>,
+  projected: string | undefined
+): void => {
+  const filePath = projected ?? resolveLegacySocialMediaFile(task)
+  if (!filePath) {
+    return
+  }
+  item.filePath = filePath
+  item.savedFileName ??= basename(filePath)
+}
+
 const buildProgress = (
   proj: ReturnType<typeof projectTaskToLegacy>
 ): DownloadProgress | undefined => {
@@ -158,6 +176,7 @@ export const projectTaskForRenderer = (task: Readonly<Task>): DownloadItem => {
   if (proj.savedFileName !== undefined) {
     item.savedFileName = proj.savedFileName
   }
+  applyMediaFilePath(item, task, proj.filePath)
   if (proj.resolvedFormatId !== undefined) {
     item.resolvedFormatId = proj.resolvedFormatId
   }
@@ -329,6 +348,7 @@ export const projectTaskForRendererHistory = (task: Readonly<Task>): DownloadHis
   if (proj.savedFileName !== undefined) {
     item.savedFileName = proj.savedFileName
   }
+  applyMediaFilePath(item, task, proj.filePath)
   if (proj.resolvedFormatId !== undefined) {
     item.resolvedFormatId = proj.resolvedFormatId
   }
