@@ -4,6 +4,7 @@ import { selectAtom } from 'jotai/utils'
 import { type ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { DownloadSelectionModifiers } from '../../hooks/use-download-selection'
+import { downloadDisplayTitle } from '../../lib/download-display-title'
 import { downloadLivePatchesAtom } from '../../store/download-live-patch'
 import type { DownloadRecord } from '../../store/downloads'
 import { DownloadItem } from './DownloadItem'
@@ -68,7 +69,7 @@ export function DownloadTaskTree({
           }}
           type="button"
         >
-          {t('download.sourceFile')}: {download.title}
+          {t('download.sourceFile')}: {downloadDisplayTitle(download)}
         </button>
       )}
     </div>

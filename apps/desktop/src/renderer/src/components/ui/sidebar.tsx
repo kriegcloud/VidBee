@@ -49,7 +49,7 @@ export function Sidebar({
       id: 'subscriptions',
       active: currentPage === 'subscriptions',
       icon: appSidebarIcons.subscriptions,
-      label: t('menu.rss'),
+      label: t('menu.subscriptions'),
       onClick: () => onPageChange('subscriptions')
     },
     {
@@ -66,9 +66,7 @@ export function Sidebar({
       active: currentPage === 'settings',
       icon: appSidebarIcons.settings,
       label: t('menu.preferences'),
-      onClick: () => onPageChange('settings'),
-      showLabel: false,
-      showTooltip: true
+      onClick: () => onPageChange('settings')
     },
     {
       id: 'about',
@@ -76,11 +74,17 @@ export function Sidebar({
       icon: appSidebarIcons.about,
       indicator: updateAvailable.available,
       label: t('menu.about'),
-      onClick: () => onPageChange('about'),
-      showLabel: false,
-      showTooltip: true
+      onClick: () => onPageChange('about')
     }
   ]
 
-  return <AppSidebar appName="VidBeep" bottomItems={bottomItems} items={items} logoAlt="VidBeep" />
+  return (
+    <AppSidebar
+      appName="VidBeep"
+      bottomItems={bottomItems}
+      items={items}
+      logoAlt="VidBeep"
+      variant="labelled"
+    />
+  )
 }

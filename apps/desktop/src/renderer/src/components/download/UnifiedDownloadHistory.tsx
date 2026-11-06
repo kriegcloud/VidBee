@@ -18,10 +18,7 @@ import {
 } from '@renderer/components/ui/dropdown-menu'
 import { cn } from '@renderer/lib/utils'
 import { DownloadEmptyState } from '@vidbee/ui/components/ui/download-empty-state'
-import {
-  DownloadFilterBar,
-  type DownloadFilterItem
-} from '@vidbee/ui/components/ui/download-filter-bar'
+import type { DownloadFilterItem } from '@vidbee/ui/components/ui/download-filter-bar'
 import { DownloadQueueStatus } from '@vidbee/ui/components/ui/download-queue-status'
 import { DownloadSelectionToolbar } from '@vidbee/ui/components/ui/download-selection-toolbar'
 import {
@@ -79,6 +76,7 @@ import { ScrollArea } from '../ui/scroll-area'
 import { DownloadDialog } from './DownloadDialog'
 import { DownloadHistoryVirtualList } from './DownloadHistoryVirtualList'
 import { DownloadSelectionContextMenuItems } from './DownloadSelectionContextMenuItems'
+import { HomeDownloadFilterBar } from './HomeDownloadFilterBar'
 import { usePlaylistExpanded } from './playlist-expanded-state'
 
 const SOURCE_FILTER_OPTIONS = [
@@ -630,8 +628,8 @@ export function UnifiedDownloadHistory({
   return (
     // biome-ignore lint/a11y/useSemanticElements: library group scopes keyboard events for the list and floating toolbar
     <div className={cn('flex h-full flex-col')} onKeyDown={handleSelectionKeyDown} role="group">
-      <CardHeader className="z-50 gap-4 bg-background p-0 px-6 py-4 backdrop-blur">
-        <DownloadFilterBar
+      <CardHeader className="z-50 gap-4 bg-background p-0 px-6 py-4">
+        <HomeDownloadFilterBar
           actions={
             <div className="flex items-center gap-2">
               <DropdownMenu modal={false}>
@@ -639,10 +637,10 @@ export function UnifiedDownloadHistory({
                   <Button
                     aria-label={t('download.creationSource')}
                     className={cn(
-                      'h-7 max-w-40 gap-1.5 rounded-full border border-black/[0.08] px-2.5 text-xs dark:border-white/12 [&_svg]:size-3.5',
+                      'h-8 max-w-40 gap-1.5 rounded-md border-0 px-2.5 text-xs hover:bg-[color:var(--hover)] [&_svg]:size-3.5',
                       originFilter === 'all'
                         ? 'text-muted-foreground'
-                        : 'border-transparent bg-muted text-foreground'
+                        : 'bg-[color:var(--active)] text-foreground'
                     )}
                     data-testid="download-source-filter"
                     size="sm"

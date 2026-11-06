@@ -231,16 +231,16 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           className={cn(
             "relative shrink-0 rounded-full outline-none cursor-pointer",
             "transition-colors duration-80",
-            "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           )}
           style={{
             width: m.trackWidth,
             height: m.trackHeight,
             backgroundColor: checked
-              ? hovered ? "#5C89F2" : "#6B97FF"
+              ? hovered ? "color-mix(in oklab, var(--data), black 12%)" : "var(--data)"
               : hovered
-                ? "color-mix(in oklab, var(--accent), rgb(var(--overlay)) 10%)"
-                : "var(--accent)",
+                ? "color-mix(in oklab, var(--input), rgb(var(--overlay)) 12%)"
+                : "var(--input)",
           }}
           onClick={(e) => e.stopPropagation()}
         >

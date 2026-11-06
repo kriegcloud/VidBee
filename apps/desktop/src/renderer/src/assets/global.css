@@ -7,6 +7,9 @@
 @import "@vidbee/ui/agent-response.css";
 @import "./view-transitions.css";
 
+/* `dark:` follows the app theme (next-themes sets .dark on <html>), not the OS colour scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Streamdown core + plugin utilities live in package JS, not this app tree. */
 @source "../../../../node_modules/streamdown/dist/*.js";
 @source "../../../../node_modules/@streamdown/code/dist/*.js";

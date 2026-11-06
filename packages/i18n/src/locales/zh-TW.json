@@ -112,7 +112,14 @@
     "downloadingUpdate": "正在下載更新",
     "changelog": {
       "currentVersion": "目前版本"
-    }
+    },
+    "emailSupport": "電子郵件支援",
+    "feedbackAndIssues": "意見回饋與問題",
+    "helpAndFeedback": "說明與意見回饋",
+    "moreFromDeveloper": "開發者的更多作品",
+    "officialWebsite": "官方網站",
+    "releaseNotes": "版本說明",
+    "shareVidBeep": "分享 VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "下載完成後關閉應用程式",
@@ -307,12 +314,17 @@
         "completed": "已完成",
         "failed": "失敗",
         "stopped": "已停止"
-      }
+      },
+      "sentenceCount": "{{count}} 個代理任務"
     },
     "sourceFile": "來源檔案",
     "troubleshoot": "協助排查",
     "troubleshootPrompt": "幫我排查下載任務 {{taskId}} 的問題。請查看目前狀態、錯誤詳情和日誌，分析可能的原因，並在採取任何操作前先給出解決建議。",
-    "troubleshootFailed": "無法開始排查，請重試。"
+    "troubleshootFailed": "無法開始排查，請重試。",
+    "addUrlAction": "新增連結",
+    "dateToday": "今天",
+    "dateYesterday": "昨天",
+    "etaValue": "剩餘 {{eta}}"
   },
   "error": {
     "title": "發生錯誤",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "含媒體的貼文",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "新增訂閱",
+    "allFilter": "全部",
+    "autoDownloadOff": "自動下載已關閉",
+    "autoDownloadOn": "自動下載已開啟",
+    "emptyDescription": "追蹤頻道、播放清單或訂閱源，VidBeep 會自動為你下載新內容。",
+    "emptyTitle": "還沒有訂閱",
+    "manage": "管理 {{name}}",
+    "newSince": "自 {{date}} 以來新增",
+    "platformFilters": "依平台篩選訂閱",
+    "rssHubLink": "使用 RSSHub 訂閱源",
+    "today": "今天",
+    "upToDate": "已是最新",
+    "yesterday": "昨天",
+    "followableTitle": "可以訂閱的內容",
+    "checksLabel": "檢查新內容",
+    "everyHours": "每 {{count}} 小時",
+    "savesToLabel": "儲存到",
+    "anyFeedUrl": "任意 RSS 或 Atom 訂閱源連結"
   },
   "kernelPreparation": {
     "copied": "已複製",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "轉換格式",
         "prompt": "幫我用 VidBeep 轉換媒體格式。先列出已完成的下載，詢問要轉換的檔案和目標格式，再產生轉換後的副本並保留原始檔案。"
-      }
+      },
+      "calmTitle": "想讓 VidBeep 做什麼？",
+      "calmDescription": "可處理你的下載、轉錄和訂閱。"
     },
     "eventStream": "Event Stream",
     "eventStatus": {

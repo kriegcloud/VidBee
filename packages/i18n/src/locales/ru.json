@@ -112,7 +112,14 @@
     "downloadingUpdate": "Загрузка обновления",
     "changelog": {
       "currentVersion": "Текущая версия"
-    }
+    },
+    "emailSupport": "Поддержка по email",
+    "feedbackAndIssues": "Отзывы и проблемы",
+    "helpAndFeedback": "Помощь и отзывы",
+    "moreFromDeveloper": "Другие проекты разработчика",
+    "officialWebsite": "Официальный сайт",
+    "releaseNotes": "Примечания к выпуску",
+    "shareVidBeep": "Поделиться VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Закрыть приложение после завершения загрузки",
@@ -307,12 +314,17 @@
         "completed": "Готово",
         "failed": "Ошибка",
         "stopped": "Остановлено"
-      }
+      },
+      "sentenceCount": "Задач агента: {{count}}"
     },
     "sourceFile": "Исходный файл",
     "troubleshoot": "Разобраться с ошибкой",
     "troubleshootPrompt": "Помоги разобраться с проблемой задачи загрузки {{taskId}}. Проверь её текущее состояние, сведения об ошибке и журналы, объясни вероятную причину и предложи следующие шаги, прежде чем выполнять какие-либо действия.",
-    "troubleshootFailed": "Не удалось начать диагностику. Попробуйте ещё раз."
+    "troubleshootFailed": "Не удалось начать диагностику. Попробуйте ещё раз.",
+    "addUrlAction": "Добавить URL",
+    "dateToday": "Сегодня",
+    "dateYesterday": "Вчера",
+    "etaValue": "Осталось {{eta}}"
   },
   "error": {
     "title": "Что-то пошло не так",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Публикации с медиа",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Добавить подписку",
+    "allFilter": "Все",
+    "autoDownloadOff": "Автозагрузка выключена",
+    "autoDownloadOn": "Автозагрузка включена",
+    "emptyDescription": "Подпишитесь на канал, плейлист или ленту, и VidBeep будет скачивать новое за вас.",
+    "emptyTitle": "Подписок пока нет",
+    "manage": "Управлять {{name}}",
+    "newSince": "новых с {{date}}",
+    "platformFilters": "Фильтр подписок по платформе",
+    "rssHubLink": "Использовать ленты RSSHub",
+    "today": "Сегодня",
+    "upToDate": "Всё скачано",
+    "yesterday": "Вчера",
+    "followableTitle": "На что можно подписаться",
+    "checksLabel": "Проверка новых элементов",
+    "everyHours": "Каждые {{count}} ч",
+    "savesToLabel": "Сохраняет в",
+    "anyFeedUrl": "Любой URL ленты RSS или Atom"
   },
   "kernelPreparation": {
     "copied": "Скопировано",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Преобразовать формат",
         "prompt": "Помоги преобразовать медиафайл в другой формат в VidBeep. Покажи завершённые загрузки, спроси, какой файл преобразовать и какой формат нужен, затем создай преобразованную копию, сохранив оригинал."
-      }
+      },
+      "calmTitle": "Что сделать VidBeep?",
+      "calmDescription": "Работает с вашими загрузками, расшифровками и подписками."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

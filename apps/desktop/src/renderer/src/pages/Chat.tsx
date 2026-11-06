@@ -76,10 +76,6 @@ export function Chat() {
 
   return (
     <section className="relative flex h-full min-h-0 flex-col" data-testid="agent-chat-page">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[calc(var(--agent-toolbar-top,1rem)+3rem)] bg-linear-to-b from-background/85 via-background/40 to-transparent"
-      />
       <header className="pointer-events-none absolute inset-x-4 top-[var(--agent-toolbar-top,1rem)] z-50 flex h-8 items-center justify-end gap-2">
         <h1 className="sr-only">{t('transcript.promptHistoryChat')}</h1>
         <Tooltip>
@@ -136,7 +132,7 @@ export function Chat() {
           </TooltipContent>
         </Tooltip>
       </header>
-      <div className="flex min-h-0 w-full flex-1 flex-col [--agent-composer-bottom:1rem] [--agent-content-max-width:48rem] [--agent-content-top-padding:calc(var(--agent-toolbar-top,1rem)+3.75rem)] [&_[data-slot=message-scroller-viewport]]:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.5),black_calc(var(--agent-toolbar-top,1rem)+2rem))]">
+      <div className="flex min-h-0 w-full flex-1 flex-col [--agent-composer-bottom:1rem] [--agent-content-max-width:48rem] [--agent-content-top-padding:calc(var(--agent-toolbar-top,1rem)+3.75rem)] [&_.clipii-quick-capture]:bg-card! [&_.clipii-quick-capture]:shadow-none! [&_[data-testid=agent-chat-composer-dock]]:bg-background">
         <AgentChat
           hasProvider={Boolean(snapshot?.activeProviderId)}
           initialDraft={thread ? undefined : initialDraft}

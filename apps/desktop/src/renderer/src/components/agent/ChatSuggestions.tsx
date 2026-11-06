@@ -24,22 +24,25 @@ export function ChatSuggestions({
   return (
     <section
       aria-labelledby="agent-chat-suggestions-title"
-      className="mx-auto w-full max-w-xl space-y-6 py-6"
+      className="mx-auto w-full max-w-none space-y-6 py-6"
       data-testid="agent-chat-suggestions"
     >
-      <div className="space-y-2 text-center">
-        <h2 className="font-semibold text-2xl tracking-tight" id="agent-chat-suggestions-title">
-          {t('agentChat.suggestions.title')}
+      <div className="space-y-2">
+        <h2 className="font-semibold text-xl" id="agent-chat-suggestions-title">
+          {t('agentChat.suggestions.calmTitle', 'What should VidBeep do?')}
         </h2>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          {t('agentChat.suggestions.description')}
+          {t(
+            'agentChat.suggestions.calmDescription',
+            'Works on your downloads, transcripts and subscriptions.'
+          )}
         </p>
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className="flex flex-wrap gap-2">
         {CHAT_SUGGESTIONS.map(({ id, icon: Icon }) => (
           <Badge
             asChild
-            className="h-7 cursor-pointer gap-1.5 border-border/60 bg-surface-2 px-2.5 hover:bg-hover disabled:pointer-events-none disabled:opacity-50"
+            className="h-8 cursor-pointer gap-1.5 border-border/60 bg-transparent px-2.5 hover:bg-hover disabled:pointer-events-none disabled:opacity-50"
             key={id}
             variant="outline"
           >

@@ -2,6 +2,7 @@ import { sourceMediaKind } from '@shared/source-media-kind'
 import type { DownloadRecord } from '../store/downloads'
 import type { EnsurePlaybackSessionInput } from '../store/transcript-playback'
 import type { TranscriptSnapshotView } from '../store/transcripts'
+import { downloadDisplayTitle } from './download-display-title'
 
 /**
  * Return the download record matching one playlist or library id.
@@ -49,7 +50,9 @@ export const buildTranscriptPlaybackInput = (input: {
     isAudio,
     subtitle: download?.channel ?? download?.uploader ?? null,
     thumbnail: cachedThumbnail ?? null,
-    title: download?.title ?? snapshot?.title ?? fallbackTitle
+    title: download
+      ? downloadDisplayTitle(download, snapshot?.title)
+      : (snapshot?.title ?? fallbackTitle)
   }
 }
 

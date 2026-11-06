@@ -19,16 +19,16 @@ export function DownloadEngineRow({ status, actions }: DownloadEngineRowProps) {
   const isActive = status.state === 'checking' || status.state === 'installing'
   const statusClassName =
     status.state === 'unavailable'
-      ? 'text-destructive'
+      ? 'bg-destructive/10 text-destructive'
       : status.state === 'bundled-fallback' || status.state === 'retry-scheduled'
-        ? 'text-amber-700 dark:text-amber-400'
-        : 'text-muted-foreground'
+        ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200'
+        : 'bg-muted text-muted-foreground'
 
   return (
-    <div className="flex items-center justify-between gap-4 px-6 py-3">
+    <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
       <div className="space-y-1">
-        <p className="font-medium leading-none">{t('about.downloadEngine.title')}</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="font-medium text-sm">{t('about.downloadEngine.title')}</p>
+        <p className="text-muted-foreground text-sm tabular-nums">
           {t('about.downloadEngine.versions', {
             nodeVersion: status.nodeVersion ?? '—',
             ytDlpVersion: status.ytDlpVersion ?? '—'
@@ -38,9 +38,9 @@ export function DownloadEngineRow({ status, actions }: DownloadEngineRowProps) {
       <div className="flex shrink-0 items-center gap-2">
         <Badge
           aria-live="polite"
-          className={`gap-1.5 ${statusClassName}`}
+          className={`shrink-0 rounded-full border-0 px-2 py-1 font-medium text-xs ${statusClassName}`}
           role={isActive ? 'status' : undefined}
-          variant="outline"
+          variant="secondary"
         >
           {isActive ? (
             <LoaderCircle

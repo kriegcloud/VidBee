@@ -112,7 +112,14 @@
     "downloadingUpdate": "Baixando atualização",
     "changelog": {
       "currentVersion": "Versão atual"
-    }
+    },
+    "emailSupport": "Suporte por e-mail",
+    "feedbackAndIssues": "Feedback e problemas",
+    "helpAndFeedback": "Ajuda e feedback",
+    "moreFromDeveloper": "Mais do desenvolvedor",
+    "officialWebsite": "Site oficial",
+    "releaseNotes": "Notas da versão",
+    "shareVidBeep": "Compartilhar VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Fechar aplicativo quando download terminar",
@@ -307,12 +314,17 @@
         "completed": "Concluído",
         "failed": "Falhou",
         "stopped": "Parado"
-      }
+      },
+      "sentenceCount": "{{count}} tarefas do agente"
     },
     "sourceFile": "Arquivo de origem",
     "troubleshoot": "Diagnosticar",
     "troubleshootPrompt": "Ajude-me a diagnosticar o problema da tarefa de download {{taskId}}. Verifique o estado atual, os detalhes do erro e os registros, explique a causa provável e recomende os próximos passos antes de realizar qualquer ação.",
-    "troubleshootFailed": "Não foi possível iniciar o diagnóstico. Tente novamente."
+    "troubleshootFailed": "Não foi possível iniciar o diagnóstico. Tente novamente.",
+    "addUrlAction": "Adicionar URL",
+    "dateToday": "Hoje",
+    "dateYesterday": "Ontem",
+    "etaValue": "Tempo restante {{eta}}"
   },
   "error": {
     "title": "Algo deu errado",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Publicações com mídia",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Adicionar inscrição",
+    "allFilter": "Todas",
+    "autoDownloadOff": "Download automático desligado",
+    "autoDownloadOn": "Download automático ligado",
+    "emptyDescription": "Siga um canal, playlist ou feed e o VidBeep baixa os novos itens para você.",
+    "emptyTitle": "Nenhuma inscrição ainda",
+    "manage": "Gerenciar {{name}}",
+    "newSince": "novos desde {{date}}",
+    "platformFilters": "Filtrar inscrições por plataforma",
+    "rssHubLink": "Usar feeds do RSSHub",
+    "today": "Hoje",
+    "upToDate": "Em dia",
+    "yesterday": "Ontem",
+    "followableTitle": "O que você pode seguir",
+    "checksLabel": "Verifica novos itens",
+    "everyHours": "A cada {{count}} horas",
+    "savesToLabel": "Salva em",
+    "anyFeedUrl": "Qualquer URL de feed RSS ou Atom"
   },
   "kernelPreparation": {
     "copied": "Copiado",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Converter formato",
         "prompt": "Ajude-me a converter uma mídia para outro formato no VidBeep. Mostre meus downloads concluídos, pergunte qual arquivo converter e o formato de saída desejado, depois crie uma cópia convertida e mantenha o original."
-      }
+      },
+      "calmTitle": "O que o VidBeep deve fazer?",
+      "calmDescription": "Trabalha com seus downloads, transcrições e inscrições."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

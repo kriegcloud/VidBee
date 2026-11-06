@@ -112,7 +112,14 @@
     "downloadingUpdate": "正在下载更新",
     "changelog": {
       "currentVersion": "当前版本"
-    }
+    },
+    "emailSupport": "邮件支持",
+    "feedbackAndIssues": "反馈与问题",
+    "helpAndFeedback": "帮助与反馈",
+    "moreFromDeveloper": "开发者的更多作品",
+    "officialWebsite": "官方网站",
+    "releaseNotes": "发布说明",
+    "shareVidBeep": "分享 VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "下载完成后关闭应用",
@@ -307,12 +314,17 @@
         "completed": "已完成",
         "failed": "失败",
         "stopped": "已停止"
-      }
+      },
+      "sentenceCount": "{{count}} 个智能体任务"
     },
     "sourceFile": "源文件",
     "troubleshoot": "协助排查",
     "troubleshootPrompt": "帮我排查下载任务 {{taskId}} 的问题。请查看当前状态、错误详情和日志，分析可能的原因，并在采取任何操作前先给出解决建议。",
-    "troubleshootFailed": "无法开始排查，请重试。"
+    "troubleshootFailed": "无法开始排查，请重试。",
+    "addUrlAction": "添加链接",
+    "dateToday": "今天",
+    "dateYesterday": "昨天",
+    "etaValue": "剩余 {{eta}}"
   },
   "error": {
     "title": "出了点问题",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "含媒体的帖子",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "添加订阅",
+    "allFilter": "全部",
+    "autoDownloadOff": "自动下载已关闭",
+    "autoDownloadOn": "自动下载已开启",
+    "emptyDescription": "关注频道、播放列表或订阅源，VidBeep 会自动为你下载新内容。",
+    "emptyTitle": "还没有订阅",
+    "manage": "管理 {{name}}",
+    "newSince": "自 {{date}} 以来新增",
+    "platformFilters": "按平台筛选订阅",
+    "rssHubLink": "使用 RSSHub 订阅源",
+    "today": "今天",
+    "upToDate": "已是最新",
+    "yesterday": "昨天",
+    "followableTitle": "可以订阅的内容",
+    "checksLabel": "检查新内容",
+    "everyHours": "每 {{count}} 小时",
+    "savesToLabel": "保存到",
+    "anyFeedUrl": "任意 RSS 或 Atom 订阅源链接"
   },
   "kernelPreparation": {
     "copied": "已复制",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "转换格式",
         "prompt": "帮我用 VidBeep 转换媒体格式。先列出已完成的下载，询问要转换的文件和目标格式，再生成转换后的副本并保留原文件。"
-      }
+      },
+      "calmTitle": "想让 VidBeep 做什么？",
+      "calmDescription": "可处理你的下载、转写和订阅。"
     },
     "eventStream": "Event Stream",
     "eventStatus": {

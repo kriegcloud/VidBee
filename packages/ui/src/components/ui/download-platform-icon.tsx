@@ -20,6 +20,17 @@ const normalizePlatformDomain = (domain: string): string => {
 }
 
 /**
+ * Hosts whose favicon is a grey mark on transparent (not a filled tile): invisible on the dark
+ * ground and faint on parchment: force them to solid black, inverted to white on dark.
+ */
+const DARK_MARK_HOSTS = ['spotify.com']
+
+const hasDarkMark = (domain: string): boolean => {
+  const host = normalizePlatformDomain(domain)
+  return DARK_MARK_HOSTS.some((mark) => host === mark || host.endsWith(`.${mark}`))
+}
+
+/**
  * Origin favicon for a download platform (`https://example.com/favicon.ico`).
  */
 export const buildPlatformIconUrl = (domain: string): string => {
@@ -54,7 +65,11 @@ export const DownloadPlatformIcon = ({ className, domain }: DownloadPlatformIcon
   return (
     <RemoteImage
       alt=""
-      className={cn('size-4 shrink-0 overflow-hidden rounded-[3px] bg-transparent', className)}
+      className={cn(
+        'size-4 shrink-0 overflow-hidden rounded-[3px] bg-transparent',
+        hasDarkMark(domain) && 'brightness-0 dark:invert',
+        className
+      )}
       fallbackIcon={globeIcon}
       loadingIcon={globeIcon}
       onError={handleError}

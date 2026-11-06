@@ -112,7 +112,14 @@
     "downloadingUpdate": "Update wird heruntergeladen",
     "changelog": {
       "currentVersion": "Aktuelle Version"
-    }
+    },
+    "emailSupport": "E-Mail-Support",
+    "feedbackAndIssues": "Feedback & Probleme",
+    "helpAndFeedback": "Hilfe und Feedback",
+    "moreFromDeveloper": "Mehr vom Entwickler",
+    "officialWebsite": "Offizielle Website",
+    "releaseNotes": "Versionshinweise",
+    "shareVidBeep": "VidBeep teilen"
   },
   "advancedOptions": {
     "closeWhenDone": "App schließen, wenn Download abgeschlossen ist",
@@ -307,12 +314,17 @@
         "completed": "Fertig",
         "failed": "Fehlgeschlagen",
         "stopped": "Gestoppt"
-      }
+      },
+      "sentenceCount": "{{count}} Agent-Aufgaben"
     },
     "sourceFile": "Quelldatei",
     "troubleshoot": "Problem untersuchen",
     "troubleshootPrompt": "Hilf mir, das Problem mit der Download-Aufgabe {{taskId}} zu untersuchen. Prüfe ihren aktuellen Status, die Fehlerdetails und Protokolle, erkläre die wahrscheinliche Ursache und schlage die nächsten Schritte vor, bevor du etwas unternimmst.",
-    "troubleshootFailed": "Die Problemanalyse konnte nicht gestartet werden. Bitte versuche es erneut."
+    "troubleshootFailed": "Die Problemanalyse konnte nicht gestartet werden. Bitte versuche es erneut.",
+    "addUrlAction": "URL hinzufügen",
+    "dateToday": "Heute",
+    "dateYesterday": "Gestern",
+    "etaValue": "Restzeit {{eta}}"
   },
   "error": {
     "title": "Etwas ist schiefgelaufen",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Beiträge mit Medien",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Abo hinzufügen",
+    "allFilter": "Alle",
+    "autoDownloadOff": "Auto-Download aus",
+    "autoDownloadOn": "Auto-Download an",
+    "emptyDescription": "Folge einem Kanal, einer Playlist oder einem Feed, und VidBeep lädt neue Inhalte für dich herunter.",
+    "emptyTitle": "Noch keine Abos",
+    "manage": "{{name}} verwalten",
+    "newSince": "neu seit {{date}}",
+    "platformFilters": "Abos nach Plattform filtern",
+    "rssHubLink": "RSSHub-Feeds verwenden",
+    "today": "Heute",
+    "upToDate": "Aktuell",
+    "yesterday": "Gestern",
+    "followableTitle": "Was du folgen kannst",
+    "checksLabel": "Prüft auf neue Inhalte",
+    "everyHours": "Alle {{count}} Stunden",
+    "savesToLabel": "Speichert in",
+    "anyFeedUrl": "Beliebige RSS- oder Atom-Feed-URL"
   },
   "kernelPreparation": {
     "copied": "Kopiert",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Format konvertieren",
         "prompt": "Hilf mir, Medien in VidBeep in ein anderes Format zu konvertieren. Zeige meine abgeschlossenen Downloads, frage nach der Datei und dem gewünschten Ausgabeformat und erstelle dann eine konvertierte Kopie. Behalte das Original."
-      }
+      },
+      "calmTitle": "Was soll VidBeep tun?",
+      "calmDescription": "Arbeitet mit deinen Downloads, Transkripten und Abos."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

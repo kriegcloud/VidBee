@@ -112,7 +112,14 @@
       "uptodate": "You're up to date",
       "error": "Unable to fetch the latest version"
     },
-    "downloadingUpdate": "Downloading update"
+    "downloadingUpdate": "Downloading update",
+    "emailSupport": "Email support",
+    "feedbackAndIssues": "Feedback & issues",
+    "helpAndFeedback": "Help and feedback",
+    "moreFromDeveloper": "More from the developer",
+    "officialWebsite": "Official website",
+    "releaseNotes": "Release notes",
+    "shareVidBeep": "Share VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Close app when download finishes",
@@ -307,12 +314,17 @@
         "completed": "Done",
         "failed": "Failed",
         "stopped": "Stopped"
-      }
+      },
+      "sentenceCount": "{{count}} agent tasks"
     },
     "sourceFile": "Source file",
     "troubleshoot": "Troubleshoot",
     "troubleshootPrompt": "Help me troubleshoot download task {{taskId}}. Inspect its current status, error details and logs, explain the likely cause, and recommend next steps before taking any action.",
-    "troubleshootFailed": "Could not start troubleshooting. Please try again."
+    "troubleshootFailed": "Could not start troubleshooting. Please try again.",
+    "addUrlAction": "Add URL",
+    "dateToday": "Today",
+    "dateYesterday": "Yesterday",
+    "etaValue": "ETA {{eta}}"
   },
   "error": {
     "title": "Something went wrong",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Posts with media",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Add subscription",
+    "allFilter": "All",
+    "autoDownloadOff": "Auto-download off",
+    "autoDownloadOn": "Auto-download on",
+    "emptyDescription": "Follow a channel, playlist or feed and VidBeep downloads new items for you.",
+    "emptyTitle": "No subscriptions yet",
+    "manage": "Manage {{name}}",
+    "newSince": "new since {{date}}",
+    "platformFilters": "Filter subscriptions by platform",
+    "rssHubLink": "Use RSSHub feeds",
+    "today": "Today",
+    "upToDate": "Up to date",
+    "yesterday": "Yesterday",
+    "followableTitle": "What you can follow",
+    "checksLabel": "Checks for new items",
+    "everyHours": "Every {{count}} hours",
+    "savesToLabel": "Saves to",
+    "anyFeedUrl": "Any RSS or Atom feed URL"
   },
   "kernelPreparation": {
     "copied": "Copied",
@@ -2083,7 +2113,9 @@
       "subscribe": {
         "label": "Create a subscription",
         "prompt": "Help me create a subscription in VidBeep. Ask for a channel, website, or RSS URL, verify the feed, and ask whether to download new videos automatically before saving it."
-      }
+      },
+      "calmTitle": "What should VidBeep do?",
+      "calmDescription": "Works on your downloads, transcripts and subscriptions."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

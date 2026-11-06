@@ -112,7 +112,14 @@
     "downloadingUpdate": "アップデートをダウンロードしています",
     "changelog": {
       "currentVersion": "現在のバージョン"
-    }
+    },
+    "emailSupport": "メールサポート",
+    "feedbackAndIssues": "フィードバックと問題報告",
+    "helpAndFeedback": "ヘルプとフィードバック",
+    "moreFromDeveloper": "開発者のその他のアプリ",
+    "officialWebsite": "公式サイト",
+    "releaseNotes": "リリースノート",
+    "shareVidBeep": "VidBeep を共有"
   },
   "advancedOptions": {
     "closeWhenDone": "ダウンロード完了時にアプリを閉じる",
@@ -307,12 +314,17 @@
         "completed": "完了",
         "failed": "失敗",
         "stopped": "停止"
-      }
+      },
+      "sentenceCount": "エージェントタスク {{count}} 件"
     },
     "sourceFile": "元のファイル",
     "troubleshoot": "問題を調べる",
     "troubleshootPrompt": "ダウンロードタスク {{taskId}} の問題を調べてください。現在の状態、エラーの詳細、ログを確認し、考えられる原因と対処方法を説明してください。操作を行う前に、まず次の手順を提案してください。",
-    "troubleshootFailed": "問題の調査を開始できませんでした。もう一度お試しください。"
+    "troubleshootFailed": "問題の調査を開始できませんでした。もう一度お試しください。",
+    "addUrlAction": "URLを追加",
+    "dateToday": "今日",
+    "dateYesterday": "昨日",
+    "etaValue": "残り {{eta}}"
   },
   "error": {
     "title": "問題が発生しました",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "メディア付きの投稿",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "購読を追加",
+    "allFilter": "すべて",
+    "autoDownloadOff": "自動ダウンロード オフ",
+    "autoDownloadOn": "自動ダウンロード オン",
+    "emptyDescription": "チャンネル、プレイリスト、フィードをフォローすると、VidBeep が新着を自動でダウンロードします。",
+    "emptyTitle": "購読はまだありません",
+    "manage": "{{name}} を管理",
+    "newSince": "{{date}} 以降の新着",
+    "platformFilters": "プラットフォームで購読を絞り込む",
+    "rssHubLink": "RSSHub のフィードを使う",
+    "today": "今日",
+    "upToDate": "最新",
+    "yesterday": "昨日",
+    "followableTitle": "フォローできるもの",
+    "checksLabel": "新着の確認",
+    "everyHours": "{{count}} 時間ごと",
+    "savesToLabel": "保存先",
+    "anyFeedUrl": "任意の RSS / Atom フィード URL"
   },
   "kernelPreparation": {
     "copied": "コピーしました",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "形式を変換",
         "prompt": "VidBeepでメディアの形式を変換したいです。ダウンロード済みのファイルを一覧表示し、変換するファイルと出力形式を確認してから、元のファイルを残して変換後のコピーを作成してください。"
-      }
+      },
+      "calmTitle": "VidBeep に何をさせますか？",
+      "calmDescription": "ダウンロード、文字起こし、購読を扱えます。"
     },
     "eventStream": "Event Stream",
     "eventStatus": {

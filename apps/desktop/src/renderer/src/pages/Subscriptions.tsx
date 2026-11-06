@@ -5,20 +5,18 @@ import {
 import { Badge } from '@renderer/components/ui/badge'
 import { Button } from '@renderer/components/ui/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@renderer/components/ui/card'
-import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextMenuTrigger
 } from '@renderer/components/ui/context-menu'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@renderer/components/ui/hover-card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@renderer/components/ui/dropdown-menu'
 import { RemoteImage } from '@renderer/components/ui/remote-image'
 import { ScrollArea } from '@renderer/components/ui/scroll-area'
 
@@ -27,6 +25,7 @@ import { ipcServices } from '@renderer/lib/ipc'
 import { withDesktopUtm } from '@renderer/lib/url'
 import { cn } from '@renderer/lib/utils'
 import { type DownloadRecord, downloadsArrayAtom } from '@renderer/store/downloads'
+import { settingsAtom } from '@renderer/store/settings'
 import {
   createSubscriptionAtom,
   loadSubscriptionsAtom,
@@ -36,8 +35,14 @@ import {
   subscriptionsAtom,
   updateSubscriptionAtom
 } from '@renderer/store/subscriptions'
-import type { DownloadStatus, SubscriptionFeedItem, SubscriptionRule } from '@shared/types'
+import type {
+  DownloadStatus,
+  SubscriptionFeedItem,
+  SubscriptionPlatform,
+  SubscriptionRule
+} from '@shared/types'
 import { SUBSCRIPTION_DUPLICATE_FEED_ERROR } from '@shared/types'
+import { DEFAULT_FEED_CHECK_INTERVAL_MS } from '@vidbee/subscriptions-core'
 import {
   getSubscriptionFeedEntries,
   type SubscriptionFeedEntry
@@ -46,19 +51,58 @@ import {
   getSubscriptionStatusMeta,
   resolveSubscriptionItemStatus
 } from '@vidbee/subscriptions-core/status'
-import { isProfilePlatform } from '@vidbee/subscriptions-core/types'
 import { PROFILE_PLATFORM_LABELS } from '@vidbee/ui/components/subscription/subscription-form-dialog'
-import { SubscriptionAllTab } from '@vidbee/ui/components/ui/subscription-all-tab'
+import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import { SubscriptionVirtualGrid } from '@vidbee/ui/components/ui/subscription-virtual-grid'
-import dayjs from 'dayjs'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Copy, Download, Edit, ExternalLink, Plus, Power, RefreshCw, Trash2 } from 'lucide-react'
+import {
+  Copy,
+  Download,
+  Edit,
+  ExternalLink,
+  MoreHorizontal,
+  Plus,
+  Power,
+  RefreshCw,
+  Rss,
+  Trash2
+} from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { logger } from '../lib/logger'
 
 type SubscriptionItemStatus = DownloadStatus | 'queued' | 'notQueued'
+
+const PLATFORM_LABELS: Record<SubscriptionPlatform, string> = {
+  ...PROFILE_PLATFORM_LABELS,
+  youtube: 'YouTube',
+  bilibili: 'Bilibili',
+  custom: 'RSS'
+}
+const HOUR_MS = 60 * 60 * 1000
+
+/** URL shape each platform accepts, shown in the empty state as reference. */
+const PLATFORM_URL_EXAMPLES: Record<SubscriptionPlatform, string> = {
+  youtube: 'youtube.com/@channel',
+  bilibili: 'space.bilibili.com/uid',
+  instagram: 'instagram.com/username',
+  threads: 'threads.net/@username',
+  x: 'x.com/username',
+  tiktok: 'tiktok.com/@username',
+  snapchat: 'snapchat.com/add/username',
+  custom: ''
+}
+const PLATFORM_DOMAINS: Record<SubscriptionPlatform, string | null> = {
+  youtube: 'youtube.com',
+  bilibili: 'bilibili.com',
+  instagram: 'instagram.com',
+  threads: 'threads.net',
+  x: 'x.com',
+  tiktok: 'tiktok.com',
+  snapchat: 'snapchat.com',
+  custom: null
+}
 
 const POLL_INTERVAL_MS = 5000
 
@@ -111,6 +155,29 @@ const isDuplicateFeedError = (error: unknown) => {
   return Boolean(message?.includes(SUBSCRIPTION_DUPLICATE_FEED_ERROR))
 }
 
+/** Format feed dates using the application's locale and the screen's recency rules. */
+function formatFeedDate(
+  timestamp: number,
+  locale: string,
+  today: string,
+  yesterday: string
+): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const previousDay = new Date(now)
+  previousDay.setDate(now.getDate() - 1)
+  const time = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(date)
+  if (date.toDateString() === now.toDateString()) {
+    return `${today} ${time}`
+  }
+  if (date.toDateString() === previousDay.toDateString()) {
+    return `${yesterday} ${time}`
+  }
+  return date.getFullYear() === now.getFullYear()
+    ? new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date)
+    : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 /** Render one subscription's selector and management actions. */
 function SubscriptionTab({
   subscription,
@@ -120,19 +187,38 @@ function SubscriptionTab({
   onUpdate,
   isActive
 }: SubscriptionTabProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [editOpen, setEditOpen] = useState(false)
   const statusMeta = getSubscriptionStatusMeta(subscription.status, subscription.enabled)
   const statusDescription =
     PROBLEM_STATUSES.has(subscription.status) && subscription.lastError
       ? subscription.lastError
       : t(statusMeta.label)
-  const isProfile = subscription.sourceKind === 'profile'
-  const lastUpdatedTimestamp =
-    subscription.lastCheckedAt ?? subscription.updatedAt ?? subscription.createdAt ?? null
-  const lastUpdatedLabel = lastUpdatedTimestamp
-    ? dayjs(lastUpdatedTimestamp).format('YYYY-MM-DD HH:mm')
-    : t('subscriptions.never')
+  const newItems = subscription.items.filter((item) => !item.addedToQueue)
+  const since = newItems.length ? Math.min(...newItems.map((item) => item.publishedAt)) : null
+  const sinceLabel =
+    since === null
+      ? '—'
+      : formatFeedDate(
+          since,
+          i18n.language,
+          t('subscriptions.today', 'Today'),
+          t('subscriptions.yesterday', 'Yesterday')
+        )
+  const minutesAgo =
+    subscription.lastCheckedAt === undefined
+      ? null
+      : Math.max(0, Math.floor((Date.now() - subscription.lastCheckedAt) / 60_000))
+  const lastCheckedLabel =
+    minutesAgo === null
+      ? '—'
+      : new Intl.RelativeTimeFormat(i18n.language, { style: 'short' }).format(
+          -Math.floor(
+            minutesAgo >= 1440 ? minutesAgo / 1440 : minutesAgo >= 60 ? minutesAgo / 60 : minutesAgo
+          ),
+          minutesAgo >= 1440 ? 'day' : minutesAgo >= 60 ? 'hour' : 'minute'
+        )
+  const platformLabel = PLATFORM_LABELS[subscription.platform]
 
   const handleToggleEnabled = async (checked: boolean) => {
     await onUpdate({ enabled: checked })
@@ -154,87 +240,109 @@ function SubscriptionTab({
 
   return (
     <>
-      <ContextMenu>
-        <HoverCard closeDelay={0} openDelay={0}>
-          <ContextMenuTrigger asChild>
-            <HoverCardTrigger asChild>
-              <button
-                aria-pressed={isActive}
-                className={cn(
-                  'flex h-auto w-20 shrink-0 grow-0 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all hover:opacity-80',
-                  isActive && 'bg-muted/45'
-                )}
-                onClick={onSelect}
-                type="button"
-              >
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden transition-colors">
-                  <RemoteImage
-                    alt={subscription.title || t('subscriptions.labels.unknown')}
-                    className="h-full w-full overflow-hidden rounded-full object-cover"
-                    src={subscription.coverUrl}
-                  />
-                  <span
-                    className={cn(
-                      'absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-background transition-colors',
-                      statusMeta.dotClass
-                    )}
-                  />
-                </div>
-                <div className="flex w-full flex-col items-center text-center">
-                  <span className="w-full truncate font-medium text-xs">
-                    {subscription.title || t('subscriptions.labels.unknown')}
-                  </span>
-                </div>
-              </button>
-            </HoverCardTrigger>
-          </ContextMenuTrigger>
-          <HoverCardContent className="max-w-xs space-y-1">
-            <p className="font-semibold text-sm">
-              {subscription.title || t('subscriptions.labels.unknown')}
-            </p>
-            {isProfile && isProfilePlatform(subscription.platform) && (
-              <p className="text-muted-foreground text-xs">
-                {PROFILE_PLATFORM_LABELS[subscription.platform]} ·{' '}
-                {subscription.categories
-                  .map((category) => t(`subscriptions.profile.categories.${category}`))
-                  .join(', ')}
-              </p>
+      <div className={cn('flex items-center gap-3 rounded-lg px-3 py-4', isActive && 'bg-muted')}>
+        <button
+          aria-pressed={isActive}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+          onClick={onSelect}
+          title={statusDescription}
+          type="button"
+        >
+          <RemoteImage
+            alt=""
+            className={cn(
+              'size-10 shrink-0 overflow-hidden object-cover',
+              subscription.sourceKind === 'profile' ||
+                (subscription.platform === 'youtube' &&
+                  !subscription.sourceUrl.includes('playlist'))
+                ? 'rounded-full'
+                : 'rounded-md'
             )}
-            <p className="text-xs">{statusDescription}</p>
-            <p className="text-xs">
-              {t('subscriptions.status.tooltip.updatedAt', { time: lastUpdatedLabel })}
+            src={subscription.coverUrl}
+          />
+          <div className="min-w-0 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="truncate font-medium text-sm">
+                {subscription.title || t('subscriptions.labels.unknown')}
+              </span>
+              <span className="shrink-0 text-muted-foreground" title={platformLabel}>
+                {subscription.platform === 'custom' ? (
+                  <Rss aria-label={platformLabel} className="size-4" />
+                ) : (
+                  <DownloadPlatformIcon domain={PLATFORM_DOMAINS[subscription.platform]} />
+                )}
+              </span>
+            </div>
+            <p className="text-meta text-xs tabular-nums">
+              {newItems.length > 0 ? (
+                <>
+                  <span className="text-data tabular-nums">
+                    {new Intl.NumberFormat(i18n.language).format(newItems.length)}
+                  </span>{' '}
+                  {t('subscriptions.newSince', {
+                    defaultValue: 'new since {{date}}',
+                    date: sinceLabel
+                  })}
+                </>
+              ) : (
+                t('subscriptions.upToDate', 'Up to date')
+              )}
             </p>
-            {subscription.enabled && subscription.nextCheckAt ? (
-              <p className="text-xs">
-                {t('subscriptions.profile.nextCheck', {
-                  time: dayjs(subscription.nextCheckAt).format('YYYY-MM-DD HH:mm')
-                })}
-              </p>
+            {PROBLEM_STATUSES.has(subscription.status) ? (
+              <p className="text-destructive text-xs">{statusDescription}</p>
             ) : null}
-          </HoverCardContent>
-        </HoverCard>
-        <ContextMenuContent>
-          <ContextMenuItem onClick={handleRefresh}>
-            <RefreshCw className="h-4 w-4" />
-            {t('subscriptions.actions.refresh')}
-          </ContextMenuItem>
-          <ContextMenuItem onClick={handleEdit}>
-            <Edit className="h-4 w-4" />
-            {t('subscriptions.actions.edit')}
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => void handleToggleEnabled(!subscription.enabled)}>
-            <Power className="h-4 w-4" />
-            {subscription.enabled
-              ? t('subscriptions.actions.disable')
-              : t('subscriptions.actions.enable')}
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={() => void handleRemove()} variant="destructive">
-            <Trash2 className="h-4 w-4" />
-            {t('subscriptions.actions.remove')}
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+          </div>
+        </button>
+        <span className="shrink-0 rounded-full bg-muted px-2 py-1 text-muted-foreground text-xs">
+          {subscription.autoDownload
+            ? t('subscriptions.autoDownloadOn', 'Auto-download on')
+            : t('subscriptions.autoDownloadOff', 'Auto-download off')}
+        </span>
+        <span
+          className="w-24 shrink-0 text-right text-meta text-xs tabular-nums"
+          title={t('subscriptions.status.tooltip.updatedAt', { time: lastCheckedLabel })}
+        >
+          {lastCheckedLabel}
+        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label={t('subscriptions.manage', {
+                defaultValue: 'Manage {{name}}',
+                name: subscription.title
+              })}
+              className="size-8 shrink-0"
+              size="icon"
+              variant="ghost"
+            >
+              <MoreHorizontal aria-hidden className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => void handleRefresh()}>
+              <RefreshCw className="size-4" />
+              {t('subscriptions.actions.refresh')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>
+              <Edit className="size-4" />
+              {t('subscriptions.actions.edit')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void handleToggleEnabled(!subscription.enabled)}>
+              <Power className="size-4" />
+              {t(
+                subscription.enabled
+                  ? 'subscriptions.actions.disable'
+                  : 'subscriptions.actions.enable'
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void handleRemove()} variant="destructive">
+              <Trash2 className="size-4" />
+              {t('subscriptions.actions.remove')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       <SubscriptionFormDialog
         mode="edit"
@@ -255,6 +363,7 @@ function SubscriptionTab({
 /** Render all RSS items or the selected subscription's items. */
 export function Subscriptions() {
   const { t } = useTranslation()
+  const settings = useAtomValue(settingsAtom)
   const [subscriptions] = useAtom(subscriptionsAtom)
   const loadSubscriptions = useSetAtom(loadSubscriptionsAtom)
   const updateSubscription = useSetAtom(updateSubscriptionAtom)
@@ -262,6 +371,7 @@ export function Subscriptions() {
   const refreshSubscription = useSetAtom(refreshSubscriptionAtom)
 
   const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [platform, setPlatform] = useState<SubscriptionPlatform | null>(null)
   const [selectedTab, setSelectedTab] = useState<string | null>(null)
   const [viewport, setViewport] = useState<HTMLDivElement | null>(null)
 
@@ -384,13 +494,30 @@ export function Subscriptions() {
     }
   }, [t])
 
+  const platforms = [...new Set(sortedSubscriptions.map((subscription) => subscription.platform))]
+  const filteredSubscriptions =
+    platform === null
+      ? sortedSubscriptions
+      : sortedSubscriptions.filter((subscription) => subscription.platform === platform)
+
   const displayedItems = useMemo(() => {
-    const sources =
-      selectedTab === null
-        ? sortedSubscriptions
-        : sortedSubscriptions.filter((subscription) => subscription.id === selectedTab)
+    const sources = sortedSubscriptions.filter(
+      (subscription) =>
+        (platform === null || subscription.platform === platform) &&
+        (selectedTab === null || subscription.id === selectedTab)
+    )
     return getSubscriptionFeedEntries(sources)
-  }, [selectedTab, sortedSubscriptions])
+  }, [platform, selectedTab, sortedSubscriptions])
+
+  useEffect(() => {
+    if (
+      platform !== null &&
+      !sortedSubscriptions.some((subscription) => subscription.platform === platform)
+    ) {
+      setPlatform(null)
+      setSelectedTab(null)
+    }
+  }, [platform, sortedSubscriptions])
 
   // Return to all items when the selected subscription is removed.
   useEffect(() => {
@@ -401,81 +528,138 @@ export function Subscriptions() {
 
   return (
     <div className="relative flex h-full min-h-0 w-full flex-col">
-      {/* Channel Tabs Header */}
-      <div className="flex shrink-0 flex-row pr-6 pb-6 pl-6">
-        <ScrollArea className="min-w-0 flex-1" orientation="horizontal" viewportClassName="h-auto">
-          <div className="flex h-auto w-auto justify-start">
-            <SubscriptionAllTab
-              isActive={selectedTab === null}
-              onSelect={() => setSelectedTab(null)}
-            />
-            {sortedSubscriptions.map((subscription) => (
-              <SubscriptionTab
-                isActive={subscription.id === selectedTab}
-                key={subscription.id}
-                onRefresh={() => refreshSubscription(subscription.id)}
-                onRemove={() => removeSubscription(subscription.id)}
-                onSelect={() => setSelectedTab(subscription.id)}
-                onUpdate={(data) => handleUpdateSubscription(subscription.id, data)}
-                subscription={subscription}
-              />
+      {sortedSubscriptions.length === 0 ? null : (
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-4 pb-4">
+          <fieldset
+            aria-label={t('subscriptions.platformFilters', 'Filter subscriptions by platform')}
+            className="flex flex-wrap gap-1"
+          >
+            {[null, ...platforms].map((value) => (
+              <Button
+                aria-pressed={platform === value}
+                className={cn('h-8 gap-2', platform === value && 'bg-muted')}
+                key={value ?? 'all'}
+                onClick={() => {
+                  setPlatform(value)
+                  setSelectedTab(null)
+                }}
+                size="sm"
+                variant="ghost"
+              >
+                {value === null ? t('subscriptions.allFilter', 'All') : PLATFORM_LABELS[value]}
+                <span className="text-meta tabular-nums">
+                  {value === null
+                    ? sortedSubscriptions.length
+                    : sortedSubscriptions.filter((subscription) => subscription.platform === value)
+                        .length}
+                </span>
+              </Button>
             ))}
-          </div>
-        </ScrollArea>
-
-        {/* Add subscription button */}
-        <Button
-          className="flex h-auto w-20 shrink-0 grow-0 flex-col items-center gap-1 rounded-2xl bg-transparent px-2 py-2 transition-all hover:bg-neutral-100 hover:opacity-80"
-          onClick={() => setAddDialogOpen(true)}
-          variant="ghost"
-        >
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/40 border-dashed transition-colors">
-            <Plus className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div className="flex w-full flex-col items-center text-center">
-            <span className="w-full truncate font-medium text-xs">
-              {t('subscriptions.add.title')}
-            </span>
-          </div>
-        </Button>
-      </div>
-
+          </fieldset>
+          <Button
+            className="h-8 shrink-0 whitespace-nowrap bg-primary text-primary-foreground"
+            onClick={() => setAddDialogOpen(true)}
+            size="sm"
+          >
+            <Plus aria-hidden className="size-4" />
+            {t('subscriptions.addAction', 'Add subscription')}
+          </Button>
+        </div>
+      )}
       <ScrollArea className="min-h-0 flex-1" viewportRef={setViewport}>
-        {/* Content Area */}
-        <div className="relative space-y-8 p-6 pt-0">
-          <section className="space-y-4">
-            {sortedSubscriptions.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground text-sm">
-                {t('subscriptions.empty')}
+        <div className="space-y-6 px-6 pb-6">
+          {sortedSubscriptions.length === 0 ? (
+            <section className="mt-4 grid gap-8 rounded-xl bg-card p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div className="space-y-3">
+                <h2 className="font-semibold text-base">
+                  {t('subscriptions.emptyTitle', 'No subscriptions yet')}
+                </h2>
+                <p className="max-w-prose text-muted-foreground text-sm">
+                  {t(
+                    'subscriptions.emptyDescription',
+                    'Follow a channel, playlist or feed and VidBeep downloads new items for you.'
+                  )}
+                </p>
+                <div className="flex flex-wrap items-center gap-4 pt-1">
+                  <Button
+                    className="h-8 bg-primary text-primary-foreground"
+                    onClick={() => setAddDialogOpen(true)}
+                    size="sm"
+                  >
+                    <Plus aria-hidden className="size-4" />
+                    {t('subscriptions.addAction', 'Add subscription')}
+                  </Button>
+                  <Button
+                    className="h-auto p-0 text-muted-foreground"
+                    onClick={() => void handleOpenRSSHubDocs()}
+                    variant="link"
+                  >
+                    {t('subscriptions.rssHubLink', 'Use RSSHub feeds')}
+                  </Button>
+                </div>
+                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 pt-6 text-sm">
+                  <dt className="text-muted-foreground">
+                    {t('subscriptions.checksLabel', 'Checks for new items')}
+                  </dt>
+                  <dd className="tabular-nums">
+                    {t('subscriptions.everyHours', 'Every {{count}} hours', {
+                      count: Math.round(DEFAULT_FEED_CHECK_INTERVAL_MS / HOUR_MS)
+                    })}
+                  </dd>
+                  <dt className="text-muted-foreground">
+                    {t('subscriptions.savesToLabel', 'Saves to')}
+                  </dt>
+                  <dd className="truncate" title={settings.downloadPath}>
+                    {settings.downloadPath || '—'}
+                  </dd>
+                </dl>
               </div>
-            ) : (
+              <div>
+                <h3 className="pb-2 font-medium text-muted-foreground text-sm">
+                  {t('subscriptions.followableTitle', 'What you can follow')}
+                </h3>
+                <ul>
+                  {(Object.keys(PLATFORM_URL_EXAMPLES) as SubscriptionPlatform[]).map((value) => (
+                    <li className="flex h-10 items-center gap-3 text-sm" key={value}>
+                      {PLATFORM_DOMAINS[value] ? (
+                        <DownloadPlatformIcon domain={PLATFORM_DOMAINS[value]} />
+                      ) : (
+                        <Rss aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+                      )}
+                      <span className="w-24 shrink-0 font-medium">{PLATFORM_LABELS[value]}</span>
+                      <span className="truncate text-muted-foreground">
+                        {PLATFORM_URL_EXAMPLES[value] ||
+                          t('subscriptions.anyFeedUrl', 'Any RSS or Atom feed URL')}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ) : (
+            <>
+              <div className="rounded-xl bg-card px-3">
+                {filteredSubscriptions.map((subscription) => (
+                  <SubscriptionTab
+                    isActive={subscription.id === selectedTab}
+                    key={subscription.id}
+                    onRefresh={() => refreshSubscription(subscription.id)}
+                    onRemove={() => removeSubscription(subscription.id)}
+                    onSelect={() =>
+                      setSelectedTab(subscription.id === selectedTab ? null : subscription.id)
+                    }
+                    onUpdate={(data) => handleUpdateSubscription(subscription.id, data)}
+                    subscription={subscription}
+                  />
+                ))}
+              </div>
               <SubscriptionItems
                 entries={displayedItems}
-                key={selectedTab ?? 'all'}
+                key={`${platform ?? 'all'}:${selectedTab ?? 'all'}`}
                 viewport={viewport}
               />
-            )}
-          </section>
-
-          {/* RSSHub Info Card */}
-          <Card className="border-primary/20 bg-primary/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {t('subscriptions.rssHub.title')}
-              </CardTitle>
-              <CardDescription>{t('subscriptions.rssHub.description')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="gap-2"
-                onClick={() => void handleOpenRSSHubDocs()}
-                size="sm"
-                variant="secondary"
-              >
-                {t('subscriptions.rssHub.openDocs')}
-              </Button>
-            </CardContent>
-          </Card>
+            </>
+          )}
         </div>
       </ScrollArea>
 
@@ -508,7 +692,7 @@ function SubscriptionItems({
   entries: SubscriptionFeedEntry<SubscriptionRule>[]
   viewport: HTMLDivElement | null
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [visibleRange, setVisibleRange] = useState({ startIndex: 0, endIndex: 0 })
   const feedItems = useMemo(
     () => entries.slice(visibleRange.startIndex, visibleRange.endIndex).map((entry) => entry.item),
@@ -661,7 +845,7 @@ function SubscriptionItems({
 
   if (entries.length === 0) {
     return (
-      <div className="py-12 text-center text-muted-foreground text-sm">
+      <div className="rounded-xl bg-card p-6 text-muted-foreground text-sm">
         {t('subscriptions.items.empty')}
       </div>
     )
@@ -685,12 +869,14 @@ function SubscriptionItems({
               })
             : t('subscriptions.items.tooltip.downloadPending')
           : t('subscriptions.items.tooltip.notQueued')
-        const badgeClass = item.addedToQueue ? 'bg-emerald-500' : 'bg-black/70'
+        const badgeClass = item.addedToQueue
+          ? 'bg-data-track text-data'
+          : 'bg-card text-muted-foreground'
         return (
           <ContextMenu key={`${subscription.id}-${item.id}`}>
             <ContextMenuTrigger asChild>
               <article className="group transition-all">
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-muted">
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted">
                   {item.thumbnail ? (
                     <RemoteImage
                       alt={item.title}
@@ -702,10 +888,9 @@ function SubscriptionItems({
                       {t('subscriptions.labels.noThumbnail')}
                     </div>
                   )}
-                  <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/5 to-transparent" />
-                  <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-black/60 py-1 pr-3 pl-1 font-medium text-white text-xs backdrop-blur">
+                  <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-card py-1 pr-3 pl-1 font-medium text-muted-foreground text-xs">
                     {subscription.coverUrl ? (
-                      <div className="h-6 w-6 overflow-hidden rounded-full border border-white/40">
+                      <div className="h-6 w-6 overflow-hidden rounded-full">
                         <RemoteImage
                           alt={subscription.title || t('subscriptions.labels.unknown')}
                           className="h-full w-full object-cover"
@@ -713,7 +898,7 @@ function SubscriptionItems({
                         />
                       </div>
                     ) : (
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full border border-white/40 bg-white/10 font-semibold text-[10px] text-white uppercase">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted font-medium text-muted-foreground text-xs">
                         {(subscription.title || t('subscriptions.labels.unknown')).slice(0, 1)}
                       </div>
                     )}
@@ -721,16 +906,18 @@ function SubscriptionItems({
                       {subscription.title || t('subscriptions.labels.unknown')}
                     </span>
                   </div>
-                  <div className="absolute bottom-3 left-3 font-medium text-white text-xs">
-                    {dayjs(item.publishedAt).format('YYYY-MM-DD HH:mm')}
+                  <div className="absolute bottom-3 left-3 rounded bg-card px-2 py-1 text-meta text-xs tabular-nums">
+                    {formatFeedDate(
+                      item.publishedAt,
+                      i18n.language,
+                      t('subscriptions.today', 'Today'),
+                      t('subscriptions.yesterday', 'Yesterday')
+                    )}
                   </div>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Badge
-                        className={cn(
-                          'absolute right-3 bottom-3 rounded-full text-white text-xs backdrop-blur',
-                          badgeClass
-                        )}
+                        className={cn('absolute right-3 bottom-3 rounded-full text-xs', badgeClass)}
                         variant="secondary"
                       >
                         {badgeLabel}
@@ -741,7 +928,7 @@ function SubscriptionItems({
                 </div>
                 <div className="px-3 py-2">
                   <p
-                    className="font-semibold text-base text-card-foreground leading-snug"
+                    className="font-medium text-card-foreground text-sm leading-snug"
                     title={item.title}
                   >
                     {item.title}

@@ -1123,7 +1123,7 @@ export function DownloadDialog({
       <DownloadDialogLayout
         activeTab={activeTab}
         addUrlPopover={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 [&_button[data-slot=button]]:h-8">
             <SavedInstagramProfiles
               loadProfiles={async () => [
                 ...(await ipcServices.download.listInstagramProfiles()).map((profile) => ({
@@ -1210,7 +1210,7 @@ export function DownloadDialog({
               submitting={isSubmitting}
               supportedSitesLabel={t('menu.supportedSites')}
               title={t('download.enterUrl')}
-              triggerLabel={t('download.pasteUrlButton')}
+              triggerLabel={t('download.addUrlAction', 'Add URL')}
               value={addUrlValue}
             />
           </div>

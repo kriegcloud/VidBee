@@ -112,7 +112,14 @@
     "downloadingUpdate": "Download dell'aggiornamento",
     "changelog": {
       "currentVersion": "Versione attuale"
-    }
+    },
+    "emailSupport": "Supporto via email",
+    "feedbackAndIssues": "Feedback e problemi",
+    "helpAndFeedback": "Aiuto e feedback",
+    "moreFromDeveloper": "Altro dallo sviluppatore",
+    "officialWebsite": "Sito ufficiale",
+    "releaseNotes": "Note di rilascio",
+    "shareVidBeep": "Condividi VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Chiudi app quando il download finisce",
@@ -307,12 +314,17 @@
         "completed": "Completato",
         "failed": "Non riuscito",
         "stopped": "Interrotto"
-      }
+      },
+      "sentenceCount": "{{count}} attività dell’agente"
     },
     "sourceFile": "File di origine",
     "troubleshoot": "Analizza il problema",
     "troubleshootPrompt": "Aiutami a diagnosticare il problema dell’attività di download {{taskId}}. Controlla lo stato attuale, i dettagli dell’errore e i registri, spiega la causa probabile e consiglia i prossimi passi prima di intraprendere qualsiasi azione.",
-    "troubleshootFailed": "Impossibile avviare la diagnosi. Riprova."
+    "troubleshootFailed": "Impossibile avviare la diagnosi. Riprova.",
+    "addUrlAction": "Aggiungi URL",
+    "dateToday": "Oggi",
+    "dateYesterday": "Ieri",
+    "etaValue": "Tempo rimanente {{eta}}"
   },
   "error": {
     "title": "Qualcosa è andato storto",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Post con media",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Aggiungi iscrizione",
+    "allFilter": "Tutte",
+    "autoDownloadOff": "Download automatico disattivato",
+    "autoDownloadOn": "Download automatico attivo",
+    "emptyDescription": "Segui un canale, una playlist o un feed e VidBeep scarica i nuovi contenuti per te.",
+    "emptyTitle": "Ancora nessuna iscrizione",
+    "manage": "Gestisci {{name}}",
+    "newSince": "nuovi dal {{date}}",
+    "platformFilters": "Filtra iscrizioni per piattaforma",
+    "rssHubLink": "Usa feed RSSHub",
+    "today": "Oggi",
+    "upToDate": "Aggiornato",
+    "yesterday": "Ieri",
+    "followableTitle": "Cosa puoi seguire",
+    "checksLabel": "Controlla le novità",
+    "everyHours": "Ogni {{count}} ore",
+    "savesToLabel": "Salva in",
+    "anyFeedUrl": "Qualsiasi URL di feed RSS o Atom"
   },
   "kernelPreparation": {
     "copied": "Copiato",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Convertire il formato",
         "prompt": "Aiutami a convertire un file multimediale in un altro formato con VidBeep. Mostra i download completati, chiedi quale file convertire e il formato di destinazione desiderato, poi crea una copia convertita mantenendo l’originale."
-      }
+      },
+      "calmTitle": "Cosa deve fare VidBeep?",
+      "calmDescription": "Lavora su download, trascrizioni e iscrizioni."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

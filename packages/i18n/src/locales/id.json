@@ -112,7 +112,14 @@
     "downloadingUpdate": "Mengunduh pembaruan",
     "changelog": {
       "currentVersion": "Versi saat ini"
-    }
+    },
+    "emailSupport": "Dukungan email",
+    "feedbackAndIssues": "Masukan & masalah",
+    "helpAndFeedback": "Bantuan dan masukan",
+    "moreFromDeveloper": "Lainnya dari pengembang",
+    "officialWebsite": "Situs resmi",
+    "releaseNotes": "Catatan rilis",
+    "shareVidBeep": "Bagikan VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Tutup aplikasi saat unduhan selesai",
@@ -307,12 +314,17 @@
         "completed": "Selesai",
         "failed": "Gagal",
         "stopped": "Dihentikan"
-      }
+      },
+      "sentenceCount": "{{count}} tugas agen"
     },
     "sourceFile": "Berkas sumber",
     "troubleshoot": "Periksa masalah",
     "troubleshootPrompt": "Bantu saya memeriksa masalah pada tugas unduhan {{taskId}}. Periksa status saat ini, detail kesalahan, dan log, jelaskan kemungkinan penyebabnya, lalu sarankan langkah berikutnya sebelum melakukan tindakan apa pun.",
-    "troubleshootFailed": "Tidak dapat memulai pemeriksaan masalah. Silakan coba lagi."
+    "troubleshootFailed": "Tidak dapat memulai pemeriksaan masalah. Silakan coba lagi.",
+    "addUrlAction": "Tambah URL",
+    "dateToday": "Hari ini",
+    "dateYesterday": "Kemarin",
+    "etaValue": "Sisa waktu {{eta}}"
   },
   "error": {
     "title": "Terjadi kesalahan",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Postingan dengan media",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Tambah langganan",
+    "allFilter": "Semua",
+    "autoDownloadOff": "Unduh otomatis mati",
+    "autoDownloadOn": "Unduh otomatis aktif",
+    "emptyDescription": "Ikuti kanal, playlist, atau feed, dan VidBeep mengunduh item baru untuk Anda.",
+    "emptyTitle": "Belum ada langganan",
+    "manage": "Kelola {{name}}",
+    "newSince": "baru sejak {{date}}",
+    "platformFilters": "Filter langganan menurut platform",
+    "rssHubLink": "Gunakan feed RSSHub",
+    "today": "Hari ini",
+    "upToDate": "Terbaru",
+    "yesterday": "Kemarin",
+    "followableTitle": "Yang bisa Anda ikuti",
+    "checksLabel": "Memeriksa item baru",
+    "everyHours": "Setiap {{count}} jam",
+    "savesToLabel": "Menyimpan ke",
+    "anyFeedUrl": "URL feed RSS atau Atom apa pun"
   },
   "kernelPreparation": {
     "copied": "Disalin",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Konversi format",
         "prompt": "Bantu saya mengonversi media ke format lain di VidBeep. Tampilkan unduhan yang sudah selesai, tanyakan file yang ingin dikonversi dan format keluaran yang diinginkan, lalu buat salinan hasil konversi dan pertahankan file aslinya."
-      }
+      },
+      "calmTitle": "Apa yang harus dilakukan VidBeep?",
+      "calmDescription": "Bekerja dengan unduhan, transkrip, dan langganan Anda."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

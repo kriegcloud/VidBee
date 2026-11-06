@@ -4,6 +4,7 @@ import { selectAtom } from 'jotai/utils'
 import { ChevronDown, ChevronRight, RotateCw, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { downloadDisplayTitle } from '../../lib/download-display-title'
 import { type DownloadLivePatch, downloadLivePatchesAtom } from '../../store/download-live-patch'
 import type { DownloadRecord } from '../../store/downloads'
 import { Button } from '../ui/button'
@@ -83,18 +84,22 @@ export function PlaylistDownloadGroup({
   const inProgressRecordings = activeRecords.filter(
     (record) => record.mediaKind === 'recording'
   ).length
-  const displayTitle = title || t('playlist.untitled')
+  const displayTitle = downloadDisplayTitle({
+    title,
+    url: records[0]?.url ?? '',
+    savedFileName: undefined
+  })
   const historyRecords = records.filter((record) => record.entryType === 'history')
   const canDeletePlaylist = historyRecords.length > 0 && Boolean(onDeletePlaylist)
   const toggleLabel = expanded ? t('playlist.groupCollapse') : t('playlist.groupExpand')
 
   return (
-    <div className="mx-6 rounded-md bg-muted/30">
+    <div className="mx-6 rounded-lg hover:bg-[color:var(--hover)]">
       <div className="flex items-center justify-between gap-2">
         <button
           aria-expanded={expanded}
           aria-label={toggleLabel}
-          className="flex min-w-0 flex-1 items-center gap-2 rounded-md p-1.5 px-3 transition-colors hover:bg-muted/40 active:bg-muted/60"
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-md p-1.5 px-3 transition-colors hover:bg-[color:var(--hover)] active:bg-[color:var(--active)]"
           onClick={onToggle}
           title={toggleLabel}
           type="button"
@@ -106,22 +111,27 @@ export function PlaylistDownloadGroup({
             <div className="flex min-w-0 items-center gap-1.5">
               <p className="truncate font-medium text-foreground text-sm">{displayTitle}</p>
               {platformLabel && (
-                <span className="flex shrink-0 items-center gap-1 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground">
+                <span className="flex shrink-0 items-center gap-1 px-1.5 py-px text-muted-foreground text-xs">
                   <DownloadPlatformIcon className="size-3 rounded-[2px]" domain={platformDomain} />
                   {platformLabel}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground tabular-nums">
               <span>
-                {t(isPlaylist ? 'playlist.collapsedProgress' : 'playlist.groupSummary', {
-                  completed: completedCount,
-                  total: totalCount
-                })}
+                {t(
+                  isPlaylist && activeCount > 0
+                    ? 'playlist.collapsedProgress'
+                    : 'playlist.groupSummary',
+                  {
+                    completed: completedCount,
+                    total: totalCount
+                  }
+                )}
               </span>
               {activeCount > 0 && (
                 <>
-                  <span className="text-muted-foreground/50">•</span>
+                  <span className="text-muted-foreground/50">·</span>
                   <span>
                     {[
                       inProgressPhotos > 0
@@ -141,7 +151,7 @@ export function PlaylistDownloadGroup({
               )}
               {errorCount > 0 && (
                 <>
-                  <span className="text-muted-foreground/50">•</span>
+                  <span className="text-muted-foreground/50">·</span>
                   <span className="text-destructive">
                     {t('playlist.groupErrors', { count: errorCount })}
                   </span>
@@ -190,7 +200,15 @@ export function PlaylistDownloadGroup({
           )}
         </div>
       </div>
-      {!expanded && totalCount > 0 && <Progress className="h-0.5 w-full" value={percent} />}
+      {activeCount > 0 && totalCount > 0 && (
+        <div className="px-3 pb-2">
+          <Progress
+            aria-label={t('agentChat.ui.progress')}
+            className="h-1 rounded-full bg-data-track [&_[data-slot=progress-indicator]]:bg-data"
+            value={percent}
+          />
+        </div>
+      )}
     </div>
   )
 }

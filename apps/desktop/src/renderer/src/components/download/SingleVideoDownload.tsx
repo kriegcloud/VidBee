@@ -480,7 +480,7 @@ export function SingleVideoDownload({
 
       {loading && !error && (
         <div className="flex min-h-[140px] flex-col items-center justify-center gap-3 rounded-md border border-border/70 border-dashed bg-muted/20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           <p className="text-muted-foreground text-sm">{t('download.fetchingVideoInfo')}</p>
         </div>
       )}

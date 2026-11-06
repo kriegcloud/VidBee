@@ -33,18 +33,7 @@ import {
 import { isListIgnoreTarget } from '@vidbee/ui/lib/list-marquee'
 import { isBrowserOpenableUrl } from '@vidbee/ui/lib/url-kind'
 import { useAtomValue, useSetAtom } from 'jotai'
-import {
-  AlertCircle,
-  Captions,
-  Copy,
-  FileAudio,
-  Loader2,
-  MoreHorizontal,
-  Pause,
-  Play,
-  RotateCw,
-  X
-} from 'lucide-react'
+import { AlertCircle, Copy, Loader2, MoreHorizontal, Pause, Play, RotateCw, X } from 'lucide-react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -55,6 +44,7 @@ import {
 import { useCachedThumbnail } from '../../hooks/use-cached-thumbnail'
 import type { DownloadSelectionModifiers } from '../../hooks/use-download-selection'
 import { useLocalPoster } from '../../hooks/use-local-poster'
+import { downloadDisplayTitle } from '../../lib/download-display-title'
 import { getDownloadErrorGuidance } from '../../lib/download-error-guidance'
 import { rememberDownloadListFocus } from '../../lib/download-list-focus'
 import { ipcServices } from '../../lib/ipc'
@@ -157,25 +147,48 @@ interface DownloadItemProps {
 }
 
 const formatFileSize = (bytes?: number) => {
-  if (!bytes) {
-    return ''
+  if (bytes === undefined || !Number.isFinite(bytes) || bytes < 0) {
+    return <span className="text-meta">—</span>
   }
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const order = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), sizes.length - 1)
-  return `${(bytes / 1024 ** order).toFixed(1)} ${sizes[order]}`
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  const order =
+    bytes === 0
+      ? 0
+      : Math.max(0, Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), sizes.length - 1))
+  return (
+    <span>
+      {(bytes / 1024 ** order).toFixed(1)}{' '}
+      <span className="font-normal text-meta">{sizes[order]}</span>
+    </span>
+  )
 }
 
-const formatDateShort = (timestamp?: number) => {
-  if (!timestamp) {
-    return ''
+const formatDateShort = (
+  timestamp: number | undefined,
+  language: string,
+  today: string,
+  yesterday: string
+) => {
+  if (timestamp === undefined || !Number.isFinite(timestamp)) {
+    return '—'
   }
   const date = new Date(timestamp)
-  return date.toLocaleString(undefined, {
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  const now = new Date()
+  const previousDay = new Date(now)
+  previousDay.setDate(now.getDate() - 1)
+  const time = new Intl.DateTimeFormat(language, { hour: '2-digit', minute: '2-digit' }).format(
+    date
+  )
+  if (date.toDateString() === now.toDateString()) {
+    return `${today} ${time}`
+  }
+  if (date.toDateString() === previousDay.toDateString()) {
+    return `${yesterday} ${time}`
+  }
+  if (date.getFullYear() === now.getFullYear()) {
+    return new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric' }).format(date)
+  }
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
 /** Render the shared library row, with a compact details link for Agent Chat cards. */
@@ -188,13 +201,14 @@ export function DownloadItem({
   selectionContextMenu,
   onToggleSelect
 }: DownloadItemProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const appInfo = useAppInfo()
   const settings = useAtomValue(settingsAtom)
   const setCookieSetupRequest = useSetAtom(cookieSetupRequestAtom)
   const navigate = useNavigate()
   const transcriptMap = useAtomValue(transcriptMapAtom)
   const transcript = transcriptMap[download.id]
+  const displayTitle = downloadDisplayTitle(download, transcript?.title)
   const agentTasks = useAtomValue(agentTasksByDownloadAtom)[download.id]
   const agentTaskAiSnapshot = useAtomValue(agentTaskAiSnapshotAtom)
   const playbackSession = useAtomValue(playbackSessionAtom)
@@ -603,10 +617,10 @@ export function DownloadItem({
         return <AlertCircle className="h-4 w-4 text-destructive" />
       case 'downloading':
       case 'processing':
-        return <Loader2 className="h-4 w-4 animate-spin text-primary" />
+        return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       case 'pending':
         if (isPausedDownload) {
-          return <Pause className="h-4 w-4 text-amber-500" />
+          return <Pause className="h-4 w-4 text-muted-foreground" />
         }
         return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       case 'cancelled':
@@ -667,9 +681,7 @@ export function DownloadItem({
   const showOpenFolderAction = Boolean(
     contents.media && download.title && (download.downloadPath || settings.downloadPath)
   )
-  const showInlineProgress = Boolean(
-    progressInfo && download.status !== 'completed' && download.status !== 'error'
-  )
+  const showInlineProgress = isInProgressStatus
   const canCopyLink = Boolean(download.url) && !isLocalMedia
   const canOpenFile = !download.collectionSummary && isCompletedStatus && fileExists
   const canDeleteFile =
@@ -681,11 +693,11 @@ export function DownloadItem({
   // yt-dlp reports a chosen format; gallery-dl routes only ever report what
   // actually landed on disk, so fall back to that rather than showing nothing.
   const selectedFormatSize =
-    download.selectedFormat?.filesize ||
-    download.selectedFormat?.filesize_approx ||
-    download.fileSize ||
+    download.selectedFormat?.filesize ??
+    download.selectedFormat?.filesize_approx ??
+    download.fileSize ??
     download.totalSize
-  const inlineFileSize = selectedFormatSize ? formatFileSize(selectedFormatSize) : undefined
+  const inlineFileSize = formatFileSize(selectedFormatSize)
   const displayErrorMessage = getDownloadErrorGuidance(download.error) ?? download.error
   const cookieFailureKind = getCookieSetupFailureKind(download.error)
   const qualityLabel = getQualityLabel(download)
@@ -761,27 +773,12 @@ export function DownloadItem({
   }
 
   const metaItems: { key: string; node: ReactNode }[] = []
-  if (showInlineProgress) {
-    metaItems.push({
-      key: 'progress',
-      node: (
-        <span className="inline-flex items-center gap-1 font-medium text-foreground">
-          {statusIcon}
-          {progressInfo?.indeterminate ? statusText : `${(progressInfo?.percent ?? 0).toFixed(0)}%`}
-        </span>
-      )
-    })
-    if (progressInfo?.currentSpeed) {
-      metaItems.push({ key: 'speed', node: progressInfo.currentSpeed })
-    }
-  } else if (download.status !== 'completed' && statusText) {
+  if (download.status !== 'completed' && statusText) {
     metaItems.push({
       key: 'status',
       node: (
         <span
-          className={`inline-flex items-center gap-1 ${
-            download.status === 'error' ? 'text-destructive' : ''
-          }`}
+          className={`inline-flex items-center gap-1 ${download.status === 'error' ? 'text-destructive' : ''}`}
         >
           {statusIcon}
           {statusText}
@@ -795,8 +792,16 @@ export function DownloadItem({
       node: <AgentTaskIndicator aiSnapshot={agentTaskAiSnapshot} tasks={agentTasks} />
     })
   }
-  if (timestamp && !showInlineProgress) {
-    metaItems.push({ key: 'date', node: formatDateShort(timestamp) })
+  if (!showInlineProgress) {
+    metaItems.push({
+      key: 'date',
+      node: formatDateShort(
+        timestamp,
+        i18n.language,
+        t('download.dateToday', 'Today'),
+        t('download.dateYesterday', 'Yesterday')
+      )
+    })
   }
   if (qualityLabel && !showInlineProgress) {
     metaItems.push({ key: 'quality', node: qualityLabel })
@@ -839,10 +844,12 @@ export function DownloadItem({
         {/* biome-ignore lint/a11y/useSemanticElements: composite row contains independent buttons and selection controls */}
         <div
           aria-current={isNowPlaying ? 'true' : undefined}
-          aria-label={download.title}
+          aria-label={displayTitle}
           aria-pressed={selectionEnabled ? isSelected : undefined}
-          className={`group relative w-full max-w-full overflow-hidden text-left transition-colors focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 ${compact ? 'cursor-pointer rounded-xl px-3 py-3 hover:bg-accent/50' : 'px-6 py-2'} ${
-            isSelectedHistory || isContextMenuOpen ? 'bg-primary/10' : ''
+          className={`group relative w-full max-w-full overflow-hidden rounded-lg text-left transition-colors hover:bg-[color:var(--hover)] focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 ${compact ? 'cursor-pointer px-3 py-3' : 'mx-4 w-[calc(100%-2rem)]! px-2 py-2'} ${
+            isSelectedHistory || isContextMenuOpen
+              ? 'bg-[color:var(--active)] hover:bg-[color:var(--active)]'
+              : ''
           }`}
           data-download-id={download.id}
           data-download-selectable={selectionEnabled ? 'true' : undefined}
@@ -890,7 +897,7 @@ export function DownloadItem({
           <div className="flex w-full items-start gap-3">
             {/* Thumbnail */}
             <div
-              className="relative z-20 aspect-video h-14 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-background/60"
+              className="relative z-20 h-[54px] w-24 shrink-0 overflow-hidden rounded-md bg-muted text-meta"
               data-download-activate=""
               data-download-transfer-cover=""
               ref={coverRef}
@@ -927,17 +934,15 @@ export function DownloadItem({
                 </div>
               )}
               <RemoteImage
-                alt={download.title}
-                className="h-full w-full object-cover"
+                alt={displayTitle}
+                className="h-full w-full object-cover text-meta"
                 fallbackIcon={
-                  contents.media === null ? (
-                    <Captions className="h-4 w-4" />
-                  ) : contents.media === 'audio' ? (
-                    <FileAudio className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )
+                  <DownloadPlatformIcon className="size-4 grayscale" domain={platform.domain} />
                 }
+                loadingIcon={
+                  <DownloadPlatformIcon className="size-4 grayscale" domain={platform.domain} />
+                }
+                placeholderClassName="bg-muted text-meta"
                 src={download.thumbnail || localPoster}
               />
               {isNowPlaying ? (
@@ -966,7 +971,7 @@ export function DownloadItem({
                   )}
 
                   <div
-                    className={`flex min-w-0 items-center gap-1.5 ${isNowPlaying ? 'text-primary' : ''}`}
+                    className={`flex min-w-0 items-center gap-1.5 ${isNowPlaying ? 'text-data' : ''}`}
                   >
                     <span
                       aria-label={platformLabel}
@@ -979,8 +984,9 @@ export function DownloadItem({
                     <p
                       className="min-w-0 cursor-pointer truncate font-medium text-sm hover:underline"
                       data-download-activate=""
+                      title={download.url}
                     >
-                      {download.title}
+                      {displayTitle}
                     </p>
                   </div>
                   <DownloadItemMeta
@@ -992,6 +998,21 @@ export function DownloadItem({
                     }
                   />
                 </div>
+                {showInlineProgress && (
+                  <div className="ml-auto shrink-0 text-right text-[13px] text-muted-foreground tabular-nums">
+                    <span>
+                      {progressInfo?.percent === undefined
+                        ? '—'
+                        : `${Math.min(100, Math.max(0, progressInfo.percent)).toFixed(0)}%`}
+                    </span>
+                    <span className="mx-1.5">·</span>
+                    <span>{progressInfo?.currentSpeed ?? download.speed ?? '—'}</span>
+                    <span className="mx-1.5">·</span>
+                    <span>
+                      {t('download.etaValue', 'ETA {{eta}}', { eta: progressInfo?.eta ?? '—' })}
+                    </span>
+                  </div>
+                )}
                 <div
                   className={
                     compact
@@ -1142,18 +1163,13 @@ export function DownloadItem({
               </div>
 
               {/* Progress */}
-              {download.progress &&
-                !download.progress.indeterminate &&
-                download.status !== 'completed' &&
-                download.status !== 'error' && (
-                  <div className="mt-1.5 w-full overflow-hidden rounded-full bg-background/60">
-                    <Progress
-                      aria-label={t('agentChat.ui.progress')}
-                      className="h-1 w-full"
-                      value={download.progress.percent}
-                    />
-                  </div>
-                )}
+              {showInlineProgress && (
+                <Progress
+                  aria-label={t('agentChat.ui.progress')}
+                  className="mt-1.5 h-1 w-full rounded-full bg-data-track [&_[data-slot=progress-indicator]]:bg-data"
+                  value={Math.min(100, Math.max(0, progressInfo?.percent ?? 0))}
+                />
+              )}
 
               {/* Format-fallback hint: shown on completed rows when yt-dlp's
                   resolved format id does not contain the user-picked id (e.g.
@@ -1196,7 +1212,7 @@ export function DownloadItem({
                       </Button>
                     </div>
                   ) : null}
-                  <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 text-muted-foreground text-xs">
+                  <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
                     <DownloadTroubleshootButton taskId={download.id} />
                     {canShowSheet && (
                       <Button
@@ -1244,11 +1260,11 @@ export function DownloadItem({
               >
                 <div className="flex h-full min-h-0 flex-col overflow-hidden">
                   <SheetHeader className="shrink-0 border-b px-6 pt-6 pb-4">
-                    <SheetTitle className="line-clamp-2">{download.title}</SheetTitle>
+                    <SheetTitle className="line-clamp-2">{displayTitle}</SheetTitle>
                     <SheetDescription>{t('download.logsTab')}</SheetDescription>
                   </SheetHeader>
                   <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-6 py-4">
-                    <div className="flex items-center justify-between text-muted-foreground text-xs">
+                    <div className="flex items-center justify-between text-[13px] text-muted-foreground">
                       <span>
                         {isInProgressStatus ? t('download.logs.live') : t('download.logs.history')}
                       </span>
@@ -1386,7 +1402,7 @@ function DownloadItemMeta({
   }
   return (
     <div
-      className="flex h-5 min-w-0 items-center overflow-hidden text-[12px] text-muted-foreground leading-none [&_img]:block [&_svg]:block"
+      className="flex h-5 min-w-0 items-center overflow-hidden text-[13px] text-muted-foreground tabular-nums leading-none [&_img]:block [&_svg]:block"
       data-testid="download-item-meta"
     >
       {leading}
@@ -1413,14 +1429,16 @@ function TaskOriginBadge({ origin, agentConversation }: Partial<TaskCreationMeta
   const navigate = useNavigate()
   if (origin === 'subscription') {
     return (
-      <span className="text-muted-foreground text-xs">{t('download.createdBySubscription')}</span>
+      <span className="text-[13px] text-muted-foreground">
+        {t('download.createdBySubscription')}
+      </span>
     )
   }
   if (origin !== 'agent') {
     return null
   }
   const className =
-    'pointer-events-auto relative z-20 inline-flex rounded-sm text-muted-foreground text-xs'
+    'pointer-events-auto relative z-20 inline-flex rounded-sm text-muted-foreground text-[13px]'
   return agentConversation ? (
     <button
       aria-label={t('download.openSourceConversation')}

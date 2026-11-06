@@ -112,7 +112,14 @@
     "downloadingUpdate": "업데이트 다운로드 중",
     "changelog": {
       "currentVersion": "현재 버전"
-    }
+    },
+    "emailSupport": "이메일 지원",
+    "feedbackAndIssues": "피드백 및 문제",
+    "helpAndFeedback": "도움말 및 피드백",
+    "moreFromDeveloper": "개발자의 다른 앱",
+    "officialWebsite": "공식 웹사이트",
+    "releaseNotes": "릴리스 노트",
+    "shareVidBeep": "VidBeep 공유"
   },
   "advancedOptions": {
     "closeWhenDone": "다운로드 완료 시 앱 닫기",
@@ -307,12 +314,17 @@
         "completed": "완료",
         "failed": "실패",
         "stopped": "중지됨"
-      }
+      },
+      "sentenceCount": "에이전트 작업 {{count}}개"
     },
     "sourceFile": "원본 파일",
     "troubleshoot": "문제 진단",
     "troubleshootPrompt": "다운로드 작업 {{taskId}}의 문제를 진단해 주세요. 현재 상태, 오류 세부 정보와 로그를 확인하고, 예상 원인과 해결 방법을 설명해 주세요. 작업을 수행하기 전에 먼저 다음 단계를 제안해 주세요.",
-    "troubleshootFailed": "문제 진단을 시작하지 못했습니다. 다시 시도해 주세요."
+    "troubleshootFailed": "문제 진단을 시작하지 못했습니다. 다시 시도해 주세요.",
+    "addUrlAction": "URL 추가",
+    "dateToday": "오늘",
+    "dateYesterday": "어제",
+    "etaValue": "남은 시간 {{eta}}"
   },
   "error": {
     "title": "문제가 발생했습니다",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "미디어가 있는 게시물",
         "spotlight": "스포트라이트"
       }
-    }
+    },
+    "addAction": "구독 추가",
+    "allFilter": "전체",
+    "autoDownloadOff": "자동 다운로드 끔",
+    "autoDownloadOn": "자동 다운로드 켬",
+    "emptyDescription": "채널, 재생목록 또는 피드를 팔로우하면 VidBeep이 새 항목을 대신 다운로드합니다.",
+    "emptyTitle": "아직 구독이 없습니다",
+    "manage": "{{name}} 관리",
+    "newSince": "{{date}} 이후 새 항목",
+    "platformFilters": "플랫폼별 구독 필터",
+    "rssHubLink": "RSSHub 피드 사용",
+    "today": "오늘",
+    "upToDate": "최신 상태",
+    "yesterday": "어제",
+    "followableTitle": "팔로우할 수 있는 항목",
+    "checksLabel": "새 항목 확인",
+    "everyHours": "{{count}}시간마다",
+    "savesToLabel": "저장 위치",
+    "anyFeedUrl": "모든 RSS 또는 Atom 피드 URL"
   },
   "kernelPreparation": {
     "copied": "복사됨",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "형식 변환",
         "prompt": "VidBeep로 미디어 형식을 변환하고 싶어요. 다운로드가 완료된 파일 목록을 보여 주고, 변환할 파일과 원하는 출력 형식을 물어본 다음 원본을 유지하면서 변환된 사본을 만들어 주세요."
-      }
+      },
+      "calmTitle": "VidBeep이 무엇을 할까요?",
+      "calmDescription": "다운로드, 전사본, 구독을 다룹니다."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

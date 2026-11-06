@@ -31,7 +31,7 @@ const STATUS_KEY: Record<AgentRunStatus, StatusKey> = {
 }
 
 const STATUS_TEXT_CLASS: Record<StatusKey, string> = {
-  running: 'text-primary',
+  running: 'text-muted-foreground',
   completed: 'opacity-70',
   failed: 'text-destructive',
   stopped: 'opacity-70'
@@ -101,8 +101,9 @@ export function AgentTaskIndicator({ tasks, aiSnapshot }: AgentTaskIndicatorProp
     name: agentTaskName(task, aiSnapshot, t),
     status: STATUS_KEY[task.status]
   }))
-  const text =
-    rows.length === 1 ? rows[0].name : t('download.agentTasks.count', { count: rows.length })
+  const text = t('download.agentTasks.sentenceCount', '{{count}} agent tasks', {
+    count: rows.length
+  })
   const summary = t('download.agentTasks.summary', {
     tasks: rows
       .map((row) => `${row.name} ${t(`download.agentTasks.status.${row.status}`)}`)
@@ -144,7 +145,7 @@ export function AgentTaskIndicator({ tasks, aiSnapshot }: AgentTaskIndicatorProp
               >
                 <Icon className="size-3" size={12} />
                 {status === 'running' ? (
-                  <span className={cn(DOWNLOAD_STACK_BUSY_RING_CLASS, 'text-primary')} />
+                  <span className={cn(DOWNLOAD_STACK_BUSY_RING_CLASS, 'text-muted-foreground')} />
                 ) : null}
                 {status === 'failed' ? (
                   <span className="absolute -right-px -bottom-px size-1.5 rounded-full bg-destructive ring-1 ring-background" />

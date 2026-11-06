@@ -112,7 +112,14 @@
     "downloadingUpdate": "تنزيل التحديث",
     "changelog": {
       "currentVersion": "الإصدار الحالي"
-    }
+    },
+    "emailSupport": "الدعم عبر البريد",
+    "feedbackAndIssues": "الملاحظات والمشكلات",
+    "helpAndFeedback": "المساعدة والملاحظات",
+    "moreFromDeveloper": "المزيد من المطوّر",
+    "officialWebsite": "الموقع الرسمي",
+    "releaseNotes": "ملاحظات الإصدار",
+    "shareVidBeep": "مشاركة VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "إغلاق التطبيق عند انتهاء التحميل",
@@ -307,12 +314,17 @@
         "completed": "اكتملت",
         "failed": "فشلت",
         "stopped": "أُوقفت"
-      }
+      },
+      "sentenceCount": "{{count}} مهام للوكيل"
     },
     "sourceFile": "الملف المصدر",
     "troubleshoot": "استكشاف المشكلة",
     "troubleshootPrompt": "ساعدني في تشخيص مشكلة مهمة التنزيل {{taskId}}. افحص حالتها الحالية وتفاصيل الخطأ والسجلات، واشرح السبب المحتمل واقترح الخطوات التالية قبل اتخاذ أي إجراء.",
-    "troubleshootFailed": "تعذّر بدء استكشاف المشكلة. يُرجى المحاولة مرة أخرى."
+    "troubleshootFailed": "تعذّر بدء استكشاف المشكلة. يُرجى المحاولة مرة أخرى.",
+    "addUrlAction": "إضافة رابط",
+    "dateToday": "اليوم",
+    "dateYesterday": "أمس",
+    "etaValue": "المتبقي {{eta}}"
   },
   "error": {
     "title": "حدث خطأ ما",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "منشورات تحتوي على وسائط",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "إضافة اشتراك",
+    "allFilter": "الكل",
+    "autoDownloadOff": "التنزيل التلقائي متوقف",
+    "autoDownloadOn": "التنزيل التلقائي مفعّل",
+    "emptyDescription": "تابع قناة أو قائمة تشغيل أو خلاصة، وسيقوم VidBeep بتنزيل الجديد نيابةً عنك.",
+    "emptyTitle": "لا توجد اشتراكات بعد",
+    "manage": "إدارة {{name}}",
+    "newSince": "جديد منذ {{date}}",
+    "platformFilters": "تصفية الاشتراكات حسب المنصة",
+    "rssHubLink": "استخدام خلاصات RSSHub",
+    "today": "اليوم",
+    "upToDate": "محدّث",
+    "yesterday": "أمس",
+    "followableTitle": "ما يمكنك متابعته",
+    "checksLabel": "التحقق من العناصر الجديدة",
+    "everyHours": "كل {{count}} ساعات",
+    "savesToLabel": "يحفظ في",
+    "anyFeedUrl": "أي رابط خلاصة RSS أو Atom"
   },
   "kernelPreparation": {
     "copied": "تم النسخ",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "تحويل الصيغة",
         "prompt": "ساعدني في تحويل ملف وسائط إلى صيغة أخرى في VidBeep. اعرض التنزيلات المكتملة، واسألني عن الملف المراد تحويله وصيغة الإخراج المطلوبة، ثم أنشئ نسخة محوّلة مع الاحتفاظ بالملف الأصلي."
-      }
+      },
+      "calmTitle": "ماذا تريد أن يفعل VidBeep؟",
+      "calmDescription": "يعمل على تنزيلاتك ونصوصك واشتراكاتك."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

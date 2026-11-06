@@ -449,7 +449,14 @@ export function AgentChat({
     )
   }
   return (
-    <>
+    <div
+      className={
+        standalone
+          ? 'contents [&[data-has-draft=true]_.clipii-capture-submit]:bg-primary! [&[data-has-draft=true]_.clipii-capture-submit]:text-primary-foreground! [&_.clipii-capture-submit]:bg-muted! [&_.clipii-capture-submit]:text-muted-foreground!'
+          : 'contents'
+      }
+      data-has-draft={Boolean(draft.trim())}
+    >
       <AgentUiProvider
         activeMessageId={messages.at(-1)?.id}
         disabled={busy || !ready || !transcriptReady}
@@ -611,6 +618,6 @@ export function AgentChat({
             : null
         }
       />
-    </>
+    </div>
   )
 }

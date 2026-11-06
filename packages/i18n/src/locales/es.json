@@ -112,7 +112,14 @@
     "downloadingUpdate": "Descargando actualización",
     "changelog": {
       "currentVersion": "Versión actual"
-    }
+    },
+    "emailSupport": "Soporte por correo",
+    "feedbackAndIssues": "Comentarios y problemas",
+    "helpAndFeedback": "Ayuda y comentarios",
+    "moreFromDeveloper": "Más del desarrollador",
+    "officialWebsite": "Sitio web oficial",
+    "releaseNotes": "Notas de la versión",
+    "shareVidBeep": "Compartir VidBeep"
   },
   "advancedOptions": {
     "closeWhenDone": "Cerrar la aplicación cuando termine la descarga",
@@ -307,12 +314,17 @@
         "completed": "Listo",
         "failed": "Error",
         "stopped": "Detenido"
-      }
+      },
+      "sentenceCount": "{{count}} tareas del agente"
     },
     "sourceFile": "Archivo de origen",
     "troubleshoot": "Diagnosticar",
     "troubleshootPrompt": "Ayúdame a diagnosticar el problema de la tarea de descarga {{taskId}}. Revisa su estado actual, los detalles del error y los registros, explica la causa probable y recomienda los siguientes pasos antes de realizar cualquier acción.",
-    "troubleshootFailed": "No se pudo iniciar el diagnóstico. Inténtalo de nuevo."
+    "troubleshootFailed": "No se pudo iniciar el diagnóstico. Inténtalo de nuevo.",
+    "addUrlAction": "Añadir URL",
+    "dateToday": "Hoy",
+    "dateYesterday": "Ayer",
+    "etaValue": "Tiempo restante {{eta}}"
   },
   "error": {
     "title": "Algo salió mal",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Publicaciones con multimedia",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Añadir suscripción",
+    "allFilter": "Todas",
+    "autoDownloadOff": "Descarga automática desactivada",
+    "autoDownloadOn": "Descarga automática activada",
+    "emptyDescription": "Sigue un canal, una lista o un feed y VidBeep descargará lo nuevo por ti.",
+    "emptyTitle": "Aún no hay suscripciones",
+    "manage": "Gestionar {{name}}",
+    "newSince": "nuevos desde {{date}}",
+    "platformFilters": "Filtrar suscripciones por plataforma",
+    "rssHubLink": "Usar feeds de RSSHub",
+    "today": "Hoy",
+    "upToDate": "Al día",
+    "yesterday": "Ayer",
+    "followableTitle": "Qué puedes seguir",
+    "checksLabel": "Busca novedades",
+    "everyHours": "Cada {{count}} horas",
+    "savesToLabel": "Guarda en",
+    "anyFeedUrl": "Cualquier URL de feed RSS o Atom"
   },
   "kernelPreparation": {
     "copied": "Copiado",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Convertir el formato",
         "prompt": "Ayúdame a convertir un archivo multimedia a otro formato en VidBeep. Muestra mis descargas completadas, pregunta qué archivo quiero convertir y el formato de salida deseado, y crea una copia convertida conservando el original."
-      }
+      },
+      "calmTitle": "¿Qué debe hacer VidBeep?",
+      "calmDescription": "Trabaja con tus descargas, transcripciones y suscripciones."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

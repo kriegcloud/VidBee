@@ -112,7 +112,14 @@
     "downloadingUpdate": "Güncelleme indiriliyor",
     "changelog": {
       "currentVersion": "Mevcut sürüm"
-    }
+    },
+    "emailSupport": "E-posta desteği",
+    "feedbackAndIssues": "Geri bildirim ve sorunlar",
+    "helpAndFeedback": "Yardım ve geri bildirim",
+    "moreFromDeveloper": "Geliştiriciden diğerleri",
+    "officialWebsite": "Resmi web sitesi",
+    "releaseNotes": "Sürüm notları",
+    "shareVidBeep": "VidBeep’i paylaş"
   },
   "advancedOptions": {
     "closeWhenDone": "İndirme bittiğinde uygulamayı kapat",
@@ -307,12 +314,17 @@
         "completed": "Tamamlandı",
         "failed": "Başarısız",
         "stopped": "Durduruldu"
-      }
+      },
+      "sentenceCount": "{{count}} ajan görevi"
     },
     "sourceFile": "Kaynak dosya",
     "troubleshoot": "Sorunu incele",
     "troubleshootPrompt": "{{taskId}} indirme görevinin sorununu incelememe yardımcı ol. Mevcut durumunu, hata ayrıntılarını ve günlüklerini kontrol et, olası nedeni açıkla ve herhangi bir işlem yapmadan önce sonraki adımları öner.",
-    "troubleshootFailed": "Sorun incelemesi başlatılamadı. Lütfen tekrar deneyin."
+    "troubleshootFailed": "Sorun incelemesi başlatılamadı. Lütfen tekrar deneyin.",
+    "addUrlAction": "URL ekle",
+    "dateToday": "Bugün",
+    "dateYesterday": "Dün",
+    "etaValue": "Kalan süre {{eta}}"
   },
   "error": {
     "title": "Bir sorun oluştu",
@@ -1453,7 +1465,25 @@
         "posts-with-media": "Medyalı gönderiler",
         "spotlight": "Spotlight"
       }
-    }
+    },
+    "addAction": "Abonelik ekle",
+    "allFilter": "Tümü",
+    "autoDownloadOff": "Otomatik indirme kapalı",
+    "autoDownloadOn": "Otomatik indirme açık",
+    "emptyDescription": "Bir kanalı, oynatma listesini veya akışı takip edin; VidBeep yeni öğeleri sizin için indirsin.",
+    "emptyTitle": "Henüz abonelik yok",
+    "manage": "{{name}} yönet",
+    "newSince": "{{date}} tarihinden beri yeni",
+    "platformFilters": "Abonelikleri platforma göre filtrele",
+    "rssHubLink": "RSSHub akışlarını kullan",
+    "today": "Bugün",
+    "upToDate": "Güncel",
+    "yesterday": "Dün",
+    "followableTitle": "Neleri takip edebilirsiniz",
+    "checksLabel": "Yeni öğeleri denetler",
+    "everyHours": "Her {{count}} saatte bir",
+    "savesToLabel": "Kaydedilen yer",
+    "anyFeedUrl": "Herhangi bir RSS veya Atom akışı URL’si"
   },
   "kernelPreparation": {
     "copied": "Kopyalandı",
@@ -2083,7 +2113,9 @@
       "convert": {
         "label": "Biçimi dönüştür",
         "prompt": "VidBeep’de bir medya dosyasını başka bir biçime dönüştürmeme yardım et. Tamamlanan indirmelerimi göster, hangi dosyayı dönüştüreceğimi ve istediğim çıktı biçimini sor, ardından orijinali koruyarak dönüştürülmüş bir kopya oluştur."
-      }
+      },
+      "calmTitle": "VidBeep ne yapsın?",
+      "calmDescription": "İndirmeleriniz, dökümleriniz ve abonelikleriniz üzerinde çalışır."
     },
     "eventStream": "Event Stream",
     "eventStatus": {

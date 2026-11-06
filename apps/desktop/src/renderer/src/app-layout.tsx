@@ -145,6 +145,12 @@ export function AppLayout() {
     visible: playbackBarVisible
   })
   const currentPage = pathToPage(pathname)
+  const pageTitleKey: Partial<Record<Page, string>> = {
+    about: 'menu.about',
+    home: 'menu.home',
+    subscriptions: 'menu.subscriptions'
+  }
+  const pageTitle = pageTitleKey[currentPage] ? i18n.t(pageTitleKey[currentPage]) : null
   const supportedSitesUrl = withDesktopUtm('https://vidbee.org/supported-sites/')
   const toolsUrl = withDesktopUtm('https://vidbee.org/tools/')
   const analyticsEnabled = settingsLoaded && settings.enableAnalytics !== false
@@ -454,7 +460,16 @@ export function AppLayout() {
                 }
                 platform={platform}
               >
-                {currentPage === 'chat' ? null : titleBarContent}
+                {currentPage === 'chat' ? null : (
+                  <>
+                    {pageTitle ? (
+                      <h1 className="shrink-0 px-2 font-semibold text-base text-foreground leading-6">
+                        {pageTitle}
+                      </h1>
+                    ) : null}
+                    {titleBarContent}
+                  </>
+                )}
               </TitleBar>
             )}
 

@@ -27,6 +27,10 @@ interface AppSidebarItem {
 }
 
 interface AppSidebarProps {
+  /** `rail` is the 80px icon rail; `labelled` is a 224px sidebar with text labels. */
+  variant?: 'labelled' | 'rail'
+  /** Optional sentence-case caption under the product name (scope, version). */
+  appCaption?: string
   appName?: string
   logoSrc?: string
   logoAlt?: string
@@ -165,6 +169,94 @@ function SidebarNavGroup({ items }: SidebarNavGroupProps) {
   )
 }
 
+interface LabelledNavItemProps {
+  item: AppSidebarItem
+}
+
+/**
+ * Render one labelled sidebar row: a 16px outline icon, a 14px label, and the
+ * active state as a neutral pill with the label brightened (never the brand hue).
+ *
+ * @param props.item Sidebar destination or action.
+ */
+function LabelledNavItem({ item }: LabelledNavItemProps) {
+  const isActive = Boolean(item.active)
+  const IconComponent = isActive ? item.icon.active : item.icon.inactive
+
+  return (
+    <button
+      aria-current={isActive ? 'page' : undefined}
+      className={cn(
+        'group relative flex h-8 w-full items-center gap-2.5 rounded-md px-2.5 text-left text-sm outline-none transition-colors duration-150',
+        'focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring)]',
+        isActive
+          ? 'bg-[color:var(--active)] font-medium text-foreground'
+          : 'text-muted-foreground hover:bg-[color:var(--hover)] hover:text-foreground',
+        item.disabled && 'pointer-events-none opacity-60'
+      )}
+      disabled={item.disabled}
+      onClick={item.onClick}
+      type="button"
+    >
+      <IconComponent className="h-4! w-4! shrink-0" />
+      <span className="min-w-0 flex-1 truncate">{item.label}</span>
+      {item.indicator ? (
+        <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-chart-3" />
+      ) : null}
+    </button>
+  )
+}
+
+/**
+ * Render the labelled sidebar: product mark and name, primary destinations,
+ * and utilities pinned to the bottom.
+ */
+function LabelledSidebar({
+  appName,
+  appCaption,
+  logoSrc,
+  logoAlt,
+  className,
+  items,
+  bottomItems
+}: Required<Pick<AppSidebarProps, 'appName' | 'logoSrc' | 'logoAlt' | 'items' | 'bottomItems'>> &
+  Pick<AppSidebarProps, 'appCaption' | 'className'>) {
+  return (
+    <DragRegion
+      asChild
+      className={cn(
+        'flex w-56 min-w-56 max-w-56 flex-col border-sidebar-border border-r bg-sidebar px-3 pt-4 pb-3',
+        className
+      )}
+    >
+      <aside>
+        <div className="flex items-center gap-2.5 px-2.5 pt-1 pb-5">
+          <img alt={logoAlt} className="h-7 w-7 shrink-0 rounded-md" src={logoSrc} />
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-foreground text-sm leading-5">{appName}</p>
+            {appCaption ? (
+              <p className="truncate text-muted-foreground text-xs leading-4">{appCaption}</p>
+            ) : null}
+          </div>
+        </div>
+        <NoDrag asChild>
+          <nav aria-label={appName} className="flex flex-col gap-0.5">
+            {items.map((item) => (
+              <LabelledNavItem item={item} key={item.id} />
+            ))}
+          </nav>
+        </NoDrag>
+        <div className="flex-1" />
+        <NoDrag className="flex flex-col gap-0.5">
+          {bottomItems.map((item) => (
+            <LabelledNavItem item={item} key={item.id} />
+          ))}
+        </NoDrag>
+      </aside>
+    </DragRegion>
+  )
+}
+
 /**
  * Render the shared app icon rail used by desktop and web.
  *
@@ -181,8 +273,24 @@ export function AppSidebar({
   logoAlt = 'App icon',
   className,
   items,
-  bottomItems = []
+  bottomItems = [],
+  variant = 'rail',
+  appCaption
 }: AppSidebarProps) {
+  if (variant === 'labelled') {
+    return (
+      <LabelledSidebar
+        appCaption={appCaption}
+        appName={appName}
+        bottomItems={bottomItems}
+        className={className}
+        items={items}
+        logoAlt={logoAlt}
+        logoSrc={logoSrc}
+      />
+    )
+  }
+
   return (
     <DragRegion
       asChild
