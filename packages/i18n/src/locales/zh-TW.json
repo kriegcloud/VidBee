@@ -1650,7 +1650,8 @@
       "formatLabel": "格式",
       "format": {
         "txt": ".txt",
-        "md": ".md"
+        "md": ".md",
+        "srt": ".srt"
       },
       "encodeLabel": "編碼",
       "encode": {
@@ -2099,7 +2100,7 @@
       "body": "開啟對話以檢視請求並回覆。"
     },
     "newChatPlaceholder": "有什麼想聊的…",
-    "placeholder": "Ask a follow-up about this video…",
+    "placeholder": "針對這段影片繼續提問…",
     "send": "Send message",
     "attachImages": "Attach images",
     "removeImage": "Remove {{name}}",

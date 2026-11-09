@@ -780,8 +780,8 @@
       "original": "Orijinal (yt-dlp varsayılanı)",
       "webm": "WebM"
     },
-    "autoTranscribeAfterDownload": "Transcribe after download",
-    "autoTranscribeAfterDownloadDescription": "When a download finishes, start a local transcript in the background. This uses your computer and skips files with no speech. Already queued jobs are not cancelled if you turn this off",
+    "autoTranscribeAfterDownload": "İndirdikten sonra döküm oluştur",
+    "autoTranscribeAfterDownloadDescription": "İndirme tamamlandığında bilgisayarın kaynaklarıyla arka planda yerel döküm başlatılır. Konuşma içermeyen dosyalar atlanır. Seçeneği kapatmak kuyruktaki işleri iptal etmez.",
     "maxConcurrentTranscriptions": "En fazla eşzamanlı transkript",
     "maxConcurrentTranscriptionsDescription": "Aynı anda kaç transkriptin çalışabileceğini belirler. Her iş bu bilgisayarı kullanır. Değeri düşürmek çalışan işleri durdurmaz",
     "cloudTranscription": {
@@ -800,18 +800,18 @@
       "unavailable": "Bulut modelleri yüklenemedi. Yeniden deneyin.",
       "modelUnavailable": "Seçilen bulut modeli kullanılamıyor. Transkripsiyondan önce kullanılabilir bir model seçin."
     },
-    "transcriptModelsTitle": "Transcript models",
-    "transcriptModelsReady": "Models ready on disk ({{size}})",
-    "transcriptModelsMissing": "Models are not downloaded yet. The first transcript will fetch them",
+    "transcriptModelsTitle": "Döküm modelleri",
+    "transcriptModelsReady": "Cihazdaki modeller hazır ({{size}})",
+    "transcriptModelsMissing": "Modeller henüz indirilmedi. İlk dökümde indirilecektir.",
     "transcriptModelsRedownload": "Redownload",
     "transcriptModelsRedownloadError": "Could not redownload transcript models.",
     "aiTab": "AI",
-    "asrUse": "Use",
-    "asrUseCurrent": "In use",
-    "asrStatusReady": "Ready",
-    "asrStatusActive": "In use",
-    "asrStatusMissing": "Not downloaded",
-    "asrStatusDownloading": "Downloading",
+    "asrUse": "Kullan",
+    "asrUseCurrent": "Kullanımda",
+    "asrStatusReady": "Hazır",
+    "asrStatusActive": "Kullanımda",
+    "asrStatusMissing": "İndirilmedi",
+    "asrStatusDownloading": "İndiriliyor",
     "asrDownloading": "Downloading {{received}} / {{total}}",
     "asrDownloadingMany": "{{count}} model indiriliyor",
     "asrDelete": "Sil",
@@ -1600,7 +1600,7 @@
       "experimentalHint": "İleride İndirmeler ile birleştirilebilir."
     },
     "followResume": "Jump to current line",
-    "title": "Transcript",
+    "title": "Döküm",
     "ready": "Transcript ready",
     "listLabel": {
       "subtitles": "Altyazılar",
@@ -1645,12 +1645,13 @@
         "subtitles": "Altyazı",
         "segments": "Bölümler",
         "whisper": "Whisper",
-        "video": "Video + altyazı"
+        "video": "Video ve altyazı"
       },
       "formatLabel": "Biçim",
       "format": {
         "txt": ".txt",
-        "md": ".md"
+        "md": ".md",
+        "srt": ".srt"
       },
       "encodeLabel": "Kodlama",
       "encode": {
@@ -1777,7 +1778,7 @@
       }
     },
     "changeModel": "Modeli değiştir",
-    "qualityHint": "Not happy with this transcript?",
+    "qualityHint": "Dökümü iyileştirmek ister misiniz?",
     "qualityHintDetail": "Download a higher-quality model and transcribe again. The current transcript is kept as history.",
     "qualityHintMax": "Zaten en yüksek kaliteli model kullanıldı. Etiketler karıştıysa konuşmacı sayısını ayarlayın. Arka plan müziği ve örtüşen konuşmalar konuşmacıları hâlâ karıştırabilir.",
     "speakerCount": {
@@ -2099,7 +2100,7 @@
       "body": "İsteği incelemek ve yanıtlamak için konuşmayı açın."
     },
     "newChatPlaceholder": "İstediğinizi sorun…",
-    "placeholder": "Ask a follow-up about this video…",
+    "placeholder": "Bu video hakkında bir soru sorun…",
     "send": "Send message",
     "attachImages": "Attach images",
     "removeImage": "Remove {{name}}",

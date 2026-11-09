@@ -1835,7 +1835,8 @@
       "formatLabel": "Format",
       "format": {
         "txt": ".txt",
-        "md": ".md"
+        "md": ".md",
+        "srt": ".srt"
       },
       "encodeLabel": "Encode",
       "encode": {

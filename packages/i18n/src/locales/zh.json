@@ -1662,7 +1662,8 @@
       "formatLabel": "格式",
       "format": {
         "txt": ".txt",
-        "md": ".md"
+        "md": ".md",
+        "srt": ".srt"
       },
       "encodeLabel": "编码",
       "encode": {
@@ -2099,7 +2100,7 @@
       "body": "打开对话以查看请求并回复。"
     },
     "newChatPlaceholder": "有什么想聊的…",
-    "placeholder": "Ask a follow-up about this video…",
+    "placeholder": "围绕这段视频继续提问…",
     "send": "Send message",
     "attachImages": "Attach images",
     "removeImage": "Remove {{name}}",
