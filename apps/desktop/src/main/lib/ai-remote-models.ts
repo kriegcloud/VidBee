@@ -1,4 +1,8 @@
-import { aiProviderNeedsApiKey, resolveAiProviderBaseUrl } from '../../shared/ai-presets'
+import {
+  aiProviderNeedsApiKey,
+  isAiProviderModelBlocked,
+  resolveAiProviderBaseUrl
+} from '../../shared/ai-presets'
 import type { AiProviderPresetId } from '../../shared/ai-types'
 import { scopedLoggers } from '../utils/logger'
 import type { CatalogModelOption } from './ai-model'
@@ -69,7 +73,9 @@ export async function listRemoteProviderModels(
       log.warn('ai remote models failed', { presetId: input.presetId, status: response.status })
       return []
     }
-    const options = parseRemoteModelOptions(await response.json())
+    const options = parseRemoteModelOptions(await response.json()).filter(
+      (option) => !isAiProviderModelBlocked(input.presetId, option.value)
+    )
     log.info('ai remote models loaded', { presetId: input.presetId, count: options.length })
     return options
   } catch (error) {

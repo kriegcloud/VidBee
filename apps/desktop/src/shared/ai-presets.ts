@@ -250,3 +250,20 @@ export const aiProviderRequiresBaseUrl = (presetId: AiProviderPresetId): boolean
  */
 export const aiProviderNeedsApiKey = (presetId: AiProviderPresetId): boolean =>
   getAiProviderPreset(presetId)?.needsApiKey !== false
+
+/** Anthropic model ids and family names that the proxy can expose. */
+const CLIPROXY_BLOCKED_MODEL = /claude|anthropic|\b(?:opus|sonnet|haiku|fable)\b/iu
+
+/**
+ * Claude models are not allowed through CLIProxyAPI: routing a Claude
+ * subscription credential through the proxy breaks Anthropic's terms
+ * (effective 2026-11-12). Use the Anthropic preset with an API key instead.
+ *
+ * @param presetId Built-in provider id.
+ * @param modelId Requested model id.
+ */
+export const isAiProviderModelBlocked = (presetId: AiProviderPresetId, modelId: string): boolean =>
+  presetId === 'cliproxy' && CLIPROXY_BLOCKED_MODEL.test(modelId)
+
+export const CLIPROXY_BLOCKED_MODEL_ERROR =
+  'Claude models are not available through CLIProxyAPI. Use the Anthropic provider with an API key.'

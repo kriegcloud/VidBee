@@ -4,7 +4,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { readCliProxyToken } from '../src/main/lib/cliproxy'
-import { aiProviderNeedsApiKey, resolveAiProviderBaseUrl } from '../src/shared/ai-presets'
+import {
+  aiProviderNeedsApiKey,
+  isAiProviderModelBlocked,
+  resolveAiProviderBaseUrl
+} from '../src/shared/ai-presets'
 
 const fixture = () => {
   const home = mkdtempSync(join(tmpdir(), 'vidbee-cliproxy-'))
@@ -65,4 +69,19 @@ test('never includes YAML source or credentials in configuration errors', () => 
   } finally {
     cleanup()
   }
+})
+
+test('CLIProxyAPI never offers or accepts Claude models', () => {
+  for (const modelId of [
+    'claude-opus-5-5',
+    'claude-fable-5-1',
+    'Claude-Sonnet-5-5',
+    'anthropic/claude-haiku-5-5'
+  ]) {
+    assert.equal(isAiProviderModelBlocked('cliproxy', modelId), true, modelId)
+  }
+  for (const modelId of ['gpt-6.1-sol', 'grok-4.7', 'gpt-6-luna', 'muse-wonder-1.0(medium)']) {
+    assert.equal(isAiProviderModelBlocked('cliproxy', modelId), false, modelId)
+  }
+  assert.equal(isAiProviderModelBlocked('anthropic', 'claude-sonnet-4-5'), false)
 })

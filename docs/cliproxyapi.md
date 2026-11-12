@@ -11,6 +11,13 @@ is `gpt-6.1-sol`; transcript skills request medium thinking effort. Existing
 failed Cloud results remain in history; use **Try again** after selecting the
 provider.
 
+Claude models are never offered or accepted through CLIProxyAPI. Routing a
+Claude subscription credential through the proxy breaks Anthropic's terms from
+2026-11-12, so VidBee filters `claude`, `anthropic`, `opus`, `sonnet`, `haiku`
+and `fable` model ids out of the live catalog, refuses to save or test them,
+and ignores previously saved CLIProxyAPI providers that name one. Use the
+Anthropic provider with an API key for Claude.
+
 Requests go to `http://127.0.0.1:8317/v1`. The endpoint is fixed so a renderer
 cannot redirect the workstation credential to another host. The main process
 reads authentication using the same precedence as fx0:

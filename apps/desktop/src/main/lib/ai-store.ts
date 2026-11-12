@@ -9,7 +9,9 @@ import {
 } from '../../shared/agent-chat'
 import {
   aiProviderNeedsApiKey,
+  CLIPROXY_BLOCKED_MODEL_ERROR,
   getAiProviderPreset,
+  isAiProviderModelBlocked,
   resolveAiProviderBaseUrl
 } from '../../shared/ai-presets'
 import { createDefaultAiPrompts, mergeDefaultAiPrompts } from '../../shared/ai-prompts'
@@ -282,7 +284,9 @@ class AiStore {
   private readState(): StoredAiState {
     const now = Date.now()
     const providers = Array.isArray(this.store.get('providers'))
-      ? (this.store.get('providers') as StoredProvider[])
+      ? (this.store.get('providers') as StoredProvider[]).filter(
+          (provider) => !isAiProviderModelBlocked(provider.presetId, provider.modelId)
+        )
       : []
     const stored = Array.isArray(this.store.get('prompts'))
       ? (this.store.get('prompts') as AiPrompt[])
@@ -338,6 +342,9 @@ class AiStore {
     const modelId = input.modelId.trim()
     if (!modelId) {
       throw new Error('Model id is required')
+    }
+    if (isAiProviderModelBlocked(input.presetId, modelId)) {
+      throw new Error(CLIPROXY_BLOCKED_MODEL_ERROR)
     }
     const baseUrl = resolveAiProviderBaseUrl(input.presetId, input.baseUrl)
     if (preset.requiresBaseUrl && !baseUrl) {

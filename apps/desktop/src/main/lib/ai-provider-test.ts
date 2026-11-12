@@ -1,5 +1,10 @@
 import type { Api, Model } from '@earendil-works/pi-ai'
-import { aiProviderNeedsApiKey, aiProviderRequiresBaseUrl } from '../../shared/ai-presets'
+import {
+  aiProviderNeedsApiKey,
+  aiProviderRequiresBaseUrl,
+  CLIPROXY_BLOCKED_MODEL_ERROR,
+  isAiProviderModelBlocked
+} from '../../shared/ai-presets'
 import {
   classifyAiPromptError,
   flattenErrorMessage,
@@ -81,6 +86,9 @@ export const testProviderConnection = async (
   const modelId = input.modelId.trim()
   if (!modelId) {
     return fail('The enabled provider is missing a model id', 'missing-model')
+  }
+  if (isAiProviderModelBlocked(input.presetId, modelId)) {
+    return fail(CLIPROXY_BLOCKED_MODEL_ERROR, 'missing-model')
   }
   if (aiProviderRequiresBaseUrl(input.presetId) && !input.baseUrl?.trim()) {
     return fail('Base URL is required', 'network')
