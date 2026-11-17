@@ -37,6 +37,10 @@ import { SavedInstagramProfiles } from '@vidbee/ui/components/ui/saved-instagram
 import { SocialMediaDialog } from '@vidbee/ui/components/ui/social-media-dialog'
 import { SocialProfileDialog } from '@vidbee/ui/components/ui/social-profile-dialog'
 import { WebmThumbnailNotice } from '@vidbee/ui/components/ui/webm-thumbnail-notice'
+import {
+  createMetadataRequestCoordinator,
+  hasPlaylistEntries
+} from '@vidbee/ui/lib/download-metadata'
 import { resolveDownloadWorkflow } from '@vidbee/ui/lib/download-workflow'
 import { savedOnlyFansProfiles } from '@vidbee/ui/lib/saved-onlyfans-profiles'
 import {
@@ -204,108 +208,55 @@ export function DownloadDialog({
     )
   }, [playlistInfo, computePlaylistRange, selectedEntryIds])
 
-  // Listen for deep link events
-  useEffect(() => {
-    const handleDeepLink = async (data: unknown) => {
-      // Support both old format (string) and new format (object with url and type)
-      let url: string
-      let type: 'single' | 'playlist' = 'single'
+  const [metadataRequests] = useState(createMetadataRequestCoordinator)
+  const deepLinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-      if (typeof data === 'string') {
-        // Legacy format: just URL string
-        url = data.trim()
-      } else if (data && typeof data === 'object' && 'url' in data) {
-        // New format: object with url and type
-        url = typeof data.url === 'string' ? data.url.trim() : ''
-        if ('type' in data && data.type === 'playlist') {
-          type = 'playlist'
-        }
-      } else {
-        return
-      }
-
-      if (!url) {
-        return
-      }
-
-      if (resolveMappedProfileSource(url)) {
-        setOpen(false)
-        setSocialProfileUrl(url)
-        return
-      }
-
-      if (resolveSocialSource(url)) {
-        setOpen(false)
-        const social = resolveSocialSource(url)
-        if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
-          setSocialProfileUrl(url)
-        } else {
-          setSocialUrl(url)
-        }
-        return
-      }
-
-      // Open dialog and set URL
-      setOpen(true)
-      setActiveTab(type)
-
-      if (type === 'playlist') {
-        // Handle playlist
-        setPlaylistUrl(url)
-        setPlaylistInfo(null)
-        setPlaylistPreviewError(null)
-        setPlaylistCustomDownloadPath('')
-        setSelectedEntryIds(new Set())
-
-        // Wait for dialog to open, then fetch playlist info
-        setTimeout(async () => {
-          setPlaylistPreviewError(null)
-          setPlaylistPreviewLoading(true)
-          try {
-            const info = await ipcServices.download.getPlaylistInfo(url)
-            setPlaylistInfo(info)
-            if (info.entryCount === 0) {
-              toast.error(t('playlist.noEntries'))
-              return
-            }
-            toast.success(t('playlist.foundVideos', { count: info.entryCount }))
-          } catch (error) {
-            logger.error('Failed to fetch playlist info:', error)
-            const message =
-              error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
-            setPlaylistPreviewError(message)
-            setPlaylistInfo(null)
-            toast.error(t('playlist.previewFailed'))
-          } finally {
-            setPlaylistPreviewLoading(false)
-          }
-        }, 100)
-      } else {
-        // Handle single video
-        setUrl(url)
-
-        // Wait for dialog to open and settings to load, then fetch video info
-        setTimeout(async () => {
-          setSingleVideoState((prev) => ({
-            ...prev,
-            selectedVideoFormat: '',
-            selectedAudioFormat: '',
-            startTime: '',
-            endTime: '',
-            selectedContainer: undefined,
-            selectedCodec: undefined,
-            selectedFps: undefined
-          }))
-          await fetchVideoInfo(url)
-        }, 100)
-      }
+  const invalidateMetadataRequests = useCallback(() => {
+    if (deepLinkTimerRef.current !== null) {
+      clearTimeout(deepLinkTimerRef.current)
+      deepLinkTimerRef.current = null
     }
+    metadataRequests.invalidate()
+    clearVideoInfo()
+  }, [clearVideoInfo, metadataRequests])
 
-    ipcEvents.on('download:deeplink', handleDeepLink)
-    return () => {
-      ipcEvents.removeListener('download:deeplink', handleDeepLink)
-    }
-  }, [fetchVideoInfo, t])
+  useEffect(() => () => invalidateMetadataRequests(), [invalidateMetadataRequests])
+
+  const fetchPlaylistInfo = useCallback(
+    async (targetUrl: string) => {
+      const requestId = metadataRequests.beginRequest()
+      setPlaylistInfo(null)
+      setSelectedEntryIds(new Set())
+      setPlaylistPreviewError(null)
+      setPlaylistPreviewLoading(true)
+      try {
+        const info = await ipcServices.download.getPlaylistInfo(targetUrl)
+        if (!metadataRequests.isCurrentRequest(requestId)) {
+          return
+        }
+        if (!hasPlaylistEntries(info)) {
+          setPlaylistPreviewError(t('playlist.noEntries'))
+          return
+        }
+        setPlaylistInfo(info)
+        toast.success(t('playlist.foundVideos', { count: info.entryCount }))
+      } catch (error) {
+        if (!metadataRequests.isCurrentRequest(requestId)) {
+          return
+        }
+        logger.error('Failed to fetch playlist info:', error)
+        const message =
+          error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
+        setPlaylistPreviewError(message)
+        toast.error(t('playlist.previewFailed'))
+      } finally {
+        if (metadataRequests.isCurrentRequest(requestId)) {
+          setPlaylistPreviewLoading(false)
+        }
+      }
+    },
+    [metadataRequests, t]
+  )
 
   useEffect(() => {
     if (!open) {
@@ -443,84 +394,21 @@ export function DownloadDialog({
 
   const handleParsePlaylistUrl = useCallback(
     async (trimmedUrl: string) => {
-      // #379: drop any stale single-video info when switching to a playlist.
-      clearVideoInfo()
+      invalidateMetadataRequests()
       setOpen(true)
       setActiveTab('playlist')
       setPlaylistUrl(trimmedUrl)
-      setPlaylistInfo(null)
-      setPlaylistPreviewError(null)
       setPlaylistCustomDownloadPath('')
-      setSelectedEntryIds(new Set())
-
-      setPlaylistPreviewError(null)
-      setPlaylistPreviewLoading(true)
-      try {
-        const info = await ipcServices.download.getPlaylistInfo(trimmedUrl)
-        setPlaylistInfo(info)
-        if (info.entryCount === 0) {
-          toast.error(t('playlist.noEntries'))
-          return
-        }
-        toast.success(t('playlist.foundVideos', { count: info.entryCount }))
-      } catch (error) {
-        logger.error('Failed to fetch playlist info:', error)
-        const message =
-          error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
-        setPlaylistPreviewError(message)
-        setPlaylistInfo(null)
-        toast.error(t('playlist.previewFailed'))
-      } finally {
-        setPlaylistPreviewLoading(false)
-      }
+      await fetchPlaylistInfo(trimmedUrl)
     },
-    [clearVideoInfo, t]
+    [fetchPlaylistInfo, invalidateMetadataRequests]
   )
-
-  const handleFetchVideo = useCallback(async () => {
-    if (!url.trim()) {
-      toast.error(t('errors.emptyUrl'))
-      return
-    }
-    if (resolveMappedProfileSource(url.trim())) {
-      setOpen(false)
-      setSocialProfileUrl(url.trim())
-      return
-    }
-    if (resolveSocialSource(url.trim())) {
-      setOpen(false)
-      const social = resolveSocialSource(url.trim())
-      if (social?.categories.length && ['x', 'tiktok'].includes(social.platform)) {
-        setSocialProfileUrl(url.trim())
-      } else {
-        setSocialUrl(url.trim())
-      }
-      return
-    }
-    if (isPlaylistLikeUrl(url.trim())) {
-      // GitHub issue #391: surface the Playlist tab as soon as a playlist URL
-      // is detected so the user is not left on the Single Video tab.
-      setActiveTab('playlist')
-      await handleParsePlaylistUrl(url.trim())
-      return
-    }
-    setSingleVideoState((prev) => ({
-      ...prev,
-      selectedVideoFormat: '',
-      selectedAudioFormat: '',
-      startTime: '',
-      endTime: '',
-      selectedContainer: undefined,
-      selectedCodec: undefined,
-      selectedFps: undefined
-    }))
-    await fetchVideoInfo(url.trim())
-  }, [url, fetchVideoInfo, handleParsePlaylistUrl, t])
 
   const handleParseSingleUrl = useCallback(
     async (trimmedUrl: string) => {
       // #379: reset stale info and invalidate in-flight fetches before re-fetch.
-      clearVideoInfo()
+      invalidateMetadataRequests()
+      setPlaylistPreviewLoading(false)
       setOpen(true)
       setActiveTab('single')
       setUrl(trimmedUrl)
@@ -536,7 +424,7 @@ export function DownloadDialog({
       }))
       await fetchVideoInfo(trimmedUrl)
     },
-    [clearVideoInfo, fetchVideoInfo]
+    [invalidateMetadataRequests, fetchVideoInfo]
   )
 
   const inspectInstagramProfile = useCallback(
@@ -620,6 +508,93 @@ export function DownloadDialog({
     window.addEventListener('vidbee:open-profile-mapper', openProfileMapper)
     return () => window.removeEventListener('vidbee:open-profile-mapper', openProfileMapper)
   }, [handleParseProfileUrl])
+
+  const handleFetchVideo = useCallback(async () => {
+    const trimmedUrl = url.trim()
+    if (!trimmedUrl) {
+      toast.error(t('errors.emptyUrl'))
+      return
+    }
+    if (resolveMappedProfileSource(trimmedUrl)) {
+      setOpen(false)
+      setSocialProfileUrl(trimmedUrl)
+      return
+    }
+    const social = resolveSocialSource(trimmedUrl)
+    if (social) {
+      setOpen(false)
+      if (social.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+        setSocialProfileUrl(trimmedUrl)
+      } else {
+        setSocialUrl(trimmedUrl)
+      }
+      return
+    }
+    if (isPlaylistLikeUrl(trimmedUrl)) {
+      await handleParsePlaylistUrl(trimmedUrl)
+      return
+    }
+    await handleParseSingleUrl(trimmedUrl)
+  }, [url, handleParsePlaylistUrl, handleParseSingleUrl, t])
+
+  // Deep links share the manual parsers, but their deferred start is owned by this dialog.
+  useEffect(() => {
+    const handleDeepLink = (data: unknown) => {
+      let targetUrl = ''
+      let type: 'single' | 'playlist' = 'single'
+      if (typeof data === 'string') {
+        targetUrl = data.trim()
+      } else if (data && typeof data === 'object' && 'url' in data) {
+        targetUrl = typeof data.url === 'string' ? data.url.trim() : ''
+        if ('type' in data && data.type === 'playlist') {
+          type = 'playlist'
+        }
+      }
+      if (!targetUrl) {
+        return
+      }
+      if (resolveMappedProfileSource(targetUrl)) {
+        setOpen(false)
+        setSocialProfileUrl(targetUrl)
+        return
+      }
+      const social = resolveSocialSource(targetUrl)
+      if (social) {
+        setOpen(false)
+        if (social.categories.length && ['x', 'tiktok'].includes(social.platform)) {
+          setSocialProfileUrl(targetUrl)
+        } else {
+          setSocialUrl(targetUrl)
+        }
+        return
+      }
+      invalidateMetadataRequests()
+      const requestId = metadataRequests.beginRequest()
+      setOpen(true)
+      setActiveTab(type)
+      setPlaylistInfo(null)
+      setPlaylistPreviewError(null)
+      setPlaylistPreviewLoading(false)
+      if (type === 'playlist') {
+        setPlaylistUrl(targetUrl)
+      } else {
+        setUrl(targetUrl)
+      }
+      deepLinkTimerRef.current = setTimeout(() => {
+        deepLinkTimerRef.current = null
+        if (!metadataRequests.isCurrentRequest(requestId)) {
+          return
+        }
+        if (type === 'playlist') {
+          void handleParsePlaylistUrl(targetUrl)
+        } else {
+          void handleParseSingleUrl(targetUrl)
+        }
+      }, 100)
+    }
+    ipcEvents.on('download:deeplink', handleDeepLink)
+    return () => ipcEvents.removeListener('download:deeplink', handleDeepLink)
+  }, [handleParsePlaylistUrl, handleParseSingleUrl, invalidateMetadataRequests, metadataRequests])
 
   const handleOneClickFromAddUrl = useCallback(
     async (trimmedUrl: string) => {
@@ -811,29 +786,9 @@ export function DownloadDialog({
       toast.error(t('errors.emptyUrl'))
       return
     }
-    setPlaylistPreviewError(null)
-    setPlaylistPreviewLoading(true)
-    try {
-      const trimmedUrl = playlistUrl.trim()
-      const info = await ipcServices.download.getPlaylistInfo(trimmedUrl)
-      setPlaylistInfo(info)
-      setSelectedEntryIds(new Set())
-      if (info.entryCount === 0) {
-        toast.error(t('playlist.noEntries'))
-        return
-      }
-      toast.success(t('playlist.foundVideos', { count: info.entryCount }))
-    } catch (error) {
-      logger.error('Failed to fetch playlist info:', error)
-      const message =
-        error instanceof Error && error.message ? error.message : t('playlist.previewFailed')
-      setPlaylistPreviewError(message)
-      setPlaylistInfo(null)
-      toast.error(t('playlist.previewFailed'))
-    } finally {
-      setPlaylistPreviewLoading(false)
-    }
-  }, [playlistUrl, t])
+    invalidateMetadataRequests()
+    await fetchPlaylistInfo(playlistUrl.trim())
+  }, [fetchPlaylistInfo, invalidateMetadataRequests, playlistUrl, t])
 
   const handleDownloadPlaylist = useCallback(async () => {
     const trimmedUrl = playlistUrl.trim()
@@ -842,7 +797,7 @@ export function DownloadDialog({
       return
     }
 
-    if (!playlistInfo) {
+    if (!(hasPlaylistEntries(playlistInfo) && playlistInfo)) {
       toast.error(t('playlist.previewRequired'))
       return
     }
@@ -1041,6 +996,17 @@ export function DownloadDialog({
     }
   }, [videoInfo, videoInfoSourceUrl, singleVideoState, addDownload, t, url, transferToList])
 
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen) {
+        invalidateMetadataRequests()
+        setPlaylistPreviewLoading(false)
+      }
+      setOpen(nextOpen)
+    },
+    [invalidateMetadataRequests]
+  )
+
   const wasDialogOpenRef = useRef(open)
 
   // Reset form only when the dialog actually closes. `if (!open)` also ran
@@ -1053,7 +1019,8 @@ export function DownloadDialog({
       return
     }
 
-    clearVideoInfo()
+    invalidateMetadataRequests()
+    setPlaylistPreviewLoading(false)
     setUrl('')
     setActiveTab('single')
     setSingleVideoState({
@@ -1084,7 +1051,7 @@ export function DownloadDialog({
     setProfileDownloadLoading(false)
     setProfileError(null)
     setSelectedProfileCategories(new Set())
-  }, [open, clearVideoInfo])
+  }, [open, invalidateMetadataRequests])
 
   const handleSingleVideoStateChange = useCallback(
     (updates: Partial<SingleVideoState>) => {
@@ -1426,7 +1393,7 @@ export function DownloadDialog({
         }
         lockDialogHeight={lockDialogHeight}
         onActiveTabChange={handleActiveTabChange}
-        onOpenChange={setOpen}
+        onOpenChange={handleOpenChange}
         open={open}
         playlistTabContent={
           <PlaylistDownload
