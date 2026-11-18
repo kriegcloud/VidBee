@@ -8,16 +8,26 @@
     "./task-queue": "./src/task-queue.ts",
     "./subscriptions": "./src/subscriptions.ts",
     "./transcripts": "./src/transcripts.ts",
-    "./prompt-runs": "./src/prompt-runs.ts"
+    "./prompt-runs": "./src/prompt-runs.ts",
+    ".": "./src/index.ts",
+    "./node": "./src/NodeSqlite.layer.ts",
+    "./legacy": "./src/legacy/index.ts",
+    "./legacy/task-queue": "./src/legacy/task-queue.ts",
+    "./legacy/subscriptions": "./src/legacy/subscriptions.ts",
+    "./legacy/transcripts": "./src/legacy/transcripts.ts",
+    "./legacy/prompt-runs": "./src/legacy/prompt-runs.ts"
   },
   "types": "./src/history.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "tsc -p test/tsconfig.json && tsx --test test/*.test.ts",
-    "check": "tsc --noEmit && tsc -p test/tsconfig.json"
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run && DB_TEST_CLIENT=borrowed bunx --bun vitest run test/clients.test.ts && DB_TEST_CLIENT=node bunx --bun vitest run test/clients.test.ts",
+    "build": "tsrs -p tsconfig.json"
   },
   "dependencies": {
-    "drizzle-orm": "catalog:"
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:",
+    "@effect/sql-sqlite-node": "catalog:",
+    "@vidbee/schema": "workspace:^"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.9.0",
@@ -31,6 +41,10 @@
     "better-sqlite3": "catalog:",
     "typescript": "catalog:",
     "esbuild": "catalog:",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:",
+    "drizzle-orm-rollback-fixture": "catalog:",
+    "@effect/platform-node": "catalog:"
   }
 }

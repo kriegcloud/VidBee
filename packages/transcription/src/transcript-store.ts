@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { applyTranscriptMigrations } from '@vidbee/db/transcripts'
+import { applyTranscriptMigrations } from '@vidbee/db/legacy/transcripts'
 import {
   deleteTranscriptSegmentsFromList,
   type InsertTranscriptSegmentInput,

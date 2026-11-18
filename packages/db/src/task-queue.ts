@@ -6,94 +6,80 @@
  * `db.select().from(tasksTable)`) and the raw SQL migration (so the SQLite
  * persist adapter can run it on a fresh DB).
  */
-import {
-  index,
-  integer,
-  sqliteTable,
-  text
-} from 'drizzle-orm/sqlite-core'
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import * as S from "effect/Schema";
 
 export const tasksTable = sqliteTable(
-  'tasks',
+  "tasks",
   {
-    id: text('id').primaryKey(),
-    kind: text('kind').notNull(),
-    parentId: text('parent_id'),
-    status: text('status').notNull(),
-    prevStatus: text('prev_status'),
-    statusReason: text('status_reason'),
-    enteredStatusAt: integer('entered_status_at', { mode: 'number' }).notNull(),
-    priority: integer('priority', { mode: 'number' }).notNull(),
-    groupKey: text('group_key').notNull(),
-    attempt: integer('attempt', { mode: 'number' }).notNull().default(0),
-    maxAttempts: integer('max_attempts', { mode: 'number' }).notNull(),
-    nextRetryAt: integer('next_retry_at', { mode: 'number' }),
-    pid: integer('pid', { mode: 'number' }),
-    pidStartedAt: integer('pid_started_at', { mode: 'number' }),
-    createdAt: integer('created_at', { mode: 'number' }).notNull(),
-    updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
-    inputJson: text('input_json').notNull(),
-    progressJson: text('progress_json'),
-    outputJson: text('output_json'),
-    lastErrorJson: text('last_error_json')
+    id: text("id").primaryKey(),
+    kind: text("kind").notNull(),
+    parentId: text("parent_id"),
+    status: text("status").notNull(),
+    prevStatus: text("prev_status"),
+    statusReason: text("status_reason"),
+    enteredStatusAt: integer("entered_status_at", { mode: "number" }).notNull(),
+    priority: integer("priority", { mode: "number" }).notNull(),
+    groupKey: text("group_key").notNull(),
+    attempt: integer("attempt", { mode: "number" }).notNull().default(0),
+    maxAttempts: integer("max_attempts", { mode: "number" }).notNull(),
+    nextRetryAt: integer("next_retry_at", { mode: "number" }),
+    pid: integer("pid", { mode: "number" }),
+    pidStartedAt: integer("pid_started_at", { mode: "number" }),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+    inputJson: text("input_json").notNull(),
+    progressJson: text("progress_json"),
+    outputJson: text("output_json"),
+    lastErrorJson: text("last_error_json"),
   },
   (t) => [
-    index('idx_tasks_status_priority').on(t.status, t.priority, t.createdAt),
-    index('idx_tasks_group').on(t.groupKey, t.status),
-    index('idx_tasks_next_retry').on(t.nextRetryAt),
-    index('idx_tasks_parent').on(t.parentId)
+    index("idx_tasks_status_priority").on(t.status, t.priority, t.createdAt),
+    index("idx_tasks_group").on(t.groupKey, t.status),
+    index("idx_tasks_next_retry").on(t.nextRetryAt),
+    index("idx_tasks_parent").on(t.parentId),
   ]
-)
+);
 
 export const attemptsTable = sqliteTable(
-  'attempts',
+  "attempts",
   {
-    id: text('id').primaryKey(),
-    taskId: text('task_id')
+    id: text("id").primaryKey(),
+    taskId: text("task_id")
       .notNull()
-      .references(() => tasksTable.id, { onDelete: 'cascade' }),
-    attemptNumber: integer('attempt_number', { mode: 'number' }).notNull(),
-    startedAt: integer('started_at', { mode: 'number' }).notNull(),
-    endedAt: integer('ended_at', { mode: 'number' }),
-    exitCode: integer('exit_code', { mode: 'number' }),
-    errorCategory: text('error_category'),
-    stdoutTail: text('stdout_tail'),
-    stderrTail: text('stderr_tail'),
-    rawArgsHash: text('raw_args_hash').notNull()
+      .references(() => tasksTable.id, { onDelete: "cascade" }),
+    attemptNumber: integer("attempt_number", { mode: "number" }).notNull(),
+    startedAt: integer("started_at", { mode: "number" }).notNull(),
+    endedAt: integer("ended_at", { mode: "number" }),
+    exitCode: integer("exit_code", { mode: "number" }),
+    errorCategory: text("error_category"),
+    stdoutTail: text("stdout_tail"),
+    stderrTail: text("stderr_tail"),
+    rawArgsHash: text("raw_args_hash").notNull(),
   },
-  (t) => [index('idx_attempts_task').on(t.taskId, t.attemptNumber)]
-)
+  (t) => [index("idx_attempts_task").on(t.taskId, t.attemptNumber)]
+);
 
 export const processJournalTable = sqliteTable(
-  'process_journal',
+  "process_journal",
   {
-    seq: integer('seq', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-    ts: integer('ts', { mode: 'number' }).notNull(),
-    op: text('op').notNull(),
-    taskId: text('task_id').notNull(),
-    attemptId: text('attempt_id'),
-    pid: integer('pid', { mode: 'number' }).notNull(),
-    pidStartedAt: integer('pid_started_at', { mode: 'number' }),
-    exitCode: integer('exit_code', { mode: 'number' }),
-    signal: text('signal')
+    seq: integer("seq", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    ts: integer("ts", { mode: "number" }).notNull(),
+    op: text("op").notNull(),
+    taskId: text("task_id").notNull(),
+    attemptId: text("attempt_id"),
+    pid: integer("pid", { mode: "number" }).notNull(),
+    pidStartedAt: integer("pid_started_at", { mode: "number" }),
+    exitCode: integer("exit_code", { mode: "number" }),
+    signal: text("signal"),
   },
-  (t) => [
-    index('idx_journal_task').on(t.taskId),
-    index('idx_journal_open').on(t.op)
-  ]
-)
+  (t) => [index("idx_journal_task").on(t.taskId), index("idx_journal_open").on(t.op)]
+);
 
-export const schemaMetaTable = sqliteTable('schema_meta', {
-  key: text('key').primaryKey(),
-  value: text('value').notNull()
-})
-
-export type TaskRow = typeof tasksTable.$inferSelect
-export type TaskInsert = typeof tasksTable.$inferInsert
-export type AttemptRowDb = typeof attemptsTable.$inferSelect
-export type AttemptInsert = typeof attemptsTable.$inferInsert
-export type ProcessJournalRowDb = typeof processJournalTable.$inferSelect
-export type ProcessJournalInsert = typeof processJournalTable.$inferInsert
+export const schemaMetaTable = sqliteTable("schema_meta", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+});
 
 /**
  * Raw SQL the SqlitePersistAdapter applies to a fresh DB. Keep this in lock-
@@ -164,4 +150,26 @@ CREATE TABLE IF NOT EXISTS schema_meta (
 );
 INSERT INTO schema_meta (key, value) VALUES ('task_queue_version', '1')
   ON CONFLICT(key) DO UPDATE SET value = excluded.value;
-`
+`;
+
+export * from "./TaskQueue.model.js";
+
+import { AttemptRowDb, ProcessJournalRowDb, SchemaMetaRow, TaskRow } from "./TaskQueue.model.js";
+import type { AttemptInsert, ProcessJournalInsert, SchemaMetaInsert, TaskInsert } from "./TaskQueue.model.js";
+
+const TaskRowFields = S.Struct(TaskRow.fields);
+const AttemptRowDbFields = S.Struct(AttemptRowDb.fields);
+const ProcessJournalRowDbFields = S.Struct(ProcessJournalRowDb.fields);
+const SchemaMetaRowFields = S.Struct(SchemaMetaRow.fields);
+
+type MutuallyAssignable<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+export const modelTypeEquivalence: [
+  MutuallyAssignable<typeof TaskRowFields.Type, typeof tasksTable.$inferSelect>,
+  MutuallyAssignable<TaskInsert, typeof tasksTable.$inferInsert>,
+  MutuallyAssignable<typeof AttemptRowDbFields.Type, typeof attemptsTable.$inferSelect>,
+  MutuallyAssignable<AttemptInsert, typeof attemptsTable.$inferInsert>,
+  MutuallyAssignable<typeof ProcessJournalRowDbFields.Type, typeof processJournalTable.$inferSelect>,
+  MutuallyAssignable<ProcessJournalInsert, typeof processJournalTable.$inferInsert>,
+  MutuallyAssignable<typeof SchemaMetaRowFields.Type, typeof schemaMetaTable.$inferSelect>,
+  MutuallyAssignable<SchemaMetaInsert, typeof schemaMetaTable.$inferInsert>,
+] = [true, true, true, true, true, true, true, true];

@@ -10,6 +10,9 @@
     "includes": [
       "packages/schema/**",
       "packages/logger/**",
+      "packages/db/**",
+      "!packages/db/test/fixtures/**",
+      "!packages/db/test/snapshots/**",
       "packages/i18n/**",
       "!packages/i18n/src/locales/**",
       "!**/dist",

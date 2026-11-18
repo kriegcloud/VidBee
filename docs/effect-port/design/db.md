@@ -98,18 +98,24 @@ Rules for these models:
 - **One model per table, in the Drizzle property names**, plus a `…RowFromSql` schema that decodes
   the snake_case row raw SQL returns into the same class. Most existing queries are raw SQL, so
   both shapes are needed.
-- **The model's type is the table's `$inferSelect`.** A compile-time check requires the two to be
-  mutually assignable, so a column added to one and not the other fails `tsrs`. The models are
-  written by hand: `drizzle-orm/effect-schema` adds safe-integer bounds the storage does not have.
+- **The model's fields are the table's `$inferSelect`.** The models are branded `S.Class` schemas
+  (the rule set requires the brand, and an opaque class is the decoded-side type ported code
+  passes around). A class instance is not a plain Drizzle row, so the compile-time check ties the
+  class's **field struct** to the table: `S.Struct(Model.fields)`'s type and `$inferSelect` must
+  be mutually assignable, so a column added to one and not the other fails `tsrs`. The models are
+  written by hand.
 - **Where the real schema is wider than the Drizzle object, the model follows the Drizzle object
   and says so.** The pinning tests list the cases: primary-key text columns declared without
   `NOT NULL` (`tasks.id`, `attempts.id`, `schema_meta.key`, `subscriptions_meta.key`,
   `transcripts.id`, `transcript_segments.id`, `transcript_speakers.id`) can physically hold NULL.
   No writer has ever stored one. A row with a NULL there fails to decode with `DbRowDecodeError`;
   it is not coerced. Each such column is listed in the model file with this note.
-- **No refinement without a constraint.** An `INTEGER` column is `S.Number`: SQLite's integer
-  affinity accepts and returns a real if one is written, so "only integers were seen" is not a
-  reason for `S.Int`. Enumerated columns (`status`, `kind`, `type`) are unconstrained `text`, so
+- **Numbers are finite, and nothing narrower.** An `INTEGER` column is `S.Finite`, not `S.Int`:
+  SQLite's integer affinity accepts and returns a real if one is written, so "only integers were
+  seen" is not a reason for `S.Int`. It is `S.Finite` and not `S.Number` because the rule set
+  rejects `S.Number` (`schemaNumber`). SQLite can physically hold an infinite `REAL` in such a
+  column (`1e999`); no writer stores one, and a row with a non-finite number fails to decode with
+  `DbRowDecodeError`, like the NULL primary keys above. Enumerated columns (`status`, `kind`, `type`) are unconstrained `text`, so
   here they are `S.String`; narrowing them to literal kits belongs to the package that owns the
   meaning, in its phase. `*_json` columns are `S.String`; their owners decode them with
   `S.fromJsonString(...)`.
@@ -158,8 +164,7 @@ VidBee-specific surface sits between a consumer and the client, the smaller that
 ```ts
 /** A SqlClient over a better-sqlite3 handle that the caller opened and will close. */
 export const layerFromHandle: (
-  handle: BetterSqlite3.Database,
-  options?: { readonly spanAttributes?: ReadonlyArray<readonly [string, unknown]> }
+  handle: BetterSqlite3.Database
 ) => Layer.Layer<SqlClient.SqlClient | SqliteClient.SqliteClient>
 ```
 
@@ -363,6 +368,16 @@ probes. No blocker. Findings and resolutions:
 | 7 | minor | Row counts do not prove content was preserved. | Section 8: content checksums, hashes, integrity and foreign-key checks, migration-only run. |
 | 8 | question | Exact adapter interface: connection methods, `.raw` mode on cached statements, the node tag's members, `Reactivity`. | Section 4.2 connection contract, prepared statements, node tag. |
 | 9 | question | What keeps later facades synchronous and error-compatible, and how is cutover risk found early? | Section 4.2 (contended acquisition is a defect), section 5 (`runtimeForHandle`, `rethrowDriverError`), rules 5 to 7; `executeStream` left unimplemented on purpose. |
+
+After implementation started, three points of this design turned out to conflict with the rule
+set and were changed here, in the rule set's favor: numeric columns are `S.Finite`
+(`schemaNumber` rejects `S.Number`); the row models are branded classes tied to the tables
+through their field structs (`schemaClassMissingBrand`); `layerFromHandle` takes only the handle
+(`missingPipeableSignature`; the options argument had no user). A fourth observation is recorded,
+not changed: the two drivers raise different error objects for the same failure (`SqliteError`
+with `SQLITE_ERROR` from `better-sqlite3`; `Error` with `ERR_SQLITE_ERROR` from `node:sqlite`), so
+the error-identity assertions of the pinning suite run on the direct and borrowed clients only,
+and `rethrowDriverError` is meaningful only until the cutover.
 
 The reviewer found sound: the transitional reading of D30, borrowing the host's handle, leaving
 enum and JSON meaning to the owning packages, and keeping the legacy appliers synchronous.
