@@ -1,6 +1,7 @@
 # VidBee Effect-native port: master plan
 
-Status: decisions locked in two grilling sessions on 2026-11-17. Per-phase status is in section 8.
+Status: decisions locked in two grilling sessions on 2026-11-17, amended the same day (see
+"Amendments"). Per-phase status is in section 8.
 Repo: `~/YeeBois/workstation-apps/VidBee` (fork `kriegcloud/VidBee`, public). Reference: `~/YeeBois/projects/beep-effect`.
 This file is the source of truth. Phase 0a moved it here from the owner's knowledge folder, which now
 holds only a pointer; phase reports are in `docs/effect-port/reports/`.
@@ -460,6 +461,29 @@ has been exercised once. Then follow plan section 7 from step 4. Report the depe
 every entry left in standards/effect-allowlist.jsonc for the owner's review, and the open questions
 you would bring to the architecture session.
 ```
+
+## Amendments (2026-11-17)
+
+The owner changed how the remaining phases run. Phases 0b to 10 are executed in one orchestrator
+run without waiting for the owner. Where a row below contradicts sections 3 to 9, the row wins.
+
+| Plan | Changed to |
+| --- | --- |
+| D12, D17, section 7 step 1: a fresh orchestrator session per phase | One orchestrator session runs every phase in order. Each phase's kickoff prompt in section 9 is still its instruction set. |
+| D14: the design gate waits for the owner | The agent drafts the schemas and service contracts, commits them under `docs/effect-port/design/`, has them reviewed by one independent reviewer session that did not write them, resolves its findings, records the review in the design file, and continues. It does not wait. |
+| D19: copying a further beep-effect helper needs the owner's approval | The helper is copied if the port needs it, with the beep-effect commit it came from, and listed in `OWNER-REVIEW.md`. |
+| Section 5 item 2: an allowlist entry is approved by the owner | The entry is added with its reason only after trying and failing to meet the rule, and listed in `OWNER-REVIEW.md`. |
+| Phase 3 spike: "report before porting" | The spike runs, its result goes into the phase report, the agent applies D30's rule itself and continues. |
+| A5, section 7 step 6: ask the owner to restart | The build is installed; the running app keeps its old build until the owner restarts it. Nobody is asked and nothing is restarted. |
+
+Additions:
+
+- `docs/effect-port/OWNER-REVIEW.md` records every choice made in the owner's place under this
+  table, every bug found and not fixed (A2), and every dependency held back.
+- Phase 0b commits the offline launch scripts under `apps/desktop/scripts/port/`.
+- Phase 1b: the harness must be able to check whatever a later phase ports. A later phase that finds
+  a tool or endpoint without a golden records one on the build before its change.
+- Phase 10 also removes anything the run left behind that the finished port does not need.
 
 ## 10. Deferred to the architecture session (phase 11)
 
