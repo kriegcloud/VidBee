@@ -1,3 +1,4 @@
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { thinkingDurationHeader } from '@renderer/lib/thinking-header'
 import { parseThinkingSteps } from '@shared/ai-thinking'
 import type { AiPromptRunSnapshot } from '@shared/ai-types'
@@ -95,7 +96,7 @@ export function TranscriptPromptThinking({
   // than claiming zero seconds.
   let header = waiting ? waitingLabel : t('transcript.promptThinking')
   if (thinkingMs > 0) {
-    header = thinkingDurationHeader(t, running, thinkingMs)
+    header = thinkingDurationHeader(plainTranslate(t), running, thinkingMs)
   }
 
   if (recovering) {

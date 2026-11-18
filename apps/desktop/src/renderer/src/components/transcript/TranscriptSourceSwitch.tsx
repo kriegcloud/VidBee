@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@renderer/components/ui/select'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import type { TranscriptSnapshotView } from '@renderer/store/transcripts'
 import { useTranslation } from 'react-i18next'
 
@@ -57,12 +58,14 @@ export function TranscriptSourceSwitch({
         aria-label={t('transcript.sourceSwitch')}
         className="h-8 w-auto min-w-36 max-w-52 gap-1 px-2 text-xs"
       >
-        <SelectValue>{transcriptSourceLabel(selected, t, i18n.language)}</SelectValue>
+        <SelectValue>
+          {transcriptSourceLabel(selected, plainTranslate(t), i18n.language)}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {sources.map((source) => (
           <SelectItem key={source.key} value={source.key}>
-            {transcriptSourceLabel(source, t, i18n.language)}
+            {transcriptSourceLabel(source, plainTranslate(t), i18n.language)}
           </SelectItem>
         ))}
       </SelectContent>

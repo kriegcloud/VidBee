@@ -8,6 +8,9 @@ interface DownloadContainerSelectProps<T extends string> {
   disabled?: boolean
 }
 
+/** Widen the generic key to a plain string for i18next 27's `t` overloads. */
+const containerOptionKey = (option: string): string => `settings.oneClickContainerOptions.${option}`
+
 export function DownloadContainerSelect<T extends string>({
   value,
   options,
@@ -36,7 +39,7 @@ export function DownloadContainerSelect<T extends string>({
       <SelectContent>
         {options.map((option) => (
           <SelectItem key={option} value={option}>
-            {t(`settings.oneClickContainerOptions.${option}`)}
+            {t(containerOptionKey(option))}
           </SelectItem>
         ))}
       </SelectContent>

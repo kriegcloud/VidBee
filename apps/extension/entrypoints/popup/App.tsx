@@ -170,7 +170,7 @@ function App() {
         return
       }
 
-      const targetUrl = tab.url as string
+      const targetUrl = tab?.url as string
       targetState.url = targetUrl
       setCurrentUrl(targetUrl)
 
@@ -269,7 +269,7 @@ function App() {
     const result: VideoGroup[] = sortedLabels.map((h) => ({
       label: `${h}p`,
       height: h,
-      formats: groups[h].sort((a, b) => {
+      formats: (groups[h] ?? []).sort((a, b) => {
         const sa = a.filesize || a.filesize_approx || 0
         const sb = b.filesize || b.filesize_approx || 0
         return sb - sa

@@ -1,5 +1,6 @@
 import { DownloadItem } from '@renderer/components/download/DownloadItem'
 import { ipcEvents, ipcServices } from '@renderer/lib/ipc'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import {
   type AgentUiActions,
   AgentUiProvider as SharedAgentUiProvider
@@ -39,7 +40,7 @@ export function AgentUiProvider(props: AgentUiActions & { children: ReactNode })
   const { t } = useTranslation()
   const runtime = useMemo<AgentUiRuntime>(
     () => ({
-      t: (key, values) => t(key, values),
+      t: plainTranslate(t),
       subscribeTasks,
       /** Preserve native download actions while sharing all card state and layout. */
       async readTasks(ids): Promise<AgentUiTaskView[]> {
