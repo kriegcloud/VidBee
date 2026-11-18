@@ -1,0 +1,101 @@
+[
+  {
+    "type": "index",
+    "name": "idx_transcript_prompt_runs_download",
+    "tbl_name": "transcript_prompt_runs",
+    "sql": "CREATE INDEX idx_transcript_prompt_runs_download ON transcript_prompt_runs(download_id, updated_at)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 0,
+        "name": "download_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 7,
+        "name": "updated_at"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcript_prompt_runs",
+    "tbl_name": "transcript_prompt_runs",
+    "sql": "CREATE TABLE transcript_prompt_runs (download_id TEXT NOT NULL, prompt_id TEXT NOT NULL, status TEXT NOT NULL, text TEXT NOT NULL, error TEXT, error_code TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, thinking_ms INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (download_id, prompt_id))",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "download_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "prompt_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 2
+      },
+      {
+        "cid": 2,
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "text",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "error_code",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "thinking_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": "0",
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  }
+]

@@ -12,7 +12,9 @@
   },
   "types": "./src/history.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p test/tsconfig.json && tsx --test test/*.test.ts",
+    "check": "tsc --noEmit && tsc -p test/tsconfig.json"
   },
   "dependencies": {
     "drizzle-orm": "catalog:"
@@ -27,6 +29,8 @@
     "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "better-sqlite3": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "esbuild": "catalog:",
+    "tsx": "catalog:"
   }
 }

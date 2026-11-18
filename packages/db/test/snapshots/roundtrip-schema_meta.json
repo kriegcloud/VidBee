@@ -1,0 +1,30 @@
+[
+  {
+    "drizzle": {
+      "key": "schema_meta:key:values:雪",
+      "value": "schema_meta:value:values:雪"
+    },
+    "raw": {
+      "key": "schema_meta:key:values:雪",
+      "value": "schema_meta:value:values:雪"
+    },
+    "types": {
+      "key": "string",
+      "value": "string"
+    }
+  },
+  {
+    "drizzle": {
+      "key": "schema_meta:key:nulls:雪",
+      "value": "schema_meta:value:nulls:雪"
+    },
+    "raw": {
+      "key": "schema_meta:key:nulls:雪",
+      "value": "schema_meta:value:nulls:雪"
+    },
+    "types": {
+      "key": "string",
+      "value": "string"
+    }
+  }
+]

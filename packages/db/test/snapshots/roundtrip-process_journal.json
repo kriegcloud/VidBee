@@ -1,0 +1,72 @@
+[
+  {
+    "drizzle": {
+      "seq": 1700000000123,
+      "ts": 1700000000123,
+      "op": "process_journal:op:values:雪",
+      "taskId": "process_journal:task_id:values:雪",
+      "attemptId": "process_journal:attempt_id:values:雪",
+      "pid": 1700000000123,
+      "pidStartedAt": 1700000000123,
+      "exitCode": 1700000000123,
+      "signal": "process_journal:signal:values:雪"
+    },
+    "raw": {
+      "seq": 1700000000123,
+      "ts": 1700000000123,
+      "op": "process_journal:op:values:雪",
+      "task_id": "process_journal:task_id:values:雪",
+      "attempt_id": "process_journal:attempt_id:values:雪",
+      "pid": 1700000000123,
+      "pid_started_at": 1700000000123,
+      "exit_code": 1700000000123,
+      "signal": "process_journal:signal:values:雪"
+    },
+    "types": {
+      "seq": "number",
+      "ts": "number",
+      "op": "string",
+      "taskId": "string",
+      "attemptId": "string",
+      "pid": "number",
+      "pidStartedAt": "number",
+      "exitCode": "number",
+      "signal": "string"
+    }
+  },
+  {
+    "drizzle": {
+      "seq": 1700000000124,
+      "ts": 1700000000124,
+      "op": "process_journal:op:nulls:雪",
+      "taskId": "process_journal:task_id:nulls:雪",
+      "attemptId": null,
+      "pid": 1700000000124,
+      "pidStartedAt": null,
+      "exitCode": null,
+      "signal": null
+    },
+    "raw": {
+      "seq": 1700000000124,
+      "ts": 1700000000124,
+      "op": "process_journal:op:nulls:雪",
+      "task_id": "process_journal:task_id:nulls:雪",
+      "attempt_id": null,
+      "pid": 1700000000124,
+      "pid_started_at": null,
+      "exit_code": null,
+      "signal": null
+    },
+    "types": {
+      "seq": "number",
+      "ts": "number",
+      "op": "string",
+      "taskId": "string",
+      "attemptId": "null",
+      "pid": "number",
+      "pidStartedAt": "null",
+      "exitCode": "null",
+      "signal": "null"
+    }
+  }
+]

@@ -1,0 +1,1606 @@
+[
+  {
+    "type": "index",
+    "name": "idx_attempts_task",
+    "tbl_name": "attempts",
+    "sql": "CREATE INDEX idx_attempts_task ON attempts(task_id, attempt_number)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "task_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 2,
+        "name": "attempt_number"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_journal_open",
+    "tbl_name": "process_journal",
+    "sql": "CREATE INDEX idx_journal_open ON process_journal(op) WHERE op = 'spawn'",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 2,
+        "name": "op"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_journal_task",
+    "tbl_name": "process_journal",
+    "sql": "CREATE INDEX idx_journal_task ON process_journal(task_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 3,
+        "name": "task_id"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_subscription_items_sub",
+    "tbl_name": "subscription_items",
+    "sql": "CREATE INDEX idx_subscription_items_sub ON subscription_items(subscription_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 0,
+        "name": "subscription_id"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_subscription_items_task",
+    "tbl_name": "subscription_items",
+    "sql": "CREATE INDEX idx_subscription_items_task ON subscription_items(task_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 7,
+        "name": "task_id"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_tasks_group",
+    "tbl_name": "tasks",
+    "sql": "CREATE INDEX idx_tasks_group ON tasks(group_key, status)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 8,
+        "name": "group_key"
+      },
+      {
+        "seqno": 1,
+        "cid": 3,
+        "name": "status"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_tasks_next_retry",
+    "tbl_name": "tasks",
+    "sql": "CREATE INDEX idx_tasks_next_retry ON tasks(next_retry_at) WHERE status = 'retry-scheduled'",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 11,
+        "name": "next_retry_at"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_tasks_parent",
+    "tbl_name": "tasks",
+    "sql": "CREATE INDEX idx_tasks_parent ON tasks(parent_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 2,
+        "name": "parent_id"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_tasks_status_priority",
+    "tbl_name": "tasks",
+    "sql": "CREATE INDEX idx_tasks_status_priority ON tasks(status, priority, created_at)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 3,
+        "name": "status"
+      },
+      {
+        "seqno": 1,
+        "cid": 7,
+        "name": "priority"
+      },
+      {
+        "seqno": 2,
+        "cid": 14,
+        "name": "created_at"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcript_prompt_runs_download",
+    "tbl_name": "transcript_prompt_runs",
+    "sql": "CREATE INDEX idx_transcript_prompt_runs_download ON transcript_prompt_runs(download_id, updated_at)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 0,
+        "name": "download_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 7,
+        "name": "updated_at"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcript_segments_time",
+    "tbl_name": "transcript_segments",
+    "sql": "CREATE INDEX idx_transcript_segments_time ON transcript_segments(transcript_id, start_ms)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "transcript_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 3,
+        "name": "start_ms"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcript_speakers_transcript",
+    "tbl_name": "transcript_speakers",
+    "sql": "CREATE INDEX idx_transcript_speakers_transcript ON transcript_speakers(transcript_id, sort_index)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "transcript_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 4,
+        "name": "sort_index"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcripts_download",
+    "tbl_name": "transcripts",
+    "sql": "CREATE INDEX idx_transcripts_download ON transcripts(download_task_id, created_at)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "download_task_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 8,
+        "name": "created_at"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcripts_task",
+    "tbl_name": "transcripts",
+    "sql": "CREATE INDEX idx_transcripts_task ON transcripts(transcription_task_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 2,
+        "name": "transcription_task_id"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "subscription_items_subscription_idx",
+    "tbl_name": "subscription_items",
+    "sql": "CREATE INDEX `subscription_items_subscription_idx` ON `subscription_items` (`subscription_id`)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 0,
+        "name": "subscription_id"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "__drizzle_migrations",
+    "tbl_name": "__drizzle_migrations",
+    "sql": "CREATE TABLE \"__drizzle_migrations\" (id SERIAL PRIMARY KEY, hash text NOT NULL, created_at numeric)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "SERIAL",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "hash",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "created_at",
+        "type": "numeric",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "attempts",
+    "tbl_name": "attempts",
+    "sql": "CREATE TABLE attempts (id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE, attempt_number INTEGER NOT NULL, started_at INTEGER NOT NULL, ended_at INTEGER, exit_code INTEGER, error_category TEXT, stdout_tail TEXT, stderr_tail TEXT, raw_args_hash TEXT NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "attempt_number",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "started_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "ended_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "exit_code",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "error_category",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "stdout_tail",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "stderr_tail",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "raw_args_hash",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "tasks",
+        "from": "task_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "download_history",
+    "tbl_name": "download_history",
+    "sql": "CREATE TABLE `download_history` (`id` text PRIMARY KEY NOT NULL, `url` text NOT NULL, `title` text NOT NULL, `thumbnail` text, `type` text NOT NULL, `status` text NOT NULL, `download_path` text, `saved_file_name` text, `file_size` integer, `duration` integer, `downloaded_at` integer NOT NULL, `completed_at` integer, `sort_key` integer NOT NULL, `error` text, `description` text, `channel` text, `uploader` text, `view_count` integer, `tags` text, `origin` text, `subscription_id` text, `selected_format` text, `playlist_id` text, `playlist_title` text, `playlist_index` integer, `playlist_size` integer , `yt_dlp_command` text, `yt_dlp_log` text)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "url",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "thumbnail",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "type",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "download_path",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "saved_file_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "file_size",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "duration",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "downloaded_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 11,
+        "name": "completed_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 12,
+        "name": "sort_key",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 13,
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 14,
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 15,
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 16,
+        "name": "uploader",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 17,
+        "name": "view_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 18,
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 19,
+        "name": "origin",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 20,
+        "name": "subscription_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 21,
+        "name": "selected_format",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 22,
+        "name": "playlist_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 23,
+        "name": "playlist_title",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 24,
+        "name": "playlist_index",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 25,
+        "name": "playlist_size",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 26,
+        "name": "yt_dlp_command",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 27,
+        "name": "yt_dlp_log",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "process_journal",
+    "tbl_name": "process_journal",
+    "sql": "CREATE TABLE process_journal (seq INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, op TEXT NOT NULL, task_id TEXT NOT NULL, attempt_id TEXT, pid INTEGER NOT NULL, pid_started_at INTEGER, exit_code INTEGER, signal TEXT)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "seq",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "ts",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "op",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "attempt_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "pid",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "pid_started_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "exit_code",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "signal",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "schema_meta",
+    "tbl_name": "schema_meta",
+    "sql": "CREATE TABLE schema_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "key",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "value",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "subscription_items",
+    "tbl_name": "subscription_items",
+    "sql": "CREATE TABLE `subscription_items` (`subscription_id` text NOT NULL, `item_id` text NOT NULL, `title` text NOT NULL, `url` text NOT NULL, `published_at` integer NOT NULL, `thumbnail` text, `added` integer NOT NULL, \"task_id\" text, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, PRIMARY KEY(`subscription_id`, `item_id`))",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "subscription_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "item_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 2
+      },
+      {
+        "cid": 2,
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "url",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "published_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "thumbnail",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "added",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "task_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "subscriptions",
+    "tbl_name": "subscriptions",
+    "sql": "CREATE TABLE `subscriptions` (`id` text PRIMARY KEY NOT NULL, `title` text NOT NULL, `source_url` text NOT NULL, `feed_url` text NOT NULL, `platform` text NOT NULL, `keywords` text NOT NULL, `tags` text NOT NULL, `only_latest` integer NOT NULL, `enabled` integer NOT NULL, `cover_url` text, `latest_video_title` text, `latest_video_published_at` integer, `last_checked_at` integer, `last_success_at` integer, `status` text NOT NULL, `last_error` text, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, `download_directory` text, `naming_template` text , auto_download INTEGER NOT NULL DEFAULT 1, download_type TEXT, download_quality TEXT, download_container TEXT, source_kind TEXT NOT NULL DEFAULT 'feed', profile_owner TEXT, categories TEXT NOT NULL DEFAULT '[]', check_interval_ms INTEGER, next_check_at INTEGER)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "source_url",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "feed_url",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "keywords",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "only_latest",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "enabled",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "cover_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "latest_video_title",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 11,
+        "name": "latest_video_published_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 12,
+        "name": "last_checked_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 13,
+        "name": "last_success_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 14,
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 15,
+        "name": "last_error",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 16,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 17,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 18,
+        "name": "download_directory",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 19,
+        "name": "naming_template",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 20,
+        "name": "auto_download",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": "1",
+        "pk": 0
+      },
+      {
+        "cid": 21,
+        "name": "download_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 22,
+        "name": "download_quality",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 23,
+        "name": "download_container",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 24,
+        "name": "source_kind",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": "'feed'",
+        "pk": 0
+      },
+      {
+        "cid": 25,
+        "name": "profile_owner",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 26,
+        "name": "categories",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": "'[]'",
+        "pk": 0
+      },
+      {
+        "cid": 27,
+        "name": "check_interval_ms",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 28,
+        "name": "next_check_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "subscriptions_meta",
+    "tbl_name": "subscriptions_meta",
+    "sql": "CREATE TABLE subscriptions_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at INTEGER NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "key",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "value",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "tasks",
+    "tbl_name": "tasks",
+    "sql": "CREATE TABLE tasks (id TEXT PRIMARY KEY, kind TEXT NOT NULL, parent_id TEXT REFERENCES tasks(id), status TEXT NOT NULL, prev_status TEXT, status_reason TEXT, entered_status_at INTEGER NOT NULL, priority INTEGER NOT NULL, group_key TEXT NOT NULL, attempt INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL, next_retry_at INTEGER, pid INTEGER, pid_started_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, input_json TEXT NOT NULL, progress_json TEXT, output_json TEXT, last_error_json TEXT)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "kind",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "parent_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "prev_status",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "status_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "entered_status_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "priority",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "group_key",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "attempt",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": "0",
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "max_attempts",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 11,
+        "name": "next_retry_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 12,
+        "name": "pid",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 13,
+        "name": "pid_started_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 14,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 15,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 16,
+        "name": "input_json",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 17,
+        "name": "progress_json",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 18,
+        "name": "output_json",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 19,
+        "name": "last_error_json",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "tasks",
+        "from": "parent_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "NO ACTION",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcript_prompt_runs",
+    "tbl_name": "transcript_prompt_runs",
+    "sql": "CREATE TABLE transcript_prompt_runs (download_id TEXT NOT NULL, prompt_id TEXT NOT NULL, status TEXT NOT NULL, text TEXT NOT NULL, error TEXT, error_code TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, thinking TEXT NOT NULL DEFAULT '', thinking_ms INTEGER NOT NULL DEFAULT 0, cloud_result_id TEXT, PRIMARY KEY (download_id, prompt_id))",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "download_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "prompt_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 2
+      },
+      {
+        "cid": 2,
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "text",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "error_code",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "thinking",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": "''",
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "thinking_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": "0",
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "cloud_result_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "type": "table",
+    "name": "transcript_segments",
+    "tbl_name": "transcript_segments",
+    "sql": "CREATE TABLE transcript_segments (id TEXT PRIMARY KEY, transcript_id TEXT NOT NULL REFERENCES transcripts(id) ON DELETE CASCADE, speaker_id TEXT, start_ms INTEGER NOT NULL, end_ms INTEGER NOT NULL, text TEXT NOT NULL, confidence REAL, sort_index INTEGER NOT NULL , words_json TEXT)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "transcript_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "speaker_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "start_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "end_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "text",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "confidence",
+        "type": "REAL",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "sort_index",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "words_json",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "transcripts",
+        "from": "transcript_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcript_speakers",
+    "tbl_name": "transcript_speakers",
+    "sql": "CREATE TABLE transcript_speakers (id TEXT PRIMARY KEY, transcript_id TEXT NOT NULL REFERENCES transcripts(id) ON DELETE CASCADE, speaker_key TEXT NOT NULL, display_name TEXT NOT NULL, sort_index INTEGER NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "transcript_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "speaker_key",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "display_name",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "sort_index",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "transcripts",
+        "from": "transcript_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcripts",
+    "tbl_name": "transcripts",
+    "sql": "CREATE TABLE transcripts (id TEXT PRIMARY KEY, download_task_id TEXT NOT NULL, transcription_task_id TEXT NOT NULL, result_kind TEXT NOT NULL, model_version TEXT NOT NULL, language TEXT, source_file_path TEXT, superseded_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL , asr_tier TEXT, source_kind TEXT)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "download_task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "transcription_task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "result_kind",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "model_version",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "language",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "source_file_path",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "superseded_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "asr_tier",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 11,
+        "name": "source_kind",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  }
+]

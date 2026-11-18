@@ -1,0 +1,72 @@
+[
+  {
+    "drizzle": {
+      "id": "transcript_segments:id:values:雪",
+      "transcriptId": "synthetic-id",
+      "speakerId": "transcript_segments:speaker_id:values:雪",
+      "startMs": 1700000000123,
+      "endMs": 1700000000123,
+      "text": "transcript_segments:text:values:雪",
+      "confidence": 0.875,
+      "wordsJson": "[\"synthetic\",{\"n\":1}]",
+      "sortIndex": 1700000000123
+    },
+    "raw": {
+      "id": "transcript_segments:id:values:雪",
+      "transcript_id": "synthetic-id",
+      "speaker_id": "transcript_segments:speaker_id:values:雪",
+      "start_ms": 1700000000123,
+      "end_ms": 1700000000123,
+      "text": "transcript_segments:text:values:雪",
+      "confidence": 0.875,
+      "sort_index": 1700000000123,
+      "words_json": "[\"synthetic\",{\"n\":1}]"
+    },
+    "types": {
+      "id": "string",
+      "transcriptId": "string",
+      "speakerId": "string",
+      "startMs": "number",
+      "endMs": "number",
+      "text": "string",
+      "confidence": "number",
+      "wordsJson": "string",
+      "sortIndex": "number"
+    }
+  },
+  {
+    "drizzle": {
+      "id": "transcript_segments:id:nulls:雪",
+      "transcriptId": "synthetic-id",
+      "speakerId": null,
+      "startMs": 1700000000124,
+      "endMs": 1700000000124,
+      "text": "transcript_segments:text:nulls:雪",
+      "confidence": null,
+      "wordsJson": null,
+      "sortIndex": 1700000000124
+    },
+    "raw": {
+      "id": "transcript_segments:id:nulls:雪",
+      "transcript_id": "synthetic-id",
+      "speaker_id": null,
+      "start_ms": 1700000000124,
+      "end_ms": 1700000000124,
+      "text": "transcript_segments:text:nulls:雪",
+      "confidence": null,
+      "sort_index": 1700000000124,
+      "words_json": null
+    },
+    "types": {
+      "id": "string",
+      "transcriptId": "string",
+      "speakerId": "null",
+      "startMs": "number",
+      "endMs": "number",
+      "text": "string",
+      "confidence": "null",
+      "wordsJson": "null",
+      "sortIndex": "number"
+    }
+  }
+]

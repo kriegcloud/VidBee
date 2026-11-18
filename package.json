@@ -37,7 +37,7 @@
     "zip:extension": "bun run --cwd apps/extension zip",
     "check:legacy": "bun run --cwd apps/desktop check",
     "lint:legacy": "bun run --cwd apps/desktop check",
-    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs",
+    "test": "bun run test:audit && bun run --cwd packages/db test && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs",
     "port:check": "node scripts/port-check.mjs"
   },
   "devDependencies": {

@@ -1,0 +1,84 @@
+[
+  {
+    "drizzle": {
+      "downloadId": "transcript_prompt_runs:download_id:values:雪",
+      "promptId": "transcript_prompt_runs:prompt_id:values:雪",
+      "status": "transcript_prompt_runs:status:values:雪",
+      "text": "transcript_prompt_runs:text:values:雪",
+      "thinking": "transcript_prompt_runs:thinking:values:雪",
+      "thinkingMs": 1700000000123,
+      "cloudResultId": "transcript_prompt_runs:cloud_result_id:values:雪",
+      "error": "transcript_prompt_runs:error:values:雪",
+      "errorCode": "transcript_prompt_runs:error_code:values:雪",
+      "createdAt": 1700000000123,
+      "updatedAt": 1700000000123
+    },
+    "raw": {
+      "download_id": "transcript_prompt_runs:download_id:values:雪",
+      "prompt_id": "transcript_prompt_runs:prompt_id:values:雪",
+      "status": "transcript_prompt_runs:status:values:雪",
+      "text": "transcript_prompt_runs:text:values:雪",
+      "error": "transcript_prompt_runs:error:values:雪",
+      "error_code": "transcript_prompt_runs:error_code:values:雪",
+      "created_at": 1700000000123,
+      "updated_at": 1700000000123,
+      "thinking": "transcript_prompt_runs:thinking:values:雪",
+      "thinking_ms": 1700000000123,
+      "cloud_result_id": "transcript_prompt_runs:cloud_result_id:values:雪"
+    },
+    "types": {
+      "downloadId": "string",
+      "promptId": "string",
+      "status": "string",
+      "text": "string",
+      "thinking": "string",
+      "thinkingMs": "number",
+      "cloudResultId": "string",
+      "error": "string",
+      "errorCode": "string",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  },
+  {
+    "drizzle": {
+      "downloadId": "transcript_prompt_runs:download_id:nulls:雪",
+      "promptId": "transcript_prompt_runs:prompt_id:nulls:雪",
+      "status": "transcript_prompt_runs:status:nulls:雪",
+      "text": "transcript_prompt_runs:text:nulls:雪",
+      "thinking": "transcript_prompt_runs:thinking:nulls:雪",
+      "thinkingMs": 1700000000124,
+      "cloudResultId": null,
+      "error": null,
+      "errorCode": null,
+      "createdAt": 1700000000124,
+      "updatedAt": 1700000000124
+    },
+    "raw": {
+      "download_id": "transcript_prompt_runs:download_id:nulls:雪",
+      "prompt_id": "transcript_prompt_runs:prompt_id:nulls:雪",
+      "status": "transcript_prompt_runs:status:nulls:雪",
+      "text": "transcript_prompt_runs:text:nulls:雪",
+      "error": null,
+      "error_code": null,
+      "created_at": 1700000000124,
+      "updated_at": 1700000000124,
+      "thinking": "transcript_prompt_runs:thinking:nulls:雪",
+      "thinking_ms": 1700000000124,
+      "cloud_result_id": null
+    },
+    "types": {
+      "downloadId": "string",
+      "promptId": "string",
+      "status": "string",
+      "text": "string",
+      "thinking": "string",
+      "thinkingMs": "number",
+      "cloudResultId": "null",
+      "error": "null",
+      "errorCode": "null",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  }
+]

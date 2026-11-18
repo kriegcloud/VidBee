@@ -200,6 +200,8 @@
         "@types/better-sqlite3": "catalog:",
         "@types/node": "catalog:",
         "better-sqlite3": "catalog:",
+        "esbuild": "catalog:",
+        "tsx": "catalog:",
         "typescript": "catalog:",
       },
       "peerDependencies": {

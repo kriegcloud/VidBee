@@ -1,0 +1,78 @@
+[
+  {
+    "drizzle": {
+      "id": "attempts:id:values:雪",
+      "taskId": "synthetic-id",
+      "attemptNumber": 1700000000123,
+      "startedAt": 1700000000123,
+      "endedAt": 1700000000123,
+      "exitCode": 1700000000123,
+      "errorCategory": "attempts:error_category:values:雪",
+      "stdoutTail": "attempts:stdout_tail:values:雪",
+      "stderrTail": "attempts:stderr_tail:values:雪",
+      "rawArgsHash": "attempts:raw_args_hash:values:雪"
+    },
+    "raw": {
+      "id": "attempts:id:values:雪",
+      "task_id": "synthetic-id",
+      "attempt_number": 1700000000123,
+      "started_at": 1700000000123,
+      "ended_at": 1700000000123,
+      "exit_code": 1700000000123,
+      "error_category": "attempts:error_category:values:雪",
+      "stdout_tail": "attempts:stdout_tail:values:雪",
+      "stderr_tail": "attempts:stderr_tail:values:雪",
+      "raw_args_hash": "attempts:raw_args_hash:values:雪"
+    },
+    "types": {
+      "id": "string",
+      "taskId": "string",
+      "attemptNumber": "number",
+      "startedAt": "number",
+      "endedAt": "number",
+      "exitCode": "number",
+      "errorCategory": "string",
+      "stdoutTail": "string",
+      "stderrTail": "string",
+      "rawArgsHash": "string"
+    }
+  },
+  {
+    "drizzle": {
+      "id": "attempts:id:nulls:雪",
+      "taskId": "synthetic-id",
+      "attemptNumber": 1700000000124,
+      "startedAt": 1700000000124,
+      "endedAt": null,
+      "exitCode": null,
+      "errorCategory": null,
+      "stdoutTail": null,
+      "stderrTail": null,
+      "rawArgsHash": "attempts:raw_args_hash:nulls:雪"
+    },
+    "raw": {
+      "id": "attempts:id:nulls:雪",
+      "task_id": "synthetic-id",
+      "attempt_number": 1700000000124,
+      "started_at": 1700000000124,
+      "ended_at": null,
+      "exit_code": null,
+      "error_category": null,
+      "stdout_tail": null,
+      "stderr_tail": null,
+      "raw_args_hash": "attempts:raw_args_hash:nulls:雪"
+    },
+    "types": {
+      "id": "string",
+      "taskId": "string",
+      "attemptNumber": "number",
+      "startedAt": "number",
+      "endedAt": "null",
+      "exitCode": "null",
+      "errorCategory": "null",
+      "stdoutTail": "null",
+      "stderrTail": "null",
+      "rawArgsHash": "string"
+    }
+  }
+]
