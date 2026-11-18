@@ -17,7 +17,8 @@ permissions:
 jobs:
   build:
     name: Package (linux)
-    runs-on: ubuntu-22.04
+    # The pinned gallery-dl standalone binary needs glibc 2.38 or newer.
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4

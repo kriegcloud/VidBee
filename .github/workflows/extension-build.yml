@@ -16,7 +16,7 @@ permissions:
 jobs:
   build:
     name: Build (extension)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -49,5 +49,7 @@ jobs:
         with:
           name: dist-extension
           path: apps/extension/.output/*.zip
+          # .output is a dot-directory, which upload-artifact skips by default.
+          include-hidden-files: true
           retention-days: 3
           if-no-files-found: error
