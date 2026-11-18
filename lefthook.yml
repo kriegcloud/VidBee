@@ -1,0 +1,11 @@
+# Read-only hooks: nothing here stashes, formats, stages or rewrites the index, so merge
+# commits are safe. The whole-repo gate (`bun run check`, `bun run test`) runs in CI.
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc}"
+      # biome.jsonc only includes ported packages; staged files outside them are ignored.
+      run: bunx biome check --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}
+    port-check:
+      run: bun run port:check

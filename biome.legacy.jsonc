@@ -67,7 +67,10 @@
     "lineEnding": "lf"
   },
   "javascript": {
-    "globals": ["browser", "defineBackground"],
+    "globals": [
+      "browser",
+      "defineBackground"
+    ],
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "asNeeded",
@@ -114,7 +117,11 @@
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": true,
+    "root": "../.."
   },
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"]
+  "extends": [
+    "./standards/biome-legacy/core.jsonc",
+    "./standards/biome-legacy/react.jsonc"
+  ]
 }
