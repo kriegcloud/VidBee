@@ -174,9 +174,7 @@ export const WebAppSettingsSchema = z.object({
   oneClickQuality: OneClickQualityPresetSchema,
   oneClickContainer: OneClickContainerOptionSchema.default('auto'),
   closeToTray: z.boolean(),
-  autoUpdate: z.boolean(),
   subscriptionOnlyLatestDefault: z.boolean(),
-  enableAnalytics: z.boolean(),
   downloadSubtitles: z.boolean().default(true),
   subtitleLanguages: z.preprocess(
     (value) =>

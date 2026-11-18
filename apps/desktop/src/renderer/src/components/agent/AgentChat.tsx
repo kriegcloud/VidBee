@@ -9,7 +9,6 @@ import { MessageScrollerItem } from '@renderer/components/ui/message-scroller'
 import { useAgentChat } from '@renderer/hooks/use-agent-chat'
 import { aiPromptLabel } from '@renderer/lib/ai-prompt-label'
 import { shareImageFileName } from '@renderer/lib/capture-prompt-share'
-import { trackDesktopEvent } from '@renderer/lib/desktop-analytics'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { thinkingDurationHeader } from '@renderer/lib/thinking-header'
@@ -328,7 +327,6 @@ export function AgentChat({
       latestRun.status === 'completed' &&
       markFirstCloudSuccess()
     ) {
-      trackDesktopEvent('cloud_prompt_first_completed', { source: 'transcript_prompt' })
       toast.success(t('transcript.promptCloudGenerated'))
     }
   }, [hasProvider, latestRun?.status, latestRun?.cloudResultId, t])

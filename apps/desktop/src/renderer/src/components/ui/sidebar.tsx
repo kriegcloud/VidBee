@@ -4,7 +4,6 @@ import { useAtomValue } from 'jotai'
 import { useTranslation } from 'react-i18next'
 import '../../assets/title-bar.css'
 import { agentApprovalPendingAtom } from '@renderer/store/agent-tasks'
-import { updateAvailableAtom } from '@renderer/store/update'
 
 type Page = 'about' | 'chat' | 'home' | 'settings' | 'subscriptions'
 
@@ -25,7 +24,6 @@ export function Sidebar({
   transcriptsActive = false
 }: SidebarProps) {
   const { t } = useTranslation()
-  const updateAvailable = useAtomValue(updateAvailableAtom)
   const approvalPending = useAtomValue(agentApprovalPendingAtom)
 
   const items: AppSidebarItem[] = [
@@ -74,7 +72,6 @@ export function Sidebar({
       id: 'about',
       active: currentPage === 'about',
       icon: appSidebarIcons.about,
-      indicator: updateAvailable.available,
       label: t('menu.about'),
       onClick: () => onPageChange('about'),
       showLabel: false,

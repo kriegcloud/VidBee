@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "アップデートを確認",
       "download": "ダウンロード",
       "email": "メール",
       "feedback": "フィードバック",
-      "goToDownload": "ダウンロードページへ行く",
       "openRepo": "GitHubリポジトリを開く",
       "view": "表示",
       "visit": "訪問"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "バックグラウンドで新しいリリースを自動的にダウンロードしてインストールします。",
-    "microsoftStoreUpdateDescription": "アプリの更新は Microsoft Store で管理されます。ストアを開いて更新を確認してください。",
-    "autoUpdateTitle": "自動アップデート",
     "description": "1000以上のサイトからメディアをダウンロードし、パソコン上で検索可能な文字起こしを作成。選んだAIプロバイダーで要約、翻訳、質問までできる、無料のオープンソース・デスクトップアプリです。",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "ここ",
     "homepage": "ホームページ",
     "notifications": {
-      "checkingUpdates": "アップデートを検索中...",
       "downloadError": "アップデートのダウンロードに失敗",
-      "downloadUpdate": "アップデート{{version}}をダウンロードしてインストールしますか？",
-      "manualDownloadAction": "今すぐダウンロード",
-      "noUpdatesAvailable": "最新バージョンを使用しています",
-      "outdatedVersionRisk": "現在のバージョンは古すぎるため、ダウンロードに失敗する可能性があります。",
-      "restartToUpdate": "今すぐ再起動してアップデートをインストールしますか？",
-      "restartNowAction": "今すぐ再起動してください",
-      "updateAvailable": "利用可能なアップデート：{{version}}",
-      "updateAvailableMessage": "新しいバージョン {{version}} が利用可能です。\n公式サイトからダウンロードしてください。",
-      "updateDownloaded": "アップデートがダウンロードされました。再起動してインストールしてください",
-      "updateDownloadedVersion": "アップデート {{version}} をダウンロードしました。再起動してインストールしてください",
-      "updateError": "アップデートの確認に失敗：{{error}}",
-      "unknownErrorFallback": "不明なエラー"
+      "manualDownloadAction": "今すぐダウンロード"
     },
     "resources": {
       "changelog": "リリースノート",
@@ -103,13 +86,6 @@
     "title": "について",
     "version": "バージョン",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "最新: v{{version}}",
-    "latestVersionStatus": {
-      "available": "新しいバージョンが利用可能",
-      "uptodate": "最新バージョンを使用中",
-      "error": "最新バージョンを取得できません"
-    },
-    "downloadingUpdate": "アップデートをダウンロードしています",
     "changelog": {
       "currentVersion": "現在のバージョン"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "起動時に起動する",
     "launchAtLoginDescription": "コンピューターにサインインした後、VidBeep を自動的に開きます",
     "launchAtLoginUnsupported": "自動起動は macOS と Windows でのみ利用できます",
-    "enableAnalytics": "VidBeep の改善にご協力ください",
-    "enableAnalyticsDescription": "匿名の使用状況データを共有することで、アプリの使用状況を把握し、改善の優先順位を付けることができます",
     "enableDownloadNotifications": "ダウンロード通知",
     "enableDownloadNotificationsDescription": "ダウンロードが完了したときにシステム通知を表示します",
     "downloadWithoutChannelSubfolders": "チャンネルのサブフォルダーを作らずに動画を保存",

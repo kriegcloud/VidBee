@@ -10,7 +10,7 @@ Thank you for taking the time to improve VidBee. These notes keep the project ma
 ## Tech Stack
 - Runtime: Electron 38, electron-vite, electron-builder.
 - Frontend: React 19, React Router, Jotai, React Hook Form, Tailwind CSS 4, shadcn/ui, Lucide icons.
-- Tooling: TypeScript, Bun, Biome, dayjs, electron-log, electron-store, electron-updater, i18next, next-themes.
+- Tooling: TypeScript, Bun, Biome, dayjs, electron-log, electron-store, i18next, next-themes.
 
 ## Local Development
 - Use `bun install` to pull dependencies after cloning.
@@ -34,7 +34,7 @@ Thank you for taking the time to improve VidBee. These notes keep the project ma
 - Every third-party version is declared once, in the `catalog` of the root `package.json`.
 - Workspace manifests reference it with `"name": "catalog:"` and reference each other with `"@vidbee/name": "workspace:^"`.
 - To add a dependency, add its range to the root catalog, then add `"name": "catalog:"` to the package that uses it and run `bun install`.
-- Exceptions, enforced by `syncpack.config.ts`: `electron-updater` and `electron` stay literal in `apps/desktop/package.json`, because electron-builder reads them from that file, and `electron` must match the exact catalog pin.
+- Exception, enforced by `syncpack.config.ts`: `electron` stays literal in `apps/desktop/package.json`, because electron-builder reads it from that file, and it must match the exact catalog pin.
 - Peer dependency ranges are not catalogued.
 
 ## Project Structure
@@ -69,21 +69,6 @@ apps/desktop/src/
 - Create platform-specific artifacts with `bun run build:win`, `bun run build:mac`, or `bun run build:linux`.
 - Use `bun run build:unpack` to generate unpacked directories under `apps/desktop/dist/` for manual inspection.
 - Bundle `yt-dlp` under `apps/desktop/resources/` and `ffmpeg/ffprobe` under `apps/desktop/resources/ffmpeg/` before packaging so merges and audio extraction work out of the box.
-
-## Releasing
-
-VidBee publishes stable releases with `bun run release` and `vX.Y.Z` tags. Installed apps
-automatically follow the stable `latest` channel through the GitHub provider configured in
-`apps/desktop/electron-builder.yml`, which emits `latest*.yml` update metadata.
-
-- The release command runs `bun run check` and then `bumpp`, which bumps
-  `apps/desktop/package.json`, commits, tags, and pushes. The tag push triggers
-  `.github/workflows/release.yml`, which builds every platform, publishes the GitHub release,
-  and notifies Cloudflare Pages. Tags containing a prerelease suffix do not trigger this workflow.
-- Before building, CI runs `apps/desktop/scripts/stamp-release.mjs` (see `build.yml`) to stamp
-  the tag's version into `package.json`.
-- A manual `workflow_dispatch` run of the release workflow is a build-only smoke test: it
-  produces artifacts but does **not** publish a release (no tag).
 
 ## Working on Changes
 - Keep each pull request focused on a single problem or feature.

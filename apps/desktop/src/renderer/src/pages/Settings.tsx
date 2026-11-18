@@ -952,38 +952,6 @@ export function Settings() {
                 <ItemGroup>
                   <Item variant="muted">
                     <ItemContent>
-                      <ItemTitle>{t('settings.enableAnalytics')}</ItemTitle>
-                      <ItemDescription>{t('settings.enableAnalyticsDescription')}</ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      {(() => {
-                        try {
-                          const analyticsValue = settings.enableAnalytics ?? true
-                          return (
-                            <Switch
-                              checked={analyticsValue}
-                              label=""
-                              onToggle={() => {
-                                try {
-                                  handleSettingChange('enableAnalytics', !analyticsValue)
-                                } catch (error) {
-                                  logger.error('[Settings] Error changing enable analytics:', error)
-                                }
-                              }}
-                            />
-                          )
-                        } catch (error) {
-                          logger.error('[Settings] Error rendering enable analytics switch:', error)
-                          return <div>Error loading enable analytics setting</div>
-                        }
-                      })()}
-                    </ItemActions>
-                  </Item>
-
-                  <ItemSeparator />
-
-                  <Item variant="muted">
-                    <ItemContent>
                       <ItemTitle>{t('settings.enableDownloadNotifications')}</ItemTitle>
                       <ItemDescription>
                         {t('settings.enableDownloadNotificationsDescription')}

@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "检查更新",
       "download": "下载",
       "email": "邮件",
       "feedback": "反馈",
-      "goToDownload": "前往下载页面",
       "openRepo": "打开 GitHub 仓库",
       "view": "查看",
       "visit": "访问"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "在后台自动下载并安装新版本。",
-    "microsoftStoreUpdateDescription": "应用更新由 Microsoft Store 管理。请打开商店检查更新。",
-    "autoUpdateTitle": "自动更新",
     "description": "从 1000+ 个网站下载媒体，在本机生成可搜索的文稿，再用你选择的 AI 服务商进行总结、翻译或提问——全部集中在一个免费开源的桌面应用中。",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "此处",
     "homepage": "主页",
     "notifications": {
-      "checkingUpdates": "正在查找更新...",
       "downloadError": "下载更新失败",
-      "downloadUpdate": "下载并安装更新 {{version}}？",
-      "manualDownloadAction": "立即下载",
-      "noUpdatesAvailable": "您正在使用最新版本",
-      "outdatedVersionRisk": "您的版本过旧，可能会导致下载失败。",
-      "restartToUpdate": "立即重启以安装更新？",
-      "restartNowAction": "立即重新启动",
-      "updateAvailable": "发现新版本: {{version}}",
-      "updateAvailableMessage": "新版本 {{version}} 已推出。\n请从官方网站下载。",
-      "updateDownloaded": "更新已下载，重启以安装",
-      "updateDownloadedVersion": "下载更新 {{version}}，重新启动安装",
-      "updateError": "检查更新失败: {{error}}",
-      "unknownErrorFallback": "未知错误"
+      "manualDownloadAction": "立即下载"
     },
     "resources": {
       "changelog": "发行说明",
@@ -103,13 +86,6 @@
     "title": "关于",
     "version": "版本",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "最新版本：v{{version}}",
-    "latestVersionStatus": {
-      "available": "有新版本可用",
-      "uptodate": "您已是最新版本",
-      "error": "无法获取最新版本"
-    },
-    "downloadingUpdate": "正在下载更新",
     "changelog": {
       "currentVersion": "当前版本"
     }
@@ -766,8 +742,6 @@
     "launchAtLogin": "启动时启动",
     "launchAtLoginDescription": "登录计算机后自动打开 VidBeep",
     "launchAtLoginUnsupported": "自动启动仅适用于 macOS 和 Windows",
-    "enableAnalytics": "帮助改进 VidBeep",
-    "enableAnalyticsDescription": "共享匿名使用数据，帮助我们了解应用程序的使用情况并确定改进的优先顺序",
     "enableDownloadNotifications": "下载通知",
     "enableDownloadNotificationsDescription": "下载完成时显示系统通知",
     "downloadWithoutChannelSubfolders": "保存视频时不创建频道子文件夹",

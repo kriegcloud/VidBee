@@ -22,17 +22,12 @@ import {
   useRef,
   useState
 } from 'react'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { DesktopChromeContext } from './desktop-chrome'
 import { useAgentTaskEvents } from './hooks/use-agent-task-events'
 import { useAppIconPlaybackMenu } from './hooks/use-app-icon-playback-menu'
-import { useDesktopValueEvents } from './hooks/use-desktop-value-events'
 import { useDownloadEvents } from './hooks/use-download-events'
 import { useHistorySync } from './hooks/use-history-sync'
 import { useImportLocalMedia } from './hooks/use-import-local-media'
-import { syncDesktopAnalytics } from './lib/desktop-analytics'
-import { addRendererBreadcrumb, setRendererTelemetryEnabled } from './lib/glitchtip'
 import { ipcEvents, ipcServices } from './lib/ipc'
 import { logger } from './lib/logger'
 import { continueDesktopSignIn, openSettingsTab } from './lib/settings-navigation'
@@ -45,7 +40,7 @@ import {
   shouldShowPlaybackBar
 } from './lib/transcript-playback'
 import { withDesktopUtm } from './lib/url'
-import { loadSettingsAtom, settingsAtom, settingsLoadedAtom } from './store/settings'
+import { loadSettingsAtom, settingsAtom } from './store/settings'
 import { loadSubscriptionsAtom, setSubscriptionsAtom } from './store/subscriptions'
 import { playbackSessionAtom } from './store/transcript-playback'
 import { playbackPlaylistAtom } from './store/transcript-playlist'
@@ -55,7 +50,6 @@ import {
   transcriptMapAtom,
   upsertTranscriptAtom
 } from './store/transcripts'
-import { updateAvailableAtom, updateReadyAtom } from './store/update'
 
 type Page = 'about' | 'chat' | 'home' | 'settings' | 'subscriptions'
 
@@ -113,7 +107,6 @@ export function AppLayout() {
   const loadSubscriptions = useSetAtom(loadSubscriptionsAtom)
   const setSubscriptions = useSetAtom(setSubscriptionsAtom)
   const [settings] = useAtom(settingsAtom)
-  const settingsLoaded = useAtomValue(settingsLoadedAtom)
   const loadSettings = useSetAtom(loadSettingsAtom)
   const { setTheme } = useTheme()
   const loadTranscripts = useSetAtom(loadTranscriptMapAtom)
@@ -124,10 +117,6 @@ export function AppLayout() {
       Object.values(transcriptMap).some((snapshot) => isInProgressTranscript(snapshot.listState)),
     [transcriptMap]
   )
-  const setUpdateReady = useSetAtom(updateReadyAtom)
-  const setUpdateAvailable = useSetAtom(updateAvailableAtom)
-  const { i18n } = useTranslation()
-  const updateDownloadInProgressRef = useRef(false)
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const pathnameRef = useRef(pathname)
@@ -147,10 +136,8 @@ export function AppLayout() {
   const currentPage = pathToPage(pathname)
   const supportedSitesUrl = withDesktopUtm('https://vidbee.org/supported-sites/')
   const toolsUrl = withDesktopUtm('https://vidbee.org/tools/')
-  const analyticsEnabled = settingsLoaded && settings.enableAnalytics !== false
 
   useDownloadEvents()
-  useDesktopValueEvents()
   useAgentTaskEvents()
   useAppIconPlaybackMenu()
   useHistorySync()
@@ -160,10 +147,6 @@ export function AppLayout() {
     (page: Page) => {
       const targetPath = pageToPath[page] ?? '/'
       if (normalizePathname(pathname) !== targetPath) {
-        addRendererBreadcrumb('navigation', 'Navigated to page', {
-          page,
-          targetPath
-        })
         void navigate({ to: targetPath })
       }
     },
@@ -223,16 +206,6 @@ export function AppLayout() {
   const handleOpenTools = useCallback(() => {
     window.open(toolsUrl, '_blank')
   }, [toolsUrl])
-
-  useEffect(() => {
-    setRendererTelemetryEnabled(analyticsEnabled)
-  }, [analyticsEnabled])
-
-  useEffect(() => {
-    if (settingsLoaded) {
-      void syncDesktopAnalytics(analyticsEnabled, pathname)
-    }
-  }, [analyticsEnabled, pathname, settingsLoaded])
 
   useEffect(() => {
     setTheme(settings.theme)
@@ -340,79 +313,6 @@ export function AppLayout() {
 
     void getRuntimeInfo()
   }, [])
-
-  useEffect(() => {
-    if (!window?.api) {
-      return
-    }
-
-    const resetDownloadState = () => {
-      if (updateDownloadInProgressRef.current) {
-        updateDownloadInProgressRef.current = false
-      }
-    }
-
-    const handleUpdateAvailable = (rawInfo: unknown) => {
-      const info = (rawInfo ?? {}) as { version?: string }
-      setUpdateAvailable({
-        available: true,
-        version: info.version
-      })
-    }
-
-    const handleUpdateDownloaded = (rawInfo: unknown) => {
-      const info = (rawInfo ?? {}) as { version?: string }
-      resetDownloadState()
-      setUpdateReady({
-        ready: true,
-        version: info.version
-      })
-      setUpdateAvailable({
-        available: true,
-        version: info.version
-      })
-
-      const versionLabel = info?.version ?? ''
-      const downloadedMessage = versionLabel
-        ? i18n.t('about.notifications.updateDownloadedVersion', { version: versionLabel })
-        : i18n.t('about.notifications.updateDownloaded')
-      toast.info(downloadedMessage, {
-        action: {
-          label: i18n.t('about.notifications.restartNowAction'),
-          onClick: () => {
-            void ipcServices.update.quitAndInstall()
-          }
-        }
-      })
-    }
-
-    const handleUpdateError = (rawMessage: unknown) => {
-      const message = typeof rawMessage === 'string' ? rawMessage : ''
-      resetDownloadState()
-
-      const errorMessage = message || i18n.t('about.notifications.unknownErrorFallback')
-      toast.error(i18n.t('about.notifications.updateError', { error: errorMessage }))
-    }
-
-    const handleDownloadProgress = (rawProgress: unknown) => {
-      const progress = (rawProgress ?? {}) as { percent?: number }
-      if (typeof progress?.percent === 'number') {
-        logger.info('Update download progress:', progress.percent.toFixed(2))
-      }
-    }
-
-    ipcEvents.on('update:available', handleUpdateAvailable)
-    ipcEvents.on('update:downloaded', handleUpdateDownloaded)
-    ipcEvents.on('update:error', handleUpdateError)
-    ipcEvents.on('update:download-progress', handleDownloadProgress)
-
-    return () => {
-      ipcEvents.removeListener('update:available', handleUpdateAvailable)
-      ipcEvents.removeListener('update:downloaded', handleUpdateDownloaded)
-      ipcEvents.removeListener('update:error', handleUpdateError)
-      ipcEvents.removeListener('update:download-progress', handleDownloadProgress)
-    }
-  }, [i18n, setUpdateAvailable, setUpdateReady])
 
   const chrome = useMemo(
     () => ({

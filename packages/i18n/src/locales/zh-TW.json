@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "檢查更新",
       "download": "下載",
       "email": "電子郵件",
       "feedback": "意見回饋",
-      "goToDownload": "前往下載頁面",
       "openRepo": "開啟 GitHub 儲存庫",
       "view": "檢視",
       "visit": "造訪"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "在背景自動下載並安裝新版本。",
-    "microsoftStoreUpdateDescription": "應用程式更新由 Microsoft Store 管理。請開啟商店檢查更新。",
-    "autoUpdateTitle": "自動更新",
     "description": "從 1000+ 個網站下載媒體，在本機建立可搜尋的文稿，再用你選擇的 AI 服務商進行摘要、翻譯或提問——全部集中在一個免費開源的桌面應用程式中。",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "此處",
     "homepage": "首頁",
     "notifications": {
-      "checkingUpdates": "正在搜尋更新...",
       "downloadError": "下載更新失敗",
-      "downloadUpdate": "下載並安裝更新 {{version}}？",
-      "manualDownloadAction": "立即下載",
-      "noUpdatesAvailable": "您正在使用最新版本",
-      "outdatedVersionRisk": "您的版本過舊，可能會導致下載失敗。",
-      "restartToUpdate": "立即重新啟動以安裝更新？",
-      "restartNowAction": "立即重新啟動",
-      "updateAvailable": "發現新版本：{{version}}",
-      "updateAvailableMessage": "新版本 {{version}} 已推出。請從官方網站下載。",
-      "updateDownloaded": "更新已下載，重新啟動以安裝",
-      "updateDownloadedVersion": "下載更新 {{version}}，重新啟動安裝",
-      "updateError": "檢查更新失敗：{{error}}",
-      "unknownErrorFallback": "未知錯誤"
+      "manualDownloadAction": "立即下載"
     },
     "resources": {
       "changelog": "發行說明",
@@ -103,13 +86,6 @@
     "title": "關於",
     "version": "版本",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "最新版本：v{{version}}",
-    "latestVersionStatus": {
-      "available": "有新版本可用",
-      "uptodate": "您已是最新版本",
-      "error": "無法取得最新版本"
-    },
-    "downloadingUpdate": "正在下載更新",
     "changelog": {
       "currentVersion": "目前版本"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "啟動時啟動",
     "launchAtLoginDescription": "登錄計算機後自動打開 VidBeep",
     "launchAtLoginUnsupported": "自動啟動僅適用於 macOS 和 Windows",
-    "enableAnalytics": "幫助改進 VidBeep",
-    "enableAnalyticsDescription": "共享匿名使用數據，幫助我們了解應用程序的使用情況並確定改進的優先順序",
     "enableDownloadNotifications": "下載通知",
     "enableDownloadNotificationsDescription": "下載完成時顯示系統通知",
     "downloadWithoutChannelSubfolders": "儲存影片時不要建立頻道子資料夾",

@@ -13,7 +13,6 @@ import { SettingsService } from './services/settings-service'
 import { SubscriptionService } from './services/subscription-service'
 import { ThumbnailService } from './services/thumbnail-service'
 import { TranscriptService } from './services/transcript-service'
-import { UpdateService } from './services/update-service'
 import { WindowService } from './services/window-service'
 
 /**
@@ -44,7 +43,6 @@ export const services = createServices([
   SubscriptionService,
   ThumbnailService,
   TranscriptService,
-  UpdateService,
   WindowService
 ])
 

@@ -69,8 +69,6 @@ const HomeRoute = () => {
   }
   return (
     <Home
-      appVersion={chrome.appVersion}
-      onOpenAbout={chrome.onOpenAbout}
       onOpenCookiesSettings={chrome.onOpenCookiesSettings}
       onOpenSettings={chrome.onOpenSettings}
       onOpenSupportedSites={chrome.onOpenSupportedSites}

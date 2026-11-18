@@ -12,7 +12,6 @@
  * (emitted from the executor's `onStd`): we keep a capped per-task buffer and
  * emit only the appended chunk on `download-log`. Saved logs for terminal items
  * are read on demand from the persisted attempt tail (`queue.getTaskLog`).
- * `glitchTipEventId` remains a best-effort no-op in this iteration.
  */
 
 import { randomUUID } from 'node:crypto'
@@ -866,11 +865,9 @@ class DownloadFacade extends EventEmitter {
   }
 
   /**
-   * Best-effort: legacy `updateDownloadInfo` was used to stamp
-   * `glitchTipEventId` on a task. The kernel doesn't expose a way to patch
-   * `task.input.options` after add, so we drop the call with a debug log.
-   * Sentry breadcrumbs still record the event; only the per-task
-   * decoration is missing.
+   * Legacy `updateDownloadInfo` patched renderer-side fields on a task. The
+   * kernel doesn't expose a way to patch `task.input.options` after add, so
+   * the call is dropped with a debug log.
    */
   updateDownloadInfo(id: string, updates: Partial<DownloadItem>): void {
     if (Object.keys(updates).length === 0) {

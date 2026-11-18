@@ -18,18 +18,11 @@ const config = {
     }
   },
   versionGroups: [
-    // electron-builder reads apps/desktop/package.json literally, so two specs there
-    // cannot be `catalog:`:
-    // - electron-updater: semver-checked before packaging (checkDependencies).
-    // - electron: with a hoisted layout apps/desktop/node_modules/electron does not
-    //   exist, so build and install-app-deps fall back to this spec, which must be an
-    //   exact version. It mirrors the exact catalog pin, enforced by the group below.
-    {
-      label: 'electron-builder reads electron-updater literally',
-      dependencies: ['electron-updater'],
-      packages: ['vidbee'],
-      isIgnored: true
-    },
+    // electron-builder reads apps/desktop/package.json literally, so one spec there
+    // cannot be `catalog:`. With a hoisted layout apps/desktop/node_modules/electron
+    // does not exist, so build and install-app-deps fall back to the manifest's
+    // `electron` spec, which must be an exact version. It mirrors the exact catalog
+    // pin, enforced by the groups below.
     {
       label: 'Root electron uses the catalog',
       dependencies: ['electron'],

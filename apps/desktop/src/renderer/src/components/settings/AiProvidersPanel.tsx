@@ -12,7 +12,6 @@ import {
 } from '@renderer/components/ui/item'
 import { useCloudAccount } from '@renderer/hooks/use-cloud-account'
 import { formatAiCredits } from '@renderer/lib/ai-credits'
-import { trackDesktopEvent } from '@renderer/lib/desktop-analytics'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { AI_PROVIDER_PRESETS } from '@shared/ai-presets'
@@ -112,7 +111,6 @@ export function AiProvidersPanel() {
       return
     }
     setCloudSignInWorking(false)
-    trackDesktopEvent('cloud_sign_in_completed', { source: 'provider_settings' })
   }, [cloudSignInWorking, user])
 
   useEffect(() => {
@@ -187,10 +185,6 @@ export function AiProvidersPanel() {
         setSnapshot(snapshot)
       }
       setDialogOpen(false)
-      trackDesktopEvent('ai_provider_configured', {
-        preset_id: inputs[0]?.presetId ?? 'custom',
-        source: 'provider_settings'
-      })
     } catch (error) {
       logger.error('Failed to save AI provider', error)
       toast.error(error instanceof Error ? error.message : t('settings.ai.saveError'))
@@ -207,10 +201,6 @@ export function AiProvidersPanel() {
   const handleUse = async (id: string): Promise<void> => {
     try {
       setSnapshot(await ipcServices.ai.setActiveProvider(id))
-      trackDesktopEvent('ai_provider_selected', {
-        provider_type: 'byok',
-        source: 'provider_settings'
-      })
     } catch (error) {
       logger.error('Failed to enable AI provider', error)
       toast.error(t('settings.ai.saveError'))
@@ -221,10 +211,6 @@ export function AiProvidersPanel() {
   const handleUseCloud = async (): Promise<void> => {
     try {
       setSnapshot(await ipcServices.ai.setActiveProvider(null))
-      trackDesktopEvent('ai_provider_selected', {
-        provider_type: 'cloud',
-        source: 'provider_settings'
-      })
     } catch (error) {
       logger.error('Failed to enable VidBee Cloud', error)
       toast.error(t('settings.ai.saveError'))
@@ -234,7 +220,6 @@ export function AiProvidersPanel() {
   /** Open the GitHub flow required by the managed cloud provider. */
   const handleCloudSignIn = async (): Promise<void> => {
     setCloudSignInWorking(true)
-    trackDesktopEvent('cloud_sign_in_started', { source: 'provider_settings' })
     try {
       await window.requestAuth()
     } catch (error) {

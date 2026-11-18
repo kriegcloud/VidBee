@@ -49,10 +49,7 @@ export function getAgentSettings(): Record<string, unknown> {
     Object.keys(agentSettingsSchema.shape).map((key) => [key, all[key as keyof typeof all]])
   )
   settings.proxy = publicEndpoint(all.proxy)
-  return {
-    settings,
-    readOnly: { autoUpdate: all.autoUpdate }
-  }
+  return { settings }
 }
 
 /** List local TTS capabilities or persist the requested default for future dubbing calls. */

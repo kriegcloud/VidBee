@@ -111,8 +111,6 @@ import { getDesktopTaskQueueRef, peekDesktopTaskQueueRef } from './queue-ref'
 import { saveVideoAgentResults } from './video-library-host'
 
 interface ActiveAgentRun {
-  analyticsOrigin: 'manual' | 'automatic'
-  analyticsProviderType?: 'cloud' | 'byok'
   thread: AgentThread
   run: AgentChatRun
   controller: AbortController
@@ -198,21 +196,10 @@ function broadcastSaved(event: AgentRunEvent, thread: AgentThread, type: string)
 
 /** Broadcast only committed product payloads, never provider-private messages or secrets. */
 function broadcast(event: AgentRunEvent): void {
-  const entry = active.get(event.threadId)
-  const delivery: AgentRunEvent =
-    entry && entry.run.id === event.runId
-      ? {
-          ...event,
-          analytics: {
-            taskOrigin: entry.analyticsOrigin,
-            providerType: entry.analyticsProviderType ?? 'unknown'
-          }
-        }
-      : event
-  publishAgentEvent(delivery)
+  publishAgentEvent(event)
   for (const window of BrowserWindow.getAllWindows()) {
     if (!window.isDestroyed()) {
-      window.webContents.send('ai:agent-event', delivery)
+      window.webContents.send('ai:agent-event', event)
     }
   }
 }
@@ -385,10 +372,7 @@ export function readAgentEvents(
 }
 
 /** Start one product run; the synchronous admission path prevents duplicate sends and automatic starts. */
-export function sendAgentMessage(
-  input: AgentChatInput,
-  origin: 'manual' | 'automatic' = 'manual'
-): AgentThread {
+export function sendAgentMessage(input: AgentChatInput): AgentThread {
   if (
     (input.thinkingLevel !== undefined && !AGENT_THINKING_LEVELS.includes(input.thinkingLevel)) ||
     (input.transcriptText !== undefined &&
@@ -513,8 +497,7 @@ export function sendAgentMessage(
   const entry: ActiveAgentRun = {
     thread,
     run,
-    controller: new AbortController(),
-    analyticsOrigin: origin
+    controller: new AbortController()
   }
   active.set(thread.id, entry)
   if (!persist(entry, 'run.started', true)) {
@@ -1801,7 +1784,6 @@ async function prepareRun(ctx: AgentRunContext): Promise<void> {
   }
   ctx.message = message
   const provider = aiStore.getActiveProviderSecret()
-  entry.analyticsProviderType = provider ? 'byok' : 'cloud'
   ctx.provider = provider
   ctx.transport = provider
     ? { model: resolvePiModel(provider.provider), fetch: undefined, profile: undefined }

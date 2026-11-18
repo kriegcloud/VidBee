@@ -46,7 +46,6 @@ const resolveDefaultDownloadPath = () => {
 }
 
 const DEFAULT_DOWNLOAD_PATH = resolveDefaultDownloadPath()
-const REQUIRED_AUTO_UPDATE = !isPortableMode
 const REQUIRED_LAUNCH_AT_LOGIN = false
 
 /**
@@ -75,7 +74,6 @@ class SettingsManager {
       defaults: {
         ...defaultSettings,
         downloadPath: DEFAULT_DOWNLOAD_PATH,
-        autoUpdate: REQUIRED_AUTO_UPDATE,
         launchAtLogin: isPortableMode ? REQUIRED_LAUNCH_AT_LOGIN : defaultSettings.launchAtLogin
       }
     })
@@ -86,10 +84,6 @@ class SettingsManager {
   }
 
   get<K extends keyof AppSettings>(key: K): AppSettings[K] {
-    if (key === 'autoUpdate') {
-      return REQUIRED_AUTO_UPDATE as AppSettings[K]
-    }
-
     if (isPortableMode && key === 'launchAtLogin') {
       return REQUIRED_LAUNCH_AT_LOGIN as AppSettings[K]
     }
@@ -118,11 +112,6 @@ class SettingsManager {
   }
 
   set<K extends keyof AppSettings>(key: K, value: AppSettings[K]): void {
-    if (key === 'autoUpdate') {
-      this.store.set(key, REQUIRED_AUTO_UPDATE)
-      return
-    }
-
     if (isPortableMode && key === 'launchAtLogin') {
       this.store.set(key, REQUIRED_LAUNCH_AT_LOGIN)
       return
@@ -139,7 +128,6 @@ class SettingsManager {
       ...defaultSettings,
       downloadPath: DEFAULT_DOWNLOAD_PATH,
       ...this.store.store,
-      autoUpdate: REQUIRED_AUTO_UPDATE,
       launchAtLogin: isPortableMode
         ? REQUIRED_LAUNCH_AT_LOGIN
         : (this.store.store.launchAtLogin ?? defaultSettings.launchAtLogin),
@@ -170,11 +158,6 @@ class SettingsManager {
 
   setAll(settings: Partial<AppSettings>): void {
     for (const [key, value] of Object.entries(settings)) {
-      if (key === 'autoUpdate') {
-        this.store.set(key, REQUIRED_AUTO_UPDATE)
-        continue
-      }
-
       if (isPortableMode && key === 'launchAtLogin') {
         this.store.set(key, REQUIRED_LAUNCH_AT_LOGIN)
         continue
@@ -195,7 +178,6 @@ class SettingsManager {
     this.store.set({
       ...defaultSettings,
       downloadPath: DEFAULT_DOWNLOAD_PATH,
-      autoUpdate: REQUIRED_AUTO_UPDATE,
       launchAtLogin: isPortableMode ? REQUIRED_LAUNCH_AT_LOGIN : defaultSettings.launchAtLogin
     })
   }
@@ -253,9 +235,6 @@ class SettingsManager {
       const permissionMode = parseAgentPermissionMode(storedPermissionMode)
       if (storedPermissionMode !== permissionMode) {
         this.store.set('agentManagementTools', permissionMode)
-      }
-      if (this.store.get('autoUpdate') !== REQUIRED_AUTO_UPDATE) {
-        this.store.set('autoUpdate', REQUIRED_AUTO_UPDATE)
       }
       if (isPortableMode && this.store.get('launchAtLogin') !== REQUIRED_LAUNCH_AT_LOGIN) {
         this.store.set('launchAtLogin', REQUIRED_LAUNCH_AT_LOGIN)

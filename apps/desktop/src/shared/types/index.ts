@@ -97,7 +97,6 @@ export interface DownloadItem {
   speed?: string
   ytDlpCommand?: string
   ytDlpLog?: string
-  glitchTipEventId?: string
   // Enhanced video information
   duration?: number
   fileSize?: number
@@ -200,7 +199,6 @@ export interface DownloadHistoryItem {
   error?: string
   ytDlpCommand?: string
   ytDlpLog?: string
-  glitchTipEventId?: string
   // Additional metadata
   description?: string
   channel?: string
@@ -432,9 +430,7 @@ export interface AppSettings {
   closeToTray: boolean
   hideDockIcon: boolean
   launchAtLogin: boolean
-  autoUpdate: boolean
   subscriptionOnlyLatestDefault: boolean
-  enableAnalytics: boolean
   enableDownloadNotifications: boolean
   rememberLastAudioLanguage: boolean
   preferredAudioLanguage: string
@@ -483,9 +479,7 @@ export const defaultSettings: AppSettings = {
   closeToTray: true,
   hideDockIcon: true,
   launchAtLogin: true,
-  autoUpdate: true,
   subscriptionOnlyLatestDefault: true,
-  enableAnalytics: true,
   enableDownloadNotifications: true,
   rememberLastAudioLanguage: true,
   preferredAudioLanguage: '',

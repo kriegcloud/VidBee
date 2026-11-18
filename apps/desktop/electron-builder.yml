@@ -26,7 +26,7 @@ files:
   - '!out/**/*.map'
   - '!**/*.tsbuildinfo'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintcache,eslint.config.mjs,dev-app-update.yml}'
+  - '!{.eslintcache,eslint.config.mjs}'
   - '!changelogs{,/**}'
   - '!build{,/**}'
   - '!{.env,.env.*,.npmrc,bun.lock,bunfig.toml}'
@@ -39,11 +39,9 @@ files:
   - '!resources{,/**}'
   - '!docs{,/**}'
   - '!scripts{,/**}'
-  # Sourcemaps stay in `out/` for GlitchTip upload; do not ship them in the DMG.
+  # Sourcemaps stay in `out/`; do not ship them.
   - '!**/*.map'
   # Build-only tooling that electron-builder would otherwise unpack as natives.
-  - '!node_modules/@sentry/cli{,/**}'
-  - '!node_modules/@sentry/cli-*{,/**}'
   - '!node_modules/lightningcss{,/**}'
   - '!node_modules/lightningcss-*{,/**}'
   - '!node_modules/@tailwindcss{,/**}'
@@ -160,7 +158,6 @@ asarUnpack:
   - node_modules/sherpa-onnx-*/**
   - node_modules/playwright-core/**
 npmRebuild: true
-publish:
-  provider: github
-  owner: nexmoe
-  repo: vidbee
+# Personal fork: nothing is published and there is no auto-updater. `null` also stops
+# electron-builder from inferring a publish target from the git remote.
+publish: null

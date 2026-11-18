@@ -133,7 +133,6 @@ You are welcome to join the open source community to build together. For more de
   - `apps/desktop`: VidBee desktop app
   - `apps/extension`: Browser extension (WXT)
   - Documentation: [vidbee.org/docs](https://vidbee.org/docs/)
-  - `apps/desktop/docs/glitchtip.md`: GlitchTip and `sentry-cli` setup for desktop monitoring
 - [Contributing Guide](./CONTRIBUTING.md)
 - [DeepWiki Documentation](https://deepwiki.com/nexmoe/VidBee)
 

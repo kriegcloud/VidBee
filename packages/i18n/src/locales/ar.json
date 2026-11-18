@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "التحقق من التحديثات",
       "download": "تحميل",
       "email": "البريد الإلكتروني",
       "feedback": "ملاحظات",
-      "goToDownload": "الانتقال إلى صفحة التحميل",
       "openRepo": "فتح مستودع GitHub",
       "view": "عرض",
       "visit": "زيارة"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "تنزيل وتثبيت الإصدارات الجديدة تلقائياً في الخلفية.",
-    "microsoftStoreUpdateDescription": "تتم إدارة تحديثات التطبيق عبر Microsoft Store. افتح المتجر للتحقق من وجود تحديثات.",
-    "autoUpdateTitle": "التحديثات التلقائية",
     "description": "نزّل الوسائط من أكثر من 1000 موقع، وأنشئ نصوصًا قابلة للبحث على جهازك، ثم لخّصها أو ترجمها أو اطرح أسئلة باستخدام مزوّد الذكاء الاصطناعي الذي تختاره—كل ذلك في تطبيق سطح مكتب مجاني ومفتوح المصدر.",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "هنا",
     "homepage": "الصفحة الرئيسية",
     "notifications": {
-      "checkingUpdates": "البحث عن التحديثات...",
       "downloadError": "فشل في تنزيل التحديث",
-      "downloadUpdate": "تنزيل وتثبيت التحديث {{version}}؟",
-      "manualDownloadAction": "تنزيل الآن",
-      "noUpdatesAvailable": "أنت تستخدم أحدث إصدار",
-      "outdatedVersionRisk": "إصدارك قديم جدًا وقد يتسبب في فشل التنزيلات.",
-      "restartToUpdate": "إعادة التشغيل الآن لتثبيت التحديث؟",
-      "restartNowAction": "إعادة التشغيل الآن",
-      "updateAvailable": "تحديث متاح: {{version}}",
-      "updateAvailableMessage": "إصدار جديد {{version}} متاح. يرجى تنزيله من الموقع الرسمي.",
-      "updateDownloaded": "تم تنزيل التحديث، أعد التشغيل للتثبيت",
-      "updateDownloadedVersion": "تم تنزيل التحديث {{version}}، أعد التشغيل للتثبيت",
-      "updateError": "فشل في التحقق من التحديثات: {{error}}",
-      "unknownErrorFallback": "خطأ غير معروف"
+      "manualDownloadAction": "تنزيل الآن"
     },
     "resources": {
       "changelog": "ملاحظات الإصدار",
@@ -103,13 +86,6 @@
     "title": "حول",
     "version": "الإصدار",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "الأحدث: v{{version}}",
-    "latestVersionStatus": {
-      "available": "إصدار جديد متاح",
-      "uptodate": "أنت محدث",
-      "error": "تعذر جلب أحدث إصدار"
-    },
-    "downloadingUpdate": "تنزيل التحديث",
     "changelog": {
       "currentVersion": "الإصدار الحالي"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "بدء التشغيل عند تسجيل الدخول",
     "launchAtLoginDescription": "فتح VidBeep تلقائياً بعد تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك",
     "launchAtLoginUnsupported": "البدء التلقائي متاح فقط على macOS و Windows",
-    "enableAnalytics": "مساعدة في تحسين VidBeep",
-    "enableAnalyticsDescription": "مشاركة بيانات الاستخدام المجهولة لمساعدتنا في فهم كيفية استخدام التطبيق وأولويات التحسينات",
     "enableDownloadNotifications": "إشعارات التنزيل",
     "enableDownloadNotificationsDescription": "اعرض إشعار نظام عند اكتمال التنزيل",
     "downloadWithoutChannelSubfolders": "احفظ الفيديوهات بدون مجلدات القنوات الفرعية",

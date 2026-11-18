@@ -1,5 +1,4 @@
 import { Button } from '@renderer/components/ui/button'
-import { trackDesktopEvent } from '@renderer/lib/desktop-analytics'
 import { openSettingsTab } from '@renderer/lib/settings-navigation'
 import { aiPromptErrorNeedsProviderSettings, isIncompleteAiStreamError } from '@shared/ai-run'
 import type { AiPromptErrorCode } from '@shared/ai-types'
@@ -159,13 +158,9 @@ export function TranscriptPromptGuidance({
     if (!isCloudSignIn) {
       return
     }
-    const removeAuthenticated = window.onAuthenticated((nextUser) => {
+    const removeAuthenticated = window.onAuthenticated(() => {
       setAuthWorking(false)
       setAuthFailed(false)
-      trackDesktopEvent('cloud_sign_in_completed', {
-        source: 'prompt_guidance',
-        user_present: Boolean(nextUser)
-      })
       onRetry?.()
     })
     const removeError = window.onAuthError(() => {
@@ -182,7 +177,6 @@ export function TranscriptPromptGuidance({
   const signInForCloud = async (): Promise<void> => {
     setAuthWorking(true)
     setAuthFailed(false)
-    trackDesktopEvent('cloud_sign_in_started', { source: 'prompt_guidance' })
     try {
       await window.requestAuth()
     } catch {
