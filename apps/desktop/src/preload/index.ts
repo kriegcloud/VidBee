@@ -1,6 +1,6 @@
 import { setupRenderer } from '@better-auth/electron/preload'
 import { electronAPI } from '@electron-toolkit/preload'
-import { logger } from '@vidbee/logger/client'
+import { logger } from '@vidbee/logger/legacy/client'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createIpcProxy } from 'electron-ipc-decorator/client'
 import type { IpcServices } from '../main/ipc'

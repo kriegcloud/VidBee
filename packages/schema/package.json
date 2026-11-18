@@ -1,0 +1,22 @@
+{
+  "name": "@vidbee/schema",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/LiteralKit/index.ts",
+    "./LiteralKit": "./src/LiteralKit/index.ts"
+  },
+  "dependencies": {
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:"
+  },
+  "scripts": {
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
+  }
+}

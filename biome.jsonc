@@ -1,0 +1,216 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "root": true,
+  "files": {
+    "includes": [
+      "packages/schema/**",
+      "packages/logger/**",
+      "!**/dist",
+      "!**/node_modules",
+      "!packages/logger/src/script.mjs"
+    ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "trailingCommas": "none",
+      "lineWidth": 80
+    },
+    "parser": {
+      "allowComments": true
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "lineWidth": 120,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "formatWithErrors": true
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "jsxQuoteStyle": "double",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "trailingCommas": "es5"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": "on",
+        "useSortedKeys": {
+          "level": "off",
+          "options": {
+            "sortOrder": "natural"
+          }
+        },
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              {
+                "type": false
+              },
+              {
+                "type": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "turborepo": "recommended"
+    },
+    "rules": {
+      "security": {
+        "noDangerouslySetInnerHtml": "warn",
+        "noGlobalEval": "error"
+      },
+      "a11y": {
+        "useFocusableInteractive": "off",
+        "useAriaPropsForRole": "off",
+        "useSemanticElements": "off",
+        "useKeyWithClickEvents": "off",
+        "noStaticElementInteractions": "off"
+      },
+      "complexity": {
+        "noBannedTypes": "off",
+        "noUselessConstructor": "warn",
+        "noUselessFragments": "off",
+        "noThisInStatic": "off",
+        "noForEach": "off",
+        "noStaticOnlyClass": "off",
+        "noArguments": "off",
+        "noCommaOperator": "off",
+        "noUselessUndefinedInitialization": "off",
+        "useLiteralKeys": {
+          "fix": "unsafe",
+          "level": "error",
+          "options": {}
+        }
+      },
+      "preset": "recommended",
+      "correctness": {
+        "noUnusedImports": {
+          "level": "error",
+          "fix": "none",
+          "options": {}
+        },
+        "noUnusedVariables": "off",
+        "useUniqueElementIds": "off",
+        "useYield": "off",
+        "noChildrenProp": "off",
+        "noSwitchDeclarations": "off",
+        "noUndeclaredVariables": "off",
+        "useExhaustiveDependencies": "off",
+        "noUnusedFunctionParameters": "off",
+        "useHookAtTopLevel": "off"
+      },
+      "performance": {
+        "noDelete": "off",
+        "noAccumulatingSpread": "off"
+      },
+      "suspicious": {
+        "noDeprecatedImports": "off",
+        "noConsole": "warn",
+        "noVar": "error",
+        "noControlCharactersInRegex": "off",
+        "noSelfCompare": "off",
+        "noUnsafeDeclarationMerging": "off",
+        "useAdjacentOverloadSignatures": "off",
+        "noDoubleEquals": "off",
+        "noPrototypeBuiltins": "off",
+        "noDebugger": "error",
+        "noRedeclare": "off",
+        "noConfusingVoidType": "off",
+        "noShadowRestrictedNames": "off",
+        "noAssignInExpressions": "off",
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "warn",
+        "useIterableCallbackReturn": "off",
+        "noTemplateCurlyInString": "off",
+        "noThenProperty": "off",
+        "noDuplicateObjectKeys": "off",
+        "noCommentText": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        },
+        "noUnusedTemplateLiteral": "off",
+        "noParameterAssign": "off",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "useNumberNamespace": "error",
+        "useConsistentArrowReturn": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "uuid": "Use the effect/crypto services: SecureRandom.uuidV4, SecureRandom.uuidV7, or Digest for name-based ids. uuid is not a repository dependency."
+            },
+            "patterns": [
+              {
+                "group": ["uuid/**"],
+                "message": "Use the effect/crypto services: SecureRandom.uuidV4, SecureRandom.uuidV7, or Digest for name-based ids. uuid is not a repository dependency."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/test/**",
+        "**/__tests__/**",
+        "**/*.test.*",
+        "**/*.spec.*",
+        "**/examples/**",
+        "**/*.stories.*",
+        "**/stories/**",
+        "**/scripts/**",
+        "**/*.bench.*",
+        "**/seed/**",
+        "**/seeds/**",
+        "**/bin.ts",
+        "**/bin-main.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ]
+}

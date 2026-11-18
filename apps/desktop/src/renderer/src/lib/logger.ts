@@ -1,7 +1,7 @@
 /**
  * Renderer process logger backed by evlog.
  */
-import { logger as evlogLogger } from '@vidbee/logger/client'
+import { logger as evlogLogger } from '@vidbee/logger/legacy/client'
 
 /** Renderer-facing evlog logger with the previous console-style API. */
 export const logger = evlogLogger

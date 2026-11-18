@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "check": {
+      "dependsOn": [
+        "^check"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^check"
+      ],
+      "outputs": []
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "VIDBEE_LOG_SERVICE"
+  ],
+  "globalDependencies": [
+    "tsconfig.base.json",
+    "biome.jsonc",
+    "standards/effect-allowlist.jsonc"
+  ],
+  "cacheDir": ".turbo/cache"
+}

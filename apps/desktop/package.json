@@ -6,7 +6,7 @@
   "author": "VidBee",
   "homepage": "https://github.com/nexmoe/vidbee",
   "scripts": {
-    "check": "ultracite check && bun run check:i18n && bun run typecheck",
+    "check": "biome check --config-path ../../biome.legacy.jsonc . && bun run check:i18n && bun run typecheck",
     "check:i18n": "node scripts/check-locales.js",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
@@ -26,7 +26,7 @@
     "build:linux": "bun run setup && node scripts/check-ytdlp.js linux && bun run build && electron-builder --linux --publish never",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "fix": "ultracite fix"
+    "fix": "biome check --write --config-path ../../biome.legacy.jsonc ."
   },
   "dependencies": {
     "@better-auth/electron": "catalog:",
@@ -140,7 +140,6 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "typescript": "catalog:",
-    "ultracite": "catalog:",
     "unplugin-icons": "catalog:",
     "vite": "catalog:"
   }

@@ -11,3 +11,8 @@ not fixed (assumption A2), and dependencies held back. One entry each, newest ph
 | 4 | 0b | held back | `lucide-react` goes to ^0.577.0, not 1.x | 1.0 removed the brand icons five files use; replacing them changes the look. |
 | 5 | 0b | held back | `@biomejs/biome` 2.5.15 and `ultracite` 8.0.2 | 1,116 new lint errors; phase 1a replaces both. |
 | 6 | 0b | bug | Fresh profile logs `no such table: transcript_prompt_runs` from the video library backfill | `video-library-host.ts` reads the table before `ai-prompt-store.ts` creates it. Warning only. |
+| 7 | 1a | choice | The rule set has 150 diagnostics (145 `error`, 5 `off`), not the plan's 187 all-`error` | `tsconfig.base.json` is copied from beep-effect unchanged, as the plan requires; the plan's count was stale. The five `off` rules are off in the reference. |
+| 8 | 1a | choice | `port:check` also rejects suppression comments, `new Map`/`new Set`, `node:http` and `zod` imports in ported units | The plan asks for greps on checklist items 2 and 3 only; these add the standing rules so they are enforced mechanically. |
+| 9 | 1a | choice | `@biomejs/biome` pinned to 2.5.6 (was 2.5.15) | D26: pin what beep-effect pins. |
+| 10 | 1a | choice | ultracite's two presets are vendored under `standards/biome-legacy/` until phase 10 | Unported code keeps today's lint and formatting without the dependency. |
+| 11 | 1a | choice | `@vidbee/schema` replaces `@beep/utils` and `@beep/identity` with public Effect modules instead of copying helpers | Nothing beyond `LiteralKit` needed copying. |

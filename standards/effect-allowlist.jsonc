@@ -1,0 +1,4 @@
+// One exact exception per entry: { "file": "packages/example/src/file.ts", "rule": "promise", "reason": "Why the rule cannot be met" }.
+// Rules: diagnostics, overrides, promise, runtime, suppression, native-collection, node-http, zod.
+// No globs. Every entry is also listed in docs/effect-port/OWNER-REVIEW.md.
+[]
