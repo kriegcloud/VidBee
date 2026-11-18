@@ -70,6 +70,34 @@ export function normalize(value, roots = []) {
       return entry.map((item, index) => walk(item, key, `${location}.${index}`))
     }
     if (entry && typeof entry === 'object') {
+      // The ASR status reports the host's hardware and the tiers recommended for it.
+      // Both differ per machine (a workstation and a CI runner disagree), so they are
+      // replaced as a unit; the tier catalog and every other field stay literal.
+      if (
+        entry.machine &&
+        typeof entry.machine === 'object' &&
+        'cpuCount' in entry.machine &&
+        Array.isArray(entry.recommended)
+      ) {
+        return walk(
+          {
+            ...entry,
+            machine: {
+              ...entry.machine,
+              arch: '<machine>',
+              class: '<machine>',
+              cpuCount: '<machine>',
+              gpu: '<machine>',
+              gpuName: '<machine>',
+              os: '<machine>',
+              ramBytes: '<machine>'
+            },
+            recommended: '<machine-dependent>'
+          },
+          key,
+          location
+        )
+      }
       return Object.fromEntries(
         Object.entries(entry).map(([field, item]) => [
           field,

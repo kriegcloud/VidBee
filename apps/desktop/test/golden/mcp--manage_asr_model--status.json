@@ -416,15 +416,15 @@
               "pendingTiers": [],
               "language": "en",
               "machine": {
-                "arch": "x64",
-                "class": "high",
-                "cpuCount": 64,
-                "gpu": "unknown",
-                "gpuName": null,
-                "os": "linux",
-                "ramBytes": 134351421440
+                "arch": "<machine>",
+                "class": "<machine>",
+                "cpuCount": "<machine>",
+                "gpu": "<machine>",
+                "gpuName": "<machine>",
+                "os": "<machine>",
+                "ramBytes": "<machine>"
               },
-              "recommended": ["parakeet-v3", "whisper-turbo", "balanced"]
+              "recommended": "<machine-dependent>"
             }
           }
         }
@@ -841,15 +841,15 @@
         "pendingTiers": [],
         "language": "en",
         "machine": {
-          "arch": "x64",
-          "class": "high",
-          "cpuCount": 64,
-          "gpu": "unknown",
-          "gpuName": null,
-          "os": "linux",
-          "ramBytes": 134351421440
+          "arch": "<machine>",
+          "class": "<machine>",
+          "cpuCount": "<machine>",
+          "gpu": "<machine>",
+          "gpuName": "<machine>",
+          "os": "<machine>",
+          "ramBytes": "<machine>"
         },
-        "recommended": ["parakeet-v3", "whisper-turbo", "balanced"]
+        "recommended": "<machine-dependent>"
       }
     }
   }

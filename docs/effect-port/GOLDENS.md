@@ -93,6 +93,8 @@ fields, array order, stable fixture values and error text. It applies these rule
 | --- | --- |
 | MCP JSON text content | Parse only `result.content[].text` object/array JSON strings, retaining a `$jsonText` wrapper so a string becoming an object still fails. Other application strings retain their type. |
 | Known path roots | Replace the specific run, scratch-work, build and repository roots with `<run>`, `<work>`, `<build>` and `<repo>`. Any remaining `/home/` path causes a failure. |
+| Bundled ffmpeg build | In `ffmpegVersion`, replace the build id after `ffmpeg version` with `<ffmpeg-build>`: the binary is downloaded at setup time. |
+| Host hardware | In an object that has both `machine` (with `cpuCount`) and `recommended`, replace the `machine` fields with `<machine>` and `recommended` with `<machine-dependent>`: ASR tier recommendations depend on the host's CPU and memory. |
 | Generated IDs | Replace ULIDs, UUIDs and 64-character generated `id` fields with `<id:1>`, `<id:2>`, and so on, assigned by first appearance within each recorded document. Fixed fixture IDs remain literal. |
 | Tokens | Replace 64-character hexadecimal values only in `token`, `session` and `tokenHash` fields, and bearer-credential strings, with `<token>`. Media hashes remain literal. |
 | Loopback ports | Replace numeric ports in `http://127.0.0.1:` URLs with `<port>`; numeric `port` fields become `<port>`. |
