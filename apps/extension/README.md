@@ -30,23 +30,23 @@ VidBeep Video Downloader is a lightweight browser companion for the VidBeep desk
 ## Development
 
 ```bash
-pnpm install
-pnpm dev
+bun install
+bun run dev
 ```
 
 Build or package:
 
 ```bash
-pnpm build
-pnpm zip
+bun run build
+bun run zip
 ```
 
 Firefox builds:
 
 ```bash
-pnpm dev:firefox
-pnpm build:firefox
-pnpm zip:firefox
+bun run dev:firefox
+bun run build:firefox
+bun run zip:firefox
 ```
 
 ## Notes on privacy

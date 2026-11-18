@@ -13,8 +13,8 @@ Make yt-dlp changes directly under `vendor/yt-dlp` (extractors live in
 `vendor/yt-dlp/yt_dlp/extractor`), then run:
 
 ```bash
-pnpm run build:ytdlp
-pnpm run verify:ytdlp
+bun run build:ytdlp
+bun run verify:ytdlp
 ```
 
 The build uses yt-dlp's locked Python environment, including its `curl_cffi`
@@ -31,7 +31,7 @@ interpreter. The generated environment and build outputs are ignored by the
 vendored source's `.gitignore`.
 
 The marker at `apps/desktop/resources/.ytdlp-vendored` records the upstream
-commit plus a digest of the effective source. `pnpm setup`, `pnpm dev`, and the
+commit plus a digest of the effective source. `bun run setup`, `bun run dev`, and the
 Desktop packaging scripts rebuild when that digest changes, so a stock release
 download cannot silently replace a customized build.
 
@@ -66,7 +66,7 @@ The practical recipe (used for 2026.08.19 -> 2026.10.21):
 3. `rsync -a --delete` `merged/` into `vendor/yt-dlp/` with the same excludes,
    update `VENDOR.json` (`ref`, `commit`, `importedAt`, `localPatches`) and
    `apps/desktop/resources/THIRD_PARTY_NOTICES.md`, then run
-   `pnpm run build:ytdlp` and `pnpm run verify:ytdlp`.
+   `bun run build:ytdlp` and `bun run verify:ytdlp`.
 4. Run upstream's tests for the patched areas from `vendor/yt-dlp`:
    `uv run --locked --no-default-groups --extra default --extra curl-cffi --group test python -m pytest test/test_YoutubeDL.py test/test_facebook_reels.py test/test_all_urls.py`.
    Upstream's test harness runs with `verbose` on, so local patches must not

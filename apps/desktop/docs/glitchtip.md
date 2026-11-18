@@ -36,7 +36,7 @@ GlitchTip is Sentry API compatible, so `sentry-cli` can target it by setting `SE
 Run:
 
 ```bash
-pnpm --filter ./apps/desktop run build:glitchtip
+bun run --cwd apps/desktop build:glitchtip
 ```
 
 This does the following:
@@ -46,7 +46,7 @@ This does the following:
 3. Uploads all source maps from `apps/desktop/out`
 4. Finalizes the release
 
-If `@sentry/cli` was installed with pnpm's build scripts blocked, run `pnpm approve-builds` and allow `@sentry/cli`.
+If Bun skipped the `@sentry/cli` postinstall, run `bun pm trust @sentry/cli`.
 
 ## Event design
 

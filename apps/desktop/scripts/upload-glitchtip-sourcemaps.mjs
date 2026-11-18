@@ -18,7 +18,7 @@ if (missingEnvKeys.length > 0) {
 const projectRoot = path.resolve(import.meta.dirname, '..')
 const outputDir = path.join(projectRoot, 'out')
 if (!existsSync(outputDir)) {
-  log.error(`Build output not found at ${outputDir}. Run "pnpm run build" first.`)
+  log.error(`Build output not found at ${outputDir}. Run "bun run build" first.`)
   process.exit(1)
 }
 
@@ -51,9 +51,7 @@ try {
   const message = error instanceof Error ? error.message : String(error)
   log.error(`Failed to upload GlitchTip source maps: ${message}`)
   if (message.includes('download the sentry-cli binary')) {
-    log.error(
-      'If pnpm blocked @sentry/cli postinstall, run "pnpm approve-builds" and allow @sentry/cli.'
-    )
+    log.error('If Bun skipped the @sentry/cli postinstall, run "bun pm trust @sentry/cli".')
   }
   process.exit(1)
 }

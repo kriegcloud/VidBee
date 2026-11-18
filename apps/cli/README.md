@@ -196,4 +196,4 @@ To cut a release:
 2. Push a `cli-vX.Y.Z` tag. The [`cli-publish.yml`](https://github.com/nexmoe/vidbee/blob/main/.github/workflows/cli-publish.yml) workflow typechecks, builds, and publishes to npm with `pnpm publish` using the `NPM_TOKEN` secret.
 3. Verify on a clean machine: `npx @vidbee/cli@latest :version` should report the new version.
 
-`pnpm --filter @vidbee/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the npm `bin`). The published tarball includes only `dist/`, the README, the CHANGELOG, and the LICENSE — no source.
+`bun run --cwd apps/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the npm `bin`). The published tarball includes only `dist/`, the README, the CHANGELOG, and the LICENSE — no source.

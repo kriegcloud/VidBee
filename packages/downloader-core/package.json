@@ -43,14 +43,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orpc/contract": "^1.16.1",
-    "@vidbee/task-queue": "workspace:*",
-    "yt-dlp-wrap-plus": "^2.3.20",
-    "zod": "^4.6.7"
+    "@orpc/contract": "catalog:",
+    "@vidbee/task-queue": "workspace:^",
+    "yt-dlp-wrap-plus": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.18.6",
-    "typescript": "^7.0.2",
-    "vitest": "^3.2.4"
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -50,30 +50,28 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.1.2
+          bun-version-file: .bun-version
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install --filter ./apps/extension...
+        run: bun install --filter ./apps/extension --frozen-lockfile
 
       - name: Build extension
-        run: pnpm --filter ./apps/extension build
+        run: bun run --cwd apps/extension build
 
       - name: Zip extensions
-        run: pnpm --filter ./apps/extension zip
+        run: bun run --cwd apps/extension zip
 
       - name: Submit to stores
         run: |
-          pnpm --dir apps/extension wxt submit \
+          cd apps/extension && bunx wxt submit \
             --chrome-zip .output/*-chrome.zip
         env:
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}

@@ -5,7 +5,7 @@ This directory contains bundled resources for the application.
 ## gallery-dl Binary
 
 VidBee uses `gallery-dl` for Instagram profile and gallery downloads. Running
-`pnpm --filter vidbee setup` downloads the pinned standalone build for the
+`bun run setup` downloads the pinned standalone build for the
 current platform, verifies its SHA-256 digest, and stores it as:
 
 1. **Windows**: `gallery-dl.exe`
@@ -31,11 +31,11 @@ VidBee tracks yt-dlp under `vendor/yt-dlp`. Customize that source and build the
 standalone executable for the current platform with:
 
 ```bash
-pnpm run build:ytdlp
-pnpm run verify:ytdlp
+bun run build:ytdlp
+bun run verify:ytdlp
 ```
 
-That writes the platform binary plus `.ytdlp-vendored`. `pnpm setup` checks the
+That writes the platform binary plus `.ytdlp-vendored`. `bun run setup` checks the
 effective source digest and rebuilds changed source instead of downloading a
 stock release. See `vendor/README.md` for build prerequisites and update notes.
 

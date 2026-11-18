@@ -1,7 +1,6 @@
 FROM node:22-alpine AS builder
 
-ENV PNPM_HOME=/pnpm
-ENV PATH=/opt/vidbee-media-tools/bin:${PNPM_HOME}:${PATH}
+ENV PATH=/opt/vidbee-media-tools/bin:${PATH}
 ENV YTDLP_PATH=/opt/vidbee-media-tools/bin/yt-dlp
 ENV GALLERY_DL_PATH=/opt/vidbee-media-tools/bin/gallery-dl
 
@@ -10,7 +9,7 @@ RUN apk add --no-cache python3 py3-pip make g++
 ENV ELECTRON_SKIP_BINARY_DOWNLOAD=1
 ENV HUSKY=0
 
-RUN corepack enable
+COPY --from=oven/bun:1.4.4-alpine /usr/local/bin/bun /usr/local/bin/bun
 
 WORKDIR /app
 
@@ -28,9 +27,15 @@ RUN python3 devscripts/make_lazy_extractors.py \
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+# Bun checks the whole workspace against bun.lock, so every manifest is copied.
+COPY bun.lock bunfig.toml package.json ./
 COPY patches patches
 COPY apps/api/package.json apps/api/package.json
+COPY apps/cli/package.json apps/cli/package.json
+COPY apps/desktop/package.json apps/desktop/package.json
+COPY apps/extension/package.json apps/extension/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY packages/browser-capture/package.json packages/browser-capture/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/downloader-core/package.json packages/downloader-core/package.json
 COPY packages/i18n/package.json packages/i18n/package.json
@@ -38,9 +43,16 @@ COPY packages/logger/package.json packages/logger/package.json
 COPY packages/subscriptions-core/package.json packages/subscriptions-core/package.json
 COPY packages/task-queue/package.json packages/task-queue/package.json
 COPY packages/transcription/package.json packages/transcription/package.json
-COPY packages/browser-capture/package.json packages/browser-capture/package.json
+COPY packages/ui/package.json packages/ui/package.json
 
-RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile
+# Runtime externals (better-sqlite3, sherpa-onnx, playwright-core) come from a
+# separate production-only install; workspace code is bundled into dist.
+RUN bun install --filter ./apps/api --production --frozen-lockfile \
+  && rm -rf node_modules/@vidbee \
+  && mkdir -p /prod/api \
+  && mv node_modules /prod/api/node_modules
+
+RUN bun install --filter ./apps/api --frozen-lockfile
 
 COPY apps/api apps/api
 COPY apps/desktop/resources/gallery-dl-extractors apps/desktop/resources/gallery-dl-extractors
@@ -53,8 +65,7 @@ COPY packages/task-queue packages/task-queue
 COPY packages/transcription packages/transcription
 COPY packages/browser-capture packages/browser-capture
 
-RUN pnpm --filter ./apps/api run build
-RUN pnpm --filter ./apps/api deploy --prod --legacy --config.allowUnusedPatches=true /prod/api
+RUN bun run --cwd apps/api build
 
 FROM node:22-alpine AS runner
 

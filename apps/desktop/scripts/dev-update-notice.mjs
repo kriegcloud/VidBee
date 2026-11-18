@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 
-const child = spawn('pnpm', ['run', 'dev'], {
+const child = spawn('bun', ['run', 'dev'], {
   cwd: new URL('..', import.meta.url),
   env: {
     ...process.env,

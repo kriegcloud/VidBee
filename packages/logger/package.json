@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "evlog": "^2.33.1"
+    "evlog": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.18.6",
-    "typescript": "^7.0.2"
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
   }
 }

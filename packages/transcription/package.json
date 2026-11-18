@@ -17,17 +17,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@vidbee/db": "workspace:*",
-    "@vidbee/i18n": "workspace:*",
-    "@vidbee/logger": "workspace:*",
-    "@vidbee/task-queue": "workspace:*",
-    "opencc-js": "^1.4.2",
-    "sherpa-onnx-node": "1.13.8"
+    "@vidbee/db": "workspace:^",
+    "@vidbee/i18n": "workspace:^",
+    "@vidbee/logger": "workspace:^",
+    "@vidbee/task-queue": "workspace:^",
+    "opencc-js": "catalog:",
+    "sherpa-onnx-node": "catalog:"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/node": "^22.18.6",
-    "better-sqlite3": "^13.0.3",
-    "typescript": "^7.0.2"
+    "@types/better-sqlite3": "catalog:",
+    "@types/node": "catalog:",
+    "better-sqlite3": "catalog:",
+    "typescript": "catalog:"
   }
 }

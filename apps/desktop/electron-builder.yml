@@ -21,7 +21,6 @@ files:
   - '!**/.context/**'
   - '!**/.github/**'
   - '!node_modules/@vidbee/downloader-core{,/**}'
-  - '!node_modules/.pnpm/@vidbee+downloader-core@*/**'
   - '!src{,/**}'
   - '!dist/*'
   - '!out/**/*.map'
@@ -30,7 +29,7 @@ files:
   - '!{.eslintcache,eslint.config.mjs,dev-app-update.yml}'
   - '!changelogs{,/**}'
   - '!build{,/**}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{.env,.env.*,.npmrc,bun.lock,bunfig.toml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!electron-builder.yml'
   - '!drizzle.config.ts'
@@ -49,6 +48,10 @@ files:
   - '!node_modules/lightningcss-*{,/**}'
   - '!node_modules/@tailwindcss{,/**}'
   - '!node_modules/tailwindcss{,/**}'
+  # Bun also installs Tailwind's WASM oxide fallback; its runtime is build-only too.
+  - '!node_modules/@emnapi{,/**}'
+  - '!node_modules/@napi-rs/wasm-runtime{,/**}'
+  - '!node_modules/@tybys{,/**}'
   - '!node_modules/@svgr{,/**}'
   - '!node_modules/caniuse-lite{,/**}'
   # Renderer-only packages are already bundled into out/renderer.

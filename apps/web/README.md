@@ -5,7 +5,7 @@ TanStack Start client for the VidBee API.
 ## Development
 
 ```bash
-pnpm run start:web
+bun run start:web
 ```
 
 `start:web` is a root workspace script that starts both `apps/web` and `apps/api`.
@@ -13,5 +13,5 @@ pnpm run start:web
 ## Build
 
 ```bash
-pnpm --filter ./apps/web run build
+bun run build:web
 ```

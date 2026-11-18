@@ -57,7 +57,7 @@ function run(bin, args, options = {}) {
 
 function checkMarker() {
   if (!fs.existsSync(markerPath)) {
-    fail(`Missing ${markerPath}. Run: pnpm run build:ytdlp`)
+    fail(`Missing ${markerPath}. Run: bun run build:ytdlp`)
   }
   const raw = fs.readFileSync(markerPath, 'utf8')
   let marker
@@ -222,7 +222,7 @@ function checkSetupRespectsVendor() {
   const setupScript = path.join(scriptDir, 'setup-dev-binaries.js')
   const result = run(process.execPath, [setupScript], { timeoutMs: 180_000 })
   if (result.status !== 0) {
-    fail(`pnpm setup path failed while vendored:\n${result.stderr || result.stdout}`)
+    fail(`setup-dev-binaries path failed while vendored:\n${result.stderr || result.stdout}`)
   }
   const after = fs.statSync(binaryPath)
   if (before.mtimeMs !== after.mtimeMs || before.size !== after.size) {

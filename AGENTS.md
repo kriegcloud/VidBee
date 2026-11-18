@@ -1,10 +1,10 @@
-1. use pnpm instead of npm
-2. use pnpm run check after tasks to check code
+1. use bun instead of npm or pnpm
+2. use bun run check after tasks to check code
 3. Support i18n. When writing business logic, initially only translate the English version of en.json
 4. use English for comments&console
 5. Follow the ✅ KISS (Keep It Simple, Stupid) & ✅ YAGNI (You Aren't Gonna Need It) principles
 6. Use Conventional Commits format for commit messages: `type(scope): subject`. Common types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert. PR titles should also follow this format.
-7. If there is an error when running `pnpm run check:i18n`, please complete the missing corresponding translation files and fields. Ensure the translation is done into the corresponding language, rather than directly copying the English version.
+7. If there is an error when running `bun run check:i18n`, please complete the missing corresponding translation files and fields. Ensure the translation is done into the corresponding language, rather than directly copying the English version.
 8. The UI/UX of the web and desktop versions in apps must be consistent, with the only difference being the platform. Try to share the UI and schema as much as possible
 
 # Ultracite Code Standards
@@ -13,9 +13,9 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 
 ## Quick Reference
 
-- **Format code**: `pnpm dlx ultracite fix`
-- **Check for issues**: `pnpm dlx ultracite check`
-- **Diagnose setup**: `pnpm dlx ultracite doctor`
+- **Format code**: `bunx ultracite fix`
+- **Check for issues**: `bunx ultracite check`
+- **Diagnose setup**: `bunx ultracite doctor`
 
 Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
 
@@ -129,4 +129,4 @@ Biome's linter will catch most issues automatically. Focus your attention on:
 
 ---
 
-Most formatting and common issues are automatically fixed by Biome. Run `pnpm dlx ultracite fix` before committing to ensure compliance.
+Most formatting and common issues are automatically fixed by Biome. Run `bunx ultracite fix` before committing to ensure compliance.

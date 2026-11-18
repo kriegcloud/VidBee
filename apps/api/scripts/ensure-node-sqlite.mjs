@@ -3,7 +3,7 @@
 import { execSync } from 'node:child_process'
 import { log } from '@vidbee/logger/script'
 
-// GitHub issue #368: the desktop app rebuilds the shared, pnpm-hoisted
+// GitHub issue #368: the desktop app rebuilds the shared, hoisted
 // better-sqlite3 for Electron's ABI (NODE_MODULE_VERSION 139). The API runs on
 // plain Node (ABI 137) and then crashes loading the same binary. This mirrors
 // apps/desktop/scripts/ensure-native-deps.mjs for the Node side: detect the ABI
@@ -28,7 +28,7 @@ if (canLoadBetterSqlite3WithNode()) {
 }
 
 log.log('[native-deps] Rebuilding better-sqlite3 for Node...')
-execSync('pnpm rebuild better-sqlite3', { stdio: 'inherit' })
+execSync('npm rebuild better-sqlite3', { stdio: 'inherit' })
 
 if (!canLoadBetterSqlite3WithNode()) {
   throw new Error('[native-deps] better-sqlite3 is still unavailable for Node after rebuild')

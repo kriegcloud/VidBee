@@ -27,12 +27,12 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@orpc/contract": "^1.16.1",
-    "@vidbee/downloader-core": "workspace:*",
-    "drizzle-orm": "^0.45.2",
-    "rss-parser": "^3.13.0",
-    "ulid": "^2.3.0",
-    "zod": "^4.6.7"
+    "@orpc/contract": "catalog:",
+    "@vidbee/downloader-core": "workspace:^",
+    "drizzle-orm": "catalog:",
+    "rss-parser": "catalog:",
+    "ulid": "catalog:",
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "@vidbee/db": "workspace:*",
@@ -51,11 +51,11 @@
     }
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/node": "^22.18.6",
-    "@vidbee/db": "workspace:*",
-    "better-sqlite3": "^13.0.3",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "@types/better-sqlite3": "catalog:",
+    "@types/node": "catalog:",
+    "@vidbee/db": "workspace:^",
+    "better-sqlite3": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }

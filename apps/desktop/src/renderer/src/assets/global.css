@@ -8,10 +8,10 @@
 @import "./view-transitions.css";
 
 /* Streamdown core + plugin utilities live in package JS, not this app tree. */
-@source "../../../../node_modules/streamdown/dist/*.js";
-@source "../../../../node_modules/@streamdown/code/dist/*.js";
-@source "../../../../node_modules/@streamdown/math/dist/*.js";
-@source "../../../../node_modules/@streamdown/cjk/dist/*.js";
+@source "../../../../../../node_modules/streamdown/dist/*.js";
+@source "../../../../../../node_modules/@streamdown/code/dist/*.js";
+@source "../../../../../../node_modules/@streamdown/math/dist/*.js";
+@source "../../../../../../node_modules/@streamdown/cjk/dist/*.js";
 
 @theme inline {
   --font-sans: var(--font-sans);

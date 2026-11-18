@@ -129,7 +129,7 @@ This monorepo now includes:
 Run locally:
 
 ```bash
-pnpm run start:web
+bun run start:web
 ```
 
 This command starts `apps/api` and `apps/web` together.

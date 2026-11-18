@@ -1,0 +1,5 @@
+[install]
+# Matches the former pnpm `shamefully-hoist=true`: Electron packaging, native
+# rebuilds and scripts resolve dependencies from a flat root node_modules.
+linker = "hoisted"
+saveTextLockfile = true

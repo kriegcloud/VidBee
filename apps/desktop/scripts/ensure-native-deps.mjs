@@ -9,7 +9,7 @@ const checkScript =
   "const Database=require('better-sqlite3');const db=new Database(':memory:');db.close()"
 
 function canLoadBetterSqlite3WithElectron() {
-  const result = spawnSync('pnpm', ['exec', 'electron', '-e', checkScript], {
+  const result = spawnSync('bun', ['x', 'electron', '-e', checkScript], {
     cwd: desktopRoot,
     env: {
       ...process.env,
@@ -35,7 +35,7 @@ if (canLoadBetterSqlite3WithElectron()) {
 }
 
 log.log('[native-deps] Rebuilding Electron native dependencies...')
-execSync('pnpm exec electron-builder install-app-deps', {
+execSync('bun x electron-builder install-app-deps', {
   cwd: desktopRoot,
   stdio: 'inherit'
 })

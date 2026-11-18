@@ -55,13 +55,13 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.1.2
+          bun-version-file: .bun-version
 
       - name: Install dependencies
-        run: pnpm install --filter ./apps/cli... --frozen-lockfile
+        run: bun install --filter ./apps/cli --frozen-lockfile
 
       - name: Verify package.json version matches tag
         if: steps.meta.outputs.publish == 'true'
@@ -75,24 +75,24 @@ jobs:
           fi
 
       - name: Run CLI typecheck
-        run: pnpm --filter @vidbee/cli typecheck
+        run: bun run --cwd apps/cli typecheck
 
       - name: Build CLI bundle
-        run: pnpm --filter @vidbee/cli build
+        run: bun run --cwd apps/cli build
 
       - name: Verify dist artifacts exist
-        run: pnpm --filter @vidbee/cli verify-dist
+        run: bun run --cwd apps/cli verify-dist
 
       - name: Pack tarball (sanity-check files whitelist)
         run: |
           cd apps/cli
-          pnpm pack --pack-destination ../..
+          bun pm pack --destination ../..
 
       - name: Publish to npm
         if: steps.meta.outputs.publish == 'true'
         run: |
           cd apps/cli
-          pnpm publish --no-git-checks --access public --tag ${{ steps.meta.outputs.tag }}
+          bun publish --access public --tag ${{ steps.meta.outputs.tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

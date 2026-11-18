@@ -27,7 +27,7 @@ if [ -n "$PARTIALLY_STAGED" ]; then
 fi
 
 # Run formatter on the staged files
-pnpm --filter ./apps/desktop run fix
+bun run --cwd apps/desktop fix
 FORMAT_EXIT_CODE=$?
 
 # Restore working directory state

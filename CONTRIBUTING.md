@@ -3,29 +3,39 @@
 Thank you for taking the time to improve VidBee. These notes keep the project maintainable and easy to review.
 
 ## Getting Ready
-- Use Node.js 18+ and pnpm 8+.
-- Install dependencies with `pnpm install`.
-- Run `pnpm dev` to test changes locally.
+- Use Node.js (version in `.node-version`) and Bun (version in `.bun-version`); `mise install` sets up both.
+- Install dependencies with `bun install`.
+- Run `bun run dev` to test changes locally.
 
 ## Tech Stack
 - Runtime: Electron 38, electron-vite, electron-builder.
 - Frontend: React 19, React Router, Jotai, React Hook Form, Tailwind CSS 4, shadcn/ui, Lucide icons.
-- Tooling: TypeScript 5, pnpm, Biome, dayjs, electron-log, electron-store, electron-updater, i18next, next-themes.
+- Tooling: TypeScript, Bun, Biome, dayjs, electron-log, electron-store, electron-updater, i18next, next-themes.
 
 ## Local Development
-- Use `pnpm install` to pull dependencies after cloning.
-- Start the Electron and Vite development environment with `pnpm dev`; hot module replacement is already configured.
-- Preview the production build locally with `pnpm start`.
+- Use `bun install` to pull dependencies after cloning.
+- Start the Electron and Vite development environment with `bun run dev`; hot module replacement is already configured.
+- Preview the production build locally with `bun run start`.
 
 ## Useful Scripts
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm run typecheck` | Type-check the main and renderer projects. |
-| `pnpm build` | Run type checks and produce production bundles. |
-| `pnpm build:win` / `pnpm build:mac` / `pnpm build:linux` | Create platform-specific distributables. |
-| `pnpm build:unpack` | Produce unpacked output directories for inspection. |
-| `pnpm run check` | Format and lint the codebase with Biome. |
+| `bun run typecheck` | Type-check the main and renderer projects. |
+| `bun run build` | Run type checks and produce production bundles. |
+| `bun run build:win` / `bun run build:mac` / `bun run build:linux` | Create platform-specific distributables. |
+| `bun run build:unpack` | Produce unpacked output directories for inspection. |
+| `bun run check` | Format and lint the codebase with Biome. |
+| `bun run deps:check` | Verify every manifest follows the dependency catalog rules (syncpack). |
+| `bun run deps:fix` | Rewrite manifests to follow those rules. |
+| `bun run deps:update` | Bump catalog versions to the latest releases. |
+
+## Dependencies
+- Every third-party version is declared once, in the `catalog` of the root `package.json`.
+- Workspace manifests reference it with `"name": "catalog:"` and reference each other with `"@vidbee/name": "workspace:^"`.
+- To add a dependency, add its range to the root catalog, then add `"name": "catalog:"` to the package that uses it and run `bun install`.
+- Exceptions, enforced by `syncpack.config.ts`: `electron-updater` and `electron` stay literal in `apps/desktop/package.json`, because electron-builder reads them from that file, and `electron` must match the exact catalog pin.
+- Peer dependency ranges are not catalogued.
 
 ## Project Structure
 
@@ -55,18 +65,18 @@ apps/desktop/src/
 - Logs are recorded with `electron-log` to simplify troubleshooting.
 
 ## Packaging
-- Build production bundles with `pnpm build`.
-- Create platform-specific artifacts with `pnpm build:win`, `pnpm build:mac`, or `pnpm build:linux`.
-- Use `pnpm build:unpack` to generate unpacked directories under `apps/desktop/dist/` for manual inspection.
+- Build production bundles with `bun run build`.
+- Create platform-specific artifacts with `bun run build:win`, `bun run build:mac`, or `bun run build:linux`.
+- Use `bun run build:unpack` to generate unpacked directories under `apps/desktop/dist/` for manual inspection.
 - Bundle `yt-dlp` under `apps/desktop/resources/` and `ffmpeg/ffprobe` under `apps/desktop/resources/ffmpeg/` before packaging so merges and audio extraction work out of the box.
 
 ## Releasing
 
-VidBee publishes stable releases with `pnpm release` and `vX.Y.Z` tags. Installed apps
+VidBee publishes stable releases with `bun run release` and `vX.Y.Z` tags. Installed apps
 automatically follow the stable `latest` channel through the GitHub provider configured in
 `apps/desktop/electron-builder.yml`, which emits `latest*.yml` update metadata.
 
-- The release command runs `pnpm run check` and then `bumpp`, which bumps
+- The release command runs `bun run check` and then `bumpp`, which bumps
   `apps/desktop/package.json`, commits, tags, and pushes. The tag push triggers
   `.github/workflows/release.yml`, which builds every platform, publishes the GitHub release,
   and notifies Cloudflare Pages. Tags containing a prerelease suffix do not trigger this workflow.
@@ -77,7 +87,7 @@ automatically follow the stable `latest` channel through the GitHub provider con
 
 ## Working on Changes
 - Keep each pull request focused on a single problem or feature.
-- Run `pnpm run check` before committing to ensure formatting and linting stay consistent.
+- Run `bun run check` before committing to ensure formatting and linting stay consistent.
 - Write comments and console messages in English only.
 - When updating copy in the app, adjust strings in `apps/desktop/src/renderer/src/locales/en.json`; other locale files are handled by maintainers.
 
@@ -88,6 +98,6 @@ automatically follow the stable `latest` channel through the GitHub provider con
 ## Submitting Pull Requests
 - Explain the motivation and impact of the change in the description.
 - Mention any user facing updates or migrations.
-- Confirm that `pnpm run check` passes and note any follow-up work that is out of scope.
+- Confirm that `bun run check` passes and note any follow-up work that is out of scope.
 
 We appreciate every contribution that keeps VidBee simple and reliable.

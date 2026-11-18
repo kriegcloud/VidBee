@@ -9,9 +9,8 @@ on:
       - 'apps/desktop/resources/drizzle/**'
       - 'apps/web/**'
       - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - 'package.json'
+      - 'bun.lock'
+            - 'package.json'
       - 'patches/**'
       - '.github/workflows/docker-publish.yml'
   workflow_dispatch:

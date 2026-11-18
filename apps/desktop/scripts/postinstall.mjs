@@ -19,7 +19,7 @@ execSync('node scripts/setup-dev-binaries.js', {
   stdio: 'inherit'
 })
 
-execSync('pnpm exec electron-builder install-app-deps', {
+execSync('bun x electron-builder install-app-deps', {
   cwd: desktopRoot,
   stdio: 'inherit'
 })
