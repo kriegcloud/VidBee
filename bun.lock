@@ -33,7 +33,7 @@
         "@vidbee/db": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
         "@vidbee/logger": "workspace:^",
-        "@vidbee/task-queue": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
         "esbuild": "catalog:",
         "typescript": "catalog:",
       },
@@ -92,7 +92,7 @@
         "@vidbee/i18n": "workspace:^",
         "@vidbee/logger": "workspace:^",
         "@vidbee/subscriptions-core": "workspace:^",
-        "@vidbee/task-queue": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
         "@vidbee/transcription": "workspace:^",
         "@videojs/react": "catalog:",
         "adm-zip": "catalog:",
@@ -180,7 +180,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@vidbee/downloader-core": "workspace:^",
-        "@vidbee/task-queue": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
         "playwright-core": "catalog:",
       },
       "devDependencies": {
@@ -221,7 +221,7 @@
       "name": "@vidbee/downloader-core",
       "version": "0.1.0",
       "dependencies": {
-        "@vidbee/task-queue": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
         "yt-dlp-wrap-plus": "catalog:",
         "zod": "catalog:",
       },
@@ -292,12 +292,12 @@
       },
       "peerDependencies": {
         "@vidbee/db": "workspace:*",
-        "@vidbee/task-queue": "workspace:*",
+        "@vidbee/task-queue-legacy": "workspace:*",
         "better-sqlite3": "^13.0.3",
       },
       "optionalPeers": [
         "@vidbee/db",
-        "@vidbee/task-queue",
+        "@vidbee/task-queue-legacy",
         "better-sqlite3",
       ],
     },
@@ -305,8 +305,24 @@
       "name": "@vidbee/task-queue",
       "version": "0.1.0",
       "dependencies": {
+        "@vidbee/db": "workspace:^",
+        "@vidbee/schema": "workspace:^",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@effect/vitest": "catalog:",
+        "@types/node": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:",
+      },
+    },
+    "packages/task-queue-legacy": {
+      "name": "@vidbee/task-queue-legacy",
+      "version": "0.1.0",
+      "dependencies": {
         "@vidbee/logger": "workspace:^",
-        "ulid": "catalog:",
+        "@vidbee/task-queue": "workspace:^",
+        "effect": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -314,7 +330,7 @@
         "typescript": "catalog:",
       },
       "peerDependencies": {
-        "@vidbee/db": "workspace:*",
+        "@vidbee/db": "workspace:^",
       },
     },
     "packages/transcription": {
@@ -324,7 +340,7 @@
         "@vidbee/db": "workspace:^",
         "@vidbee/i18n": "workspace:^",
         "@vidbee/logger": "workspace:^",
-        "@vidbee/task-queue": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
         "opencc-js": "catalog:",
         "sherpa-onnx-node": "catalog:",
       },
@@ -1306,6 +1322,8 @@
     "@vidbee/subscriptions-core": ["@vidbee/subscriptions-core@workspace:packages/subscriptions-core"],
 
     "@vidbee/task-queue": ["@vidbee/task-queue@workspace:packages/task-queue"],
+
+    "@vidbee/task-queue-legacy": ["@vidbee/task-queue-legacy@workspace:packages/task-queue-legacy"],
 
     "@vidbee/transcription": ["@vidbee/transcription@workspace:packages/transcription"],
 

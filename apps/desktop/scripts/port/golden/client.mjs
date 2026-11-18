@@ -125,5 +125,49 @@ export function createClient(runDir) {
       clearTimeout(timeout)
     }
   }
-  return { rpc, http, mcp: async (name, args = {}) => rpc('tools/call', { name, arguments: args }) }
+  const events = async () => {
+    const handshake = await http('POST', '/automation/v1/handshake', {})
+    const response = await fetch(`${base}/automation/v1/events`, {
+      headers: { authorization: `Bearer ${handshake.body.token}` }
+    })
+    if (!response.ok) {
+      throw new Error(`Event stream failed: ${response.status}`)
+    }
+    const reader = response.body.getReader()
+    const values = []
+    let buffer = ''
+    const consume = async () => {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) {
+          return
+        }
+        buffer += new TextDecoder().decode(value)
+        let end = buffer.indexOf('\n\n')
+        while (end >= 0) {
+          const frame = buffer.slice(0, end)
+          buffer = buffer.slice(end + 2)
+          const data = frame.split('\n').find((line) => line.startsWith('data:'))
+          if (data) {
+            values.push(JSON.parse(data.slice(5)))
+          }
+          end = buffer.indexOf('\n\n')
+        }
+      }
+    }
+    const consuming = consume()
+    return {
+      values,
+      close: async () => {
+        await reader.cancel()
+        await consuming
+      }
+    }
+  }
+  return {
+    rpc,
+    http,
+    events,
+    mcp: async (name, args = {}) => rpc('tools/call', { name, arguments: args })
+  }
 }

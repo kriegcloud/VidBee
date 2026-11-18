@@ -7,7 +7,7 @@
  * MUST be consistent.
  */
 
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 
 export const ExitCode = {
   /** probe success | detached download enqueue success | wait-mode success */

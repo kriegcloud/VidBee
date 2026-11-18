@@ -23,7 +23,7 @@
  *   - token within `expiresAtSlackMs` of expiry
  */
 
-import type { Task, AddTaskRequest } from '@vidbee/task-queue'
+import type { Task, AddTaskRequest } from '@vidbee/task-queue-legacy'
 
 import type { ContractClient, ListInput } from '../subcommands'
 

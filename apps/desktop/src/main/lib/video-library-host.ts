@@ -1,6 +1,6 @@
 import { realpathSync } from 'node:fs'
 import path from 'node:path'
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 import { type AgentThread, selectedAgentMessages } from '../../shared/agent-chat'
 import type { AiPromptRunSnapshot } from '../../shared/ai-types'
 import { settingsManager } from '../settings'

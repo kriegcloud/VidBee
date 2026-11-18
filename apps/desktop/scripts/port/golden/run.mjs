@@ -1,10 +1,10 @@
 import { spawn } from 'node:child_process'
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
-import { buildFixture } from './build-fixture.mjs'
+import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../../../..')
@@ -64,10 +64,14 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
     process.exit(1)
   })
 }
-const launch = async (runDir, seed) => {
-  active = spawn('bash', [launchScript, build, runDir, '900', ...(seed ? [seed] : [])], {
-    stdio: ['ignore', 'ignore', 'pipe']
-  })
+const launch = async (runDir, seed, profile) => {
+  active = spawn(
+    'bash',
+    [launchScript, build, runDir, '900', ...(profile ? ['', profile] : seed ? [seed] : [])],
+    {
+      stdio: ['ignore', 'ignore', 'pipe']
+    }
+  )
   let failure = ''
   active.stderr.on('data', (data) => {
     failure += data
@@ -112,6 +116,7 @@ try {
   await rm(path.join(seed, 'logs'), { recursive: true, force: true })
   const runDir = path.join(work, 'run')
   await buildFixture(seed, { pathRoot: path.join(runDir, 'userdata') })
+  await buildLoopbackFixture(seed, build, command)
   const models = option('--models')
   if (models) {
     await cp(path.resolve(models), path.join(seed, 'models'), { recursive: true })
@@ -122,6 +127,7 @@ try {
     runDir,
     build,
     ...(args.includes('--update') ? ['--update'] : []),
+    ...(args.includes('--loopback-only') ? ['--loopback-only'] : []),
     ...(option('--subset') ? ['--subset', option('--subset')] : []),
     ...(models ? ['--models', path.resolve(models)] : [])
   ]
@@ -131,6 +137,32 @@ try {
     { env: process.env }
   )
   process.stdout.write(output)
+  await stop()
+  const state = JSON.parse(await readFile(path.join(runDir, 'loopback/state.json'), 'utf8'))
+  await symlink(path.join(runDir, 'downloads'), state.alias)
+  try {
+    const restartDir = path.join(work, 'restart')
+    const restartPid = await launch(restartDir, undefined, path.join(runDir, 'userdata'))
+    const restartOutput = await command('nsenter', [
+      '-t',
+      restartPid,
+      '-U',
+      '-n',
+      '--preserve-credentials',
+      process.execPath,
+      path.join(here, 'worker.mjs'),
+      restartDir,
+      build,
+      '--loopback-only',
+      '--loopback-restart',
+      runDir,
+      ...(args.includes('--update') ? ['--update'] : []),
+      ...(option('--subset') ? ['--subset', option('--subset')] : [])
+    ])
+    process.stdout.write(restartOutput)
+  } finally {
+    await rm(state.alias, { force: true })
+  }
   if (active.exitCode !== null || active.signalCode !== null) {
     throw new Error('Offline launcher exited unexpectedly before suite completion')
   }

@@ -1,4 +1,4 @@
-import { isDownloadTaskKind, type TaskKind } from '@vidbee/task-queue'
+import { isDownloadTaskKind, type TaskKind } from '@vidbee/task-queue-legacy'
 import { type AgentThread, selectedAgentMessages } from './agent-chat'
 import { AI_OVERVIEW_PROMPT_ID } from './ai-prompts'
 import type { AiPromptRunSnapshot, AiPromptRunStatus } from './ai-types'

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { isDownloadTaskKind, type Task } from '@vidbee/task-queue'
+import { isDownloadTaskKind, type Task } from '@vidbee/task-queue-legacy'
 import type { ExtensionChatSource } from '../../shared/extension-chat'
 import { isExtensionSourceUrl } from '../../shared/extension-source-url'
 import { videoIdentityFromUrl } from '../../shared/video-identity'

@@ -1,3 +1,4 @@
+import { dual } from "effect/Function";
 /**
  * Kind-specific success guards for `running/processing → completed`.
  *
@@ -6,36 +7,35 @@
  * require a committed transcript or explicit no-speech result — never a
  * media file check.
  */
-import type { TaskKind, TaskOutput } from './types'
+import type { TaskKind, TaskOutput } from "./types.js";
 
 export interface OutputCompleteCheck {
-  filePresent: (path: string) => boolean
+  filePresent: (path: string) => boolean;
 }
 
-export function isOutputComplete(
-  kind: TaskKind,
-  output: TaskOutput,
-  check: OutputCompleteCheck
-): boolean {
-  if (kind === 'social-media') {
+export const isOutputComplete: {
+  (kind: TaskKind, output: TaskOutput, check: OutputCompleteCheck): boolean;
+  (output: TaskOutput, check: OutputCompleteCheck): (kind: TaskKind) => boolean;
+} = dual(3, (kind: TaskKind, output: TaskOutput, check: OutputCompleteCheck): boolean => {
+  if (kind === "social-media") {
     return Boolean(
       output.collectionSummary &&
-        output.collectionSummary.reason !== 'incomplete' &&
+        output.collectionSummary.reason !== "incomplete" &&
         output.collectionSummary.failed === 0 &&
         output.outputDirectory &&
         check.filePresent(output.outputDirectory) &&
         check.filePresent(output.collectionSummary.manifestPath)
-    )
+    );
   }
   if (
-    kind === 'instagram-profile-category' ||
-    kind === 'pinterest-gallery' ||
-    kind === 'vsco-gallery' ||
-    kind === 'facebook-gallery' ||
-    kind === 'tiktok-photo' ||
-    kind === 'threads-post' ||
-    kind === 'threads-profile' ||
-    kind === 'snapchat-media'
+    kind === "instagram-profile-category" ||
+    kind === "pinterest-gallery" ||
+    kind === "vsco-gallery" ||
+    kind === "facebook-gallery" ||
+    kind === "tiktok-photo" ||
+    kind === "threads-post" ||
+    kind === "threads-profile" ||
+    kind === "snapchat-media"
   ) {
     return Boolean(
       output.outputDirectory &&
@@ -44,20 +44,17 @@ export function isOutputComplete(
         output.size > 0 &&
         (output.failedCount ?? 0) === 0 &&
         check.filePresent(output.outputDirectory)
-    )
+    );
   }
-  if (kind === 'transcription') {
-    const result = output.transcript
-    return Boolean(
-      result?.transcriptId &&
-        (result.resultKind === 'transcript' || result.resultKind === 'no-speech')
-    )
+  if (kind === "transcription") {
+    const result = output.transcript;
+    return Boolean(result?.transcriptId && (result.resultKind === "transcript" || result.resultKind === "no-speech"));
   }
   if (
-    kind === 'subtitles' &&
-    !(output.transcript?.resultKind === 'transcript' && output.transcript.transcriptId)
+    kind === "subtitles" &&
+    !(output.transcript?.resultKind === "transcript" && Boolean(output.transcript.transcriptId))
   ) {
-    return false
+    return false;
   }
-  return Boolean(output.filePath) && output.size > 0 && check.filePresent(output.filePath)
-}
+  return Boolean(output.filePath) && output.size > 0 && check.filePresent(output.filePath);
+});

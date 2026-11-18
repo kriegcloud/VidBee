@@ -22,6 +22,7 @@ const bundledWorkspacePackages = [
   '@vidbee/ui',
   '@vidbee/logger',
   '@vidbee/task-queue',
+  '@vidbee/task-queue-legacy',
   '@vidbee/subscriptions-core',
   '@vidbee/transcription',
   '@earendil-works/pi-ai',

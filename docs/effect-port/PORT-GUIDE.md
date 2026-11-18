@@ -55,6 +55,83 @@ calls `initLog` at import. Its raw evlog re-exports keep their original identity
 Delete a facade and its runtime when its last unported consumer migrates.
 `@vidbee/logger/script` remains the original JavaScript build-script API.
 
+### Task queue compatibility package
+
+The phase 4 task queue uses an explicit sibling compatibility package instead of
+an in-package `legacy` directory. `@vidbee/task-queue` contains the strict kernel;
+`@vidbee/task-queue-legacy` keeps the old synchronous/Promise interface, Node
+helpers and four retained zod schemas. Dependencies point from compatibility to
+kernel. Unported consumers import the sibling package, and desktop bundling
+includes both packages. Its `./types` and `./schemas` entries must stay safe for
+the renderer. See [the reviewed task queue design](design/task-queue.md) for the
+scope and the runtime ownership contract. The sibling is listed as **unported**
+by `port:check` until its phase-10 removal. Use this arrangement when exact legacy
+synchronous defaults or helper APIs cannot satisfy the strict unit rules; putting
+those files under `legacy/` does not exempt them from the ported unit. Keep the
+reviewed design explicit about that boundary, and keep the dependency one-way.
+
+Preserve the suspension points of the original Promise methods. `LegacyTiming`
+names the old `await` positions: the native layer does nothing and the compatibility
+layer yields one microtask turn. Starting a child fiber and settling a Promise can
+introduce additional turns; test those sequences directly. Synchronous executor
+callbacks, event delivery and admission handoff have synchronous prefixes that
+must complete before returning to the host. Timer cancellation is an Effect value;
+when creating it inside another Effect, use `Effect.map` to return the value rather
+than returning a nested Effect directly from a generator.
+
+Model old mutable structs with `S.mutableKey` and old mutable arrays with
+`S.mutable`; record values use `S.mutableKey` on the value schema. `S.mutable`
+accepts array schemas, not record schemas. Optional fields must accept the explicit
+`undefined` assignments the old callers use (`S.optional` includes that allowance). Compare the old declaration fixture under the compatibility
+package's original `exactOptionalPropertyTypes: false` setting: reinterpreting old
+`field?: T` declarations under the strict kernel's `true` setting changes their
+meaning. Keep the kernel settings strict and check old/new mutual assignability
+in the compatibility package, alongside real nested-array mutation sites. Preserve
+shallow readonly snapshot/event views as well. Where saved task data must retain
+unknown fields, use
+`S.StructWithRest` at every object level; a closed outer schema alone cannot
+preserve unknown nested fields. Test decode, mutation and encode as a round trip.
+The installed parser has no `onExcessProperty: "preserve"` option.
+
+The pure FSM takes `ctx.now` and returns `Result`; compatibility supplies the old
+clock default and maps failure to `IllegalTransitionError`. Classifier date
+backoff likewise takes explicit time. Keep argument hashing synchronous and retain
+its exact `sha256:` format and `sha256:none` sentinel, because an asynchronous
+digest would add a suspension. The pure SHA-256 implementation has empty, short,
+multi-block and UTF-8 vectors. Task-store indexes and cached ID lists also affect
+behavior: replacing them with a scan changes results after a caller directly
+mutates a stored object. Preserve those index and cache rules during the port.
+
+Keep semantic read codecs separate from write serialization when preserving an
+old typed in-process API. The task queue does not decode host arguments on entry;
+validating their semantic shape while encoding a write changed a golden HTTP
+invalid-add response from 200 to 500. Schema JSON Unknown serialization preserves
+the old JSON write behavior, including key order and non-finite values becoming
+JSON null, while open semantic codecs still validate persisted reads. Do not
+weaken a committed golden to conceal added validation.
+
+Importing the native `@effect/sql-sqlite-node/SqliteClient` value module eagerly
+loads `node:sqlite`, even when only its tag or TypeId was wanted. The borrowed db
+adapter uses native types only and registers the exact public service key/TypeId
+without loading that driver. Check CLI stderr and an import-only process; do not
+suppress ExperimentalWarning output or introduce the second driver before cutover.
+
+A host adapter's synchronous prefix can re-enter the queue. Preserve its order
+relative to publishing pending-operation state: the insert adapter starts before
+the admission Promise/Deferred is registered. Named timing turns also cover nested
+async completion/adoption, not just I/O. For exact Promise settlement, the task
+queue uses `runFork` plus an exit observer rather than `runPromise`, and retains
+`PreventSchedulerYield` in the runtime's final context. Detached work uses immediate
+start where the old callback began its synchronous prefix immediately.
+
+Ordered listener arrays must release removed callbacks. Mark tombstones while
+live iteration is active, prune at outermost completion, and prune immediately
+outside traversal. Preserve deduplication and stale unsubscribe/re-registration
+identity, including across an Effect facade. Keep output writers quiescent during
+packaging and check archive integrity when Electron rejects an app before its
+JavaScript starts; one phase-4 archive had invalid offsets, with the exact cause
+unproven.
+
 ## File conventions and the ratchet
 
 Existing filenames stay. New companions are `Foo.model.ts`, `Foo.errors.ts`,

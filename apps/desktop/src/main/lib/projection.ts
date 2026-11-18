@@ -1,7 +1,7 @@
 /**
  * Desktop renderer projection helpers.
  *
- * Narrow @vidbee/task-queue's host-neutral `LegacyTaskProjection` into the
+ * Narrow @vidbee/task-queue-legacy's host-neutral `LegacyTaskProjection` into the
  * concrete `DownloadItem` / `DownloadHistoryItem` shapes the renderer reads
  * via IPC. Renderer code stays unchanged after NEX-131; only the field
  * provenance moves from the legacy `download-engine` / `history-manager` to
@@ -16,8 +16,8 @@
 import { basename } from 'node:path'
 import type { DownloadRuntimeSettings } from '@vidbee/downloader-core'
 import { cookieSourcesFromArgs } from '@vidbee/downloader-core/yt-dlp-args'
-import type { Task, TaskCreationMetadata } from '@vidbee/task-queue'
-import { projectTaskToLegacy } from '@vidbee/task-queue'
+import type { Task, TaskCreationMetadata } from '@vidbee/task-queue-legacy'
+import { projectTaskToLegacy } from '@vidbee/task-queue-legacy'
 import type {
   DownloadHistoryItem,
   DownloadItem,

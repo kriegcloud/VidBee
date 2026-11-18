@@ -10,8 +10,8 @@ import type {
   ExecutorEvents,
   ExecutorRun,
   TaskOutput
-} from '@vidbee/task-queue'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import type { GpuKind } from './asr-recommend'
 import { type AsrTierId, DEFAULT_ASR_TIER, parseAsrTier } from './asr-tiers'
 import {

@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import { captionLanguageScore, isHumanCaptionTrack, isTextSubtitleCodec } from './captions'
 
 export interface ExtractedCaptionTrack {

@@ -1,0 +1,97 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "audio",
+    "parentId": null,
+    "title": "audio",
+    "url": "http://127.0.0.1:<port>/audio.wav",
+    "status": "completed",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": "loopback-audio.wav",
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": {
+      "filePath": "<run>/downloads/loopback-audio.wav",
+      "size": 64078,
+      "durationMs": null,
+      "sha256": null,
+      "formatId": "wav",
+      "cookieSources": []
+    },
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "completed"],
+  "history": [
+    {
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/audio.wav",
+      "title": "audio",
+      "type": "audio",
+      "status": "completed",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "fileSize": 64078,
+      "downloadPath": "<run>/downloads",
+      "savedFileName": "loopback-audio.wav",
+      "filePath": "<run>/downloads/loopback-audio.wav",
+      "resolvedFormatId": "wav",
+      "cookieSources": [],
+      "channel": "Generic",
+      "uploader": "Generic",
+      "origin": "agent",
+      "taskKind": "audio"
+    }
+  ],
+  "file": {
+    "size": 64078,
+    "name": "loopback-audio.wav",
+    "probe": {
+      "streams": [
+        {
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio",
+          "sample_rate": "16000",
+          "channels": 1
+        }
+      ],
+      "format": {
+        "format_name": "wav",
+        "duration": "2.000000",
+        "size": "64078"
+      }
+    }
+  },
+  "queue": {
+    "total": 3,
+    "byStatus": {
+      "queued": 0,
+      "running": 0,
+      "processing": 0,
+      "paused": 0,
+      "retry-scheduled": 0,
+      "completed": 3,
+      "failed": 0,
+      "cancelled": 0
+    },
+    "running": 0,
+    "queued": 0,
+    "capacity": 5,
+    "groupCount": 3
+  }
+}

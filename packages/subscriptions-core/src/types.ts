@@ -58,7 +58,7 @@ export interface SubscriptionDownloadPreferences {
 
 /**
  * High-level subscription state. The granular task lifecycle for a
- * subscription item is owned by `@vidbee/task-queue` (see `TaskStatus`); this
+ * subscription item is owned by `@vidbee/task-queue-legacy` (see `TaskStatus`); this
  * field describes only the result of the most recent feed-check, not
  * individual items.
  */

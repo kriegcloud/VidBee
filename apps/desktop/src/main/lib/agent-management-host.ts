@@ -12,7 +12,7 @@ import {
   sanitizeOutput,
   type Task,
   type TaskCreationMetadata
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import { agentTaskSchema } from '../../shared/agent-task'
 import {
   buildAudioFormatPreference,

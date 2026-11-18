@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import { createBoundedTextBuffer } from './bounded-output-buffer'
 import type {
   KernelCommandOptions,

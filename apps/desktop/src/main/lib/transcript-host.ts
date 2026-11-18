@@ -1,7 +1,7 @@
 import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { TaskCreationMetadata } from '@vidbee/task-queue'
-import { type Task, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
+import { type Task, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import {
   type AsrTierId,
   AutoTranscriptionCoordinator,

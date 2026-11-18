@@ -1,4 +1,4 @@
-import { isMediaTaskKind } from '@vidbee/task-queue'
+import { isMediaTaskKind } from '@vidbee/task-queue-legacy'
 import { z } from 'zod'
 import type { AgentUiTask } from '../../shared/agent-ui'
 import { projectTaskForRenderer } from './projection'

@@ -8,7 +8,7 @@ import {
   type TaskQueueAPI,
   TERMINAL_STATUSES,
   TRANSCRIPTION_GROUP_KEY
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import { parseAsrTier } from './asr-tiers'
 import {
   DEFAULT_CLOUD_TRANSCRIPTION_MODEL,

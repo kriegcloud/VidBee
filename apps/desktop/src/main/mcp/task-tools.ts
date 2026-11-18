@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import { resolveSubtitleLanguages } from '@vidbee/downloader-core/subtitle-languages'
-import { ListInputSchema, sanitizeOutput, type Task } from '@vidbee/task-queue'
+import { ListInputSchema, sanitizeOutput, type Task } from '@vidbee/task-queue-legacy'
 import { z } from 'zod'
 import { agentSettingsSchema } from '../../shared/agent-settings'
 import { agentTaskParameters } from '../../shared/agent-task'

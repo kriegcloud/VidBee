@@ -6,8 +6,8 @@ import {
   type ExecutorEvents,
   type ExecutorRun,
   sanitizeOutput
-} from '@vidbee/task-queue'
-import { readPidStartTime } from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy'
+import { readPidStartTime } from '@vidbee/task-queue-legacy/process'
 import { z } from 'zod'
 import { getDesktopTaskQueueRef } from './queue-ref'
 import { downloadSubtitles, subtitleDownloadSchema } from './subtitle-download'

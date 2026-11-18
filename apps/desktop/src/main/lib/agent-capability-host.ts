@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { lstat, mkdir, mkdtemp, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { TaskCreationMetadata } from '@vidbee/task-queue'
-import { isMediaTaskKind } from '@vidbee/task-queue'
+import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
+import { isMediaTaskKind } from '@vidbee/task-queue-legacy'
 import {
   agentAiSettingsSchema,
   agentSettingsSchema,

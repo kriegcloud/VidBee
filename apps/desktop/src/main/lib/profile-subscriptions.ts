@@ -28,7 +28,7 @@ import type {
   SubscriptionRule
 } from '@vidbee/subscriptions-core/types'
 import { profileItemCategory } from '@vidbee/subscriptions-core/types'
-import type { TaskQueueAPI } from '@vidbee/task-queue'
+import type { TaskQueueAPI } from '@vidbee/task-queue-legacy'
 
 /** Matches the Instagram inspector's own throttle cooldown. */
 const RATE_LIMIT_RETRY_MS = 15 * 60 * 1000

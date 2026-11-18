@@ -2,7 +2,7 @@ import { execFileSync, spawn } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import type { AsrTierId } from './asr-tiers'
 import { atomicWriteJson } from './atomic-file'
 import {

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { DownloadCookieSource } from '@vidbee/task-queue'
+import type { DownloadCookieSource } from '@vidbee/task-queue-legacy'
 import { parseBrowserCookiesSetting } from './browser-cookies-setting'
 import { normalizeDzenProfileUrl } from './dzen-profile'
 import { isFanslySite } from './fansly-profile'

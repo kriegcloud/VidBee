@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
+import type { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
 import type { DownloadRuntimeSettings } from './types'
 
 const MAX_OUTPUT_BYTES = 32 * 1024 * 1024

@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { isOutputComplete } from '@vidbee/task-queue'
+import { isOutputComplete } from '@vidbee/task-queue-legacy'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   chatVideoByOrdinal,

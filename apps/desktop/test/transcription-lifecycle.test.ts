@@ -5,10 +5,10 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { TaskQueueAPI } from '../../../packages/task-queue/src/api'
-import type { ExecutorContext, ExecutorEvents } from '../../../packages/task-queue/src/executor'
-import { MemoryPersistAdapter } from '../../../packages/task-queue/src/persist/memory'
-import { deferred, fakeTimers, turn } from '../../../packages/task-queue/test/fixtures'
+import { TaskQueueAPI } from '@vidbee/task-queue-legacy'
+import type { ExecutorContext, ExecutorEvents } from '@vidbee/task-queue-legacy/executor'
+import { MemoryPersistAdapter } from '@vidbee/task-queue-legacy/persist'
+import { deferred, fakeTimers, turn } from '../../../packages/task-queue-legacy/test/fixtures'
 import { AutoTranscriptionCoordinator } from '../../../packages/transcription/src/coordinator'
 import { MemoryTranscriptStore } from '../../../packages/transcription/src/memory-store'
 import { probeWorker } from '../../../packages/transcription/src/runtime'
@@ -167,7 +167,7 @@ for (const outcome of ['result', 'error'] as const) {
       maxWorkerRestarts: 0
     })
     const result = await new Promise<
-      import('../../../packages/task-queue/src/executor').ExecutorFinishEvent
+      import('@vidbee/task-queue-legacy/executor').ExecutorFinishEvent
     >((resolve) => {
       executor.run(
         {

@@ -1,4 +1,4 @@
-import { sanitizeOutput, type Task, type TaskQueueAPI } from '@vidbee/task-queue'
+import { sanitizeOutput, type Task, type TaskQueueAPI } from '@vidbee/task-queue-legacy'
 
 /** Background work has its own deadline, independent of model and tool activity clocks. */
 export const AGENT_TASK_WAIT_MS = 24 * 60 * 60 * 1000

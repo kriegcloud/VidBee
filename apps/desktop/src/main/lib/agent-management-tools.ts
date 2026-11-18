@@ -1,5 +1,9 @@
 import type { AgentTool } from '@earendil-works/pi-agent-core'
-import { type TaskCreationMetadata, TaskKindSchema, TaskStatusSchema } from '@vidbee/task-queue'
+import {
+  type TaskCreationMetadata,
+  TaskKindSchema,
+  TaskStatusSchema
+} from '@vidbee/task-queue-legacy'
 import { Type } from 'typebox'
 import { z } from 'zod'
 import { agentTaskParameters } from '../../shared/agent-task'

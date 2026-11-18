@@ -1,4 +1,4 @@
-import { DownloadCookieSourceSchema } from '@vidbee/task-queue/schemas'
+import { DownloadCookieSourceSchema } from '@vidbee/task-queue-legacy/schemas'
 import { z } from 'zod'
 import {
   SocialMediaOptionsSchema,
@@ -31,7 +31,7 @@ export const DownloadProgressSchema = z.object({
 })
 
 // NEX-131: extended with optional projection fields produced by
-// @vidbee/task-queue/projection. Existing fields are unchanged so legacy
+// @vidbee/task-queue-legacy/projection. Existing fields are unchanged so legacy
 // web clients keep working; new clients that opt-in can branch on
 // internalStatus / subStatus / nextRetryAt / errorCategory.
 const TaskQueueInternalStatusSchema = z.enum([

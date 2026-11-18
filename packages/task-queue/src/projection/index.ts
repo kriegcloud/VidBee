@@ -1,3 +1,23 @@
+import * as A from "effect/Array";
+import * as HashSet from "effect/HashSet";
+import * as O from "effect/Option";
+import * as Str from "effect/String";
+import type {
+  LegacyDownloadProgress,
+  LegacyDownloadStatus,
+  LegacySubStatus,
+  LegacyTaskProjection,
+  MaybeHostFields,
+} from "../Projection.model.js";
+
+export type {
+  LegacyDownloadProgress,
+  LegacyDownloadStatus,
+  LegacySubStatus,
+  LegacyTaskProjection,
+} from "../Projection.model.js";
+
+import { TERMINAL_STATUSES } from "../types.js";
 /**
  * Legacy `DownloadTask` projection.
  *
@@ -18,124 +38,22 @@
  *     to prevent a workspace cycle. Adapters narrow to their local
  *     `DownloadTask` type by spreading.
  */
-import type {
-  ClassifiedError,
-  ErrorCategory,
-  SocialCollectionSummary,
-  Task,
-  TaskOutput,
-  TaskProgress,
-  TaskStatus
-} from '../types'
-import { TERMINAL_STATUSES } from '../types'
+import type { Task, TaskProgress, TaskStatus } from "../types.js";
 
 /**
  * Legacy status kept for renderer / web client back-compat.
  */
-export type LegacyDownloadStatus =
-  | 'pending'
-  | 'downloading'
-  | 'processing'
-  | 'completed'
-  | 'error'
-  | 'cancelled'
-
 /**
  * Sub-status for the buckets where multiple internal statuses collapse onto
  * the same legacy status. UIs that opt-in can show a richer label
  * ("Paused" / "Retrying in 23s") instead of a flat "pending".
  */
-export type LegacySubStatus = 'queued' | 'paused' | 'retry-scheduled'
-
-export interface LegacyDownloadProgress {
-  percent: number
-  indeterminate?: boolean
-  currentSpeed?: string
-  eta?: string
-  downloaded?: string
-  total?: string
-}
 
 /**
  * Shape consumed by the renderer/web client. Intentionally a superset of
  * the historical `DownloadTask` shape — adapters spread this onto the
  * local `DownloadTask` and drop fields the local host does not surface.
  */
-export interface LegacyTaskProjection {
-  id: string
-  url: string
-  title?: string
-  thumbnail?: string
-  /** Legacy `type` field. Derived from TaskKind: audio for `audio`, video otherwise. */
-  type: 'video' | 'audio'
-  status: LegacyDownloadStatus
-  /** Internal status kept verbatim so callers that DO know about task-queue
-   *  can branch without re-reading `task.status`. */
-  internalStatus: TaskStatus
-  /** Set when multiple internal statuses collapse onto one legacy status. */
-  subStatus?: LegacySubStatus
-  /** Mirror of `task.statusReason` (e.g. 'crash-recovery', 'retry-after-stalled'). */
-  statusReason?: string | null
-  createdAt: number
-  startedAt?: number
-  completedAt?: number
-  duration?: number
-  fileSize?: number
-  speed?: string
-  downloadPath?: string
-  savedFileName?: string
-  /**
-   * Absolute path of the media this task saved (the first file for galleries).
-   * Never a collection manifest. Prefer it over `downloadPath` + `savedFileName`:
-   * gallery and social runs write below their output directory, so joining the
-   * two does not name a real file.
-   */
-  filePath?: string
-  /**
-   * yt-dlp's resolved format id (e.g. `30080+30280`). Hosts compare against
-   * the user's pick to detect that the chain fell back to best-available.
-   */
-  resolvedFormatId?: string
-  subtitleStatus?: TaskOutput['subtitleStatus']
-  subtitleLanguages?: string[]
-  cookieSources?: TaskOutput['cookieSources']
-  description?: string
-  channel?: string
-  uploader?: string
-  viewCount?: number
-  tags?: string[]
-  playlistId?: string
-  playlistTitle?: string
-  playlistIndex?: number
-  playlistSize?: number
-  sourceMediaKind?: 'image' | 'video' | 'mixed'
-  collectionSummary?: SocialCollectionSummary
-  mediaKind?: 'photo' | 'video' | 'recording'
-  batchId?: string
-  batchKind?: 'instagram-profile' | 'social-media'
-  batchTitle?: string
-  batchCategory?: string
-  batchOrder?: number
-  batchSourceCount?: number
-  batchAssetCount?: number
-  outputDirectory?: string
-  fileCount?: number
-  downloadedCount?: number
-  skippedCount?: number
-  failedCount?: number
-  totalSize?: number
-  progress?: LegacyDownloadProgress
-  error?: string
-  /** Set when status === 'error'. */
-  errorCategory?: ErrorCategory
-  /** ms epoch; only present when internalStatus === 'retry-scheduled'. */
-  nextRetryAt?: number
-  /** Current attempt number (0-indexed). */
-  attempt?: number
-  maxAttempts?: number
-  /** i18n key describing the user-facing message for the last error. */
-  uiMessageKey?: string
-}
 
 /**
  * Map an internal `TaskStatus` to the legacy `DownloadStatus`. Pure;
@@ -143,24 +61,24 @@ export interface LegacyTaskProjection {
  */
 export function legacyDownloadStatusOf(status: TaskStatus): LegacyDownloadStatus {
   switch (status) {
-    case 'queued':
-      return 'pending'
-    case 'running':
-      return 'downloading'
-    case 'processing':
-      return 'processing'
-    case 'paused':
-      return 'pending'
-    case 'retry-scheduled':
-      return 'pending'
-    case 'completed':
-      return 'completed'
-    case 'failed':
-      return 'error'
-    case 'cancelled':
-      return 'cancelled'
+    case "queued":
+      return "pending";
+    case "running":
+      return "downloading";
+    case "processing":
+      return "processing";
+    case "paused":
+      return "pending";
+    case "retry-scheduled":
+      return "pending";
+    case "completed":
+      return "completed";
+    case "failed":
+      return "error";
+    case "cancelled":
+      return "cancelled";
     default:
-      return status
+      return status;
   }
 }
 
@@ -170,41 +88,15 @@ export function legacyDownloadStatusOf(status: TaskStatus): LegacyDownloadStatus
  */
 export function legacySubStatusOf(status: TaskStatus): LegacySubStatus | undefined {
   switch (status) {
-    case 'queued':
-      return 'queued'
-    case 'paused':
-      return 'paused'
-    case 'retry-scheduled':
-      return 'retry-scheduled'
+    case "queued":
+      return "queued";
+    case "paused":
+      return "paused";
+    case "retry-scheduled":
+      return "retry-scheduled";
     default:
-      return undefined
+      return undefined;
   }
-}
-
-interface MaybeHostFields {
-  /** Legacy host metadata stashed in `Task.input.options` by adapters. */
-  description?: string
-  channel?: string
-  uploader?: string
-  viewCount?: number
-  tags?: readonly string[]
-  duration?: number
-  playlistTitle?: string
-  playlistSize?: number
-  mediaKind?: 'photo' | 'video' | 'recording'
-  fileSize?: number
-  startedAt?: number
-  completedAt?: number
-  downloadPath?: string
-  sourceMediaKind?: 'image' | 'video' | 'mixed'
-  collectionSummary?: SocialCollectionSummary
-  batchId?: string
-  batchKind?: 'instagram-profile' | 'social-media'
-  batchTitle?: string
-  batchCategory?: string
-  batchOrder?: number
-  batchSourceCount?: number
-  batchAssetCount?: number
 }
 
 /**
@@ -214,18 +106,16 @@ interface MaybeHostFields {
  * Pure; no I/O, no clock reads.
  */
 export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection {
-  const status = legacyDownloadStatusOf(task.status)
-  const subStatus = legacySubStatusOf(task.status)
-  const opts = (task.input.options ?? {}) as MaybeHostFields
+  const status = legacyDownloadStatusOf(task.status);
+  const subStatus = legacySubStatusOf(task.status);
+  const opts = (task.input.options ?? {}) as MaybeHostFields;
   const proj: LegacyTaskProjection = {
     id: task.id,
     url: task.input.url,
     title: task.input.title,
     thumbnail: task.input.thumbnail,
     type:
-      task.kind === 'audio' || (task.kind === 'conversion' && task.input.options?.type === 'audio')
-        ? 'audio'
-        : 'video',
+      task.kind === "audio" || (task.kind === "conversion" && task.input.options?.type === "audio") ? "audio" : "video",
     status,
     internalStatus: task.status,
     statusReason: task.statusReason,
@@ -234,7 +124,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     channel: opts.channel,
     uploader: opts.uploader,
     viewCount: opts.viewCount,
-    tags: opts.tags ? [...opts.tags] : undefined,
+    tags: opts.tags != null ? [...opts.tags] : undefined,
     duration: opts.duration,
     playlistId: task.input.playlistId,
     playlistTitle: opts.playlistTitle,
@@ -252,142 +142,143 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     batchAssetCount: opts.batchAssetCount,
     fileSize: opts.fileSize,
     startedAt: opts.startedAt,
-    completedAt:
-      opts.completedAt ?? (TERMINAL_STATUSES.has(task.status) ? task.enteredStatusAt : undefined),
+    completedAt: opts.completedAt ?? (HashSet.has(TERMINAL_STATUSES, task.status) ? task.enteredStatusAt : undefined),
     downloadPath: opts.downloadPath,
     attempt: task.attempt,
-    maxAttempts: task.maxAttempts
-  }
+    maxAttempts: task.maxAttempts,
+  };
 
-  if (task.kind === 'social-media' && proj.collectionSummary) {
-    const { images, videos, manifestPath } = proj.collectionSummary
+  if (task.kind === "social-media" && proj.collectionSummary != null) {
+    const { images, videos, manifestPath } = proj.collectionSummary;
     proj.sourceMediaKind =
-      images > 0 && videos === 0
-        ? 'image'
-        : videos > 0 && images === 0
-          ? 'video'
-          : opts.sourceMediaKind
-    proj.outputDirectory = dirnameOf(dirnameOf(manifestPath))
-    proj.downloadPath = proj.outputDirectory
+      images > 0 && videos === 0 ? "image" : videos > 0 && images === 0 ? "video" : opts.sourceMediaKind;
+    proj.outputDirectory = dirnameOf(dirnameOf(manifestPath));
+    proj.downloadPath = proj.outputDirectory;
   }
 
-  if (subStatus) {
-    proj.subStatus = subStatus
+  if (subStatus !== undefined) {
+    proj.subStatus = subStatus;
   }
 
   // Progress is meaningful for running/processing AND for paused/retry, where
   // we want the UI to remember "you were 47% in" rather than reset to 0.
   if (task.progress.percent != null || task.progress.bytesDownloaded != null) {
-    proj.progress = projectProgress(task.progress)
+    proj.progress = projectProgress(task.progress);
     if (task.progress.speedBps != null) {
-      proj.speed = formatSpeed(task.progress.speedBps)
+      proj.speed = formatSpeed(task.progress.speedBps);
     }
   }
 
-  if (task.output) {
-    const out = task.output as TaskOutput
-    if (out.cookieSources) {
-      proj.cookieSources = out.cookieSources.map((source) => ({ ...source }))
+  if (task.output != null) {
+    const out = task.output;
+    if (out.cookieSources != null) {
+      proj.cookieSources = A.map(out.cookieSources, (source) => ({ ...source }));
     }
-    proj.fileSize = out.size
+    proj.fileSize = out.size;
     // Social runs report the shared collection manifest when no single media
     // file was recorded (runs before per-asset reporting, empty inspections).
-    const manifestPath = proj.collectionSummary?.manifestPath
+    const manifestPath = proj.collectionSummary?.manifestPath;
     const mediaFilePath =
-      out.filePath && !(task.kind === 'social-media' && out.filePath === manifestPath)
+      out.filePath !== "" && !(task.kind === "social-media" && out.filePath === manifestPath)
         ? out.filePath
-        : undefined
-    proj.filePath = mediaFilePath
+        : undefined;
+    proj.filePath = mediaFilePath;
     proj.savedFileName =
-      task.kind === 'social-media'
-        ? mediaFilePath
+      task.kind === "social-media"
+        ? mediaFilePath !== undefined
           ? basenameOf(mediaFilePath)
           : undefined
-        : basenameOf(out.filePath)
-    proj.downloadPath = out.outputDirectory ?? dirnameOf(out.filePath)
-    proj.outputDirectory = out.outputDirectory
-    proj.fileCount = out.fileCount
-    proj.downloadedCount = out.downloadedCount
-    proj.skippedCount = out.skippedCount
-    proj.failedCount = out.failedCount
-    proj.totalSize = out.totalSize
+        : basenameOf(out.filePath);
+    proj.downloadPath = out.outputDirectory ?? dirnameOf(out.filePath);
+    proj.outputDirectory = out.outputDirectory;
+    proj.fileCount = out.fileCount;
+    proj.downloadedCount = out.downloadedCount;
+    proj.skippedCount = out.skippedCount;
+    proj.failedCount = out.failedCount;
+    proj.totalSize = out.totalSize;
     if (out.durationMs != null) {
-      proj.duration = Math.round(out.durationMs / 1000)
+      proj.duration = Math.round(out.durationMs / 1000);
     }
-    if (out.formatId) {
-      proj.resolvedFormatId = out.formatId
+    if (out.formatId != null && out.formatId !== "") {
+      proj.resolvedFormatId = out.formatId;
     }
-    if (out.subtitleStatus) {
-      proj.subtitleStatus = out.subtitleStatus
+    if (out.subtitleStatus !== undefined) {
+      proj.subtitleStatus = out.subtitleStatus;
     }
-    if (out.subtitleLanguages) {
-      proj.subtitleLanguages = [...out.subtitleLanguages]
-    }
-  }
-
-  if (task.lastError) {
-    const err = task.lastError as ClassifiedError
-    proj.errorCategory = err.category
-    proj.uiMessageKey = err.uiMessageKey
-    if (status === 'error') {
-      proj.error = err.rawMessage
+    if (out.subtitleLanguages != null) {
+      proj.subtitleLanguages = [...out.subtitleLanguages];
     }
   }
 
-  if (task.status === 'retry-scheduled' && task.nextRetryAt != null) {
-    proj.nextRetryAt = task.nextRetryAt
+  if (task.lastError != null) {
+    const err = task.lastError;
+    proj.errorCategory = err.category;
+    proj.uiMessageKey = err.uiMessageKey;
+    if (status === "error") {
+      proj.error = err.rawMessage;
+    }
   }
 
-  return proj
+  if (task.status === "retry-scheduled" && task.nextRetryAt != null) {
+    proj.nextRetryAt = task.nextRetryAt;
+  }
+
+  return proj;
 }
 
 function projectProgress(p: Readonly<TaskProgress>): LegacyDownloadProgress {
-  const percent = p.percent == null ? 0 : Math.max(0, Math.min(100, p.percent * 100))
+  const percent = p.percent == null ? 0 : Math.max(0, Math.min(100, p.percent * 100));
   return {
     percent,
     indeterminate: p.percent == null,
     currentSpeed: p.speedBps == null ? undefined : formatSpeed(p.speedBps),
     eta: p.etaMs == null ? undefined : formatEta(p.etaMs),
     downloaded: p.bytesDownloaded == null ? undefined : formatBytes(p.bytesDownloaded),
-    total: p.bytesTotal == null ? undefined : formatBytes(p.bytesTotal)
-  }
+    total: p.bytesTotal == null ? undefined : formatBytes(p.bytesTotal),
+  };
 }
 
 function formatBytes(n: number): string {
   if (n < 1024) {
-    return `${n}B`
+    return `${n}B`;
   }
-  const units = ['KB', 'MB', 'GB', 'TB']
-  let value = n / 1024
-  let i = 0
+  const units = ["KB", "MB", "GB", "TB"];
+  let value = n / 1024;
+  let i = 0;
   while (value >= 1024 && i < units.length - 1) {
-    value /= 1024
-    i++
+    value /= 1024;
+    i++;
   }
-  return `${value.toFixed(2)}${units[i]}`
+  return `${value.toFixed(2)}${units[i]}`;
 }
 
 function formatSpeed(bps: number): string {
-  return `${formatBytes(bps)}/s`
+  return `${formatBytes(bps)}/s`;
 }
 
 function formatEta(ms: number): string {
-  const s = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(s / 60)
-  const r = s % 60
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
   if (m >= 60) {
-    const h = Math.floor(m / 60)
-    return `${h}:${String(m % 60).padStart(2, '0')}:${String(r).padStart(2, '0')}`
+    const h = Math.floor(m / 60);
+    return `${h}:${Str.padStart(2, "0")(String(m % 60))}:${Str.padStart(2, "0")(String(r))}`;
   }
-  return `${m}:${String(r).padStart(2, '0')}`
+  return `${m}:${Str.padStart(2, "0")(String(r))}`;
 }
 
 function basenameOf(p: string): string {
-  const i = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'))
-  return i >= 0 ? p.slice(i + 1) : p
+  const i = Math.max(
+    O.getOrElse(Str.lastIndexOf("/")(p), () => -1),
+    O.getOrElse(Str.lastIndexOf("\\")(p), () => -1)
+  );
+  return i >= 0 ? Str.slice(i + 1)(p) : p;
 }
 
 function dirnameOf(p: string): string {
-  const i = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'))
-  return i >= 0 ? p.slice(0, i) : ''
+  const i = Math.max(
+    O.getOrElse(Str.lastIndexOf("/")(p), () => -1),
+    O.getOrElse(Str.lastIndexOf("\\")(p), () => -1)
+  );
+  return i >= 0 ? Str.slice(0, i)(p) : "";
 }

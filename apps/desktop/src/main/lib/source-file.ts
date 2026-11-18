@@ -1,6 +1,6 @@
 import { existsSync, statSync } from 'node:fs'
 import { extname, join } from 'node:path'
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 import { resolveLegacySocialMediaFile } from './social-media-file'
 
 const fileOk = (path: string | null | undefined): path is string =>

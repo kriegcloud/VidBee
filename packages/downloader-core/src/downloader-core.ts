@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type {
   CreateDownloadInput,

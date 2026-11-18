@@ -1,4 +1,4 @@
-import type { Task, TransitionEvent } from '@vidbee/task-queue'
+import type { Task, TransitionEvent } from '@vidbee/task-queue-legacy'
 
 interface DownloadActivitySource {
   list: (options: { cursor?: string | null; limit: number }) => {

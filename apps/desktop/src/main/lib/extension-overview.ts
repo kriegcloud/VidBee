@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { isDownloadTaskKind } from '@vidbee/task-queue'
+import { isDownloadTaskKind } from '@vidbee/task-queue-legacy'
 import { AI_OVERVIEW_PROMPT_ID } from '../../shared/ai-prompts'
 import type { AiPromptRunSnapshot } from '../../shared/ai-types'
 import type {

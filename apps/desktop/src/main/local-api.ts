@@ -1,9 +1,9 @@
 import crypto from 'node:crypto'
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { Task, TaskQueueEvent } from '@vidbee/task-queue'
+import type { Task, TaskQueueEvent } from '@vidbee/task-queue-legacy'
 
-import { projectTaskToLegacy } from '@vidbee/task-queue'
+import { projectTaskToLegacy } from '@vidbee/task-queue-legacy'
 import { app } from 'electron'
 import log from 'electron-log/main'
 import {

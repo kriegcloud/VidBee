@@ -1,4 +1,4 @@
-import type { Task, TaskCreationMetadata } from '@vidbee/task-queue'
+import type { Task, TaskCreationMetadata } from '@vidbee/task-queue-legacy'
 import {
   type AsrTierId,
   DEFAULT_ASR_TIER,

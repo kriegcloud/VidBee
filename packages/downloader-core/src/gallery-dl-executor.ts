@@ -11,9 +11,9 @@ import {
   type TaskOutput,
   type TaskProgress,
   virtualError
-} from '@vidbee/task-queue'
-import { killProcessTree } from '@vidbee/task-queue/process'
-import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
+} from '@vidbee/task-queue-legacy'
+import { killProcessTree } from '@vidbee/task-queue-legacy/process'
+import type { SocialCollectionSummary } from '@vidbee/task-queue-legacy/types'
 import { normalizeFacebookGalleryUrl } from './facebook-gallery'
 import { buildGalleryDlRuntimeArgs, INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from './instagram-profile'
 import { normalizePinterestUrl, PINTEREST_EXTRACTOR_ARGS } from './pinterest'

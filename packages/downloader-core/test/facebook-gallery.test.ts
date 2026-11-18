@@ -1,4 +1,4 @@
-import { TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import { TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import { describe, expect, it } from 'vitest'
 import { normalizeFacebookGalleryUrl } from '../src/facebook-gallery'
 import {

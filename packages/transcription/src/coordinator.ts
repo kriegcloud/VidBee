@@ -4,7 +4,7 @@ import {
   type TaskQueueAPI,
   type TaskQueueEvent,
   TRANSCRIBABLE_TASK_KINDS
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import type { TranscriptionProvider } from './cloud'
 import { enqueueTranscription } from './enqueue'
 import type { MemoryTranscriptStore } from './memory-store'

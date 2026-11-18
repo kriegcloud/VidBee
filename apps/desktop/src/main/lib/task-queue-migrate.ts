@@ -24,7 +24,7 @@ import {
   type Task,
   type TaskOutput,
   type TaskStatus
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import { app } from 'electron'
 import { scopedLoggers } from '../utils/logger'
 import { getDatabaseFilePath } from './database-path'

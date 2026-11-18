@@ -4,8 +4,12 @@ import type { SocialMediaOptions } from '@vidbee/downloader-core/social-media'
 import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
 import { defaultLanguageCode, type LanguageCode } from '@vidbee/i18n/languages'
 import type { SubscriptionDownloadPreferences } from '@vidbee/subscriptions-core/types'
-import type { DownloadCookieSource, TaskCreationMetadata, TaskKind } from '@vidbee/task-queue'
-import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
+import type {
+  DownloadCookieSource,
+  TaskCreationMetadata,
+  TaskKind
+} from '@vidbee/task-queue-legacy'
+import type { SocialCollectionSummary } from '@vidbee/task-queue-legacy/types'
 import type { AsrTierId } from '@vidbee/transcription/asr'
 import {
   DEFAULT_CLOUD_TRANSCRIPTION_MODEL,

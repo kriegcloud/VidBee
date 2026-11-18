@@ -1,6 +1,6 @@
 import { existsSync, statSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
-import { isDownloadTaskKind, type Task, type TaskQueueAPI } from '@vidbee/task-queue'
+import { isDownloadTaskKind, type Task, type TaskQueueAPI } from '@vidbee/task-queue-legacy'
 import { type AsrTierId, enqueueTranscription, type TranscriptStore } from '@vidbee/transcription'
 import type { TranscriptionProvider } from '@vidbee/transcription/cloud'
 import type { DownloadHistoryItem } from '../../shared/types'

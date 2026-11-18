@@ -1,3 +1,5 @@
+import * as A from "effect/Array";
+import * as Option from "effect/Option";
 /**
  * Generic min-heap ordered by a comparator. Used for:
  *  - Scheduler ready queue (priority-then-FIFO).
@@ -7,31 +9,34 @@
  * `remove()` can match by id.
  */
 export class MinHeap<T> {
-  private readonly data: T[] = []
-  constructor(private readonly cmp: (a: T, b: T) => number) {}
+  private readonly data: T[] = [];
+  private readonly cmp: (a: T, b: T) => number;
+  constructor(cmp: (a: T, b: T) => number) {
+    this.cmp = cmp;
+  }
 
   size(): number {
-    return this.data.length
+    return this.data.length;
   }
 
   peek(): T | undefined {
-    return this.data[0]
+    return this.data[0];
   }
 
   push(item: T): void {
-    this.data.push(item)
-    this.siftUp(this.data.length - 1)
+    this.data.push(item);
+    this.siftUp(this.data.length - 1);
   }
 
   pop(): T | undefined {
-    if (this.data.length === 0) return undefined
-    const top = this.data[0]!
-    const last = this.data.pop()!
+    if (this.data.length === 0) return undefined;
+    const top = this.data[0]!;
+    const last = this.data.pop()!;
     if (this.data.length > 0) {
-      this.data[0] = last
-      this.siftDown(0)
+      this.data[0] = last;
+      this.siftDown(0);
     }
-    return top
+    return top;
   }
 
   /**
@@ -39,47 +44,44 @@ export class MinHeap<T> {
    * which are rare relative to dispatch.
    */
   remove(pred: (item: T) => boolean): T | undefined {
-    const idx = this.data.findIndex(pred)
-    if (idx < 0) return undefined
-    const removed = this.data[idx]
-    const last = this.data.pop()!
+    const idx = Option.getOrElse(A.findFirstIndex(this.data, pred), () => -1);
+    if (idx < 0) return undefined;
+    const removed = this.data[idx];
+    const last = this.data.pop()!;
     if (idx < this.data.length) {
-      this.data[idx] = last
-      this.siftDown(idx)
-      this.siftUp(idx)
+      this.data[idx] = last;
+      this.siftDown(idx);
+      this.siftUp(idx);
     }
-    return removed
+    return removed;
   }
 
   toArray(): readonly T[] {
-    return this.data
+    return this.data;
   }
 
   private siftUp(idx: number): void {
-    let i = idx
+    let i = idx;
     while (i > 0) {
-      const parent = (i - 1) >> 1
-      if (this.cmp(this.data[i]!, this.data[parent]!) >= 0) return
-      ;[this.data[i], this.data[parent]] = [this.data[parent]!, this.data[i]!]
-      i = parent
+      const parent = (i - 1) >> 1;
+      if (this.cmp(this.data[i]!, this.data[parent]!) >= 0) return;
+      [this.data[i], this.data[parent]] = [this.data[parent]!, this.data[i]!];
+      i = parent;
     }
   }
 
   private siftDown(idx: number): void {
-    const n = this.data.length
-    let i = idx
+    const n = this.data.length;
+    let i = idx;
     while (true) {
-      const l = i * 2 + 1
-      const r = i * 2 + 2
-      let smallest = i
-      if (l < n && this.cmp(this.data[l]!, this.data[smallest]!) < 0) smallest = l
-      if (r < n && this.cmp(this.data[r]!, this.data[smallest]!) < 0) smallest = r
-      if (smallest === i) return
-      ;[this.data[i], this.data[smallest]] = [
-        this.data[smallest]!,
-        this.data[i]!
-      ]
-      i = smallest
+      const l = i * 2 + 1;
+      const r = i * 2 + 2;
+      let smallest = i;
+      if (l < n && this.cmp(this.data[l]!, this.data[smallest]!) < 0) smallest = l;
+      if (r < n && this.cmp(this.data[r]!, this.data[smallest]!) < 0) smallest = r;
+      if (smallest === i) return;
+      [this.data[i], this.data[smallest]] = [this.data[smallest]!, this.data[i]!];
+      i = smallest;
     }
   }
 }

@@ -450,3 +450,48 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
   console.log(JSON.stringify(await buildFixture(path.resolve(process.argv[2])), null, 2))
 }
+
+/** Generate tiny synthetic download inputs with the baseline's bundled encoder. */
+export async function buildLoopbackFixture(profileDir, build, command) {
+  const directory = path.join(profileDir, 'loopback-fixtures')
+  await mkdir(directory, { recursive: true })
+  const ffmpeg = path.join(build, 'resources/resources/ffmpeg/ffmpeg')
+  await command(ffmpeg, [
+    '-nostdin',
+    '-v',
+    'error',
+    '-f',
+    'lavfi',
+    '-i',
+    'testsrc2=size=160x90:rate=10:duration=2',
+    '-f',
+    'lavfi',
+    '-i',
+    'sine=frequency=440:sample_rate=16000:duration=2',
+    '-map_metadata',
+    '-1',
+    '-c:v',
+    'libx264',
+    '-threads',
+    '1',
+    '-c:a',
+    'aac',
+    '-movflags',
+    '+faststart',
+    path.join(directory, 'video.mp4')
+  ])
+  await command(ffmpeg, [
+    '-nostdin',
+    '-v',
+    'error',
+    '-f',
+    'lavfi',
+    '-i',
+    'sine=frequency=330:sample_rate=16000:duration=2',
+    '-map_metadata',
+    '-1',
+    '-c:a',
+    'pcm_s16le',
+    path.join(directory, 'audio.wav')
+  ])
+}

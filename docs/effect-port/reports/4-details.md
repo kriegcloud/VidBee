@@ -1,0 +1,532 @@
+# Phase 4 details: characterization, sequencing tables and implementation receipts
+
+The working record behind the [phase 4 report](4.md), written in three parts as the phase
+progressed (characterization of the old kernel, implementation, closing the declared changes).
+
+## Current status
+
+The Effect kernel and temporary compatibility package are implemented. Part 3
+closes the twenty characterization conflicts according to design section 9 and
+normalizes SQLite bigint integers through the shared SQL row codecs. The final
+local gate and final-source packaged/decode receipts appear below. Earlier Part 2
+receipts retain their historical scope; installation and hosted CI are not claimed.
+
+## Part 1 progress (historical pre-port baseline)
+
+The following checklist and subsequent characterization/sequencing/validation
+sections record Part 1 against the unchanged Promise kernel. Public API suites
+were subsequently moved to the compatibility package by import changes, with their
+assertions preserved. These historical gate counts are superseded by the current
+Implementation receipts below.
+
+- [x] 1. Real SQLite: memory and temporary file; all fifteen statements; three pragmas;
+  immediate transactions and rollback; descendant/attempt deletion with journal retention;
+  row-count attempt numbers; open-spawn chronology; maintenance cutoff/checkpoint failure;
+  owned/shared close; bigint sequence/count; missing progress; earliest-attempt backfill;
+  malformed JSON in all four columns through load/start; string/null/missing-fields/wrong-types
+  in all four columns through load/start; primitive-input backfill error; unknown root and nested
+  object/array keys through load, public transition, save and reload.
+- [x] 2. FSM: all 64 status pairs; completion-output/size and retry-time guards; all twelve
+  triggers; attempts, previous status, reasons, timestamps, progress/output/error retention,
+  PID clearing/retention and startedAt; exact IllegalTransitionError fields/messages.
+- [x] 3. Classifier: every regex alternative and near miss; first-match precedence; header/stderr
+  Retry-After seconds/date/precedence/fallback; all sanitizer patterns and classify redaction;
+  tail boundary, approximate truncation and multibyte limits; virtualError/defaultMaxAttempts.
+- [x] 4. Projection: eight statuses; percent clamp; bytes/speed/ETA; duration rounding; eighteen
+  kinds and audio detection; failed/cancelled completedAt; social manifest suppression;
+  baseline own undefined keys versus absent keys and all optional input/output/progress fields.
+- [x] 5. Lifecycle: concurrent start; failed-start latch and stop recovery; stop, post-stop
+  get/list/stats/subscribe/on/rename; repeated stop; empty restart and populated restart error;
+  finish during stop and after stop; idle/retry cleanup and retained watchdog.
+- [x] 6. Rollback: transition and rename restore by identity; add/importCompleted remove
+  unconditionally; relocate restores each identical snapshot; history deletion preserves store
+  until persistence succeeds. Each operation includes a concurrent replacement-object case.
+- [x] 7. Events: typed before wildcard, registration order, same-delivery addition/removal,
+  throw isolation, ignored rejected return promise, idempotent unsubscribe; exact success,
+  retry and cancel event life including progress and processing.
+- [x] 8. Admission: waiter before subscriber; aborted/pre-aborted waits; no permit leak;
+  platform/subdomain/www/case/port normalization, unrelated hosts, invalid URL, double release.
+- [x] 9. Sequencing: add, concurrent duplicate add, dispatch, running/queued pause/cancel,
+  success/retry finish, synchronous finish in run, spawn and slot release; store-visible state,
+  persistence start/settlement, events and promise settlement at three chained microtask markers.
+- [x] 10. Public scheduler: priority/FIFO; global/group/download caps; null group reset; shrink
+  selection; retry budget maximum, injected jitter and suggested delay; watchdog retry, idle
+  reconciliation/rearm and zombie grace boundary. Additional backoff-cap and tie tests below.
+- [x] 11. Linux helpers: spawn options; /proc own-process start time; injected reader and
+  liveness; process-tree group and fallback signals only on test-owned children.
+- [x] 12. Pre-port type declarations fixture, not imported by implementation or tests yet.
+- [x] Final combined suite: 180 cases pass ten consecutive runs; all four root gates pass.
+
+## Characterization
+
+| File under `packages/task-queue/test/` | Scope |
+| --- | --- |
+| `characterization-sqlite.test.ts` | Requirement 1: real better-sqlite3 connections, raw persisted fixtures and public queue cancellation |
+| `characterization-pure.test.ts` | Requirements 2–4 and 11: FSM, classifier, projection, owned process helpers |
+| `characterization-api.test.ts` | Requirements 5–8 and 10: lifecycle, rollback, events, admission and public scheduling |
+| `characterization-sequencing.test.ts` | Requirement 9: exact measured traces |
+| `fixtures/legacy-sequences.json` | Immutable trace oracle, each row includes store status/PID and slot count |
+| `fixtures/legacy-types.ts` | Requirement 12: original types plus event/executor/persist declaration sections; local type imports omitted when concatenated |
+
+The SQLite harness forwards to a real driver, including real transactions. A transparent callable
+proxy reconciles the old adapter's generic function-intersection declaration with better-sqlite3's
+reconstructed function type, without a cast or suppression. SQLite verbose traces pin actual SQL
+and transaction modes. A real held reader makes checkpoint fail with SQLITE_LOCKED.
+
+The sequence recorder attaches settlement observers to adapter promises and returns the original
+promise; it does not add an awaited wrapper. The expected traces were measured once against the
+unchanged old implementation, then tested as fixed assertions. Executor callbacks have no public
+promise: their return marker pins their synchronous prefix, and drained state pins continuation.
+
+The deliberately rejected listener promise has its own rejection handler to keep node:test from
+reporting an unrelated unhandled rejection. The listener returns that same rejected promise;
+queue delivery ignores the value and continues synchronously.
+
+## Sequencing tables
+
+Citations below are to the pre-port source. A row's synchronous work happens before its next
+await. An await of a settled promise still suspends. `undefined` pending admission also suspends.
+The shared mutex expansion applies wherever a table says `mutex`.
+
+### Scheduler lock and dispatch expansion
+
+| Stage | Synchronous work and suspension | Source |
+| --- | --- | --- |
+| acquire | An unlocked mutex marks locked and returns a release function in its async promise; a contended acquire first awaits the waiter promise. | `src/util/async-mutex.ts:10–17` |
+| mutex await 1 | `runExclusive` awaits acquire, including the unlocked case. | `src/util/async-mutex.ts:21` |
+| mutex body / await 2 | Executes body synchronously, then awaits its return (even a plain value); finally releases and synchronously grants next waiter. | `src/util/async-mutex.ts:23–25` |
+| enqueue await 1 | `ensureEnqueued` awaits mutex body that inserts one priority/FIFO entry if absent. | `src/scheduler/scheduler.ts:111–123` |
+| enqueue await 2 | Awaits `tryDispatch`. | `src/scheduler/scheduler.ts:124` |
+| dispatch await 1 | `tryDispatch` awaits mutex; body reserves eligible global/group/source slots and records dispatching IDs before executor IO. | `src/scheduler/scheduler.ts:272–287` |
+| dispatch await 2 | For each reserved ID, awaits phase owner `dispatchOne`, outside lock. | `src/scheduler/scheduler.ts:291` |
+| failure await 3 | If false/throw, awaits mutex to release admission and decrement reservation/group. No implicit new kick here. | `src/scheduler/scheduler.ts:300–309` |
+
+### Add and concurrent duplicate admission
+
+| Stage | Work / exact awaited value | Source |
+| --- | --- | --- |
+| synchronous prefix | Reads clock, caller ID and duplicate identity; validates parent. Existing-ID/duplicate branch awaits possibly absent pending insertion, then returns existing ID with no events. | `src/api/index.ts:402–420` (awaits 409, 418) |
+| new store write | Builds queued task, inserts in store, calls `persist.insertTask`, then records the returned promise in pending admissions. Store is visible before IO settles. | `src/api/index.ts:422–447` |
+| await 1 | Awaits insertion promise. Failure removes current ID unconditionally; finally removes pending admission. | `src/api/index.ts:448–455` |
+| event prefix | Emits transition null→queued then snapshot; both see queued state. | `src/api/index.ts:457–470` |
+| await 2 | Awaits scheduler enqueue (expanded above); normal path includes running persistence and executor run. | `src/api/index.ts:471` |
+| settlement | Resolves `{ id }` after enqueue. Concurrent duplicate resolves after insertion and before dispatch, so it can observe queued. | `src/api/index.ts:472`; `concurrent-add` trace |
+
+### Phase owner dispatch
+
+| Stage | Work / exact awaited value | Source |
+| --- | --- | --- |
+| synchronous prefix | Checks queued, creates attempt UUID, calls applyTransition; store immediately becomes running. | `src/api/index.ts:881–893` |
+| await 1 | Awaits running transition (`applyTransition` expansion below). IllegalTransition returns false; other failures propagate. | `src/api/index.ts:890–899` |
+| await 2 | Awaits `persist.insertAttempt` with PID -1 and hash of original input args. | `src/api/index.ts:903–910` |
+| executor synchronous tail | Installs attempt-finished promise then calls executor.run. Callback synchronous prefixes execute inside run. Installs active handle only if callbacks still accepted. | `src/api/index.ts:912–1026` |
+| thrown-run await 3 | Awaits failed applyTransition, then awaits releaseSlot; finally completes attempt and returns false. | `src/api/index.ts:1033`, `1038` |
+| settlement | Returns true after run returns. A synchronous finish has already stopped acceptance and started closeAttempt; no active handle is retained. | `src/api/index.ts:1003–1026`, `1044` |
+
+### Apply transition (shared by dispatch, pause, cancel and finish)
+
+| Stage | Work / exact awaited value | Source |
+| --- | --- | --- |
+| synchronous prefix | Reads current object, runs pure FSM with injected clock, optionally replaces input, writes new object to store. | `src/api/index.ts:1273–1290`, `1331` |
+| await | Awaits `persist.upsertTask`. On rejection restores old object only when current object is identical to the written one. | `src/api/index.ts:1333–1340` |
+| events / settlement | Emits transition then snapshot and resolves next object. | `src/api/index.ts:1342–1358` |
+| panic branch await 1 | An illegal FSM edge first awaits panic journal append. | `src/api/index.ts:1293–1302` |
+| panic branch await 2 | If old status not completed/cancelled, computes failed fallback, writes store, awaits upsert, emits only failed transition, then throws original illegal error. Fallback FSM may itself throw. | `src/api/index.ts:1304–1328` (await 1313) |
+
+### Pause
+
+| Branch | Work / awaited values in order | Source |
+| --- | --- | --- |
+| missing/other | Returns with no change. | `src/api/index.ts:723–727`, `750` |
+| queued | Await scheduler.dequeue (mutex expansion), then await applyTransition paused. Public promise resolves after transition and snapshot. | `src/api/index.ts:729–731` |
+| retry-scheduled | Synchronously removes retry timer entry, then awaits applyTransition paused. | `src/api/index.ts:734–736` |
+| running/processing | Sets pending pause reason, awaits executor.pause. Does not itself change status or wait for finish. On executor rejection removes pending reason and logs. | `src/api/index.ts:739–748` |
+| settlement markers | Running pause's executor command starts before method return; settlement observer runs between markers 1 and 2; queued pause starts persistence after marker 3. | `pause-running` / `pause-queued` traces |
+
+### Cancel
+
+| Branch | Work / awaited values in order | Source |
+| --- | --- | --- |
+| prefix | Reads task, sets pending cancel and deletes pending pause. Missing/terminal return; terminal removes intent. | `src/api/index.ts:662–672` |
+| queued/paused | Await scheduler.dequeue (mutex); remove retry, clear pending intent; await cancelled applyTransition; return. | `src/api/index.ts:674–682` |
+| retry-scheduled | Remove retry, clear intent, await cancelled applyTransition; return. | `src/api/index.ts:684–691` |
+| running/processing await 1 | Calls applyTransition immediately: store cancelled and upsert starts before method return; awaits durable cancellation before signal. | `src/api/index.ts:695–699` |
+| no active handle await 2 | Clear intent and await scheduler.releaseSlot, then return. | `src/api/index.ts:701–705` |
+| active await 2 | Await executor.cancel; rejection is logged; finally removes intent. Does not await finish or slot release. | `src/api/index.ts:708–714` |
+| settlement markers | Running cancel store is cancelled at return, transition events precede signal, settlement follows marker 3. Queued cancel starts upsert after marker 3. | `cancel-running` / `cancel-queued` traces |
+
+### Executor spawn
+
+| Stage | Synchronous work and detached writes | Source |
+| --- | --- | --- |
+| callback prefix | Rejects stale callback; resolves PID start time. Calls ProcessRegistry.recordSpawn without awaiting. That updates registry and starts spawn journal append before its first await. | `src/api/index.ts:936–947`; `src/process/registry.ts:57–70` (await 60) |
+| store / PID write | Reads store and skips absent/terminal; writes PID snapshot, starts upsert without awaiting, arms watchdog. No queue events. | `src/api/index.ts:948–959` |
+| callback return | Both writes have started; journal observer settles before upsert observer. Store already has PID at return. | `spawn` trace |
+
+### Finish success, error/retry, cancelled and synchronous finish
+
+| Stage / branch | Work / awaited values in order | Source |
+| --- | --- | --- |
+| callback prefix | Stops accepting events synchronously, starts handleFinish detached; pause/cancel intent overrides result to cancelled, else stalled error overrides result. `.catch().finally(completeAttempt)` runs later. | `src/api/index.ts:998–1017` |
+| handleFinish prefix / await 1 | Disarms watchdog, deletes active handle, awaits finishAttempt. Failure logged. | `src/api/index.ts:1065–1070` |
+| success after cancelled | Await closeAttempt(exit 0), await recordClose journal, return with no transition. | `src/api/index.ts:1093–1104` |
+| valid success | Probe output synchronously; await closeAttempt, await recordClose; check cancellation again; await completed applyTransition. | `src/api/index.ts:1107–1128` (awaits 1110, 1119, 1123) |
+| invalid success | Await closeAttempt(output-missing), await recordClose, check cancellation, await failed applyTransition. | `src/api/index.ts:1130–1148` (awaits 1130, 1139, 1143) |
+| cancelled | Captures/deletes pending pause before branch; await closeAttempt, await recordClose(SIGTERM), consume pending cancel, then await paused or cancelled transition only if still running/processing. | `src/api/index.ts:1088–1089`, `1157–1182` (awaits 1157, 1166, 1172/1177) |
+| error | Await closeAttempt, await recordClose; return if cancelled; synchronously emit error-classified, combine configured/default attempts by maximum and compute retry. | `src/api/index.ts:1187–1215` (awaits 1189, 1198) |
+| retry/error final await | Await retry-scheduled transition, then synchronously enqueue retry timer; otherwise await failed transition. | `src/api/index.ts:1216–1230` (awaits 1216/1224) |
+| recordClose expansion | Deletes process handle and awaits appendJournal wrapper; wrapper itself awaits persist.appendJournal. These are two distinct suspension layers. | `src/process/registry.ts:73–90`, `202–221` (awaits 81, 210) |
+| handleFinish final await | Always awaits scheduler.releaseSlot, including when finalization failed. Then detached catch/finally completes attempt. | `src/api/index.ts:1071–1073`, `1016–1017` |
+| synchronous finish in run | CloseAttempt starts inside run; active handle is not installed. Add may resolve after completed store write starts but before completed persistence observer/events; trace pins this exact ordering. | `sync-finish` trace |
+
+### Slot release
+
+| Stage | Work / awaited values in order | Source |
+| --- | --- | --- |
+| await 1 | Await mutex; body synchronously releases source admission before deleting running reservation and decrementing group. Release grants admission waiter before notifying subscribers, whose scheduler kick starts detached. | `src/scheduler/scheduler.ts:165–177`; `src/source-admission.ts:49–60` |
+| await 2 | Await tryDispatch (full expansion above), which can start next task before release resolves. | `src/scheduler/scheduler.ts:178` |
+| visibility | Completed transition/snapshot still see old slot; next queued task is running by final drain; no artificial slot-release event. | `slot-release` trace |
+
+### Representative promise timing
+
+With a three-marker queueMicrotask chain scheduled immediately after calling the operation:
+
+| Operation | Position of public settlement observer |
+| --- | --- |
+| hasTask on settled adapter | After marker 1, before marker 2 |
+| running pause on settled executor | After marker 1, before marker 2 |
+| new add with available scheduler | After marker 3, after executor.run |
+| concurrent duplicate add | After marker 1, before marker 2, before initial dispatch |
+| running cancel | After marker 3; cancellation persistence/events precede executor command |
+| queued pause/cancel | After marker 3, after persistence/events |
+
+These are exact array assertions, not inequalities or eventual-only checks. No extra-turn behavior
+change is approved by this characterization; the Effect compatibility bridge must match them or
+record a measured deliberate change as required by the design.
+
+## For OWNER-REVIEW
+
+These are measured old behaviors, preserved here rather than fixed:
+
+1. A failed start keeps `started` true. Another start resolves without retry; stop is needed.
+   Empty restart succeeds; populated restart throws `TaskStore: duplicate id …`.
+2. Stop clears idle/retry timers and waits executor cancellation, but leaves watchdog armed and
+   permits finish, reads and subscriptions after stop. Finalization can write after close.
+3. Transition/rename/relocate rollback is identity-guarded; add/import rollback unconditionally
+   removes the ID even after a replacement snapshot has been written.
+4. `setMaxPerGroup(key, null)` deletes an override, restoring the default cap. It does not mean
+   unlimited if the queue has a finite default. Global shrink dispatches its follow-up detached;
+   awaiting the setter alone need not await the newly started executors.
+5. SQLite progress writes overwrite `updatedAt` with SQL wall-clock seconds; conflict upserts
+   retain original `createdAt`. Attempt numbering uses remaining row count and can duplicate.
+6. Wrong-shaped JSON usually loads unchanged; null input fails reading options, primitive input
+   with attempt backfill fails assigning options. JSON `null` progress stays null while absent/
+   empty SQL progress defaults. Malformed JSON yields native SyntaxError without task/column.
+7. Bigint sequence/count become numbers (sequence may lose precision); other returned integer
+   columns can stay bigint. closeAttempt ignores supplied taskId and keys on attemptId.
+8. FSM does not validate trigger/edge correspondence; NaN/Infinity pass size/retry guards.
+   Manual requeue keeps old output and resets completedAt to an own undefined key.
+9. virtualError preserves raw secret-like text; classify sanitizes after matching original text.
+   Tail truncation is approximate (8193 ASCII bytes becomes 7374). Custom limits below ten can
+   make its loop stop progressing; hanging inputs are not executed in-process by this suite.
+10. Projection emits error category/key on nonfailed tasks but error text only on failed tasks;
+    speed/ETA/total-only progress has no progress object. Social manifest suppression can still
+    leave manifest-directory downloadPath and undefined outputDirectory. Options summary ignored.
+11. Typed/wildcard listeners use live set iteration: added listeners run in the same delivery,
+    removed listeners are skipped, throws logged, returned rejected promise ignored.
+
+## Validation and limits
+
+Final receipts (all exit 0):
+
+| Command | Result |
+| --- | --- |
+| `bunx tsx --test packages/task-queue/test/characterization-*.test.ts`, ten consecutive runs | 180 pass, zero fail on every run |
+| `bun run check` | Four Turbo checks successful; 8 ported configurations, zero violations |
+| `bun run test` | 396 audit tests, ported Vitest suites and 3 checker tests pass |
+| `bun run deps:check` | No issues found |
+| `bun run port:check` | 8 ported configurations, zero violations |
+| `bun run --cwd packages/task-queue typecheck` | Package source typecheck passes |
+| Standalone strict `tsc` including the four new suites and legacy-types fixture | Passes (package's current config includes only source) |
+| `git diff --exit-code -- packages/task-queue/src` | Empty source diff |
+
+The db Vitest gate retains its existing skip report and runs isolated driver passes as configured.
+These tests do not add skips on Linux. Logs and exact standalone command are listed in this part
+handoff. Ten repeated runs include the real file driver and test-owned process termination.
+ No source file under
+`packages/task-queue/src` is changed. No application is launched or signalled. Linux process
+signals target only children spawned by the tests. No packaged build/goldens, real owner database,
+non-Linux runtime or Effect implementation has been verified in part 1; the phase owner owns
+those separate proof obligations.
+
+## Implementation
+
+The reviewed two-package design is implemented. Part 3 rewrites only the twenty
+cases explicitly declared changed by design section 9, retaining their former
+expectations in comments. Nullable output/error JSON and all other characterization
+assertions remain unchanged. The same SQL layer now converts every bigint numeric
+projection with `Number`, including the documented loss of precision, for both SQL
+clients; ordinary number-mode results retain their values. Native and compatibility
+tests, root gates and final packaged proof are recorded below. Part 1 and Part 2
+receipts describe their earlier snapshots.
+
+### Progress
+
+- [x] Mutable schema-backed domain/request/event/executor models, named literal kits and tagged errors.
+- [x] Pure modules, synchronous SHA-256 and compile-only old/new public-type checks.
+- [x] Injectable native operation services, callback wiring, SQL/memory persistence and compatibility runtime.
+- [x] Consumer/package/bundle/gate wiring, internal test migrations, TestClock and recording seams.
+- [x] Execute every static/unit/catalog/ratchet gate; Part 3 resolves all twenty declared assertion conflicts.
+- [x] Both SQL-client suites and sanitized golden/owner-copy row decode proofs.
+- [x] Linux and CLI builds, archive-integrity/unresolved-import checks, five full golden comparisons.
+- [x] Final exact-build manual MCP exercise and CLI artifact restoration receipt.
+- [x] Final consolidated scratch handoff.
+- [x] Part 3: twenty declared-change rewrites, all-integer SQL normalization and precision-loss proof.
+- [x] Part 3: full green gate, final Linux/CLI build, full golden and both-client 820/820 decode proof.
+- [x] Part 3: CLI/golden/source-copy preservation audit and scratch `HANDOFF.md`.
+
+### Architecture, compatibility surface and consumers
+
+`TaskQueue` consumes the supplied `Scheduler`, `RetryScheduler`, `Watchdog` and
+`ProcessRegistry` operation services alongside persistence, executor, store,
+events, admission, clock/timers, random, output probe, process control and legacy
+timing. `TaskQueueHooks` binds dispatch/demotion/retry/stall handlers before the
+queue is exposed, resolving the callback dependency cycle. `internalLayers`
+composes the live internal services; callers can substitute their own operation
+services, as the native injection test demonstrates.
+
+`TaskQueueAPI` uses one warmed `ManagedRuntime` per instance. Runtime context keeps
+the node logger and `PreventSchedulerYield` reference. Synchronous methods work
+before start. Promise methods use `runFork` and an exit observer, with original
+host failures mapped at that observer. `stop` does not dispose the runtime, so
+post-stop reads, empty restart and in-flight finalization remain possible.
+Detached writes start immediately at their old positions. All twelve exact
+characterized microtask/store/persistence/event/settlement traces pass; no residual
+fixed promise-settlement change is declared.
+
+The temporary unported package exports the old `TaskQueueAPI`, request/options,
+domain/callback types, persistence adapters, executor router, admission class,
+FSM wrapper/error, classifiers, projection, predicates and constants. Subpaths
+remain `types`, `schemas`, `fsm`, `classifier`, `scheduler`, `executor`, `persist`,
+`events`, `process`, `projection`, `complete`, `download-identity` and
+`source-admission`. `scheduler` retains the pure backoff helper; `events` exposes
+types, and `process` retains the synchronous helpers. Unused internal classes have
+no compatibility implementation. Four used zod schemas remain; fourteen unused
+schemas are deleted. Constants that historically were Sets remain real Sets in
+the compatibility package. Both packages' type/schema entries bundle for the
+browser without Node or process-driver imports.
+
+Users are desktop, CLI, `downloader-core`, `transcription`, `browser-capture` and
+`subscriptions-core`. Consumer source changes are import specifiers. Two desktop
+imports needed line wrapping after the longer specifier crossed the legacy
+formatter's limit. A desktop lifecycle test's fixture import also follows the
+compatibility package. Manifests, desktop `bundledWorkspacePackages`, root audit
+and Turbo filters and Biome scope follow the split. The benchmark now uses the
+native store through a benchmark-local runtime. Unused compatibility `ulid` is
+removed; another package still uses the root catalog pin.
+
+### Data, services and test coverage
+
+Schemas preserve mutable struct keys, arrays and record values where the old
+types were mutable, and shallow readonly snapshot/event views where required.
+All 47 old aliases, including callback and persistence types, are checked in both
+directions with mutation-site checks. The fixture is interpreted under its original
+compatibility configuration (`exactOptionalPropertyTypes: false`): reinterpreting
+old optional declarations under `true` changes their meaning and rejects existing
+explicit `undefined` assignments. Native configuration remains unchanged and
+strict, with no override, cast-based diagnostic bypass or suppression added.
+
+Persisted JSON codecs are open at every nested typed object. Unknown options and
+unknown array-element fields survive SQL/memory round trips. Read decoding applies
+the semantic schemas; writes use Schema JSON Unknown serialization, preserving
+old key order and host-input behavior without adding validation of typed in-process
+calls. Missing progress defaults and earliest-attempt timestamp backfill remain.
+SQL transactions retain `BEGIN IMMEDIATE`; rows and projections are decoded, and
+closing/ownership/journal-age options remain on the original host connection.
+
+The native suites pass **43 tests in eleven files**. They include the migrated
+store, timer, process-recovery and additional Scheduler assertions; TestClock;
+recording timer handle-0/count/rearm checks; SQL/memory persistence; SHA-256 vectors;
+primitives; default-layer boundary fakes; and replacement of all four internal
+operation services. Public node:test suites remain in the compatibility package:
+**202/202 passing in Part 3**, including the added precision-loss case.
+The focused lifecycle/API/sequencing/identity/reentrancy selection passes **51/51**.
+All other characterization assertions are unchanged; the twenty design-declared rewrites are listed below.
+
+Two additional Scheduler-internal suites existed in `source-admission` and
+`upstream-sync` beyond the three internal suites named in design section 10. Their
+inputs/assertions moved to native tests. Internal Scheduler priorities stay numeric
+because an existing case uses `1`; public persisted `Task.priority` remains
+`0 | 10 | 20`. The feed timer case remains an unported test in the compatibility
+suite because it exercises `subscriptions-core`.
+
+The shared SQL suite passes **6/6** with the borrowed client and **6/6** with the
+node client in separate processes; memory tests pass separately. The golden
+fixture's **10/10** and owner-copy database's **820/820** task rows decode with each
+client. Only counts and sanitized paths are recorded; no owner row content enters
+the repository, report or handoff. The integration fix in the db package also
+passes its strict/Biome gate, borrowed-client **20/20**, native-client **20/20** in
+separate processes, and adapter **8/8**. A Node import and actual borrowed-query
+smoke each produce no stdout/stderr, including an import with `node:sqlite`
+resolution blocked.
+
+### Regressions found by the broader proof
+
+The packaged golden suite caught two regressions that local characterization had
+not covered. Semantic validation on SQL writes changed invalid-add from HTTP 200
+to 500; writes now serialize through Schema JSON Unknown while read schemas remain.
+The borrowed db adapter's runtime import of the native SQLite client also caused
+`node:sqlite` ExperimentalWarning output on remote CLI reads. Its native client
+shape is now type-only, while the borrowed provider keeps the exact public foreign
+service key and TypeId. No warning is suppressed and no golden is changed.
+
+A scratch old/new probe confirmed a reentrant insert ordering difference. The
+old host insert adapter's synchronous prefix ran before the pending-admission
+Promise was published. The queue now starts that write immediately before
+publishing its Deferred, then joins it with the same rollback/error mapping. Both
+old and corrected implementations let the inner same-id add settle before insert
+release. The new regression assertion passes alongside every old sequencing trace.
+
+The listener audit also removed inactive callback retention introduced by the
+initial ordered-array implementation. Delivery/notification depth preserves live
+iteration; unsubscription prunes immediately outside traversal and outermost
+completion prunes deferred tombstones. The facade weakly caches admission callback
+Effects to preserve Set deduplication. Re-registration and stale unsubscribe
+identity semantics are covered by new tests, including a probe against the old
+admission implementation.
+
+One earlier archive failed its own integrity hashes and Electron rejected it
+before app JavaScript. A quiescent rebuild produced a valid archive. The exact
+cause of that earlier offset corruption is not established; final declaration
+emitters/checks complete before packaging begins.
+
+### Part 2 verification (historical)
+
+| Command or proof | Exit/result |
+| --- | --- |
+| `bun run check` | 0; legacy checks and all ported source/test checks pass. |
+| `bun run test` | 1; 381 audit cases, 361 passing, exactly the twenty retained SQLite conflicts fail. |
+| `bun run --cwd packages/task-queue check` | 0; strict source/tests and Biome pass. |
+| `bun run --cwd packages/task-queue test` | 0; 43/43 in eleven files. |
+| `bun run --cwd packages/task-queue-legacy check` | 0; compatibility source and public-type fixture pass, also included in the root check. |
+| `bun run deps:check` | 0; no catalog issues. |
+| `bun run port:check` | 0; ten ported configurations, zero violations; compatibility remains unported. |
+| Other ported package tests and checker/type-fixture scripts | Pass independently; root audit failure otherwise short-circuits these stages. |
+| `bun run build:linux` | 0 on the final frozen source, with writers quiescent. |
+| `bun run --cwd apps/cli build` | 0 on that same source. |
+| Archive integrity/bundling | Package JSON and sampled main/renderer integrity hashes match; 84 main JS files have zero unresolved `@vidbee/task-queue*` imports; CLI has no native SQLite import. |
+| `bun run test:golden --scratch <lane-scratch>` five times | Each run: 358 comparisons, zero failures, same final package, no golden changes. Harness durations: 26.2, 26.6, 30.1, 26.4 and 26.1 seconds. |
+| Deliberate regression proof | Scratch-only expected capacity mutation from 5 to 6 is detected at `$.body.capacity`; four normalizer regression tests also pass. No committed golden is altered. |
+
+On the exact final archive, the offline manual MCP exercise imported the supplied
+local WAV, queued an MP3 conversion, observed pause → paused, resume → running,
+cancel → cancelled, retry → running and pause → paused. After restarting from that
+isolated profile, the same conversion remained paused and the boot log explicitly
+reported **3 persisted tasks** at the isolated SQLite path, proving persistence
+rather than memory fallback. MCP resumed it and observed completed; physical and
+reported output sizes both equal **10,931,769 bytes**. The longer WAV repeats the
+supplied sample so conversion stays active long enough to exercise those actions.
+Automatic ASR work was cancelled; model/transcription success is not claimed.
+Both owned launches and their descendants were cleaned up. No owner application,
+profile or service was accessed.
+
+All **12 CLI process-exit cases** and **7 SQLite local-client process-exit cases**
+exit naturally with the same codes as the baseline. Renderer-safe entry bundling
+was repeated successfully for all four type/schema entries. After all package,
+golden, CLI and manual proofs, tracked `apps/cli/dist/index.mjs` was restored to
+its exact HEAD bytes. Goldens have zero diff and the final diff whitespace check
+is clean. No staging, commit or push was performed. Scratch `HANDOFF.md` consolidates
+the exact commands, logs, unresolved contract choices and intended commit boundaries.
+Golden local-ASR success remains outside the proof when models are absent.
+
+### Remaining proof limits
+
+Part 3 resolves all twenty Part 2 assertion conflicts under design section 9.
+The historical Part 2 failure counts above are superseded by final verification.
+
+The old SQLite options can accept an opaque structural wrapper that omits
+`inTransaction`. The adapter tracks its own transactions through such a wrapper
+so rollback stays correct. A transaction begun externally behind that opaque
+wrapper cannot be detected from its old interface. Real host handles expose the
+state, and borrowed/savepoint behavior is covered; the opaque external case remains
+unverified. Native default process-command parsing/liveness has fake Linux proof;
+actual native signalling and macOS/Windows execution are not claimed. The packaged
+app uses the unchanged compatibility process helpers.
+
+### Characterization assertions rewritten to declared changes
+
+Each title below names the old and new behavior; the corresponding test keeps its
+exact former expectation beside the new assertion as a `// Before the port:`
+comment. Every skip case checks direct loading, the started queue, a healthy peer,
+the complete unchanged stored row, and one error-level record per read containing
+only task id, column and schema issue path. Syntax cases check `instanceof
+SyntaxError` and the exact task/column message.
+
+| Test title | Old behavior | New behavior | Design item |
+| --- | --- | --- | --- |
+| `SQLite malformed input_json: load and start formerly rejected with native text, now reject with task/column SyntaxError` | `SyntaxError`: `Expected property name or '}' in JSON at position 1 (line 1 column 2)` | `SyntaxError`: `Cannot decode task corrupt column input_json` | 9.2 |
+| `SQLite malformed progress_json: load and start formerly rejected with native text, now reject with task/column SyntaxError` | `SyntaxError`: `Expected property name or '}' in JSON at position 1 (line 1 column 2)` | `SyntaxError`: `Cannot decode task corrupt column progress_json` | 9.2 |
+| `SQLite malformed output_json: load and start formerly rejected with native text, now reject with task/column SyntaxError` | `SyntaxError`: `Expected property name or '}' in JSON at position 1 (line 1 column 2)` | `SyntaxError`: `Cannot decode task corrupt column output_json` | 9.2 |
+| `SQLite malformed last_error_json: load and start formerly rejected with native text, now reject with task/column SyntaxError` | `SyntaxError`: `Expected property name or '}' in JSON at position 1 (line 1 column 2)` | `SyntaxError`: `Cannot decode task corrupt column last_error_json` | 9.2 |
+| `SQLite wrong-shaped input_json "object-expected": formerly loads unchanged, now skips and logs` | Both load and queue return `"object-expected"` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped input_json null: formerly throws, now skips and logs` | `TypeError`: `Cannot read properties of null (reading 'options')` | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped input_json {}: formerly loads unchanged, now skips and logs` | Both load and queue return `{}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped input_json {"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}: formerly loads unchanged, now skips and logs` | Both load and queue return `{"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped progress_json "object-expected": formerly loads unchanged, now skips and logs` | Both load and queue return `"object-expected"` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped progress_json null: formerly loads unchanged, now skips and logs` | Both load and queue return `null` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped progress_json {}: formerly loads unchanged, now skips and logs` | Both load and queue return `{}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped progress_json {"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}: formerly loads unchanged, now skips and logs` | Both load and queue return `{"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped output_json "object-expected": formerly loads unchanged, now skips and logs` | Both load and queue return `"object-expected"` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped output_json {}: formerly loads unchanged, now skips and logs` | Both load and queue return `{}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped output_json {"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}: formerly loads unchanged, now skips and logs` | Both load and queue return `{"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped last_error_json "object-expected": formerly loads unchanged, now skips and logs` | Both load and queue return `"object-expected"` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped last_error_json {}: formerly loads unchanged, now skips and logs` | Both load and queue return `{}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite wrong-shaped last_error_json {"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}: formerly loads unchanged, now skips and logs` | Both load and queue return `{"kind":42,"url":false,"percent":"wrong","size":"wrong","retryable":"wrong"}` unchanged | Row skipped; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite primitive input with an attempt formerly fails timestamp backfill, now skips and logs` | `TypeError`: `Cannot create property 'options' on string 'object-expected'` from load/start | Row skipped before backfill; healthy peer retained; stored row untouched; sanitized error log | 9.1 |
+| `SQLite bigint mode: formerly only sequence/count normalized, now every integer becomes a number` | Attempt number `2n`, PID `123n`; sequence/count already converted with precision loss | Attempt number `2`, PID `123`; every numeric projection normalized | 9.4 |
+
+The added case `SQLite bigint mode loses precision above 2^53 in every
+unconstrained integer field` stores `9007199254740993n` and expects
+`9007199254740992` for task timestamps, attempt/max attempts, retry timestamp,
+PID/start time, attempt number/times/exit code, journal sequence/time/PID/start
+time/exit code and the earliest-attempt backfill projection. Valid priority and
+EXISTS also normalize correctly; their constrained values cannot exceed 2^53.
+Count normalization is exercised by inserting consecutive attempts in safe mode.
+No other characterization assertion changes.
+
+### Final verification (Part 3)
+
+All commands below exit **0**. Evidence filenames are relative to the Part 3
+scratch directory (`4c` beside this part brief); the node SQL suite runs in its own
+process. No check/declaration writer overlaps desktop packaging.
+
+| Command or proof | Exit/result | Evidence |
+| --- | --- | --- |
+| `bun run check` | 0; legacy and strict source/test checks; ten ported configs, zero violations | `root-check.log` |
+| `bun run test` | 0; 382/382 audit cases, all five ported package test tasks, checker/type fixtures | `root-test.log` |
+| `bun run deps:check` | 0; no catalog issues | `deps.log` |
+| `bun run port:check` | 0; ten ported configurations, zero violations | `port.log` |
+| `bun run --cwd packages/task-queue check` | 0; strict source/test and Biome | `kernel-check.log` |
+| `bun run --cwd packages/task-queue test` | 0; 43/43 across eleven files | `kernel-test.log` |
+| `bun run --cwd packages/task-queue build` | 0 | `kernel-build.log` |
+| `bun run --cwd packages/task-queue-legacy check` | 0 | `legacy-check.log` |
+| `bun run --cwd packages/task-queue-legacy typecheck` | 0 | `legacy-typecheck.log` |
+| Compatibility tests (`bunx tsx --test packages/task-queue-legacy/test/*.test.ts`) | 0; 202/202, including all 33 SQLite cases | `legacy-test.log` |
+| Shared SQL persistence suite, native client in separate process | 0; 6/6 (borrowed 6/6 in kernel test above) | `sql-node.log` |
+| `bun run build:linux` | 0; final source tree, with `/usr/bin/uv` available through scratch PATH | `build-linux.log` |
+| `bun run --cwd apps/cli build` | 0 | `cli-build.log` |
+| `bun run test:golden --scratch <lane-scratch>/golden` | 0; 358 comparisons, zero failures, 28.2 seconds; zero golden changes | `golden.log`, `golden/suite-BvWTyV/result.json` |
+| Seed fixture decode, both clients in separate processes | 0; 9/9 seeded tasks, no schema failure | `decode-golden-borrowed.log`, `decode-golden-node.log` |
+| Post-suite golden fixture decode, both clients in separate processes | 0; 10/10 task rows, no schema failure | `decode-golden-run-borrowed.log`, `decode-golden-run-node.log` |
+| Owner-copy decode, both clients in separate processes | 0; 820/820 task rows, no schema failure; source hash unchanged | `decode-owner-borrowed.log`, `decode-owner-node.log`, `preservation-source.json` |
+| Test-diff scope / CLI artifact / golden preservation | 0; only twenty declared cases plus helper/import/new bigint case; exact HEAD CLI dist; zero golden changes; whitespace clean | `final-preservation.json` |
+
+The one full Part 3 golden run is on the final source tree and supersedes the
+Part 2 archive for automated packaged proof. The Part 2 manual MCP/restart and
+five-run stability receipts above remain evidence for that prior archive; a
+manual exercise was not repeated for this numeric-codec-only Part 3 change.
+Hosted CI, installation/dogfooding, local ASR success without models, and native
+macOS/Windows signalling remain outside this part's proof. No owner application
+or live profile was accessed, and the prior lane's owner database was copied
+before opening it. The source database was never opened by either SQL client.
+No staging, commit, push, or golden update was performed.

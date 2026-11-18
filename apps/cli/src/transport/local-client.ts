@@ -10,7 +10,7 @@
  * cleanly without leftover SQLite files; pass `persist: 'sqlite'` to opt
  * into crash-recovery.
  *
- * Imports of `@vidbee/task-queue` and `@vidbee/downloader-core` are kept
+ * Imports of `@vidbee/task-queue-legacy` and `@vidbee/downloader-core` are kept
  * as dynamic imports so the parser/probe path can run without those
  * runtime dependencies resolved (e.g. an `npx @vidbee/cli` install that
  * skipped optional yt-dlp deps).
@@ -21,7 +21,7 @@ import { createRequire } from 'node:module'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import type { AddTaskRequest, Executor, Task, TaskQueueAPI, TaskStatus } from '@vidbee/task-queue'
+import type { AddTaskRequest, Executor, Task, TaskQueueAPI, TaskStatus } from '@vidbee/task-queue-legacy'
 
 import type { ContractClient, ListInput } from '../subcommands'
 
@@ -62,7 +62,7 @@ export interface LocalClientHandle extends ContractClient {
  * ContractClient and a teardown handle.
  */
 export async function createLocalClient(opts: LocalClientOptions = {}): Promise<LocalClientHandle> {
-  const taskQueue = await import('@vidbee/task-queue')
+  const taskQueue = await import('@vidbee/task-queue-legacy')
   const downloaderCore = await import('@vidbee/downloader-core')
   const tqDb = await import('@vidbee/db/task-queue')
 

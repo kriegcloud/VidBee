@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { type Task, type TaskCreationMetadata, TERMINAL_STATUSES } from '@vidbee/task-queue'
+import { type Task, type TaskCreationMetadata, TERMINAL_STATUSES } from '@vidbee/task-queue-legacy'
 import { type AsrTierId, isAsrTierId } from '@vidbee/transcription/asr'
 import { getDesktopTaskQueueRef } from './queue-ref'
 

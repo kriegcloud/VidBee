@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@vidbee/downloader-core": "workspace:^",
-    "@vidbee/task-queue": "workspace:^",
-    "playwright-core": "catalog:"
+    "playwright-core": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "catalog:",

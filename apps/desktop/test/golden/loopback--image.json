@@ -1,0 +1,96 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "image",
+    "url": "http://127.0.0.1:<port>/image.png",
+    "status": "completed",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": "loopback-image.png",
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": {
+      "filePath": "<run>/downloads/loopback-image/loopback-image.png",
+      "size": 68,
+      "durationMs": null,
+      "sha256": null,
+      "formatId": "0",
+      "cookieSources": []
+    },
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "completed"],
+  "history": [
+    {
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/image.png",
+      "title": "image",
+      "type": "video",
+      "status": "completed",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "fileSize": 68,
+      "downloadPath": "<run>/downloads/loopback-image",
+      "savedFileName": "loopback-image.png",
+      "filePath": "<run>/downloads/loopback-image/loopback-image.png",
+      "resolvedFormatId": "0",
+      "cookieSources": [],
+      "channel": "Generic",
+      "uploader": "Generic",
+      "origin": "agent",
+      "taskKind": "video"
+    }
+  ],
+  "file": {
+    "size": 68,
+    "name": "loopback-image.png",
+    "probe": {
+      "streams": [
+        {
+          "codec_name": "png",
+          "codec_type": "video",
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "format": {
+        "format_name": "png_pipe",
+        "size": "68"
+      }
+    }
+  },
+  "queue": {
+    "total": 4,
+    "byStatus": {
+      "queued": 0,
+      "running": 0,
+      "processing": 0,
+      "paused": 0,
+      "retry-scheduled": 0,
+      "completed": 4,
+      "failed": 0,
+      "cancelled": 0
+    },
+    "running": 0,
+    "queued": 0,
+    "capacity": 5,
+    "groupCount": 4
+  }
+}

@@ -14,8 +14,8 @@
  * SSE stream available at `/automation/v1/events`.
  */
 
-import type { Task, AddTaskRequest } from '@vidbee/task-queue'
-import { TERMINAL_STATUSES } from '@vidbee/task-queue'
+import type { Task, AddTaskRequest } from '@vidbee/task-queue-legacy'
+import { TERMINAL_STATUSES } from '@vidbee/task-queue-legacy'
 
 import type { ContractClient } from '../subcommands'
 

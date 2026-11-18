@@ -1,4 +1,3 @@
-import * as SqliteClient from "@effect/sql-sqlite-node/SqliteClient";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -11,8 +10,12 @@ import * as Stream from "effect/Stream";
 import * as Client from "effect/sql/SqlClient";
 import { classifySqliteError, SqlError } from "effect/sql/SqlError";
 import * as Statement from "effect/sql/Statement";
+import type * as SqliteClient from "@effect/sql-sqlite-node/SqliteClient";
 import type BetterSqlite3 from "better-sqlite3";
 import type * as Connection from "effect/sql/SqlConnection";
+
+// Keep the native public service identity without loading its node:sqlite implementation.
+const sqliteTypeId: SqliteClient.TypeId = "~@effect/sql-sqlite-node/SqliteClient";
 
 const failure = (cause: unknown) => SqlError.make({ reason: classifySqliteError(cause, { operation: "execute" }) });
 export const layerFromHandle = (
@@ -128,13 +131,20 @@ export const layerFromHandle = (
         releaseSavepoint: (name) => `RELEASE SAVEPOINT ${name}`,
       });
       const nodeClient = Object.assign(client as SqliteClient.SqliteClient & Client.SqlClient, {
-        [SqliteClient.TypeId]: SqliteClient.TypeId,
+        [sqliteTypeId]: sqliteTypeId,
         config: { filename: handle.name },
         backup: (_destination: string) => Effect.fail(failure(new Error("Cannot back up a borrowed database handle"))),
         loadExtension: (_path: string) =>
           Effect.fail(failure(new Error("Cannot load extensions on a borrowed database handle"))),
       });
       // SQLite compiler rejects updateValues; the node driver exposes this member as never.
-      return Context.make(Client.SqlClient, nodeClient).pipe(Context.add(SqliteClient.SqliteClient, nodeClient));
+      return Context.make(Client.SqlClient, nodeClient).pipe(
+        Context.add(
+          Context.Service<SqliteClient.SqliteClient, SqliteClient.SqliteClient & Client.SqlClient>(
+            "@effect/sql-sqlite-node/SqliteClient"
+          ),
+          nodeClient
+        )
+      );
     })
   ).pipe(Layer.provide(Reactivity.layer));

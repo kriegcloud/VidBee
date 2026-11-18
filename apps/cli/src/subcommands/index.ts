@@ -6,7 +6,7 @@
  * verbs under `:download` (cancel/pause/resume/retry/logs).
  */
 
-import type { AddTaskRequest, Task, TaskQueueAPI, TaskStatus } from '@vidbee/task-queue'
+import type { AddTaskRequest, Task, TaskQueueAPI, TaskStatus } from '@vidbee/task-queue-legacy'
 import { errorEnvelope, type ErrorEnvelope } from '../envelope'
 
 export interface ContractClient {
@@ -102,7 +102,7 @@ async function handleDownload(
       // the task object (which includes `lastError.stderrTail`) so callers
       // can inspect failures without a separate round-trip. A dedicated
       // logs route is tracked as a follow-up that needs new contract
-      // schema work in @vidbee/task-queue.
+      // schema work in @vidbee/task-queue-legacy.
       const task = await ctx.client.get(id)
       const stderrTail =
         (task.lastError as { stderrTail?: string } | null)?.stderrTail ?? null

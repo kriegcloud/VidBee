@@ -20,9 +20,9 @@
     "@vidbee/db": "workspace:^",
     "@vidbee/i18n": "workspace:^",
     "@vidbee/logger": "workspace:^",
-    "@vidbee/task-queue": "workspace:^",
     "opencc-js": "catalog:",
-    "sherpa-onnx-node": "catalog:"
+    "sherpa-onnx-node": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^"
   },
   "devDependencies": {
     "@types/better-sqlite3": "catalog:",

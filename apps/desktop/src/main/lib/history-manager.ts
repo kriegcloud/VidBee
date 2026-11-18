@@ -17,7 +17,7 @@
  *     `clearHistory` delegate to `taskQueue.removeFromHistory`, then drop the
  *     stored transcripts and prompt runs for those downloads.
  */
-import { isLibraryTaskKind, isMediaTaskKind, type Task } from '@vidbee/task-queue'
+import { isLibraryTaskKind, isMediaTaskKind, type Task } from '@vidbee/task-queue-legacy'
 
 import type { DownloadHistoryItem } from '../../shared/types'
 import { scopedLoggers } from '../utils/logger'

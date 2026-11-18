@@ -4,8 +4,8 @@ import type {
   ExecutorEvents,
   ExecutorFinishEvent,
   ExecutorRun
-} from '@vidbee/task-queue'
-import { virtualError } from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
+import { virtualError } from '@vidbee/task-queue-legacy'
 import { describe, expect, it } from 'vitest'
 import { parseNetscapeCookieFile, toPlaywrightCookies } from '../src/cookies'
 import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '../src/drm'

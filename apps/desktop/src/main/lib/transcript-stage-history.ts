@@ -1,4 +1,4 @@
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 import type { TranscriptionStage, TranscriptStageTiming } from '@vidbee/transcription'
 
 /** Restore queue and pipeline clocks from persisted task state before worker stages exist. */

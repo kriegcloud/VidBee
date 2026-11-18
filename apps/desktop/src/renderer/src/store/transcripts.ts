@@ -1,4 +1,4 @@
-import type { TaskCreationMetadata } from '@vidbee/task-queue'
+import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
 import { atom } from 'jotai'
 import { ipcServices } from '../lib/ipc'
 import { applyTranscriptSnapshot, mergeTranscriptMaps } from '../lib/transcript-library'

@@ -46,7 +46,7 @@ import {
   type Task,
   type TaskInput,
   type TaskQueueAPI
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import { appendCappedLog } from '../../shared/live-log'
 import type {
   DownloadItem,

@@ -76,7 +76,6 @@
     "@vidbee/i18n": "workspace:^",
     "@vidbee/logger": "workspace:^",
     "@vidbee/subscriptions-core": "workspace:^",
-    "@vidbee/task-queue": "workspace:^",
     "@vidbee/transcription": "workspace:^",
     "@videojs/react": "catalog:",
     "adm-zip": "catalog:",
@@ -113,7 +112,8 @@
     "typebox": "catalog:",
     "yaml": "catalog:",
     "yt-dlp-wrap-plus": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^"
   },
   "optionalDependencies": {
     "sherpa-onnx-darwin-arm64": "catalog:",
