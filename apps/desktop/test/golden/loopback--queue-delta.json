@@ -1,0 +1,17 @@
+{
+  "total": 12,
+  "byStatus": {
+    "queued": 0,
+    "running": 0,
+    "processing": 0,
+    "paused": 0,
+    "retry-scheduled": 0,
+    "completed": 9,
+    "failed": 1,
+    "cancelled": 2
+  },
+  "running": 0,
+  "queued": 0,
+  "capacity": 5,
+  "groupCount": 12
+}

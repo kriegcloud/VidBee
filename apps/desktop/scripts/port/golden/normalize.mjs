@@ -1,3 +1,6 @@
+// build-fixture.mjs deliberately schedules its fixed retry task in 2100.
+const FIXTURE_NEXT_RETRY_AT = 4_102_444_800_000
+
 // Each rule is deliberately narrow; arrays and application fields retain order.
 export function normalize(value, roots = []) {
   const ids = new Map()
@@ -13,11 +16,14 @@ export function normalize(value, roots = []) {
         return `<${key}>`
       }
       if (
-        /^(expiresAt|startedAt|finishedAt|updatedAt|createdAt|completedAt|downloadedAt|enteredStatusAt|lastSeenAt|lastConnectedAt|lastUsedAt|lastHeartbeatAt|leaseExpiresAt)$/.test(
+        /^(acquiredAt|expiresAt|startedAt|finishedAt|updatedAt|createdAt|completedAt|downloadedAt|enteredStatusAt|lastSeenAt|lastConnectedAt|lastUsedAt|lastHeartbeatAt|leaseExpiresAt)$/.test(
           key
         ) &&
         entry > 1_760_000_000_000
       ) {
+        return '<timestamp>'
+      }
+      if (key === 'nextRetryAt' && entry > 1_760_000_000_000 && entry !== FIXTURE_NEXT_RETRY_AT) {
         return '<timestamp>'
       }
       if (/^(elapsedMs|latencyMs)$/.test(key)) {
@@ -51,6 +57,9 @@ export function normalize(value, roots = []) {
         result = result.replace(/^ffmpeg version \S+/, 'ffmpeg version <ffmpeg-build>')
       }
       result = result.replace(/Bearer [a-f0-9]{64}/g, 'Bearer <token>')
+      if (key === 'groupKey' && /^127\.0\.0\.1:\d+$/.test(result)) {
+        result = '127.0.0.1:<port>'
+      }
       result = result.replace(/http:\/\/127\.0\.0\.1:\d+/g, 'http://127.0.0.1:<port>')
       if (
         /^(expiresAt|startedAt|finishedAt|updatedAt|createdAt|completedAt|timestamp|pidStartedAt)$/.test(

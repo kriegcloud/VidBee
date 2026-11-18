@@ -157,3 +157,81 @@ before starting the loopback-only namespace. The following comparison step uses
 the just-built default `linux-unpacked` directory and scratch under `RUNNER_TEMP`.
 This workflow integration requires confirmation on GitHub Actions; local runs do
 not prove the hosted runner's namespace and display behavior.
+
+## Offline loopback download cases
+
+The worker starts `loopback.mjs` inside the same offline network namespace as the
+app and bundled yt-dlp. It listens on an ephemeral `127.0.0.1` port and stops in a
+`finally` block. No external service, dependency, DNS entry or CI configuration is
+needed. `build-fixture.mjs` generates a two-second H.264/AAC video and a two-second
+PCM waveform with the baseline's bundled ffmpeg; the image is the existing
+synthetic fixture PNG. No real media is used.
+
+The server sets fixed Last-Modified, Content-Type, Content-Length and Accept-Ranges
+headers on file responses. It handles HEAD, bounded/open/suffix byte ranges and
+416 responses. Routes beginning `/slow` trickle bytes; `/stall` flushes headers
+and sends no body; `/404` and `/500` fail; `/recover` changes from 404 to successful
+media only when the case explicitly switches it. Other routes serve video,
+except `.wav` and `.png`, which serve the corresponding fixtures. Every request's
+method, path and Range header is retained, in arrival order, in
+`run/loopback/requests.jsonl`.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --loopback-only --subset loopback
+bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs
+```
+
+`--loopback-only` is an independent scenario selector: it skips the original
+renderer, CLI and API cases, pins its own settings through `update_settings`, and
+waits for seeded active fixture tasks to settle before measuring queue changes.
+`--subset` still filters recorded comparisons within the selected scenario. A
+normal full invocation executes all original cases first, then loopback cases,
+then restarts the app with the same physical synthetic profile and checks persisted
+loopback tasks/history. The restart uses another fresh isolated launch directory; its `userdata` symlink
+points to the original run's physical profile. The optional reuse argument is
+restricted to that same suite's original `run/userdata`. HOME, descriptors and
+networking remain isolated; completed media remain in the original run directory.
+
+Each run uses a short temporary `.golden-loopback-suite-*` symlink under the
+checkout, pointing at that run's physical `downloads/` directory. It avoids the
+baseline's absolute output-path truncation on long scratch paths. The exact alias
+root normalizes to `<run>/downloads`, preserving every filename and subdirectory;
+the alias is removed in `finally`, including comparison failures. The restart
+recreates that same alias only for its observation. Generated downloads remain
+physically inside the run directory. See [the loopback report](reports/4-loopback.md)
+for the baseline bug and the first probe's evidence.
+
+To add a download case, extend `loopback-cases.mjs`, admit it through a public
+MCP/HTTP tool, and poll `get_task` for the required state. Subscribe to the
+public automation SSE route before admission: transition events retain fast
+states that polling could miss. Cancellation and pause require both a logged
+media-body request and positive task progress, never a fixed sleep. Keep a
+bounded timeout that fails when the condition is not reached. New failure routes
+must have a matching narrow expected metadata-error signature; unrelated
+application errors still fail. Record with `--update --loopback-only --subset
+loopback` against the pre-change packaged build, inspect the new documents and
+repeat both isolated and full comparisons.
+
+Loopback snapshots explicitly project away the task's `progress` values and
+`log` string because both contain timing-dependent progress, speed and ETA text.
+They retain `progressFields` (the ordered keys), every other task field, complete
+output/error objects, SSE status order, history, and pinned ffprobe stream and
+container fields. Full wire answers and all events remain in `loopback/raw.json`
+and `loopback/events.json`. Partial-file cases pin names, since partial byte
+counts depend on the instant cancellation lands. Queue comparisons pin changes
+from the settled pre-scenario state immediately after video, remux, audio and
+image completion and again at scenario end, plus capacity/active counts and the
+loopback group's count, so earlier independent cases cannot contaminate them.
+
+The additional named normalization rules are: loopback `groupKey` ports become
+`127.0.0.1:<port>`; runtime numeric `nextRetryAt` and subtitle acquisition
+`acquiredAt` become `<timestamp>`. The deliberate fixture retry time
+`4102444800000` remains literal. These rules retain the existence/nullability of
+retry scheduling and all attempt, error and status data; they do not normalize
+retry delays, lifecycle sequences, filenames, file sizes or media durations.
+The short alias is an exact known-path-root replacement, not a path pattern.
+
+The download suite deliberately omits the stalled-download watchdog case: its
+running threshold is 60 seconds and no public preference lowers it. A server
+contract test still proves the stall route and connection cleanup. Remote-media
+extractors, authenticated sites, live ASR and hosted CI remain outside this proof.
