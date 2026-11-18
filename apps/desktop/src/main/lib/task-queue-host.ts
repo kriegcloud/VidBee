@@ -21,16 +21,16 @@ import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
 import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/legacy/task-queue'
 import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/legacy/transcripts'
+import type { YtDlpTaskOptions } from '@vidbee/downloader-core'
 import {
   GalleryDlExecutor,
   HostRoutingExecutor,
   InstagramProfileInspector,
   restoreBrowserCaptureGroupCap,
   restoreInstagramProfileGroupCaps,
-  YtDlpExecutor,
-  type YtDlpTaskOptions
-} from '@vidbee/downloader-core'
-import { restoreSocialMediaGroupCaps } from '@vidbee/downloader-core/social-media-service'
+  YtDlpExecutor
+} from '@vidbee/downloader-core-legacy'
+import { restoreSocialMediaGroupCaps } from '@vidbee/downloader-core-legacy/social-media-service'
 import {
   ExecutorRouter,
   MemoryPersistAdapter,

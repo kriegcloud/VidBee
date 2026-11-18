@@ -57,3 +57,26 @@ test('node SQLite is restricted to db before desktop cutover', () => {
     assert.ok(violations.every((v) => v.file.startsWith('packages/demo/') && v.rule === 'node-sqlite-before-cutover'))
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
+
+test('HTTP rule rejects module loading while allowing download protocol values', () => {
+  const root = mkdtempSync(join(tmpdir(), 'vidbee-http-rule-'))
+  try {
+    mkdirSync(join(root, 'packages/demo/src'), { recursive: true })
+    mkdirSync(join(root, 'standards'))
+    writeFileSync(join(root, 'packages/demo/tsconfig.json'), '{"extends":"../../tsconfig.base.json"}')
+    writeFileSync(join(root, 'tsconfig.base.json'), '{}')
+    writeFileSync(join(root, 'standards/effect-allowlist.jsonc'), '[]')
+    const source = [
+      'const direct = protocol === "http" || protocol === "https"',
+      "import http from 'node:http'",
+      "export { request } from 'https'",
+      "import 'node:https'",
+      "const dynamic = import( 'http')",
+      "const common = require( 'node:https')"
+    ].join('\n')
+    writeFileSync(join(root, 'packages/demo/src/protocol.ts'), source)
+    const violations = check(root).violations
+    assert.equal(violations.length, 5)
+    assert.ok(violations.every((item) => item.rule === 'node-http' && item.line > 1))
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})

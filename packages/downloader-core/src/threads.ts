@@ -1,41 +1,46 @@
-const THREADS_HOSTS = new Set(['threads.com', 'www.threads.com', 'threads.net', 'www.threads.net'])
-const THREADS_PATH =
-  /^\/@([A-Za-z0-9_][A-Za-z0-9._]{0,29})(?:\/(media)|\/post\/([A-Za-z0-9_-]{5,20}))?\/?$/
+import * as MutableHashSet from "effect/MutableHashSet";
+import * as Str from "effect/String";
+
+const THREADS_HOSTS = MutableHashSet.fromIterable(["threads.com", "www.threads.com", "threads.net", "www.threads.net"]);
+const THREADS_PATH = /^\/@([A-Za-z0-9_][A-Za-z0-9._]{0,29})(?:\/(media)|\/post\/([A-Za-z0-9_-]{5,20}))?\/?$/;
 
 export interface NormalizedThreadsUrl {
-  kind: 'post' | 'profile'
-  url: string
-  username: string
-  shortcode?: string
-  directorySegments: readonly string[]
+  directorySegments: readonly string[];
+  kind: "post" | "profile";
+  shortcode?: string | undefined;
+  url: string;
+  username: string;
 }
 
 /** Threads profiles download their Media tab; replies and reposts are excluded. */
 export const normalizeThreadsUrl = (value: string): NormalizedThreadsUrl | null => {
   try {
-    const parsed = new URL(value)
+    const parsed = new URL(value);
     if (
-      !(['http:', 'https:'].includes(parsed.protocol) && THREADS_HOSTS.has(parsed.hostname)) ||
-      parsed.username ||
-      parsed.password ||
-      parsed.port
+      !(["http:", "https:"].includes(parsed.protocol) && MutableHashSet.has(THREADS_HOSTS, parsed.hostname)) ||
+      (parsed.username !== undefined && parsed.username !== null && parsed.username !== "") ||
+      (parsed.password !== undefined && parsed.password !== null && parsed.password !== "") ||
+      (parsed.port !== undefined && parsed.port !== null && parsed.port !== "")
     ) {
-      return null
+      return null;
     }
-    const match = THREADS_PATH.exec(parsed.pathname)
-    if (!match) {
-      return null
+    const match = THREADS_PATH.exec(parsed.pathname);
+    if (!(match !== null)) {
+      return null;
     }
-    const username = match[1].toLowerCase()
-    const shortcode = match[3]
+    const username = Str.toLowerCase(match[1] ?? "");
+    const shortcode = match[3];
     return {
-      kind: shortcode ? 'post' : 'profile',
-      url: `https://www.threads.com/@${username}${shortcode ? `/post/${shortcode}` : '/media'}`,
+      kind: shortcode !== undefined && shortcode !== null && shortcode !== "" ? "post" : "profile",
+      url: `https://www.threads.com/@${username}${shortcode !== undefined && shortcode !== null && shortcode !== "" ? `/post/${shortcode}` : "/media"}`,
       username,
       shortcode,
-      directorySegments: shortcode ? ['Threads', username, shortcode] : ['Threads', username]
-    }
+      directorySegments:
+        shortcode !== undefined && shortcode !== null && shortcode !== ""
+          ? ["Threads", username, shortcode]
+          : ["Threads", username],
+    };
   } catch {
-    return null
+    return null;
   }
-}
+};

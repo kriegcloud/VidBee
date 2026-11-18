@@ -17,6 +17,7 @@ const bundledWorkspacePackages = [
   '@modelcontextprotocol/sdk',
   '@vidbee/db',
   '@vidbee/downloader-core',
+  '@vidbee/downloader-core-legacy',
   '@vidbee/browser-capture',
   '@vidbee/i18n',
   '@vidbee/ui',
@@ -186,6 +187,10 @@ export default defineConfig(({ mode }) => {
       optimizeDeps: {
         exclude: [
           '@vidbee/downloader-core',
+          '@vidbee/downloader-core-legacy',
+          '@vidbee/downloader-core-legacy/fansly-profile',
+          '@vidbee/downloader-core-legacy/onlyfans-profile',
+          '@vidbee/downloader-core-legacy/social-media',
           '@vidbee/downloader-core/browser-cookies-setting',
           '@vidbee/downloader-core/cookie-setup',
           '@vidbee/downloader-core/filename-style',

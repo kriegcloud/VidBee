@@ -1,11 +1,13 @@
 import {
   appendYouTubeSafeExtractorArgs as appendSharedYouTubeSafeExtractorArgs,
+  formatYtDlpCommand
+} from '@vidbee/downloader-core/yt-dlp-args'
+import {
   buildCaptionExtractArgs as buildSharedCaptionExtractArgs,
   buildPlaylistInfoArgs as buildSharedPlaylistInfoArgs,
   buildVideoInfoArgs as buildSharedVideoInfoArgs,
-  formatYtDlpCommand,
   resolveFfmpegLocationFromPath
-} from '@vidbee/downloader-core/yt-dlp-args'
+} from '@vidbee/downloader-core-legacy/yt-dlp-args'
 import { toSharedSettings } from '../download-engine/args-builder'
 import type { settingsManager } from '../settings'
 import { ytdlpManager } from './ytdlp-manager'

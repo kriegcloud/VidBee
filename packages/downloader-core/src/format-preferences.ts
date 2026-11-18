@@ -1,14 +1,14 @@
-export type OneClickQualityPreset = 'best' | 'good' | 'normal' | 'bad' | 'worst'
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as MutableHashSet from "effect/MutableHashSet";
+export const OneClickQualityPreset = LiteralKit(["best", "good", "normal", "bad", "worst"]);
+export type OneClickQualityPreset = typeof OneClickQualityPreset.Type;
 
-export type OneClickContainerOption = 'auto' | 'mp4' | 'mkv' | 'webm' | 'original'
+export const OneClickContainerOption = LiteralKit(["auto", "mp4", "mkv", "webm", "original"]);
+export type OneClickContainerOption = typeof OneClickContainerOption.Type;
 
-export const ONE_CLICK_CONTAINER_OPTIONS: OneClickContainerOption[] = [
-  'auto',
-  'mp4',
-  'mkv',
-  'webm',
-  'original'
-]
+export const ONE_CLICK_CONTAINER_OPTIONS: OneClickContainerOption[] = ["auto", "mp4", "mkv", "webm", "original"];
 
 /**
  * Container passed into each playlist video download.
@@ -17,19 +17,32 @@ export const ONE_CLICK_CONTAINER_OPTIONS: OneClickContainerOption[] = [
  * selection wins, otherwise the global Container setting is used. Audio
  * downloads do not remux into a video container.
  */
-export const resolvePlaylistContainerFormat = (
-  downloadType: 'video' | 'audio',
-  selectedContainer: OneClickContainerOption | undefined,
-  fallbackContainer: OneClickContainerOption | undefined
-): OneClickContainerOption | undefined => {
-  if (downloadType !== 'video') {
-    return undefined
+export const resolvePlaylistContainerFormat: {
+  (
+    selectedContainer: OneClickContainerOption | undefined,
+    fallbackContainer: OneClickContainerOption | undefined
+  ): (downloadType: "video" | "audio") => OneClickContainerOption | undefined;
+  (
+    downloadType: "video" | "audio",
+    selectedContainer: OneClickContainerOption | undefined,
+    fallbackContainer: OneClickContainerOption | undefined
+  ): OneClickContainerOption | undefined;
+} = dual(
+  3,
+  (
+    downloadType: "video" | "audio",
+    selectedContainer: OneClickContainerOption | undefined,
+    fallbackContainer: OneClickContainerOption | undefined
+  ): OneClickContainerOption | undefined => {
+    if (downloadType !== "video") {
+      return undefined;
+    }
+    return selectedContainer ?? fallbackContainer;
   }
-  return selectedContainer ?? fallbackContainer
-}
+);
 
 export interface OneClickFormatSettings {
-  oneClickQuality?: OneClickQualityPreset
+  oneClickQuality?: OneClickQualityPreset;
 }
 
 const qualityPresetToVideoHeight: Record<OneClickQualityPreset, number | null> = {
@@ -37,74 +50,77 @@ const qualityPresetToVideoHeight: Record<OneClickQualityPreset, number | null> =
   good: 1080,
   normal: 720,
   bad: 480,
-  worst: 360
-}
+  worst: 360,
+};
 
 const qualityPresetToAudioAbr: Record<OneClickQualityPreset, number | null> = {
   best: 320,
   good: 256,
   normal: 192,
   bad: 128,
-  worst: 96
-}
+  worst: 96,
+};
 
 const dedupe = (candidates: Array<string | undefined>): string[] => {
-  const seen = new Set<string>()
-  const result: string[] = []
+  const seen = MutableHashSet.empty<string>();
+  const result: string[] = [];
   for (const candidate of candidates) {
-    if (!candidate) {
-      continue
+    if (!(candidate !== undefined && candidate !== null && candidate !== "")) {
+      continue;
     }
-    if (seen.has(candidate)) {
-      continue
+    if (MutableHashSet.has(seen, candidate)) {
+      continue;
     }
-    seen.add(candidate)
-    result.push(candidate)
+    MutableHashSet.add(seen, candidate);
+    result.push(candidate);
   }
-  return result
-}
+  return result;
+};
 
 const getQualityPreset = (settings: OneClickFormatSettings): OneClickQualityPreset =>
-  settings.oneClickQuality ?? 'best'
+  settings.oneClickQuality ?? "best";
 
 const buildAudioSelectors = (preset: OneClickQualityPreset): string[] => {
-  if (preset === 'worst') {
-    return dedupe(['worstaudio', 'bestaudio'])
+  if (preset === "worst") {
+    return dedupe(["worstaudio", "bestaudio"]);
   }
 
-  const abrLimit = qualityPresetToAudioAbr[preset]
-  return dedupe([abrLimit ? `bestaudio[abr<=${abrLimit}]` : undefined, 'bestaudio'])
-}
+  const abrLimit = qualityPresetToAudioAbr[preset];
+  return dedupe([
+    abrLimit !== undefined && abrLimit !== null && abrLimit !== 0 ? `bestaudio[abr<=${abrLimit}]` : undefined,
+    "bestaudio",
+  ]);
+};
 
 export const buildVideoFormatPreference = (settings: OneClickFormatSettings): string => {
-  const preset = getQualityPreset(settings)
+  const preset = getQualityPreset(settings);
 
-  if (preset === 'worst') {
-    return 'worstvideo+worstaudio/worst/best'
+  if (preset === "worst") {
+    return "worstvideo+worstaudio/worst/best";
   }
 
-  const maxHeight = qualityPresetToVideoHeight[preset]
+  const maxHeight = qualityPresetToVideoHeight[preset];
   const videoCandidates = dedupe([
-    maxHeight ? `bestvideo[height<=${maxHeight}]` : undefined,
-    'bestvideo'
-  ])
+    maxHeight !== undefined && maxHeight !== null && maxHeight !== 0 ? `bestvideo[height<=${maxHeight}]` : undefined,
+    "bestvideo",
+  ]);
 
-  const audioSelectors = buildAudioSelectors(preset)
-  const combinations: string[] = []
+  const audioSelectors = buildAudioSelectors(preset);
+  const combinations: string[] = [];
 
   for (const video of videoCandidates) {
     for (const audio of audioSelectors) {
-      combinations.push(`${video}+${audio}`)
+      combinations.push(`${video}+${audio}`);
     }
   }
 
-  combinations.push('bestvideo+bestaudio')
-  combinations.push('best')
+  combinations.push("bestvideo+bestaudio");
+  combinations.push("best");
 
-  return dedupe(combinations).join('/')
-}
+  return A.join(dedupe(combinations), "/");
+};
 
 export const buildAudioFormatPreference = (settings: OneClickFormatSettings): string => {
-  const selectors = buildAudioSelectors(getQualityPreset(settings))
-  return dedupe([...selectors, 'best']).join('/')
-}
+  const selectors = buildAudioSelectors(getQualityPreset(settings));
+  return A.join(dedupe([...selectors, "best"]), "/");
+};

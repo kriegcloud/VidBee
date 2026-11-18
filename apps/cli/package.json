@@ -58,7 +58,8 @@
     "prepublishOnly": "bun run build && bun run verify-dist"
   },
   "dependencies": {
-    "yt-dlp-wrap-plus": "catalog:"
+    "yt-dlp-wrap-plus": "catalog:",
+    "@vidbee/downloader-core-legacy": "workspace:^"
   },
   "optionalDependencies": {
     "better-sqlite3": "catalog:"

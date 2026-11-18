@@ -21,6 +21,7 @@ files:
   - '!**/.context/**'
   - '!**/.github/**'
   - '!node_modules/@vidbee/downloader-core{,/**}'
+  - '!node_modules/@vidbee/downloader-core-legacy{,/**}'
   - '!src{,/**}'
   - '!dist/*'
   - '!out/**/*.map'

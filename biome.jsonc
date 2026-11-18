@@ -12,6 +12,7 @@
       "packages/logger/**",
       "packages/db/**",
       "packages/task-queue/**",
+      "packages/downloader-core/**",
       "!packages/db/test/fixtures/**",
       "!packages/db/test/snapshots/**",
       "packages/i18n/**",

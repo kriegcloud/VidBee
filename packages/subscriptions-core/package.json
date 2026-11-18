@@ -30,7 +30,8 @@
     "drizzle-orm": "catalog:",
     "rss-parser": "catalog:",
     "ulid": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@vidbee/downloader-core-legacy": "workspace:^"
   },
   "peerDependencies": {
     "@vidbee/db": "workspace:*",

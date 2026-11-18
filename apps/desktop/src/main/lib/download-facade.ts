@@ -19,8 +19,6 @@ import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
-  enqueueInstagramProfileDownload,
-  expandTikTokShortLink,
   type InstagramProfileCategory,
   type InstagramProfileDownloadInput,
   type InstagramProfileDownloadResult,
@@ -30,15 +28,20 @@ import {
   resolveDownloadTaskKind,
   shouldUseGalleryDl
 } from '@vidbee/downloader-core'
-import { FanslyCommandSchema } from '@vidbee/downloader-core/fansly-profile'
 import { isMappedProfilePostUrl } from '@vidbee/downloader-core/mapped-profile-source'
 import type { OnlyFansCommand, OnlyFansDownload } from '@vidbee/downloader-core/onlyfans-profile'
-import { resolveSocialSource, SocialMediaOptionsSchema } from '@vidbee/downloader-core/social-media'
+import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
+import type { SocialMediaDownloadRequest } from '@vidbee/downloader-core/social-media-service'
+import {
+  enqueueInstagramProfileDownload,
+  expandTikTokShortLink
+} from '@vidbee/downloader-core-legacy'
+import { FanslyCommandSchema } from '@vidbee/downloader-core-legacy/fansly-profile'
+import { SocialMediaOptionsSchema } from '@vidbee/downloader-core-legacy/social-media'
 import {
   downloadSocialMedia,
-  previewSocialMedia,
-  type SocialMediaDownloadRequest
-} from '@vidbee/downloader-core/social-media-service'
+  previewSocialMedia
+} from '@vidbee/downloader-core-legacy/social-media-service'
 import {
   downloadIdentity,
   isLibraryTaskKind,

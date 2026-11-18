@@ -1,422 +1,429 @@
-import { z } from 'zod'
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as A from "effect/Array";
+import * as Effect from "effect/Effect";
+import * as MutableHashSet from "effect/MutableHashSet";
+import * as Option from "effect/Option";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
 
-export const SocialMediaOptionsSchema = z
-  .object({
-    media: z.enum(['all', 'images', 'videos']).default('all'),
-    scope: z.enum(['post', 'thread']).default('post'),
-    authorOnly: z.boolean().default(false),
-    expandThreads: z.boolean().default(false),
-    linkedMedia: z.boolean().default(true),
-    slideshowAudio: z.boolean().default(false),
-    maxPosts: z.number().int().positive().max(1_000_000).optional(),
-    since: z.iso.date().optional(),
-    until: z.iso.date().optional()
+export const SocialMediaKind = LiteralKit(["all", "images", "videos"]);
+export const SocialMediaScope = LiteralKit(["post", "thread"]);
+export const SocialPlatform = LiteralKit(["x", "reddit", "tiktok", "instagram"]);
+export const SocialSourceKind = LiteralKit(["post", "profile", "feed", "image", "unsupported"]);
+export const SocialAssetKind = LiteralKit(["image", "video", "audio"]);
+const IsoDate = S.String.check(
+  S.isPattern(/^\d{4}-\d{2}-\d{2}$/),
+  S.makeFilter((value) => {
+    const year = Number(Str.slice(0, 4)(value));
+    const month = Number(Str.slice(5, 7)(value));
+    const day = Number(Str.slice(8, 10)(value));
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return month >= 1 && month <= 12 && day >= 1 && day <= (days[month - 1] ?? 0);
   })
-  .refine((value) => !(value.since && value.until) || value.since <= value.until, {
-    message: 'The start date must not be after the end date.',
-    path: ['since']
-  })
-export type SocialMediaOptions = z.infer<typeof SocialMediaOptionsSchema>
-export const DEFAULT_SOCIAL_MEDIA_OPTIONS: SocialMediaOptions = SocialMediaOptionsSchema.parse({})
+);
+export const SocialMediaOptionsSchema = S.Struct({
+  media: SocialMediaKind.pipe(S.withDecodingDefault(Effect.succeed("all")), S.mutableKey),
+  scope: SocialMediaScope.pipe(S.withDecodingDefault(Effect.succeed("post")), S.mutableKey),
+  authorOnly: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey),
+  expandThreads: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey),
+  linkedMedia: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(true)), S.mutableKey),
+  slideshowAudio: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey),
+  maxPosts: S.Finite.check(S.isInt(), S.isBetween({ minimum: 1, maximum: 1_000_000 })).pipe(S.optional, S.mutableKey),
+  since: IsoDate.pipe(S.optional, S.mutableKey),
+  until: IsoDate.pipe(S.optional, S.mutableKey),
+}).check(
+  S.makeFilter(
+    (value) =>
+      value.since === undefined ||
+      value.since === "" ||
+      value.until === undefined ||
+      value.until === "" ||
+      value.since <= value.until
+  )
+);
+export type SocialMediaOptions = typeof SocialMediaOptionsSchema.Type;
+export const DEFAULT_SOCIAL_MEDIA_OPTIONS: SocialMediaOptions = {
+  media: "all",
+  scope: "post",
+  authorOnly: false,
+  expandThreads: false,
+  linkedMedia: true,
+  slideshowAudio: false,
+};
+export const SocialSourceSchema = S.Struct({
+  platform: SocialPlatform.pipe(S.mutableKey),
+  url: S.String.pipe(S.mutableKey),
+  kind: SocialSourceKind.pipe(S.mutableKey),
+  category: S.String.pipe(S.mutableKey),
+  owner: S.String.pipe(S.mutableKey),
+  supportsThread: S.Boolean.pipe(S.mutableKey),
+  requiresAuth: S.Boolean.pipe(S.mutableKey),
+  categories: S.Array(
+    S.Struct({
+      key: S.String.pipe(S.mutableKey),
+      url: S.String.pipe(S.mutableKey),
+      requiresAuth: S.Boolean.pipe(S.mutableKey),
+    })
+  ).pipe(S.mutable, S.mutableKey),
+});
+export type SocialSource = typeof SocialSourceSchema.Type;
 
-export const SocialSourceSchema = z.object({
-  platform: z.enum(['x', 'reddit', 'tiktok', 'instagram']),
-  url: z.url(),
-  kind: z.enum(['post', 'profile', 'feed', 'image', 'unsupported']),
-  category: z.string(),
-  owner: z.string(),
-  supportsThread: z.boolean(),
-  requiresAuth: z.boolean(),
-  categories: z.array(z.object({ key: z.string(), url: z.url(), requiresAuth: z.boolean() }))
-})
-export type SocialSource = z.infer<typeof SocialSourceSchema>
+const X_HOSTS = MutableHashSet.fromIterable([
+  "x.com",
+  "www.x.com",
+  "mobile.x.com",
+  "twitter.com",
+  "www.twitter.com",
+  "mobile.twitter.com",
+]);
+const REDDIT_HOSTS = MutableHashSet.fromIterable([
+  "reddit.com",
+  "www.reddit.com",
+  "old.reddit.com",
+  "new.reddit.com",
+  "m.reddit.com",
+  "np.reddit.com",
+]);
+const TIKTOK_HOSTS = MutableHashSet.fromIterable([
+  "tiktok.com",
+  "www.tiktok.com",
+  "m.tiktok.com",
+  "vm.tiktok.com",
+  "vt.tiktok.com",
+]);
+const INSTAGRAM_HOSTS = MutableHashSet.fromIterable([
+  "instagram.com",
+  "www.instagram.com",
+  "m.instagram.com",
+  "instagr.am",
+]);
+const INSTAGRAM_USER = /^[A-Za-z0-9_.]{1,30}$/;
+const INSTAGRAM_SHORTCODE = /^[A-Za-z0-9_-]+$/;
+const X_USER = /^[A-Za-z0-9_]{1,15}$/;
+const TIKTOK_USER = /^@[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$/;
+const REDDIT_USER = /^[A-Za-z0-9_-]+$/;
+const NUMERIC = /^\d+$/;
+const POST_ID = /^[a-z0-9]+$/i;
+const X_CATEGORIES = ["tweets", "media", "with_replies", "highlights", "timeline", "likes", "following", "followers"];
+const REDDIT_CATEGORIES = ["submitted", "comments", "saved", "upvoted", "downvoted"];
+const TIKTOK_CATEGORIES = ["posts", "reposts", "stories", "likes", "saved"];
+const SORTS = MutableHashSet.fromIterable(["hot", "new", "top", "rising", "controversial", "best", "search"]);
+const X_RESERVED = MutableHashSet.fromIterable([
+  "home",
+  "i",
+  "search",
+  "hashtag",
+  "notifications",
+  "settings",
+  "explore",
+  "messages",
+  "login",
+  "logout",
+  "signup",
+  "compose",
+]);
+const REDDIT_QUERY_KEYS = MutableHashSet.fromIterable(["q", "sort", "t", "restrict_sr", "type"]);
 
-const X_HOSTS = new Set([
-  'x.com',
-  'www.x.com',
-  'mobile.x.com',
-  'twitter.com',
-  'www.twitter.com',
-  'mobile.twitter.com'
-])
-const REDDIT_HOSTS = new Set([
-  'reddit.com',
-  'www.reddit.com',
-  'old.reddit.com',
-  'new.reddit.com',
-  'm.reddit.com',
-  'np.reddit.com'
-])
-const TIKTOK_HOSTS = new Set([
-  'tiktok.com',
-  'www.tiktok.com',
-  'm.tiktok.com',
-  'vm.tiktok.com',
-  'vt.tiktok.com'
-])
-const INSTAGRAM_HOSTS = new Set([
-  'instagram.com',
-  'www.instagram.com',
-  'm.instagram.com',
-  'instagr.am'
-])
-const INSTAGRAM_USER = /^[A-Za-z0-9_.]{1,30}$/
-const INSTAGRAM_SHORTCODE = /^[A-Za-z0-9_-]+$/
-const X_USER = /^[A-Za-z0-9_]{1,15}$/
-const TIKTOK_USER = /^@[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$/
-const REDDIT_USER = /^[A-Za-z0-9_-]+$/
-const NUMERIC = /^\d+$/
-const POST_ID = /^[a-z0-9]+$/i
-const X_CATEGORIES = [
-  'tweets',
-  'media',
-  'with_replies',
-  'highlights',
-  'timeline',
-  'likes',
-  'following',
-  'followers'
-]
-const REDDIT_CATEGORIES = ['submitted', 'comments', 'saved', 'upvoted', 'downvoted']
-const TIKTOK_CATEGORIES = ['posts', 'reposts', 'stories', 'likes', 'saved']
-const SORTS = new Set(['hot', 'new', 'top', 'rising', 'controversial', 'best', 'search'])
-const X_RESERVED = new Set([
-  'home',
-  'i',
-  'search',
-  'hashtag',
-  'notifications',
-  'settings',
-  'explore',
-  'messages',
-  'login',
-  'logout',
-  'signup',
-  'compose'
-])
-const REDDIT_QUERY_KEYS = new Set(['q', 'sort', 't', 'restrict_sr', 'type'])
-
-const descriptor = (platform: SocialSource['platform'], url: URL): SocialSource => ({
+const descriptor = (platform: SocialSource["platform"], url: URL): SocialSource => ({
   platform,
   url: url.toString(),
-  kind: 'unsupported',
-  category: 'unsupported',
+  kind: "unsupported",
+  category: "unsupported",
   owner: platform,
   supportsThread: false,
   requiresAuth: false,
-  categories: []
-})
+  categories: [],
+});
 
-const profile = (
-  source: SocialSource,
-  root: string,
-  categories: string[],
-  selected?: string
-): SocialSource => ({
+const profile = (source: SocialSource, root: string, categories: string[], selected?: string): SocialSource => ({
   ...source,
-  kind: selected ? 'feed' : 'profile',
-  category: selected ?? 'posts',
-  categories: categories.map((key) => ({
+  kind: selected !== undefined && selected !== null && selected !== "" ? "feed" : "profile",
+  category: selected ?? "posts",
+  categories: A.map(categories, (key) => ({
     key,
     url: `${root}/${key}`,
-    requiresAuth: ['likes', 'saved', 'upvoted', 'downvoted', 'following', 'followers'].includes(key)
-  }))
-})
+    requiresAuth: ["likes", "saved", "upvoted", "downvoted", "following", "followers"].includes(key),
+  })),
+});
 
 const resolveX = (url: URL, parts: string[]): SocialSource => {
-  const source = descriptor('x', url)
-  const [owner = '', second = '', id = '', fourth = ''] = parts
-  source.owner = owner
-  source.requiresAuth = true
+  const source = descriptor("x", url);
+  const [owner = "", second = "", id = "", fourth = ""] = parts;
+  source.owner = owner;
+  source.requiresAuth = true;
   if (
-    (X_USER.test(owner) || owner === 'i') &&
-    (second === 'status' || (owner === 'i' && second === 'web' && id === 'status')) &&
-    NUMERIC.test(second === 'web' ? fourth : id)
+    (X_USER.test(owner) || owner === "i") &&
+    (second === "status" || (owner === "i" && second === "web" && id === "status")) &&
+    NUMERIC.test(second === "web" ? fourth : id)
   ) {
-    const postId = second === 'web' ? fourth : id
-    const tail = parts.slice(second === 'web' ? 4 : 3)
+    const postId = second === "web" ? fourth : id;
+    const tail = parts.slice(second === "web" ? 4 : 3);
     if (
       tail.length === 0 ||
-      (['photo', 'video'].includes(tail[0]) && tail.length === 2 && NUMERIC.test(tail[1]))
+      (["photo", "video"].includes(tail[0] ?? "") && tail.length === 2 && NUMERIC.test(tail[1] ?? ""))
     ) {
       return {
         ...source,
         url: `https://x.com/i/web/status/${postId}`,
-        kind: 'post',
-        category: 'post',
+        kind: "post",
+        category: "post",
         supportsThread: true,
-        requiresAuth: false
-      }
+        requiresAuth: false,
+      };
     }
-    if (tail.length === 1 && tail[0] === 'quotes') {
-      return { ...source, kind: 'feed', category: 'quotes' }
+    if (tail.length === 1 && tail[0] === "quotes") {
+      return { ...source, kind: "feed", category: "quotes" };
     }
-    return source
+    return source;
   }
-  if (X_USER.test(owner) && second === 'communities' && parts.length === 2) {
-    return { ...source, kind: 'feed', category: 'communities' }
+  if (X_USER.test(owner) && second === "communities" && parts.length === 2) {
+    return { ...source, kind: "feed", category: "communities" };
   }
   if (
     X_USER.test(owner) &&
-    !X_RESERVED.has(owner.toLowerCase()) &&
+    !MutableHashSet.has(X_RESERVED, Str.toLowerCase(owner)) &&
     (parts.length === 1 || (parts.length === 2 && X_CATEGORIES.includes(second)))
   ) {
-    return profile(source, `https://x.com/${owner}`, X_CATEGORIES, second || undefined)
+    return profile(source, `https://x.com/${owner}`, X_CATEGORIES, second || undefined);
   }
   if (
-    (owner === 'home' &&
-      (parts.length === 1 || (parts.length === 2 && ['following', 'for-you'].includes(second)))) ||
-    (owner === 'notifications' && parts.length === 1)
+    (owner === "home" && (parts.length === 1 || (parts.length === 2 && ["following", "for-you"].includes(second)))) ||
+    (owner === "notifications" && parts.length === 1)
   ) {
     return {
       ...source,
-      kind: 'feed',
-      category: owner === 'home' ? `home${second ? `-${second}` : ''}` : owner
-    }
+      kind: "feed",
+      category:
+        owner === "home"
+          ? `home${second !== undefined && second !== null && second !== "" ? `-${second}` : ""}`
+          : owner,
+    };
   }
   if (
-    (owner === 'search' && parts.length === 1 && url.searchParams.get('q')) ||
-    (owner === 'hashtag' && parts.length === 2 && second)
+    (owner === "search" && parts.length === 1 && (url.searchParams.get("q") ?? "") !== "") ||
+    (owner === "hashtag" && parts.length === 2 && second !== "")
   ) {
-    return { ...source, kind: 'feed', category: owner }
+    return { ...source, kind: "feed", category: owner };
   }
   if (
-    owner === 'i' &&
-    ((['bookmarks', 'history', 'timeline', 'communities'].includes(second) && parts.length === 2) ||
-      (['lists', 'communities', 'events'].includes(second) &&
+    owner === "i" &&
+    ((["bookmarks", "history", "timeline", "communities"].includes(second) && parts.length === 2) ||
+      (["lists", "communities", "events"].includes(second) &&
         NUMERIC.test(id) &&
-        (parts.length === 3 || (second === 'lists' && fourth === 'members' && parts.length === 4))))
+        (parts.length === 3 || (second === "lists" && fourth === "members" && parts.length === 4))))
   ) {
-    return { ...source, kind: 'feed', category: second, owner: id || second }
+    return { ...source, kind: "feed", category: second, owner: id || second };
   }
-  return source
-}
+  return source;
+};
 
 const resolveReddit = (url: URL, parts: string[]): SocialSource => {
-  const source = descriptor('reddit', url)
-  const [first = '', name = '', third = '', id = ''] = parts
-  if ((first === 'r' || first === 'user' || first === 'u') && third === 's' && parts.length === 4) {
-    return { ...source, kind: 'post', category: 'share', owner: name, supportsThread: true }
+  const source = descriptor("reddit", url);
+  const [first = "", name = "", third = "", id = ""] = parts;
+  if ((first === "r" || first === "user" || first === "u") && third === "s" && parts.length === 4) {
+    return { ...source, kind: "post", category: "share", owner: name, supportsThread: true };
   }
-  const postId = first === 'comments' || first === 'gallery' ? name : third === 'comments' ? id : ''
+  const postId = first === "comments" || first === "gallery" ? name : third === "comments" ? id : "";
   if (POST_ID.test(postId)) {
     return {
       ...source,
       url: `https://www.reddit.com/comments/${postId}`,
-      kind: 'post',
-      category: 'post',
-      owner: first === 'r' ? name : 'posts',
-      supportsThread: true
-    }
+      kind: "post",
+      category: "post",
+      owner: first === "r" ? name : "posts",
+      supportsThread: true,
+    };
   }
   if (
-    first === 'r' &&
+    first === "r" &&
     /^[A-Za-z0-9_+]+$/.test(name) &&
-    (parts.length === 2 || (parts.length === 3 && SORTS.has(third)))
+    (parts.length === 2 || (parts.length === 3 && MutableHashSet.has(SORTS, third)))
   ) {
-    return { ...source, kind: 'feed', category: third || 'hot', owner: name }
+    return { ...source, kind: "feed", category: third || "hot", owner: name };
   }
   if (
-    ['u', 'user'].includes(first) &&
+    ["u", "user"].includes(first) &&
     REDDIT_USER.test(name) &&
     (parts.length === 2 || (parts.length === 3 && REDDIT_CATEGORIES.includes(third)))
   ) {
-    const root = `https://www.reddit.com/user/${name}`
+    const root = `https://www.reddit.com/user/${name}`;
     return profile(
       {
         ...source,
-        url: `${root}${third ? `/${third}` : ''}${url.search}`,
+        url: `${root}${third !== undefined && third !== null && third !== "" ? `/${third}` : ""}${url.search}`,
         owner: name,
-        requiresAuth: ['saved', 'upvoted', 'downvoted'].includes(third)
+        requiresAuth: ["saved", "upvoted", "downvoted"].includes(third),
       },
       root,
       REDDIT_CATEGORIES,
       third || undefined
-    )
+    );
   }
-  if (parts.length === 0 || (parts.length === 1 && SORTS.has(first))) {
+  if (parts.length === 0 || (parts.length === 1 && MutableHashSet.has(SORTS, first))) {
     return {
       ...source,
-      kind: 'feed',
-      category: first || 'home',
-      owner: 'home',
-      requiresAuth: first !== 'search'
-    }
+      kind: "feed",
+      category: first || "home",
+      owner: "home",
+      requiresAuth: first !== "search",
+    };
   }
-  return source
-}
+  return source;
+};
 
 const resolveTikTok = (url: URL, parts: string[]): SocialSource => {
-  const source = descriptor('tiktok', url)
-  const [owner = '', category = '', id = ''] = parts
-  if (url.hostname === 'vm.tiktok.com' || url.hostname === 'vt.tiktok.com' || owner === 't') {
+  const source = descriptor("tiktok", url);
+  const [owner = "", category = "", id = ""] = parts;
+  if (url.hostname === "vm.tiktok.com" || url.hostname === "vt.tiktok.com" || owner === "t") {
     if (
       (parts.length === 1 && /^[\w-]+$/.test(owner)) ||
-      (owner === 't' && parts.length === 2 && /^[\w-]+$/.test(category))
+      (owner === "t" && parts.length === 2 && /^[\w-]+$/.test(category))
     ) {
-      return { ...source, kind: 'post', category: 'share' }
+      return { ...source, kind: "post", category: "share" };
     }
-    return source
+    return source;
   }
   if (
-    (TIKTOK_USER.test(owner) || owner === 'share') &&
-    ['photo', 'video'].includes(category) &&
+    (TIKTOK_USER.test(owner) || owner === "share") &&
+    ["photo", "video"].includes(category) &&
     NUMERIC.test(id) &&
     parts.length === 3
   ) {
-    return { ...source, kind: 'post', category, owner: owner.replace(/^@/, '') }
+    return { ...source, kind: "post", category, owner: Str.replace(/^@/, "")(owner) };
   }
-  if (
-    TIKTOK_USER.test(owner) &&
-    (parts.length === 1 || (parts.length === 2 && TIKTOK_CATEGORIES.includes(category)))
-  ) {
+  if (TIKTOK_USER.test(owner) && (parts.length === 1 || (parts.length === 2 && TIKTOK_CATEGORIES.includes(category)))) {
     return profile(
-      { ...source, owner: owner.slice(1), requiresAuth: ['likes', 'saved'].includes(category) },
+      { ...source, owner: Str.slice(1)(owner), requiresAuth: ["likes", "saved"].includes(category) },
       `https://www.tiktok.com/${owner}`,
       TIKTOK_CATEGORIES,
       category || undefined
-    )
+    );
   }
-  if (owner === 'following' && parts.length === 1) {
+  if (owner === "following" && parts.length === 1) {
     return {
       ...source,
-      kind: 'feed',
-      category: 'following-stories',
-      owner: 'following',
-      requiresAuth: true
-    }
+      kind: "feed",
+      category: "following-stories",
+      owner: "following",
+      requiresAuth: true,
+    };
   }
-  return source
-}
+  return source;
+};
 
 /**
  * Instagram posts can be image carousels that yt-dlp cannot download, so they
  * use the gallery-dl collection path. Reels and profiles keep their own flows.
  */
 const resolveInstagram = (parts: string[]): SocialSource | null => {
-  const offset = parts.length === 3 && INSTAGRAM_USER.test(parts[0]) ? 1 : 0
-  const [section = '', code = ''] = parts.slice(offset)
-  if (parts.length !== offset + 2 || section !== 'p' || !INSTAGRAM_SHORTCODE.test(code)) {
-    return null
+  const offset = parts.length === 3 && INSTAGRAM_USER.test(parts[0] ?? "") ? 1 : 0;
+  const [section = "", code = ""] = parts.slice(offset);
+  if (parts.length !== offset + 2 || section !== "p" || !INSTAGRAM_SHORTCODE.test(code)) {
+    return null;
   }
-  const url = new URL(`https://www.instagram.com/p/${code}/`)
+  const url = new URL(`https://www.instagram.com/p/${code}/`);
   return {
-    ...descriptor('instagram', url),
-    kind: 'post',
-    category: 'post',
-    owner: offset ? parts[0] : 'instagram',
-    requiresAuth: true
-  }
-}
+    ...descriptor("instagram", url),
+    kind: "post",
+    category: "post",
+    owner: offset !== 0 ? (parts[0] ?? "") : "instagram",
+    requiresAuth: true,
+  };
+};
 
 /** Resolve only explicit supported surfaces; platform URLs never silently become videos. */
 export const resolveSocialSource = (value: string): SocialSource | null => {
   try {
-    const url = new URL(value.trim())
+    const url = new URL(Str.trim(value));
     if (
-      !['https:', 'http:'].includes(url.protocol) ||
-      url.username ||
-      url.password ||
-      url.port ||
-      url.pathname.includes('//')
+      !["https:", "http:"].includes(url.protocol) ||
+      (url.username !== undefined && url.username !== null && url.username !== "") ||
+      (url.password !== undefined && url.password !== null && url.password !== "") ||
+      (url.port !== undefined && url.port !== null && url.port !== "") ||
+      Str.includes("//")(url.pathname)
     ) {
-      return null
+      return null;
     }
-    const host = url.hostname.toLowerCase()
-    url.protocol = 'https:'
-    url.hash = ''
-    const parts = url.pathname.split('/').filter(Boolean)
-    if (X_HOSTS.has(host)) {
-      url.hostname = 'x.com'
+    const host = Str.toLowerCase(url.hostname);
+    url.protocol = "https:";
+    url.hash = "";
+    const parts = A.filter(Str.split(url.pathname, "/"), Boolean);
+    if (MutableHashSet.has(X_HOSTS, host)) {
+      url.hostname = "x.com";
       for (const key of [...url.searchParams.keys()]) {
-        if (!['q', 'f', 'src'].includes(key)) {
-          url.searchParams.delete(key)
+        if (!["q", "f", "src"].includes(key)) {
+          url.searchParams.delete(key);
         }
       }
-      return resolveX(url, parts)
+      return resolveX(url, parts);
     }
-    if (REDDIT_HOSTS.has(host)) {
-      url.hostname = 'www.reddit.com'
+    if (MutableHashSet.has(REDDIT_HOSTS, host)) {
+      url.hostname = "www.reddit.com";
       for (const key of [...url.searchParams.keys()]) {
-        if (!REDDIT_QUERY_KEYS.has(key)) {
-          url.searchParams.delete(key)
+        if (!MutableHashSet.has(REDDIT_QUERY_KEYS, key)) {
+          url.searchParams.delete(key);
         }
       }
-      return resolveReddit(url, parts)
+      return resolveReddit(url, parts);
     }
-    if (host === 'redd.it' && parts.length === 1 && POST_ID.test(parts[0])) {
-      return resolveSocialSource(`https://www.reddit.com/comments/${parts[0]}`)
+    if (host === "redd.it" && parts.length === 1 && POST_ID.test(parts[0] ?? "")) {
+      return resolveSocialSource(`https://www.reddit.com/comments/${parts[0]}`);
     }
-    if (host === 'pbs.twimg.com' && parts[0] === 'media' && parts.length === 2) {
-      url.searchParams.set('name', 'orig')
-      return { ...descriptor('x', url), kind: 'image', category: 'image', owner: 'images' }
+    if (host === "pbs.twimg.com" && parts[0] === "media" && parts.length === 2) {
+      url.searchParams.set("name", "orig");
+      return { ...descriptor("x", url), kind: "image", category: "image", owner: "images" };
     }
-    if (['i.redd.it', 'preview.redd.it'].includes(host) && parts.length === 1) {
-      url.hostname = 'i.redd.it'
-      url.search = ''
-      return { ...descriptor('reddit', url), kind: 'image', category: 'image', owner: 'images' }
+    if (["i.redd.it", "preview.redd.it"].includes(host) && parts.length === 1) {
+      url.hostname = "i.redd.it";
+      url.search = "";
+      return { ...descriptor("reddit", url), kind: "image", category: "image", owner: "images" };
     }
-    if (TIKTOK_HOSTS.has(host)) {
-      if (!['vm.tiktok.com', 'vt.tiktok.com'].includes(host)) {
-        url.hostname = 'www.tiktok.com'
+    if (MutableHashSet.has(TIKTOK_HOSTS, host)) {
+      if (!["vm.tiktok.com", "vt.tiktok.com"].includes(host)) {
+        url.hostname = "www.tiktok.com";
       }
-      url.search = ''
-      if (parts[1] === 'liked') {
-        parts[1] = 'likes'
-        url.pathname = parts.join('/')
+      url.search = "";
+      if (parts[1] === "liked") {
+        parts[1] = "likes";
+        url.pathname = A.join(parts, "/");
       }
-      return resolveTikTok(url, parts)
+      return resolveTikTok(url, parts);
     }
-    if (INSTAGRAM_HOSTS.has(host)) {
-      return resolveInstagram(parts)
+    if (MutableHashSet.has(INSTAGRAM_HOSTS, host)) {
+      return resolveInstagram(parts);
     }
-    return null
+    return null;
   } catch {
-    return null
+    return null;
   }
-}
+};
 
 export const socialCollectionUrl = (source: SocialSource): string => {
-  if (source.kind !== 'profile') {
-    return source.url
+  if (source.kind !== "profile") {
+    return source.url;
   }
-  return `${source.url.replace(/\/$/, '').split('?')[0]}/${source.platform === 'reddit' ? 'submitted' : source.platform === 'x' ? 'tweets' : 'posts'}`
-}
+  return `${Str.split(Str.replace(/\/$/, "")(source.url), "?")[0]}/${source.platform === "reddit" ? "submitted" : source.platform === "x" ? "tweets" : "posts"}`;
+};
 
-export const SocialMediaPreviewSchema = z.object({
-  posts: z.number().int().nonnegative(),
-  images: z.number().int().nonnegative(),
-  videos: z.number().int().nonnegative(),
-  limited: z.boolean()
-})
-export type SocialMediaPreview = z.infer<typeof SocialMediaPreviewSchema>
+const Counter = S.Finite.check(S.isInt(), S.isGreaterThanOrEqualTo(0));
+export const SocialMediaPreviewSchema = S.Struct({
+  posts: Counter.pipe(S.mutableKey),
+  images: Counter.pipe(S.mutableKey),
+  videos: Counter.pipe(S.mutableKey),
+  limited: S.Boolean.pipe(S.mutableKey),
+});
+export type SocialMediaPreview = typeof SocialMediaPreviewSchema.Type;
 
 /** One file a social collection run saved or verified on disk. */
-export interface SocialAssetFile {
-  readonly path: string
-  readonly kind: 'image' | 'video' | 'audio'
-}
-
-const SOCIAL_ASSET_KINDS = new Set<SocialAssetFile['kind']>(['image', 'video', 'audio'])
+export const SocialAssetFile = S.Struct({ path: S.String.check(S.isNonEmpty()), kind: SocialAssetKind });
+export type SocialAssetFile = typeof SocialAssetFile.Type;
 
 /** Narrow one `asset` protocol event from the social extractor; anything else is ignored. */
-export const readSocialAsset = (event: unknown): SocialAssetFile | null => {
-  if (!event || typeof event !== 'object') {
-    return null
-  }
-  const record = event as Record<string, unknown>
-  const kind = record.kind as SocialAssetFile['kind']
-  if (
-    typeof record.path !== 'string' ||
-    record.path.length === 0 ||
-    !SOCIAL_ASSET_KINDS.has(kind)
-  ) {
-    return null
-  }
-  return { path: record.path, kind }
-}
+export const readSocialAsset = (event: unknown): SocialAssetFile | null =>
+  Option.getOrNull(S.decodeUnknownOption(SocialAssetFile)(event));
 
-const PRIMARY_KIND_ORDER: readonly SocialAssetFile['kind'][] = ['video', 'audio', 'image']
+const PRIMARY_KIND_ORDER: readonly SocialAssetFile["kind"][] = ["video", "audio", "image"];
 
 /**
  * Pick the file a details page should open for a social run: the first video,
@@ -424,25 +431,25 @@ const PRIMARY_KIND_ORDER: readonly SocialAssetFile['kind'][] = ['video', 'audio'
  */
 export const selectPrimarySocialFile = (assets: readonly SocialAssetFile[]): string | null => {
   for (const kind of PRIMARY_KIND_ORDER) {
-    const match = assets.find((asset) => asset.kind === kind)
-    if (match) {
-      return match.path
+    const match = Option.getOrUndefined(A.findFirst(assets, (asset) => asset.kind === kind));
+    if (match !== undefined) {
+      return match.path;
     }
   }
-  return null
-}
+  return null;
+};
 
 /** gallery-dl extractor category the social manifest keys assets by. */
 const MANIFEST_CATEGORY: Record<string, string> = {
-  x: 'twitter',
-  reddit: 'reddit',
-  tiktok: 'tiktok',
-  instagram: 'instagram'
-}
+  x: "twitter",
+  reddit: "reddit",
+  tiktok: "tiktok",
+  instagram: "instagram",
+};
 
-const X_STATUS_ID = /\/status\/(\d+)/
-const REDDIT_POST_ID = /\/comments\/([a-z0-9]+)/i
-const TIKTOK_POST_ID = /\/(?:video|photo)\/(\d+)/
+const X_STATUS_ID = /\/status\/(\d+)/;
+const REDDIT_POST_ID = /\/comments\/([a-z0-9]+)/i;
+const TIKTOK_POST_ID = /\/(?:video|photo)\/(\d+)/;
 
 /**
  * Manifest asset-key prefix (`<category>:<postId>:`) for a single-post source,
@@ -450,19 +457,26 @@ const TIKTOK_POST_ID = /\/(?:video|photo)\/(\d+)/
  * `null` for profiles, feeds and platforms whose post id is not in the URL.
  */
 export const socialManifestPostKeyPrefix = (url: string): string | null => {
-  const source = resolveSocialSource(url)
-  if (source?.kind !== 'post') {
-    return null
+  const source = resolveSocialSource(url);
+  if (source?.kind !== "post") {
+    return null;
   }
-  const category = MANIFEST_CATEGORY[source.platform]
+  const category = MANIFEST_CATEGORY[source.platform];
   const pattern =
-    source.platform === 'x'
+    source.platform === "x"
       ? X_STATUS_ID
-      : source.platform === 'reddit'
+      : source.platform === "reddit"
         ? REDDIT_POST_ID
-        : source.platform === 'tiktok'
+        : source.platform === "tiktok"
           ? TIKTOK_POST_ID
-          : null
-  const postId = pattern ? pattern.exec(new URL(source.url).pathname)?.[1] : undefined
-  return category && postId ? `${category}:${postId}:` : null
-}
+          : null;
+  const postId = pattern !== null ? pattern.exec(new URL(source.url).pathname)?.[1] : undefined;
+  return category !== undefined &&
+    category !== null &&
+    category !== "" &&
+    postId !== undefined &&
+    postId !== null &&
+    postId !== ""
+    ? `${category}:${postId}:`
+    : null;
+};

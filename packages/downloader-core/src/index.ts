@@ -1,15 +1,123 @@
-export type { BrowserCookiesSetting } from './browser-cookies-setting'
-// biome-ignore lint/performance/noBarrelFile: This file is the package's documented public entry point.
-export {
-  buildBrowserCookiesSetting,
-  parseBrowserCookiesSetting
-} from './browser-cookies-setting'
+export { buildBrowserCookiesSetting, parseBrowserCookiesSetting } from "./browser-cookies-setting.js";
 export {
   getBrowserCookieDatabaseName,
   getBrowserCookieDatabaseRelativeSegments,
   getBrowserProfileBaseDirs,
-  getBrowserProfileCandidates
-} from './cookie-browser-paths'
+  getBrowserProfileCandidates,
+} from "./cookie-browser-paths.js";
+export {
+  COOKIE_BROWSER_IDS,
+  COOKIE_SITE_SPECS,
+  COOKIES_CHROME_EXTENSION_URL,
+  COOKIES_FIREFOX_EXTENSION_URL,
+  COOKIES_GUIDE_URL,
+  cookieDomainsForUrl,
+  getCookieSetupFailureKind,
+  getMaxCookiesFileBytes,
+  hasConfiguredCookieSettings,
+  isBrowserCookieReadSupported,
+  isCookieBrowserId,
+  isWindowsBlockedCookieBrowser,
+  listSelectableCookieBrowsers,
+  looksLikeNetscapeCookies,
+  MACOS_BROWSER_COOKIE_PERMISSION_MESSAGE,
+  recommendCookieSetup,
+  serializeNetscapeCookies,
+  unconfiguredCookieHealth,
+  VIDBEE_EXTENSION_CHROME_URL,
+} from "./cookie-setup.js";
+export { DownloadArguments } from "./DownloadArguments.service.js";
+export { DownloaderEvent, DownloaderInitialization, DownloaderOptions, DownloaderStatus } from "./Downloader.model.js";
+export { Downloader } from "./Downloader.service.js";
+export { DownloaderHost } from "./DownloaderHost.service.js";
+export { DownloadFiles } from "./DownloadFiles.service.js";
+export { DownloadHost } from "./DownloadHost.service.js";
+export { DownloadProcess } from "./DownloadProcess.service.js";
+export { DownloadQueue } from "./DownloadQueue.service.js";
+export { DownloadTiming } from "./DownloadTiming.service.js";
+export {
+  applyViaVidBeeFilename,
+  DEFAULT_FILENAME_STYLE,
+  DEFAULT_FILENAME_TEMPLATE,
+  DEFAULT_FILENAME_VIA_VIDBEE,
+  FILENAME_STYLE_PREVIEWS,
+  FILENAME_STYLES,
+  isFilenameStyle,
+  resolveFilenameTemplate,
+  SHARED_FILENAME_TEMPLATE,
+  VIA_VIDBEE_LABEL,
+} from "./filename-style.js";
+export {
+  buildAudioFormatPreference,
+  buildVideoFormatPreference,
+  ONE_CLICK_CONTAINER_OPTIONS,
+} from "./format-preferences.js";
+export {
+  buildSingleVideoFormatSelector,
+  isMuxedVideoFormat,
+  resolvePreferredAudioExt,
+  SINGLE_FORMAT_FALLBACK,
+} from "./format-selector.js";
+export { GalleryDlExecutorHost } from "./GalleryDlExecutorHost.service.js";
+export {
+  normalizeVscoGalleryUrl,
+  resolveDefaultGalleryDlFilenameTemplate,
+  resolveDownloadTaskKind,
+  shouldUseGalleryDl,
+  TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS,
+  VSCO_GALLERY_DL_EXTRACTOR_ARGS,
+} from "./gallery-dl-executor.js";
+export { InstagramInspectionLookupLive } from "./InstagramEnqueue.layer.js";
+export {
+  buildInstagramCategoryUrl,
+  INSTAGRAM_PROFILE_CATEGORIES,
+  InstagramProfileInspector as InstagramProfiles,
+  normalizeInstagramProfileUrl,
+} from "./instagram-profile.js";
+export {
+  BROWSER_CAPTURE_GROUP_KEY,
+  BROWSER_CAPTURE_MAX_PER_GROUP,
+  mapPlaylistInfo,
+  parsePlaylistMediaKind,
+  planPlaylistDownloadOrder,
+  playlistEntryGroupKey,
+} from "./playlist-plan.js";
+export { ShortLinkResolverLive } from "./ShortLinkResolver.layer.js";
+export { ShortLinkResolver } from "./ShortLinkResolver.service.js";
+export { SocialDownloadsLive } from "./SocialDownloads.layer.js";
+export { SocialDownloads } from "./SocialDownloads.service.js";
+export { SocialInventoryCodec } from "./SocialInventoryCodec.service.js";
+export { SocialTraversal } from "./SocialTraversal.service.js";
+export * from "./schemas.js";
+export { SocialProfileManager as SocialProfiles } from "./social-profile-manager.js";
+export {
+  DEFAULT_SUBTITLE_LANGUAGES,
+  expandSubtitleLanguageAliases,
+  FOLLOW_INTERFACE_SUBTITLE_LANGUAGE,
+  interfaceSubtitleLanguage,
+  MAX_SUBTITLE_LANGUAGES,
+  normalizeSubtitleLanguages,
+  resolveSubtitleLanguages,
+} from "./subtitle-languages.js";
+export { normalizeTikTokPhotoUrl } from "./tiktok-photo.js";
+export { isTikTokShortLink } from "./tiktok-short-link.js";
+export { YtDlpExecutorHost } from "./YtDlpExecutorHost.service.js";
+export { YtDlpProcess } from "./YtDlpProcess.service.js";
+export {
+  appendYouTubeSafeExtractorArgs,
+  formatYtDlpCommand,
+  isDirectMediaSegmentUrl,
+  isTransientYtDlpNetworkError,
+  METADATA_NETWORK_ATTEMPTS,
+  parseDownloadTimecode,
+  resolveAudioFormatSelector,
+  resolveDownloadSubtitleLanguages,
+  resolveVideoFormatSelector,
+  sanitizeFilenameTemplate,
+  VIDBEE_OUTPUT_PATH_PREFIX,
+} from "./yt-dlp-args.js";
+export { YtDlpTaskOptions } from "./yt-dlp-executor.js";
+export type { BrowserCookiesSetting } from "./browser-cookies-setting.js";
 export type {
   CookieBrowserId,
   CookieHealth,
@@ -22,124 +130,12 @@ export type {
   CookieSetupRecommendation,
   CookieSiteMatch,
   InstalledCookieBrowser,
-  NetscapeCookieInput
-} from './cookie-setup'
-export {
-  COOKIE_BROWSER_IDS,
-  COOKIE_SITE_SPECS,
-  COOKIES_CHROME_EXTENSION_URL,
-  COOKIES_FIREFOX_EXTENSION_URL,
-  COOKIES_GUIDE_URL,
-  cookieDomainsForUrl,
-  getCookieSetupFailureKind,
-  getMaxCookiesFileBytes,
-  hasConfiguredCookieSettings,
-  inspectNetscapeCookies,
-  isBrowserCookieReadSupported,
-  isCookieBrowserId,
-  isWindowsBlockedCookieBrowser,
-  listSelectableCookieBrowsers,
-  looksLikeNetscapeCookies,
-  MACOS_BROWSER_COOKIE_PERMISSION_MESSAGE,
-  matchCookieSites,
-  recommendCookieSetup,
-  serializeNetscapeCookies,
-  unconfiguredCookieHealth,
-  VIDBEE_EXTENSION_CHROME_URL
-} from './cookie-setup'
-export { DownloaderCore } from './downloader-core'
-export {
-  BROWSER_CAPTURE_GROUP_KEY,
-  BROWSER_CAPTURE_MAX_PER_GROUP,
-  mapPlaylistInfo,
-  parsePlaylistMediaKind,
-  planPlaylistDownloadOrder,
-  playlistEntryGroupKey,
-  restoreBrowserCaptureGroupCap
-} from './playlist-plan'
-export type { FilenameStyle } from './filename-style'
-export {
-  applyViaVidBeeFilename,
-  DEFAULT_FILENAME_STYLE,
-  DEFAULT_FILENAME_TEMPLATE,
-  DEFAULT_FILENAME_VIA_VIDBEE,
-  FILENAME_STYLE_PREVIEWS,
-  FILENAME_STYLES,
-  isFilenameStyle,
-  resolveFilenameTemplate,
-  SHARED_FILENAME_TEMPLATE,
-  VIA_VIDBEE_LABEL
-} from './filename-style'
-export type {
-  OneClickContainerOption,
-  OneClickFormatSettings,
-  OneClickQualityPreset
-} from './format-preferences'
-export {
-  buildAudioFormatPreference,
-  buildVideoFormatPreference,
-  ONE_CLICK_CONTAINER_OPTIONS
-} from './format-preferences'
-export type { FormatSelectorInput } from './format-selector'
-export {
-  buildSingleVideoFormatSelector,
-  isMuxedVideoFormat,
-  resolvePreferredAudioExt,
-  SINGLE_FORMAT_FALLBACK
-} from './format-selector'
-export type { GalleryDlExecutorOptions } from './gallery-dl-executor'
-export {
-  GalleryDlExecutor,
-  HostRoutingExecutor,
-  normalizeVscoGalleryUrl,
-  resolveDefaultGalleryDlFilenameTemplate,
-  resolveDownloadTaskKind,
-  shouldUseGalleryDl,
-  TIKTOK_PHOTO_GALLERY_DL_EXTRACTOR_ARGS,
-  VSCO_GALLERY_DL_EXTRACTOR_ARGS
-} from './gallery-dl-executor'
-export type {
-  EnqueueInstagramProfileOptions,
-  InstagramProfileInspectorOptions
-} from './instagram-profile'
-export {
-  buildGalleryDlRuntimeArgs,
-  buildInstagramCategoryUrl,
-  enqueueInstagramProfileDownload,
-  INSTAGRAM_PROFILE_CATEGORIES,
-  InstagramProfileInspector,
-  normalizeInstagramProfileUrl,
-  restoreInstagramProfileGroupCaps
-} from './instagram-profile'
-export {
-  InstagramCategoryStateSchema,
-  InstagramCategorySummarySchema,
-  InstagramInspectionErrorCodeSchema,
-  InstagramProfileCategorySchema,
-  InstagramProfileDownloadInputSchema,
-  InstagramProfileDownloadOutputSchema,
-  InstagramProfileDownloadResultSchema,
-  InstagramProfileInspectInputSchema,
-  InstagramProfileInspectionSchema,
-  InstagramProfileInspectOutputSchema,
-  WebAppSettingsSchema
-} from './schemas'
-export {
-  DEFAULT_SUBTITLE_LANGUAGES,
-  expandSubtitleLanguageAliases,
-  FOLLOW_INTERFACE_SUBTITLE_LANGUAGE,
-  interfaceSubtitleLanguage,
-  MAX_SUBTITLE_LANGUAGES,
-  normalizeSubtitleLanguages,
-  resolveSubtitleLanguages
-} from './subtitle-languages'
-export type { NormalizedTikTokPhotoUrl } from './tiktok-photo'
-export { normalizeTikTokPhotoUrl } from './tiktok-photo'
-export type {
-  ExpandTikTokShortLinkOptions,
-  TikTokShortLinkFetch
-} from './tiktok-short-link'
-export { expandTikTokShortLink, isTikTokShortLink } from './tiktok-short-link'
+  NetscapeCookieInput,
+} from "./cookie-setup.js";
+export type { FilenameStyle } from "./filename-style.js";
+export type { OneClickContainerOption, OneClickFormatSettings, OneClickQualityPreset } from "./format-preferences.js";
+export type { FormatSelectorInput } from "./format-selector.js";
+export type { NormalizedTikTokPhotoUrl } from "./tiktok-photo.js";
 export type {
   CreateDownloadInput,
   DirectoryEntry,
@@ -174,31 +170,6 @@ export type {
   UploadSettingsFileOutput,
   VideoFormat,
   VideoInfo,
-  VideoInfoInput
-} from './types'
-export type { SubtitleDownloadSkipReason } from './yt-dlp-args'
-export {
-  appendYouTubeSafeExtractorArgs,
-  assertDownloadSourceUrl,
-  buildCaptionExtractArgs,
-  buildDownloadArgs,
-  buildPlaylistInfoArgs,
-  buildVideoInfoArgs,
-  formatYtDlpCommand,
-  isDirectMediaSegmentUrl,
-  isTransientYtDlpNetworkError,
-  METADATA_NETWORK_ATTEMPTS,
-  parseDownloadTimecode,
-  resolveAudioFormatSelector,
-  resolveDownloadSubtitleLanguages,
-  resolveFfmpegLocationFromPath,
-  resolvePathWithHome,
-  resolveSubtitleDownloadSkipReason,
-  resolveVideoFormatSelector,
-  retryTransientYtDlpNetworkError,
-  sanitizeFilenameTemplate,
-  VIDBEE_OUTPUT_PATH_PREFIX,
-  validateDownloadTimeRange
-} from './yt-dlp-args'
-export type { YtDlpExecutorOptions, YtDlpTaskOptions } from './yt-dlp-executor'
-export { YtDlpExecutor } from './yt-dlp-executor'
+  VideoInfoInput,
+} from "./types.js";
+export type { SubtitleDownloadSkipReason } from "./yt-dlp-args.js";

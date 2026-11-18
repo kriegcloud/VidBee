@@ -1,0 +1,389 @@
+import type { SocialCollectionSummary } from '@vidbee/task-queue-legacy/types'
+import type { DownloadCookieSource } from '@vidbee/task-queue-legacy'
+import type { FilenameStyle } from './filename-style'
+import type { OneClickContainerOption } from './format-preferences'
+import type { SocialMediaOptions } from './social-media'
+
+export type DownloadType = 'video' | 'audio'
+
+export type PlaylistMediaKind = 'photo' | 'video' | 'recording'
+
+export type { OneClickContainerOption }
+
+export type DownloadStatus =
+  | 'pending'
+  | 'downloading'
+  | 'processing'
+  | 'completed'
+  | 'error'
+  | 'cancelled'
+
+export interface DownloadProgress {
+  indeterminate?: boolean
+  percent: number
+  currentSpeed?: string
+  eta?: string
+  downloaded?: string
+  total?: string
+}
+
+/**
+ * NEX-131 task-queue projection extras carried alongside legacy fields.
+ * Optional everywhere so legacy clients don't have to know about the
+ * task-queue at all; renderer/web client opt in by checking these fields.
+ */
+export type TaskQueueInternalStatus =
+  | 'queued'
+  | 'running'
+  | 'processing'
+  | 'paused'
+  | 'retry-scheduled'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+
+export type TaskQueueSubStatus = 'queued' | 'paused' | 'retry-scheduled'
+
+export type TaskQueueErrorCategory =
+  | 'http-429'
+  | 'auth-required'
+  | 'geo-blocked'
+  | 'not-found'
+  | 'disk-full'
+  | 'permission-denied'
+  | 'binary-missing'
+  | 'ffmpeg'
+  | 'network-transient'
+  | 'stalled'
+  | 'cancelled-by-user'
+  | 'output-missing'
+  | 'unknown'
+
+export interface DownloadTask {
+  sourceMediaKind?: 'image' | 'video' | 'mixed'
+  socialMedia?: SocialMediaOptions
+  collectionSummary?: SocialCollectionSummary
+  id: string
+  url: string
+  title?: string
+  thumbnail?: string
+  type: DownloadType
+  status: DownloadStatus
+  createdAt: number
+  startedAt?: number
+  completedAt?: number
+  duration?: number
+  fileSize?: number
+  speed?: string
+  ytDlpCommand?: string
+  ytDlpLog?: string
+  cookieSources?: DownloadCookieSource[]
+  downloadPath?: string
+  savedFileName?: string
+  description?: string
+  channel?: string
+  uploader?: string
+  viewCount?: number
+  tags?: string[]
+  selectedFormat?: VideoFormat
+  playlistId?: string
+  playlistTitle?: string
+  playlistIndex?: number
+  playlistSize?: number
+  mediaKind?: PlaylistMediaKind
+  batchId?: string
+  batchKind?: 'instagram-profile' | 'social-media'
+  batchTitle?: string
+  batchCategory?: string
+  batchOrder?: number
+  batchSourceCount?: number
+  batchAssetCount?: number
+  outputDirectory?: string
+  fileCount?: number
+  downloadedCount?: number
+  skippedCount?: number
+  failedCount?: number
+  totalSize?: number
+  progress?: DownloadProgress
+  error?: string
+  internalStatus?: TaskQueueInternalStatus
+  subStatus?: TaskQueueSubStatus
+  statusReason?: string | null
+  errorCategory?: TaskQueueErrorCategory
+  uiMessageKey?: string
+  nextRetryAt?: number
+  attempt?: number
+  maxAttempts?: number
+}
+
+export interface DownloadRuntimeSettings {
+  downloadPath?: string
+  browserForCookies?: string
+  cookiesPath?: string
+  /** Host-only provenance for the injected cookie file; never accepted from API settings. */
+  cookieSource?: DownloadCookieSource
+  proxy?: string
+  configPath?: string
+  downloadSubtitles?: boolean
+  subtitleLanguages?: string[]
+  interfaceLanguage?: string
+  embedSubs?: boolean
+  writeAutoSubs?: boolean
+  embedThumbnail?: boolean
+  embedMetadata?: boolean
+  embedChapters?: boolean
+  filenameStyle?: FilenameStyle
+  filenameViaVidBee?: boolean
+  shareWatermark?: boolean
+  downloadWithoutChannelSubfolders?: boolean
+  downloadMirror?: 'auto' | 'cn' | 'global'
+}
+
+export interface VideoInfoInput {
+  url: string
+  settings?: DownloadRuntimeSettings
+}
+
+export interface PlaylistInfoInput {
+  url: string
+  settings?: DownloadRuntimeSettings
+}
+
+export interface CreateDownloadInput {
+  socialMedia?: SocialMediaOptions
+  singleVideo?: boolean
+  url: string
+  type: DownloadType
+  title?: string
+  thumbnail?: string
+  duration?: number
+  description?: string
+  channel?: string
+  uploader?: string
+  viewCount?: number
+  tags?: string[]
+  selectedFormat?: VideoFormat
+  playlistId?: string
+  playlistTitle?: string
+  playlistIndex?: number
+  playlistSize?: number
+  format?: string
+  audioFormat?: string
+  audioFormatIds?: string[]
+  startTime?: string
+  endTime?: string
+  customDownloadPath?: string
+  customFilenameTemplate?: string
+  containerFormat?: OneClickContainerOption
+  settings?: DownloadRuntimeSettings
+}
+
+export interface VideoFormat {
+  formatId: string
+  ext: string
+  width?: number
+  height?: number
+  fps?: number
+  vcodec?: string
+  acodec?: string
+  filesize?: number
+  filesizeApprox?: number
+  formatNote?: string
+  tbr?: number
+  quality?: number
+  protocol?: string
+  language?: string
+  videoExt?: string
+  audioExt?: string
+}
+
+export interface VideoInfo {
+  id: string
+  title: string
+  thumbnail?: string
+  duration?: number
+  extractorKey?: string
+  webpageUrl?: string
+  description?: string
+  viewCount?: number
+  uploader?: string
+  tags?: string[]
+  formats: VideoFormat[]
+}
+
+export interface PlaylistEntry {
+  id: string
+  title: string
+  url: string
+  index: number
+  thumbnail?: string
+  mediaKind?: PlaylistMediaKind
+}
+
+export interface PlaylistInfo {
+  id: string
+  title: string
+  entries: PlaylistEntry[]
+  entryCount: number
+}
+
+export interface PlaylistDownloadInput {
+  url: string
+  type: DownloadType
+  format?: string
+  audioFormat?: string
+  audioFormatIds?: string[]
+  customDownloadPath?: string
+  customFilenameTemplate?: string
+  entryIds?: string[]
+  startIndex?: number
+  endIndex?: number
+  containerFormat?: OneClickContainerOption
+  settings?: DownloadRuntimeSettings
+}
+
+export interface PlaylistDownloadEntry {
+  downloadId: string
+  entryId: string
+  title: string
+  url: string
+  index: number
+}
+
+export interface PlaylistDownloadResult {
+  groupId: string
+  playlistId: string
+  playlistTitle: string
+  type: DownloadType
+  totalCount: number
+  startIndex: number
+  endIndex: number
+  entries: PlaylistDownloadEntry[]
+}
+
+export type InstagramProfileCategory = 'posts' | 'reels' | 'stories' | 'highlights' | 'tagged'
+
+export type InstagramCategoryState =
+  | 'cancelled'
+  | 'unscanned'
+  | 'ready'
+  | 'empty'
+  | 'auth-required'
+  | 'unavailable'
+
+export type InstagramInspectionErrorCode =
+  | 'auth-required'
+  | 'rate-limited'
+  | 'not-found'
+  | 'network'
+  | 'binary-missing'
+  | 'unavailable'
+
+export interface InstagramProfileItem {
+  assetIds?: string[]
+  sourceVersion?: string
+  downloaded?: boolean
+  id: string
+  url: string
+  assetCount: number
+  title?: string
+}
+
+export interface InstagramCategorySummary {
+  incremental?: boolean
+  cursor?: string
+  category: InstagramProfileCategory
+  state: InstagramCategoryState
+  sourceCount: number
+  assetCount: number
+  errorCode?: InstagramInspectionErrorCode
+  /** Epoch ms after which Instagram throttling is expected to have lifted. */
+  retryAfter?: number
+  items?: InstagramProfileItem[]
+  mappedAt?: number
+}
+
+export interface InstagramProfileInspectInput {
+  url: string
+  categories?: InstagramProfileCategory[]
+  settings?: DownloadRuntimeSettings
+}
+
+export interface InstagramProfileInspection {
+  mapping?: { category: InstagramProfileCategory; state: 'queued' | 'running' }
+  inspectionId: string
+  expiresAt: number
+  complete: boolean
+  profile: {
+    username: string
+    profileUrl: string
+    displayName?: string
+    avatarUrl?: string
+    isPrivate?: boolean
+  }
+  categories: InstagramCategorySummary[]
+  totalSourceCount: number
+  totalAssetCount: number
+}
+
+export interface InstagramProfileDownloadInput {
+  inspectionId: string
+  itemIds?: string[]
+  categories: InstagramProfileCategory[]
+  customDownloadPath?: string
+  settings?: DownloadRuntimeSettings
+}
+
+export interface InstagramProfileDownloadTask {
+  downloadId: string
+  category: InstagramProfileCategory
+  sourceCount: number
+  assetCount: number
+}
+
+export interface InstagramProfileDownloadResult {
+  groupId: string
+  username: string
+  totalSourceCount: number
+  totalAssetCount: number
+  tasks: InstagramProfileDownloadTask[]
+}
+
+export interface FilePathInput {
+  path: string
+}
+
+export interface DirectoryListInput {
+  path?: string
+}
+
+export type UploadSettingsFileKind = 'cookies' | 'config'
+
+export interface UploadSettingsFileInput {
+  kind: UploadSettingsFileKind
+  fileName: string
+  content: string
+}
+
+export interface DirectoryEntry {
+  name: string
+  path: string
+}
+
+export interface FileExistsOutput {
+  exists: boolean
+}
+
+export interface FileOperationOutput {
+  success: boolean
+}
+
+export interface ListDirectoriesOutput {
+  currentPath: string
+  parentPath: string | null
+  directories: DirectoryEntry[]
+}
+
+export interface UploadSettingsFileOutput {
+  path: string
+}

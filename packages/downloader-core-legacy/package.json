@@ -1,0 +1,61 @@
+{
+  "name": "@vidbee/downloader-core-legacy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./browser-cookies-setting": "./src/browser-cookies-setting.ts",
+    "./cookie-setup": "./src/cookie-setup.ts",
+    "./cookie-browser-paths": "./src/cookie-browser-paths.ts",
+    "./download-file": "./src/download-file.ts",
+    "./dzen-profile": "./src/dzen-profile.ts",
+    "./facebook-gallery": "./src/facebook-gallery.ts",
+    "./filename-style": "./src/filename-style.ts",
+    "./format-preferences": "./src/format-preferences.ts",
+    "./format-presentation": "./src/format-presentation.ts",
+    "./gallery-dl-executor": "./src/gallery-dl-executor.ts",
+    "./instagram-profile": "./src/instagram-profile.ts",
+    "./instagram-url": "./src/instagram-url.ts",
+    "./format-selector": "./src/format-selector.ts",
+    "./schemas": "./src/schemas.ts",
+    "./pinterest": "./src/pinterest.ts",
+    "./output-path": "./src/output-path.ts",
+    "./audio-format-preferences": "./src/audio-format-preferences.ts",
+    "./subtitle-languages": "./src/subtitle-languages.ts",
+    "./snapchat": "./src/snapchat.ts",
+    "./threads": "./src/threads.ts",
+    "./tiktok-photo": "./src/tiktok-photo.ts",
+    "./tiktok-short-link": "./src/tiktok-short-link.ts",
+    "./yt-dlp-args": "./src/yt-dlp-args.ts",
+    "./yt-dlp-wrap": "./src/yt-dlp-wrap.ts",
+    "./social-media": "./src/social-media.ts",
+    "./social-media-service": "./src/social-media-service.ts",
+    "./social-profile-manager": "./src/social-profile-manager.ts",
+    "./mapped-profile-source": "./src/mapped-profile-source.ts",
+    "./onlyfans-profile": "./src/onlyfans-profile.ts",
+    "./fansly-profile": "./src/fansly-profile.ts",
+    "./vsco": "./src/vsco.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bunx --bun vitest run",
+    "check": "bun run typecheck && bun run check:characterization",
+    "check:characterization": "tsc --noEmit -p tsconfig.characterization.json"
+  },
+  "dependencies": {
+    "yt-dlp-wrap-plus": "catalog:",
+    "zod": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^",
+    "@vidbee/downloader-core": "workspace:^",
+    "effect": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@vidbee/task-queue": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

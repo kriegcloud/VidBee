@@ -3,7 +3,8 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-import { buildGalleryDlRuntimeArgs, type DownloadRuntimeSettings } from '@vidbee/downloader-core'
+import type { DownloadRuntimeSettings } from '@vidbee/downloader-core'
+import { buildGalleryDlRuntimeArgs } from '@vidbee/downloader-core-legacy'
 
 import { scopedLoggers } from '../utils/logger'
 import { resolveBundledResourcesPath } from './bundled-resources-path'

@@ -11,11 +11,11 @@ import {
   type CookieHealth,
   getMaxCookiesFileBytes,
   type InstalledCookieBrowser,
-  inspectNetscapeCookies,
   isBrowserCookieReadSupported,
   looksLikeNetscapeCookies,
   unconfiguredCookieHealth
 } from '@vidbee/downloader-core/cookie-setup'
+import { inspectNetscapeCookies } from '@vidbee/downloader-core-legacy/cookie-setup'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type { ExtensionCookieConnection } from '../../../shared/extension-cookies'
 import { inspectBrowserCookieAccess } from '../../lib/browser-cookie-access'

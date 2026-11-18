@@ -196,7 +196,7 @@ bun run test:golden
 ```
 
 `bun run test:golden` launches the packaged build offline on a synthetic fixture
-profile and compares 358 MCP, HTTP, CLI and renderer answers with the goldens in
+profile and compares 379 MCP, HTTP, CLI and renderer answers with the goldens in
 `apps/desktop/test/golden/`. [GOLDENS.md](GOLDENS.md) explains how to run a
 subset, how to add a case for a tool or endpoint that has none (do this on the
 build before your change), and how to update a golden when a change is intended.
@@ -291,3 +291,53 @@ and `snapshot.json`. Preserve SQL bytes and original millisecond journal values
 when reconciling migration tracking, so the preceding 0.45 build can reopen a
 fresh database. A cached `better-sqlite3` statement's `.raw(true)` mutates it;
 restore object mode in `finally`, including after errors.
+
+## Downloader process and compatibility patterns (phase 5)
+
+The downloader separates process observations from domain results. `DownloadProcess` accepts an
+explicit command specification and a synchronous Effect sink. Compatibility listeners enter the
+sink directly through the owner's warmed runtime; a stream consumer cannot preserve delivery
+before a Node listener returns. Keep raw byte chunks intact. Ordinary yt-dlp output decodes each
+chunk independently; Redgifs uses streaming UTF-8 decoding and readline-compatible delivery.
+
+Raw completion retains nullable code/signal and the actual child `killed` flag. Native completion
+retains an exit code or the actual `PlatformError`; native acquisition failure has no acquired
+child, PID or spawn notification. Never synthesize missing raw observations. Keep a process scope
+alive through its attempt, including output drain, and own asynchronous finalization separately
+from the synchronous sink. The native differences and per-site cancellation policies are specified
+in [the downloader design](design/downloader-core.md), section 6; phase 9.1 must resolve or declare
+these before switching the application from the compatibility process layer.
+
+Reuse `DownloadFiles` for downloader persistence behavior, preserving byte decoding, BOMs,
+false-on-failure existence probes, separate read/stat recovery, and creation-only modes. Directory
+creation, direct write and rename are separate capabilities. Do not introduce a generic atomic
+writer that changes the known-items direct overwrite, temporary filenames, failed-rename residue,
+cache-before-save order or existing inode permissions.
+
+`@vidbee/task-queue-legacy/runtime` exports `runLegacyPromise(runtime, effect, mapError)` and
+`runLegacySync(runtime, effect, mapError)`. Both owners keep their own warmed runtime. The Promise
+runner settles from a fiber exit observer without another Promise handler; the synchronous runner
+maps `runSyncExit` failure before throwing. Cross-owner callbacks re-enter the receiving owner's
+runtime synchronously. Reuse these utilities rather than constructing a per-call runtime or
+changing the suspension points of an old Promise method.
+
+Wrapper tests compare raw event traces against the installed `yt-dlp-wrap-plus` oracle. Injected
+`spawnFn` emitters already represent wrapper observations and must bypass a second conversion.
+For Node-specific spawn/abort/error messages, explicitly select the repository-pinned Node and
+compare structured traces inside Node child processes. Bun hosts Vitest; its own interpreter is
+not a substitute for the pinned Node fixture. Normalize only fixture paths, PIDs and timestamps,
+never error messages, chunk boundaries, callback ordering or synchronous observation markers.
+
+
+Downloader raw progress stays unknown until its field checks; the wrapper can emit NaN for a
+false-positive progress regex match. Do not weaken finite domain schemas to model that raw value.
+The default best-quality preset also uses a null height sentinel: a truthiness rewrite must skip
+null as well as zero and undefined. Pin every saved quality preset through its complete selector.
+Optional cookie booleans need their original boolean coercion; testing only true does not establish
+false/default parity. The packaged remux path exposed this distinction after source suites passed.
+
+Downloader signals use the additive `ProcessRequests` tag beside `ProcessControl`: PID, group-only
+and tree requests acknowledge without awaiting termination. Existing queue recovery `kill` remains
+unchanged. Neither capability adds process identity checks; those remain `ProcessRegistry`'s role.
+`InstagramInspectionLookupLive` connects native enqueueing to the same inspector/cache owner;
+compatibility borrows its host inspector and queue instead of exposing or reconstructing runtimes.

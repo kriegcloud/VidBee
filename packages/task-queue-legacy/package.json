@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./runtime": "./src/bridge/runtime.ts",
     "./source-admission": "./src/source-admission.ts",
     ".": "./src/index.ts",
     "./types": "./src/types.ts",

@@ -9,11 +9,11 @@ import {
   cookieDomainsForUrl,
   cookieMatchesUrlScope,
   looksLikeNetscapeCookies,
-  matchCookieSites,
   type NetscapeCookieInput,
   serializeNetscapeCookies,
   VIDBEE_EXTENSION_ORIGIN
 } from '@vidbee/downloader-core/cookie-setup'
+import { matchCookieSites } from '@vidbee/downloader-core-legacy/cookie-setup'
 import type {
   ExtensionCookieConnection,
   ExtensionCookieSourcePreference
