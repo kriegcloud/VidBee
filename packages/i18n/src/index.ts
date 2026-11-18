@@ -1,11 +1,22 @@
+export { I18nInitializerLive } from "./I18n.driver.js";
+export { I18nInitializationError } from "./I18n.errors.js";
+export {
+  I18nOptions,
+  SystemProfile,
+  SystemProfileHints,
+  SystemProfileInput,
+  TranslationDictionary as TranslationDictionarySchema,
+} from "./I18n.model.js";
+export { I18nInitializer } from "./I18n.service.js";
+export { createI18nOptions, initSharedI18n } from "./init.js";
 export {
   defaultLanguageCode,
+  LanguageCode,
+  LanguageDefinition,
   languageList,
   languages,
   normalizeLanguageCode,
-  supportedLanguageCodes
-} from './languages'
-export type { LanguageCode, LanguageDefinition } from './languages'
-export { createI18nOptions, initSharedI18n } from './init'
-export { translationResources } from './resources'
-export type { TranslationDictionary } from './resources'
+  supportedLanguageCodes,
+} from "./languages.js";
+export { translationResources } from "./resources.js";
+export type { TranslationDictionary } from "./resources.js";
