@@ -13,7 +13,10 @@
       "dependsOn": [
         "^check"
       ],
-      "outputs": []
+      "outputs": [],
+      "env": [
+        "DB_TEST_CLIENT"
+      ]
     },
     "build": {
       "dependsOn": [

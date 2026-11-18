@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { applySubscriptionsMigrations } from '@vidbee/db/subscriptions'
+import { applySubscriptionsMigrations } from '@vidbee/db/legacy/subscriptions'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { SubscriptionsApi } from '../src/api'
@@ -251,7 +251,7 @@ const openStore = () => {
   assert.ok(columns().includes('source_kind'))
   let clock = 1000
   const now = () => clock
-  const store = createSqliteSubscriptionsStore({ db: drizzle(sqlite), now })
+  const store = createSqliteSubscriptionsStore({ db: drizzle({ client: sqlite }), now })
   return { store, now, advance: (ms: number) => (clock += ms) }
 }
 

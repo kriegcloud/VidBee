@@ -15,13 +15,13 @@
  *
  * Both steps are idempotent and CREATE TABLE IF NOT EXISTS-style so they're
  * safe to re-run on every boot. We now read everything through the shared
- * `@vidbee/db/subscriptions` Drizzle schema; the legacy
+ * `@vidbee/db/legacy/subscriptions` Drizzle schema; the legacy
  * `subscription-manager.ts` / `subscription-scheduler.ts` modules they
  * superseded have been removed.
  */
 
 import path from 'node:path'
-import { applySubscriptionsMigrations } from '@vidbee/db/subscriptions'
+import { applySubscriptionsMigrations } from '@vidbee/db/legacy/subscriptions'
 import {
   createSqliteMetaStore,
   createSqliteSubscriptionsStore,

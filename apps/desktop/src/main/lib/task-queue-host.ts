@@ -19,8 +19,8 @@ import { fileURLToPath } from 'node:url'
 import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
 import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
 import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
-import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
-import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
+import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/legacy/task-queue'
+import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/legacy/transcripts'
 import {
   GalleryDlExecutor,
   HostRoutingExecutor,

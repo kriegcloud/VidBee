@@ -1,0 +1,310 @@
+[
+  {
+    "type": "index",
+    "name": "idx_transcript_segments_time",
+    "tbl_name": "transcript_segments",
+    "sql": "CREATE INDEX idx_transcript_segments_time ON transcript_segments(transcript_id, start_ms)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "transcript_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 3,
+        "name": "start_ms"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcript_speakers_transcript",
+    "tbl_name": "transcript_speakers",
+    "sql": "CREATE INDEX idx_transcript_speakers_transcript ON transcript_speakers(transcript_id, sort_index)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "transcript_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 4,
+        "name": "sort_index"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcripts_download",
+    "tbl_name": "transcripts",
+    "sql": "CREATE INDEX idx_transcripts_download ON transcripts(download_task_id, created_at)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "download_task_id"
+      },
+      {
+        "seqno": 1,
+        "cid": 8,
+        "name": "created_at"
+      }
+    ]
+  },
+  {
+    "type": "index",
+    "name": "idx_transcripts_task",
+    "tbl_name": "transcripts",
+    "sql": "CREATE INDEX idx_transcripts_task ON transcripts(transcription_task_id)",
+    "columns": [
+      {
+        "seqno": 0,
+        "cid": 2,
+        "name": "transcription_task_id"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcript_segments",
+    "tbl_name": "transcript_segments",
+    "sql": "CREATE TABLE transcript_segments (id TEXT PRIMARY KEY, transcript_id TEXT NOT NULL REFERENCES transcripts(id) ON DELETE CASCADE, speaker_id TEXT, start_ms INTEGER NOT NULL, end_ms INTEGER NOT NULL, text TEXT NOT NULL, confidence REAL, sort_index INTEGER NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "transcript_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "speaker_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "start_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "end_ms",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "text",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "confidence",
+        "type": "REAL",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "sort_index",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "transcripts",
+        "from": "transcript_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcript_speakers",
+    "tbl_name": "transcript_speakers",
+    "sql": "CREATE TABLE transcript_speakers (id TEXT PRIMARY KEY, transcript_id TEXT NOT NULL REFERENCES transcripts(id) ON DELETE CASCADE, speaker_key TEXT NOT NULL, display_name TEXT NOT NULL, sort_index INTEGER NOT NULL)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "transcript_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "speaker_key",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "display_name",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "sort_index",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "transcripts",
+        "from": "transcript_id",
+        "to": "id",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  {
+    "type": "table",
+    "name": "transcripts",
+    "tbl_name": "transcripts",
+    "sql": "CREATE TABLE transcripts (id TEXT PRIMARY KEY, download_task_id TEXT NOT NULL, transcription_task_id TEXT NOT NULL, result_kind TEXT NOT NULL, model_version TEXT NOT NULL, language TEXT, source_file_path TEXT, superseded_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL , source_kind TEXT)",
+    "columns": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "download_task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 2,
+        "name": "transcription_task_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 3,
+        "name": "result_kind",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "model_version",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "language",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "source_file_path",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 7,
+        "name": "superseded_at",
+        "type": "INTEGER",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 8,
+        "name": "created_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 9,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 10,
+        "name": "source_kind",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "foreignKeys": []
+  }
+]

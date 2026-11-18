@@ -14,69 +14,70 @@
  * deployments. The schema must be identical in both worlds, which is why it
  * lives here next to the task-queue schema rather than inside any host.
  */
-import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import * as S from "effect/Schema";
 
-export const subscriptionsTable = sqliteTable('subscriptions', {
-  id: text('id').primaryKey(),
-  title: text('title').notNull(),
-  sourceUrl: text('source_url').notNull(),
-  feedUrl: text('feed_url').notNull(),
-  platform: text('platform').notNull(),
+export const subscriptionsTable = sqliteTable("subscriptions", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  sourceUrl: text("source_url").notNull(),
+  feedUrl: text("feed_url").notNull(),
+  platform: text("platform").notNull(),
   /** JSON array of strings. */
-  keywords: text('keywords').notNull(),
+  keywords: text("keywords").notNull(),
   /** JSON array of strings. */
-  tags: text('tags').notNull(),
-  onlyDownloadLatest: integer('only_latest', { mode: 'number' }).notNull(),
-  autoDownload: integer('auto_download', { mode: 'number' }).notNull(),
-  enabled: integer('enabled', { mode: 'number' }).notNull(),
-  coverUrl: text('cover_url'),
-  latestVideoTitle: text('latest_video_title'),
-  latestVideoPublishedAt: integer('latest_video_published_at', { mode: 'number' }),
-  lastCheckedAt: integer('last_checked_at', { mode: 'number' }),
-  lastSuccessAt: integer('last_success_at', { mode: 'number' }),
-  status: text('status').notNull(),
-  lastError: text('last_error'),
-  createdAt: integer('created_at', { mode: 'number' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
-  downloadDirectory: text('download_directory'),
-  namingTemplate: text('naming_template'),
-  downloadType: text('download_type'),
-  downloadQuality: text('download_quality'),
-  downloadContainer: text('download_container'),
+  tags: text("tags").notNull(),
+  onlyDownloadLatest: integer("only_latest", { mode: "number" }).notNull(),
+  autoDownload: integer("auto_download", { mode: "number" }).notNull(),
+  enabled: integer("enabled", { mode: "number" }).notNull(),
+  coverUrl: text("cover_url"),
+  latestVideoTitle: text("latest_video_title"),
+  latestVideoPublishedAt: integer("latest_video_published_at", { mode: "number" }),
+  lastCheckedAt: integer("last_checked_at", { mode: "number" }),
+  lastSuccessAt: integer("last_success_at", { mode: "number" }),
+  status: text("status").notNull(),
+  lastError: text("last_error"),
+  createdAt: integer("created_at", { mode: "number" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+  downloadDirectory: text("download_directory"),
+  namingTemplate: text("naming_template"),
+  downloadType: text("download_type"),
+  downloadQuality: text("download_quality"),
+  downloadContainer: text("download_container"),
   /** 'feed' (RSS) or 'profile' (checked through a profile mapper). */
-  sourceKind: text('source_kind').notNull().default('feed'),
-  profileOwner: text('profile_owner'),
+  sourceKind: text("source_kind").notNull().default("feed"),
+  profileOwner: text("profile_owner"),
   /** JSON array of followed profile categories; '[]' for feeds. */
-  categories: text('categories').notNull().default('[]'),
-  checkIntervalMs: integer('check_interval_ms', { mode: 'number' }),
-  nextCheckAt: integer('next_check_at', { mode: 'number' })
-})
+  categories: text("categories").notNull().default("[]"),
+  checkIntervalMs: integer("check_interval_ms", { mode: "number" }),
+  nextCheckAt: integer("next_check_at", { mode: "number" }),
+});
 
 export const subscriptionItemsTable = sqliteTable(
-  'subscription_items',
+  "subscription_items",
   {
-    subscriptionId: text('subscription_id').notNull(),
-    itemId: text('item_id').notNull(),
-    title: text('title').notNull(),
-    url: text('url').notNull(),
-    publishedAt: integer('published_at', { mode: 'number' }).notNull(),
-    thumbnail: text('thumbnail'),
+    subscriptionId: text("subscription_id").notNull(),
+    itemId: text("item_id").notNull(),
+    title: text("title").notNull(),
+    url: text("url").notNull(),
+    publishedAt: integer("published_at", { mode: "number" }).notNull(),
+    thumbnail: text("thumbnail"),
     /** 1 while the item is linked to a task that still exists. */
-    added: integer('added', { mode: 'number' }).notNull(),
+    added: integer("added", { mode: "number" }).notNull(),
     /** Task id while the item is queued. Null after that task is removed. */
-    taskId: text('task_id'),
-    createdAt: integer('created_at', { mode: 'number' }).notNull(),
-    updatedAt: integer('updated_at', { mode: 'number' }).notNull()
+    taskId: text("task_id"),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "number" }).notNull(),
   },
   (table) => [
     primaryKey({
       columns: [table.subscriptionId, table.itemId],
-      name: 'subscription_items_pk'
+      name: "subscription_items_pk",
     }),
-    index('idx_subscription_items_sub').on(table.subscriptionId),
-    index('idx_subscription_items_task').on(table.taskId)
+    index("idx_subscription_items_sub").on(table.subscriptionId),
+    index("idx_subscription_items_task").on(table.taskId),
   ]
-)
+);
 
 /**
  * Workspace-scoped key/value store for subscription-related metadata.
@@ -94,18 +95,11 @@ export const subscriptionItemsTable = sqliteTable(
  * without DDL changes; CAS is implemented by reading + writing inside a single
  * transaction in `LeaderElection`.
  */
-export const subscriptionsMetaTable = sqliteTable('subscriptions_meta', {
-  key: text('key').primaryKey(),
-  value: text('value').notNull(),
-  updatedAt: integer('updated_at', { mode: 'number' }).notNull()
-})
-
-export type SubscriptionRow = typeof subscriptionsTable.$inferSelect
-export type SubscriptionInsert = typeof subscriptionsTable.$inferInsert
-export type SubscriptionItemRow = typeof subscriptionItemsTable.$inferSelect
-export type SubscriptionItemInsert = typeof subscriptionItemsTable.$inferInsert
-export type SubscriptionsMetaRow = typeof subscriptionsMetaTable.$inferSelect
-export type SubscriptionsMetaInsert = typeof subscriptionsMetaTable.$inferInsert
+export const subscriptionsMetaTable = sqliteTable("subscriptions_meta", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+});
 
 /**
  * Raw SQL applied on a fresh subscriptions DB. Hosts that share a file with
@@ -166,7 +160,7 @@ CREATE TABLE IF NOT EXISTS subscriptions_meta (
 INSERT INTO subscriptions_meta (key, value, updated_at)
   VALUES ('subscriptions_version', '1', 0)
   ON CONFLICT(key) DO UPDATE SET value = excluded.value;
-`
+`;
 
 /**
  * Existing databases created with `SUBSCRIPTIONS_DDL_V1` lack `auto_download`.
@@ -174,43 +168,32 @@ INSERT INTO subscriptions_meta (key, value, updated_at)
  */
 export const SUBSCRIPTIONS_DDL_V2 = `
 ALTER TABLE subscriptions ADD COLUMN auto_download INTEGER NOT NULL DEFAULT 1;
-`
-
-/**
- * Apply subscription DDL and additive column migrations. `columns` is the
- * current `PRAGMA table_info(subscriptions)` name list (empty when the table
- * does not exist yet). Idempotent.
- *
- * @param exec SQLite exec callback used by the host.
- * @param columns Existing `subscriptions` column names.
- */
-export const applySubscriptionsMigrations = (
-  exec: (sql: string) => void,
-  columns: string[]
-): void => {
-  exec(SUBSCRIPTIONS_DDL_V1)
-  if (!columns.includes('auto_download')) {
-    exec(SUBSCRIPTIONS_DDL_V2)
-  }
-  // Nullable overrides preserve the global defaults for existing subscriptions.
-  for (const column of ['download_type', 'download_quality', 'download_container']) {
-    if (!columns.includes(column)) {
-      exec(`ALTER TABLE subscriptions ADD COLUMN ${column} TEXT;`)
-    }
-  }
-  // V3: profile subscriptions. Existing rows are RSS feeds on the default interval.
-  for (const [column, definition] of SUBSCRIPTIONS_V3_COLUMNS) {
-    if (!columns.includes(column)) {
-      exec(`ALTER TABLE subscriptions ADD COLUMN ${column} ${definition};`)
-    }
-  }
-}
+`;
 
 /** Additive V3 columns for profile subscriptions and per-subscription scheduling. */
 export const SUBSCRIPTIONS_V3_COLUMNS = [
-  ['source_kind', "TEXT NOT NULL DEFAULT 'feed'"],
-  ['profile_owner', 'TEXT'],
-  ['categories', "TEXT NOT NULL DEFAULT '[]'"],
-  ['check_interval_ms', 'INTEGER'],
-  ['next_check_at', 'INTEGER']
-] as const
+  ["source_kind", "TEXT NOT NULL DEFAULT 'feed'"],
+  ["profile_owner", "TEXT"],
+  ["categories", "TEXT NOT NULL DEFAULT '[]'"],
+  ["check_interval_ms", "INTEGER"],
+  ["next_check_at", "INTEGER"],
+] as const;
+
+export * from "./Subscriptions.model.js";
+
+import { SubscriptionItemRow, SubscriptionRow, SubscriptionsMetaRow } from "./Subscriptions.model.js";
+import type { SubscriptionInsert, SubscriptionItemInsert, SubscriptionsMetaInsert } from "./Subscriptions.model.js";
+
+const SubscriptionRowFields = S.Struct(SubscriptionRow.fields);
+const SubscriptionItemRowFields = S.Struct(SubscriptionItemRow.fields);
+const SubscriptionsMetaRowFields = S.Struct(SubscriptionsMetaRow.fields);
+
+type MutuallyAssignable<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+export const modelTypeEquivalence: [
+  MutuallyAssignable<typeof SubscriptionRowFields.Type, typeof subscriptionsTable.$inferSelect>,
+  MutuallyAssignable<SubscriptionInsert, typeof subscriptionsTable.$inferInsert>,
+  MutuallyAssignable<typeof SubscriptionItemRowFields.Type, typeof subscriptionItemsTable.$inferSelect>,
+  MutuallyAssignable<SubscriptionItemInsert, typeof subscriptionItemsTable.$inferInsert>,
+  MutuallyAssignable<typeof SubscriptionsMetaRowFields.Type, typeof subscriptionsMetaTable.$inferSelect>,
+  MutuallyAssignable<SubscriptionsMetaInsert, typeof subscriptionsMetaTable.$inferInsert>,
+] = [true, true, true, true, true, true];

@@ -1,0 +1,90 @@
+[
+  {
+    "drizzle": {
+      "id": "transcripts:id:values:雪",
+      "downloadTaskId": "transcripts:download_task_id:values:雪",
+      "transcriptionTaskId": "transcripts:transcription_task_id:values:雪",
+      "resultKind": "transcripts:result_kind:values:雪",
+      "modelVersion": "transcripts:model_version:values:雪",
+      "asrTier": "transcripts:asr_tier:values:雪",
+      "language": "transcripts:language:values:雪",
+      "sourceFilePath": "transcripts:source_file_path:values:雪",
+      "sourceKind": "transcripts:source_kind:values:雪",
+      "supersededAt": 1700000000123,
+      "createdAt": 1700000000123,
+      "updatedAt": 1700000000123
+    },
+    "raw": {
+      "id": "transcripts:id:values:雪",
+      "download_task_id": "transcripts:download_task_id:values:雪",
+      "transcription_task_id": "transcripts:transcription_task_id:values:雪",
+      "result_kind": "transcripts:result_kind:values:雪",
+      "model_version": "transcripts:model_version:values:雪",
+      "language": "transcripts:language:values:雪",
+      "source_file_path": "transcripts:source_file_path:values:雪",
+      "superseded_at": 1700000000123,
+      "created_at": 1700000000123,
+      "updated_at": 1700000000123,
+      "asr_tier": "transcripts:asr_tier:values:雪",
+      "source_kind": "transcripts:source_kind:values:雪"
+    },
+    "types": {
+      "id": "string",
+      "downloadTaskId": "string",
+      "transcriptionTaskId": "string",
+      "resultKind": "string",
+      "modelVersion": "string",
+      "asrTier": "string",
+      "language": "string",
+      "sourceFilePath": "string",
+      "sourceKind": "string",
+      "supersededAt": "number",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  },
+  {
+    "drizzle": {
+      "id": "transcripts:id:nulls:雪",
+      "downloadTaskId": "transcripts:download_task_id:nulls:雪",
+      "transcriptionTaskId": "transcripts:transcription_task_id:nulls:雪",
+      "resultKind": "transcripts:result_kind:nulls:雪",
+      "modelVersion": "transcripts:model_version:nulls:雪",
+      "asrTier": null,
+      "language": null,
+      "sourceFilePath": null,
+      "sourceKind": null,
+      "supersededAt": null,
+      "createdAt": 1700000000124,
+      "updatedAt": 1700000000124
+    },
+    "raw": {
+      "id": "transcripts:id:nulls:雪",
+      "download_task_id": "transcripts:download_task_id:nulls:雪",
+      "transcription_task_id": "transcripts:transcription_task_id:nulls:雪",
+      "result_kind": "transcripts:result_kind:nulls:雪",
+      "model_version": "transcripts:model_version:nulls:雪",
+      "language": null,
+      "source_file_path": null,
+      "superseded_at": null,
+      "created_at": 1700000000124,
+      "updated_at": 1700000000124,
+      "asr_tier": null,
+      "source_kind": null
+    },
+    "types": {
+      "id": "string",
+      "downloadTaskId": "string",
+      "transcriptionTaskId": "string",
+      "resultKind": "string",
+      "modelVersion": "string",
+      "asrTier": "null",
+      "language": "null",
+      "sourceFilePath": "null",
+      "sourceKind": "null",
+      "supersededAt": "null",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  }
+]

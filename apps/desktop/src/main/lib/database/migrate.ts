@@ -156,6 +156,15 @@ const findLegacyMigrationForColumn = (columnName: string): LegacyMigration | nul
   return null
 }
 
+// The old 0.45 build compares journal timestamps at millisecond precision.
+// Keep those values for fresh 1.0 databases as well as upgraded profiles.
+const reconcileMigrationTimestamps = (sqlite: Database.Database): void => {
+  const update = sqlite.prepare(`UPDATE "${MIGRATIONS_TABLE}" SET created_at = ? WHERE hash = ?`)
+  for (const migration of LEGACY_MIGRATIONS) {
+    update.run(migration.createdAt, migration.hash)
+  }
+}
+
 export const runMigrations = (database: BetterSQLite3Database): void => {
   const migrationsFolder = resolveMigrationsFolder()
   if (!migrationsFolder) {
@@ -167,6 +176,7 @@ export const runMigrations = (database: BetterSQLite3Database): void => {
 
   try {
     migrate(database, { migrationsFolder, migrationsTable: MIGRATIONS_TABLE })
+    reconcileMigrationTimestamps(sqlite)
   } catch (error) {
     // Sentry issue VIDBEE-16: legacy 1.3.x desktops still hit
     // `SqliteError: duplicate column name: <col>` when the local DB had the
@@ -188,6 +198,7 @@ export const runMigrations = (database: BetterSQLite3Database): void => {
       .run(legacy.hash, legacy.createdAt)
 
     migrate(database, { migrationsFolder, migrationsTable: MIGRATIONS_TABLE })
+    reconcileMigrationTimestamps(sqlite)
   }
 }
 

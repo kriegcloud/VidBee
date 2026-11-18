@@ -16,7 +16,7 @@ import {
   subscriptionItemsTable,
   subscriptionsMetaTable,
   subscriptionsTable
-} from '@vidbee/db/subscriptions'
+} from '@vidbee/db/legacy/subscriptions'
 import { and, desc, eq, inArray, isNotNull, or } from 'drizzle-orm'
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import { buildFeedKey } from './feed-resolver'

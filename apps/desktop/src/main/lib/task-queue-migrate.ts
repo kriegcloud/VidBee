@@ -16,8 +16,8 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
-import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
-import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/transcripts'
+import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/legacy/task-queue'
+import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/legacy/transcripts'
 import {
   PRIORITY_BACKGROUND,
   PRIORITY_USER,

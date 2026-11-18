@@ -31,7 +31,7 @@ export const getDatabaseConnection = (): DatabaseConnection => {
   sqlite.pragma('journal_mode = WAL')
   sqlite.pragma('foreign_keys = ON')
 
-  const db = drizzle(sqlite)
+  const db = drizzle({ client: sqlite })
   connection = { sqlite, db, path: databasePath }
   runMigrations(db)
   migrationsReady = true

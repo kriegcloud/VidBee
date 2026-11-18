@@ -1,0 +1,78 @@
+[
+  {
+    "drizzle": {
+      "subscriptionId": "subscription_items:subscription_id:values:雪",
+      "itemId": "subscription_items:item_id:values:雪",
+      "title": "subscription_items:title:values:雪",
+      "url": "subscription_items:url:values:雪",
+      "publishedAt": 1700000000123,
+      "thumbnail": "subscription_items:thumbnail:values:雪",
+      "added": 1700000000123,
+      "taskId": "subscription_items:task_id:values:雪",
+      "createdAt": 1700000000123,
+      "updatedAt": 1700000000123
+    },
+    "raw": {
+      "subscription_id": "subscription_items:subscription_id:values:雪",
+      "item_id": "subscription_items:item_id:values:雪",
+      "title": "subscription_items:title:values:雪",
+      "url": "subscription_items:url:values:雪",
+      "published_at": 1700000000123,
+      "thumbnail": "subscription_items:thumbnail:values:雪",
+      "added": 1700000000123,
+      "task_id": "subscription_items:task_id:values:雪",
+      "created_at": 1700000000123,
+      "updated_at": 1700000000123
+    },
+    "types": {
+      "subscriptionId": "string",
+      "itemId": "string",
+      "title": "string",
+      "url": "string",
+      "publishedAt": "number",
+      "thumbnail": "string",
+      "added": "number",
+      "taskId": "string",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  },
+  {
+    "drizzle": {
+      "subscriptionId": "subscription_items:subscription_id:nulls:雪",
+      "itemId": "subscription_items:item_id:nulls:雪",
+      "title": "subscription_items:title:nulls:雪",
+      "url": "subscription_items:url:nulls:雪",
+      "publishedAt": 1700000000124,
+      "thumbnail": null,
+      "added": 1700000000124,
+      "taskId": null,
+      "createdAt": 1700000000124,
+      "updatedAt": 1700000000124
+    },
+    "raw": {
+      "subscription_id": "subscription_items:subscription_id:nulls:雪",
+      "item_id": "subscription_items:item_id:nulls:雪",
+      "title": "subscription_items:title:nulls:雪",
+      "url": "subscription_items:url:nulls:雪",
+      "published_at": 1700000000124,
+      "thumbnail": null,
+      "added": 1700000000124,
+      "task_id": null,
+      "created_at": 1700000000124,
+      "updated_at": 1700000000124
+    },
+    "types": {
+      "subscriptionId": "string",
+      "itemId": "string",
+      "title": "string",
+      "url": "string",
+      "publishedAt": "number",
+      "thumbnail": "null",
+      "added": "number",
+      "taskId": "null",
+      "createdAt": "number",
+      "updatedAt": "number"
+    }
+  }
+]

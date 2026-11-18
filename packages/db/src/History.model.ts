@@ -1,0 +1,87 @@
+import * as S from "effect/Schema";
+// Text primary keys follow Drizzle, rejecting physically possible NULL values.
+// SQLite numeric affinity also permits real numbers; no integer refinements apply.
+// Stored non-finite numbers fail decoding with DbRowDecodeError, like NULL primary keys.
+
+export class DownloadHistoryRow extends S.Class<DownloadHistoryRow, { readonly brand: unique symbol }>(
+  "@vidbee/db/DownloadHistoryRow"
+)({
+  id: S.String,
+  url: S.String,
+  title: S.String,
+  thumbnail: S.NullOr(S.String),
+  type: S.String,
+  status: S.String,
+  downloadPath: S.NullOr(S.String),
+  savedFileName: S.NullOr(S.String),
+  fileSize: S.NullOr(S.Finite),
+  duration: S.NullOr(S.Finite),
+  downloadedAt: S.Finite,
+  completedAt: S.NullOr(S.Finite),
+  sortKey: S.Finite,
+  error: S.NullOr(S.String),
+  ytDlpCommand: S.NullOr(S.String),
+  ytDlpLog: S.NullOr(S.String),
+  description: S.NullOr(S.String),
+  channel: S.NullOr(S.String),
+  uploader: S.NullOr(S.String),
+  viewCount: S.NullOr(S.Finite),
+  tags: S.NullOr(S.String),
+  origin: S.NullOr(S.String),
+  subscriptionId: S.NullOr(S.String),
+  selectedFormat: S.NullOr(S.String),
+  playlistId: S.NullOr(S.String),
+  playlistTitle: S.NullOr(S.String),
+  playlistIndex: S.NullOr(S.Finite),
+  playlistSize: S.NullOr(S.Finite),
+}) {}
+export const DownloadHistoryRowFromSql = DownloadHistoryRow.pipe(
+  S.encodeKeys({
+    downloadPath: "download_path",
+    savedFileName: "saved_file_name",
+    fileSize: "file_size",
+    downloadedAt: "downloaded_at",
+    completedAt: "completed_at",
+    sortKey: "sort_key",
+    ytDlpCommand: "yt_dlp_command",
+    ytDlpLog: "yt_dlp_log",
+    viewCount: "view_count",
+    subscriptionId: "subscription_id",
+    selectedFormat: "selected_format",
+    playlistId: "playlist_id",
+    playlistTitle: "playlist_title",
+    playlistIndex: "playlist_index",
+    playlistSize: "playlist_size",
+  })
+);
+export const DownloadHistoryInsert = S.Struct({
+  id: S.String,
+  url: S.String,
+  title: S.String,
+  thumbnail: S.String.pipe(S.NullOr, S.optional),
+  type: S.String,
+  status: S.String,
+  downloadPath: S.String.pipe(S.NullOr, S.optional),
+  savedFileName: S.String.pipe(S.NullOr, S.optional),
+  fileSize: S.Finite.pipe(S.NullOr, S.optional),
+  duration: S.Finite.pipe(S.NullOr, S.optional),
+  downloadedAt: S.Finite,
+  completedAt: S.Finite.pipe(S.NullOr, S.optional),
+  sortKey: S.Finite,
+  error: S.String.pipe(S.NullOr, S.optional),
+  ytDlpCommand: S.String.pipe(S.NullOr, S.optional),
+  ytDlpLog: S.String.pipe(S.NullOr, S.optional),
+  description: S.String.pipe(S.NullOr, S.optional),
+  channel: S.String.pipe(S.NullOr, S.optional),
+  uploader: S.String.pipe(S.NullOr, S.optional),
+  viewCount: S.Finite.pipe(S.NullOr, S.optional),
+  tags: S.String.pipe(S.NullOr, S.optional),
+  origin: S.String.pipe(S.NullOr, S.optional),
+  subscriptionId: S.String.pipe(S.NullOr, S.optional),
+  selectedFormat: S.String.pipe(S.NullOr, S.optional),
+  playlistId: S.String.pipe(S.NullOr, S.optional),
+  playlistTitle: S.String.pipe(S.NullOr, S.optional),
+  playlistIndex: S.Finite.pipe(S.NullOr, S.optional),
+  playlistSize: S.Finite.pipe(S.NullOr, S.optional),
+});
+export type DownloadHistoryInsert = typeof DownloadHistoryInsert.Type;

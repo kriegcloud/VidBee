@@ -39,3 +39,21 @@ test('ratchet catches each violation and honors only exact allowlist entries', (
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+
+test('node SQLite is restricted to db before desktop cutover', () => {
+  const root = mkdtempSync(join(tmpdir(), 'vidbee-node-cutover-'))
+  try {
+    for (const unit of ['db', 'demo']) {
+      mkdirSync(join(root, `packages/${unit}/src`), { recursive: true })
+      writeFileSync(join(root, `packages/${unit}/tsconfig.json`), '{"extends":"../../tsconfig.base.json"}')
+      writeFileSync(join(root, `packages/${unit}/src/index.ts`), `import * as Node from '@effect/sql-sqlite-node/SqliteClient'\nimport {layer} from '@vidbee/db/node'`)
+    }
+    mkdirSync(join(root, 'standards'))
+    writeFileSync(join(root, 'tsconfig.base.json'), '{}')
+    writeFileSync(join(root, 'standards/effect-allowlist.jsonc'), '[]')
+    const violations = check(root).violations
+    assert.equal(violations.length, 2)
+    assert.ok(violations.every((v) => v.file.startsWith('packages/demo/') && v.rule === 'node-sqlite-before-cutover'))
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})

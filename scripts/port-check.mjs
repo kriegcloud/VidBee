@@ -58,6 +58,7 @@ export function check(root) {
         ['suppression', /@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|eslint-disable/g, false],
         ['native-collection', /\bnew\s+(?:Map|Set)\b/g, false],
         ['node-http', /["'](?:node:)?https?["']/g, false],
+        ['node-sqlite-before-cutover', /(?:from\s*|import\s*\()["'](?:@effect\/sql-sqlite-node(?:\/[^"']*)?|@vidbee\/db\/node)["']/g, file.startsWith('packages/db/')],
         ['zod', /from\s+["']zod(?:\/[^"']*)?["']/g, false]
       ]
       for (const [rule, pattern, exempt] of rules) {

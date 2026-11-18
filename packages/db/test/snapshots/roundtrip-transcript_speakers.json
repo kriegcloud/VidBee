@@ -1,0 +1,48 @@
+[
+  {
+    "drizzle": {
+      "id": "transcript_speakers:id:values:雪",
+      "transcriptId": "synthetic-id",
+      "speakerKey": "transcript_speakers:speaker_key:values:雪",
+      "displayName": "transcript_speakers:display_name:values:雪",
+      "sortIndex": 1700000000123
+    },
+    "raw": {
+      "id": "transcript_speakers:id:values:雪",
+      "transcript_id": "synthetic-id",
+      "speaker_key": "transcript_speakers:speaker_key:values:雪",
+      "display_name": "transcript_speakers:display_name:values:雪",
+      "sort_index": 1700000000123
+    },
+    "types": {
+      "id": "string",
+      "transcriptId": "string",
+      "speakerKey": "string",
+      "displayName": "string",
+      "sortIndex": "number"
+    }
+  },
+  {
+    "drizzle": {
+      "id": "transcript_speakers:id:nulls:雪",
+      "transcriptId": "synthetic-id",
+      "speakerKey": "transcript_speakers:speaker_key:nulls:雪",
+      "displayName": "transcript_speakers:display_name:nulls:雪",
+      "sortIndex": 1700000000124
+    },
+    "raw": {
+      "id": "transcript_speakers:id:nulls:雪",
+      "transcript_id": "synthetic-id",
+      "speaker_key": "transcript_speakers:speaker_key:nulls:雪",
+      "display_name": "transcript_speakers:display_name:nulls:雪",
+      "sort_index": 1700000000124
+    },
+    "types": {
+      "id": "string",
+      "transcriptId": "string",
+      "speakerKey": "string",
+      "displayName": "string",
+      "sortIndex": "number"
+    }
+  }
+]

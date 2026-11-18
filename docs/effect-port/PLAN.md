@@ -191,7 +191,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | 1a | Toolchain and pilot (`logger`) | 95 | | | 1b | merged ([report](reports/1a.md)) |
 | 1b | Fixture profile and golden harness | | | | 1a | merged ([report](reports/1b.md)) |
 | 2 | `i18n` | 351 | | | 3 | merged ([report](reports/2.md)) |
-| 3 | `db` | 638 | yes | unit | 2 | not started |
+| 3 | `db` | 638 | yes | unit | 2 | merged ([report](reports/3.md), [design](design/db.md)) |
 | 4 | `task-queue` | 6.9k | yes | | | not started |
 | 5 | `downloader-core` | 14.6k | yes | | | not started |
 | 6a | `subscriptions-core` | 4.1k | yes | unit | 6b, 6c | not started |

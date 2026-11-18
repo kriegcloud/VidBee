@@ -1,0 +1,1462 @@
+[
+  {
+    "name": "attempts",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "task_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "attempt_number",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "started_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "ended_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "exit_code",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "error_category",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "stdout_tail",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "stderr_tail",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "raw_args_hash",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_attempts_task",
+        "unique": false,
+        "columns": [
+          "task_id",
+          "attempt_number"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          "task_id"
+        ],
+        "table": "tasks",
+        "foreignColumns": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": null
+      }
+    ]
+  },
+  {
+    "name": "download_history",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "url",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "thumbnail",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "type",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_path",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "saved_file_name",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "file_size",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "duration",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "downloaded_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "completed_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "sort_key",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "error",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "yt_dlp_command",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "yt_dlp_log",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "channel",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "uploader",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "view_count",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "tags",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "origin",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "subscription_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "selected_format",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "playlist_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "playlist_title",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "playlist_index",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "playlist_size",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "process_journal",
+    "columns": [
+      {
+        "name": "seq",
+        "type": "integer",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": true,
+        "default": null
+      },
+      {
+        "name": "ts",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "op",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "task_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "attempt_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "pid",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "pid_started_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "exit_code",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "signal",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_journal_task",
+        "unique": false,
+        "columns": [
+          "task_id"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_journal_open",
+        "unique": false,
+        "columns": [
+          "op"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "schema_meta",
+    "columns": [
+      {
+        "name": "key",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "value",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "subscription_items",
+    "columns": [
+      {
+        "name": "subscription_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "item_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "url",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "published_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "thumbnail",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "added",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "task_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "created_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [
+      {
+        "name": "subscription_items_pk",
+        "columns": [
+          "subscription_id",
+          "item_id"
+        ]
+      }
+    ],
+    "indexes": [
+      {
+        "name": "idx_subscription_items_sub",
+        "unique": false,
+        "columns": [
+          "subscription_id"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_subscription_items_task",
+        "unique": false,
+        "columns": [
+          "task_id"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "subscriptions",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "source_url",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "feed_url",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "platform",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "keywords",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "tags",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "only_latest",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "auto_download",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "enabled",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "cover_url",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "latest_video_title",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "latest_video_published_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "last_checked_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "last_success_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "last_error",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "created_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_directory",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "naming_template",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_type",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_quality",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_container",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "source_kind",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": "feed"
+      },
+      {
+        "name": "profile_owner",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "categories",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": "[]"
+      },
+      {
+        "name": "check_interval_ms",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "next_check_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "subscriptions_meta",
+    "columns": [
+      {
+        "name": "key",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "value",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "tasks",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "kind",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "parent_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "prev_status",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "status_reason",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "entered_status_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "priority",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "group_key",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "attempt",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": 0
+      },
+      {
+        "name": "max_attempts",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "next_retry_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "pid",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "pid_started_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "created_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "input_json",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "progress_json",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "output_json",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "last_error_json",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_tasks_status_priority",
+        "unique": false,
+        "columns": [
+          "status",
+          "priority",
+          "created_at"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_tasks_group",
+        "unique": false,
+        "columns": [
+          "group_key",
+          "status"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_tasks_next_retry",
+        "unique": false,
+        "columns": [
+          "next_retry_at"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_tasks_parent",
+        "unique": false,
+        "columns": [
+          "parent_id"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "transcript_prompt_runs",
+    "columns": [
+      {
+        "name": "download_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "prompt_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "thinking",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": ""
+      },
+      {
+        "name": "thinking_ms",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": 0
+      },
+      {
+        "name": "cloud_result_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "error",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "error_code",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "created_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [
+      {
+        "name": "transcript_prompt_runs_pk",
+        "columns": [
+          "download_id",
+          "prompt_id"
+        ]
+      }
+    ],
+    "indexes": [
+      {
+        "name": "idx_transcript_prompt_runs_download",
+        "unique": false,
+        "columns": [
+          "download_id",
+          "updated_at"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "transcript_segments",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "transcript_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "speaker_id",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "start_ms",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "end_ms",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "confidence",
+        "type": "real",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "words_json",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "sort_index",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_transcript_segments_time",
+        "unique": false,
+        "columns": [
+          "transcript_id",
+          "start_ms"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          "transcript_id"
+        ],
+        "table": "transcripts",
+        "foreignColumns": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": null
+      }
+    ]
+  },
+  {
+    "name": "transcript_speakers",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "transcript_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "speaker_key",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "display_name",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "sort_index",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_transcript_speakers_transcript",
+        "unique": false,
+        "columns": [
+          "transcript_id",
+          "sort_index"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          "transcript_id"
+        ],
+        "table": "transcripts",
+        "foreignColumns": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": null
+      }
+    ]
+  },
+  {
+    "name": "transcripts",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "notNull": true,
+        "primary": true,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "download_task_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "transcription_task_id",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "result_kind",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "model_version",
+        "type": "text",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "asr_tier",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "language",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "source_file_path",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "source_kind",
+        "type": "text",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "superseded_at",
+        "type": "integer",
+        "notNull": false,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "created_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      },
+      {
+        "name": "updated_at",
+        "type": "integer",
+        "notNull": true,
+        "primary": false,
+        "autoIncrement": false,
+        "default": null
+      }
+    ],
+    "primaryKeys": [],
+    "indexes": [
+      {
+        "name": "idx_transcripts_download",
+        "unique": false,
+        "columns": [
+          "download_task_id",
+          "created_at"
+        ],
+        "where": null
+      },
+      {
+        "name": "idx_transcripts_task",
+        "unique": false,
+        "columns": [
+          "transcription_task_id"
+        ],
+        "where": null
+      }
+    ],
+    "foreignKeys": []
+  }
+]

@@ -1,0 +1,205 @@
+[
+  {
+    "name": "auto_download",
+    "type": "INTEGER",
+    "notnull": 1,
+    "dflt_value": "1",
+    "pk": 0
+  },
+  {
+    "name": "categories",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": "'[]'",
+    "pk": 0
+  },
+  {
+    "name": "check_interval_ms",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "cover_url",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "created_at",
+    "type": "INTEGER",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "download_container",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "download_directory",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "download_quality",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "download_type",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "enabled",
+    "type": "INTEGER",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "feed_url",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "id",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 1
+  },
+  {
+    "name": "keywords",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "last_checked_at",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "last_error",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "last_success_at",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "latest_video_published_at",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "latest_video_title",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "naming_template",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "next_check_at",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "only_latest",
+    "type": "INTEGER",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "platform",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "profile_owner",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "source_kind",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": "'feed'",
+    "pk": 0
+  },
+  {
+    "name": "source_url",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "status",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "tags",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "title",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "name": "updated_at",
+    "type": "INTEGER",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  }
+]

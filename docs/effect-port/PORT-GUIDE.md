@@ -177,3 +177,40 @@ uses `lefthook install --force` to replace an existing Husky hooks path safely.
   `BUN_TMPDIR` to a writable scratch directory. No privilege escalation is needed.
 - Never overlap a deliberately failing diagnostic fixture with whole-repo checks
   or tests. Remove the fixture in a finally block before running real gates.
+
+## Database access
+
+The desktop process uses only `better-sqlite3` until the final driver cutover.
+Do not import `@effect/sql-sqlite-node` or `@vidbee/db/node` from a ported unit
+outside `packages/db`: `port:check` reports `node-sqlite-before-cutover`. Phase
+9.5 or 10 removes this rule when the last raw handle holder leaves the process.
+Different SQLite drivers must never open the same file within one process.
+
+1. Request `SqlClient.SqlClient` from context. A legacy facade receives the
+   host's existing handle and calls `runtimeForHandle` from `@vidbee/db/legacy`.
+   Reuse that runtime and call `releaseHandle` before the host closes its handle.
+2. Transactions and every path invoked by a synchronous facade contain SQL and
+   pure work only. Never sleep, await, or invoke a yielding service while holding
+   the database permit; contended acquisition is a programming defect.
+3. State the begin mode on every operation with `SqlClient.BeginTransaction`.
+   Preserve `BEGIN IMMEDIATE` for task queue and transcripts and explicit `BEGIN`
+   for subscriptions. A host-owned transaction is borrowed through a savepoint.
+4. Decode rows with the exported row models, or derive a schema from their fields
+   beside the query for projections, aggregates and computed columns. Decode
+   failures become `DbRowDecodeError`, with an issue that excludes row content.
+   Do not fetch extra columns to satisfy a decoder. `CountRow`, `ExistsRow` and
+   `IdRow` cover shared small query shapes.
+5. Legacy facade failures go through `rethrowDriverError` so old callers continue
+   to receive the original driver error object, class, message and code.
+6. Never use the SQL client's stream operation: the target node driver does not
+   implement streaming.
+7. Run each ported consumer's persistence tests against the borrowed-handle and
+   node clients in separate processes. Both must pass before claiming cutover
+   readiness.
+
+Drizzle 1.0 requires `drizzle({ client: handle })`; the old positional call opens
+an unrelated in-memory database. Migration directories now hold `migration.sql`
+and `snapshot.json`. Preserve SQL bytes and original millisecond journal values
+when reconciling migration tracking, so the preceding 0.45 build can reopen a
+fresh database. A cached `better-sqlite3` statement's `.raw(true)` mutates it;
+restore object mode in `finally`, including after errors.

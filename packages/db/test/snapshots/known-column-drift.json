@@ -1,0 +1,110 @@
+[
+  {
+    "table": "attempts",
+    "column": "id",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "process_journal",
+    "column": "seq",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "schema_meta",
+    "column": "key",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "subscriptions",
+    "column": "auto_download",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": true,
+      "default": "1"
+    }
+  },
+  {
+    "table": "subscriptions_meta",
+    "column": "key",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "tasks",
+    "column": "id",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "transcript_segments",
+    "column": "id",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "transcript_speakers",
+    "column": "id",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  },
+  {
+    "table": "transcripts",
+    "column": "id",
+    "drizzle": {
+      "notNull": true,
+      "default": null
+    },
+    "sqlite": {
+      "notNull": false,
+      "default": null
+    }
+  }
+]
