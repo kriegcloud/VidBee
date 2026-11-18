@@ -1,4 +1,4 @@
-import { logCaughtError } from '@vidbee/logger'
+import { logCaughtError } from '@vidbee/logger/legacy'
 import type { SourceAdmission } from '../source-admission'
 /**
  * Scheduler — owns the readyHeap (priority + FIFO), the global concurrency

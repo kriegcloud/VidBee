@@ -13,7 +13,7 @@
  */
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, statSync } from 'node:fs'
-import { logCaughtError } from '@vidbee/logger'
+import { logCaughtError } from '@vidbee/logger/legacy'
 import { defaultMaxAttempts, virtualError } from '../classifier'
 import { isOutputComplete } from '../complete'
 import { downloadIdentity } from '../download-identity'

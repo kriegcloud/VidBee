@@ -1,4 +1,4 @@
-import { initVidbeeLogger } from '@vidbee/logger'
+import { initVidbeeLogger } from '@vidbee/logger/legacy'
 import log from 'electron-log/main'
 import { formatDesktopConsoleLog } from '../lib/desktop-console-format'
 

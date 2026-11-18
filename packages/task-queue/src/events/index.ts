@@ -1,4 +1,4 @@
-import { logCaughtError } from '@vidbee/logger'
+import { logCaughtError } from '@vidbee/logger/legacy'
 import type { ClassifiedError, Task, TaskProgress, TaskStatus } from '../types'
 
 export interface TransitionEvent {

@@ -1,4 +1,4 @@
-import { logCaughtError } from '@vidbee/logger'
+import { logCaughtError } from '@vidbee/logger/legacy'
 /**
  * Watchdog — fires when a task makes no observable progress for too long.
  *

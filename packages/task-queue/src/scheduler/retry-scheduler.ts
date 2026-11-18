@@ -7,7 +7,7 @@
  * Reference: docs/vidbee-task-queue-state-machine-design.md §3.1, §7.2.
  */
 
-import { logCaughtError } from '@vidbee/logger'
+import { logCaughtError } from '@vidbee/logger/legacy'
 import { MinHeap } from '../util/min-heap'
 
 /**

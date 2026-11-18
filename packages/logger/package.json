@@ -6,17 +6,25 @@
   "exports": {
     ".": "./src/node.ts",
     "./client": "./src/client.ts",
-    "./script": "./src/script.mjs"
+    "./script": "./src/script.mjs",
+    "./legacy": "./src/legacy/node.ts",
+    "./legacy/client": "./src/legacy/client.ts"
   },
   "types": "./src/node.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
   },
   "dependencies": {
-    "evlog": "catalog:"
+    "evlog": "catalog:",
+    "effect": "catalog:",
+    "@vidbee/schema": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:"
   }
 }
