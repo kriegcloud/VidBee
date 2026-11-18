@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { type TaskQueueAPI, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import { type TaskQueueAPI, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import { describe, expect, it, vi } from 'vitest'
 import {
   galleryWaitDurationMs,

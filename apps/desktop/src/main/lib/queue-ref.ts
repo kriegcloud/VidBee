@@ -1,4 +1,4 @@
-import type { TaskQueueAPI } from '@vidbee/task-queue'
+import type { TaskQueueAPI } from '@vidbee/task-queue-legacy'
 
 let queue: TaskQueueAPI | null = null
 

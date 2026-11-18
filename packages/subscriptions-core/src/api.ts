@@ -1,4 +1,4 @@
-import type { TaskCreationMetadata } from '@vidbee/task-queue'
+import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
 /**
  * Public surface of `@vidbee/subscriptions-core`.
  *

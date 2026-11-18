@@ -14,8 +14,8 @@ import {
   type ExecutorRun,
   type TaskOutput,
   virtualError
-} from '@vidbee/task-queue'
-import { killProcessTree } from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy'
+import { killProcessTree } from '@vidbee/task-queue-legacy/process'
 import {
   DEFAULT_CAPTURE_SIZE,
   isBrowserCaptureAvailable,

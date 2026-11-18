@@ -1,4 +1,4 @@
-import { type ClassifiedError, type ErrorCategory, virtualError } from '@vidbee/task-queue'
+import { type ClassifiedError, type ErrorCategory, virtualError } from '@vidbee/task-queue-legacy'
 
 /** Thrown when the source media has no audio track to decode. */
 export const NO_AUDIO_STREAM_ERROR = 'source has no audio stream'

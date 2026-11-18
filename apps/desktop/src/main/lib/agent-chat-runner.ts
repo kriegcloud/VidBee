@@ -3,7 +3,7 @@ import { access, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { AgentMessage, AgentTool } from '@earendil-works/pi-agent-core'
 import type { Api, Context, FetchFunction, ImageContent, Model } from '@earendil-works/pi-ai'
-import { isMediaTaskKind } from '@vidbee/task-queue'
+import { isMediaTaskKind } from '@vidbee/task-queue-legacy'
 import { app, BrowserWindow } from 'electron'
 import {
   AGENT_MAX_MESSAGE_IMAGES,

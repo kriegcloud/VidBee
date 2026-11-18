@@ -5,7 +5,7 @@ import {
   backgroundChildSpawnOptions,
   FFMPEG_ENCODE_THREADS,
   lowerChildPriority
-} from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy/process'
 import { isNoAudioStreamError, NO_AUDIO_STREAM_ERROR } from './errors'
 import { ffprobePathFromFfmpeg } from './extract-captions'
 

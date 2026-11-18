@@ -5,8 +5,8 @@ import {
   cookieSourcesFromArgs,
   resolveDownloadSubtitleLanguages
 } from '@vidbee/downloader-core/yt-dlp-args'
-import type { DownloadCookieSource } from '@vidbee/task-queue'
-import { lowerChildPriority } from '@vidbee/task-queue/process'
+import type { DownloadCookieSource } from '@vidbee/task-queue-legacy'
+import { lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import type {
   ExtensionTranscriptSnapshot,
   ExtensionTranscriptTrack

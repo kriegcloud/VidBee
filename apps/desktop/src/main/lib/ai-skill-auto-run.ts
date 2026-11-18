@@ -1,4 +1,4 @@
-import { TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import { TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import { AI_CHAT_PROMPT_ID } from '../../shared/ai-prompts'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

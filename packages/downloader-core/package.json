@@ -43,9 +43,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@vidbee/task-queue": "workspace:^",
     "yt-dlp-wrap-plus": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "catalog:",

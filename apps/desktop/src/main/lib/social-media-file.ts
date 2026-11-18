@@ -4,7 +4,7 @@ import {
   selectPrimarySocialFile,
   socialManifestPostKeyPrefix
 } from '@vidbee/downloader-core/social-media'
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 import DatabaseConstructor from 'better-sqlite3'
 import log from 'electron-log/main'
 

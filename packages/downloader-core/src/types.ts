@@ -1,5 +1,5 @@
-import type { SocialCollectionSummary } from '@vidbee/task-queue/types'
-import type { DownloadCookieSource } from '@vidbee/task-queue'
+import type { SocialCollectionSummary } from '@vidbee/task-queue-legacy/types'
+import type { DownloadCookieSource } from '@vidbee/task-queue-legacy'
 import type { FilenameStyle } from './filename-style'
 import type { OneClickContainerOption } from './format-preferences'
 import type { SocialMediaOptions } from './social-media'

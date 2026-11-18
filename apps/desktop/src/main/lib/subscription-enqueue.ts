@@ -8,7 +8,7 @@
 import { resolveSubtitleLanguages } from '@vidbee/downloader-core/subtitle-languages'
 import { buildSubscriptionDownloadOptions } from '@vidbee/subscriptions-core/download-options'
 import type { SubscriptionDownloadPreferences } from '@vidbee/subscriptions-core/types'
-import type { TaskCreationMetadata, TaskInput } from '@vidbee/task-queue'
+import type { TaskCreationMetadata, TaskInput } from '@vidbee/task-queue-legacy'
 import type { AppSettings } from '../../shared/types'
 import { sanitizeFilenameTemplate, toSharedSettings } from '../download-engine/args-builder'
 

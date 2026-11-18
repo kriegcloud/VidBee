@@ -20,6 +20,11 @@ it("borrowed adapter is synchronous, caches one runtime, and never closes its ha
   try {
     const runtime = runtimeForHandle(handle);
     expect(runtimeForHandle(handle)).toBe(runtime);
+    const native = runtime.runSync(NodeClient.SqliteClient);
+    const generic = runtime.runSync(Client.SqlClient);
+    expect(native).toBe(generic);
+    expect(native[NodeClient.TypeId]).toBe(NodeClient.TypeId);
+    expect(native.config.filename).toBe(handle.name);
     const rows = runtime.runSync(
       Effect.gen(function* () {
         const sql = yield* Client.SqlClient;

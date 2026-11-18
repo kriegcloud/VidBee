@@ -34,14 +34,14 @@
   },
   "peerDependencies": {
     "@vidbee/db": "workspace:*",
-    "@vidbee/task-queue": "workspace:*",
-    "better-sqlite3": "^13.0.3"
+    "better-sqlite3": "^13.0.3",
+    "@vidbee/task-queue-legacy": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@vidbee/db": {
       "optional": true
     },
-    "@vidbee/task-queue": {
+    "@vidbee/task-queue-legacy": {
       "optional": true
     },
     "better-sqlite3": {

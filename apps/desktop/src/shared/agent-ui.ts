@@ -1,4 +1,4 @@
-import type { TaskKind, TaskStatus } from '@vidbee/task-queue'
+import type { TaskKind, TaskStatus } from '@vidbee/task-queue-legacy'
 import type { AgentUiTaskFacts } from '@vidbee/ui/lib/agent-ui'
 import type { DownloadItem } from './types'
 

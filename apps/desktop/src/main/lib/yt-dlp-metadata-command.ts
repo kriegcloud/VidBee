@@ -3,7 +3,7 @@ import {
   backgroundChildSpawnOptions,
   killProcessTree,
   lowerChildPriority
-} from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy/process'
 import { createBoundedTextBuffer } from './bounded-output-buffer'
 
 const MAX_METADATA_BYTES = 64 * 1024 * 1024

@@ -1,4 +1,4 @@
-import type { Task } from '@vidbee/task-queue'
+import type { Task } from '@vidbee/task-queue-legacy'
 
 /**
  * Fresh adds and manual retries from failed/cancelled should appear as

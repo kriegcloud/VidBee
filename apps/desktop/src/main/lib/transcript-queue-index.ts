@@ -1,4 +1,4 @@
-import type { Task, TaskQueueAPI } from '@vidbee/task-queue'
+import type { Task, TaskQueueAPI } from '@vidbee/task-queue-legacy'
 
 /** Statuses `findActiveTranscription` treats as an in-flight transcription child. */
 const ACTIVE_TRANSCRIPTION = new Set([

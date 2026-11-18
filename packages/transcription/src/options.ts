@@ -1,4 +1,4 @@
-import type { TaskCreationMetadata, TaskInput } from '@vidbee/task-queue'
+import type { TaskCreationMetadata, TaskInput } from '@vidbee/task-queue-legacy'
 import { DEFAULT_ASR_TIER, parseAsrTier } from './asr-tiers'
 import { DEFAULT_CLOUD_TRANSCRIPTION_MODEL, parseTranscriptionProvider } from './cloud'
 import { DEFAULT_SPEAKER_COUNT, parseSpeakerCount } from './speaker-count'

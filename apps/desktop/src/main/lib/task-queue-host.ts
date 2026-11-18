@@ -1,5 +1,5 @@
 /**
- * Desktop host for @vidbee/task-queue (NEX-131, A1 artifact).
+ * Desktop host for @vidbee/task-queue-legacy (NEX-131, A1 artifact).
  *
  * Owns the single TaskQueueAPI instance the renderer (via the
  * `download-facade.ts` event emitter and IPC services) and the loopback
@@ -36,8 +36,8 @@ import {
   MemoryPersistAdapter,
   SqlitePersistAdapter,
   TaskQueueAPI
-} from '@vidbee/task-queue'
-import { SourceAdmission } from '@vidbee/task-queue/source-admission'
+} from '@vidbee/task-queue-legacy'
+import { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
 import {
   applyTranscriptionConcurrency,
   mergeLegacyTaskQueueDb,

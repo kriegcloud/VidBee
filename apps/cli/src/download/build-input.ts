@@ -18,7 +18,7 @@
  * field when `rawArgs` is set, so a wrong guess is non-fatal.
  */
 
-import type { TaskInput, TaskKind } from '@vidbee/task-queue'
+import type { TaskInput, TaskKind } from '@vidbee/task-queue-legacy'
 
 import type { Flags } from '../parser'
 import { redactArgs } from '../parser/redact'

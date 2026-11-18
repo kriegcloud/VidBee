@@ -1,4 +1,4 @@
-import { isOutputComplete, TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import { isOutputComplete, TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import { describe, expect, it } from 'vitest'
 import {
   resolveDownloadTaskKind,

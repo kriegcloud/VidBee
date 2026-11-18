@@ -1,7 +1,7 @@
 {
   "name": "@vidbee/cli",
   "version": "0.1.0",
-  "description": "VidBee CLI — standalone yt-dlp wrapper that talks to the shared VidBee TaskQueue. Works against a local Desktop, a remote API, or fully in-process for CI / Docker / agents.",
+  "description": "VidBee CLI \u2014 standalone yt-dlp wrapper that talks to the shared VidBee TaskQueue. Works against a local Desktop, a remote API, or fully in-process for CI / Docker / agents.",
   "homepage": "https://github.com/nexmoe/vidbee/tree/main/apps/cli#readme",
   "bugs": {
     "url": "https://github.com/nexmoe/vidbee/issues"
@@ -69,9 +69,9 @@
     "@vidbee/db": "workspace:^",
     "@vidbee/downloader-core": "workspace:^",
     "@vidbee/logger": "workspace:^",
-    "@vidbee/task-queue": "workspace:^",
     "esbuild": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^"
   },
   "engines": {
     "node": ">=20"

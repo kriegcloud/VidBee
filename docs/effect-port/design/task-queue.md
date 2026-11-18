@@ -296,8 +296,19 @@ The port changes nothing else. These three are consequences of the plan's own re
    Bun.)
 3. **Log line shape**, as in section 8.
 
-A fourth is possible and is decided by measurement, not in advance: a fixed extra number of
-microtask turns before a public promise settles (section 7).
+4. **Under `better-sqlite3`'s safe-integer mode, every integer column is converted to a number.**
+   The old adapter converted only the journal sequence and the attempt count and let the other
+   integer fields through as `bigint`, against their declared types. No host enables that mode
+   (it exists in a characterization test), so nothing changes in the app.
+
+The characterization tests written against the old kernel pin the old behavior of items 1, 2
+and 4 in twenty assertions. Those twenty are rewritten to the behavior declared here, each with
+the old expectation kept next to it as a comment and listed in the phase report; every other
+characterization assertion passes unchanged.
+
+A further one was possible and was decided by measurement: a fixed extra number of
+microtask turns before a public promise settles (section 7). The implementation reproduces all twelve
+characterized sequences exactly, so none is declared.
 
 ## 10. Verification the implementation owes
 

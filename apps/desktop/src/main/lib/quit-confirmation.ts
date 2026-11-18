@@ -1,4 +1,4 @@
-import type { TaskStatus } from '@vidbee/task-queue'
+import type { TaskStatus } from '@vidbee/task-queue-legacy'
 
 /** Statuses that represent work currently executing and would be interrupted by quit. */
 export const IN_PROGRESS_TASK_STATUSES: readonly TaskStatus[] = ['running', 'processing']

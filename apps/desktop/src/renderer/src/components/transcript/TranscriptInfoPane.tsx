@@ -1,7 +1,7 @@
 import { formatBytes } from '@renderer/components/settings/asr-model-shared'
 import { formatClock } from '@renderer/lib/format-clock'
 import { plainTranslate } from '@renderer/lib/plain-translate'
-import type { DownloadCookieSource } from '@vidbee/task-queue'
+import type { DownloadCookieSource } from '@vidbee/task-queue-legacy'
 import { isAsrTierId } from '@vidbee/transcription/asr'
 import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
 import { useMemo } from 'react'

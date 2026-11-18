@@ -1,5 +1,5 @@
 /**
- * YtDlpExecutor — host-neutral implementation of the @vidbee/task-queue
+ * YtDlpExecutor — host-neutral implementation of the @vidbee/task-queue-legacy
  * `Executor` interface. Owns yt-dlp spawn, progress parsing, postprocess
  * detection, output discovery, and SIGTERM/SIGKILL cancel semantics.
  *
@@ -19,13 +19,13 @@ import type {
   ExecutorRun,
   TaskInput,
   TaskOutput
-} from '@vidbee/task-queue'
-import { classify, virtualError } from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
+import { classify, virtualError } from '@vidbee/task-queue-legacy'
 import {
   backgroundChildSpawnOptions,
   killProcessTree,
   lowerChildPriority
-} from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy/process'
 import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type { OneClickContainerOption } from './format-preferences'
 import type { DownloadRuntimeSettings } from './types'

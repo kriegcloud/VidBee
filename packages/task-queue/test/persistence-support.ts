@@ -1,0 +1,23 @@
+import type { Task } from "../src/Task.model.js";
+export const task = (id: string): Task => ({
+  id,
+  kind: "video",
+  parentId: null,
+  input: { url: "synthetic", kind: "video", options: { future: { retained: true } } },
+  priority: 0,
+  groupKey: "g",
+  status: "queued",
+  prevStatus: null,
+  statusReason: null,
+  enteredStatusAt: 0,
+  attempt: 1,
+  maxAttempts: 3,
+  nextRetryAt: null,
+  progress: { percent: null, bytesDownloaded: null, bytesTotal: null, speedBps: null, etaMs: null, ticks: 0 },
+  output: null,
+  lastError: null,
+  pid: null,
+  pidStartedAt: null,
+  createdAt: 0,
+  updatedAt: 0,
+});

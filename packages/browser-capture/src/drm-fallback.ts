@@ -4,7 +4,7 @@ import type {
   ExecutorEvents,
   ExecutorFinishEvent,
   ExecutorRun
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import { isBrowserCaptureAvailable } from './availability'
 import { DRM_FALLBACK_MESSAGE, isDrmProtectedMessage } from './drm'
 

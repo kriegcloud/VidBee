@@ -15,22 +15,64 @@
     "./persist": "./src/persist/index.ts",
     "./events": "./src/events/index.ts",
     "./process": "./src/process/index.ts",
-    "./projection": "./src/projection/index.ts"
+    "./projection": "./src/projection/index.ts",
+    "./Task.model": "./src/Task.model.ts",
+    "./TaskQueue.model": "./src/TaskQueue.model.ts",
+    "./Events.model": "./src/Events.model.ts",
+    "./Executor.model": "./src/Executor.model.ts",
+    "./Persist.model": "./src/Persist.model.ts",
+    "./TaskQueue.errors": "./src/TaskQueue.errors.ts",
+    "./TaskPersistence.service": "./src/TaskPersistence.service.ts",
+    "./Projection.model": "./src/Projection.model.ts",
+    "./Classifier.model": "./src/Classifier.model.ts",
+    "./TaskStore.service": "./src/TaskStore.service.ts",
+    "./TaskStore.layer": "./src/TaskStore.layer.ts",
+    "./LegacyTiming.service": "./src/LegacyTiming.service.ts",
+    "./QueueTimers.service": "./src/QueueTimers.service.ts",
+    "./QueueTimers.layer": "./src/QueueTimers.layer.ts",
+    "./QueueRandom.service": "./src/QueueRandom.service.ts",
+    "./OutputProbe.service": "./src/OutputProbe.service.ts",
+    "./ProcessControl.service": "./src/ProcessControl.service.ts",
+    "./TaskExecutor.service": "./src/TaskExecutor.service.ts",
+    "./TaskEvents.service": "./src/TaskEvents.service.ts",
+    "./TaskEvents.layer": "./src/TaskEvents.layer.ts",
+    "./TaskPersistence.layer": "./src/TaskPersistence.layer.ts",
+    "./SourceAdmission.service": "./src/SourceAdmission.service.ts",
+    "./SourceAdmission.layer": "./src/SourceAdmission.layer.ts",
+    "./persist/Rows.model": "./src/persist/Rows.model.ts",
+    "./process/Watchdog.service": "./src/process/Watchdog.service.ts",
+    "./process/Watchdog.layer": "./src/process/Watchdog.layer.ts",
+    "./process/ProcessRegistry.service": "./src/process/ProcessRegistry.service.ts",
+    "./process/ProcessRegistry.layer": "./src/process/ProcessRegistry.layer.ts",
+    "./scheduler/Scheduler.service": "./src/scheduler/Scheduler.service.ts",
+    "./scheduler/Scheduler.layer": "./src/scheduler/Scheduler.layer.ts",
+    "./scheduler/RetryScheduler.service": "./src/scheduler/RetryScheduler.service.ts",
+    "./scheduler/RetryScheduler.layer": "./src/scheduler/RetryScheduler.layer.ts",
+    "./util/sha256": "./src/util/sha256.ts",
+    "./complete": "./src/complete.ts",
+    "./download-identity": "./src/download-identity.ts",
+    "./TaskQueue.service": "./src/TaskQueue.service.ts",
+    "./TaskQueue.layer": "./src/TaskQueue.layer.ts",
+    "./QueueRandom.layer": "./src/QueueRandom.layer.ts",
+    "./ProcessControl.driver": "./src/ProcessControl.driver.ts",
+    "./OutputProbe.layer": "./src/OutputProbe.layer.ts",
+    "./TaskExecutor.layer": "./src/TaskExecutor.layer.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
   },
   "dependencies": {
-    "@vidbee/logger": "workspace:^",
-    "ulid": "catalog:",
-    "zod": "catalog:"
-  },
-  "peerDependencies": {
-    "@vidbee/db": "workspace:*"
+    "effect": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "@vidbee/db": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:"
   }
 }

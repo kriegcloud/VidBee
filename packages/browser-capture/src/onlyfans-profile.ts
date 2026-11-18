@@ -36,7 +36,7 @@ import {
   type TaskOutput,
   type TaskQueueAPI,
   virtualError
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import type { BrowserContext, Locator, Page, Response } from 'playwright-core'
 import { resolveBrowserExecutable } from './availability'
 

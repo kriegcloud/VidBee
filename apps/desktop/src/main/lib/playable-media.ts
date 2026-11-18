@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, renameSync, statSync, unlinkSync } from 'node:fs
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import { isNativelyPlayableAudio } from '../../shared/utils/native-playable'
 
 const execFileAsync = promisify(execFile)

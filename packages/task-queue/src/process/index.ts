@@ -1,17 +1,3 @@
-export {
-  BACKGROUND_CHILD_PRIORITY,
-  backgroundChildSpawnOptions,
-  FFMPEG_ENCODE_THREADS,
-  lowerChildPriority
-} from './child-priority'
-export { killProcessTree } from './kill-process-tree'
-export { ProcessRegistry } from './registry'
-export type { ProcessHandle, ProcessRegistryDeps } from './registry'
-export { Watchdog } from './watchdog'
-export type { WatchdogConfig, WatchdogEntry } from './watchdog'
-export {
-  readPidStartTime,
-  setReadPidStartTimeImpl,
-  isPidAlive
-} from './pid-start-time'
-export type { ReadPidStartTimeFn } from './pid-start-time'
+export * from "../ProcessControl.service.js";
+export * from "./ProcessRegistry.service.js";
+export * from "./Watchdog.service.js";

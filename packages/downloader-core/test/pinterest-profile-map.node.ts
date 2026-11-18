@@ -3,9 +3,9 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
-import { TaskKindSchema } from '@vidbee/task-queue/schemas'
-import { TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue/types'
-import { isOutputComplete } from '../../task-queue/src/complete'
+import { TaskKindSchema } from '@vidbee/task-queue-legacy/schemas'
+import { TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy/types'
+import { isOutputComplete } from '@vidbee/task-queue-legacy'
 import {
   HostRoutingExecutor,
   resolveDefaultGalleryDlFilenameTemplate,

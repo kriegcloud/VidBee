@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import type { TaskQueueAPI } from '@vidbee/task-queue'
+import type { TaskQueueAPI } from '@vidbee/task-queue-legacy'
 import {
   enqueueInstagramProfileDownload,
   INSTAGRAM_RATE_LIMIT_COOLDOWN_MS,

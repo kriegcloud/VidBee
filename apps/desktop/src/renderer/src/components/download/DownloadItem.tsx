@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui
 import { plainTranslate } from '@renderer/lib/plain-translate'
 import { useNavigate } from '@tanstack/react-router'
 import { getCookieSetupFailureKind } from '@vidbee/downloader-core/cookie-setup'
-import type { TaskCreationMetadata } from '@vidbee/task-queue'
+import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
 import { DownloadContentStack } from '@vidbee/ui/components/ui/download-content-stack'
 import { DownloadLogs } from '@vidbee/ui/components/ui/download-logs'
 import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'

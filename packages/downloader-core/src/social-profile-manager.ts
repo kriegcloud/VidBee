@@ -8,7 +8,7 @@ import {
   writeFileSync
 } from 'node:fs'
 import path from 'node:path'
-import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
+import type { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
 import { mapFacebookProfile } from './facebook-profile-map'
 import type { GalleryDlExecutorOptions } from './gallery-dl-executor'
 import type { GalleryDlProfileMapRuntime } from './gallery-dl-json-run'

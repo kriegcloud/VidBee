@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { createInterface } from 'node:readline'
-import type { SourceAdmission } from '@vidbee/task-queue/source-admission'
+import type { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
 import { redGifsWatchUrl } from './mapped-profile-source'
 import type { SocialMappedItem } from './social-media-service'
 

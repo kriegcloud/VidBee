@@ -10,7 +10,7 @@ import {
   McpError,
   ReadResourceRequestSchema
 } from '@modelcontextprotocol/sdk/types.js'
-import { sanitizeOutput } from '@vidbee/task-queue'
+import { sanitizeOutput } from '@vidbee/task-queue-legacy'
 import { app } from 'electron'
 import type { DesktopMcpCapabilityGroup } from '../../shared/mcp'
 import { createMcpAiTools } from './ai-tools'

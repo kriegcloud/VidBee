@@ -1,4 +1,4 @@
-import { TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue'
+import { TaskKindSchema, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import { describe, expect, it } from 'vitest'
 import { resolveGalleryDlFilenameTemplate, shouldUseGalleryDl } from '../src/gallery-dl-executor'
 import { normalizeTikTokPhotoUrl } from '../src/tiktok-photo'

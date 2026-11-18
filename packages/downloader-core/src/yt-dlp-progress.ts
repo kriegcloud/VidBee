@@ -1,4 +1,4 @@
-import type { TaskProgress } from '@vidbee/task-queue'
+import type { TaskProgress } from '@vidbee/task-queue-legacy'
 
 /**
  * Raw progress object emitted by yt-dlp-wrap-plus.

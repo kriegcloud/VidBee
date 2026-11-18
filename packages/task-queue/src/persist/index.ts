@@ -1,10 +1,9 @@
+export { JournalAgeMs, layerMemory, layerSql } from "../TaskPersistence.layer.js";
+export { TaskPersistence } from "../TaskPersistence.service.js";
 export type {
-  PersistAdapter,
+  JournalAppendInput,
   PersistTransitionInput,
-  RecordSpawnInput,
   RecordCloseInput,
-  JournalAppendInput
-} from './adapter'
-export { MemoryPersistAdapter } from './memory'
-export { SqlitePersistAdapter } from './sqlite'
-export type { SqlitePersistOptions } from './sqlite'
+  RecordSpawnInput,
+} from "../Persist.model.js";
+export type { PersistenceError } from "../TaskPersistence.service.js";

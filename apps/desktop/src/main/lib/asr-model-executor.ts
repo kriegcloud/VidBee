@@ -7,7 +7,7 @@ import {
   type ExecutorRun,
   sanitizeOutput,
   virtualError
-} from '@vidbee/task-queue'
+} from '@vidbee/task-queue-legacy'
 import type { ModelManager } from '@vidbee/transcription'
 import { isAsrTierId } from '@vidbee/transcription/asr'
 

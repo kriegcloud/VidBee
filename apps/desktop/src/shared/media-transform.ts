@@ -1,4 +1,4 @@
-import { FFMPEG_ENCODE_THREADS } from '@vidbee/task-queue/process'
+import { FFMPEG_ENCODE_THREADS } from '@vidbee/task-queue-legacy/process'
 import { z } from 'zod'
 
 /** Structured media operations never accept arbitrary process flags or output paths. */

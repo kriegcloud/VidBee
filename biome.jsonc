@@ -11,6 +11,7 @@
       "packages/schema/**",
       "packages/logger/**",
       "packages/db/**",
+      "packages/task-queue/**",
       "!packages/db/test/fixtures/**",
       "!packages/db/test/snapshots/**",
       "packages/i18n/**",

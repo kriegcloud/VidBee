@@ -1,6 +1,6 @@
 // Types entry only — the package barrel evaluates Node process helpers and
 // crashes the desktop renderer (`node:child_process` is browser-external).
-import { canAdmitTranscription, TRANSCRIPTION_GROUP_KEY } from '@vidbee/task-queue/types'
+import { canAdmitTranscription, TRANSCRIPTION_GROUP_KEY } from '@vidbee/task-queue-legacy/types'
 
 export { canAdmitTranscription }
 

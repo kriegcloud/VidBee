@@ -10,8 +10,8 @@ import {
   type ExecutorRun,
   readPidStartTime,
   sanitizeOutput
-} from '@vidbee/task-queue'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue/process'
+} from '@vidbee/task-queue-legacy'
+import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import { buildMediaTransformArgs, mediaTransformSchema } from '../../shared/media-transform'
 import { ffmpegManager } from './ffmpeg-manager'
 import { createKeyedCoalescer, PROGRESS_IPC_INTERVAL_MS } from './ipc-coalescer'
