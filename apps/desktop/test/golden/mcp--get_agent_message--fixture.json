@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-message-user",
+              "role": "user",
+              "text": "Summarize these field notes.",
+              "totalCharacters": 28,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-message-user",
+        "role": "user",
+        "text": "Summarize these field notes.",
+        "totalCharacters": 28,
+        "nextOffset": null
+      }
+    }
+  }
+}

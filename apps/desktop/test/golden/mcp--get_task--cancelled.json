@@ -1,0 +1,74 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-cancelled",
+              "kind": "video",
+              "parentId": null,
+              "title": "Golden cancelled field notes",
+              "url": "https://example.invalid/media/golden-cancelled",
+              "status": "cancelled",
+              "progress": {
+                "percent": 0.25,
+                "bytesDownloaded": 800,
+                "bytesTotal": 120044,
+                "speedBps": null,
+                "etaMs": null,
+                "ticks": 4
+              },
+              "attempt": 0,
+              "maxAttempts": 0,
+              "nextRetryAt": null,
+              "error": null,
+              "filename": null,
+              "log": null,
+              "automaticRetry": false,
+              "children": [],
+              "childrenNextCursor": null,
+              "groupKey": "example.invalid",
+              "createdAt": 1735689600003,
+              "updatedAt": 1735689600003,
+              "output": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-cancelled",
+        "kind": "video",
+        "parentId": null,
+        "title": "Golden cancelled field notes",
+        "url": "https://example.invalid/media/golden-cancelled",
+        "status": "cancelled",
+        "progress": {
+          "percent": 0.25,
+          "bytesDownloaded": 800,
+          "bytesTotal": 120044,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 4
+        },
+        "attempt": 0,
+        "maxAttempts": 0,
+        "nextRetryAt": null,
+        "error": null,
+        "filename": null,
+        "log": null,
+        "automaticRetry": false,
+        "children": [],
+        "childrenNextCursor": null,
+        "groupKey": "example.invalid",
+        "createdAt": 1735689600003,
+        "updatedAt": 1735689600003,
+        "output": null
+      }
+    }
+  }
+}

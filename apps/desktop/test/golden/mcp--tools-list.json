@@ -1,0 +1,2812 @@
+{
+  "status": 200,
+  "result": {
+    "tools": [
+      {
+        "name": "get_app_status",
+        "description": "Read Desktop version/platform, downloader readiness, extension connection and queue status.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_settings",
+        "description": "Read public Desktop preferences. API keys, cookie contents and proxy credentials are never returned.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "update_settings",
+        "description": "Patch declared Desktop preferences, including download/subtitle defaults, language/theme, concurrency and ASR tier. Unspecified fields are preserved. Paths must be absolute; the ASR tier must be installed.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "maxConcurrentDownloads": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "downloadWithoutChannelSubfolders": {
+              "type": "boolean"
+            },
+            "browserForCookies": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "cookiesPath": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "proxy": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "configPath": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "es",
+                "ar",
+                "id",
+                "pt",
+                "fr",
+                "it",
+                "zh",
+                "zh-TW",
+                "ko",
+                "ja",
+                "ru",
+                "tr",
+                "de"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": ["system", "light", "dark"]
+            },
+            "oneClickDownload": {
+              "type": "boolean"
+            },
+            "oneClickDownloadType": {
+              "type": "string",
+              "enum": ["video", "audio"]
+            },
+            "oneClickQuality": {
+              "type": "string",
+              "enum": ["best", "good", "normal", "bad", "worst"]
+            },
+            "oneClickContainer": {
+              "type": "string",
+              "enum": ["auto", "mp4", "mkv", "webm", "original"]
+            },
+            "closeToTray": {
+              "type": "boolean"
+            },
+            "hideDockIcon": {
+              "type": "boolean"
+            },
+            "launchAtLogin": {
+              "type": "boolean"
+            },
+            "subscriptionOnlyLatestDefault": {
+              "type": "boolean"
+            },
+            "enableDownloadNotifications": {
+              "type": "boolean"
+            },
+            "rememberLastAudioLanguage": {
+              "type": "boolean"
+            },
+            "preferredAudioLanguage": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "downloadSubtitles": {
+              "type": "boolean"
+            },
+            "subtitleLanguages": {
+              "minItems": 1,
+              "maxItems": 5,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              }
+            },
+            "embedSubs": {
+              "type": "boolean"
+            },
+            "writeAutoSubs": {
+              "type": "boolean"
+            },
+            "embedThumbnail": {
+              "type": "boolean"
+            },
+            "embedMetadata": {
+              "type": "boolean"
+            },
+            "embedChapters": {
+              "type": "boolean"
+            },
+            "filenameStyle": {
+              "type": "string",
+              "enum": ["classic", "basic", "pretty", "nerdy"]
+            },
+            "filenameViaVidBee": {
+              "type": "boolean"
+            },
+            "shareWatermark": {
+              "type": "boolean"
+            },
+            "sequentialFilenames": {
+              "type": "boolean"
+            },
+            "autoTranscribeAfterDownload": {
+              "type": "boolean"
+            },
+            "maxConcurrentTranscriptions": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "asrTier": {
+              "type": "string",
+              "enum": [
+                "minimal",
+                "whisper-base",
+                "balanced",
+                "whisper-medium",
+                "whisper-turbo",
+                "sense-voice",
+                "sense-voice-2025",
+                "fire-red-asr",
+                "parakeet-v2",
+                "parakeet-v3",
+                "orukeet",
+                "quality",
+                "qwen3-1.7b"
+              ]
+            },
+            "ttsModelId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}$"
+            },
+            "transcriptionProvider": {
+              "type": "string",
+              "enum": ["local", "cloud"]
+            },
+            "cloudTranscriptionModelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "downloadMirror": {
+              "type": "string",
+              "enum": ["auto", "cn", "global"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_ai_settings",
+        "description": "Read configured AI providers and saved prompts without API keys or embedded endpoint credentials.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "manage_ai_settings",
+        "description": "Manage provider models/capabilities, select or test saved providers, inspect/select Cloud models, and save/delete/restore prompts. Reuse saved keys through copyApiKeyFromId; configure new secrets inside Desktop Settings.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "list",
+                "catalog",
+                "select_cloud_model",
+                "select_provider",
+                "save_provider",
+                "update_provider",
+                "test_provider",
+                "delete_provider",
+                "save_prompt",
+                "delete_prompt",
+                "restore_prompts"
+              ]
+            },
+            "id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "presetId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "copyApiKeyFromId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "baseUrl": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "modelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "contextWindow": {
+              "type": "integer",
+              "minimum": 4096,
+              "maximum": 2000000
+            },
+            "maxTokens": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000000
+            },
+            "vision": {
+              "type": "boolean"
+            },
+            "tools": {
+              "type": "boolean"
+            },
+            "reasoning": {
+              "type": "boolean"
+            },
+            "thinkingOnly": {
+              "type": "boolean"
+            },
+            "allowDisableThinking": {
+              "type": "boolean"
+            },
+            "thinkingLevels": {
+              "maxItems": 7,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "off",
+                  "minimal",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              }
+            },
+            "defaultThinkingLevel": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "off",
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "content": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50000
+            },
+            "autoRun": {
+              "type": "boolean"
+            }
+          },
+          "required": ["action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "list_tasks",
+        "description": "List downloads, conversions, transcription and model tasks. Follow nextCursor with the same filters.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "video",
+                "audio",
+                "subtitles",
+                "playlist",
+                "instagram-profile-category",
+                "pinterest-gallery",
+                "vsco-gallery",
+                "facebook-gallery",
+                "social-media",
+                "tiktok-photo",
+                "threads-post",
+                "threads-profile",
+                "snapchat-media",
+                "subscription-item",
+                "yt-dlp-forward",
+                "transcription",
+                "conversion",
+                "model-download"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "running",
+                "processing",
+                "paused",
+                "retry-scheduled",
+                "completed",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "groupKey": {
+              "type": "string"
+            },
+            "parentId": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "cursor": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_task",
+        "description": "Read one task, local output paths, progress, retry state, child tasks and sanitized failure logs.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_queue_stats",
+        "description": "Read task counts, execution capacity and running tasks per group.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "create_task",
+        "description": "Queue video/audio from url, convert/trim/resize a completed parentId, transcribe parentId, or download an asrTier. Returns admission; poll get_task for completion. Formats and containers use saved preferences when omitted.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "parentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "startSeconds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 864000
+            },
+            "durationSeconds": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 864000
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 144,
+              "maximum": 4320,
+              "multipleOf": 2
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "video",
+                "audio",
+                "conversion",
+                "transcription",
+                "model-download"
+              ]
+            },
+            "url": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "container": {
+              "type": "string",
+              "enum": ["auto", "mp4", "mkv", "webm", "original"]
+            },
+            "background": {
+              "description": "Skip automatic completion waiting only when the user explicitly requests admission-only background work.",
+              "type": "boolean"
+            },
+            "asrTier": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "download_media",
+        "description": "Queue video, audio, or subtitles only. Use type: subtitles with optional language and format: srt (default) or vtt to fetch existing website captions without media or ASR. Captions appear in the library and transcript detail; use the returned task ID as get_transcript.downloadId. Subtitle mode also accepts title and customDownloadPath. Video/audio support format selection, audio tracks, clipping, filenames, folders, tags and subtitle settings. Saved preferences and credentials are reused. Returns admission; poll get_task for completion and output.filePath.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "maxLength": 4096,
+              "format": "uri"
+            },
+            "type": {
+              "default": "video",
+              "type": "string",
+              "enum": ["video", "audio", "subtitles"]
+            },
+            "language": {
+              "description": "Select one caption language when type is subtitles.",
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[a-z]{2,3}(?:[-_][a-z0-9]{2,8})*$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "audioFormat": {
+              "type": "string",
+              "enum": [
+                "mp3",
+                "m4a",
+                "wav",
+                "flac",
+                "opus",
+                "vorbis",
+                "aac",
+                "best"
+              ]
+            },
+            "audioFormatIds": {
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "containerFormat": {
+              "type": "string",
+              "enum": ["auto", "mp4", "mkv", "webm", "original"]
+            },
+            "startTime": {
+              "type": "string",
+              "pattern": "^(?:\\d+:){0,2}\\d+(?:\\.\\d+)?$"
+            },
+            "endTime": {
+              "type": "string",
+              "pattern": "^(?:\\d+:){0,2}\\d+(?:\\.\\d+)?$"
+            },
+            "customDownloadPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "customFilenameTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "tags": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "subtitles": {
+              "type": "object",
+              "properties": {
+                "downloadSubtitles": {
+                  "type": "boolean"
+                },
+                "subtitleLanguages": {
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "embedSubs": {
+                  "type": "boolean"
+                },
+                "writeAutoSubs": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["url"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "download_batch",
+        "description": "Queue up to 50 media URLs serially with common options. Each result reports admission or error independently; duplicate downloads are reused.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "urls": {
+              "minItems": 1,
+              "maxItems": 50,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 4096,
+                "format": "uri"
+              }
+            },
+            "options": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "default": "video",
+                  "type": "string",
+                  "enum": ["video", "audio", "subtitles"]
+                },
+                "language": {
+                  "description": "Select one caption language when type is subtitles.",
+                  "type": "string",
+                  "maxLength": 64,
+                  "pattern": "^[a-z]{2,3}(?:[-_][a-z0-9]{2,8})*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "format": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "audioFormat": {
+                  "type": "string",
+                  "enum": [
+                    "mp3",
+                    "m4a",
+                    "wav",
+                    "flac",
+                    "opus",
+                    "vorbis",
+                    "aac",
+                    "best"
+                  ]
+                },
+                "audioFormatIds": {
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "containerFormat": {
+                  "type": "string",
+                  "enum": ["auto", "mp4", "mkv", "webm", "original"]
+                },
+                "startTime": {
+                  "type": "string",
+                  "pattern": "^(?:\\d+:){0,2}\\d+(?:\\.\\d+)?$"
+                },
+                "endTime": {
+                  "type": "string",
+                  "pattern": "^(?:\\d+:){0,2}\\d+(?:\\.\\d+)?$"
+                },
+                "customDownloadPath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "customFilenameTemplate": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "tags": {
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
+                "subtitles": {
+                  "type": "object",
+                  "properties": {
+                    "downloadSubtitles": {
+                      "type": "boolean"
+                    },
+                    "subtitleLanguages": {
+                      "minItems": 1,
+                      "maxItems": 5,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      }
+                    },
+                    "embedSubs": {
+                      "type": "boolean"
+                    },
+                    "writeAutoSubs": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "required": ["urls"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "manage_task",
+        "description": "Pause, resume, cancel, retry, remove history, rename title, or rename a completed media file. Inspect get_task before retrying. remove retains physical files; name is required for renames.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "pause",
+                "resume",
+                "cancel",
+                "retry",
+                "remove",
+                "rename",
+                "rename_file"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id", "action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "configure_queue_group",
+        "description": "Set a per-group concurrency limit (1–64); null restores the shared default. Global limits are available through update_settings.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "groupKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 64
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["groupKey", "limit"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "inspect_media_engine",
+        "description": "Inspect yt-dlp/FFmpeg, paginate URL formats or playlist entries, probe a completed local task, or update/repair yt-dlp. No shell commands or arbitrary flags are accepted.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "status",
+                "formats",
+                "playlist",
+                "probe",
+                "update_ytdlp",
+                "repair_ytdlp"
+              ]
+            },
+            "url": {
+              "type": "string",
+              "maxLength": 4096,
+              "format": "uri"
+            },
+            "taskId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": ["action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "list_download_history",
+        "description": "Search persisted media history by ID/title/URL, with optional status. Logs and execution commands are omitted; local paths are included.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "downloading",
+                "processing",
+                "completed",
+                "error",
+                "cancelled"
+              ]
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "list_subscriptions",
+        "description": "Search subscriptions by ID/title/feed URL. Results omit item bodies and include refresh errors; follow nextOffset.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_subscription",
+        "description": "Read one saved subscription and its configuration.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "test_subscription",
+        "description": "Resolve and fetch an RSS/Atom, website or supported channel URL without saving or downloading. Returns evidence and corrected feed URLs when discovered.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "maxLength": 4096,
+              "format": "uri"
+            }
+          },
+          "required": ["url"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "create_subscription",
+        "description": "Validate a feed then save a subscription. autoDownload defaults false; enable it explicitly for automatic downloads.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "maxLength": 4096,
+              "format": "uri"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "downloadDirectory": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "namingTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "autoDownload": {
+              "type": "boolean"
+            },
+            "onlyDownloadLatest": {
+              "type": "boolean"
+            },
+            "keywords": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "tags": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "downloadType": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["video", "audio"]
+                },
+                {
+                  "type": "string",
+                  "const": "subtitles"
+                }
+              ]
+            },
+            "downloadQuality": {
+              "type": "string",
+              "enum": ["best", "good", "normal", "bad", "worst"]
+            },
+            "downloadContainer": {
+              "type": "string",
+              "enum": ["auto", "mp4", "mkv", "webm", "original"]
+            }
+          },
+          "required": ["url"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "update_subscription",
+        "description": "Patch a subscription; omitted preferences are retained and changed URLs are fetched before saving.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "maxLength": 4096,
+              "format": "uri"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "downloadDirectory": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "namingTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "autoDownload": {
+              "type": "boolean"
+            },
+            "onlyDownloadLatest": {
+              "type": "boolean"
+            },
+            "keywords": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "tags": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "downloadType": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["video", "audio"]
+                },
+                {
+                  "type": "string",
+                  "const": "subtitles"
+                }
+              ]
+            },
+            "downloadQuality": {
+              "type": "string",
+              "enum": ["best", "good", "normal", "bad", "worst"]
+            },
+            "downloadContainer": {
+              "type": "string",
+              "enum": ["auto", "mp4", "mkv", "webm", "original"]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "remove_subscription",
+        "description": "Remove a subscription and cancel its outstanding tasks. Completed media files are retained.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "refresh_subscription",
+        "description": "Fetch a subscription now. May queue new items when its saved autoDownload preference is enabled.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "list_subscription_items",
+        "description": "Read paginated feed entries and download status for one subscription.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subscriptionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": ["subscriptionId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "queue_subscription_item",
+        "description": "Queue one existing feed entry using the subscription download preferences. Returns its task ID.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subscriptionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "itemId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["subscriptionId", "itemId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "list_transcripts",
+        "description": "List transcript states and available caption/ASR sources. Query matches source ID or title; follow nextOffset.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_transcript",
+        "description": "Read paginated selected caption/ASR segments, speakers, source choices and timestamps. Optional query/time range filters and word timestamps. Follow nextOffset to read all text.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "startMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "endMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "includeWords": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "import_media",
+        "description": "Import existing local audio/video files into the library for transcription. Paths must be absolute. Returns accepted items and explicit rejections; no file dialog is opened.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "paths": {
+              "minItems": 1,
+              "maxItems": 50,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              }
+            }
+          },
+          "required": ["paths"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "start_transcription",
+        "description": "Queue local transcription for a completed media download/import. force regenerates existing ASR; speakerCount can pin diarization. Returns admission; poll get_transcript for state.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "force": {
+              "default": false,
+              "type": "boolean"
+            },
+            "speakerCount": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "auto"
+                },
+                {
+                  "type": "number",
+                  "const": 1
+                },
+                {
+                  "type": "number",
+                  "const": 2
+                },
+                {
+                  "type": "number",
+                  "const": 3
+                },
+                {
+                  "type": "number",
+                  "const": 4
+                },
+                {
+                  "type": "number",
+                  "const": 5
+                },
+                {
+                  "type": "number",
+                  "const": 6
+                },
+                {
+                  "type": "number",
+                  "const": 7
+                },
+                {
+                  "type": "number",
+                  "const": 8
+                }
+              ]
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "manage_transcription",
+        "description": "Retry/cancel transcription, rediarize speakers, switch caption/ASR source, or upgrade the ASR tier and retranscribe. key, speakerCount or tier is required for the respective action.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "retry",
+                "cancel",
+                "rediarize",
+                "select_source",
+                "upgrade"
+              ]
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "speakerCount": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "auto"
+                },
+                {
+                  "type": "number",
+                  "const": 1
+                },
+                {
+                  "type": "number",
+                  "const": 2
+                },
+                {
+                  "type": "number",
+                  "const": 3
+                },
+                {
+                  "type": "number",
+                  "const": 4
+                },
+                {
+                  "type": "number",
+                  "const": 5
+                },
+                {
+                  "type": "number",
+                  "const": 6
+                },
+                {
+                  "type": "number",
+                  "const": 7
+                },
+                {
+                  "type": "number",
+                  "const": 8
+                }
+              ]
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "minimal",
+                "whisper-base",
+                "balanced",
+                "whisper-medium",
+                "whisper-turbo",
+                "sense-voice",
+                "sense-voice-2025",
+                "fire-red-asr",
+                "parakeet-v2",
+                "parakeet-v3",
+                "orukeet",
+                "quality",
+                "qwen3-1.7b"
+              ]
+            }
+          },
+          "required": ["downloadId", "action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "update_transcript_segment",
+        "description": "Edit a selected transcript segment text, timing or speaker. Reads and edits use the same selected source as Desktop.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "segmentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 50000
+            },
+            "startMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "endMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "speakerId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["downloadId", "segmentId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "insert_transcript_segment",
+        "description": "Insert a caption before/after an existing segment or at a timestamp. Returns the new segment ID.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "afterId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "beforeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 50000
+            },
+            "speakerId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "delete_transcript_segments",
+        "description": "Delete explicitly identified captions from the selected source.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "segmentIds": {
+              "minItems": 1,
+              "maxItems": 500,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          },
+          "required": ["downloadId", "segmentIds"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "export_transcript",
+        "description": "Export the selected transcript using the detail page styles (transcript, subtitles, speaker segments, whisper), word/sentence grouping and timestamp option. Return paginated TXT/Markdown/SRT/VTT/JSON, or save the complete output to library/Exports with saveToFile=true. No dialogs or overwrites.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "format": {
+              "default": "txt",
+              "type": "string",
+              "enum": ["txt", "md", "srt", "vtt", "json"]
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "saveToFile": {
+              "default": false,
+              "type": "boolean"
+            },
+            "style": {
+              "default": "transcript",
+              "type": "string",
+              "enum": ["transcript", "subtitles", "segments", "whisper"]
+            },
+            "grouping": {
+              "default": "none",
+              "type": "string",
+              "enum": ["none", "words", "sentences"]
+            },
+            "showTimestamp": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "export_subtitled_video",
+        "description": "Export a completed local video with the selected transcript: soft muxes selectable subtitles into MKV; hard burns captions into MP4. Writes a unique file in the library Exports folder without dialogs. Wait for the result; concurrent exports are rejected.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "mode": {
+              "default": "soft",
+              "type": "string",
+              "enum": ["soft", "hard"]
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "manage_asr_model",
+        "description": "Inspect installed tiers; queue a model download; select a ready tier; or delete an inactive tier. Monitor model downloads with task tools.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["status", "download", "select", "delete"]
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "minimal",
+                "whisper-base",
+                "balanced",
+                "whisper-medium",
+                "whisper-turbo",
+                "sense-voice",
+                "sense-voice-2025",
+                "fire-red-asr",
+                "parakeet-v2",
+                "parakeet-v3",
+                "orukeet",
+                "quality",
+                "qwen3-1.7b"
+              ]
+            }
+          },
+          "required": ["action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "list_agent_threads",
+        "description": "Search persistent AI conversations, optionally restricted to a media ID. Follow nextOffset.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_agent_thread",
+        "description": "Read a conversation status, pending approvals, artifacts and paginated selected-branch messages. Long message text can be read with get_agent_message.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "allBranches": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": ["threadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_agent_message",
+        "description": "Read a long conversation message in character pages, optionally including model thinking.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "messageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 10000,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50000
+            },
+            "includeThinking": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": ["threadId", "messageId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "create_agent_thread",
+        "description": "Create a blank AI conversation attached to an existing media task. Sending a message starts the model run.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "send_agent_message",
+        "description": "Send a message to a saved conversation using the configured AI provider. Returns immediately; poll get_agent_thread. Saved transcript context is loaded by Desktop.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            "thinkingLevel": {
+              "type": "string",
+              "enum": [
+                "off",
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max"
+              ]
+            },
+            "retryMessageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["threadId", "text"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "manage_agent_thread",
+        "description": "Stop a model run, rename/delete a conversation, or restore a reply branch. title is required for rename; messageId for select_branch.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "action": {
+              "type": "string",
+              "enum": ["stop", "rename", "delete", "select_branch"]
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "messageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["threadId", "action"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "decide_agent_tool",
+        "description": "Approve or reject one pending tool call in the built-in Agent. Inspect its approval in get_agent_thread first; remember defaults false.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "toolCallId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "approved": {
+              "type": "boolean"
+            },
+            "remember": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": ["threadId", "toolCallId", "approved"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "get_agent_events",
+        "description": "Recover up to 50 committed conversation events after a sequence number. Follow nextAfter when hasMore is true.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "after": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": ["threadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "start_ai_prompt",
+        "description": "Run a saved AI prompt/skill on the selected stored transcript with the configured provider. Returns admission; read get_ai_prompt_run for streamed output.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "promptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "forceRegenerate": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": ["downloadId", "promptId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        }
+      },
+      {
+        "name": "get_ai_prompt_run",
+        "description": "Read a saved skill run status/error and paginated generated text.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "promptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 10000,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50000
+            }
+          },
+          "required": ["downloadId", "promptId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "stop_ai_prompt",
+        "description": "Cancel the identified AI prompt/skill run without stopping other conversations.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "promptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": ["downloadId", "promptId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "list_skill_results",
+        "description": "Discover saved one-shot skills and assistant replies on a media item. Results include selectors, completion status and available export formats. New/custom skills are supported automatically.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": ["downloadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "export_skill_result",
+        "description": "Export one assistant reply as Markdown, PDF or a branded PNG share image. Requires threadId and an optional messageId from an agent_reply in list_skill_results. downloadId+promptId skill records are not exportable: their screenshots are text placeholders. Embedded screenshots, source links and attribution match Desktop. PNG supports long posters or paginated images. Writes unique files under library/Exports; opens no dialogs or foreground windows.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "messageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "format": {
+              "type": "string",
+              "enum": ["md", "pdf", "png"]
+            },
+            "imageMode": {
+              "default": "long",
+              "type": "string",
+              "enum": ["long", "pages"]
+            },
+            "imageCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "includeCover": {
+              "default": true,
+              "type": "boolean"
+            },
+            "tagline": {
+              "default": "Download. Transcribe locally. Ask AI.",
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": ["threadId", "format"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "export_mermaid_diagram",
+        "description": "Export one Mermaid diagram from a completed assistant reply as PNG (default), JPG, SVG or MMD source. Requires threadId; messageId defaults to the latest non-empty reply in the selected branch. diagramIndex is zero-based in Markdown display order, including lists and blockquotes. theme defaults to Desktop's current light/dark theme. Renders with the same Pele plugin and raster exporter as Streamdown; raster edges are capped at 4096 pixels. Returns the saved path, bytes, diagram count and image dimensions. Writes a unique file under library/Exports using a private hidden window, with cancellation and no dialogs or clipboard access.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "messageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "diagramIndex": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "format": {
+              "default": "png",
+              "type": "string",
+              "enum": ["png", "jpg", "svg", "mmd"]
+            },
+            "theme": {
+              "type": "string",
+              "enum": ["light", "dark"]
+            }
+          },
+          "required": ["threadId"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "export_caption_share_image",
+        "description": "Export selected stored caption segments as the same branded quote image used on the transcript detail page. Supply owned segment IDs. Supports long or paginated PNG images and never opens a share sheet or touches the clipboard.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "downloadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "segmentIds": {
+              "minItems": 1,
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "imageMode": {
+              "default": "long",
+              "type": "string",
+              "enum": ["long", "pages"]
+            },
+            "imageCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "includeCover": {
+              "default": true,
+              "type": "boolean"
+            },
+            "tagline": {
+              "default": "Download. Transcribe locally. Ask AI.",
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": ["downloadId", "segmentIds"],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "result": {}
+          },
+          "required": ["result"]
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      }
+    ]
+  }
+}

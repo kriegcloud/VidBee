@@ -1,0 +1,54 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "<id:1>",
+              "downloadId": "golden-completed",
+              "promptId": "chat",
+              "title": "",
+              "updatedAt": 0,
+              "running": false,
+              "approvalPending": false,
+              "status": "idle",
+              "model": "",
+              "seq": 1,
+              "leafId": null,
+              "runs": [],
+              "artifacts": [],
+              "images": [],
+              "items": [],
+              "total": 0,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "<id:1>",
+        "downloadId": "golden-completed",
+        "promptId": "chat",
+        "title": "",
+        "updatedAt": 0,
+        "running": false,
+        "approvalPending": false,
+        "status": "idle",
+        "model": "",
+        "seq": 1,
+        "leafId": null,
+        "runs": [],
+        "artifacts": [],
+        "images": [],
+        "items": [],
+        "total": 0,
+        "nextOffset": null
+      }
+    }
+  }
+}

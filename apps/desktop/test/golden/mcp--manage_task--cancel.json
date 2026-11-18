@@ -1,0 +1,48 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "task": {
+                "id": "golden-paused",
+                "kind": "video",
+                "parentId": null,
+                "title": "Golden paused field notes",
+                "url": "https://example.invalid/media/golden-paused",
+                "status": "cancelled",
+                "progress": 0.25,
+                "attempt": 0,
+                "maxAttempts": 0,
+                "nextRetryAt": null,
+                "error": null,
+                "filename": null
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "task": {
+          "id": "golden-paused",
+          "kind": "video",
+          "parentId": null,
+          "title": "Golden paused field notes",
+          "url": "https://example.invalid/media/golden-paused",
+          "status": "cancelled",
+          "progress": 0.25,
+          "attempt": 0,
+          "maxAttempts": 0,
+          "nextRetryAt": null,
+          "error": null,
+          "filename": null
+        }
+      }
+    }
+  }
+}

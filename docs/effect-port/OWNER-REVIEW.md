@@ -16,3 +16,7 @@ not fixed (assumption A2), and dependencies held back. One entry each, newest ph
 | 9 | 1a | choice | `@biomejs/biome` pinned to 2.5.6 (was 2.5.15) | D26: pin what beep-effect pins. |
 | 10 | 1a | choice | ultracite's two presets are vendored under `standards/biome-legacy/` until phase 10 | Unported code keeps today's lint and formatting without the dependency. |
 | 11 | 1a | choice | `@vidbee/schema` replaces `@beep/utils` and `@beep/identity` with public Effect modules instead of copying helpers | Nothing beyond `LiteralKit` needed copying. |
+| 12 | 1b | choice | The golden harness is plain Node `.mjs` under `apps/desktop/scripts/port/golden/`, not TypeScript | D7 keeps build scripts in JavaScript; a harness with no dependency on the toolchain survives every phase unchanged. |
+| 13 | 1b | choice | Goldens normalize ids, timestamps, ports, pids, tokens, run paths, durations and the ffmpeg build id; everything else is literal | See the phase 1b report for the rules. |
+| 14 | 1b | bug | The automation `add` endpoint accepts a task of unknown kind without a URL (HTTP 200); the renderer then throws on `url.trim()` | Pinned by a golden as it behaves today; not fixed (A2). |
+| 15 | 1b | choice | Not covered by goldens because they need the network or are not deterministic: successful downloads, feed refresh, AI generation, model downloads, extension caption/overview success, cookie long-poll delivery, rendered PDF/PNG/video exports, local ASR | Their validation and error answers are pinned; later phases exercise the success paths by hand where they can. |

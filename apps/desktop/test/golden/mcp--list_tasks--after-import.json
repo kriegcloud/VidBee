@@ -1,0 +1,84 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [
+                {
+                  "id": "<id:1>",
+                  "kind": "audio",
+                  "parentId": null,
+                  "groupKey": "unknown",
+                  "url": "file://<run>/userdata/golden-media/import-sample.wav",
+                  "title": "import-sample.wav",
+                  "status": "completed",
+                  "progress": {
+                    "percent": 1,
+                    "bytesDownloaded": 120044,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 1
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": "<timestamp>",
+                  "updatedAt": "<timestamp>",
+                  "output": {
+                    "filePath": "<run>/userdata/golden-media/import-sample.wav",
+                    "size": 120044,
+                    "durationMs": null,
+                    "sha256": null
+                  },
+                  "error": null
+                }
+              ],
+              "nextCursor": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [
+          {
+            "id": "<id:1>",
+            "kind": "audio",
+            "parentId": null,
+            "groupKey": "unknown",
+            "url": "file://<run>/userdata/golden-media/import-sample.wav",
+            "title": "import-sample.wav",
+            "status": "completed",
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 120044,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 1
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": "<timestamp>",
+            "updatedAt": "<timestamp>",
+            "output": {
+              "filePath": "<run>/userdata/golden-media/import-sample.wav",
+              "size": 120044,
+              "durationMs": null,
+              "sha256": null
+            },
+            "error": null
+          }
+        ],
+        "nextCursor": null
+      }
+    }
+  }
+}

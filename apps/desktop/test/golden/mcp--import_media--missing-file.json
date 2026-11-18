@@ -1,0 +1,34 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "imported": [],
+              "rejected": [
+                {
+                  "path": "<run>/userdata/golden-media/missing.wav",
+                  "reason": "missing"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "imported": [],
+        "rejected": [
+          {
+            "path": "<run>/userdata/golden-media/missing.wav",
+            "reason": "missing"
+          }
+        ]
+      }
+    }
+  }
+}

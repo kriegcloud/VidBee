@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": [
+            {
+              "origin": "number",
+              "code": "too_small",
+              "minimum": 0,
+              "inclusive": true,
+              "path": ["offset"],
+              "message": "Too small: expected number to be >=0"
+            }
+          ]
+        }
+      }
+    ],
+    "isError": true
+  }
+}

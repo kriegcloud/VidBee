@@ -1,0 +1,66 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-subscription",
+              "title": "Golden Observatory",
+              "sourceUrl": "https://www.youtube.com/channel/UC0000000000000000000000",
+              "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0000000000000000000000",
+              "platform": "youtube",
+              "keywords": ["river", "morning"],
+              "tags": ["science", "fixture"],
+              "onlyDownloadLatest": false,
+              "autoDownload": false,
+              "enabled": false,
+              "status": "idle",
+              "createdAt": 1735689500000,
+              "updatedAt": 1735689600000,
+              "sourceKind": "feed",
+              "categories": [],
+              "coverUrl": "file://<run>/userdata/golden-media/thumbnail.png",
+              "latestVideoTitle": "River morning",
+              "latestVideoPublishedAt": 1735689590000,
+              "lastCheckedAt": 1735689600000,
+              "lastSuccessAt": 1735689600000,
+              "downloadDirectory": "<run>/userdata/golden-media",
+              "namingTemplate": "%(title)s.%(ext)s",
+              "itemCount": 3
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-subscription",
+        "title": "Golden Observatory",
+        "sourceUrl": "https://www.youtube.com/channel/UC0000000000000000000000",
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0000000000000000000000",
+        "platform": "youtube",
+        "keywords": ["river", "morning"],
+        "tags": ["science", "fixture"],
+        "onlyDownloadLatest": false,
+        "autoDownload": false,
+        "enabled": false,
+        "status": "idle",
+        "createdAt": 1735689500000,
+        "updatedAt": 1735689600000,
+        "sourceKind": "feed",
+        "categories": [],
+        "coverUrl": "file://<run>/userdata/golden-media/thumbnail.png",
+        "latestVideoTitle": "River morning",
+        "latestVideoPublishedAt": 1735689590000,
+        "lastCheckedAt": 1735689600000,
+        "lastSuccessAt": 1735689600000,
+        "downloadDirectory": "<run>/userdata/golden-media",
+        "namingTemplate": "%(title)s.%(ext)s",
+        "itemCount": 3
+      }
+    }
+  }
+}

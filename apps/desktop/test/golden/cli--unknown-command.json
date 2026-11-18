@@ -1,0 +1,12 @@
+{
+  "code": 2,
+  "stdout": {
+    "ok": false,
+    "code": "PARSE_ERROR",
+    "message": "unknown subcommand: :golden-unknown",
+    "details": {
+      "subcommand": "golden-unknown"
+    }
+  },
+  "stderr": null
+}

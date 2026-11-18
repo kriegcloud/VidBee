@@ -1,0 +1,70 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "id": "golden-cancelled",
+                  "url": "https://example.invalid/media/golden-cancelled",
+                  "title": "Golden cancelled field notes",
+                  "type": "video",
+                  "status": "cancelled",
+                  "createdAt": 1735689600003,
+                  "startedAt": 1735689595000,
+                  "downloadedAt": 1735689595000,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+                  "completedAt": 1735689600000,
+                  "duration": 3.75,
+                  "fileSize": 120044,
+                  "description": "An invented recording for deterministic offline tests.",
+                  "channel": "Synthetic Observatory",
+                  "uploader": "Fixture narrator",
+                  "viewCount": 1234,
+                  "tags": ["field-notes", "synthetic"],
+                  "origin": "manual",
+                  "taskKind": "video"
+                }
+              ],
+              "total": 1,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "id": "golden-cancelled",
+            "url": "https://example.invalid/media/golden-cancelled",
+            "title": "Golden cancelled field notes",
+            "type": "video",
+            "status": "cancelled",
+            "createdAt": 1735689600003,
+            "startedAt": 1735689595000,
+            "downloadedAt": 1735689595000,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "completedAt": 1735689600000,
+            "duration": 3.75,
+            "fileSize": 120044,
+            "description": "An invented recording for deterministic offline tests.",
+            "channel": "Synthetic Observatory",
+            "uploader": "Fixture narrator",
+            "viewCount": 1234,
+            "tags": ["field-notes", "synthetic"],
+            "origin": "manual",
+            "taskKind": "video"
+          }
+        ],
+        "total": 1,
+        "nextOffset": null
+      }
+    }
+  }
+}

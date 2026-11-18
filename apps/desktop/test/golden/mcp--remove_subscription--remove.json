@@ -1,0 +1,22 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "removed": true
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "removed": true
+      }
+    }
+  }
+}

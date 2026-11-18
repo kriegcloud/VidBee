@@ -1,0 +1,362 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "asrTier": "minimal",
+              "downloadTaskId": "golden-completed",
+              "error": null,
+              "listState": "completed",
+              "rediarize": false,
+              "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "sourceKind": "asr",
+              "speakerCount": "auto",
+              "stage": null,
+              "stageHistory": [],
+              "title": "Golden completed field notes",
+              "transcriptId": "golden-transcript",
+              "transcriptionTaskId": "golden-transcription-task",
+              "updatedAt": 1735689600000,
+              "sources": [
+                {
+                  "auto": false,
+                  "key": "captions:en",
+                  "kind": "captions",
+                  "language": "en",
+                  "languageCode": "en",
+                  "selected": false
+                },
+                {
+                  "auto": false,
+                  "key": "asr",
+                  "kind": "asr",
+                  "language": "en",
+                  "languageCode": "en",
+                  "selected": true
+                }
+              ],
+              "segmentCount": 3,
+              "language": "en",
+              "resultKind": "transcript",
+              "speakers": [
+                {
+                  "id": "golden-speaker-1",
+                  "speakerKey": "SPEAKER_00",
+                  "displayName": "Narrator",
+                  "sortIndex": 0
+                },
+                {
+                  "id": "golden-speaker-2",
+                  "speakerKey": "SPEAKER_01",
+                  "displayName": "Researcher",
+                  "sortIndex": 1
+                }
+              ],
+              "items": [
+                {
+                  "id": "golden-segment-1",
+                  "speakerId": "golden-speaker-1",
+                  "startMs": 0,
+                  "endMs": 1250,
+                  "text": "Welcome to the synthetic field notes.",
+                  "confidence": 0.98,
+                  "sortIndex": 0,
+                  "words": [
+                    {
+                      "endMs": 208,
+                      "startMs": 0,
+                      "text": "Welcome"
+                    },
+                    {
+                      "endMs": 416,
+                      "startMs": 208,
+                      "text": "to"
+                    },
+                    {
+                      "endMs": 625,
+                      "startMs": 416,
+                      "text": "the"
+                    },
+                    {
+                      "endMs": 833,
+                      "startMs": 625,
+                      "text": "synthetic"
+                    },
+                    {
+                      "endMs": 1041,
+                      "startMs": 833,
+                      "text": "field"
+                    },
+                    {
+                      "endMs": 1250,
+                      "startMs": 1041,
+                      "text": "notes."
+                    }
+                  ]
+                },
+                {
+                  "id": "golden-segment-2",
+                  "speakerId": "golden-speaker-2",
+                  "startMs": 1250,
+                  "endMs": 2500,
+                  "text": "The river sounds clear this morning.",
+                  "confidence": 0.97,
+                  "sortIndex": 1,
+                  "words": [
+                    {
+                      "endMs": 1458,
+                      "startMs": 1250,
+                      "text": "The"
+                    },
+                    {
+                      "endMs": 1666,
+                      "startMs": 1458,
+                      "text": "river"
+                    },
+                    {
+                      "endMs": 1875,
+                      "startMs": 1666,
+                      "text": "sounds"
+                    },
+                    {
+                      "endMs": 2083,
+                      "startMs": 1875,
+                      "text": "clear"
+                    },
+                    {
+                      "endMs": 2291,
+                      "startMs": 2083,
+                      "text": "this"
+                    },
+                    {
+                      "endMs": 2500,
+                      "startMs": 2291,
+                      "text": "morning."
+                    }
+                  ]
+                },
+                {
+                  "id": "golden-segment-3",
+                  "speakerId": "golden-speaker-1",
+                  "startMs": 2500,
+                  "endMs": 3750,
+                  "text": "We will return at sunset.",
+                  "confidence": 0.96,
+                  "sortIndex": 2,
+                  "words": [
+                    {
+                      "endMs": 2750,
+                      "startMs": 2500,
+                      "text": "We"
+                    },
+                    {
+                      "endMs": 3000,
+                      "startMs": 2750,
+                      "text": "will"
+                    },
+                    {
+                      "endMs": 3250,
+                      "startMs": 3000,
+                      "text": "return"
+                    },
+                    {
+                      "endMs": 3500,
+                      "startMs": 3250,
+                      "text": "at"
+                    },
+                    {
+                      "endMs": 3750,
+                      "startMs": 3500,
+                      "text": "sunset."
+                    }
+                  ]
+                }
+              ],
+              "total": 3,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "asrTier": "minimal",
+        "downloadTaskId": "golden-completed",
+        "error": null,
+        "listState": "completed",
+        "rediarize": false,
+        "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+        "sourceKind": "asr",
+        "speakerCount": "auto",
+        "stage": null,
+        "stageHistory": [],
+        "title": "Golden completed field notes",
+        "transcriptId": "golden-transcript",
+        "transcriptionTaskId": "golden-transcription-task",
+        "updatedAt": 1735689600000,
+        "sources": [
+          {
+            "auto": false,
+            "key": "captions:en",
+            "kind": "captions",
+            "language": "en",
+            "languageCode": "en",
+            "selected": false
+          },
+          {
+            "auto": false,
+            "key": "asr",
+            "kind": "asr",
+            "language": "en",
+            "languageCode": "en",
+            "selected": true
+          }
+        ],
+        "segmentCount": 3,
+        "language": "en",
+        "resultKind": "transcript",
+        "speakers": [
+          {
+            "id": "golden-speaker-1",
+            "speakerKey": "SPEAKER_00",
+            "displayName": "Narrator",
+            "sortIndex": 0
+          },
+          {
+            "id": "golden-speaker-2",
+            "speakerKey": "SPEAKER_01",
+            "displayName": "Researcher",
+            "sortIndex": 1
+          }
+        ],
+        "items": [
+          {
+            "id": "golden-segment-1",
+            "speakerId": "golden-speaker-1",
+            "startMs": 0,
+            "endMs": 1250,
+            "text": "Welcome to the synthetic field notes.",
+            "confidence": 0.98,
+            "sortIndex": 0,
+            "words": [
+              {
+                "endMs": 208,
+                "startMs": 0,
+                "text": "Welcome"
+              },
+              {
+                "endMs": 416,
+                "startMs": 208,
+                "text": "to"
+              },
+              {
+                "endMs": 625,
+                "startMs": 416,
+                "text": "the"
+              },
+              {
+                "endMs": 833,
+                "startMs": 625,
+                "text": "synthetic"
+              },
+              {
+                "endMs": 1041,
+                "startMs": 833,
+                "text": "field"
+              },
+              {
+                "endMs": 1250,
+                "startMs": 1041,
+                "text": "notes."
+              }
+            ]
+          },
+          {
+            "id": "golden-segment-2",
+            "speakerId": "golden-speaker-2",
+            "startMs": 1250,
+            "endMs": 2500,
+            "text": "The river sounds clear this morning.",
+            "confidence": 0.97,
+            "sortIndex": 1,
+            "words": [
+              {
+                "endMs": 1458,
+                "startMs": 1250,
+                "text": "The"
+              },
+              {
+                "endMs": 1666,
+                "startMs": 1458,
+                "text": "river"
+              },
+              {
+                "endMs": 1875,
+                "startMs": 1666,
+                "text": "sounds"
+              },
+              {
+                "endMs": 2083,
+                "startMs": 1875,
+                "text": "clear"
+              },
+              {
+                "endMs": 2291,
+                "startMs": 2083,
+                "text": "this"
+              },
+              {
+                "endMs": 2500,
+                "startMs": 2291,
+                "text": "morning."
+              }
+            ]
+          },
+          {
+            "id": "golden-segment-3",
+            "speakerId": "golden-speaker-1",
+            "startMs": 2500,
+            "endMs": 3750,
+            "text": "We will return at sunset.",
+            "confidence": 0.96,
+            "sortIndex": 2,
+            "words": [
+              {
+                "endMs": 2750,
+                "startMs": 2500,
+                "text": "We"
+              },
+              {
+                "endMs": 3000,
+                "startMs": 2750,
+                "text": "will"
+              },
+              {
+                "endMs": 3250,
+                "startMs": 3000,
+                "text": "return"
+              },
+              {
+                "endMs": 3500,
+                "startMs": 3250,
+                "text": "at"
+              },
+              {
+                "endMs": 3750,
+                "startMs": 3500,
+                "text": "sunset."
+              }
+            ]
+          }
+        ],
+        "total": 3,
+        "nextOffset": null
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "status": 401,
+  "body": {
+    "jsonrpc": "2.0",
+    "id": null,
+    "error": {
+      "code": -32000,
+      "message": "Unauthorized"
+    }
+  }
+}

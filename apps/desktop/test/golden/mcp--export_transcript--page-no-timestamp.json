@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "content": "The river sounds clear this morning.",
+              "items": ["golden-segment-2"],
+              "total": 3,
+              "nextOffset": 2,
+              "format": "txt"
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "content": "The river sounds clear this morning.",
+        "items": ["golden-segment-2"],
+        "total": 3,
+        "nextOffset": 2,
+        "format": "txt"
+      }
+    }
+  }
+}

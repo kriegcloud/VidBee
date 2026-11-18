@@ -1,0 +1,138 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [
+                {
+                  "id": "golden-paused",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-paused",
+                  "title": "Golden paused field notes",
+                  "status": "paused",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600001,
+                  "updatedAt": 1735689600001,
+                  "output": null,
+                  "error": null
+                },
+                {
+                  "id": "golden-failed",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-failed",
+                  "title": "Golden failed field notes",
+                  "status": "failed",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 1,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600002,
+                  "updatedAt": 1735689600002,
+                  "output": null,
+                  "error": {
+                    "category": "not-found",
+                    "exitCode": 1,
+                    "rawMessage": "Synthetic media is unavailable.",
+                    "uiMessageKey": "download.error.notFound",
+                    "uiActionHints": [],
+                    "retryable": false,
+                    "suggestedRetryAfterMs": null
+                  }
+                }
+              ],
+              "nextCursor": "golden-failed"
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [
+          {
+            "id": "golden-paused",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-paused",
+            "title": "Golden paused field notes",
+            "status": "paused",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600001,
+            "updatedAt": 1735689600001,
+            "output": null,
+            "error": null
+          },
+          {
+            "id": "golden-failed",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-failed",
+            "title": "Golden failed field notes",
+            "status": "failed",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600002,
+            "updatedAt": 1735689600002,
+            "output": null,
+            "error": {
+              "category": "not-found",
+              "exitCode": 1,
+              "rawMessage": "Synthetic media is unavailable.",
+              "uiMessageKey": "download.error.notFound",
+              "uiActionHints": [],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            }
+          }
+        ],
+        "nextCursor": "golden-failed"
+      }
+    }
+  }
+}

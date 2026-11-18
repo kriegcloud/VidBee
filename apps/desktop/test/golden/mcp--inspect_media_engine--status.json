@@ -1,0 +1,48 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "ytDlp": {
+                "error": null,
+                "nodeVersion": "22.23.4",
+                "preparationStep": null,
+                "progress": null,
+                "ready": true,
+                "source": "bundled",
+                "state": "up-to-date",
+                "ytDlpVersion": "2026.10.21"
+              },
+              "ffmpegReady": true,
+              "ffmpegVersion": "ffmpeg version <ffmpeg-build> Copyright (c) 2000-2026 the FFmpeg developers",
+              "ffmpegError": null,
+              "conversions": ["mp4", "mkv", "webm", "mp3", "m4a", "wav", "flac"]
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "ytDlp": {
+          "error": null,
+          "nodeVersion": "22.23.4",
+          "preparationStep": null,
+          "progress": null,
+          "ready": true,
+          "source": "bundled",
+          "state": "up-to-date",
+          "ytDlpVersion": "2026.10.21"
+        },
+        "ffmpegReady": true,
+        "ffmpegVersion": "ffmpeg version <ffmpeg-build> Copyright (c) 2000-2026 the FFmpeg developers",
+        "ffmpegError": null,
+        "conversions": ["mp4", "mkv", "webm", "mp3", "m4a", "wav", "flac"]
+      }
+    }
+  }
+}

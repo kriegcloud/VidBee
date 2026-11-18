@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": [
+            {
+              "code": "unrecognized_keys",
+              "keys": ["unexpected"],
+              "path": [],
+              "message": "Unrecognized key: \"unexpected\""
+            }
+          ]
+        }
+      }
+    ],
+    "isError": true
+  }
+}

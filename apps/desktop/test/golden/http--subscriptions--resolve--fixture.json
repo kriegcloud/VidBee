@@ -1,0 +1,10 @@
+{
+  "status": 200,
+  "body": {
+    "sourceUrl": "https://example.invalid/feed.xml",
+    "feedUrl": "https://example.invalid/feed.xml",
+    "platform": "custom",
+    "sourceKind": "feed",
+    "availableCategories": []
+  }
+}

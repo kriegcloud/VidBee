@@ -1,0 +1,144 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "asrTier": "minimal",
+              "downloadTaskId": "golden-completed",
+              "error": null,
+              "listState": "completed",
+              "rediarize": false,
+              "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "sourceKind": "asr",
+              "speakerCount": "auto",
+              "stage": null,
+              "stageHistory": [],
+              "title": "Golden completed field notes",
+              "transcriptId": "golden-transcript",
+              "transcriptionTaskId": "golden-transcription-task",
+              "updatedAt": 1735689600000,
+              "sources": [
+                {
+                  "auto": false,
+                  "key": "captions:en",
+                  "kind": "captions",
+                  "language": "en",
+                  "languageCode": "en",
+                  "selected": false
+                },
+                {
+                  "auto": false,
+                  "key": "asr",
+                  "kind": "asr",
+                  "language": "en",
+                  "languageCode": "en",
+                  "selected": true
+                }
+              ],
+              "segmentCount": 3,
+              "language": "en",
+              "resultKind": "transcript",
+              "speakers": [
+                {
+                  "id": "golden-speaker-1",
+                  "speakerKey": "SPEAKER_00",
+                  "displayName": "Narrator",
+                  "sortIndex": 0
+                },
+                {
+                  "id": "golden-speaker-2",
+                  "speakerKey": "SPEAKER_01",
+                  "displayName": "Researcher",
+                  "sortIndex": 1
+                }
+              ],
+              "items": [
+                {
+                  "id": "golden-segment-2",
+                  "speakerId": "golden-speaker-2",
+                  "startMs": 1250,
+                  "endMs": 2500,
+                  "text": "The river sounds clear this morning.",
+                  "confidence": 0.97,
+                  "sortIndex": 1
+                }
+              ],
+              "total": 3,
+              "nextOffset": 2
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "asrTier": "minimal",
+        "downloadTaskId": "golden-completed",
+        "error": null,
+        "listState": "completed",
+        "rediarize": false,
+        "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+        "sourceKind": "asr",
+        "speakerCount": "auto",
+        "stage": null,
+        "stageHistory": [],
+        "title": "Golden completed field notes",
+        "transcriptId": "golden-transcript",
+        "transcriptionTaskId": "golden-transcription-task",
+        "updatedAt": 1735689600000,
+        "sources": [
+          {
+            "auto": false,
+            "key": "captions:en",
+            "kind": "captions",
+            "language": "en",
+            "languageCode": "en",
+            "selected": false
+          },
+          {
+            "auto": false,
+            "key": "asr",
+            "kind": "asr",
+            "language": "en",
+            "languageCode": "en",
+            "selected": true
+          }
+        ],
+        "segmentCount": 3,
+        "language": "en",
+        "resultKind": "transcript",
+        "speakers": [
+          {
+            "id": "golden-speaker-1",
+            "speakerKey": "SPEAKER_00",
+            "displayName": "Narrator",
+            "sortIndex": 0
+          },
+          {
+            "id": "golden-speaker-2",
+            "speakerKey": "SPEAKER_01",
+            "displayName": "Researcher",
+            "sortIndex": 1
+          }
+        ],
+        "items": [
+          {
+            "id": "golden-segment-2",
+            "speakerId": "golden-speaker-2",
+            "startMs": 1250,
+            "endMs": 2500,
+            "text": "The river sounds clear this morning.",
+            "confidence": 0.97,
+            "sortIndex": 1
+          }
+        ],
+        "total": 3,
+        "nextOffset": 2
+      }
+    }
+  }
+}

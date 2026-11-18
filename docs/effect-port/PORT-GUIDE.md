@@ -113,7 +113,18 @@ bun run port:check
 bun run check
 bun run test
 bun run deps:check
+bun run build:linux
+bun run --cwd apps/cli build
+bun run test:golden
 ```
+
+`bun run test:golden` launches the packaged build offline on a synthetic fixture
+profile and compares 358 MCP, HTTP, CLI and renderer answers with the goldens in
+`apps/desktop/test/golden/`. [GOLDENS.md](GOLDENS.md) explains how to run a
+subset, how to add a case for a tool or endpoint that has none (do this on the
+build before your change), and how to update a golden when a change is intended.
+A phase that ports a unit must leave the suite passing without touching a golden,
+unless the plan removes the behavior.
 
 For subsequent phases, substitute the ported package names in the first two
 commands. Whole-repo `check` retains legacy desktop lint, locale validation and

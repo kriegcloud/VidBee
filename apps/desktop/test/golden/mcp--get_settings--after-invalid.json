@@ -1,0 +1,100 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "settings": {
+                "downloadPath": "<run>/userdata/golden-media",
+                "maxConcurrentDownloads": 5,
+                "downloadWithoutChannelSubfolders": false,
+                "browserForCookies": "none",
+                "cookiesPath": "",
+                "proxy": "",
+                "configPath": "",
+                "language": "en",
+                "theme": "dark",
+                "oneClickDownload": true,
+                "oneClickDownloadType": "audio",
+                "oneClickQuality": "best",
+                "oneClickContainer": "auto",
+                "closeToTray": true,
+                "hideDockIcon": true,
+                "launchAtLogin": false,
+                "subscriptionOnlyLatestDefault": true,
+                "enableDownloadNotifications": true,
+                "rememberLastAudioLanguage": true,
+                "preferredAudioLanguage": "",
+                "downloadSubtitles": true,
+                "subtitleLanguages": ["en", "fr"],
+                "embedSubs": true,
+                "writeAutoSubs": true,
+                "embedThumbnail": false,
+                "embedMetadata": true,
+                "embedChapters": true,
+                "filenameStyle": "pretty",
+                "filenameViaVidBee": true,
+                "shareWatermark": false,
+                "sequentialFilenames": true,
+                "autoTranscribeAfterDownload": false,
+                "maxConcurrentTranscriptions": 1,
+                "asrTier": "minimal",
+                "ttsModelId": "kokoro-multi-lang-v1_0",
+                "transcriptionProvider": "local",
+                "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+                "downloadMirror": "auto"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "settings": {
+          "downloadPath": "<run>/userdata/golden-media",
+          "maxConcurrentDownloads": 5,
+          "downloadWithoutChannelSubfolders": false,
+          "browserForCookies": "none",
+          "cookiesPath": "",
+          "proxy": "",
+          "configPath": "",
+          "language": "en",
+          "theme": "dark",
+          "oneClickDownload": true,
+          "oneClickDownloadType": "audio",
+          "oneClickQuality": "best",
+          "oneClickContainer": "auto",
+          "closeToTray": true,
+          "hideDockIcon": true,
+          "launchAtLogin": false,
+          "subscriptionOnlyLatestDefault": true,
+          "enableDownloadNotifications": true,
+          "rememberLastAudioLanguage": true,
+          "preferredAudioLanguage": "",
+          "downloadSubtitles": true,
+          "subtitleLanguages": ["en", "fr"],
+          "embedSubs": true,
+          "writeAutoSubs": true,
+          "embedThumbnail": false,
+          "embedMetadata": true,
+          "embedChapters": true,
+          "filenameStyle": "pretty",
+          "filenameViaVidBee": true,
+          "shareWatermark": false,
+          "sequentialFilenames": true,
+          "autoTranscribeAfterDownload": false,
+          "maxConcurrentTranscriptions": 1,
+          "asrTier": "minimal",
+          "ttsModelId": "kokoro-multi-lang-v1_0",
+          "transcriptionProvider": "local",
+          "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+          "downloadMirror": "auto"
+        }
+      }
+    }
+  }
+}

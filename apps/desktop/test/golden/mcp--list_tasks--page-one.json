@@ -1,0 +1,154 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [
+                {
+                  "id": "golden-audio",
+                  "kind": "audio",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/audio",
+                  "title": "Golden audio archive",
+                  "status": "completed",
+                  "progress": {
+                    "percent": 1,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689599000,
+                  "updatedAt": "<timestamp>",
+                  "output": {
+                    "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                    "size": 120044,
+                    "durationMs": 3750,
+                    "sha256": null,
+                    "formatId": "synthetic-wav",
+                    "subtitleStatus": "downloaded",
+                    "subtitleLanguages": ["en"]
+                  },
+                  "error": null
+                },
+                {
+                  "id": "golden-completed",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-completed",
+                  "title": "Golden completed field notes",
+                  "status": "completed",
+                  "progress": {
+                    "percent": 1,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600000,
+                  "updatedAt": "<timestamp>",
+                  "output": {
+                    "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                    "size": 120044,
+                    "durationMs": 3750,
+                    "sha256": null,
+                    "formatId": "synthetic-wav",
+                    "subtitleStatus": "downloaded",
+                    "subtitleLanguages": ["en"]
+                  },
+                  "error": null
+                }
+              ],
+              "nextCursor": "golden-completed"
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [
+          {
+            "id": "golden-audio",
+            "kind": "audio",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/audio",
+            "title": "Golden audio archive",
+            "status": "completed",
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689599000,
+            "updatedAt": "<timestamp>",
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "error": null
+          },
+          {
+            "id": "golden-completed",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-completed",
+            "title": "Golden completed field notes",
+            "status": "completed",
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600000,
+            "updatedAt": "<timestamp>",
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "error": null
+          }
+        ],
+        "nextCursor": "golden-completed"
+      }
+    }
+  }
+}

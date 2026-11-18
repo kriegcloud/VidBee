@@ -1,0 +1,40 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "downloadId": "golden-unknown",
+              "promptId": "golden-unknown",
+              "status": "idle",
+              "thinkingMs": 0,
+              "error": null,
+              "errorCode": null,
+              "updatedAt": "<timestamp>",
+              "text": "",
+              "totalCharacters": 0,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "downloadId": "golden-unknown",
+        "promptId": "golden-unknown",
+        "status": "idle",
+        "thinkingMs": 0,
+        "error": null,
+        "errorCode": null,
+        "updatedAt": "<timestamp>",
+        "text": "",
+        "totalCharacters": 0,
+        "nextOffset": null
+      }
+    }
+  }
+}

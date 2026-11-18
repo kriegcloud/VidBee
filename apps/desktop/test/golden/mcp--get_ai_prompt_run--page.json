@@ -1,0 +1,40 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "downloadId": "golden-completed",
+              "promptId": "golden-summary",
+              "status": "completed",
+              "thinkingMs": 120,
+              "error": null,
+              "errorCode": null,
+              "updatedAt": 1735689600000,
+              "text": "eam record",
+              "totalCharacters": 53,
+              "nextOffset": 15
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "downloadId": "golden-completed",
+        "promptId": "golden-summary",
+        "status": "completed",
+        "thinkingMs": 120,
+        "error": null,
+        "errorCode": null,
+        "updatedAt": 1735689600000,
+        "text": "eam record",
+        "totalCharacters": 53,
+        "nextOffset": 15
+      }
+    }
+  }
+}

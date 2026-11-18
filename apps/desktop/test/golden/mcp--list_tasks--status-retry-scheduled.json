@@ -1,0 +1,74 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [
+                {
+                  "id": "golden-retry",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-retry",
+                  "title": "Golden retry-scheduled field notes",
+                  "status": "retry-scheduled",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": 4102444800000,
+                  "createdAt": 1735689600007,
+                  "updatedAt": 1735689600007,
+                  "output": null,
+                  "error": null
+                }
+              ],
+              "nextCursor": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [
+          {
+            "id": "golden-retry",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-retry",
+            "title": "Golden retry-scheduled field notes",
+            "status": "retry-scheduled",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": 4102444800000,
+            "createdAt": 1735689600007,
+            "updatedAt": 1735689600007,
+            "output": null,
+            "error": null
+          }
+        ],
+        "nextCursor": null
+      }
+    }
+  }
+}

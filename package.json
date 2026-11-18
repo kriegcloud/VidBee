@@ -30,6 +30,7 @@
     "prepare": "effect-tsgo unpatch --tsrs && effect-tsgo patch --tsrs && lefthook install --force",
     "setup": "bun run --cwd apps/desktop setup",
     "start": "bun run --cwd apps/desktop start",
+    "test:golden": "node apps/desktop/scripts/port/golden/run.mjs",
     "test:audit": "tsx --test apps/desktop/test/*.test.ts packages/task-queue/test/*.test.ts packages/downloader-core/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts",
     "typecheck": "bun run --cwd apps/desktop typecheck",
     "verify:ytdlp": "bun run --cwd apps/desktop verify:ytdlp",

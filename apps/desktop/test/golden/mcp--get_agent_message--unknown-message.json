@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Message not found"
+      }
+    ],
+    "isError": true
+  }
+}

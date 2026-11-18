@@ -1,0 +1,24 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [],
+              "nextCursor": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [],
+        "nextCursor": null
+      }
+    }
+  }
+}

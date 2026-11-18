@@ -1,0 +1,14 @@
+{
+  "code": 0,
+  "stdout": {
+    "ok": true,
+    "mode": "subcommand",
+    "subcommand": "version",
+    "result": {
+      "cli": "0.1.0",
+      "contract": "0.1.0",
+      "changelog": "https://github.com/nexmoe/vidbee/blob/main/apps/cli/CHANGELOG.md"
+    }
+  },
+  "stderr": null
+}

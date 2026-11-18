@@ -1,0 +1,70 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "imported": [
+                {
+                  "path": "<run>/userdata/golden-media/import-sample.wav",
+                  "downloadId": "<id:1>",
+                  "created": true,
+                  "reused": false,
+                  "historyItem": {
+                    "id": "<id:1>",
+                    "url": "file://<run>/userdata/golden-media/import-sample.wav",
+                    "title": "import-sample.wav",
+                    "type": "audio",
+                    "status": "completed",
+                    "createdAt": "<timestamp>",
+                    "downloadedAt": "<timestamp>",
+                    "completedAt": "<timestamp>",
+                    "fileSize": 120044,
+                    "downloadPath": "<run>/userdata/golden-media",
+                    "savedFileName": "import-sample.wav",
+                    "filePath": "<run>/userdata/golden-media/import-sample.wav",
+                    "origin": "manual",
+                    "taskKind": "audio"
+                  }
+                }
+              ],
+              "rejected": []
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "imported": [
+          {
+            "path": "<run>/userdata/golden-media/import-sample.wav",
+            "downloadId": "<id:1>",
+            "created": true,
+            "reused": false,
+            "historyItem": {
+              "id": "<id:1>",
+              "url": "file://<run>/userdata/golden-media/import-sample.wav",
+              "title": "import-sample.wav",
+              "type": "audio",
+              "status": "completed",
+              "createdAt": "<timestamp>",
+              "downloadedAt": "<timestamp>",
+              "completedAt": "<timestamp>",
+              "fileSize": 120044,
+              "downloadPath": "<run>/userdata/golden-media",
+              "savedFileName": "import-sample.wav",
+              "filePath": "<run>/userdata/golden-media/import-sample.wav",
+              "origin": "manual",
+              "taskKind": "audio"
+            }
+          }
+        ],
+        "rejected": []
+      }
+    }
+  }
+}

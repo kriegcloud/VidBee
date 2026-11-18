@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": [
+            {
+              "origin": "string",
+              "code": "too_small",
+              "minimum": 1,
+              "inclusive": true,
+              "path": ["id"],
+              "message": "Too small: expected string to have >=1 characters"
+            }
+          ]
+        }
+      }
+    ],
+    "isError": true
+  }
+}

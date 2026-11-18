@@ -1,0 +1,126 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "id": "golden-completed",
+                  "url": "https://example.invalid/media/golden-completed",
+                  "title": "Golden completed field notes",
+                  "type": "video",
+                  "status": "completed",
+                  "createdAt": 1735689600000,
+                  "startedAt": 1735689595000,
+                  "downloadedAt": 1735689595000,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+                  "completedAt": 1735689600000,
+                  "duration": 4,
+                  "fileSize": 120044,
+                  "downloadPath": "<run>/userdata/golden-media/Golden field recording",
+                  "savedFileName": "Golden field recording.wav",
+                  "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                  "resolvedFormatId": "synthetic-wav",
+                  "subtitleStatus": "downloaded",
+                  "subtitleLanguages": ["en"],
+                  "description": "An invented recording for deterministic offline tests.",
+                  "channel": "Synthetic Observatory",
+                  "uploader": "Fixture narrator",
+                  "viewCount": 1234,
+                  "tags": ["field-notes", "synthetic"],
+                  "origin": "manual",
+                  "taskKind": "video"
+                },
+                {
+                  "id": "golden-failed",
+                  "url": "https://example.invalid/media/golden-failed",
+                  "title": "Golden failed field notes",
+                  "type": "video",
+                  "status": "error",
+                  "createdAt": 1735689600002,
+                  "startedAt": 1735689595000,
+                  "downloadedAt": 1735689595000,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+                  "completedAt": 1735689600000,
+                  "duration": 3.75,
+                  "fileSize": 120044,
+                  "error": "Synthetic media is unavailable.",
+                  "description": "An invented recording for deterministic offline tests.",
+                  "channel": "Synthetic Observatory",
+                  "uploader": "Fixture narrator",
+                  "viewCount": 1234,
+                  "tags": ["field-notes", "synthetic"],
+                  "origin": "manual",
+                  "taskKind": "video"
+                }
+              ],
+              "total": 7,
+              "nextOffset": 3
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "id": "golden-completed",
+            "url": "https://example.invalid/media/golden-completed",
+            "title": "Golden completed field notes",
+            "type": "video",
+            "status": "completed",
+            "createdAt": 1735689600000,
+            "startedAt": 1735689595000,
+            "downloadedAt": 1735689595000,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "completedAt": 1735689600000,
+            "duration": 4,
+            "fileSize": 120044,
+            "downloadPath": "<run>/userdata/golden-media/Golden field recording",
+            "savedFileName": "Golden field recording.wav",
+            "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+            "resolvedFormatId": "synthetic-wav",
+            "subtitleStatus": "downloaded",
+            "subtitleLanguages": ["en"],
+            "description": "An invented recording for deterministic offline tests.",
+            "channel": "Synthetic Observatory",
+            "uploader": "Fixture narrator",
+            "viewCount": 1234,
+            "tags": ["field-notes", "synthetic"],
+            "origin": "manual",
+            "taskKind": "video"
+          },
+          {
+            "id": "golden-failed",
+            "url": "https://example.invalid/media/golden-failed",
+            "title": "Golden failed field notes",
+            "type": "video",
+            "status": "error",
+            "createdAt": 1735689600002,
+            "startedAt": 1735689595000,
+            "downloadedAt": 1735689595000,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "completedAt": 1735689600000,
+            "duration": 3.75,
+            "fileSize": 120044,
+            "error": "Synthetic media is unavailable.",
+            "description": "An invented recording for deterministic offline tests.",
+            "channel": "Synthetic Observatory",
+            "uploader": "Fixture narrator",
+            "viewCount": 1234,
+            "tags": ["field-notes", "synthetic"],
+            "origin": "manual",
+            "taskKind": "video"
+          }
+        ],
+        "total": 7,
+        "nextOffset": 3
+      }
+    }
+  }
+}

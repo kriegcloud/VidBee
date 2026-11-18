@@ -1,0 +1,42 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "id": "golden-item-2",
+                  "url": "https://www.youtube.com/watch?v=golden00002",
+                  "title": "Mountain afternoon",
+                  "publishedAt": 1735689580000,
+                  "addedToQueue": false,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+                }
+              ],
+              "total": 3
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "id": "golden-item-2",
+            "url": "https://www.youtube.com/watch?v=golden00002",
+            "title": "Mountain afternoon",
+            "publishedAt": 1735689580000,
+            "addedToQueue": false,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+          }
+        ],
+        "total": 3
+      }
+    }
+  }
+}

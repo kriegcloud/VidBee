@@ -1,0 +1,74 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-retry",
+              "kind": "video",
+              "parentId": null,
+              "title": "Golden retry-scheduled field notes",
+              "url": "https://example.invalid/media/golden-retry",
+              "status": "retry-scheduled",
+              "progress": {
+                "percent": 0.25,
+                "bytesDownloaded": 800,
+                "bytesTotal": 120044,
+                "speedBps": null,
+                "etaMs": null,
+                "ticks": 4
+              },
+              "attempt": 0,
+              "maxAttempts": 0,
+              "nextRetryAt": 4102444800000,
+              "error": null,
+              "filename": null,
+              "log": null,
+              "automaticRetry": true,
+              "children": [],
+              "childrenNextCursor": null,
+              "groupKey": "example.invalid",
+              "createdAt": 1735689600007,
+              "updatedAt": 1735689600007,
+              "output": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-retry",
+        "kind": "video",
+        "parentId": null,
+        "title": "Golden retry-scheduled field notes",
+        "url": "https://example.invalid/media/golden-retry",
+        "status": "retry-scheduled",
+        "progress": {
+          "percent": 0.25,
+          "bytesDownloaded": 800,
+          "bytesTotal": 120044,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 4
+        },
+        "attempt": 0,
+        "maxAttempts": 0,
+        "nextRetryAt": 4102444800000,
+        "error": null,
+        "filename": null,
+        "log": null,
+        "automaticRetry": true,
+        "children": [],
+        "childrenNextCursor": null,
+        "groupKey": "example.invalid",
+        "createdAt": 1735689600007,
+        "updatedAt": 1735689600007,
+        "output": null
+      }
+    }
+  }
+}

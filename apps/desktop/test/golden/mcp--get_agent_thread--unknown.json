@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Agent thread not found: golden-unknown"
+      }
+    ],
+    "isError": true
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-paused",
+              "kind": "video",
+              "parentId": null,
+              "title": "Golden paused field notes",
+              "url": "https://example.invalid/media/golden-paused",
+              "status": "paused",
+              "progress": {
+                "percent": 0.25,
+                "bytesDownloaded": 800,
+                "bytesTotal": 120044,
+                "speedBps": null,
+                "etaMs": null,
+                "ticks": 4
+              },
+              "attempt": 0,
+              "maxAttempts": 0,
+              "nextRetryAt": null,
+              "error": null,
+              "filename": null,
+              "log": null,
+              "automaticRetry": false,
+              "children": [],
+              "childrenNextCursor": null,
+              "groupKey": "example.invalid",
+              "createdAt": 1735689600001,
+              "updatedAt": 1735689600001,
+              "output": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-paused",
+        "kind": "video",
+        "parentId": null,
+        "title": "Golden paused field notes",
+        "url": "https://example.invalid/media/golden-paused",
+        "status": "paused",
+        "progress": {
+          "percent": 0.25,
+          "bytesDownloaded": 800,
+          "bytesTotal": 120044,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 4
+        },
+        "attempt": 0,
+        "maxAttempts": 0,
+        "nextRetryAt": null,
+        "error": null,
+        "filename": null,
+        "log": null,
+        "automaticRetry": false,
+        "children": [],
+        "childrenNextCursor": null,
+        "groupKey": "example.invalid",
+        "createdAt": 1735689600001,
+        "updatedAt": 1735689600001,
+        "output": null
+      }
+    }
+  }
+}

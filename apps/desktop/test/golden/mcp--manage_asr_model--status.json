@@ -1,0 +1,856 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "ready": false,
+              "version": "vidbee-asr-2026.08.20-3",
+              "bytes": 0,
+              "files": [
+                {
+                  "id": "silero-vad",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/silero_vad.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "pyannote-segmentation",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "speaker-embedding-campplus",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "speaker-embedding",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "speaker-embedding-titanet",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/nemo_en_titanet_small.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-tiny-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-tiny-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-tiny-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-base-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-base-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-base-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-small-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-small-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-small-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-medium-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-medium-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-medium-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-turbo-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-turbo-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "whisper-turbo-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "sense-voice-model",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "sense-voice-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "sense-voice-2025-model",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2025-09-09/model.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "sense-voice-2025-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2025-09-09/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "fire-red-asr-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "fire-red-asr-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "fire-red-asr-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v2-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v2-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v2-joiner",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/joiner.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v2-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v3-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v3-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v3-joiner",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/joiner.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "parakeet-v3-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-manifest",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/manifest.json",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-joiner",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/joiner.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-tokens",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/tokens.txt",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-license",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/LICENSE-WEIGHTS",
+                  "bytes": 0
+                },
+                {
+                  "id": "orukeet-notice",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/NOTICE.md",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-frontend",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-tokenizer",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-1.7b-encoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/encoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-1.7b-decoder",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/decoder.int8.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-1.7b-frontend",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/conv_frontend.onnx",
+                  "bytes": 0
+                },
+                {
+                  "id": "qwen3-asr-1.7b-tokenizer",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/tokenizer",
+                  "bytes": 0
+                },
+                {
+                  "id": "punct-ct-transformer-zh-en",
+                  "present": false,
+                  "path": "<run>/userdata/models/transcription/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+                  "bytes": 0
+                }
+              ],
+              "tiers": [
+                {
+                  "id": "minimal",
+                  "family": "whisper",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 10
+                },
+                {
+                  "id": "whisper-base",
+                  "family": "whisper",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 20
+                },
+                {
+                  "id": "balanced",
+                  "family": "whisper",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 30
+                },
+                {
+                  "id": "whisper-medium",
+                  "family": "whisper",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 38
+                },
+                {
+                  "id": "whisper-turbo",
+                  "family": "whisper",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 42
+                },
+                {
+                  "id": "sense-voice",
+                  "family": "sense-voice",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 36
+                },
+                {
+                  "id": "sense-voice-2025",
+                  "family": "sense-voice",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 37
+                },
+                {
+                  "id": "fire-red-asr",
+                  "family": "fire-red-asr",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 45
+                },
+                {
+                  "id": "parakeet-v2",
+                  "family": "parakeet",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 39
+                },
+                {
+                  "id": "parakeet-v3",
+                  "family": "parakeet",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 41
+                },
+                {
+                  "id": "orukeet",
+                  "family": "parakeet",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 41
+                },
+                {
+                  "id": "quality",
+                  "family": "qwen3",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 50
+                },
+                {
+                  "id": "qwen3-1.7b",
+                  "family": "qwen3",
+                  "ready": false,
+                  "bytes": 0,
+                  "qualityRank": 60
+                }
+              ],
+              "downloading": null,
+              "downloads": [],
+              "pendingTiers": [],
+              "language": "en",
+              "machine": {
+                "arch": "<machine>",
+                "class": "<machine>",
+                "cpuCount": "<machine>",
+                "gpu": "<machine>",
+                "gpuName": "<machine>",
+                "os": "<machine>",
+                "ramBytes": "<machine>"
+              },
+              "recommended": "<machine-dependent>"
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "ready": false,
+        "version": "vidbee-asr-2026.08.20-3",
+        "bytes": 0,
+        "files": [
+          {
+            "id": "silero-vad",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/silero_vad.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "pyannote-segmentation",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "speaker-embedding-campplus",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "speaker-embedding",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "speaker-embedding-titanet",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/nemo_en_titanet_small.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-tiny-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-tiny-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-tiny-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-base-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-base-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-base-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-base/base-tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-small-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-small-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-small-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-small/small-tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-medium-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-medium-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-medium-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-medium/medium-tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-turbo-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-turbo-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "whisper-turbo-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-whisper-turbo/turbo-tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "sense-voice-model",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "sense-voice-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "sense-voice-2025-model",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2025-09-09/model.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "sense-voice-2025-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2025-09-09/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "fire-red-asr-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "fire-red-asr-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "fire-red-asr-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-fire-red-asr2-zh_en-int8-2026-02-26/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v2-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v2-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v2-joiner",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/joiner.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v2-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v3-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v3-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v3-joiner",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/joiner.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "parakeet-v3-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-manifest",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/manifest.json",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-joiner",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/joiner.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-tokens",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/tokens.txt",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-license",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/LICENSE-WEIGHTS",
+            "bytes": 0
+          },
+          {
+            "id": "orukeet-notice",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-orukeet-v0.1.0-int8/NOTICE.md",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-frontend",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-tokenizer",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-1.7b-encoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/encoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-1.7b-decoder",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/decoder.int8.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-1.7b-frontend",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/conv_frontend.onnx",
+            "bytes": 0
+          },
+          {
+            "id": "qwen3-asr-1.7b-tokenizer",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/qwen3-asr-1.7b-int8-cb045ad8/tokenizer",
+            "bytes": 0
+          },
+          {
+            "id": "punct-ct-transformer-zh-en",
+            "present": false,
+            "path": "<run>/userdata/models/transcription/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+            "bytes": 0
+          }
+        ],
+        "tiers": [
+          {
+            "id": "minimal",
+            "family": "whisper",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 10
+          },
+          {
+            "id": "whisper-base",
+            "family": "whisper",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 20
+          },
+          {
+            "id": "balanced",
+            "family": "whisper",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 30
+          },
+          {
+            "id": "whisper-medium",
+            "family": "whisper",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 38
+          },
+          {
+            "id": "whisper-turbo",
+            "family": "whisper",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 42
+          },
+          {
+            "id": "sense-voice",
+            "family": "sense-voice",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 36
+          },
+          {
+            "id": "sense-voice-2025",
+            "family": "sense-voice",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 37
+          },
+          {
+            "id": "fire-red-asr",
+            "family": "fire-red-asr",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 45
+          },
+          {
+            "id": "parakeet-v2",
+            "family": "parakeet",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 39
+          },
+          {
+            "id": "parakeet-v3",
+            "family": "parakeet",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 41
+          },
+          {
+            "id": "orukeet",
+            "family": "parakeet",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 41
+          },
+          {
+            "id": "quality",
+            "family": "qwen3",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 50
+          },
+          {
+            "id": "qwen3-1.7b",
+            "family": "qwen3",
+            "ready": false,
+            "bytes": 0,
+            "qualityRank": 60
+          }
+        ],
+        "downloading": null,
+        "downloads": [],
+        "pendingTiers": [],
+        "language": "en",
+        "machine": {
+          "arch": "<machine>",
+          "class": "<machine>",
+          "cpuCount": "<machine>",
+          "gpu": "<machine>",
+          "gpuName": "<machine>",
+          "os": "<machine>",
+          "ramBytes": "<machine>"
+        },
+        "recommended": "<machine-dependent>"
+      }
+    }
+  }
+}

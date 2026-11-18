@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "All media paths must be absolute"
+      }
+    ],
+    "isError": true
+  }
+}

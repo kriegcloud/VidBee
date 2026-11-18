@@ -1,0 +1,80 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "asrTier": "minimal",
+                  "downloadTaskId": "golden-completed",
+                  "error": null,
+                  "listState": "completed",
+                  "record": {
+                    "asrTier": "minimal",
+                    "createdAt": 1735689600000,
+                    "id": "golden-transcript",
+                    "language": "en",
+                    "modelVersion": "golden-asr-v1",
+                    "resultKind": "transcript",
+                    "sourceKind": "asr",
+                    "updatedAt": 1735689600000
+                  },
+                  "rediarize": false,
+                  "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                  "sourceKind": "asr",
+                  "speakerCount": "auto",
+                  "stage": null,
+                  "stageHistory": [],
+                  "title": "Golden completed field notes",
+                  "transcriptId": "golden-transcript",
+                  "transcriptionTaskId": "golden-transcription-task",
+                  "updatedAt": 1735689600000
+                }
+              ],
+              "total": 1,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "asrTier": "minimal",
+            "downloadTaskId": "golden-completed",
+            "error": null,
+            "listState": "completed",
+            "record": {
+              "asrTier": "minimal",
+              "createdAt": 1735689600000,
+              "id": "golden-transcript",
+              "language": "en",
+              "modelVersion": "golden-asr-v1",
+              "resultKind": "transcript",
+              "sourceKind": "asr",
+              "updatedAt": 1735689600000
+            },
+            "rediarize": false,
+            "sourceFilePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+            "sourceKind": "asr",
+            "speakerCount": "auto",
+            "stage": null,
+            "stageHistory": [],
+            "title": "Golden completed field notes",
+            "transcriptId": "golden-transcript",
+            "transcriptionTaskId": "golden-transcription-task",
+            "updatedAt": 1735689600000
+          }
+        ],
+        "total": 1,
+        "nextOffset": null
+      }
+    }
+  }
+}

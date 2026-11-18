@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-message-user",
+              "role": "user",
+              "text": "mmarize th",
+              "totalCharacters": 28,
+              "nextOffset": 12
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-message-user",
+        "role": "user",
+        "text": "mmarize th",
+        "totalCharacters": 28,
+        "nextOffset": 12
+      }
+    }
+  }
+}

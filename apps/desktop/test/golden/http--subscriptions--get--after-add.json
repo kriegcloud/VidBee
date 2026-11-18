@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "body": {
+    "id": "<id:1>",
+    "title": "Golden offline feed",
+    "sourceUrl": "https://example.invalid/golden-new-feed.xml",
+    "feedUrl": "https://example.invalid/golden-new-feed.xml",
+    "platform": "custom",
+    "keywords": [],
+    "tags": [],
+    "onlyDownloadLatest": true,
+    "autoDownload": false,
+    "enabled": false,
+    "status": "idle",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "sourceKind": "feed",
+    "categories": [],
+    "items": []
+  }
+}

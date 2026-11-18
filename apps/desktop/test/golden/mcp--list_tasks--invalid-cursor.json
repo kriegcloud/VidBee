@@ -1,0 +1,554 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "tasks": [
+                {
+                  "id": "golden-audio",
+                  "kind": "audio",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/audio",
+                  "title": "Golden audio archive",
+                  "status": "completed",
+                  "progress": {
+                    "percent": 1,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689599000,
+                  "updatedAt": "<timestamp>",
+                  "output": {
+                    "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                    "size": 120044,
+                    "durationMs": 3750,
+                    "sha256": null,
+                    "formatId": "synthetic-wav",
+                    "subtitleStatus": "downloaded",
+                    "subtitleLanguages": ["en"]
+                  },
+                  "error": null
+                },
+                {
+                  "id": "golden-completed",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-completed",
+                  "title": "Golden completed field notes",
+                  "status": "completed",
+                  "progress": {
+                    "percent": 1,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600000,
+                  "updatedAt": "<timestamp>",
+                  "output": {
+                    "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+                    "size": 120044,
+                    "durationMs": 3750,
+                    "sha256": null,
+                    "formatId": "synthetic-wav",
+                    "subtitleStatus": "downloaded",
+                    "subtitleLanguages": ["en"]
+                  },
+                  "error": null
+                },
+                {
+                  "id": "golden-paused",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-paused",
+                  "title": "Golden paused field notes",
+                  "status": "paused",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600001,
+                  "updatedAt": 1735689600001,
+                  "output": null,
+                  "error": null
+                },
+                {
+                  "id": "golden-failed",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-failed",
+                  "title": "Golden failed field notes",
+                  "status": "failed",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 1,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600002,
+                  "updatedAt": 1735689600002,
+                  "output": null,
+                  "error": {
+                    "category": "not-found",
+                    "exitCode": 1,
+                    "rawMessage": "Synthetic media is unavailable.",
+                    "uiMessageKey": "download.error.notFound",
+                    "uiActionHints": [],
+                    "retryable": false,
+                    "suggestedRetryAfterMs": null
+                  }
+                },
+                {
+                  "id": "golden-cancelled",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-cancelled",
+                  "title": "Golden cancelled field notes",
+                  "status": "cancelled",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600003,
+                  "updatedAt": 1735689600003,
+                  "output": null,
+                  "error": null
+                },
+                {
+                  "id": "golden-queued",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-queued",
+                  "title": "Golden queued field notes",
+                  "status": "failed",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 1,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600004,
+                  "updatedAt": "<timestamp>",
+                  "output": null,
+                  "error": {
+                    "category": "unknown",
+                    "exitCode": null,
+                    "rawMessage": "ERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+                    "uiMessageKey": "task.error.unknown",
+                    "uiActionHints": ["retry", "report-bug"],
+                    "retryable": true,
+                    "suggestedRetryAfterMs": null
+                  }
+                },
+                {
+                  "id": "golden-running",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-running",
+                  "title": "Golden running field notes",
+                  "status": "failed",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 1,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600005,
+                  "updatedAt": "<timestamp>",
+                  "output": null,
+                  "error": {
+                    "category": "unknown",
+                    "exitCode": null,
+                    "rawMessage": "ERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+                    "uiMessageKey": "task.error.unknown",
+                    "uiActionHints": ["retry", "report-bug"],
+                    "retryable": true,
+                    "suggestedRetryAfterMs": null
+                  }
+                },
+                {
+                  "id": "golden-processing",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-processing",
+                  "title": "Golden processing field notes",
+                  "status": "failed",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 1,
+                  "maxAttempts": 0,
+                  "nextRetryAt": null,
+                  "createdAt": 1735689600006,
+                  "updatedAt": "<timestamp>",
+                  "output": null,
+                  "error": {
+                    "category": "unknown",
+                    "exitCode": null,
+                    "rawMessage": "ERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+                    "uiMessageKey": "task.error.unknown",
+                    "uiActionHints": ["retry", "report-bug"],
+                    "retryable": true,
+                    "suggestedRetryAfterMs": null
+                  }
+                },
+                {
+                  "id": "golden-retry",
+                  "kind": "video",
+                  "parentId": null,
+                  "groupKey": "example.invalid",
+                  "url": "https://example.invalid/media/golden-retry",
+                  "title": "Golden retry-scheduled field notes",
+                  "status": "retry-scheduled",
+                  "progress": {
+                    "percent": 0.25,
+                    "bytesDownloaded": 800,
+                    "bytesTotal": 120044,
+                    "speedBps": null,
+                    "etaMs": null,
+                    "ticks": 4
+                  },
+                  "attempt": 0,
+                  "maxAttempts": 0,
+                  "nextRetryAt": 4102444800000,
+                  "createdAt": 1735689600007,
+                  "updatedAt": 1735689600007,
+                  "output": null,
+                  "error": null
+                }
+              ],
+              "nextCursor": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "tasks": [
+          {
+            "id": "golden-audio",
+            "kind": "audio",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/audio",
+            "title": "Golden audio archive",
+            "status": "completed",
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689599000,
+            "updatedAt": "<timestamp>",
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "error": null
+          },
+          {
+            "id": "golden-completed",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-completed",
+            "title": "Golden completed field notes",
+            "status": "completed",
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600000,
+            "updatedAt": "<timestamp>",
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "error": null
+          },
+          {
+            "id": "golden-paused",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-paused",
+            "title": "Golden paused field notes",
+            "status": "paused",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600001,
+            "updatedAt": 1735689600001,
+            "output": null,
+            "error": null
+          },
+          {
+            "id": "golden-failed",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-failed",
+            "title": "Golden failed field notes",
+            "status": "failed",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600002,
+            "updatedAt": 1735689600002,
+            "output": null,
+            "error": {
+              "category": "not-found",
+              "exitCode": 1,
+              "rawMessage": "Synthetic media is unavailable.",
+              "uiMessageKey": "download.error.notFound",
+              "uiActionHints": [],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            }
+          },
+          {
+            "id": "golden-cancelled",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-cancelled",
+            "title": "Golden cancelled field notes",
+            "status": "cancelled",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600003,
+            "updatedAt": 1735689600003,
+            "output": null,
+            "error": null
+          },
+          {
+            "id": "golden-queued",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-queued",
+            "title": "Golden queued field notes",
+            "status": "failed",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600004,
+            "updatedAt": "<timestamp>",
+            "output": null,
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            }
+          },
+          {
+            "id": "golden-running",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-running",
+            "title": "Golden running field notes",
+            "status": "failed",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600005,
+            "updatedAt": "<timestamp>",
+            "output": null,
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            }
+          },
+          {
+            "id": "golden-processing",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-processing",
+            "title": "Golden processing field notes",
+            "status": "failed",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "createdAt": 1735689600006,
+            "updatedAt": "<timestamp>",
+            "output": null,
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            }
+          },
+          {
+            "id": "golden-retry",
+            "kind": "video",
+            "parentId": null,
+            "groupKey": "example.invalid",
+            "url": "https://example.invalid/media/golden-retry",
+            "title": "Golden retry-scheduled field notes",
+            "status": "retry-scheduled",
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": 4102444800000,
+            "createdAt": 1735689600007,
+            "updatedAt": 1735689600007,
+            "output": null,
+            "error": null
+          }
+        ],
+        "nextCursor": null
+      }
+    }
+  }
+}

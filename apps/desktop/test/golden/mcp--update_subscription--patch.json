@@ -1,0 +1,124 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "subscription": {
+                "id": "golden-subscription",
+                "title": "Golden renamed feed",
+                "sourceUrl": "https://www.youtube.com/channel/UC0000000000000000000000",
+                "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0000000000000000000000",
+                "platform": "youtube",
+                "keywords": ["science"],
+                "tags": ["golden"],
+                "onlyDownloadLatest": false,
+                "autoDownload": false,
+                "enabled": false,
+                "status": "idle",
+                "createdAt": 1735689500000,
+                "updatedAt": "<timestamp>",
+                "sourceKind": "feed",
+                "categories": [],
+                "coverUrl": "file://<run>/userdata/golden-media/thumbnail.png",
+                "latestVideoTitle": "River morning",
+                "latestVideoPublishedAt": 1735689590000,
+                "lastCheckedAt": 1735689600000,
+                "lastSuccessAt": 1735689600000,
+                "downloadDirectory": "<run>/userdata/golden-media",
+                "namingTemplate": "%(title)s.%(ext)s",
+                "items": [
+                  {
+                    "id": "golden-item-1",
+                    "url": "https://www.youtube.com/watch?v=golden00001",
+                    "title": "River morning",
+                    "publishedAt": 1735689590000,
+                    "addedToQueue": true,
+                    "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+                    "taskId": "golden-completed"
+                  },
+                  {
+                    "id": "golden-item-2",
+                    "url": "https://www.youtube.com/watch?v=golden00002",
+                    "title": "Mountain afternoon",
+                    "publishedAt": 1735689580000,
+                    "addedToQueue": false,
+                    "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+                  },
+                  {
+                    "id": "golden-item-3",
+                    "url": "https://www.youtube.com/watch?v=golden00003",
+                    "title": "Forest evening",
+                    "publishedAt": 1735689570000,
+                    "addedToQueue": false,
+                    "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+                  }
+                ]
+              },
+              "tested": false
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "subscription": {
+          "id": "golden-subscription",
+          "title": "Golden renamed feed",
+          "sourceUrl": "https://www.youtube.com/channel/UC0000000000000000000000",
+          "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0000000000000000000000",
+          "platform": "youtube",
+          "keywords": ["science"],
+          "tags": ["golden"],
+          "onlyDownloadLatest": false,
+          "autoDownload": false,
+          "enabled": false,
+          "status": "idle",
+          "createdAt": 1735689500000,
+          "updatedAt": "<timestamp>",
+          "sourceKind": "feed",
+          "categories": [],
+          "coverUrl": "file://<run>/userdata/golden-media/thumbnail.png",
+          "latestVideoTitle": "River morning",
+          "latestVideoPublishedAt": 1735689590000,
+          "lastCheckedAt": 1735689600000,
+          "lastSuccessAt": 1735689600000,
+          "downloadDirectory": "<run>/userdata/golden-media",
+          "namingTemplate": "%(title)s.%(ext)s",
+          "items": [
+            {
+              "id": "golden-item-1",
+              "url": "https://www.youtube.com/watch?v=golden00001",
+              "title": "River morning",
+              "publishedAt": 1735689590000,
+              "addedToQueue": true,
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "taskId": "golden-completed"
+            },
+            {
+              "id": "golden-item-2",
+              "url": "https://www.youtube.com/watch?v=golden00002",
+              "title": "Mountain afternoon",
+              "publishedAt": 1735689580000,
+              "addedToQueue": false,
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+            },
+            {
+              "id": "golden-item-3",
+              "url": "https://www.youtube.com/watch?v=golden00003",
+              "title": "Forest evening",
+              "publishedAt": 1735689570000,
+              "addedToQueue": false,
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+            }
+          ]
+        },
+        "tested": false
+      }
+    }
+  }
+}
