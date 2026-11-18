@@ -9,7 +9,7 @@ Thank you for taking the time to improve VidBee. These notes keep the project ma
 
 ## Tech Stack
 - Runtime: Electron 38, electron-vite, electron-builder.
-- Frontend: React 19, React Router, Jotai, React Hook Form, Tailwind CSS 4, shadcn/ui, Lucide icons.
+- Frontend: React 19, React Router, Jotai, Tailwind CSS 4, shadcn/ui, Lucide icons.
 - Tooling: TypeScript, Bun, Biome, dayjs, electron-log, electron-store, i18next, next-themes.
 
 ## Local Development

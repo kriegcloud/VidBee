@@ -74,8 +74,6 @@ files:
   - '!node_modules/@tanstack{,/**}'
   - '!node_modules/@lobehub{,/**}'
   - '!node_modules/sonner{,/**}'
-  - '!node_modules/@hookform{,/**}'
-  - '!node_modules/react-hook-form{,/**}'
   - '!node_modules/next-themes{,/**}'
   - '!node_modules/cmdk{,/**}'
   - '!node_modules/tailwind-merge{,/**}'
