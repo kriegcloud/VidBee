@@ -19,7 +19,8 @@ const DEFAULT_DELAYS = [0, 5_000, 15_000, 45_000, 120_000, 600_000] as const
  */
 export const startMinimalModelFill = (opts: MinimalModelFillOptions): { stop: () => void } => {
   const delays = opts.delaysMs ?? DEFAULT_DELAYS
-  const schedule = opts.schedule ?? setTimeout
+  const schedule: NonNullable<MinimalModelFillOptions['schedule']> =
+    opts.schedule ?? ((fn, ms) => setTimeout(fn, ms))
   let stopped = false
   let attempt = 0
   let timer: ReturnType<typeof setTimeout> | null = null

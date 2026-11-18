@@ -5,7 +5,7 @@ import path from 'node:path'
  *
  * @param platform Node `os.platform()` value.
  */
-const pathForPlatform = (platform: string): path.PlatformPath =>
+const pathForPlatform = (platform: string): typeof path.posix =>
   platform === 'win32' ? path.win32 : path.posix
 
 /**

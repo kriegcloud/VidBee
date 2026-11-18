@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui
 import { useExtensionCookieConnection } from '@renderer/hooks/use-extension-cookie-connection'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { withDesktopUtm } from '@renderer/lib/url'
 import { saveSettingAtom, settingsAtom } from '@renderer/store/settings'
 import {
@@ -466,17 +467,17 @@ export function CookiesSetupPanel({
           <ItemContent>
             <div className="flex flex-wrap items-center gap-2">
               <ItemTitle className="text-base">
-                {sourceLabel(health, connection.browser, t)}
+                {sourceLabel(health, connection.browser, plainTranslate(t))}
               </ItemTitle>
               {showStatusBadge ? (
                 <Badge variant={healthLoading ? 'outline' : healthBadgeVariant(health)}>
                   {healthLoading
                     ? t('settings.cookiesSetup.checking')
-                    : healthBadgeLabel(health, t)}
+                    : healthBadgeLabel(health, plainTranslate(t))}
                 </Badge>
               ) : null}
             </div>
-            <ItemDescription>{healthDescription(health, t)}</ItemDescription>
+            <ItemDescription>{healthDescription(health, plainTranslate(t))}</ItemDescription>
             {health.sites.length > 0 ? (
               <ItemDescription>
                 {t('settings.cookiesSetup.sitesLabel', {
@@ -518,7 +519,10 @@ export function CookiesSetupPanel({
               <ItemDescription>
                 {connection.connected
                   ? t('settings.cookiesSetup.extensionConnectedShort', {
-                      browser: browserLabel(connection.browser ?? health.browser ?? '', t)
+                      browser: browserLabel(
+                        connection.browser ?? health.browser ?? '',
+                        plainTranslate(t)
+                      )
                     })
                   : t('settings.cookiesSetup.extensionShortHint')}
               </ItemDescription>
@@ -547,7 +551,7 @@ export function CookiesSetupPanel({
               {currentBrowserUnsupported ? (
                 <ItemDescription className="text-destructive">
                   {t('settings.cookiesSetup.windowsUnsupportedCurrent', {
-                    browser: browserLabel(browserForCookiesValue, t)
+                    browser: browserLabel(browserForCookiesValue, plainTranslate(t))
                   })}
                 </ItemDescription>
               ) : null}
@@ -573,7 +577,7 @@ export function CookiesSetupPanel({
                   <SelectItem value="none">{t('settings.none')}</SelectItem>
                   {selectableBrowsers.map((browser) => (
                     <SelectItem key={browser} value={browser}>
-                      {browserLabel(browser, t)}
+                      {browserLabel(browser, plainTranslate(t))}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -1,3 +1,4 @@
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import type { AgentArtifact, AgentChatMessage, AgentChatRun } from '@shared/agent-chat'
 import {
   AgentEventStream as EventStream,
@@ -16,5 +17,5 @@ export function AgentEventStream(props: {
   onDecideTool?: (input: { toolCallId: string; approved: boolean; remember: boolean }) => void
 }) {
   const { t } = useTranslation()
-  return <EventStream {...props} translate={t} />
+  return <EventStream {...props} translate={plainTranslate(t)} />
 }

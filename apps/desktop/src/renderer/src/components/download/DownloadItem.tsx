@@ -15,6 +15,7 @@ import {
   SheetTitle
 } from '@renderer/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { useNavigate } from '@tanstack/react-router'
 import { getCookieSetupFailureKind } from '@vidbee/downloader-core/cookie-setup'
 import type { TaskCreationMetadata } from '@vidbee/task-queue'
@@ -208,7 +209,7 @@ export function DownloadItem({
   const timestamp = download.completedAt ?? download.downloadedAt ?? download.createdAt
   const resolvedExtension = resolveDownloadExtension(download)
   const selectionEnabled = isHistory && Boolean(onToggleSelect)
-  const contents = resolveDownloadContents({ download, t, transcript })
+  const contents = resolveDownloadContents({ download, t: plainTranslate(t), transcript })
   // Track if the file exists
   const [fileExists, setFileExists] = useState(false)
   // undefined while the existence check runs, null when nothing was found.

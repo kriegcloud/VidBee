@@ -1,5 +1,6 @@
 import { exportFileName } from '@renderer/lib/capture-prompt-share'
 import { ipcServices } from '@renderer/lib/ipc'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { thinkingDurationHeader } from '@renderer/lib/thinking-header'
 import { agentTaskAiSnapshotAtom } from '@renderer/store/agent-tasks'
 import { type AgentChatMessage, type AgentThread, selectedAgentMessages } from '@shared/agent-chat'
@@ -118,7 +119,7 @@ export function AgentChatMessageView({
   const canExport = Boolean(showAnswer && message.text.trim())
   const thinkingLabel =
     (message.thinkingMs ?? 0) > 0
-      ? thinkingDurationHeader(t, false, message.thinkingMs ?? 0)
+      ? thinkingDurationHeader(plainTranslate(t), false, message.thinkingMs ?? 0)
       : undefined
   /**
    * Persist this reply through a native save dialog and reveal the file.

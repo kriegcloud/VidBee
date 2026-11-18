@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui
 import { DesktopChromeContext, useTitleBar } from '@renderer/desktop-chrome'
 import { useCachedThumbnail } from '@renderer/hooks/use-cached-thumbnail'
 import { ipcEvents, ipcServices } from '@renderer/lib/ipc'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import {
   bumpDetailRequest,
   detailVersionMoved,
@@ -994,7 +995,7 @@ export function TranscriptPage() {
         currentTimeMs={currentTimeMs}
         durationMs={durationMs}
         info={{
-          ...downloadFieldsForInfo(download, t),
+          ...downloadFieldsForInfo(download, plainTranslate(t)),
           asrTier: snapshot?.record?.asrTier ?? snapshot?.asrTier,
           channel: download?.channel || download?.uploader || null,
           createdAt: snapshot?.record?.createdAt ?? snapshot?.updatedAt ?? null,

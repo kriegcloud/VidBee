@@ -1,5 +1,6 @@
 import { formatBytes } from '@renderer/components/settings/asr-model-shared'
 import { formatClock } from '@renderer/lib/format-clock'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import type { DownloadCookieSource } from '@vidbee/task-queue'
 import { isAsrTierId } from '@vidbee/transcription/asr'
 import { DownloadPlatformIcon } from '@vidbee/ui/components/ui/download-platform-icon'
@@ -126,7 +127,10 @@ export const hasTranscriptInfo = (info: TranscriptInfoFields): boolean =>
  */
 export function TranscriptInfoPane(info: TranscriptInfoFields) {
   const { t, i18n } = useTranslation()
-  const groups = useMemo(() => buildInfoGroups(info, t, i18n.language), [i18n.language, info, t])
+  const groups = useMemo(
+    () => buildInfoGroups(info, plainTranslate(t), i18n.language),
+    [i18n.language, info, t]
+  )
   if (groups.length === 0 && info.cookieSources === undefined) {
     return <p className="px-4 py-6 text-muted-foreground text-sm">{t('transcript.info.empty')}</p>
   }
@@ -158,9 +162,9 @@ export function TranscriptInfoPane(info: TranscriptInfoFields) {
                       sources:
                         info.configuredCookieSources.length === 0
                           ? t('transcript.info.cookiesNotConfigured')
-                          : cookieSourcesLabel(info.configuredCookieSources, t)
+                          : cookieSourcesLabel(info.configuredCookieSources, plainTranslate(t))
                     })
-                  : cookieSourcesLabel(info.cookieSources, t)
+                  : cookieSourcesLabel(info.cookieSources, plainTranslate(t))
             }}
           />
         </dl>

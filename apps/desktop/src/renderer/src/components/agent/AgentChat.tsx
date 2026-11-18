@@ -11,6 +11,7 @@ import { aiPromptLabel } from '@renderer/lib/ai-prompt-label'
 import { shareImageFileName } from '@renderer/lib/capture-prompt-share'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { thinkingDurationHeader } from '@renderer/lib/thinking-header'
 import { agentTaskAiSnapshotAtom } from '@renderer/store/agent-tasks'
 import { downloadsArrayAtom } from '@renderer/store/downloads'
@@ -550,7 +551,7 @@ export function AgentChat({
                 tagline: t('transcript.promptShareTagline'),
                 thinkingLabel:
                   (shareMessage.thinkingMs ?? 0) > 0
-                    ? thinkingDurationHeader(t, false, shareMessage.thinkingMs ?? 0)
+                    ? thinkingDurationHeader(plainTranslate(t), false, shareMessage.thinkingMs ?? 0)
                     : undefined,
                 userText: sharePromptUserText(
                   thread?.messages ?? [],

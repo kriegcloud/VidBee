@@ -40,6 +40,7 @@ import { useStreamingTranscript } from '@renderer/hooks/use-streaming-transcript
 import { shareImageFileName } from '@renderer/lib/capture-prompt-share'
 import { formatClock } from '@renderer/lib/format-clock'
 import { ipcServices } from '@renderer/lib/ipc'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import {
   bilingualCaptionSources,
   type CaptionSource,
@@ -1488,7 +1489,7 @@ export function TranscriptCaptionsPane({
                       }
                       value={source.key}
                     >
-                      {transcriptSourceLabel(source, t, i18n.language)}
+                      {transcriptSourceLabel(source, plainTranslate(t), i18n.language)}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>

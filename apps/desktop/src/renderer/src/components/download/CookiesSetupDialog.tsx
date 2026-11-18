@@ -13,6 +13,7 @@ import {
 } from '@renderer/components/ui/dialog'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
+import { plainTranslate } from '@renderer/lib/plain-translate'
 import { type CookieSetupRequest, cookieSetupRequestAtom } from '@renderer/store/cookie-setup'
 import { addDownloadAtom, downloadsArrayAtom } from '@renderer/store/downloads'
 import {
@@ -135,7 +136,7 @@ export function CookiesSetupDialog() {
         <DialogHeader>
           <DialogTitle>{t('download.cookiesSetupDialogTitle')}</DialogTitle>
           <DialogDescription>
-            {request ? failureDescription(request.failureKind, t) : null}
+            {request ? failureDescription(request.failureKind, plainTranslate(t)) : null}
           </DialogDescription>
         </DialogHeader>
         <CookiesSetupPanel onHealthChange={setHealth} />
