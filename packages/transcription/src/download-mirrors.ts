@@ -1,4 +1,4 @@
-import { detectSystemProfile } from '@vidbee/i18n/system-locale'
+import { detectSystemProfile } from '@vidbee/i18n/legacy/system-locale'
 
 export const DOWNLOAD_MIRROR_IDS = ['auto', 'cn', 'global'] as const
 

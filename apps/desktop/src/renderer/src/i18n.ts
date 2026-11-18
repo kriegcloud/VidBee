@@ -1,4 +1,4 @@
-import { initSharedI18n } from '@vidbee/i18n'
+import { initSharedI18n } from '@vidbee/i18n/legacy'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 

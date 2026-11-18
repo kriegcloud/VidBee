@@ -1,95 +1,89 @@
-export interface LanguageDefinition {
-  name: string
-  hreflang: string
-}
-
+import * as A from "effect/Array";
+import * as O from "effect/Option";
+import * as R from "effect/Record";
+import * as Str from "effect/String";
+import type { LanguageCode, LanguageDefinition } from "./I18n.model.js";
 export const languages = {
   en: {
-    name: 'English',
-    hreflang: 'en'
+    name: "English",
+    hreflang: "en",
   },
   es: {
-    name: 'Español',
-    hreflang: 'es'
+    name: "Español",
+    hreflang: "es",
   },
   ar: {
-    name: 'العربية',
-    hreflang: 'ar'
+    name: "العربية",
+    hreflang: "ar",
   },
   id: {
-    name: 'Bahasa Indonesia',
-    hreflang: 'id'
+    name: "Bahasa Indonesia",
+    hreflang: "id",
   },
   pt: {
-    name: 'Português',
-    hreflang: 'pt-BR'
+    name: "Português",
+    hreflang: "pt-BR",
   },
   fr: {
-    name: 'Français',
-    hreflang: 'fr'
+    name: "Français",
+    hreflang: "fr",
   },
   it: {
-    name: 'Italiano',
-    hreflang: 'it'
+    name: "Italiano",
+    hreflang: "it",
   },
   zh: {
-    name: '中文',
-    hreflang: 'zh-CN'
+    name: "中文",
+    hreflang: "zh-CN",
   },
-  'zh-TW': {
-    name: '繁體中文',
-    hreflang: 'zh-TW'
+  "zh-TW": {
+    name: "繁體中文",
+    hreflang: "zh-TW",
   },
   ko: {
-    name: '한국어',
-    hreflang: 'ko'
+    name: "한국어",
+    hreflang: "ko",
   },
   ja: {
-    name: '日本語',
-    hreflang: 'ja'
+    name: "日本語",
+    hreflang: "ja",
   },
   ru: {
-    name: 'Русский',
-    hreflang: 'ru'
+    name: "Русский",
+    hreflang: "ru",
   },
   tr: {
-    name: 'Türkçe',
-    hreflang: 'tr'
+    name: "Türkçe",
+    hreflang: "tr",
   },
   de: {
-    name: 'Deutsch',
-    hreflang: 'de'
-  }
-} as const satisfies Record<string, LanguageDefinition>
+    name: "Deutsch",
+    hreflang: "de",
+  },
+} as const satisfies Record<string, LanguageDefinition>;
 
-export type LanguageCode = keyof typeof languages
+export { LanguageCode, LanguageDefinition } from "./I18n.model.js";
 
-export const defaultLanguageCode: LanguageCode = 'en'
+export const defaultLanguageCode: LanguageCode = "en";
 
-export const languageList = Object.entries(languages).map(([code, definition]) => ({
-  value: code as LanguageCode,
-  ...definition
-}))
+export const languageList = A.map(R.toEntries(languages), ([code, definition]) => ({
+  value: code,
+  ...definition,
+}));
 
-export const supportedLanguageCodes = languageList.map((language) => language.value)
+export const supportedLanguageCodes = A.map(languageList, (language) => language.value);
 
 export function normalizeLanguageCode(code: string | null | undefined): LanguageCode {
-  if (!code) {
-    return defaultLanguageCode
-  }
-
-  const normalizedInput = code.toLowerCase()
-  const directMatch = supportedLanguageCodes.find(
-    (languageCode) => languageCode.toLowerCase() === normalizedInput
-  )
-  if (directMatch) {
-    return directMatch
-  }
-
-  const base = normalizedInput.split('-')[0] ?? ''
-  const baseMatch = supportedLanguageCodes.find(
-    (languageCode) => languageCode.split('-')[0]?.toLowerCase() === base
-  )
-
-  return baseMatch ?? defaultLanguageCode
+  if (code === null || code === undefined || code === "") return defaultLanguageCode;
+  const normalizedInput = Str.toLowerCase(code);
+  const directMatch = O.getOrUndefined(
+    A.findFirst(supportedLanguageCodes, (languageCode) => Str.toLowerCase(languageCode) === normalizedInput)
+  );
+  if (directMatch !== undefined) return directMatch;
+  const base = Str.split(normalizedInput, "-")[0];
+  return (
+    O.getOrUndefined(
+      A.findFirst(supportedLanguageCodes, (languageCode) => Str.toLowerCase(Str.split(languageCode, "-")[0]) === base)
+    ) ?? defaultLanguageCode
+  );
 }

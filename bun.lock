@@ -226,12 +226,15 @@
       "name": "@vidbee/i18n",
       "version": "0.1.0",
       "dependencies": {
-        "react-i18next": "catalog:",
+        "@vidbee/schema": "workspace:^",
+        "effect": "catalog:",
+        "i18next": "catalog:",
       },
       "devDependencies": {
+        "@effect/vitest": "catalog:",
         "@types/node": "catalog:",
-        "i18next": "catalog:",
         "typescript": "catalog:",
+        "vitest": "catalog:",
       },
     },
     "packages/logger": {
