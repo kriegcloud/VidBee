@@ -187,7 +187,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | Phase | Unit | Size | Design gate | Pinning | Can run alongside | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0a | Baseline: fork and removals | | | | | merged ([report](reports/0a.md)) |
-| 0b | Baseline: dependency updates | | | | | not started |
+| 0b | Baseline: dependency updates | | | | | merged ([report](reports/0b.md)) |
 | 1a | Toolchain and pilot (`logger`) | 95 | | | 1b | not started |
 | 1b | Fixture profile and golden harness | | | | 1a | not started |
 | 2 | `i18n` | 351 | | | 3 | not started |

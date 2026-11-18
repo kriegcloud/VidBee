@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # Launch a packaged VidBee build offline on a throwaway profile and log every
 # hostname it tries to resolve.
-# Usage: offline-launch.sh <linux-unpacked dir> <run dir> [seconds]
+# Usage: offline-launch.sh <linux-unpacked dir> <run dir> [seconds] [seed dir]
+# The optional seed dir is copied into the throwaway user-data dir before launch.
 # Never touches ~/.config/vidbee or ~/.config/VidBee: HOME, XDG dirs, the user-data
 # dir and both automation descriptors all point inside <run dir>. The network
 # namespace has loopback only; DNS goes to a logger that answers 127.0.0.1.
 set -euo pipefail
-APP="$1"; RUN="$2"; SECS="${3:-75}"
+APP="$1"; RUN="$2"; SECS="${3:-75}"; SEED="${4:-}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 rm -rf "$RUN"; mkdir -p "$RUN/home/.config" "$RUN/home/.cache" "$RUN/home/.local/share" "$RUN/userdata"
 BIN="$APP/vidbee"
+if [ -n "$SEED" ]; then cp -a "$SEED/." "$RUN/userdata/"; fi
 test -x "$BIN"
 printf 'nameserver 127.0.0.1\noptions timeout:1 attempts:1\n' > "$RUN/resolv.conf"
 sed -E 's/^hosts:.*/hosts: files dns/' /etc/nsswitch.conf > "$RUN/nsswitch.conf"
