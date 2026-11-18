@@ -34,7 +34,11 @@ socket.addEventListener('message', (event) => {
   }
   if (message.method === 'Runtime.exceptionThrown') {
     const details = message.params.exceptionDetails
-    problems.push({ route: currentRoute, kind: 'exception', text: details.exception?.description ?? details.text })
+    problems.push({
+      route: currentRoute,
+      kind: 'exception',
+      text: details.exception?.description ?? details.text
+    })
   }
   if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
     const text = message.params.args.map((arg) => arg.value ?? arg.description ?? '').join(' ')
