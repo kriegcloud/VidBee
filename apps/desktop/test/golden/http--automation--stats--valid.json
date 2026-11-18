@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "body": {
+    "total": 10,
+    "byStatus": {
+      "queued": 0,
+      "running": 0,
+      "processing": 0,
+      "paused": 0,
+      "retry-scheduled": 1,
+      "completed": 3,
+      "failed": 4,
+      "cancelled": 2
+    },
+    "running": 0,
+    "queued": 0,
+    "capacity": 5,
+    "perGroup": {
+      "example.invalid": 9,
+      "unknown": 1
+    }
+  }
+}

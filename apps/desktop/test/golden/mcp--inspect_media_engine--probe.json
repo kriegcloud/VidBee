@@ -1,0 +1,56 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "taskId": "golden-completed",
+              "media": {
+                "streams": [
+                  {
+                    "index": 0,
+                    "codec_name": "pcm_s16le",
+                    "codec_type": "audio",
+                    "sample_rate": "16000",
+                    "channels": 1,
+                    "duration": "3.750000"
+                  }
+                ],
+                "format": {
+                  "format_name": "wav",
+                  "duration": "3.750000",
+                  "size": "120044"
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "taskId": "golden-completed",
+        "media": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "pcm_s16le",
+              "codec_type": "audio",
+              "sample_rate": "16000",
+              "channels": 1,
+              "duration": "3.750000"
+            }
+          ],
+          "format": {
+            "format_name": "wav",
+            "duration": "3.750000",
+            "size": "120044"
+          }
+        }
+      }
+    }
+  }
+}

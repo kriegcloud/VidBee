@@ -1,0 +1,20 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": [
+            {
+              "code": "custom",
+              "path": ["url"],
+              "message": "Provide an HTTP(S) URL without embedded credentials"
+            }
+          ]
+        }
+      }
+    ],
+    "isError": true
+  }
+}

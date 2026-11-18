@@ -1,0 +1,17 @@
+{
+  "status": 200,
+  "body": {
+    "items": [
+      {
+        "id": "golden-item-1",
+        "url": "https://www.youtube.com/watch?v=golden00001",
+        "title": "River morning",
+        "publishedAt": 1735689590000,
+        "addedToQueue": true,
+        "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+        "taskId": "golden-completed"
+      }
+    ],
+    "total": 3
+  }
+}

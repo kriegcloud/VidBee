@@ -1,0 +1,40 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "downloadId": "golden-completed",
+              "promptId": "golden-summary",
+              "status": "completed",
+              "thinkingMs": 120,
+              "error": null,
+              "errorCode": null,
+              "updatedAt": 1735689600000,
+              "text": "The team recorded a river and planned a sunset visit.",
+              "totalCharacters": 53,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "downloadId": "golden-completed",
+        "promptId": "golden-summary",
+        "status": "completed",
+        "thinkingMs": 120,
+        "error": null,
+        "errorCode": null,
+        "updatedAt": 1735689600000,
+        "text": "The team recorded a river and planned a sunset visit.",
+        "totalCharacters": 53,
+        "nextOffset": null
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs'
 
 const [configPath, command, tool, rawArguments] = process.argv.slice(2)
 const config = JSON.parse(readFileSync(configPath, 'utf8'))
+let protocolVersion
 let sessionId
 let nextId = 0
 
@@ -31,6 +32,9 @@ const rpc = async (method, params, notification = false) => {
     authorization: `Bearer ${config.token}`,
     'content-type': 'application/json'
   }
+  if (protocolVersion) {
+    headers['MCP-Protocol-Version'] = protocolVersion
+  }
   if (sessionId) {
     headers['mcp-session-id'] = sessionId
   }
@@ -42,11 +46,12 @@ const rpc = async (method, params, notification = false) => {
   return { status: response.status, message: await parseBody(response) }
 }
 
-await rpc('initialize', {
+const initialized = await rpc('initialize', {
   protocolVersion: '2025-06-18',
   capabilities: {},
   clientInfo: { name: 'vidbee-port-harness', version: '1' }
 })
+protocolVersion = initialized.message.result.protocolVersion
 await rpc('notifications/initialized', {}, true)
 const result =
   command === 'list'

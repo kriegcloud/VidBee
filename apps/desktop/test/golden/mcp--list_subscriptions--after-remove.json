@@ -1,0 +1,26 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "subscriptions": [],
+              "total": 0,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "subscriptions": [],
+        "total": 0,
+        "nextOffset": null
+      }
+    }
+  }
+}

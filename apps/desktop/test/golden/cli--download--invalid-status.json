@@ -1,0 +1,9 @@
+{
+  "code": 2,
+  "stdout": {
+    "ok": false,
+    "code": "UNKNOWN_ERROR",
+    "message": "unknown status: unknown"
+  },
+  "stderr": null
+}

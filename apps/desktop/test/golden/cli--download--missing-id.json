@@ -1,0 +1,9 @@
+{
+  "code": 2,
+  "stdout": {
+    "ok": false,
+    "code": "PARSE_ERROR",
+    "message": "missing id; usage: :download status <id>"
+  },
+  "stderr": null
+}

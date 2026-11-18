@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Task cannot be paused in its current state"
+      }
+    ],
+    "isError": true
+  }
+}

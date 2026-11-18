@@ -1,0 +1,50 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "id": "golden-thread",
+                  "downloadId": "golden-completed",
+                  "promptId": "golden-summary",
+                  "title": "Field notes summary",
+                  "updatedAt": 1735689600000,
+                  "running": false,
+                  "approvalPending": false,
+                  "status": "completed",
+                  "model": "golden-offline-model"
+                }
+              ],
+              "total": 1,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "id": "golden-thread",
+            "downloadId": "golden-completed",
+            "promptId": "golden-summary",
+            "title": "Field notes summary",
+            "updatedAt": 1735689600000,
+            "running": false,
+            "approvalPending": false,
+            "status": "completed",
+            "model": "golden-offline-model"
+          }
+        ],
+        "total": 1,
+        "nextOffset": null
+      }
+    }
+  }
+}

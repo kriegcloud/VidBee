@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "body": {
+    "token": "<token>",
+    "expiresAt": "<timestamp>",
+    "ttlMs": 3600000,
+    "schemaVersion": "1.0.0"
+  }
+}

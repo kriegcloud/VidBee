@@ -1,0 +1,32 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "updated": ["theme", "oneClickDownloadType", "subtitleLanguages"],
+              "settings": {
+                "theme": "dark",
+                "oneClickDownloadType": "audio",
+                "subtitleLanguages": ["en", "fr"]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "updated": ["theme", "oneClickDownloadType", "subtitleLanguages"],
+        "settings": {
+          "theme": "dark",
+          "oneClickDownloadType": "audio",
+          "subtitleLanguages": ["en", "fr"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "valid": false,
+              "error": "fetch failed",
+              "downloadsTested": false
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "valid": false,
+        "error": "fetch failed",
+        "downloadsTested": false
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Choose a completed task with an existing local media file"
+      }
+    ],
+    "isError": true
+  }
+}

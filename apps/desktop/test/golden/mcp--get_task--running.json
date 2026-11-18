@@ -1,0 +1,90 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-running",
+              "kind": "video",
+              "parentId": null,
+              "title": "Golden running field notes",
+              "url": "https://example.invalid/media/golden-running",
+              "status": "failed",
+              "progress": {
+                "percent": 0.25,
+                "bytesDownloaded": 800,
+                "bytesTotal": 120044,
+                "speedBps": null,
+                "etaMs": null,
+                "ticks": 4
+              },
+              "attempt": 1,
+              "maxAttempts": 0,
+              "nextRetryAt": null,
+              "error": {
+                "category": "unknown",
+                "exitCode": null,
+                "rawMessage": "ERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+                "uiMessageKey": "task.error.unknown",
+                "uiActionHints": ["retry", "report-bug"],
+                "retryable": true,
+                "suggestedRetryAfterMs": null
+              },
+              "filename": null,
+              "log": "[generic] Extracting URL: https://example.invalid/media/golden-running\n[generic] golden-running: Downloading webpage\n\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+              "automaticRetry": false,
+              "children": [],
+              "childrenNextCursor": null,
+              "groupKey": "example.invalid",
+              "createdAt": 1735689600005,
+              "updatedAt": "<timestamp>",
+              "output": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-running",
+        "kind": "video",
+        "parentId": null,
+        "title": "Golden running field notes",
+        "url": "https://example.invalid/media/golden-running",
+        "status": "failed",
+        "progress": {
+          "percent": 0.25,
+          "bytesDownloaded": 800,
+          "bytesTotal": 120044,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 4
+        },
+        "attempt": 1,
+        "maxAttempts": 0,
+        "nextRetryAt": null,
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "ERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+          "uiMessageKey": "task.error.unknown",
+          "uiActionHints": ["retry", "report-bug"],
+          "retryable": true,
+          "suggestedRetryAfterMs": null
+        },
+        "filename": null,
+        "log": "[generic] Extracting URL: https://example.invalid/media/golden-running\n[generic] golden-running: Downloading webpage\n\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+        "automaticRetry": false,
+        "children": [],
+        "childrenNextCursor": null,
+        "groupKey": "example.invalid",
+        "createdAt": 1735689600005,
+        "updatedAt": "<timestamp>",
+        "output": null
+      }
+    }
+  }
+}

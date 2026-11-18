@@ -1,0 +1,19 @@
+{
+  "status": 200,
+  "body": {
+    "ok": true,
+    "capabilities": {
+      "extensionSecurity": 1,
+      "extensionCookies": 1,
+      "extensionOverview": 1,
+      "extensionChat": 1,
+      "extensionChatSidebar": 1,
+      "extensionTranscript": 1
+    },
+    "extension": {
+      "connected": true,
+      "browser": "chrome",
+      "lastSeenAt": "<timestamp>"
+    }
+  }
+}

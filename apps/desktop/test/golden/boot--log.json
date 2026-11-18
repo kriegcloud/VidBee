@@ -1,0 +1,25 @@
+{
+  "lines": [
+    {
+      "line": "database initialized at",
+      "present": true
+    },
+    {
+      "line": "ffmpeg initialized successfully",
+      "present": true
+    },
+    {
+      "line": "Extension API listening on",
+      "present": true
+    },
+    {
+      "line": "Automation descriptor written at",
+      "present": true
+    },
+    {
+      "line": "Desktop MCP available at",
+      "present": true
+    }
+  ],
+  "errors": []
+}

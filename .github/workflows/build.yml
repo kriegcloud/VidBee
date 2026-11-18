@@ -50,6 +50,16 @@ jobs:
       - name: Verify packaged sherpa natives
         run: node apps/desktop/scripts/check-packaged-sherpa.cjs linux
 
+      # Ubuntu 24.04 AppArmor restricts the unprivileged user namespaces needed
+      # by unshare -rmn. The golden app runs with loopback-only networking.
+      - name: Enable user namespaces for offline golden tests
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Compare packaged app offline goldens
+        run: |
+          bun run --cwd apps/cli build
+          bun run test:golden --scratch "$RUNNER_TEMP/vidbee-goldens"
+
       - name: Upload build artifacts
         if: inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4

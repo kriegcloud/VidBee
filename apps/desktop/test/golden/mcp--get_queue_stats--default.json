@@ -1,0 +1,54 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "total": 9,
+              "byStatus": {
+                "queued": 0,
+                "running": 0,
+                "processing": 0,
+                "paused": 1,
+                "retry-scheduled": 1,
+                "completed": 2,
+                "failed": 4,
+                "cancelled": 1
+              },
+              "running": 0,
+              "queued": 0,
+              "capacity": 5,
+              "perGroup": {
+                "example.invalid": 9
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "total": 9,
+        "byStatus": {
+          "queued": 0,
+          "running": 0,
+          "processing": 0,
+          "paused": 1,
+          "retry-scheduled": 1,
+          "completed": 2,
+          "failed": 4,
+          "cancelled": 1
+        },
+        "running": 0,
+        "queued": 0,
+        "capacity": 5,
+        "perGroup": {
+          "example.invalid": 9
+        }
+      }
+    }
+  }
+}

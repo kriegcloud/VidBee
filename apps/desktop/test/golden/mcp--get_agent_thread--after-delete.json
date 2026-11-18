@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Agent thread not found: <id:1>"
+      }
+    ],
+    "isError": true
+  }
+}

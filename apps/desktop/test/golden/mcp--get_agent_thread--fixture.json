@@ -1,0 +1,128 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-thread",
+              "downloadId": "golden-completed",
+              "promptId": "golden-summary",
+              "title": "Field notes summary",
+              "updatedAt": 1735689600000,
+              "running": false,
+              "approvalPending": false,
+              "status": "completed",
+              "model": "golden-offline-model",
+              "seq": 1,
+              "leafId": "golden-message-assistant",
+              "runs": [
+                {
+                  "id": "golden-agent-run",
+                  "messageId": "golden-message-assistant",
+                  "status": "completed",
+                  "error": null,
+                  "model": "golden-offline-model",
+                  "createdAt": 1735689600000,
+                  "updatedAt": 1735689600000,
+                  "tools": [],
+                  "usage": {
+                    "input": 40,
+                    "output": 20,
+                    "totalTokens": 60
+                  }
+                }
+              ],
+              "artifacts": [],
+              "images": [],
+              "items": [
+                {
+                  "id": "golden-message-user",
+                  "parentId": null,
+                  "runId": null,
+                  "role": "user",
+                  "text": "Summarize these field notes.",
+                  "createdAt": 1735689600000,
+                  "textLength": 28,
+                  "truncated": false
+                },
+                {
+                  "id": "golden-message-assistant",
+                  "parentId": "golden-message-user",
+                  "runId": "golden-agent-run",
+                  "role": "assistant",
+                  "text": "The recording describes a clear river and a planned sunset visit.",
+                  "createdAt": 1735689600000,
+                  "textLength": 65,
+                  "truncated": false
+                }
+              ],
+              "total": 2,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-thread",
+        "downloadId": "golden-completed",
+        "promptId": "golden-summary",
+        "title": "Field notes summary",
+        "updatedAt": 1735689600000,
+        "running": false,
+        "approvalPending": false,
+        "status": "completed",
+        "model": "golden-offline-model",
+        "seq": 1,
+        "leafId": "golden-message-assistant",
+        "runs": [
+          {
+            "id": "golden-agent-run",
+            "messageId": "golden-message-assistant",
+            "status": "completed",
+            "error": null,
+            "model": "golden-offline-model",
+            "createdAt": 1735689600000,
+            "updatedAt": 1735689600000,
+            "tools": [],
+            "usage": {
+              "input": 40,
+              "output": 20,
+              "totalTokens": 60
+            }
+          }
+        ],
+        "artifacts": [],
+        "images": [],
+        "items": [
+          {
+            "id": "golden-message-user",
+            "parentId": null,
+            "runId": null,
+            "role": "user",
+            "text": "Summarize these field notes.",
+            "createdAt": 1735689600000,
+            "textLength": 28,
+            "truncated": false
+          },
+          {
+            "id": "golden-message-assistant",
+            "parentId": "golden-message-user",
+            "runId": "golden-agent-run",
+            "role": "assistant",
+            "text": "The recording describes a clear river and a planned sunset visit.",
+            "createdAt": 1735689600000,
+            "textLength": 65,
+            "truncated": false
+          }
+        ],
+        "total": 2,
+        "nextOffset": null
+      }
+    }
+  }
+}

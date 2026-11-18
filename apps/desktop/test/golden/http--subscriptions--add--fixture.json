@@ -1,0 +1,6 @@
+{
+  "status": 500,
+  "body": {
+    "error": "Cannot read properties of undefined (reading 'trim')"
+  }
+}

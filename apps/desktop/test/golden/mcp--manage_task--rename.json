@@ -1,0 +1,48 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "task": {
+                "id": "golden-completed",
+                "kind": "video",
+                "parentId": null,
+                "title": "Golden renamed media",
+                "url": "https://example.invalid/media/golden-completed",
+                "status": "completed",
+                "progress": 1,
+                "attempt": 0,
+                "maxAttempts": 0,
+                "nextRetryAt": null,
+                "error": null,
+                "filename": "Golden field recording.wav"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "task": {
+          "id": "golden-completed",
+          "kind": "video",
+          "parentId": null,
+          "title": "Golden renamed media",
+          "url": "https://example.invalid/media/golden-completed",
+          "status": "completed",
+          "progress": 1,
+          "attempt": 0,
+          "maxAttempts": 0,
+          "nextRetryAt": null,
+          "error": null,
+          "filename": "Golden field recording.wav"
+        }
+      }
+    }
+  }
+}

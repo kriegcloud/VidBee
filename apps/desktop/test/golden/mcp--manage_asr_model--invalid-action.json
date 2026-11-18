@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": [
+            {
+              "code": "invalid_value",
+              "values": ["status", "download", "select", "delete"],
+              "path": ["action"],
+              "message": "Invalid option: expected one of \"status\"|\"download\"|\"select\"|\"delete\""
+            }
+          ]
+        }
+      }
+    ],
+    "isError": true
+  }
+}

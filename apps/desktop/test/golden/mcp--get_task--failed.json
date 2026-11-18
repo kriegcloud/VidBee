@@ -1,0 +1,90 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-failed",
+              "kind": "video",
+              "parentId": null,
+              "title": "Golden failed field notes",
+              "url": "https://example.invalid/media/golden-failed",
+              "status": "failed",
+              "progress": {
+                "percent": 0.25,
+                "bytesDownloaded": 800,
+                "bytesTotal": 120044,
+                "speedBps": null,
+                "etaMs": null,
+                "ticks": 4
+              },
+              "attempt": 1,
+              "maxAttempts": 0,
+              "nextRetryAt": null,
+              "error": {
+                "category": "not-found",
+                "exitCode": 1,
+                "rawMessage": "Synthetic media is unavailable.",
+                "uiMessageKey": "download.error.notFound",
+                "uiActionHints": [],
+                "retryable": false,
+                "suggestedRetryAfterMs": null
+              },
+              "filename": null,
+              "log": null,
+              "automaticRetry": false,
+              "children": [],
+              "childrenNextCursor": null,
+              "groupKey": "example.invalid",
+              "createdAt": 1735689600002,
+              "updatedAt": 1735689600002,
+              "output": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-failed",
+        "kind": "video",
+        "parentId": null,
+        "title": "Golden failed field notes",
+        "url": "https://example.invalid/media/golden-failed",
+        "status": "failed",
+        "progress": {
+          "percent": 0.25,
+          "bytesDownloaded": 800,
+          "bytesTotal": 120044,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 4
+        },
+        "attempt": 1,
+        "maxAttempts": 0,
+        "nextRetryAt": null,
+        "error": {
+          "category": "not-found",
+          "exitCode": 1,
+          "rawMessage": "Synthetic media is unavailable.",
+          "uiMessageKey": "download.error.notFound",
+          "uiActionHints": [],
+          "retryable": false,
+          "suggestedRetryAfterMs": null
+        },
+        "filename": null,
+        "log": null,
+        "automaticRetry": false,
+        "children": [],
+        "childrenNextCursor": null,
+        "groupKey": "example.invalid",
+        "createdAt": 1735689600002,
+        "updatedAt": 1735689600002,
+        "output": null
+      }
+    }
+  }
+}

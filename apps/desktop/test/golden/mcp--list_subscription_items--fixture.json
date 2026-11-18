@@ -1,0 +1,76 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "id": "golden-item-1",
+                  "url": "https://www.youtube.com/watch?v=golden00001",
+                  "title": "River morning",
+                  "publishedAt": 1735689590000,
+                  "addedToQueue": true,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+                  "taskId": "golden-completed"
+                },
+                {
+                  "id": "golden-item-2",
+                  "url": "https://www.youtube.com/watch?v=golden00002",
+                  "title": "Mountain afternoon",
+                  "publishedAt": 1735689580000,
+                  "addedToQueue": false,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+                },
+                {
+                  "id": "golden-item-3",
+                  "url": "https://www.youtube.com/watch?v=golden00003",
+                  "title": "Forest evening",
+                  "publishedAt": 1735689570000,
+                  "addedToQueue": false,
+                  "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+                }
+              ],
+              "total": 3
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "id": "golden-item-1",
+            "url": "https://www.youtube.com/watch?v=golden00001",
+            "title": "River morning",
+            "publishedAt": 1735689590000,
+            "addedToQueue": true,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "taskId": "golden-completed"
+          },
+          {
+            "id": "golden-item-2",
+            "url": "https://www.youtube.com/watch?v=golden00002",
+            "title": "Mountain afternoon",
+            "publishedAt": 1735689580000,
+            "addedToQueue": false,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+          },
+          {
+            "id": "golden-item-3",
+            "url": "https://www.youtube.com/watch?v=golden00003",
+            "title": "Forest evening",
+            "publishedAt": 1735689570000,
+            "addedToQueue": false,
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png"
+          }
+        ],
+        "total": 3
+      }
+    }
+  }
+}

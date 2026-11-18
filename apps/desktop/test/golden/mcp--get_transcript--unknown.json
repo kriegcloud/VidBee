@@ -1,0 +1,64 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "asrTier": "minimal",
+              "downloadTaskId": "golden-unknown",
+              "error": null,
+              "listState": "none",
+              "rediarize": false,
+              "sourceFilePath": null,
+              "sourceKind": null,
+              "speakerCount": "auto",
+              "stage": null,
+              "stageHistory": [],
+              "title": null,
+              "transcriptId": null,
+              "transcriptionTaskId": null,
+              "updatedAt": 0,
+              "sources": [],
+              "segmentCount": 0,
+              "language": null,
+              "resultKind": null,
+              "speakers": [],
+              "items": [],
+              "total": 0,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "asrTier": "minimal",
+        "downloadTaskId": "golden-unknown",
+        "error": null,
+        "listState": "none",
+        "rediarize": false,
+        "sourceFilePath": null,
+        "sourceKind": null,
+        "speakerCount": "auto",
+        "stage": null,
+        "stageHistory": [],
+        "title": null,
+        "transcriptId": null,
+        "transcriptionTaskId": null,
+        "updatedAt": 0,
+        "sources": [],
+        "segmentCount": 0,
+        "language": null,
+        "resultKind": null,
+        "speakers": [],
+        "items": [],
+        "total": 0,
+        "nextOffset": null
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "No transcript is available. Start transcription and wait for completion, or select an available caption source."
+      }
+    ],
+    "isError": true
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "status": 200,
+  "body": {
+    "tasks": [
+      {
+        "task": {
+          "id": "golden-audio",
+          "kind": "audio",
+          "parentId": null,
+          "input": {
+            "url": "https://example.invalid/media/audio",
+            "kind": "audio",
+            "title": "Golden audio archive",
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "options": {
+              "type": "audio",
+              "title": "Golden audio archive",
+              "description": "An invented recording for deterministic offline tests.",
+              "channel": "Synthetic Observatory",
+              "uploader": "Fixture narrator",
+              "viewCount": 1234,
+              "tags": ["field-notes", "synthetic"],
+              "duration": 3.75,
+              "customDownloadPath": "<run>/userdata/golden-media",
+              "fileSize": 120044,
+              "completedAt": 1735689600000,
+              "startedAt": 1735689595000
+            }
+          },
+          "priority": 10,
+          "groupKey": "example.invalid",
+          "status": "completed",
+          "prevStatus": null,
+          "statusReason": null,
+          "enteredStatusAt": 1735689600000,
+          "attempt": 0,
+          "maxAttempts": 0,
+          "nextRetryAt": null,
+          "progress": {
+            "percent": 1,
+            "bytesDownloaded": 800,
+            "bytesTotal": 120044,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 4
+          },
+          "output": {
+            "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+            "size": 120044,
+            "durationMs": 3750,
+            "sha256": null,
+            "formatId": "synthetic-wav",
+            "subtitleStatus": "downloaded",
+            "subtitleLanguages": ["en"]
+          },
+          "lastError": null,
+          "pid": null,
+          "pidStartedAt": null,
+          "createdAt": 1735689599000,
+          "updatedAt": "<timestamp>"
+        },
+        "projection": {
+          "id": "golden-audio",
+          "url": "https://example.invalid/media/audio",
+          "title": "Golden audio archive",
+          "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+          "type": "audio",
+          "status": "completed",
+          "internalStatus": "completed",
+          "statusReason": null,
+          "createdAt": 1735689599000,
+          "description": "An invented recording for deterministic offline tests.",
+          "channel": "Synthetic Observatory",
+          "uploader": "Fixture narrator",
+          "viewCount": 1234,
+          "tags": ["field-notes", "synthetic"],
+          "duration": 4,
+          "fileSize": 120044,
+          "startedAt": 1735689595000,
+          "completedAt": 1735689600000,
+          "downloadPath": "<run>/userdata/golden-media/Golden field recording",
+          "attempt": 0,
+          "maxAttempts": 0,
+          "progress": {
+            "percent": 100,
+            "indeterminate": false,
+            "downloaded": "800B",
+            "total": "117.23KB"
+          },
+          "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+          "savedFileName": "Golden field recording.wav",
+          "resolvedFormatId": "synthetic-wav",
+          "subtitleStatus": "downloaded",
+          "subtitleLanguages": ["en"]
+        }
+      },
+      {
+        "task": {
+          "id": "golden-completed",
+          "kind": "video",
+          "parentId": null,
+          "input": {
+            "url": "https://example.invalid/media/golden-completed",
+            "kind": "video",
+            "title": "Golden renamed media",
+            "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+            "options": {
+              "type": "video",
+              "title": "Golden completed field notes",
+              "description": "An invented recording for deterministic offline tests.",
+              "channel": "Synthetic Observatory",
+              "uploader": "Fixture narrator",
+              "viewCount": 1234,
+              "tags": ["field-notes", "synthetic"],
+              "duration": 3.75,
+              "customDownloadPath": "<run>/userdata/golden-media",
+              "fileSize": 120044,
+              "completedAt": 1735689600000,
+              "startedAt": 1735689595000
+            }
+          },
+          "priority": 10,
+          "groupKey": "example.invalid",
+          "status": "completed",
+          "prevStatus": null,
+          "statusReason": null,
+          "enteredStatusAt": 1735689600000,
+          "attempt": 0,
+          "maxAttempts": 0,
+          "nextRetryAt": null,
+          "progress": {
+            "percent": 1,
+            "bytesDownloaded": 800,
+            "bytesTotal": 120044,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 4
+          },
+          "output": {
+            "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+            "size": 120044,
+            "durationMs": 3750,
+            "sha256": null,
+            "formatId": "synthetic-wav",
+            "subtitleStatus": "downloaded",
+            "subtitleLanguages": ["en"]
+          },
+          "lastError": null,
+          "pid": null,
+          "pidStartedAt": null,
+          "createdAt": 1735689600000,
+          "updatedAt": "<timestamp>"
+        },
+        "projection": {
+          "id": "golden-completed",
+          "url": "https://example.invalid/media/golden-completed",
+          "title": "Golden renamed media",
+          "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+          "type": "video",
+          "status": "completed",
+          "internalStatus": "completed",
+          "statusReason": null,
+          "createdAt": 1735689600000,
+          "description": "An invented recording for deterministic offline tests.",
+          "channel": "Synthetic Observatory",
+          "uploader": "Fixture narrator",
+          "viewCount": 1234,
+          "tags": ["field-notes", "synthetic"],
+          "duration": 4,
+          "fileSize": 120044,
+          "startedAt": 1735689595000,
+          "completedAt": 1735689600000,
+          "downloadPath": "<run>/userdata/golden-media/Golden field recording",
+          "attempt": 0,
+          "maxAttempts": 0,
+          "progress": {
+            "percent": 100,
+            "indeterminate": false,
+            "downloaded": "800B",
+            "total": "117.23KB"
+          },
+          "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+          "savedFileName": "Golden field recording.wav",
+          "resolvedFormatId": "synthetic-wav",
+          "subtitleStatus": "downloaded",
+          "subtitleLanguages": ["en"]
+        }
+      }
+    ],
+    "nextCursor": "golden-completed"
+  }
+}

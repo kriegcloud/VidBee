@@ -1,0 +1,52 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "items": [
+                {
+                  "kind": "agent_reply",
+                  "title": "Field notes summary",
+                  "selector": {
+                    "threadId": "golden-thread",
+                    "messageId": "golden-message-assistant"
+                  },
+                  "status": "completed",
+                  "characters": 65,
+                  "updatedAt": 1735689600000,
+                  "formats": ["md", "pdf", "png"]
+                }
+              ],
+              "total": 2,
+              "nextOffset": null
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "items": [
+          {
+            "kind": "agent_reply",
+            "title": "Field notes summary",
+            "selector": {
+              "threadId": "golden-thread",
+              "messageId": "golden-message-assistant"
+            },
+            "status": "completed",
+            "characters": 65,
+            "updatedAt": 1735689600000,
+            "formats": ["md", "pdf", "png"]
+          }
+        ],
+        "total": 2,
+        "nextOffset": null
+      }
+    }
+  }
+}

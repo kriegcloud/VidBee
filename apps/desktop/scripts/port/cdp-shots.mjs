@@ -11,15 +11,35 @@ if (!outDir) {
 }
 mkdirSync(outDir, { recursive: true })
 const routes = ['#/', '#/subscriptions', '#/chat', '#/settings', '#/about']
-const targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json()
+const targets = await (
+  await fetch(`http://127.0.0.1:${port}/json`, { signal: AbortSignal.timeout(15_000) })
+).json()
 const page = targets.find((target) => target.type === 'page' && !target.url.startsWith('devtools'))
 if (!page) {
   throw new Error('no page target')
 }
 const socket = new WebSocket(page.webSocketDebuggerUrl)
 await new Promise((resolve, reject) => {
-  socket.addEventListener('open', resolve)
-  socket.addEventListener('error', reject)
+  const timer = setTimeout(() => {
+    reject(new Error('CDP socket open timed out'))
+    socket.close()
+  }, 15_000)
+  socket.addEventListener(
+    'open',
+    () => {
+      clearTimeout(timer)
+      resolve()
+    },
+    { once: true }
+  )
+  socket.addEventListener(
+    'error',
+    (error) => {
+      clearTimeout(timer)
+      reject(error)
+    },
+    { once: true }
+  )
 })
 let nextId = 0
 const pending = new Map()
@@ -28,7 +48,13 @@ let currentRoute = 'boot'
 socket.addEventListener('message', (event) => {
   const message = JSON.parse(event.data)
   if (message.id !== undefined) {
-    pending.get(message.id)?.(message)
+    const command = pending.get(message.id)
+    clearTimeout(command?.timer)
+    if (message.error) {
+      command?.reject(new Error(`CDP ${command.method}: ${JSON.stringify(message.error)}`))
+    } else {
+      command?.resolve(message)
+    }
     pending.delete(message.id)
     return
   }
@@ -45,11 +71,23 @@ socket.addEventListener('message', (event) => {
     problems.push({ route: currentRoute, kind: 'console.error', text })
   }
 })
+socket.addEventListener('close', () => {
+  for (const command of pending.values()) {
+    clearTimeout(command.timer)
+    command.reject(new Error(`CDP ${command.method}: socket closed`))
+  }
+  pending.clear()
+})
 const send = (method, params = {}) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     nextId += 1
-    pending.set(nextId, resolve)
-    socket.send(JSON.stringify({ id: nextId, method, params }))
+    const id = nextId
+    const timer = setTimeout(() => {
+      pending.delete(id)
+      reject(new Error(`CDP ${method}: command timed out`))
+    }, 15_000)
+    pending.set(id, { resolve, reject, method, timer })
+    socket.send(JSON.stringify({ id, method, params }))
   })
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 await send('Runtime.enable')
@@ -65,9 +103,10 @@ for (const route of routes) {
   })
   const shot = await send('Page.captureScreenshot', { format: 'png' })
   const name = route === '#/' ? 'home' : route.slice(2)
-  if (shot.result?.data) {
-    writeFileSync(join(outDir, `${name}.png`), Buffer.from(shot.result.data, 'base64'))
+  if (!shot.result?.data) {
+    throw new Error(`CDP screenshot missing for ${route}`)
   }
+  writeFileSync(join(outDir, `${name}.png`), Buffer.from(shot.result.data, 'base64'))
   summary.push({ route, text: text.result?.result?.value ?? '' })
 }
 writeFileSync(join(outDir, 'summary.json'), JSON.stringify({ summary, problems }, null, 2))

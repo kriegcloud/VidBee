@@ -1,0 +1,34 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": {
+          "$jsonText": {
+            "result": {
+              "id": "golden-message-assistant",
+              "role": "assistant",
+              "text": "The recording describes a clear river and a planned sunset visit.",
+              "totalCharacters": 65,
+              "nextOffset": null,
+              "thinking": "The river observation and sunset plan are the two main details.",
+              "thinkingCharacters": 63
+            }
+          }
+        }
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "id": "golden-message-assistant",
+        "role": "assistant",
+        "text": "The recording describes a clear river and a planned sunset visit.",
+        "totalCharacters": 65,
+        "nextOffset": null,
+        "thinking": "The river observation and sunset plan are the two main details.",
+        "thinkingCharacters": 63
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "status": 200,
+  "body": {
+    "models": [
+      {
+        "value": "cloud",
+        "label": "VidBee Cloud"
+      }
+    ],
+    "selected": "cloud",
+    "thinking": {
+      "levels": ["off", "minimal", "low", "medium", "high", "xhigh", "max"],
+      "defaultLevel": "low",
+      "vision": false
+    }
+  }
+}

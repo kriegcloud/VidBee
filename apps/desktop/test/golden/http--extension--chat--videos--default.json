@@ -1,0 +1,42 @@
+{
+  "status": 200,
+  "body": {
+    "result": {
+      "videos": [
+        {
+          "id": "golden-completed",
+          "title": "Golden renamed media"
+        },
+        {
+          "id": "golden-paused",
+          "title": "Golden paused field notes"
+        },
+        {
+          "id": "golden-failed",
+          "title": "Golden failed field notes"
+        },
+        {
+          "id": "golden-cancelled",
+          "title": "Golden cancelled field notes"
+        },
+        {
+          "id": "golden-queued",
+          "title": "Golden queued field notes"
+        },
+        {
+          "id": "golden-running",
+          "title": "Golden running field notes"
+        },
+        {
+          "id": "golden-processing",
+          "title": "Golden processing field notes"
+        },
+        {
+          "id": "golden-retry",
+          "title": "Golden retry-scheduled field notes"
+        }
+      ],
+      "nextCursor": null
+    }
+  }
+}

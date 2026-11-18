@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Media task not found: golden-unknown"
+      }
+    ],
+    "isError": true
+  }
+}
