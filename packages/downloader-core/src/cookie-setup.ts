@@ -244,6 +244,29 @@ export const isBrowserCookieReadSupported = (platform: string, browser: string):
 export const isCookieBrowserId = (value: string): value is CookieBrowserId =>
   (COOKIE_BROWSER_IDS as readonly string[]).includes(value)
 
+const COOKIE_BROWSER_LABELS: Record<CookieBrowserId, string> = {
+  chrome: 'Chrome',
+  chromium: 'Chromium',
+  firefox: 'Firefox',
+  edge: 'Edge',
+  safari: 'Safari',
+  brave: 'Brave',
+  opera: 'Opera',
+  vivaldi: 'Vivaldi',
+  whale: 'Whale'
+}
+
+/**
+ * Display name of the browser a `browserForCookies` setting reads, such as
+ * `Brave` for `brave+kwallet:/path/Default`; undefined when none is set.
+ *
+ * @param browserForCookies Raw `browserForCookies` setting.
+ */
+export const cookieBrowserLabel = (browserForCookies: string | undefined): string | undefined => {
+  const id = browserForCookies?.trim().split(/[+:]/, 1)[0]?.toLowerCase() ?? ''
+  return isCookieBrowserId(id) ? COOKIE_BROWSER_LABELS[id] : undefined
+}
+
 /**
  * Browsers the settings picker should offer for `--cookies-from-browser`.
  *

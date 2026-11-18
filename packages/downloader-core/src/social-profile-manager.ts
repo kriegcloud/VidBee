@@ -155,7 +155,7 @@ export class SocialProfileManager {
     signal: AbortSignal,
     onItem: (item: SocialMappedItem) => void,
     options: ProfileMapOptions
-  ): Promise<{ complete: boolean; error?: string }> {
+  ): Promise<{ complete: boolean; error?: string; authRequired?: boolean }> {
     if (platform === 'facebook') {
       return mapFacebookProfile(
         url,
@@ -290,7 +290,7 @@ export class SocialProfileManager {
       .then((result) => {
         mapped.state = result.complete
           ? 'complete'
-          : result.error?.includes('AuthRequired')
+          : result.authRequired || result.error?.includes('AuthRequired')
             ? 'auth-required'
             : 'partial'
         mapped.error = result.error

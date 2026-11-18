@@ -145,7 +145,8 @@ const checkSocial = async (
       continue
     }
     if (mapped.state !== 'complete') {
-      const error = classifyMapError(mapped.error)
+      const error =
+        mapped.state === 'auth-required' ? 'auth-required' : classifyMapError(mapped.error)
       result.categoryErrors[category] = error
       result.error ??= mapped.error ?? `${category} mapping did not finish`
       if (error === 'rate-limited') {
