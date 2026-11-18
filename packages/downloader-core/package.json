@@ -43,7 +43,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orpc/contract": "catalog:",
     "@vidbee/task-queue": "workspace:^",
     "yt-dlp-wrap-plus": "catalog:",
     "zod": "catalog:"

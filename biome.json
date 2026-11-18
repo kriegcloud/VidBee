@@ -86,7 +86,6 @@
       "**/*.js",
       "**/*.jsx",
       "**/*.json",
-      "!apps/docs",
       "!apps/desktop/build",
       "!apps/desktop/dist",
       "!apps/desktop/out",

@@ -20,8 +20,6 @@ export {
 } from './classifier'
 export type { OutputCompleteCheck } from './complete'
 export { isOutputComplete } from './complete'
-export type { TaskQueueContract } from './contract'
-export { taskQueueContract } from './contract'
 export { downloadIdentity } from './download-identity'
 export type {
   ErrorClassifiedEvent,

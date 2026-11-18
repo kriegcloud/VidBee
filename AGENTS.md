@@ -5,7 +5,7 @@
 5. Follow the ✅ KISS (Keep It Simple, Stupid) & ✅ YAGNI (You Aren't Gonna Need It) principles
 6. Use Conventional Commits format for commit messages: `type(scope): subject`. Common types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert. PR titles should also follow this format.
 7. If there is an error when running `bun run check:i18n`, please complete the missing corresponding translation files and fields. Ensure the translation is done into the corresponding language, rather than directly copying the English version.
-8. The UI/UX of the web and desktop versions in apps must be consistent, with the only difference being the platform. Try to share the UI and schema as much as possible
+8. Desktop, the CLI and the browser extension are the only apps. Share UI and schemas through `packages/` where possible
 
 # Ultracite Code Standards
 

@@ -1,10 +1,6 @@
 node_modules
 /dist
 apps/desktop/dist
-apps/web/dist
-apps/docs/dist
-apps/api/dist
-apps/api/.data/
 out
 .conductor/
 .wxt
