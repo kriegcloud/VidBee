@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -15,7 +16,7 @@ test('a Threads media tab maps carousels to one item per post', async (t) => {
   // separate URL events sharing an id.
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const url = (meta) => console.log(JSON.stringify([3, 'https://scontent.cdninstagram.com/signed.jpg', meta]));
 url({ id: '3271', shortcode: 'DAbCdEf', username: 'benoppold', num: 1, extension: 'jpg' });
 url({ id: '3271', shortcode: 'DAbCdEf', username: 'benoppold', num: 2, extension: 'webp' });

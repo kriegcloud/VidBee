@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -28,7 +29,7 @@ test('a VSCO gallery maps to its own post pages', async (t) => {
   // gallery-dl writes `[messageType, url, metadata]`; 3 is a URL event.
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const url = (meta) => console.log(JSON.stringify([3, 'https://image.vsco.co/signed/asset.jpg', meta]));
 url({ id: '65A1B2C3D4E5F6', user: 'allybari', video: false, description: 'Golden hour' });
 url({ id: 'aa11bb22-cc33', user: 'allybari', video: true, description: '' });
@@ -99,7 +100,7 @@ test('an empty VSCO response suggests refreshing the session without declaring t
   const bin = path.join(root, 'fake-gallery-dl')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 console.log(JSON.stringify([2, { user: 'public-profile', category: 'vsco', subcategory: 'gallery' }]));
 `,
     { mode: 0o755 }
@@ -130,7 +131,7 @@ const challengeThenPosts = async (root: string, challenges: number) => {
   const runs = path.join(root, 'runs.log')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const fs = require('node:fs');
 fs.appendFileSync(${JSON.stringify(runs)}, JSON.stringify(process.argv.slice(2)) + '\\n');
 const run = fs.readFileSync(${JSON.stringify(runs)}, 'utf8').trim().split('\\n').length;
@@ -257,7 +258,7 @@ test('VSCO extractor failures retain the underlying error instead of reporting a
   const bin = path.join(root, 'fake-gallery-dl')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 console.error('HTTP 429: Too Many Requests');
 process.exitCode = 1;
 `,

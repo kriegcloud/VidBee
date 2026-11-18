@@ -1,0 +1,389 @@
+[
+  [
+    "returned",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ]
+    ]
+  ],
+  [
+    "stdout",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ]
+    ]
+  ],
+  [
+    "stderr",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stderr",
+          "line": "diagnostic"
+        }
+      ]
+    ]
+  ],
+  [
+    "error",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stderr",
+          "line": "diagnostic"
+        }
+      ],
+      [
+        "finish",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "original-child-error",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": [
+                "retry",
+                "report-bug"
+              ],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          },
+          "closedAt": 1000,
+          "stdoutTail": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB\n[Merger] combine\n",
+          "stderrTail": "diagnostic\n"
+        }
+      ]
+    ]
+  ],
+  [
+    "close",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stderr",
+          "line": "diagnostic"
+        }
+      ],
+      [
+        "finish",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "original-child-error",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": [
+                "retry",
+                "report-bug"
+              ],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          },
+          "closedAt": 1000,
+          "stdoutTail": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB\n[Merger] combine\n",
+          "stderrTail": "diagnostic\n"
+        }
+      ]
+    ]
+  ],
+  [
+    "stdout",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stderr",
+          "line": "diagnostic"
+        }
+      ],
+      [
+        "finish",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "original-child-error",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": [
+                "retry",
+                "report-bug"
+              ],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          },
+          "closedAt": 1000,
+          "stdoutTail": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB\n[Merger] combine\n",
+          "stderrTail": "diagnostic\n"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "after completion"
+        }
+      ]
+    ]
+  ],
+  [
+    "drained",
+    [
+      [
+        "spawn",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": -1,
+          "pidStartedAt": null,
+          "kind": "gallery-dl",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "[Merger] combine"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stderr",
+          "line": "diagnostic"
+        }
+      ],
+      [
+        "finish",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "original-child-error",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": [
+                "retry",
+                "report-bug"
+              ],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          },
+          "closedAt": 1000,
+          "stdoutTail": "[download] 20% of 10MiB at 1MiB/s ETA 00:08\r[download] 50% of 10MiB\n[Merger] combine\n",
+          "stderrTail": "diagnostic\n"
+        }
+      ],
+      [
+        "std",
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "stream": "stdout",
+          "line": "after completion"
+        }
+      ]
+    ]
+  ]
+]

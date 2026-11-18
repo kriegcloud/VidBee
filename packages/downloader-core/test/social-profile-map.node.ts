@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -17,7 +18,7 @@ test('social mapping retains post references without accepting media URLs', asyn
   const bin = path.join(root, 'fake-gallery')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const fs = require('node:fs');
 const path = require('node:path');
 const raw = process.argv.find((arg) => arg.startsWith('extractor.vidbee-social.destination='));
@@ -80,7 +81,7 @@ test('X mapping reports an empty traversal and rejected browser cookies instead 
   const bin = path.join(root, 'fake-gallery')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const fs = require('node:fs');
 const path = require('node:path');
 const raw = process.argv.find((arg) => arg.startsWith('extractor.vidbee-social.destination='));
@@ -106,7 +107,7 @@ console.log('__VIDBEE_SOCIAL__\\t' + JSON.stringify({ type: 'complete', summary:
 
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 process.stderr.write("[twitter][error] 'Could not authenticate you'\\n");
 process.exit(4);
 `,

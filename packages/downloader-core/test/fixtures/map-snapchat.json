@@ -1,0 +1,17 @@
+[
+  "--config-ignore",
+  "--no-input",
+  "--no-colors",
+  "-j",
+  "-o",
+  "output.jsonl=true",
+  "--sleep-request",
+  "1",
+  "--sleep-429",
+  "60",
+  "--retries",
+  "1",
+  "--proxy",
+  "http://proxy.invalid:8080",
+  "https://www.snapchat.com/@fixture/stories"
+]

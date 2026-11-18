@@ -1,0 +1,35 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": "<PID>",
+      "pidStartedAt": null,
+      "kind": "gallery-dl",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "ready"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "cancelled"
+      },
+      "closedAt": 1000,
+      "stdoutTail": "ready\n",
+      "stderrTail": ""
+    }
+  ]
+]

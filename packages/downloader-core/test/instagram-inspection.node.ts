@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -28,7 +29,7 @@ console.log(JSON.stringify(result))
   const launcher = join(dir, 'gallery')
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node\nrequire('node:child_process').spawnSync(process.execPath,[${JSON.stringify(script)},process.argv.at(-1)],{stdio:'inherit'})\n`,
+    `#!${NODE}\nrequire('node:child_process').spawnSync(${JSON.stringify(NODE)},[${JSON.stringify(script)},process.argv.at(-1)],{stdio:'inherit'})\n`,
     { mode: 0o755 }
   )
   const actual = new InstagramProfileInspector({
@@ -52,7 +53,7 @@ test('a throttled scan pauses further gallery-dl launches until the cooldown pas
   const launcher = join(dir, 'gallery')
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node
+    `#!${NODE}
 require('node:fs').appendFileSync(${JSON.stringify(log)}, JSON.stringify(process.argv.at(-1))+'\\n')
 console.log(JSON.stringify([[-1,{error:'AbortExtraction',message:'HTTP redirect to home page (https://www.instagram.com/)'}]]))
 `,
@@ -90,7 +91,7 @@ test('concurrent profile scans share duplicate requests and serialize different 
   const launcher = join(dir, 'gallery')
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node
+    `#!${NODE}
 require('node:fs').appendFileSync(${JSON.stringify(log)}, JSON.stringify(process.argv.at(-1))+'\\n')
 console.log('[]')
 `,
@@ -137,7 +138,7 @@ test('mapped references survive restart and failed refresh, and queue incrementa
   ]
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node\nconsole.log(${JSON.stringify(JSON.stringify(messages))})\n`,
+    `#!${NODE}\nconsole.log(${JSON.stringify(JSON.stringify(messages))})\n`,
     { mode: 0o755 }
   )
   const inspector = new InstagramProfileInspector({ storageDir, resolveBinaryPath: () => launcher })
@@ -171,7 +172,7 @@ test('mapped references survive restart and failed refresh, and queue incrementa
   )
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node\nconsole.log(JSON.stringify([[-1,{error:'AuthRequired',message:'Login required'}]]))\n`,
+    `#!${NODE}\nconsole.log(JSON.stringify([[-1,{error:'AuthRequired',message:'Login required'}]]))\n`,
     { mode: 0o755 }
   )
   const refreshed = await inspector.inspect('https://instagram.com/fixture', undefined, ['posts'])
@@ -297,7 +298,7 @@ test('stopping a map kills extraction, saves discovered images and videos, and a
   ]
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node
+    `#!${NODE}
 const fs = require('node:fs')
 for (const record of ${JSON.stringify(records)}) process.stderr.write('VIDBEE_MAP:'+JSON.stringify(record)+'\\n')
 fs.writeFileSync(${JSON.stringify(started)}, String(process.pid))
@@ -344,7 +345,7 @@ setInterval(()=>{},1000)
   )
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node\nconsole.log(${JSON.stringify(JSON.stringify(records))})\n`,
+    `#!${NODE}\nconsole.log(${JSON.stringify(JSON.stringify(records))})\n`,
     { mode: 0o755 }
   )
   const resumed = await inspector.inspect('https://instagram.com/fixture/', undefined, ['posts'])
@@ -359,7 +360,7 @@ test('every Instagram category preserves image and video references without medi
   const launcher = join(dir, 'gallery')
   writeFileSync(
     launcher,
-    `#!/usr/bin/env node
+    `#!${NODE}
 if (process.argv.includes('--filter')) process.exit(1)
 const records=[[3,'https://cdn.invalid/image.jpg',{post_id:'image',post_url:'https://www.instagram.com/p/IMAGE/',extension:'jpg'}],[3,'https://cdn.invalid/video.mp4',{post_id:'video',post_url:'https://www.instagram.com/reel/VIDEO/',extension:'mp4'}]]
 for (const record of records) process.stderr.write('VIDBEE_MAP:'+JSON.stringify(record)+'\\n')

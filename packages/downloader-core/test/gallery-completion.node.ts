@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -44,7 +45,7 @@ for (const kind of [
       const bin = path.join(root, 'fake-gallery')
       await writeFile(
         bin,
-        `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(`${lines.join('\n')}\n`)})\n`,
+        `#!${NODE}\nprocess.stdout.write(${JSON.stringify(`${lines.join('\n')}\n`)})\n`,
         { mode: 0o755 }
       )
       const executor = new GalleryDlExecutor({
@@ -96,7 +97,7 @@ test('cancelling a standalone gallery downloader reaps the child holding its pip
   const bin = path.join(root, 'fake-standalone')
   await writeFile(
     bin,
-    `#!${process.execPath}\nconst c=require('node:child_process').spawn(process.execPath,['-e',"process.stdout.write('child-ready\\\\n');setInterval(()=>{},1000)"],{stdio:['ignore','inherit','inherit']});setInterval(()=>{},1000)\n`,
+    `#!${NODE}\nconst c=require('node:child_process').spawn(${JSON.stringify(NODE)},['-e',"process.stdout.write('child-ready\\\\n');setInterval(()=>{},1000)"],{stdio:['ignore','inherit','inherit']});setInterval(()=>{},1000)\n`,
     { mode: 0o755 }
   )
   let pid: number | undefined

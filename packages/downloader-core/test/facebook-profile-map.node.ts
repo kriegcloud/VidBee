@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -31,7 +32,7 @@ test('Facebook mapping saves stable post references and deduplicates overlapping
   const bin = path.join(root, 'fake-extractor')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 if (process.argv.includes('-J')) {
   process.stdout.write(JSON.stringify({ id: 'fixture', title: 'Reels', entries: [
     { id: '456', title: 'Reel 456', url: 'https://www.facebook.com/reel/456' }
@@ -81,7 +82,7 @@ test('a failed Facebook gallery page retains discovered items as partial', async
   const bin = path.join(root, 'fake-gallery')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 process.stdout.write(JSON.stringify([3, 'https://cdn.example/temporary.jpg', { id: '789' }]) + '\\n');
 process.stderr.write('page failed\\n');
 process.exit(1);

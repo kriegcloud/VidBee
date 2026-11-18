@@ -1,0 +1,188 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Instagram enqueue cap/get/add/settlement microtasks and exact task payload, categories ordered and deduplicated 1`] = `
+[
+  [
+    "cap",
+    "instagram-profile",
+    1,
+  ],
+  "returned",
+  [
+    "get",
+    "instagram_item_85dbe0982a768e4d4588c47edfe207ebc357ec08ede95dc700763e5bb8407d2b",
+  ],
+  [
+    "add",
+    {
+      "groupKey": "instagram-profile",
+      "id": "instagram_item_85dbe0982a768e4d4588c47edfe207ebc357ec08ede95dc700763e5bb8407d2b",
+      "input": {
+        "kind": "instagram-profile-category",
+        "options": {
+          "batchAssetCount": 2,
+          "batchCategory": "highlights",
+          "batchId": "batch",
+          "batchKind": "instagram-profile",
+          "batchOrder": 3,
+          "batchSourceCount": 1,
+          "batchTitle": "Batch",
+          "customDownloadPath": "/fixture/out/Instagram/fixture/Highlights",
+          "downloadPath": "/fixture/out/Instagram/fixture/Highlights",
+          "expectedAssetCount": 2,
+          "galleryDlBaseDirectory": "/fixture/out/Instagram/fixture",
+          "galleryDlDirectorySegments": [
+            "Highlights",
+            "{highlight_title}",
+          ],
+          "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Highlights",
+          "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+          "settings": {
+            "proxy": "http://proxy.invalid",
+          },
+          "type": "video",
+        },
+        "thumbnail": undefined,
+        "title": "@fixture · Highlights",
+        "url": "https://www.instagram.com/p/ONE/",
+      },
+      "maxAttempts": 3,
+      "priority": 0,
+    },
+  ],
+  "microtask",
+  [
+    "get",
+    "instagram_item_79c61345975fab8db24cb4bd0a0ff4e0f99684254d7f2c5c9f3a03dae17a1e26",
+  ],
+  [
+    "add",
+    {
+      "groupKey": "instagram-profile",
+      "id": "instagram_item_79c61345975fab8db24cb4bd0a0ff4e0f99684254d7f2c5c9f3a03dae17a1e26",
+      "input": {
+        "kind": "instagram-profile-category",
+        "options": {
+          "batchAssetCount": 2,
+          "batchCategory": "posts",
+          "batchId": "batch",
+          "batchKind": "instagram-profile",
+          "batchOrder": 0,
+          "batchSourceCount": 1,
+          "batchTitle": "Batch",
+          "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+          "downloadPath": "/fixture/out/Instagram/fixture/Posts",
+          "expectedAssetCount": 2,
+          "galleryDlBaseDirectory": undefined,
+          "galleryDlDirectorySegments": undefined,
+          "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+          "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+          "settings": {
+            "proxy": "http://proxy.invalid",
+          },
+          "type": "video",
+        },
+        "thumbnail": undefined,
+        "title": "@fixture · Posts",
+        "url": "https://www.instagram.com/p/ONE/",
+      },
+      "maxAttempts": 3,
+      "priority": 0,
+    },
+  ],
+  [
+    "settled",
+    {
+      "groupId": "batch",
+      "tasks": [
+        {
+          "assetCount": 2,
+          "category": "highlights",
+          "downloadId": "instagram_item_85dbe0982a768e4d4588c47edfe207ebc357ec08ede95dc700763e5bb8407d2b",
+          "sourceCount": 1,
+        },
+        {
+          "assetCount": 2,
+          "category": "posts",
+          "downloadId": "instagram_item_79c61345975fab8db24cb4bd0a0ff4e0f99684254d7f2c5c9f3a03dae17a1e26",
+          "sourceCount": 1,
+        },
+      ],
+      "totalAssetCount": 4,
+      "totalSourceCount": 2,
+      "username": "fixture",
+    },
+  ],
+]
+`;
+
+exports[`social download exact task payload and Promise markers; duplicate category order and restore caps 1`] = `
+[
+  "returned",
+  "microtask",
+  [
+    "cap",
+    "social:x",
+    1,
+  ],
+  [
+    "add",
+    {
+      "groupKey": "social:x",
+      "input": {
+        "kind": "social-media",
+        "options": {
+          "batchCategory": "tweets",
+          "batchId": "batch",
+          "batchKind": "social-media",
+          "batchOrder": 2,
+          "batchTitle": "Batch",
+          "customDownloadPath": "/fixture/out",
+          "downloadPath": "/fixture/out",
+          "settings": undefined,
+          "socialMedia": {
+            "authorOnly": false,
+            "expandThreads": false,
+            "linkedMedia": true,
+            "media": "images",
+            "scope": "post",
+            "slideshowAudio": false,
+          },
+          "sourceMediaKind": "image",
+        },
+        "title": "x: fixture",
+        "url": "https://x.com/fixture/tweets",
+      },
+    },
+  ],
+  [
+    "settled",
+    {
+      "groupId": "batch",
+      "ids": [
+        "added",
+      ],
+    },
+  ],
+  [
+    "cap",
+    "social:x",
+    1,
+  ],
+  [
+    "cap",
+    "social:reddit",
+    1,
+  ],
+  [
+    "cap",
+    "social:tiktok",
+    1,
+  ],
+  [
+    "cap",
+    "social:instagram",
+    1,
+  ],
+]
+`;

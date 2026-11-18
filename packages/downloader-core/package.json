@@ -40,7 +40,9 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "bunx --bun vitest run",
+    "check": "bun run typecheck && bun run check:characterization",
+    "check:characterization": "tsc --noEmit -p tsconfig.characterization.json"
   },
   "dependencies": {
     "yt-dlp-wrap-plus": "catalog:",

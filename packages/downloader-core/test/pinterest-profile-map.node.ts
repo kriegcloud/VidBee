@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -25,7 +26,7 @@ const fixture = async (t: { after: (fn: () => Promise<void>) => void }, script: 
   const root = await mkdtemp(path.join(tmpdir(), 'vidbee-pinterest-test-'))
   t.after(() => rm(root, { recursive: true, force: true }))
   const bin = path.join(root, 'gallery-dl')
-  await writeFile(bin, `#!${process.execPath}\n${script}\n`, { mode: 0o755 })
+  await writeFile(bin, `#!${NODE}\n${script}\n`, { mode: 0o755 })
   return { root, bin }
 }
 

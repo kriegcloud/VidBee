@@ -1,0 +1,39 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": "<PID>",
+      "pidStartedAt": null,
+      "kind": "yt-dlp",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "error",
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "\n\nError code: null",
+          "uiMessageKey": "task.error.unknown",
+          "uiActionHints": [
+            "retry",
+            "report-bug"
+          ],
+          "retryable": true,
+          "suggestedRetryAfterMs": null
+        },
+        "exitCode": null
+      },
+      "closedAt": 1000,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  ]
+]

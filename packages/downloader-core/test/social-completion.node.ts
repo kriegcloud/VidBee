@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -45,7 +46,7 @@ for (const scenario of [
         ? '__VIDBEE_SOCIAL__\t{bad json}\n'
         : `__VIDBEE_SOCIAL__\t${JSON.stringify({ type: scenario === 'missing-final' ? 'progress' : 'complete', summary })}\n`
     const bin = path.join(root, 'fake-gallery')
-    await writeFile(bin, `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(line)})\n`, {
+    await writeFile(bin, `#!${NODE}\nprocess.stdout.write(${JSON.stringify(line)})\n`, {
       mode: 0o755
     })
     const destination = scenario === 'symlink-destination' ? path.join(root, 'chosen') : root
@@ -119,7 +120,7 @@ for (const scenario of ['video-after-image', 'images-only', 'no-assets'] as cons
     const bin = path.join(root, 'fake-gallery')
     await writeFile(
       bin,
-      `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(lines)})\n`,
+      `#!${NODE}\nprocess.stdout.write(${JSON.stringify(lines)})\n`,
       {
         mode: 0o755
       }

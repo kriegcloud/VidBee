@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -72,7 +73,7 @@ test('a Snapchat profile maps stories per snap and spotlights per post', async (
   const bin = path.join(root, 'fake-gallery-dl')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 const target = process.argv.at(-1);
 const url = (meta) => console.log(JSON.stringify([3, 'https://cf-st.sc-cdn.net/d/signed', meta]));
 if (target.endsWith('/stories')) {

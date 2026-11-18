@@ -1,0 +1,1382 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`multi-stream aggregation, sidecars, changing totals and false positives through public executor 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 12288,
+        "bytesTotal": 12288,
+        "etaMs": null,
+        "percent": 0,
+        "speedBps": null,
+        "ticks": 1,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 10485760,
+        "bytesTotal": 104857600,
+        "etaMs": null,
+        "percent": 0.1,
+        "speedBps": null,
+        "ticks": 2,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 83886080,
+        "bytesTotal": 104857600,
+        "etaMs": null,
+        "percent": 0.8,
+        "speedBps": null,
+        "ticks": 3,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 104857600,
+        "bytesTotal": 104857600,
+        "etaMs": null,
+        "percent": 1,
+        "speedBps": null,
+        "ticks": 4,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 105381888,
+        "bytesTotal": 115343360,
+        "etaMs": null,
+        "percent": 0.9136363636363637,
+        "speedBps": null,
+        "ticks": 5,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 110100480,
+        "bytesTotal": 115343360,
+        "etaMs": null,
+        "percent": 0.9545454545454546,
+        "speedBps": null,
+        "ticks": 6,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 115343360,
+        "bytesTotal": 115343360,
+        "etaMs": null,
+        "percent": 1,
+        "speedBps": null,
+        "ticks": 7,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 115343360,
+        "bytesTotal": 115343360,
+        "etaMs": null,
+        "percent": 1,
+        "speedBps": null,
+        "ticks": 8,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": 120586240,
+        "bytesTotal": 115343360,
+        "etaMs": 3723000,
+        "percent": 1,
+        "speedBps": null,
+        "ticks": 9,
+      },
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > injected close(7) is passed directly through without wrapper conversion 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "unknown",
+          "exitCode": 7,
+          "rawMessage": "yt-dlp exited with code 7",
+          "retryable": true,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "retry",
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.unknown",
+        },
+        "exitCode": 7,
+        "type": "error",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > injected close(null) is passed directly through without wrapper conversion 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "yt-dlp exited with code -1",
+          "retryable": true,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "retry",
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.unknown",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > no child emitter supports progress, original error message, and finish once 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "progress",
+    {
+      "attemptId": "attempt",
+      "enteredProcessing": false,
+      "progress": {
+        "bytesDownloaded": null,
+        "bytesTotal": null,
+        "etaMs": null,
+        "percent": 0.4,
+        "speedBps": null,
+        "ticks": 1,
+      },
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "
+original-injected-error",
+          "retryable": true,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "retry",
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.unknown",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > path, format and subtitle signals outlive 8192-character tails; independent chunk UTF-8 is lossy 1`] = `
+{
+  "cookieSources": [],
+  "durationMs": 1250,
+  "filePath": "<FILE>",
+  "formatId": "137+140",
+  "sha256": null,
+  "size": 5,
+  "subtitleAcquisition": {
+    "acquiredAt": 1000,
+    "credentialsUsed": false,
+    "id": "attempt",
+    "visibility": "private",
+  },
+  "subtitleLanguages": [
+    "en",
+    "fr",
+  ],
+  "subtitleStatus": "downloaded",
+}
+`;
+
+exports[`old executor synchronous callback boundary > pause and repeated cancel acknowledge before close and replace escalation timer 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "type": "cancelled",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > preflight binary finishes before run returns 1`] = `
+[
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "binary-missing",
+          "exitCode": null,
+          "rawMessage": "opaque-failure",
+          "retryable": false,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.binaryMissing",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "opaque-failure",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > preflight builder finishes before run returns 1`] = `
+[
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "opaque-failure",
+          "retryable": true,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "retry",
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.unknown",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "opaque-failure",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > preflight ffmpeg finishes before run returns 1`] = `
+[
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "binary-missing",
+          "exitCode": null,
+          "rawMessage": "ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.",
+          "retryable": false,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.binaryMissing",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > preflight spawn finishes before run returns 1`] = `
+[
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "opaque-failure",
+          "retryable": true,
+          "suggestedRetryAfterMs": null,
+          "uiActionHints": [
+            "retry",
+            "report-bug",
+          ],
+          "uiMessageKey": "task.error.unknown",
+        },
+        "exitCode": null,
+        "type": "error",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > records state immediately after every emission, then synchronous finish, exactly once 1`] = `
+[
+  [
+    "run-return",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "progress",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "data",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "data",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "data",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "processing",
+        {
+          "attemptId": "attempt",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "ger] combine
+next",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "progress",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "processing",
+        {
+          "attemptId": "attempt",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "ger] combine
+next",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": true,
+          "progress": {
+            "bytesDownloaded": 10695475,
+            "bytesTotal": 12582912,
+            "etaMs": null,
+            "percent": 0.8499999841054281,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "close",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "processing",
+        {
+          "attemptId": "attempt",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "ger] combine
+next",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": true,
+          "progress": {
+            "bytesDownloaded": 10695475,
+            "bytesTotal": 12582912,
+            "etaMs": null,
+            "percent": 0.8499999841054281,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "output": {
+              "cookieSources": [],
+              "durationMs": null,
+              "filePath": "",
+              "formatId": null,
+              "sha256": null,
+              "size": 0,
+            },
+            "type": "success",
+          },
+          "stderrTail": "warning
+",
+          "stdoutTail": "[Merger] combine
+next
+",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "close",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "yt-dlp",
+          "pid": -1,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": 5242880,
+            "bytesTotal": 10485760,
+            "etaMs": 5000,
+            "percent": 0.5,
+            "speedBps": 1048576,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "[Mer",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "processing",
+        {
+          "attemptId": "attempt",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "ger] combine
+next",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": true,
+          "progress": {
+            "bytesDownloaded": 10695475,
+            "bytesTotal": 12582912,
+            "etaMs": null,
+            "percent": 0.8499999841054281,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "output": {
+              "cookieSources": [],
+              "durationMs": null,
+              "filePath": "",
+              "formatId": null,
+              "sha256": null,
+              "size": 0,
+            },
+            "type": "success",
+          },
+          "stderrTail": "warning
+",
+          "stdoutTail": "[Merger] combine
+next
+",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > settings preparation rejection and cancellation are distinct microtask sequences 1`] = `
+[
+  [
+    "returned",
+    [],
+  ],
+  [
+    "marker",
+    [
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "settings-failure",
+              "retryable": true,
+              "suggestedRetryAfterMs": null,
+              "uiActionHints": [
+                "retry",
+                "report-bug",
+              ],
+              "uiMessageKey": "task.error.unknown",
+            },
+            "exitCode": null,
+            "type": "error",
+          },
+          "stderrTail": "settings-failure",
+          "stdoutTail": "",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "await",
+    [
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "error": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "settings-failure",
+              "retryable": true,
+              "suggestedRetryAfterMs": null,
+              "uiActionHints": [
+                "retry",
+                "report-bug",
+              ],
+              "uiMessageKey": "task.error.unknown",
+            },
+            "exitCode": null,
+            "type": "error",
+          },
+          "stderrTail": "settings-failure",
+          "stdoutTail": "",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+]
+`;
+
+exports[`old executor synchronous callback boundary > subtitle-only close retries once with same attempt, no second spawn, explicit opt-outs 1`] = `
+[
+  [
+    "spawn",
+    {
+      "attemptId": "attempt",
+      "kind": "yt-dlp",
+      "pid": -1,
+      "pidStartedAt": null,
+      "spawnedAt": 1000,
+      "taskId": "task",
+    },
+  ],
+  [
+    "std",
+    {
+      "attemptId": "attempt",
+      "line": "Unable to download video subtitles for en",
+      "stream": "stderr",
+      "taskId": "task",
+    },
+  ],
+  [
+    "std",
+    {
+      "attemptId": "attempt",
+      "line": "[VidBeep] Subtitle download failed; retrying the video without subtitles.",
+      "stream": "stderr",
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "output": {
+          "cookieSources": [],
+          "durationMs": null,
+          "filePath": "",
+          "formatId": null,
+          "sha256": null,
+          "size": 0,
+          "subtitleAcquisition": {
+            "acquiredAt": 1000,
+            "credentialsUsed": false,
+            "id": "attempt",
+            "visibility": undefined,
+          },
+          "subtitleStatus": "failed",
+        },
+        "type": "success",
+      },
+      "stderrTail": "Unable to download video subtitles for en
+[VidBeep] Subtitle download failed; retrying the video without subtitles.
+",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;
+
+exports[`saved path extraction public close: [EmbedSubtitle] Writing "/fixture/subbed.mp4" 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/subbed.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "[EmbedSubtitle] Writing "/fixture/subbed.mp4"
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: [ExtractAudio] Converting to "/fixture/audio.mp3" 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/audio.mp3",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "[ExtractAudio] Converting to "/fixture/audio.mp3"
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: [MoveFiles] Moving file "old" to "/fixture/moved.mp4" 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/moved.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "[MoveFiles] Moving file "old" to "/fixture/moved.mp4"
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: [download] /fixture/existing.mp4 has already been downloaded 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/existing.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "[download] /fixture/existing.mp4 has already been downloaded
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: Destination: "/fixture/quoted.mp4" 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/quoted.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "Destination: "/fixture/quoted.mp4"
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: Destination: '/fixture/single.mp4' 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/single.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "Destination: '/fixture/single.mp4'
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: Destination: /fixture/unquoted.mp4 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/unquoted.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "Destination: /fixture/unquoted.mp4
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`saved path extraction public close: Merging formats into "/fixture/merged.mp4" 1`] = `
+[
+  "finish",
+  {
+    "attemptId": "attempt",
+    "closedAt": 1000,
+    "result": {
+      "output": {
+        "cookieSources": [],
+        "durationMs": null,
+        "filePath": "/fixture/merged.mp4",
+        "formatId": null,
+        "sha256": null,
+        "size": 0,
+      },
+      "type": "success",
+    },
+    "stderrTail": "",
+    "stdoutTail": "Merging formats into "/fixture/merged.mp4"
+",
+    "taskId": "task",
+  },
+]
+`;
+
+exports[`subtitle unavailable and auth-skipped outcomes differ 1`] = `
+[
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "output": {
+          "cookieSources": [],
+          "durationMs": null,
+          "filePath": "",
+          "formatId": null,
+          "sha256": null,
+          "size": 0,
+          "subtitleAcquisition": {
+            "acquiredAt": 1000,
+            "credentialsUsed": false,
+            "id": "attempt",
+            "visibility": undefined,
+          },
+          "subtitleStatus": "unavailable",
+        },
+        "type": "success",
+      },
+      "stderrTail": "",
+      "stdoutTail": "There are no subtitles for the requested languages
+",
+      "taskId": "task",
+    },
+  ],
+  [
+    "finish",
+    {
+      "attemptId": "attempt",
+      "closedAt": 1000,
+      "result": {
+        "output": {
+          "cookieSources": [],
+          "durationMs": null,
+          "filePath": "",
+          "formatId": null,
+          "sha256": null,
+          "size": 0,
+          "subtitleAcquisition": {
+            "acquiredAt": 1000,
+            "credentialsUsed": false,
+            "id": "attempt",
+            "visibility": undefined,
+          },
+          "subtitleStatus": "skipped-auth",
+        },
+        "type": "success",
+      },
+      "stderrTail": "",
+      "stdoutTail": "",
+      "taskId": "task",
+    },
+  ],
+]
+`;

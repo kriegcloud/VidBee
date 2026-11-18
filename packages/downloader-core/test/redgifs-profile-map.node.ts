@@ -1,3 +1,4 @@
+import { NODE } from './fixtures/node-runtime'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -12,7 +13,7 @@ test('Redgifs user mapping saves watch pages without media URLs', async (t) => {
   const bin = path.join(root, 'fake-ytdlp')
   await writeFile(
     bin,
-    `#!${process.execPath}
+    `#!${NODE}
 console.log(JSON.stringify({ extractor_key: 'RedGifs', id: 'JovialPristinePterosaurs', title: 'First post', url: 'https://media.redgifs.com/private.mp4' }));
 console.log(JSON.stringify({ extractor_key: 'RedGifs', id: '../invalid', url: 'https://media.redgifs.com/other.mp4' }));
 `,
