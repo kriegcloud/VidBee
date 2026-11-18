@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "Verificar atualizações",
       "download": "Download",
       "email": "Email",
       "feedback": "Feedback",
-      "goToDownload": "Vá para a página de download",
       "openRepo": "Abrir repositório GitHub",
       "view": "Ver",
       "visit": "Visitar"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "Baixar e instalar novas versões automaticamente em segundo plano.",
-    "microsoftStoreUpdateDescription": "As atualizações do aplicativo são gerenciadas pela Microsoft Store. Abra a Store para verificar se há atualizações.",
-    "autoUpdateTitle": "Atualizações automáticas",
     "description": "Baixe mídias de mais de 1000 sites, crie transcrições pesquisáveis no seu computador e use o provedor de IA que você escolher para resumir, traduzir ou fazer perguntas, tudo em um app gratuito e de código aberto para desktop.",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "aqui",
     "homepage": "Página inicial",
     "notifications": {
-      "checkingUpdates": "Procurando atualizações...",
       "downloadError": "Falha ao baixar atualização",
-      "downloadUpdate": "Baixar e instalar atualização {{version}}?",
-      "manualDownloadAction": "Baixe agora",
-      "noUpdatesAvailable": "Você está usando a versão mais recente",
-      "outdatedVersionRisk": "Sua versão está muito desatualizada e pode fazer os downloads falharem.",
-      "restartToUpdate": "Reiniciar agora para instalar atualização?",
-      "restartNowAction": "Reinicie agora",
-      "updateAvailable": "Atualização disponível: {{version}}",
-      "updateAvailableMessage": "Uma nova versão {{version}} está disponível. \nFaça o download no site oficial.",
-      "updateDownloaded": "Atualização baixada, reinicie para instalar",
-      "updateDownloadedVersion": "Atualização {{version}} baixada, reinicie para instalar",
-      "updateError": "Falha ao verificar atualizações: {{error}}",
-      "unknownErrorFallback": "Erro desconhecido"
+      "manualDownloadAction": "Baixe agora"
     },
     "resources": {
       "changelog": "Notas da versão",
@@ -103,13 +86,6 @@
     "title": "Sobre",
     "version": "Versão",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "Mais recente: v{{version}}",
-    "latestVersionStatus": {
-      "available": "Nova versão disponível",
-      "uptodate": "Você está atualizado",
-      "error": "Não foi possível obter a versão mais recente"
-    },
-    "downloadingUpdate": "Baixando atualização",
     "changelog": {
       "currentVersion": "Versão atual"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "Lançar na inicialização",
     "launchAtLoginDescription": "Abra o VidBeep automaticamente depois de fazer login no seu computador",
     "launchAtLoginUnsupported": "A inicialização automática está disponível apenas no macOS e no Windows",
-    "enableAnalytics": "Ajude a melhorar o VidBeep",
-    "enableAnalyticsDescription": "Compartilhe dados de uso anônimos para nos ajudar a entender como o aplicativo é usado e priorizar melhorias",
     "enableDownloadNotifications": "Notificações de download",
     "enableDownloadNotificationsDescription": "Mostra uma notificação do sistema quando um download for concluído",
     "downloadWithoutChannelSubfolders": "Salvar vídeos sem subpastas do canal",

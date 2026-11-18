@@ -21,6 +21,13 @@
   </p>
 </div>
 
+> [!NOTE]
+>
+> This repository (`kriegcloud/VidBee`) is a personal hard fork of [nexmoe/VidBee](https://github.com/nexmoe/VidBee),
+> verified on Linux only. It ships no releases, no auto-updater and no telemetry, and it no longer contains the
+> web client, API server or documentation site. It is being ported to Effect v4: see
+> [`docs/effect-port/PLAN.md`](docs/effect-port/PLAN.md). The text below is upstream's description of the app.
+
 VidBee is a free, open-source desktop app that turns video and audio into an organized, searchable library. Download media from 1000+ supported sites or import local files. Create transcripts on your computer with speaker labels and timestamped playback, then summarize, translate, or ask questions with the AI provider and prompts you choose. Download queues, RSS subscriptions, flexible exports, and metadata controls keep the whole workflow in one place.
 
 ## 👋🏻 Getting Started
@@ -118,84 +125,6 @@ See [Formats & Containers](https://vidbee.org/docs/formats/) for details.
 
 VidBee works with 1000+ supported video and audio sites. Browse the current list at [vidbee.org/supported-sites](https://vidbee.org/supported-sites/).
 
-## 🧱 Web + API (Docker-ready)
-
-This monorepo now includes:
-
-- `packages/downloader-core`: Shared yt-dlp/ffmpeg download core
-- `apps/api`: Fastify API server with oRPC and SSE events
-- `apps/web`: TanStack Start web client using oRPC
-
-Run locally:
-
-```bash
-bun run start:web
-```
-
-This command starts `apps/api` and `apps/web` together.
-
-Run with Docker:
-
-```bash
-docker compose up -d --build
-```
-
-Run with GitHub Container Registry images:
-
-```yaml
-services:
-  api:
-    image: ghcr.io/nexmoe/vidbee-api:latest
-    environment:
-      VIDBEE_API_HOST: 0.0.0.0
-      VIDBEE_API_PORT: 3100
-      VIDBEE_DOWNLOAD_DIR: /data/downloads
-      VIDBEE_DATA_DIR: /data/vidbee
-      VIDBEE_HISTORY_STORE_PATH: /data/vidbee/vidbee.db
-    ports:
-      - "3100:3100"
-    volumes:
-      # Replace the named volume with /path/on/your/NAS:/data/downloads
-      # when downloaded files must be directly visible on the host.
-      - vidbee-downloads:/data/downloads
-      - vidbee-data:/data/vidbee
-    restart: unless-stopped
-
-  web:
-    image: ghcr.io/nexmoe/vidbee-web:latest
-    depends_on:
-      - api
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-
-volumes:
-  vidbee-downloads:
-  vidbee-data:
-```
-
-Stop services:
-
-```bash
-docker compose down
-```
-
-Optional env vars (via `.env`):
-
-```bash
-VIDBEE_API_PORT=3100
-VIDBEE_WEB_PORT=3000
-# Optional host or NAS bind mount. The named volume remains the default.
-VIDBEE_DOWNLOAD_DIR_HOST=/path/on/your/NAS/downloads
-```
-
-Storage inside the API container:
-
-- `/data/downloads` — media files (`VIDBEE_DOWNLOAD_DIR`)
-- `/data/vidbee` — `vidbee.db` (queue, history, transcripts, subscriptions), settings, uploaded cookies, and transcription models (`VIDBEE_DATA_DIR`)
-
-The web API uses the same SQLite file layout as Desktop: one `vidbee.db` for the download queue, history, transcripts, and RSS subscriptions. The web UI talks to the server filesystem, not the browser. Use **Save to this computer** to pull a finished file down, and upload a Netscape `cookies.txt` for authenticated sites. If you already stored sqlite under `/data/downloads/.vidbee`, VidBee keeps using that directory until `/data/vidbee/vidbee.db` exists.
-
 ## 🤝 Contributing
 
 You are welcome to join the open source community to build together. For more details, check out:
@@ -204,7 +133,6 @@ You are welcome to join the open source community to build together. For more de
   - `apps/desktop`: VidBee desktop app
   - `apps/extension`: Browser extension (WXT)
   - Documentation: [vidbee.org/docs](https://vidbee.org/docs/)
-  - `apps/desktop/docs/glitchtip.md`: GlitchTip and `sentry-cli` setup for desktop monitoring
 - [Contributing Guide](./CONTRIBUTING.md)
 - [DeepWiki Documentation](https://deepwiki.com/nexmoe/VidBee)
 

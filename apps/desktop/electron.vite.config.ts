@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
@@ -6,7 +5,6 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'electron-vite'
 import { FileSystemIconLoader } from 'unplugin-icons/loaders'
 import Icons from 'unplugin-icons/vite'
-import { loadEnv } from 'vite'
 import { createRendererResolve } from './renderer-react-resolve'
 
 const require = createRequire(import.meta.url)
@@ -58,27 +56,9 @@ const shouldExternalizeNativeRuntime = (id: string): boolean =>
   nativeRuntimeExternals.some((name) => id === name || id.startsWith(`${name}/`)) ||
   id.startsWith('electron/') ||
   id.startsWith('sherpa-onnx-')
-const packageJson = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, 'package.json'), 'utf8')
-) as {
-  version: string
-}
-
-const createTelemetryDefines = (mode: string): Record<string, string> => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const release = env.VITE_GLITCHTIP_RELEASE || `vidbee-desktop@${packageJson.version}`
-  const environment =
-    env.VITE_GLITCHTIP_ENVIRONMENT || (mode === 'production' ? 'production' : mode)
-
-  return {
-    __GLITCHTIP_DSN__: JSON.stringify(env.VITE_GLITCHTIP_DSN || ''),
-    __GLITCHTIP_ENVIRONMENT__: JSON.stringify(environment),
-    __GLITCHTIP_RELEASE__: JSON.stringify(release)
-  }
-}
 
 export default defineConfig(({ mode }) => {
-  const define = createTelemetryDefines(mode)
+  const define: Record<string, string> = {}
   const portlessUrl = mode === 'development' ? process.env.PORTLESS_URL : undefined
   if (portlessUrl) {
     define['import.meta.env.VITE_VIDBEE_HOME_URL'] = JSON.stringify(
@@ -114,8 +94,7 @@ export default defineConfig(({ mode }) => {
             // Runtime helpers resolve preload and worker paths relative to the main output directory.
             chunkFileNames: '[name]-[hash].js'
           },
-          // The GA4 transport reads renderer-bootstrap.js beside its installed module.
-          external: [...nativeRuntimeExternalMatchers, /^electron-ga4-telemetry(?:\/|$)/]
+          external: nativeRuntimeExternalMatchers
         },
         externalizeDeps: {
           exclude: bundledWorkspacePackages
@@ -187,7 +166,7 @@ export default defineConfig(({ mode }) => {
       build: {
         sourcemap: true,
         externalizeDeps: {
-          exclude: [...bundledWorkspacePackages, 'electron-ga4-telemetry']
+          exclude: bundledWorkspacePackages
         }
       }
     },

@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "Проверить обновления",
       "download": "Скачать",
       "email": "Email",
       "feedback": "Обратная связь",
-      "goToDownload": "Перейти на страницу загрузки",
       "openRepo": "Открыть репозиторий GitHub",
       "view": "Просмотр",
       "visit": "Посетить"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "Автоматически загружать и устанавливать новые версии в фоновом режиме.",
-    "microsoftStoreUpdateDescription": "Обновлениями приложения управляет Microsoft Store. Откройте магазин, чтобы проверить наличие обновлений.",
-    "autoUpdateTitle": "Автообновления",
     "description": "Скачивайте медиа с 1000+ сайтов, создавайте на компьютере расшифровки с поиском, а затем делайте резюме, переводите или задавайте вопросы через выбранного ИИ-провайдера — всё в одном бесплатном настольном приложении с открытым исходным кодом.",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "здесь",
     "homepage": "Главная страница",
     "notifications": {
-      "checkingUpdates": "Поиск обновлений...",
       "downloadError": "Не удалось загрузить обновление",
-      "downloadUpdate": "Загрузить и установить обновление {{version}}?",
-      "manualDownloadAction": "Скачать сейчас",
-      "noUpdatesAvailable": "Вы используете последнюю версию",
-      "outdatedVersionRisk": "Ваша версия слишком старая и может приводить к сбоям загрузки.",
-      "restartToUpdate": "Перезапустить сейчас для установки обновления?",
-      "restartNowAction": "Перезапустить сейчас",
-      "updateAvailable": "Доступно обновление: {{version}}",
-      "updateAvailableMessage": "Доступна новая версия {{version}}. Пожалуйста, загрузите её с официального сайта.",
-      "updateDownloaded": "Обновление загружено, перезапустите для установки",
-      "updateDownloadedVersion": "Обновление {{version}} загружено, перезапустите для установки",
-      "updateError": "Не удалось проверить обновления: {{error}}",
-      "unknownErrorFallback": "Неизвестная ошибка"
+      "manualDownloadAction": "Скачать сейчас"
     },
     "resources": {
       "changelog": "Примечания к выпуску",
@@ -103,13 +86,6 @@
     "title": "О программе",
     "version": "Версия",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "Последняя: v{{version}}",
-    "latestVersionStatus": {
-      "available": "Доступна новая версия",
-      "uptodate": "У вас актуальная версия",
-      "error": "Не удалось получить последнюю версию"
-    },
-    "downloadingUpdate": "Загрузка обновления",
     "changelog": {
       "currentVersion": "Текущая версия"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "Запускать при входе",
     "launchAtLoginDescription": "Автоматически открывать VidBeep после входа в систему",
     "launchAtLoginUnsupported": "Автозапуск доступен только в macOS и Windows",
-    "enableAnalytics": "Помочь улучшить VidBeep",
-    "enableAnalyticsDescription": "Поделитесь анонимными данными об использовании, чтобы помочь нам понять, как используется приложение, и расставить приоритеты улучшений",
     "enableDownloadNotifications": "Уведомления о загрузке",
     "enableDownloadNotificationsDescription": "Показывать системное уведомление, когда загрузка завершена",
     "downloadWithoutChannelSubfolders": "Сохранять видео без подпапок канала",

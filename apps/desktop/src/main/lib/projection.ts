@@ -31,7 +31,6 @@ interface RendererTaskOptions {
   agentConversation?: TaskCreationMetadata['agentConversation']
   selectedFormat?: VideoFormat
   ytDlpCommand?: string
-  glitchTipEventId?: string
 }
 
 /** Ignore incomplete legacy provenance instead of navigating to a guessed conversation. */
@@ -77,8 +76,7 @@ const readRendererOptions = (task: Readonly<Task>): RendererTaskOptions => {
   return {
     ...readTaskCreation(task),
     selectedFormat: opts.selectedFormat as VideoFormat | undefined,
-    ytDlpCommand: typeof opts.ytDlpCommand === 'string' ? opts.ytDlpCommand : undefined,
-    glitchTipEventId: typeof opts.glitchTipEventId === 'string' ? opts.glitchTipEventId : undefined
+    ytDlpCommand: typeof opts.ytDlpCommand === 'string' ? opts.ytDlpCommand : undefined
   }
 }
 
@@ -279,9 +277,6 @@ export const projectTaskForRenderer = (task: Readonly<Task>): DownloadItem => {
   if (renderer.ytDlpCommand !== undefined) {
     item.ytDlpCommand = renderer.ytDlpCommand
   }
-  if (renderer.glitchTipEventId !== undefined) {
-    item.glitchTipEventId = renderer.glitchTipEventId
-  }
   const progress = buildProgress(proj)
   if (progress) {
     item.progress = progress
@@ -447,9 +442,6 @@ export const projectTaskForRendererHistory = (task: Readonly<Task>): DownloadHis
   }
   if (renderer.ytDlpCommand !== undefined) {
     item.ytDlpCommand = renderer.ytDlpCommand
-  }
-  if (renderer.glitchTipEventId !== undefined) {
-    item.glitchTipEventId = renderer.glitchTipEventId
   }
   return item
 }

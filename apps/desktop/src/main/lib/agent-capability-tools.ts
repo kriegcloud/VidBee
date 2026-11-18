@@ -21,7 +21,7 @@ export function createAgentCapabilityTools(context: AgentToolContext): AgentTool
     defineAgentTool(
       context,
       'get_settings',
-      'Read public app preferences. The update_settings tool schema defines supported fields and values. Proxy credentials and API keys are never returned. autoUpdate is read-only. For AI providers/prompts load tool manage_ai_settings; for ASR resources load tool manage_asr_model; for TTS models load tool manage_tts_model.',
+      'Read public app preferences. The update_settings tool schema defines supported fields and values. Proxy credentials and API keys are never returned. For AI providers/prompts load tool manage_ai_settings; for ASR resources load tool manage_asr_model; for TTS models load tool manage_tts_model.',
       Type.Object({}, { additionalProperties: false }),
       async () => result((await host()).getAgentSettings())
     ),

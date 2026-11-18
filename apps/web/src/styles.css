@@ -1,6 +1,0 @@
-@import "tailwindcss";
-@import "@vidbee/ui/theme.css";
-@import "tw-animate-css";
-@import "@vidbee/ui/base.css";
-
-@source inline("bg-hover bg-surface-{1..8} shadow-surface-{1..8}");

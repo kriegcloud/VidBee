@@ -98,7 +98,6 @@ $env:TMP = $TempDir
 $env:VIDBEE_PORTABLE = '1'
 $env:VIDBEE_PORTABLE_DIR = $PortableRoot
 $env:NO_UPDATE_NOTIFIER = '1'
-$env:SENTRYCLI_SKIP_DOWNLOAD = '1'
 
 $UserDataDir = Join-Path $DataDir 'UserData'
 Start-Process -FilePath $ExePath -WorkingDirectory $AppDir -ArgumentList ('--user-data-dir="{0}"' -f $UserDataDir)

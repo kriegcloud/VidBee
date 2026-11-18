@@ -31,7 +31,6 @@ export const agentSettingsSchema = z
     hideDockIcon: z.boolean(),
     launchAtLogin: z.boolean(),
     subscriptionOnlyLatestDefault: z.boolean(),
-    enableAnalytics: z.boolean(),
     enableDownloadNotifications: z.boolean(),
     rememberLastAudioLanguage: z.boolean(),
     preferredAudioLanguage: text,
@@ -56,7 +55,7 @@ export const agentSettingsSchema = z
   } satisfies Record<
     Exclude<
       keyof AppSettings,
-      'autoUpdate' | 'lastSeenWhatsNew' | 'agentManagementTools' | 'extensionCookieSources'
+      'lastSeenWhatsNew' | 'agentManagementTools' | 'extensionCookieSources'
     >,
     z.ZodType
   >)

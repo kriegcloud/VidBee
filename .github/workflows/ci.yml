@@ -1,12 +1,22 @@
 name: CI
 
+# Pull-request gate for the fork. Nothing here publishes anything.
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  i18n:
-    runs-on: ubuntu-latest
+  check:
+    name: Lint, typecheck, tests, deps
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -14,20 +24,33 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Check locale completeness
-        run: node apps/desktop/scripts/check-locales.js
+      - name: Lint, locale check and typecheck
+        run: bun run check
+
+      - name: Tests
+        run: bun run test:audit
+
+      - name: Dependency catalog check
+        run: bun run deps:check
 
   build:
+    name: Linux packaged build
     uses: ./.github/workflows/build.yml
+    with:
+      upload_artifacts: true
+
+  extension:
+    name: Extension build
+    uses: ./.github/workflows/extension-build.yml
     with:
       upload_artifacts: true

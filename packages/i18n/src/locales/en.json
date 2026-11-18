@@ -1,11 +1,9 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "Check updates",
       "download": "Download",
       "email": "Email",
       "feedback": "Feedback",
-      "goToDownload": "Go to download page",
       "openRepo": "Open GitHub repository",
       "view": "View",
       "visit": "Visit"
@@ -14,9 +12,6 @@
       "currentVersion": "Current"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "Automatic updates are always enabled and new releases download in the background.",
-    "microsoftStoreUpdateDescription": "Application updates are managed by Microsoft Store. Open the Store to check for updates.",
-    "autoUpdateTitle": "Auto updates",
     "description": "Download media from 1000+ sites, create searchable transcripts on your computer, and summarize, translate, or ask questions with the AI provider you choose—all in one free, open-source desktop app.",
     "downloadEngine": {
       "status": {
@@ -55,20 +50,8 @@
     "here": "here",
     "homepage": "Homepage",
     "notifications": {
-      "checkingUpdates": "Looking for updates...",
       "downloadError": "Failed to download update",
-      "downloadUpdate": "Download and install update {{version}}?",
-      "manualDownloadAction": "Download now",
-      "noUpdatesAvailable": "You're using the latest version",
-      "outdatedVersionRisk": "Your version is too old and may cause downloads to fail.",
-      "restartToUpdate": "Restart now to install update?",
-      "restartNowAction": "Restart now",
-      "updateAvailable": "Update available: {{version}}",
-      "updateAvailableMessage": "A new version {{version}} is available. Please download it from the official website.",
-      "updateDownloaded": "Update downloaded, restart to install",
-      "updateDownloadedVersion": "Update {{version}} downloaded, restart to install",
-      "updateError": "Failed to check for updates: {{error}}",
-      "unknownErrorFallback": "Unknown error"
+      "manualDownloadAction": "Download now"
     },
     "resources": {
       "changelog": "Release notes",
@@ -105,14 +88,7 @@
     "sourceCode": "Source Code is available",
     "title": "About",
     "version": "Version",
-    "versionLabel": "v{{version}}",
-    "latestVersionBadge": "Latest: v{{version}}",
-    "latestVersionStatus": {
-      "available": "New version available",
-      "uptodate": "You're up to date",
-      "error": "Unable to fetch the latest version"
-    },
-    "downloadingUpdate": "Downloading update"
+    "versionLabel": "v{{version}}"
   },
   "advancedOptions": {
     "closeWhenDone": "Close app when download finishes",
@@ -766,8 +742,6 @@
     "launchAtLogin": "Launch at startup",
     "launchAtLoginDescription": "Open VidBeep automatically after you sign in to your computer",
     "launchAtLoginUnsupported": "Auto launch is only available on macOS and Windows",
-    "enableAnalytics": "Help improve VidBeep",
-    "enableAnalyticsDescription": "Share anonymous usage data to help us understand how the app is used and prioritize improvements",
     "enableDownloadNotifications": "Download notifications",
     "enableDownloadNotificationsDescription": "Show a system notification when a download finishes",
     "downloadWithoutChannelSubfolders": "Save videos without channel subfolders",

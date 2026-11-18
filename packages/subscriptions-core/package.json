@@ -5,7 +5,6 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./contract": "./src/contract.ts",
     "./types": "./src/types.ts",
     "./schemas": "./src/schemas.ts",
     "./form": "./src/form.ts",
@@ -27,7 +26,6 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@orpc/contract": "catalog:",
     "@vidbee/downloader-core": "workspace:^",
     "drizzle-orm": "catalog:",
     "rss-parser": "catalog:",

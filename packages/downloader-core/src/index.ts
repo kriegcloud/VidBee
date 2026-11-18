@@ -4,7 +4,6 @@ export {
   buildBrowserCookiesSetting,
   parseBrowserCookiesSetting
 } from './browser-cookies-setting'
-export { downloaderContract } from './contract'
 export {
   getBrowserCookieDatabaseName,
   getBrowserCookieDatabaseRelativeSegments,

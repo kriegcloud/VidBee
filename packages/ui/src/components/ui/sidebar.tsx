@@ -30,7 +30,6 @@ interface SidebarProps {
   currentPage: Page
   onPageChange: (page: Page) => void
   labels: SidebarLabels
-  updateAvailable?: boolean
   logoSrc?: string
   logoAlt?: string
   appName?: string
@@ -81,7 +80,6 @@ export function Sidebar({
   currentPage,
   onPageChange,
   labels,
-  updateAvailable = false,
   logoSrc = './app-icon.png',
   logoAlt = 'App icon',
   appName = 'App',
@@ -164,7 +162,6 @@ export function Sidebar({
         {bottomNavigationItems.map((item) => {
           const isActive = currentPage === item.id
           const IconComponent = isActive ? item.icon.active : item.icon.inactive
-          const showUpdateDot = item.id === 'about' && updateAvailable
 
           return (
             <NoDrag className="flex flex-col items-center gap-1" key={item.id}>
@@ -177,9 +174,6 @@ export function Sidebar({
                     variant="ghost"
                   >
                     <IconComponent className={cn('h-5! w-5!', isActive && 'text-primary')} />
-                    {showUpdateDot ? (
-                      <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
-                    ) : null}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">

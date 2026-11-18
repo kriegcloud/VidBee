@@ -1,19 +1,14 @@
 {
   "about": {
     "actions": {
-      "checkUpdates": "Periksa pembaruan",
       "download": "Unduh",
       "email": "Email",
       "feedback": "Masukan",
-      "goToDownload": "Buka halaman unduhan",
       "openRepo": "Buka repositori GitHub",
       "view": "Lihat",
       "visit": "Kunjungi"
     },
     "appName": "VidBeep",
-    "autoUpdateDescription": "Unduh dan instal rilis baru secara otomatis di latar belakang.",
-    "microsoftStoreUpdateDescription": "Pembaruan aplikasi dikelola oleh Microsoft Store. Buka Store untuk memeriksa pembaruan.",
-    "autoUpdateTitle": "Pembaruan otomatis",
     "description": "Unduh media dari 1000+ situs, buat transkrip yang dapat dicari di komputer Anda, lalu gunakan penyedia AI pilihan Anda untuk merangkum, menerjemahkan, atau mengajukan pertanyaan—semuanya dalam satu aplikasi desktop gratis dan sumber terbuka.",
     "downloadEngine": {
       "status": {
@@ -52,20 +47,8 @@
     "here": "di sini",
     "homepage": "Beranda",
     "notifications": {
-      "checkingUpdates": "Mencari pembaruan...",
       "downloadError": "Gagal mengunduh pembaruan",
-      "downloadUpdate": "Unduh dan instal pembaruan {{version}}?",
-      "manualDownloadAction": "Unduh sekarang",
-      "noUpdatesAvailable": "Anda menggunakan versi terbaru",
-      "outdatedVersionRisk": "Versi Anda terlalu lama dan dapat menyebabkan unduhan gagal.",
-      "restartToUpdate": "Mulai ulang sekarang untuk menginstal pembaruan?",
-      "restartNowAction": "Mulai ulang sekarang",
-      "updateAvailable": "Pembaruan tersedia: {{version}}",
-      "updateAvailableMessage": "Versi baru {{version}} tersedia. Silakan unduh dari situs web resmi.",
-      "updateDownloaded": "Pembaruan diunduh, mulai ulang untuk menginstal",
-      "updateDownloadedVersion": "Pembaruan {{version}} diunduh, mulai ulang untuk menginstal",
-      "updateError": "Gagal memeriksa pembaruan: {{error}}",
-      "unknownErrorFallback": "Kesalahan tidak diketahui"
+      "manualDownloadAction": "Unduh sekarang"
     },
     "resources": {
       "changelog": "Catatan rilis",
@@ -103,13 +86,6 @@
     "title": "Tentang",
     "version": "Versi",
     "versionLabel": "v{{version}}",
-    "latestVersionBadge": "Terbaru: v{{version}}",
-    "latestVersionStatus": {
-      "available": "Versi baru tersedia",
-      "uptodate": "Anda sudah menggunakan versi terbaru",
-      "error": "Tidak dapat mengambil versi terbaru"
-    },
-    "downloadingUpdate": "Mengunduh pembaruan",
     "changelog": {
       "currentVersion": "Versi saat ini"
     }
@@ -678,8 +654,6 @@
     "launchAtLogin": "Luncurkan saat startup",
     "launchAtLoginDescription": "Buka VidBeep secara otomatis setelah Anda masuk ke komputer Anda",
     "launchAtLoginUnsupported": "Peluncuran otomatis hanya tersedia di macOS dan Windows",
-    "enableAnalytics": "Bantu tingkatkan VidBeep",
-    "enableAnalyticsDescription": "Bagikan data penggunaan anonim untuk membantu kami memahami bagaimana aplikasi digunakan dan memprioritaskan peningkatan",
     "enableDownloadNotifications": "Notifikasi unduhan",
     "enableDownloadNotificationsDescription": "Tampilkan notifikasi sistem saat unduhan selesai",
     "downloadWithoutChannelSubfolders": "Simpan video tanpa subfolder kanal",

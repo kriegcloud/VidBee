@@ -13,8 +13,6 @@ export {
   resolveSubscriptionItemStatus
 } from './status'
 export type { SubscriptionItemQueueStatus, SubscriptionStatusMeta } from './status'
-export { subscriptionContract } from './contract'
-export type { SubscriptionContract } from './contract'
 
 export {
   resolveFeedFromInput,

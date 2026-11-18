@@ -13,9 +13,7 @@ import {
   shell
 } from 'electron'
 import log from 'electron-log/main'
-import { autoUpdater } from 'electron-updater'
 import appIcon from '../../build/icon.png?asset'
-import { classifyDownloadError } from '../shared/telemetry/yt-dlp-error-classifier'
 import {
   buildAudioFormatPreference,
   buildVideoFormatPreference
@@ -24,7 +22,6 @@ import { configureLogger } from './config/logger-config'
 import { services } from './ipc'
 import { registerAgentArtifactProtocol } from './lib/agent-artifacts'
 import { isAppQuitPrepared, isAppQuitting, prepareAppQuit } from './lib/app-quit'
-import { canUseAppAutoUpdater } from './lib/app-update-policy'
 import {
   AUTH_PROTOCOL,
   handleDesktopAuthCallback,
@@ -32,16 +29,8 @@ import {
   registerDesktopAuthProtocol,
   setupDesktopAuth
 } from './lib/auth-client'
-import { isVendoredYtDlpBuild } from './lib/bundled-resources-path'
-import { initializeDesktopAnalytics } from './lib/desktop-analytics'
 import { downloadEngine } from './lib/download-facade'
 import { ffmpegManager } from './lib/ffmpeg-manager'
-import {
-  addMainBreadcrumb,
-  captureMainException,
-  captureMainMessage,
-  initGlitchTipMain
-} from './lib/glitchtip'
 import { localMediaKind } from './lib/import-local-media'
 import {
   createKeyedCoalescer,
@@ -99,24 +88,13 @@ log.initialize()
 
 // Configure logger settings
 configureLogger()
-initGlitchTipMain()
 
 process.on('uncaughtException', (error) => {
   log.error('Main process uncaught exception:', error)
-  captureMainException(error, {
-    tags: {
-      source: 'process.uncaughtException'
-    }
-  })
 })
 
 process.on('unhandledRejection', (reason) => {
   log.error('Main process unhandled rejection:', reason)
-  captureMainException(reason, {
-    tags: {
-      source: 'process.unhandledRejection'
-    }
-  })
 })
 
 if (process.platform === 'linux') {
@@ -231,7 +209,6 @@ const recoverRendererToHome = (window: BrowserWindow, trigger: string): void => 
     })
     .catch((error: unknown) => {
       log.error(`Failed to recover renderer after ${trigger}:`, error)
-      captureMainException(error, { tags: { source: 'renderer.recovery', trigger } })
     })
     .finally(() => {
       rendererRecoveryPromise = null
@@ -449,15 +426,8 @@ const handleDeepLinkUrl = (rawUrl: string): void => {
   const data = parseDownloadDeepLink(rawUrl)
   if (!data) {
     log.warn('Ignored unsupported deep link:', rawUrl)
-    addMainBreadcrumb('deeplink', 'Ignored unsupported deep link', {
-      url: rawUrl
-    })
     return
   }
-  addMainBreadcrumb('deeplink', 'Received deep link', {
-    type: data.type,
-    url: data.url
-  })
   if (settingsManager.get('oneClickDownload')) {
     queueOneClickDownload(data)
     return
@@ -620,7 +590,6 @@ export function createWindow(): void {
     isRendererReady = false
     destroyShareCaptureWindow()
     applyDockVisibility(settingsManager.get('hideDockIcon'))
-    // The hidden analytics collector keeps window-all-closed from firing.
     if (process.platform !== 'darwin' && !isAppQuitting() && !settingsManager.get('closeToTray')) {
       app.quit()
     }
@@ -652,7 +621,6 @@ export function createWindow(): void {
   // Load the remote URL for development or the local html file for production.
   void loadRendererEntry(mainWindow).catch((error: unknown) => {
     log.error('Failed to load renderer entry:', error)
-    captureMainException(error, { tags: { source: 'renderer.load' } })
   })
 
   mainWindow.webContents.on('did-finish-load', () => {
@@ -685,25 +653,14 @@ export function createWindow(): void {
  * Capture renderer failures and recover a native window that can no longer draw.
  */
 function setupRendererErrorHandling(window: BrowserWindow): void {
-  // Sentry issue VIDBEE-H8: Electron emits `unresponsive` for transient hangs
-  // too. Only capture freezes that actually exceed the 5s threshold so the
-  // signal isn't drowned out by short main-thread blips, and report the
-  // measured duration so we can tell a 6s blip apart from a 60s lockup.
-  const RENDERER_UNRESPONSIVE_REPORT_MS = 5000
   const RENDERER_UNRESPONSIVE_RECOVERY_MS = 15_000
   let unresponsiveSince: number | null = null
-  let unresponsiveTimer: NodeJS.Timeout | null = null
   let unresponsiveRecoveryTimer: NodeJS.Timeout | null = null
-  let unresponsiveReported = false
 
   /**
    * Cancel pending renderer-hang work after recovery or process exit.
    */
   const clearUnresponsiveTimers = (): void => {
-    if (unresponsiveTimer) {
-      clearTimeout(unresponsiveTimer)
-      unresponsiveTimer = null
-    }
     if (unresponsiveRecoveryTimer) {
       clearTimeout(unresponsiveRecoveryTimer)
       unresponsiveRecoveryTimer = null
@@ -718,17 +675,8 @@ function setupRendererErrorHandling(window: BrowserWindow): void {
     log.error(
       `Renderer process gone: reason=${details.reason} exitCode=${details.exitCode} url=${rendererUrl}`
     )
-    captureMainMessage(
-      'Renderer process gone',
-      {
-        extra: { exit_code: details.exitCode, renderer_url: rendererUrl },
-        tags: { reason: details.reason, source: 'renderer.process-gone' }
-      },
-      'error'
-    )
     clearUnresponsiveTimers()
     unresponsiveSince = null
-    unresponsiveReported = false
     isRendererUnresponsive = false
     if (details.reason !== 'clean-exit') {
       recoverRendererToHome(window, `renderer ${details.reason}`)
@@ -737,31 +685,9 @@ function setupRendererErrorHandling(window: BrowserWindow): void {
 
   window.webContents.on('unresponsive', () => {
     log.error('Renderer process became unresponsive')
-    addMainBreadcrumb('renderer', 'Renderer process became unresponsive', undefined, 'warning')
     isRendererUnresponsive = true
     unresponsiveSince = Date.now()
-    unresponsiveReported = false
     clearUnresponsiveTimers()
-    unresponsiveTimer = setTimeout(() => {
-      unresponsiveTimer = null
-      if (unresponsiveSince === null) {
-        return
-      }
-      unresponsiveReported = true
-      captureMainMessage(
-        'Renderer process unresponsive (sustained)',
-        {
-          extra: {
-            unresponsive_ms_at_capture: Date.now() - unresponsiveSince,
-            threshold_ms: RENDERER_UNRESPONSIVE_REPORT_MS
-          },
-          tags: {
-            source: 'renderer.unresponsive'
-          }
-        },
-        'warning'
-      )
-    }, RENDERER_UNRESPONSIVE_REPORT_MS)
     if (process.platform === 'win32' && app.isPackaged) {
       unresponsiveRecoveryTimer = setTimeout(() => {
         unresponsiveRecoveryTimer = null
@@ -777,26 +703,10 @@ function setupRendererErrorHandling(window: BrowserWindow): void {
   })
 
   window.webContents.on('responsive', () => {
-    const duration = unresponsiveSince === null ? null : Date.now() - unresponsiveSince
     log.info('Renderer process became responsive again')
     isRendererUnresponsive = false
-    addMainBreadcrumb('renderer', 'Renderer process became responsive again', {
-      unresponsive_ms: duration ?? undefined,
-      reported_to_sentry: unresponsiveReported
-    })
     clearUnresponsiveTimers()
-    if (unresponsiveReported && duration !== null) {
-      captureMainMessage(
-        'Renderer process recovered from sustained unresponsiveness',
-        {
-          extra: { unresponsive_ms: duration },
-          tags: { source: 'renderer.unresponsive' }
-        },
-        'info'
-      )
-    }
     unresponsiveSince = null
-    unresponsiveReported = false
   })
 
   // Listen for renderer errors via IPC
@@ -819,28 +729,6 @@ function setupRendererErrorHandling(window: BrowserWindow): void {
     if (errorData.context) {
       log.error('Error context:', errorData.context)
     }
-
-    const rendererError =
-      errorData?.error && typeof errorData.error === 'object'
-        ? new Error(errorData.error.message ?? 'Unknown renderer error')
-        : new Error('Unknown renderer error')
-
-    if (errorData?.error?.stack) {
-      rendererError.stack = errorData.error.stack
-    }
-
-    captureMainException(rendererError, {
-      extra: {
-        componentStack: errorData?.errorInfo?.componentStack,
-        rendererContext: errorData?.context,
-        timestamp: errorData?.timestamp
-      },
-      fingerprint: ['renderer-error', errorData?.error?.name ?? 'Error'],
-      tags: {
-        error_name: errorData?.error?.name ?? 'Error',
-        source: 'renderer.ipc'
-      }
-    })
   })
 }
 
@@ -895,7 +783,6 @@ function setupDownloadEvents(): void {
       progressIpc.clear(id)
       logIpc.clear(id)
     }
-    addMainBreadcrumb('download', 'Download queued')
     sendToRenderer('download:queued', item)
   })
 
@@ -904,7 +791,6 @@ function setupDownloadEvents(): void {
   })
 
   downloadEngine.on('download-started', (id: string) => {
-    addMainBreadcrumb('download', 'Download started', { downloadId: id })
     sendToRenderer('download:started', id)
   })
 
@@ -918,28 +804,10 @@ function setupDownloadEvents(): void {
 
   downloadEngine.on('download-completed', (id: string) => {
     flushDownloadIpc(id)
-    addMainBreadcrumb('download', 'Download completed', { downloadId: id })
     sendToRenderer('download:completed', id)
   })
 
   downloadEngine.on('download-error', (id: string, error: Error) => {
-    // Sentry issue VIDBEE-68: classify the error so operational failures (yt-dlp
-    // postprocessing, upstream HTTP / DRM / cookies) drop out of telemetry and
-    // genuine bugs get a stable category tag.
-    const { category, isOperational } = classifyDownloadError(error)
-    const glitchTipEventId = isOperational
-      ? undefined
-      : captureMainException(error, {
-          fingerprint: ['download-error', category, error.name, error.message],
-          tags: {
-            download_id: id,
-            download_error_category: category,
-            source: 'download-engine'
-          }
-        })
-    if (glitchTipEventId) {
-      downloadEngine.updateDownloadInfo(id, { glitchTipEventId })
-    }
     flushDownloadIpc(id)
     sendToRenderer('download:error', { id, error: error.message })
   })
@@ -1012,11 +880,6 @@ const startOneClickDownload = async (data: DeepLinkData): Promise<void> => {
         url: data.url,
         count: result.totalCount
       })
-      addMainBreadcrumb('download', 'One-click playlist download queued', {
-        count: result.totalCount,
-        type: data.type,
-        url: data.url
-      })
       return
     }
 
@@ -1029,28 +892,11 @@ const startOneClickDownload = async (data: DeepLinkData): Promise<void> => {
     })
     if (started) {
       log.info('One-click download queued:', { id: downloadId, url: data.url })
-      addMainBreadcrumb('download', 'One-click download queued', {
-        downloadId,
-        type: data.type,
-        url: data.url
-      })
     } else {
       log.info('One-click download already queued:', { id: downloadId, url: data.url })
-      addMainBreadcrumb('download', 'One-click download was already queued', {
-        downloadId,
-        url: data.url
-      })
     }
   } catch (error) {
     log.error('Failed to start one-click download:', error)
-    captureMainException(error, {
-      extra: {
-        deepLink: data
-      },
-      tags: {
-        source: 'one-click-download'
-      }
-    })
   }
 }
 
@@ -1115,80 +961,6 @@ function registerVidbeeProtocol(): void {
   }
 }
 
-/** Initialize stable automatic updates for installed desktop apps. */
-function initAutoUpdater(): void {
-  if (isVendoredYtDlpBuild()) {
-    log.info('Vendored build is managed from source, skipping automatic app updates')
-    return
-  }
-  if (!canUseAppAutoUpdater) {
-    log.info('App auto-updates are disabled for portable and Microsoft Store distributions')
-    return
-  }
-
-  try {
-    log.info('Initializing auto-updater...')
-
-    log.transports.file.level = 'info'
-    autoUpdater.logger = log
-    autoUpdater.autoDownload = true
-    autoUpdater.autoInstallOnAppQuit = true
-    autoUpdater.allowPrerelease = false
-    autoUpdater.channel = 'latest'
-    // Setting the channel enables downgrades unless explicitly disabled afterward.
-    autoUpdater.allowDowngrade = false
-
-    autoUpdater.on('update-available', (info) => {
-      log.info('Update available:', info.version)
-      addMainBreadcrumb('update', 'Update available', {
-        version: info.version
-      })
-      sendToRenderer('update:available', info)
-      log.info('Automatic updates are required, update will download in the background')
-    })
-
-    autoUpdater.on('update-not-available', (info) => {
-      log.info('Update not available:', info.version)
-      sendToRenderer('update:not-available', info)
-    })
-
-    autoUpdater.on('error', (err) => {
-      log.error('Update error:', err)
-      captureMainException(err, {
-        tags: {
-          source: 'auto-updater'
-        }
-      })
-      sendToRenderer('update:error', err.message)
-    })
-
-    autoUpdater.on('download-progress', (progressObj) => {
-      sendToRenderer('update:download-progress', progressObj)
-    })
-
-    autoUpdater.on('update-downloaded', (info) => {
-      log.info('Update downloaded:', info.version)
-      addMainBreadcrumb('update', 'Update downloaded', {
-        version: info.version
-      })
-      sendToRenderer('update:downloaded', info)
-    })
-
-    log.info('Auto-updater initialized successfully')
-    log.info('Automatic updates are required, checking for updates immediately...')
-    // Use checkForUpdates instead of checkForUpdatesAndNotify
-    // because we have our own notification system and want to ensure immediate download
-    void autoUpdater.checkForUpdates()
-  } catch (error) {
-    log.error('Failed to initialize auto-updater:', error)
-    captureMainException(error, {
-      tags: {
-        source: 'auto-updater.init'
-      }
-    })
-  }
-}
-
 const allowMultipleInstances = process.env.VIDBEE_ALLOW_MULTIPLE_INSTANCES === '1'
 const gotSingleInstanceLock = allowMultipleInstances || app.requestSingleInstanceLock()
 
@@ -1218,22 +990,6 @@ app.on('child-process-gone', (_event, details) => {
 
   log.error(
     `Electron child process gone: type=${details.type} reason=${details.reason} exitCode=${details.exitCode} service=${details.serviceName ?? details.name ?? 'unknown'}`
-  )
-  captureMainMessage(
-    'Electron child process gone',
-    {
-      extra: {
-        exit_code: details.exitCode,
-        name: details.name,
-        service_name: details.serviceName
-      },
-      tags: {
-        process_type: details.type,
-        reason: details.reason,
-        source: 'electron.child-process-gone'
-      }
-    },
-    'error'
   )
 
   const window = mainWindow
@@ -1275,7 +1031,6 @@ app.whenReady().then(async () => {
   settingsManager.applyFreshInstallLocale()
 
   registerVidbeeProtocol()
-  initializeDesktopAnalytics(() => mainWindow, rendererEntryUrl(), app.getVersion())
 
   if (isPortableMode) {
     log.info(`Portable mode is active, skipping ${APP_PROTOCOL} protocol handler registration`)
@@ -1374,13 +1129,10 @@ app.whenReady().then(async () => {
   await startExtensionApiServer()
 
   if (BACKGROUND_MODE) {
-    addMainBreadcrumb('app', 'Started in --background tray-only mode')
     log.info('Desktop launched with --background; main window will stay hidden')
   }
 
   applyAutoLaunchSetting(settingsManager.get('launchAtLogin'))
-
-  initAutoUpdater()
 
   // Create system tray
   createTray()

@@ -40,13 +40,12 @@ const PACKAGING_FILE_IGNORES = [
   '!electron-builder.yml',
   '!drizzle.config.ts',
   '!components.json',
-  '!renderer-react-resolve.ts',
-  '!dev-app-update.yml'
+  '!renderer-react-resolve.ts'
 ]
 
 /**
  * Deletes electron-vite sourcemaps under `out/` so they cannot enter app.asar.
- * Maps stay on disk until this hook; upload them before `electron-builder`.
+ * Maps stay on disk until this hook.
  * @param {string} projectDir
  * @returns {{ removed: number, bytes: number }}
  */
