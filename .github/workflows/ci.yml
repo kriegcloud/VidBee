@@ -38,7 +38,10 @@ jobs:
         run: bun run check
 
       - name: Tests
-        run: bun run test:audit
+        run: bun run test
+
+      - name: Effect port ratchet
+        run: bun run port:check
 
       - name: Dependency catalog check
         run: bun run deps:check
