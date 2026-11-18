@@ -186,14 +186,8 @@ Sensitive arguments (`--password`, `--video-password`, `--ap-password`, `--twofa
 
 ---
 
-## Versioning & releasing
+## Building
 
-CLI semver is **independent of VidBee Desktop**. The CLI starts at `0.1.0`; Desktop continues on `1.x`. We bump the CLI on its own cadence so a `yt-dlp` probe-flag fix doesn't have to wait for a Desktop release.
+This fork does not publish the CLI to npm; build it from the workspace.
 
-To cut a release:
-
-1. Update `apps/cli/package.json` `version` and add a `CHANGELOG.md` entry.
-2. Push a `cli-vX.Y.Z` tag. The [`cli-publish.yml`](https://github.com/nexmoe/vidbee/blob/main/.github/workflows/cli-publish.yml) workflow typechecks, builds, and publishes to npm with `pnpm publish` using the `NPM_TOKEN` secret.
-3. Verify on a clean machine: `npx @vidbee/cli@latest :version` should report the new version.
-
-`bun run --cwd apps/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the npm `bin`). The published tarball includes only `dist/`, the README, the CHANGELOG, and the LICENSE — no source.
+`bun run --cwd apps/cli build` produces `dist/index.mjs` (single bundled ESM file) and `dist/bin/vidbee.mjs` (the `bin` entry).

@@ -1,5 +1,6 @@
 name: Build Extension
 
+# Browser extension build, called from ci.yml.
 on:
   workflow_call:
     inputs:
@@ -9,25 +10,32 @@ on:
         default: false
         description: 'Whether to upload build artifacts'
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build (extension)
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: Install dependencies
-        run: bun install --filter ./apps/extension --frozen-lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck extension
+        run: bun run --cwd apps/extension compile
 
       - name: Build extension
         run: bun run --cwd apps/extension build
@@ -41,5 +49,5 @@ jobs:
         with:
           name: dist-extension
           path: apps/extension/.output/*.zip
-          retention-days: 1
+          retention-days: 3
           if-no-files-found: error
