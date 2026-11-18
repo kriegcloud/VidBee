@@ -10,6 +10,8 @@
     "includes": [
       "packages/schema/**",
       "packages/logger/**",
+      "packages/i18n/**",
+      "!packages/i18n/src/locales/**",
       "!**/dist",
       "!**/node_modules",
       "!packages/logger/src/script.mjs"

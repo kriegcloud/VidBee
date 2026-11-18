@@ -7,18 +7,25 @@
     ".": "./src/index.ts",
     "./languages": "./src/languages.ts",
     "./system-locale": "./src/system-locale.ts",
-    "./locales/*": "./src/locales/*.json"
+    "./locales/*": "./src/locales/*.json",
+    "./legacy": "./src/legacy/index.ts",
+    "./legacy/system-locale": "./src/legacy/system-locale.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
   },
   "dependencies": {
-    "react-i18next": "catalog:"
+    "effect": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "i18next": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "i18next": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:"
   }
 }

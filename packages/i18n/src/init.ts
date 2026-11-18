@@ -1,7 +1,8 @@
-import type { InitOptions, i18n as I18nInstance, ThirdPartyModule } from 'i18next'
-import { defaultLanguageCode, supportedLanguageCodes } from './languages'
-import { translationResources } from './resources'
-
+import * as Effect from "effect/Effect";
+import { I18nInitializer } from "./I18n.service.js";
+import { defaultLanguageCode, supportedLanguageCodes } from "./languages.js";
+import { translationResources } from "./resources.js";
+import type { i18n as I18nInstance, InitOptions, ThirdPartyModule } from "i18next";
 /**
  * Build the shared i18next options (resources, default/fallback language).
  */
@@ -11,27 +12,18 @@ export const createI18nOptions = (): InitOptions => ({
   fallbackLng: defaultLanguageCode,
   supportedLngs: supportedLanguageCodes,
   interpolation: {
-    escapeValue: false
-  }
-})
+    escapeValue: false,
+  },
+});
 
 /**
- * Initialize a shared i18next instance with the consumer's own React binding.
- *
- * The `reactBinding` (react-i18next's `initReactI18next`) MUST come from the
- * consuming app's own `react-i18next` copy. Importing it inside this package
- * resolves a separate physical react-i18next instance (peer-dependency
- * duplication in the workspace), so `setI18n()` and `useTranslation()` would
- * bind to different module state and every key would render untranslated.
+ * Initialize with the consuming app's own react-i18next binding, so setI18n and
+ * useTranslation share that app's module state. Never import its runtime here.
  */
-export const initSharedI18n = async (
+export const initSharedI18n = Effect.fn("i18n.initSharedI18n")(function* (
   instance: I18nInstance,
   reactBinding: ThirdPartyModule
-): Promise<I18nInstance> => {
-  if (instance.isInitialized) {
-    return instance
-  }
-
-  await instance.use(reactBinding).init(createI18nOptions())
-  return instance
-}
+) {
+  const initializer = yield* I18nInitializer;
+  return yield* initializer.initialize(instance, reactBinding);
+});
