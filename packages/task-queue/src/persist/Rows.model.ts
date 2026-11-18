@@ -1,4 +1,5 @@
 import * as S from "effect/Schema";
+import * as Getter from "effect/SchemaGetter";
 import * as T from "../Task.model.js";
 
 const rest = [S.Record(S.String, S.Unknown)];
@@ -31,6 +32,14 @@ export const InputJson = S.fromJsonString(Input);
 export const ProgressJson = S.fromJsonString(Progress);
 export const OutputJson = S.fromJsonString(Output);
 export const ErrorJson = S.fromJsonString(Error);
+// SQLite safe-integer mode applies to every integer projection. Preserve ordinary
+// numbers and use the legacy seq/count Number conversion, including precision loss.
+const SqlNumber = S.Union([S.Finite, S.BigInt]).pipe(
+  S.decodeTo(S.Finite, {
+    decode: Getter.transform((value) => Number(value)),
+    encode: Getter.transform((value) => value),
+  })
+);
 export const RawTask = S.Struct({
   id: S.String,
   kind: T.TaskKind,
@@ -38,18 +47,18 @@ export const RawTask = S.Struct({
   status: T.TaskStatus,
   prev_status: S.NullOr(T.TaskStatus),
   status_reason: S.NullOr(S.String),
-  entered_status_at: S.Finite,
-  priority: T.TaskPriority,
+  entered_status_at: SqlNumber,
+  priority: SqlNumber.pipe(S.decodeTo(T.TaskPriority)),
   group_key: S.String,
-  attempt: S.Finite,
-  max_attempts: S.Finite,
-  next_retry_at: S.NullOr(S.Finite),
-  pid: S.NullOr(S.Finite),
-  pid_started_at: S.NullOr(S.Finite),
-  created_at: S.Finite,
-  updated_at: S.Finite,
+  attempt: SqlNumber,
+  max_attempts: SqlNumber,
+  next_retry_at: S.NullOr(SqlNumber),
+  pid: S.NullOr(SqlNumber),
+  pid_started_at: S.NullOr(SqlNumber),
+  created_at: SqlNumber,
+  updated_at: SqlNumber,
   input_json: S.String,
-  first_started_at: S.NullOr(S.Finite),
+  first_started_at: S.NullOr(SqlNumber),
   progress_json: S.NullOr(S.String),
   output_json: S.NullOr(S.String),
   last_error_json: S.NullOr(S.String),
@@ -57,27 +66,27 @@ export const RawTask = S.Struct({
 export const RawAttempt = S.Struct({
   id: S.String,
   task_id: S.String,
-  attempt_number: S.Finite,
-  started_at: S.Finite,
-  ended_at: S.NullOr(S.Finite),
-  exit_code: S.NullOr(S.Finite),
+  attempt_number: SqlNumber,
+  started_at: SqlNumber,
+  ended_at: S.NullOr(SqlNumber),
+  exit_code: S.NullOr(SqlNumber),
   error_category: S.NullOr(T.ErrorCategory),
   stdout_tail: S.NullOr(S.String),
   stderr_tail: S.NullOr(S.String),
   raw_args_hash: S.String,
 });
 export const RawJournal = S.Struct({
-  seq: S.Union([S.Finite, S.BigInt]),
-  ts: S.Finite,
+  seq: SqlNumber,
+  ts: SqlNumber,
   op: T.ProcessJournalOp,
   task_id: S.String,
   attempt_id: S.NullOr(S.String),
-  pid: S.Finite,
-  pid_started_at: S.NullOr(S.Finite),
-  exit_code: S.NullOr(S.Finite),
+  pid: SqlNumber,
+  pid_started_at: S.NullOr(SqlNumber),
+  exit_code: S.NullOr(SqlNumber),
   signal: S.NullOr(S.String),
 });
-export const Count = S.Struct({ n: S.Union([S.Finite, S.BigInt]) });
+export const Count = S.Struct({ n: SqlNumber });
 export const Id = S.Struct({ id: S.String });
 
-export const Exists = S.Struct({ present: S.Finite });
+export const Exists = S.Struct({ present: SqlNumber });

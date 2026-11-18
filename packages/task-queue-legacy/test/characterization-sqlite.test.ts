@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { inspect } from 'node:util'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -199,22 +200,56 @@ test('SQLite open spawns match later seq, task, pid and null/empty attempt; orde
   ])
 })
 
-test('SQLite bigint sequence and count values are converted to numbers (including precision loss)', async (t) => {
+test('SQLite bigint mode: formerly only sequence/count normalized, now every integer becomes a number', async (t) => {
   const { db, driver } = database(t)
   const persist = new SqlitePersistAdapter({ db: driver })
   db.defaultSafeIntegers(true)
   await persist.insertTask(task('root'))
   await persist.insertAttempt(spawn('root', 'a'))
   await persist.insertAttempt(spawn('root', 'b'))
-  assert.equal((await persist.loadLatestAttempt('root'))?.attemptNumber, 2n)
+  // Before the port: assert.equal((await persist.loadLatestAttempt('root'))?.attemptNumber, 2n)
+  assert.equal((await persist.loadLatestAttempt('root'))?.attemptNumber, 2)
   db.prepare('INSERT INTO process_journal (seq, ts, op, task_id, pid) VALUES (?, ?, ?, ?, ?)')
     .run(9007199254740993n, 1, 'spawn', 'root', 123)
   const [row] = await persist.findOpenSpawns()
   assert.ok(row)
   assert.equal(row.seq, 9007199254740992)
   assert.equal(typeof row.seq, 'number')
-  // Only seq is normalized: the other integer fields keep the driver's bigint mode.
-  assert.equal(row.pid, 123n)
+  // Before the port: assert.equal(row.pid, 123n)
+  assert.equal(row.pid, 123)
+  assert.equal(await persist.hasTask('root'), true)
+  assert.equal((await persist.loadAllTasks())[0]?.attempt, 1)
+})
+
+test('SQLite bigint mode loses precision above 2^53 in every unconstrained integer field', async (t) => {
+  const { db, driver } = database(t)
+  const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
+  await persist.insertTask(task('root'))
+  await persist.insertAttempt(spawn('root', 'a'))
+  const big = 9007199254740993n
+  const rounded = 9007199254740992
+  db.defaultSafeIntegers(true)
+  const taskColumns = ['entered_status_at', 'attempt', 'max_attempts', 'next_retry_at', 'pid',
+    'pid_started_at', 'created_at', 'updated_at']
+  db.prepare(`UPDATE tasks SET ${taskColumns.map((column) => `${column} = ?`).join(', ')}`).run(...taskColumns.map(() => big))
+  const attemptColumns = ['attempt_number', 'started_at', 'ended_at', 'exit_code']
+  db.prepare(`UPDATE attempts SET ${attemptColumns.map((column) => `${column} = ?`).join(', ')}`).run(...attemptColumns.map(() => big))
+  db.prepare('INSERT INTO process_journal (seq, ts, op, task_id, pid, pid_started_at, exit_code) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .run(big, big, 'spawn', 'root', big, big, big)
+  const [loaded] = await persist.loadAllTasks()
+  assert.ok(loaded)
+  for (const field of ['enteredStatusAt', 'attempt', 'maxAttempts', 'nextRetryAt', 'pid', 'pidStartedAt', 'createdAt', 'updatedAt'] as const) {
+    assert.equal(loaded[field], rounded, field)
+  }
+  assert.equal(loaded.priority, 0) // The enum's valid values cannot exceed 2^53.
+  assert.equal(loaded.input.options?.startedAt, rounded) // MIN(started_at) projection/backfill.
+  const attempt = await persist.loadLatestAttempt('root')
+  assert.ok(attempt)
+  for (const field of ['attemptNumber', 'startedAt', 'endedAt', 'exitCode'] as const) assert.equal(attempt[field], rounded, field)
+  const [open] = await persist.findOpenSpawns()
+  assert.ok(open)
+  for (const field of ['seq', 'ts', 'pid', 'pidStartedAt', 'exitCode'] as const) assert.equal(open[field], rounded, field)
+  assert.equal(await persist.hasTask('root'), true) // EXISTS stays the number 1 internally.
 })
 
 test('SQLite maintenance ages strictly older journal rows and swallows a real checkpoint failure', async (t) => {
@@ -289,12 +324,17 @@ const columns = [
 ] as const
 
 for (const [column] of columns) {
-  test(`SQLite malformed ${column}: load and start reject with native SyntaxError`, async (t) => {
+  test(`SQLite malformed ${column}: load and start formerly rejected with native text, now reject with task/column SyntaxError`, async (t) => {
     const { db, driver } = database(t)
     const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
     await persist.insertTask(task('corrupt'))
     db.prepare(`UPDATE tasks SET ${column} = ? WHERE id = ?`).run('{', 'corrupt')
-    const expected = { name: 'SyntaxError', message: "Expected property name or '}' in JSON at position 1 (line 1 column 2)" }
+    // Before the port: { name: 'SyntaxError', message: "Expected property name or '}' in JSON at position 1 (line 1 column 2)" }
+    const expected = (error: unknown) => {
+      assert.ok(error instanceof SyntaxError)
+      assert.equal(error.message, `Cannot decode task corrupt column ${column}`)
+      return true
+    }
     await assert.rejects(persist.loadAllTasks(), expected)
     const queue = queueFor(persist)
     await assert.rejects(queue.start(), expected)
@@ -303,39 +343,72 @@ for (const [column] of columns) {
   })
 }
 
+// Observe real error records from the shared SQL runtime without replacing persistence.
+const assertSkipped = async (t: TestContext, db: Database.Database, persist: SqlitePersistAdapter,
+  id: string, column: string, path: string) => {
+  const logs: string[] = []
+  t.mock.method(console, 'log', (...args: unknown[]) => { logs.push(args.map((value) => typeof value === 'string' ? value : inspect(value)).join(' ')) })
+  const before = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id)
+  assert.deepEqual((await persist.loadAllTasks()).map((row) => row.id), ['healthy'])
+  assert.equal(logs.length, 1)
+  const queue = queueFor(persist)
+  await queue.start()
+  assert.equal(queue.get(id), undefined)
+  assert.ok(queue.get('healthy'))
+  assert.deepEqual(db.prepare('SELECT * FROM tasks WHERE id = ?').get(id), before)
+  assert.equal(logs.length, 2) // One record per read: direct load and queue start.
+  for (const log of logs) {
+    assert.match(log, /ERROR/)
+    assert.ok(log.includes(id))
+    assert.ok(log.includes(column))
+    assert.ok(log.endsWith(inspect({ taskId: id, column, issue: path })))
+    assert.ok(!log.includes('object-expected'))
+    assert.ok(!log.includes('fixture.invalid'))
+    assert.ok(!log.includes('example.com'))
+    assert.ok(!log.includes("'wrong'"))
+  }
+  await queue.stop()
+}
+
 for (const [column, field] of columns) {
   for (const value of ['object-expected', null, {}, { kind: 42, url: false, percent: 'wrong', size: 'wrong', retryable: 'wrong' }]) {
-    test(`SQLite wrong-shaped ${column} ${JSON.stringify(value)}: ${column === 'input_json' && value === null ? 'throws' : 'loads unchanged'}`, async (t) => {
-      const { db, driver } = database(t)
-      const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
-      await persist.insertTask(task('wrong-shape'))
-      db.prepare(`UPDATE tasks SET ${column} = ? WHERE id = ?`).run(JSON.stringify(value), 'wrong-shape')
-      const queue = queueFor(persist)
-      if (column === 'input_json' && value === null) {
-        const expected = { name: 'TypeError', message: "Cannot read properties of null (reading 'options')" }
-        await assert.rejects(persist.loadAllTasks(), expected)
-        await assert.rejects(queue.start(), expected)
-      } else {
+    // Nullable output/error were already valid; keep these two original cases unchanged.
+    if ((column === 'output_json' || column === 'last_error_json') && value === null) {
+      test(`SQLite wrong-shaped ${column} ${JSON.stringify(value)}: loads unchanged`, async (t) => {
+        const { db, driver } = database(t)
+        const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
+        await persist.insertTask(task('wrong-shape'))
+        db.prepare(`UPDATE tasks SET ${column} = ? WHERE id = ?`).run(JSON.stringify(value), 'wrong-shape')
+        const queue = queueFor(persist)
         assert.deepEqual((await persist.loadAllTasks())[0]?.[field], value)
         await queue.start()
         assert.deepEqual(queue.get('wrong-shape')?.[field], value)
-      }
-      await queue.stop()
+        await queue.stop()
+      })
+      continue
+    }
+    test(`SQLite wrong-shaped ${column} ${JSON.stringify(value)}: formerly ${column === 'input_json' && value === null ? 'throws' : 'loads unchanged'}, now skips and logs`, async (t) => {
+      const { db, driver } = database(t)
+      const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
+      await persist.insertTask(task('wrong-shape'))
+      await persist.insertTask(task('healthy', { status: 'paused' }))
+      db.prepare(`UPDATE tasks SET ${column} = ? WHERE id = ?`).run(JSON.stringify(value), 'wrong-shape')
+      const path = value === null || typeof value === 'string' ? 'root' : column === 'input_json' ? 'url' : column === 'progress_json' ? 'percent' : column === 'output_json' ? 'filePath' : 'category'
+      // Before the port: input_json null rejects with { name: 'TypeError', message: "Cannot read properties of null (reading 'options')" }; otherwise assert.deepEqual((await persist.loadAllTasks())[0]?.[field], value) and assert.deepEqual(queue.get('wrong-shape')?.[field], value).
+      await assertSkipped(t, db, persist, 'wrong-shape', column, path)
     })
   }
 }
 
-test('SQLite primitive input with an attempt fails when timestamp backfill assigns options', async (t) => {
+test('SQLite primitive input with an attempt formerly fails timestamp backfill, now skips and logs', async (t) => {
   const { db, driver } = database(t)
   const persist = new SqlitePersistAdapter({ db: driver, ownsConnection: false })
   await persist.insertTask(task('primitive'))
+  await persist.insertTask(task('healthy', { status: 'paused' }))
   await persist.insertAttempt(spawn('primitive', 'a'))
-  db.prepare('UPDATE tasks SET input_json = ?').run('"object-expected"')
-  const expected = { name: 'TypeError', message: "Cannot create property 'options' on string 'object-expected'" }
-  await assert.rejects(persist.loadAllTasks(), expected)
-  const queue = queueFor(persist)
-  await assert.rejects(queue.start(), expected)
-  await queue.stop()
+  db.prepare('UPDATE tasks SET input_json = ? WHERE id = ?').run('"object-expected"', 'primitive')
+  // Before the port: loadAllTasks() and queue.start() reject with { name: 'TypeError', message: "Cannot create property 'options' on string 'object-expected'" }.
+  await assertSkipped(t, db, persist, 'primitive', 'input_json', 'root')
 })
 
 test('SQLite unknown keys survive loading, public cancellation transition, save and reload at every object level', async (t) => {
