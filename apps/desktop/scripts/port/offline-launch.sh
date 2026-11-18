@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: offline-launch.sh <linux-unpacked> <new run dir> [seconds] [seed dir]
+# Usage: offline-launch.sh <linux-unpacked> <new run dir> [seconds] [seed dir] [owned disposable profile]
 # The caller must use a new directory. All descendants belong to a dedicated
 # session, so cleanup never matches or signals another VidBee instance.
 set -euo pipefail
@@ -7,11 +7,26 @@ APP="$(realpath "$1")"
 RUN="$(realpath -m "$2")"
 SECS="${3:-75}"
 SEED="${4:-}"
+PROFILE="${5:-}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 test ! -e "$RUN" || { echo "run directory already exists: $RUN" >&2; exit 1; }
 test -x "$APP/vidbee"
 mkdir -p "$RUN/home/.config" "$RUN/home/.cache" "$RUN/home/.local/share" "$RUN/userdata"
-if [ -n "$SEED" ]; then cp -a "$SEED/." "$RUN/userdata/"; fi
+if [ -n "$PROFILE" ]; then
+  test -z "$SEED" || { echo "profile reuse cannot also seed a copy" >&2; exit 1; }
+  PROFILE="$(realpath "$PROFILE")"
+  # This optional restart seam accepts only a golden run's sibling profile.
+  # It must never become a route to the owner's profile or installation.
+  case "$PROFILE" in
+    "$(dirname "$RUN")/run/userdata") ;;
+    *) echo "profile reuse requires this suite's original run/userdata" >&2; exit 1 ;;
+  esac
+  test -f "$PROFILE/vidbee.db"
+  rmdir "$RUN/userdata"
+  ln -s "$PROFILE" "$RUN/userdata"
+elif [ -n "$SEED" ]; then
+  cp -a "$SEED/." "$RUN/userdata/"
+fi
 printf 'nameserver 127.0.0.1\noptions timeout:1 attempts:1\n' > "$RUN/resolv.conf"
 sed -E 's/^hosts:.*/hosts: files dns/' /etc/nsswitch.conf > "$RUN/nsswitch.conf"
 RESOLV="$(readlink -f /etc/resolv.conf)"

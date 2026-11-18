@@ -1,0 +1,103 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "video",
+    "url": "http://127.0.0.1:<port>/video.mp4",
+    "status": "completed",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": "loopback-video.mp4",
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": {
+      "filePath": "<run>/downloads/loopback-video/loopback-video.mp4",
+      "size": 35476,
+      "durationMs": null,
+      "sha256": null,
+      "formatId": "mp4",
+      "cookieSources": []
+    },
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "completed"],
+  "history": [
+    {
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/video.mp4",
+      "title": "video",
+      "type": "video",
+      "status": "completed",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "fileSize": 35476,
+      "downloadPath": "<run>/downloads/loopback-video",
+      "savedFileName": "loopback-video.mp4",
+      "filePath": "<run>/downloads/loopback-video/loopback-video.mp4",
+      "resolvedFormatId": "mp4",
+      "cookieSources": [],
+      "channel": "Generic",
+      "uploader": "Generic",
+      "origin": "agent",
+      "taskKind": "video"
+    }
+  ],
+  "file": {
+    "size": 35476,
+    "name": "loopback-video.mp4",
+    "probe": {
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 160,
+          "height": 90
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "sample_rate": "16000",
+          "channels": 1
+        }
+      ],
+      "format": {
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "duration": "2.000000",
+        "size": "35476"
+      }
+    }
+  },
+  "queue": {
+    "total": 1,
+    "byStatus": {
+      "queued": 0,
+      "running": 0,
+      "processing": 0,
+      "paused": 0,
+      "retry-scheduled": 0,
+      "completed": 1,
+      "failed": 0,
+      "cancelled": 0
+    },
+    "running": 0,
+    "queued": 0,
+    "capacity": 5,
+    "groupCount": 1
+  }
+}

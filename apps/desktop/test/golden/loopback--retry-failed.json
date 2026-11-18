@@ -1,0 +1,57 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "url": "http://127.0.0.1:<port>/recover.mp4",
+    "status": "failed",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": {
+      "category": "not-found",
+      "exitCode": null,
+      "rawMessage": "ERROR: [generic] recover: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n\nError code: 1\n\nStderr:\nERROR: [generic] recover: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n",
+      "uiMessageKey": "task.error.notFound",
+      "uiActionHints": ["remove-task"],
+      "retryable": false,
+      "suggestedRetryAfterMs": null
+    },
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "failed"],
+  "history": [
+    {
+      "configuredCookieSources": [],
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/recover.mp4",
+      "title": "http://127.0.0.1:<port>/recover.mp4",
+      "type": "video",
+      "status": "error",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "downloadPath": "<run>/downloads",
+      "error": "ERROR: [generic] recover: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n\nError code: 1\n\nStderr:\nERROR: [generic] recover: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n",
+      "origin": "agent",
+      "taskKind": "video"
+    }
+  ],
+  "file": null
+}

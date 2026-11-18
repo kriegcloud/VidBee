@@ -1,0 +1,51 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "slow-cancel",
+    "url": "http://127.0.0.1:<port>/slow-cancel.mp4",
+    "status": "cancelled",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "cancelled"],
+  "history": [
+    {
+      "configuredCookieSources": [],
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/slow-cancel.mp4",
+      "title": "slow-cancel",
+      "type": "video",
+      "status": "cancelled",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "downloadPath": "<run>/downloads",
+      "channel": "Generic",
+      "uploader": "Generic",
+      "origin": "agent",
+      "taskKind": "video"
+    }
+  ],
+  "file": null
+}
