@@ -16,6 +16,8 @@ export interface GalleryDlProfileMapRuntime {
 
 export interface GalleryDlJsonRun {
   stdout: string
+  /** Last few KiB of stderr, where gallery-dl logs warnings such as challenges. */
+  stderr: string
   error?: string
   complete: boolean
 }
@@ -97,7 +99,7 @@ export const runGalleryDlJson = (
           : code !== 0 && !signal.aborted
             ? stderr.trim() || `${label} mapper exited with code ${code}.`
             : undefined
-      resolve({ stdout, error, complete: code === 0 && !signal.aborted && !exceeded })
+      resolve({ stdout, stderr, error, complete: code === 0 && !signal.aborted && !exceeded })
     })
   })
 

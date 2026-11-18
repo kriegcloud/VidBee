@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
@@ -115,9 +115,140 @@ console.log(JSON.stringify([2, { user: 'public-profile', category: 'vsco', subca
   const gallery = profile.categories.gallery
   assert.equal(gallery?.state, 'partial')
   assert.equal(gallery?.items.length, 0)
-  assert.match(gallery?.error ?? '', /refresh your VSCO session/)
+  assert.match(gallery?.error ?? '', /VSCO returned no posts/)
+  assert.match(gallery?.error ?? '', /choose that browser for cookies in Settings/)
   assert.match(gallery?.error ?? '', /import fresh VSCO cookies/)
-  assert.doesNotMatch(gallery?.error ?? '', /profile is public|private/)
+  assert.doesNotMatch(gallery?.error ?? '', /profile is public|private|re-read/)
+})
+
+/**
+ * A fake gallery-dl that answers with a Cloudflare challenge for the first
+ * `challenges` runs, then lists one post. Each run appends its argv to a log.
+ */
+const challengeThenPosts = async (root: string, challenges: number) => {
+  const bin = path.join(root, 'fake-gallery-dl')
+  const runs = path.join(root, 'runs.log')
+  await writeFile(
+    bin,
+    `#!${process.execPath}
+const fs = require('node:fs');
+fs.appendFileSync(${JSON.stringify(runs)}, JSON.stringify(process.argv.slice(2)) + '\\n');
+const run = fs.readFileSync(${JSON.stringify(runs)}, 'utf8').trim().split('\\n').length;
+console.log(JSON.stringify([2, { user: 'allybari', category: 'vsco', subcategory: 'gallery' }]));
+if (run <= ${challenges}) {
+  console.error('[vsco][warning] Cloudflare challenge');
+} else {
+  console.log(JSON.stringify([3, 'https://image.vsco.co/a.jpg', { id: '65a1b2c3d4e5f6', video: false }]));
+}
+`,
+    { mode: 0o755 }
+  )
+  const runCount = async () =>
+    (await readFile(runs, 'utf8'))
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line) as string[])
+  return { bin, runCount }
+}
+
+const braveRuntime = (bin: string) => ({
+  resolveGalleryDlPath: () => bin,
+  resolveYtDlpPath: () => bin,
+  resolveGalleryDlArgs: () => [
+    '--cookies-from-browser',
+    'brave:/home/user/.config/BraveSoftware/Brave-Browser/Default'
+  ]
+})
+
+test('a VSCO Cloudflare challenge is retried with a fresh read of the browser cookies', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-refresh-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { bin, runCount } = await challengeThenPosts(root, 1)
+  const items: string[] = []
+  const result = await mapVscoProfile(
+    'https://vsco.co/allybari/gallery',
+    'allybari',
+    braveRuntime(bin),
+    { browserForCookies: 'brave:/home/user/.config/BraveSoftware/Brave-Browser/Default' },
+    new AbortController().signal,
+    (item) => items.push(item.id),
+    { cookieRefreshDelaysMs: [0, 0] }
+  )
+  assert.deepEqual(result, { complete: true, error: undefined })
+  assert.deepEqual(items, ['65a1b2c3d4e5f6'])
+  const runs = await runCount()
+  assert.equal(runs.length, 2)
+  // Every run asks gallery-dl to extract the browser cookies again.
+  for (const argv of runs) {
+    assert.ok(argv.includes('--cookies-from-browser'))
+  }
+})
+
+test('a persistent VSCO Cloudflare challenge asks for the gallery to be opened in the cookie browser', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-challenge-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { bin, runCount } = await challengeThenPosts(root, 99)
+  const result = await mapVscoProfile(
+    'https://vsco.co/allybari/gallery',
+    'allybari',
+    braveRuntime(bin),
+    { browserForCookies: 'brave+kwallet:/home/user/.config/BraveSoftware/Brave-Browser/Default' },
+    new AbortController().signal,
+    () => assert.fail('A challenged map must not emit posts'),
+    { cookieRefreshDelaysMs: [0, 0] }
+  )
+  assert.equal(result.complete, false)
+  assert.equal(result.authRequired, true)
+  assert.match(result.error ?? '', /Cloudflare check/)
+  assert.match(result.error ?? '', /re-read Brave cookies 2 times/)
+  assert.match(result.error ?? '', /Open https:\/\/vsco\.co\/allybari\/gallery in Brave/)
+  assert.equal((await runCount()).length, 3)
+})
+
+test('a VSCO Cloudflare challenge marks the saved gallery as needing sign-in', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-auth-state-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { bin, runCount } = await challengeThenPosts(root, 99)
+  // Without browser cookies a rerun cannot change the answer, so none happens.
+  const manager = new SocialProfileManager({
+    storageDir: path.join(root, 'profiles'),
+    resolveYtDlpPath: () => bin,
+    runtime: { resolveBinaryPath: () => bin, resolveExtraArgs: () => [] }
+  })
+  const url = 'https://vsco.co/allybari/gallery'
+  manager.map(url, 'gallery')
+  const gallery = (await settled(manager, url, 'gallery')).categories.gallery
+  assert.equal(gallery?.state, 'auth-required')
+  assert.match(gallery?.error ?? '', /Choose your browser for cookies in Settings/)
+  assert.equal((await runCount()).length, 1)
+})
+
+test('stopping a VSCO map during a cookie refresh wait ends it without another run', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'vidbee-vsco-abort-test-'))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { bin, runCount } = await challengeThenPosts(root, 99)
+  const controller = new AbortController()
+  const mapping = mapVscoProfile(
+    'https://vsco.co/allybari/gallery',
+    'allybari',
+    braveRuntime(bin),
+    undefined,
+    controller.signal,
+    () => assert.fail('A challenged map must not emit posts'),
+    { cookieRefreshDelaysMs: [60_000] }
+  )
+  // Abort once the first run has finished and the refresh wait has begun.
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const done = await runCount().catch(() => [])
+    if (done.length === 1) {
+      break
+    }
+    await new Promise((resolve) => setTimeout(resolve, 25))
+  }
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  controller.abort()
+  assert.deepEqual(await mapping, { complete: false })
+  assert.equal((await runCount()).length, 1)
 })
 
 test('VSCO extractor failures retain the underlying error instead of reporting an empty gallery', async (t) => {

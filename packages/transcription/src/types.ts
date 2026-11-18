@@ -145,7 +145,7 @@ export type ModelRole =
   | 'punctuation'
   | 'speech'
 
-export type ModelGroup = 'vad' | 'speaker' | 'asr' | 'punct' | 'speech'
+export type ModelGroup = | 'vad' | 'speaker' | 'asr' | 'punct' | 'speech'
 
 /** One file that must exist inside a directory-shaped catalog entry. */
 export interface DirectoryMemberRequirement {
