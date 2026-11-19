@@ -117,10 +117,10 @@ export class SubscriptionsApi {
   const leaderHost=Object.assign(leaderReceiver,{metaStore,kind:opts.kind,pid:opts.pid,heartbeatIntervalMs:opts.leader?.heartbeatIntervalMs??30000,lockTtlMs:opts.leader?.lockTtlMs??90000,now:opts.now??opts.leader?.now??(()=>Date.now()),log:owner.log,scheduleInterval:opts.leader?.scheduleInterval??((cb:()=>void,ms:number)=>setInterval(cb,ms)),clearIntervalImpl:opts.leader?.clearInterval??((handle:unknown)=>clearInterval(handle as ReturnType<typeof setInterval>))})
   const base=Layer.mergeAll(
    Layer.succeed(SubscriptionMethodDispatch,{
-    refreshAll:fallback=>Effect.suspend(()=>this.refreshAll===SubscriptionsApi.prototype.refreshAll?fallback:promise(()=>this.refreshAll())),
-    reconcileOrphanedTasks:fallback=>Effect.suspend(()=>this.reconcileOrphanedTasks===SubscriptionsApi.prototype.reconcileOrphanedTasks?fallback:promise(()=>this.reconcileOrphanedTasks())),
-    releaseRemovedTasks:(ids,fallback)=>Effect.suspend(()=>this.releaseRemovedTasks===SubscriptionsApi.prototype.releaseRemovedTasks?fallback:promise(()=>this.releaseRemovedTasks(ids))),
-    refreshOne:(id,fallback)=>this.refreshOne===SubscriptionsApi.prototype.refreshOne?fallback:promise(()=>this.refreshOne(id))}),
+    refreshAll:fallback=>Effect.suspend(()=>this.refreshAll===originalMethods.refreshAll?fallback:promise(()=>this.refreshAll())),
+    reconcileOrphanedTasks:fallback=>Effect.suspend(()=>this.reconcileOrphanedTasks===originalMethods.reconcileOrphanedTasks?fallback:promise(()=>this.reconcileOrphanedTasks())),
+    releaseRemovedTasks:(ids,fallback)=>Effect.suspend(()=>this.releaseRemovedTasks===originalMethods.releaseRemovedTasks?fallback:promise(()=>this.releaseRemovedTasks(ids))),
+    refreshOne:(id,fallback)=>this.refreshOne===originalMethods.refreshOne?fallback:promise(()=>this.refreshOne(id))}),
    hostLayers(dispatch,{now:()=>owner.now(),log:(...args)=>owner.log(...args)}),
    Layer.succeed(SubscriptionQueue,SubscriptionQueue.of({
     enqueue:context=>promise(()=>owner.enqueueItem(context as EnqueueItemContext)),
@@ -193,3 +193,7 @@ export class SubscriptionsApi {
  refreshOne(id:string):Promise<void>{return this.effect(owner=>owner.refreshOne(id))}
  noteTaskRemoved(id:string):void{runLegacySync(this.runtime,Effect.flatMap(NativeApi,owner=>owner.noteTaskRemoved(id)),legacyError)}
 }
+// The unpatched public methods, captured once. A later replacement on the instance, on a
+// subclass or on this prototype itself differs from them and is dispatched through the
+// instance, as the old dynamic self-calls were.
+const originalMethods={refreshAll:SubscriptionsApi.prototype.refreshAll,reconcileOrphanedTasks:SubscriptionsApi.prototype.reconcileOrphanedTasks,releaseRemovedTasks:SubscriptionsApi.prototype.releaseRemovedTasks,refreshOne:SubscriptionsApi.prototype.refreshOne}

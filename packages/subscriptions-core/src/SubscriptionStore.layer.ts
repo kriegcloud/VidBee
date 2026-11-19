@@ -371,10 +371,16 @@ export const SubscriptionStoreSqlLive = Layer.effect(
     return SubscriptionStore.of({
       ...store,
       // Suppress budget yields in the orchestration too: the host callback's
-      // own suspension is the only gap in the old asynchronous method.
-      clearOrphanedQueueLinks: Effect.fn("SubscriptionStore.clearOrphanedQueueLinks")((isLive) =>
-        store.clearOrphanedQueueLinks(isLive).pipe(Effect.provideService(Scheduler.PreventSchedulerYield, true))
-      ),
+      // own suspension is the only gap in the old asynchronous method. The
+      // callback itself, and any fiber it forks, keeps the caller's scheduling.
+      clearOrphanedQueueLinks: Effect.fn("SubscriptionStore.clearOrphanedQueueLinks")(function* (isLive) {
+        const callerPreventsYield = yield* Scheduler.PreventSchedulerYield;
+        return yield* store
+          .clearOrphanedQueueLinks((taskId) =>
+            isLive(taskId).pipe(Effect.provideService(Scheduler.PreventSchedulerYield, callerPreventsYield))
+          )
+          .pipe(Effect.provideService(Scheduler.PreventSchedulerYield, true));
+      }),
       list: segment(store.list),
       get: Effect.fn("SubscriptionStore.get")((id) => segment(store.get(id))),
       findDuplicateFeed: Effect.fn("SubscriptionStore.findDuplicateFeed")((url, ignoreId) =>

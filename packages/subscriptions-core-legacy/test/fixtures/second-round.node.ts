@@ -20,7 +20,7 @@ const core=old?await import(pathToFileURL(old).href):current
 const expected=readFileSync(new URL('../../../../.node-version',import.meta.url),'utf8').trim().replace(/^v/,'')
 assert.equal(process.versions.node,expected)
 const out:Record<string,unknown>={}
-for(const mode of ['instance','subclass']) {
+for(const mode of ['instance','subclass','prototype']) {
  const events:unknown[]=[]
  let tick:()=>void=()=>{throw new Error('missing scheduler callback')}
  const methods={
@@ -34,11 +34,17 @@ for(const mode of ['instance','subclass']) {
  const store={list:async()=>[],get:async(id:string)=>{events.push(['get',id]);return {id,items:[]}},update:async()=>null,clearQueueLinks:async()=>0,clearOrphanedQueueLinks:async()=>{events.push('native reconcile');return 0}}
  const api=new (mode==='subclass'?OverrideApi:core.SubscriptionsApi)({store,metaStore:new core.InMemoryMetaStore(),fetcher:{fetch:async()=>({items:[]})},kind:'desktop',pid:1,enqueueItem:async()=>null,now:()=>1000,leader:{scheduleInterval:()=>1,clearInterval:()=>{}},scheduler:{setTimeoutImpl:(cb:()=>void)=>{events.push('schedule');tick=cb;return 1},clearTimeoutImpl:()=>events.push('clear')}})
  if(mode==='instance')Object.assign(api,methods)
+ // A patch of the base prototype itself (a spy, a monkey patch) installed after construction.
+ const base=core.SubscriptionsApi.prototype as Record<string,unknown>
+ const saved=mode==='prototype'?Object.fromEntries(Object.keys(methods).map(key=>[key,base[key]])):undefined
+ if(saved)Object.assign(base,methods)
+ try {
  await api.start();events.push('started')
  tick();await new Promise(resolve=>setImmediate(resolve));events.push('ticked')
  await api.refresh({id:'s'});events.push('refreshed')
  api.noteTaskRemoved('t1');await new Promise(resolve=>setImmediate(resolve));events.push('flushed')
  await api.stop()
+ } finally {if(saved)Object.assign(base,saved)}
  out[mode]=events
 }
 for(const mode of ['instance','subclass']) {

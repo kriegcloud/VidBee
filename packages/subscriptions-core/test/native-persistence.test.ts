@@ -10,6 +10,7 @@ import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Reactivity from "effect/reactivity/Reactivity";
+import * as Scheduler from "effect/Scheduler";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import * as SqlClient from "effect/sql/SqlClient";
@@ -271,6 +272,32 @@ layer(services, { buildPerTest: true })((it) => {
         expect((yield* store.list)[0]?.items).toHaveLength(300);
       }),
     10_000
+  );
+  run(`${driver}: the orphan liveness callback and the fibers it forks keep the caller's scheduling`, () =>
+    Effect.gen(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const created = yield* store.add(input);
+      yield* store.markItemQueued(created.id, "a", "gone");
+      const observed: boolean[] = [];
+      const caller = yield* Scheduler.PreventSchedulerYield;
+      const cleared = yield* store.clearOrphanedQueueLinks(() =>
+        Effect.gen(function* () {
+          const inCallback = yield* Scheduler.PreventSchedulerYield;
+          const forked = yield* Effect.service(Scheduler.PreventSchedulerYield).pipe(
+            Effect.forkChild({ startImmediately: true })
+          );
+          const inForkedFiber = yield* Fiber.join(forked);
+          observed.push(inCallback, inForkedFiber);
+          return false;
+        })
+      );
+      const afterwards = yield* Scheduler.PreventSchedulerYield;
+      expect(cleared).toBe(1);
+      expect(observed).toEqual([caller, caller]);
+      expect(caller).toBe(false);
+      expect(afterwards).toBe(caller);
+    })
   );
   run(
     `${driver}: queue placeholders, counted clearing, unique ordered orphan lookups and parent removal`,
