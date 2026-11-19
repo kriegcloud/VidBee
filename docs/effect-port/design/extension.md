@@ -929,6 +929,7 @@ The following changes are declared rather than hidden as consequences of adoptin
 | Undecodable selected cache entry | Unchecked property reads determine behavior | Cache miss; read leaves the original entry untouched |
 | Undecodable pruning timestamp | Missing timestamp is retained; other values can coerce or throw | Entry retained unless a finite decoded timestamp proves it is older than the limit |
 | Malformed storage notification root | Unchecked lookup may miss, consume a property or fail | Decode failure is logged; no storage rewrite or invented UI transition |
+| Request header name case | The origin header is sent as `X-VidBee-Extension` | Sent as `x-vidbee-extension`: Effect's `Headers` stores names in lower case. HTTP field names are case-insensitive, the desktop's Node server lowercases them and its CORS allow-list matches either spelling, and the value is unchanged |
 
 The response root policy includes null, arrays and JSON scalars. Today, a truthy scalar or array can reach generic metadata presentation through property reads; a falsy `info` does not satisfy the ready-payload guards (`P:146`, `:180`, `:204`). The new stored error is explicit. The unchanged desktop route’s four-field projection is an object, so no assertion is made that it normally emits a rejected root.
 
