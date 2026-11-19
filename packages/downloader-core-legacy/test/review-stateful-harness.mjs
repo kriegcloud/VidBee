@@ -8,7 +8,13 @@ const options={media:'all',scope:'post',authorOnly:false,expandThreads:false,lin
 const mutations=(seed,p=[])=>Object.entries(seed).flatMap(([k,v])=>[...scalars.map(x=>({path:[...p,k],value:x})),...(v&&typeof v==='object'?mutations(v,[...p,k]):[])]);
 const mutate=(seed,{path,value})=>{const v=structuredClone(seed);let o=v;for(const k of path.slice(0,-1))o=o[k];o[path.at(-1)]=value;return v;};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-export async function runStateful(modules,{browserOnly=false}={}){
+// Two cases put a relative download path through path.resolve into a task id, so the
+// matrix runs from the filesystem root: the recorded ids are then the same on every machine.
+export async function runStateful(modules,options){
+ const previous=process.cwd();process.chdir('/');
+ try{return await runStatefulFromRoot(modules,options);}finally{process.chdir(previous);}
+}
+async function runStatefulFromRoot(modules,{browserOnly=false}={}){
  const root=mkdtempSync(join(tmpdir(),'vidbee-third-input-')),bin=join(root,'gallery');
  writeFileSync(bin,`#!${process.execPath}\nif(process.argv.includes('-J'))console.log(JSON.stringify({id:'playlist',title:'Playlist',entries:[{id:'one',url:'https://fixture.invalid/one',title:'One'}],formats:[]}));else console.log('[]');\n`,{mode:0o755});
  const normalize=v=>JSON.parse(JSON.stringify(v,(k,v)=>{if(v===undefined)return {$review:'undefined'};if(typeof v==='number'&&!Number.isFinite(v))return {$review:String(v)};if(['createdAt','completedAt','updatedAt','expiresAt'].includes(k))return '<time>';if(typeof v==='string'){if(/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(v)||/^(playlist_group_|instagram_profile_group_)/.test(v))return '<id>';return v.replaceAll(root,'<root>');}return v;}));
