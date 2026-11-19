@@ -532,26 +532,32 @@ const withBestFallback = (selector: string): string =>
 export const resolveVideoFormatSelector = (options: YtDlpDownloadOptions): string => {
   const format = options.format;
   const audioFormat = options.audioFormat;
+  const hasFormat = Boolean(format);
+  const hasAudioFormat = Boolean(audioFormat);
   const audioFormatIds = A.filter(options.audioFormatIds ?? [], (id) => Str.trim(id) !== "");
 
-  if (nonempty(format) && audioFormat === "") {
+  if (hasFormat && format !== undefined && audioFormat === "") {
     return format;
   }
 
-  if (nonempty(format) && (Str.includes("/")(format) || Str.includes("+")(format) || Str.includes("[")(format))) {
+  if (
+    hasFormat &&
+    format !== undefined &&
+    (Str.includes("/")(format) || Str.includes("+")(format) || Str.includes("[")(format))
+  ) {
     return format;
   }
 
   if (audioFormatIds.length > 0) {
-    const baseVideo = nonempty(format) && format !== "best" ? format : "bestvideo*";
+    const baseVideo = hasFormat && format !== undefined && format !== "best" ? format : "bestvideo*";
     return `${baseVideo}+${A.join(audioFormatIds, "+")}`;
   }
 
-  if (!nonempty(format) || format === "best") {
+  if (!(hasFormat && format !== undefined) || format === "best") {
     if (audioFormat === "none") {
       return "bestvideo+none";
     }
-    if (!nonempty(audioFormat) || audioFormat === "best") {
+    if (!hasAudioFormat || audioFormat === "best") {
       return "bestvideo+bestaudio/best";
     }
     return withBestFallback(`bestvideo+${audioFormat}`);
@@ -561,7 +567,7 @@ export const resolveVideoFormatSelector = (options: YtDlpDownloadOptions): strin
     return `${format}+none`;
   }
 
-  if (!nonempty(audioFormat) || audioFormat === "best") {
+  if (!hasAudioFormat || audioFormat === "best") {
     return `${format}+bestaudio/best`;
   }
 
@@ -626,8 +632,9 @@ export const isUnsupportedThumbnailEmbedOnlyFailure = (output: string): boolean 
 
 export const resolveAudioFormatSelector = (options: YtDlpDownloadOptions): string => {
   const format = options.format;
+  const hasFormat = Boolean(format);
 
-  if (!nonempty(format)) {
+  if (!hasFormat || format === undefined) {
     return "bestaudio";
   }
 
@@ -657,7 +664,8 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
   const container: OneClickContainerOption | undefined =
     options.type === "video" ? (options.containerFormat ?? "auto") : undefined;
 
-  if (options.type === "video" && container !== undefined && !isDirectMediaFileUrl(options.url)) {
+  const hasContainer = Boolean(container);
+  if (options.type === "video" && hasContainer && container !== undefined && !isDirectMediaFileUrl(options.url)) {
     const formatSelector = resolveVideoFormatSelector(options);
     if (nonempty(formatSelector)) {
       args.push("-f", formatSelector);
@@ -998,12 +1006,15 @@ export const cookieSourcesFromArgs: {
     }
   }
   const sources: DownloadCookieSource[] = [];
-  if (nonempty(browser)) {
+  const hasBrowser = Boolean(browser);
+  if (hasBrowser && browser !== undefined) {
     sources.push({ type: "browser", browser: Str.split(browser, /[:+]/)[0] });
   }
-  if (nonempty(cookieFile)) {
+  const hasCookieFile = Boolean(cookieFile);
+  const hasCookieSource = Boolean(settings.cookieSource);
+  if (hasCookieFile && cookieFile !== undefined) {
     sources.push(
-      cookieFile === settings.cookiesPath && settings.cookieSource !== undefined
+      cookieFile === settings.cookiesPath && hasCookieSource && settings.cookieSource !== undefined
         ? { ...settings.cookieSource }
         : { type: "file" }
     );

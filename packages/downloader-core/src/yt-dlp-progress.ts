@@ -202,7 +202,8 @@ export class DownloadProgressAggregator {
 
 /** Parse a yt-dlp size token such as `1.55MiB` or `512KiB`. */
 export function parseSize(value: string | undefined): number | null {
-  if (value === undefined || value.length === 0) {
+  const hasValue = Boolean(value);
+  if (!hasValue || value === undefined) {
     return null;
   }
   const m = /([0-9]+(?:\.[0-9]+)?)\s*(B|KB|KiB|MB|MiB|GB|GiB|TB|TiB)/i.exec(value);
@@ -229,7 +230,8 @@ export function parseSize(value: string | undefined): number | null {
 
 /** Parse a yt-dlp speed token such as `1.55MiB/s`. */
 export function parseSpeed(value: string | undefined): number | null {
-  if (value === undefined || value.length === 0) {
+  const hasValue = Boolean(value);
+  if (!hasValue || value === undefined) {
     return null;
   }
   const cleaned = Str.trim(Str.replace(/\/s$/i, "")(value));
@@ -238,7 +240,8 @@ export function parseSpeed(value: string | undefined): number | null {
 
 /** Parse a yt-dlp ETA token (`MM:SS` or `HH:MM:SS`) into milliseconds. */
 export function parseEtaMs(value: string | undefined): number | null {
-  if (value === undefined || value.length === 0) {
+  const hasValue = Boolean(value);
+  if (!hasValue || value === undefined) {
     return null;
   }
   const trimmed = Str.trim(value);

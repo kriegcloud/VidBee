@@ -1520,5 +1520,495 @@
         }
       ]
     }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": " https://x.com/fixture ",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": " https://x.com/fixture ",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "\thttps://a.b\n",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://a.b",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "\thttps://a.b\n",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://a.b",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": " a:b ",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "a:b",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": " a:b ",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "a:b",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "file:///tmp/a",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "file:///tmp/a",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "file:///tmp/a",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "file:///tmp/a",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "http://[::1]/",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "http://[::1]/",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "http://[::1]/",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "http://[::1]/",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://例え.テスト/",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://例え.テスト/",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://例え.テスト/",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://例え.テスト/",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "javascript:alert(1)",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "javascript:alert(1)",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "https://x.com/fixture/tweets",
+          "requiresAuth": false
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "javascript:alert(1)",
+          "requiresAuth": false
+        }
+      ]
+    },
+    "accepted": true,
+    "decoded": {
+      "platform": "x",
+      "url": "https://x.com/fixture",
+      "kind": "profile",
+      "category": "tweets",
+      "owner": "fixture",
+      "supportsThread": true,
+      "requiresAuth": false,
+      "categories": [
+        {
+          "key": "tweets",
+          "url": "javascript:alert(1)",
+          "requiresAuth": false
+        }
+      ]
+    }
   }
 ]

@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import * as Str from "effect/String";
 import { HostFailure } from "../src/Downloader.errors.js";
 import { DownloadFiles } from "../src/DownloadFiles.service.js";
 import { DownloadHost } from "../src/DownloadHost.service.js";
@@ -21,7 +22,7 @@ import { mapVscoProfile } from "../src/vsco-profile-map.js";
 import type { ProcessSink } from "../src/DownloadProcess.service.js";
 import type { ProcessSpec } from "../src/Process.model.js";
 
-const fixture = (mode: string) => {
+const fixture = (mode: string, onWrite?: (text: string) => void) => {
   const trace: string[] = [];
   const failure = HostFailure.make({ operation: mode, legacyMessage: mode });
   const files = Layer.succeed(DownloadFiles, {
@@ -29,7 +30,8 @@ const fixture = (mode: string) => {
     exists: Effect.fn("fixture.exists")(() => Effect.succeed(false)),
     stat: Effect.fn("fixture.stat")(() => Effect.succeed({ size: 1, isFile: true })),
     write: Effect.fn("fixture.write")(
-      (): Effect.Effect<void, HostFailure> => (mode === "write" ? Effect.fail(failure) : Effect.void)
+      (_file: string, text: string): Effect.Effect<void, HostFailure> =>
+        mode === "write" ? Effect.fail(failure) : Effect.sync(() => onWrite?.(text))
     ),
     makeDirectory: Effect.fn("fixture.makeDirectory")(() => Effect.void),
     makeTempDirectory: Effect.fn("fixture.makeTempDirectory")(() =>
@@ -171,14 +173,33 @@ layer(Layer.empty)("cleanup precedence", (it) => {
   );
 });
 
-const managerFixture = fixture("manager");
+const managerWrites: string[] = [];
+const managerFixture = fixture("manager", (text) => {
+  managerWrites.push(text);
+});
 let traversals = 0;
 const synchronousTraversal = Layer.succeed(SocialTraversal, {
-  map: Effect.fn("fixture.synchronousTraversal")(() =>
-    Effect.sync(() => {
-      traversals++;
-      return { complete: true };
-    })
+  map: Effect.fn("fixture.synchronousTraversal")(
+    (request: {
+      url: string;
+    }): Effect.Effect<{ complete: boolean; authRequired?: boolean; error?: string | undefined }, HostFailure> => {
+      if (Str.includes("failed")(request.url))
+        return Effect.fail(HostFailure.make({ operation: "traversal", legacyMessage: "fixture failed" }));
+      return Effect.sync(() => {
+        traversals++;
+        if (Str.includes("partial")(request.url)) {
+          const result = { complete: false, error: undefined };
+          Reflect.set(result, "error", null);
+          return result;
+        }
+        if (Str.includes("authrequired")(request.url)) {
+          const result = { complete: false, authRequired: false };
+          Reflect.set(result, "authRequired", 7);
+          return result;
+        }
+        return { complete: true };
+      });
+    }
   ),
 });
 const manager = socialProfileManagerLayer({ storageDir: "/inventory" }).pipe(
@@ -194,6 +215,36 @@ layer(manager)("synchronous profile traversal", (it) => {
       yield* service.mapAndWait(url, "media");
       yield* service.mapAndWait(url, "media");
       expect(traversals).toBe(2);
+    })
+  );
+  it.effect("returns the mapping snapshot after starting the synchronous traversal", () =>
+    Effect.gen(function* () {
+      const service = yield* SocialProfileManager;
+      const before = traversals;
+      const snapshot = yield* service.map("https://www.threads.com/@snapshot/media", "media");
+      expect(traversals).toBe(before + 1);
+      expect(snapshot.categories.media?.state).toBe("mapping");
+      expect(snapshot.categories.media?.error).toBeUndefined();
+    })
+  );
+
+  it.effect("returns the mapping snapshot for synchronous failure without a stale active entry", () =>
+    Effect.gen(function* () {
+      const service = yield* SocialProfileManager;
+      for (const attempt of [1, 2]) {
+        const snapshot = yield* service.map(`https://www.threads.com/@failed${attempt}/media`, "media");
+        expect(snapshot.categories.media?.state).toBe("mapping");
+        expect(snapshot.categories.media?.error).toBeUndefined();
+      }
+    })
+  );
+  it.effect("retains optional-null errors and truthy authentication outcomes", () =>
+    Effect.gen(function* () {
+      const service = yield* SocialProfileManager;
+      yield* service.map("https://www.threads.com/@partial/media", "media");
+      expect(managerWrites.at(-1)).toContain('"state":"partial"');
+      yield* service.map("https://www.threads.com/@authrequired/media", "media");
+      expect(managerWrites.at(-1)).toContain('"state":"auth-required"');
     })
   );
 });

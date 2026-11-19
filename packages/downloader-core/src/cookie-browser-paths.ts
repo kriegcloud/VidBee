@@ -4,15 +4,19 @@ import * as Str from "effect/String";
 
 /** Normalize a target-platform path without consulting the host OS. */
 const targetJoin = (windows: boolean, parts: readonly string[]): string => {
-  const separator = windows ? "\\" : "/";
-  const joined = A.join(
-    A.filter(
-      A.map(parts, (part) => Str.replaceAll(windows ? "\\" : "/", "/")(part)),
-      (part) => part.length > 0
-    ),
-    separator
-  );
-  if (!(joined !== undefined && joined !== null && joined !== "")) return ".";
+  const nonemptyParts = A.filter(parts, (part) => Str.replaceAll("\\", "/")(part).length > 0);
+  let joined = A.join(nonemptyParts, windows ? "\\" : "/");
+  if (joined === "") return ".";
+  const first = nonemptyParts[0] ?? "";
+  if (windows) {
+    // join only preserves a UNC root when the first nonempty part starts with
+    // exactly two separators followed by a non-separator.
+    if (!/^[\\\\/]{2}[^\\\\/]/.test(first)) joined = Str.replace(/^[\\\\/]{2,}/, "\\")(joined);
+    // Pinned Node 22 leaves reserved device segments unnormalized. Check before
+    // converting forward slashes, as its join implementation does.
+    if (A.some(Str.split(joined, "\\"), (part) => /^(?:CON|PRN|AUX|NUL|COM[1-9¹²³]|LPT[1-9¹²³]):/i.test(part)))
+      return Str.replaceAll("/", "\\")(joined);
+  }
   const source = windows ? Str.replaceAll("\\", "/")(joined) : joined;
   let prefix = "";
   let rest = source;
@@ -22,11 +26,12 @@ const targetJoin = (windows: boolean, parts: readonly string[]): string => {
     const unc = /^\/\/([^/]+)\/+([^/]+)(?:\/+|$)/.exec(rest);
     if (
       unc !== null &&
-      Str.startsWith("//")(Str.replaceAll("\\", "/")(parts[0] ?? "")) &&
-      !Str.startsWith("///")(Str.replaceAll("\\", "/")(parts[0] ?? ""))
+      Str.startsWith("//")(Str.replaceAll("\\", "/")(first)) &&
+      !Str.startsWith("///")(Str.replaceAll("\\", "/")(first))
     ) {
-      prefix = `//${unc[1]}/${unc[2]}/`;
-      rest = Str.slice(unc[0].length)(rest);
+      const deviceRoot = unc[1] === "." || unc[1] === "?";
+      prefix = deviceRoot ? `//${unc[1]}/` : `//${unc[1]}/${unc[2]}/`;
+      rest = Str.slice(deviceRoot ? 4 : unc[0].length)(rest);
       absolute = true;
     } else if (drive !== undefined && drive !== null && drive !== "") {
       prefix = drive;
@@ -46,6 +51,9 @@ const targetJoin = (windows: boolean, parts: readonly string[]): string => {
   let normalized = prefix + A.join(stack, "/");
   if (!(normalized !== undefined && normalized !== null && normalized !== "")) normalized = absolute ? "/" : ".";
   if (Str.endsWith("/")(source) && !Str.endsWith("/")(normalized)) normalized += "/";
+  // Node 22 prevents a relative colon segment from becoming a device path.
+  if (windows && !absolute && prefix === "" && (/^[A-Za-z]:/.test(normalized) || /:(?:\/|$)/.test(source)))
+    normalized = `./${normalized}`;
   return windows ? Str.replaceAll("/", "\\")(normalized) : normalized;
 };
 const pathForPlatform = (platform: string) => ({

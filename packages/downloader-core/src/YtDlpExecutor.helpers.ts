@@ -36,7 +36,8 @@ interface SubtitleOutcome {
 
 /** Extract the subtitle language tags yt-dlp selected from its info output. */
 export const extractDownloadedSubtitleLanguages = (output: string): string[] => {
-  const rawLanguages = SUBTITLE_DOWNLOAD_INFO.exec(output)?.[1];
+  const matched = Option.getOrUndefined(Str.match(SUBTITLE_DOWNLOAD_INFO)(output));
+  const rawLanguages = matched?.[1];
   if (rawLanguages === undefined || rawLanguages === "") {
     return [];
   }
@@ -51,7 +52,8 @@ export const resolveSubtitleOutcome = (input: {
   subtitlesRequested: boolean;
   unavailableSeen: boolean;
 }): SubtitleOutcome | undefined => {
-  if (input.initialStatus !== undefined) {
+  const hasInitialStatus = Boolean(input.initialStatus);
+  if (hasInitialStatus && input.initialStatus !== undefined) {
     return { status: input.initialStatus };
   }
   if (input.fallbackAttempted) {
@@ -103,7 +105,8 @@ export const withoutSubtitleDownloadArgs = (args: readonly string[]): string[] =
 
   const sourceUrl = filtered.pop();
   filtered.push("--no-write-subs", "--no-write-auto-subs", "--no-embed-subs");
-  if (sourceUrl !== undefined && sourceUrl !== "") {
+  const hasSourceUrl = Boolean(sourceUrl);
+  if (hasSourceUrl && sourceUrl !== undefined) {
     filtered.push(sourceUrl);
   }
   return filtered;

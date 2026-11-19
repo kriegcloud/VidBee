@@ -8,6 +8,7 @@ import * as Result from "effect/Result";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { InvalidDownload } from "./Downloader.errors.js";
+import { ProfileUrl } from "./ProfileUrl.model.js";
 import type { OnlyFansFeed } from "./DownloadLiterals.model.js";
 
 export const OnlyFansCategorySchema = LiteralKit(["photos", "videos"]);
@@ -56,16 +57,8 @@ export const OnlyFansPurchasedRouteSchema = LiteralKit(onlyFansPurchasedRoutes);
 export const OnlyFansItemState = LiteralKit(["available", "locked", "drm", "unsupported"]);
 export const OnlyFansProfileState = LiteralKit(["idle", "mapping", "partial", "complete", "auth-required", "error"]);
 export const OnlyFansAction = LiteralKit(["get", "open", "map", "stop"]);
-export const ProfileUrl = S.String.check(
-  S.makeFilter((value) => {
-    try {
-      new URL(value);
-      return true;
-    } catch {
-      return false;
-    }
-  })
-);
+export { ProfileUrl } from "./ProfileUrl.model.js";
+
 const NumericId = S.String.check(S.isPattern(/^\d+$/));
 const ChatId = S.String.check(S.isPattern(/^\d{1,20}$/));
 const Username = S.String.check(S.isPattern(/^[a-z0-9._-]{1,64}$/));

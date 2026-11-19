@@ -17,7 +17,6 @@ import { DownloadFiles } from "./DownloadFiles.service.js";
 import { DownloadHost } from "./DownloadHost.service.js";
 import { DownloadTiming } from "./DownloadTiming.service.js";
 import { resolveMappedProfileSource } from "./mapped-profile-source.js";
-import { SocialMappedProfileSchema } from "./ProfilePersistence.model.js";
 import { SocialInventoryCodec } from "./SocialInventoryCodec.service.js";
 import { SocialTraversal } from "./SocialTraversal.service.js";
 import type { HostFailure } from "./Downloader.errors.js";
@@ -65,7 +64,7 @@ const profileSource = (url: string) => {
     : Effect.succeed(source);
 };
 const preAggregated = HashSet.make("facebook", "vsco", "threads", "pinterest", "snapchat");
-const codec = S.fromJsonString(SocialMappedProfileSchema);
+const codec = S.fromJsonString(S.Unknown);
 
 /** Each layer owns its active scans and their continuation scope. */
 export const socialProfileManagerLayer = (options: SocialProfileManagerOptions) =>
@@ -222,10 +221,13 @@ export const socialProfileManagerLayer = (options: SocialProfileManagerOptions) 
           .pipe(
             Effect.flatMap(
               Effect.fn("SocialProfileManager.complete")(function* (result) {
+                const authRequired = Boolean(result.authRequired);
                 mapped.state = result.complete
                   ? "complete"
-                  : result.authRequired === true ||
-                      (result.error !== undefined && Str.includes("AuthRequired")(result.error))
+                  : authRequired ||
+                      (result.error !== undefined &&
+                        result.error !== null &&
+                        Str.includes("AuthRequired")(result.error))
                     ? "auth-required"
                     : "partial";
                 mapped.error = result.error;
@@ -246,9 +248,10 @@ export const socialProfileManagerLayer = (options: SocialProfileManagerOptions) 
               })
             )
           );
+        const snapshot = structuredClone(profile);
         const done = yield* Effect.forkIn(work, scope, { startImmediately: true });
         if (!completed) active = HashMap.set(active, target, { controller, done });
-        return structuredClone(profile);
+        return snapshot;
       });
       const mapAndWait = Effect.fn("SocialProfileManager.mapAndWait")(function* (
         url: string,

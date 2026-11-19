@@ -173,7 +173,8 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
       };
       const save = Effect.fn("InstagramInspector.save")(function* (entry: InspectionCacheEntry) {
         put(entry.inspection.inspectionId, entry);
-        if (options.storageDir === undefined || options.storageDir === "") return;
+        const hasStorageDir = Boolean(options.storageDir);
+        if (!hasStorageDir || options.storageDir === undefined) return;
         yield* files.makeDirectory(options.storageDir, true, 0o700);
         const target = path.join(options.storageDir, `${entry.inspection.inspectionId}.json`);
         const temporary = `${target}.${host.uuid()}.tmp`;
@@ -187,10 +188,11 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
       });
       const get = Effect.fn("InstagramInspector.get")(function* (id: string) {
         let entry = Option.getOrUndefined(HashMap.get(cache, id));
+        const hasStorageDir = Boolean(options.storageDir);
         if (
           entry === undefined &&
+          hasStorageDir &&
           options.storageDir !== undefined &&
-          options.storageDir !== "" &&
           /^instagram_[a-f0-9]{64}$/.test(id)
         ) {
           const inspection = yield* files.read(path.join(options.storageDir, `${id}.json`)).pipe(
@@ -245,7 +247,8 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
       });
       const list = Effect.fn("InstagramInspector.list")(function* () {
         const ids = [...cacheOrder];
-        if (options.storageDir !== undefined && options.storageDir !== "") {
+        const hasStorageDir = Boolean(options.storageDir);
+        if (hasStorageDir && options.storageDir !== undefined) {
           const names = yield* files
             .readDirectory(options.storageDir)
             .pipe(Effect.catchIf(missing, () => Effect.succeed([])));
@@ -332,11 +335,12 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
             };
           else {
             const attempt = Effect.fn("InstagramInspector.category")(function* () {
+              const hasStorageDir = Boolean(options.storageDir);
               const categoryArgs = [
                 ...extraArgs,
                 "-o",
                 `extractor.instagram.vidbee-inspection-category=${category}`,
-                ...(options.storageDir !== undefined && options.storageDir !== ""
+                ...(hasStorageDir && options.storageDir !== undefined
                   ? ["-o", `extractor.instagram.vidbee-known-profile=${path.join(options.storageDir, `${id}.json`)}`]
                   : []),
               ];

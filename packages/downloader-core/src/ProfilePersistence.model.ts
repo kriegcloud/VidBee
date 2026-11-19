@@ -6,18 +6,9 @@ import {
   InstagramProfileCategory,
   InstagramProfileInspection,
 } from "./Download.model.js";
+import { ProfileUrl as Url } from "./ProfileUrl.model.js";
 
 const Counter = S.Finite.check(S.isInt(), S.isGreaterThanOrEqualTo(0));
-const Url = S.String.check(
-  S.makeFilter((value) => {
-    try {
-      new URL(value);
-      return true;
-    } catch {
-      return false;
-    }
-  })
-);
 export const MappedProfilePlatform = LiteralKit([
   "x",
   "tiktok",
@@ -70,7 +61,7 @@ const InstagramItem = S.Struct({
   downloaded: S.Boolean.pipe(S.optional, S.mutableKey),
   title: S.String.pipe(S.optional, S.mutableKey),
 });
-const InstagramCategory = S.Struct({
+export const InstagramCategory = S.Struct({
   incremental: S.Boolean.pipe(S.optional, S.mutableKey),
   cursor: S.String.pipe(S.optional, S.mutableKey),
   category: InstagramProfileCategory.pipe(S.mutableKey),
