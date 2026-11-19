@@ -1,0 +1,55 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "browser-capture-fansly-legacy",
+    "url": "https://fansly.com/synthetic_creator",
+    "status": "failed",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": {
+      "category": "auth-required",
+      "exitCode": null,
+      "rawMessage": "Open this Fansly profile in VidBeep and map it using the dedicated browser session.",
+      "uiMessageKey": "task.error.authRequired",
+      "uiActionHints": ["import-cookies"],
+      "retryable": false,
+      "suggestedRetryAfterMs": null
+    },
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "fansly.com",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "failed"],
+  "history": [
+    {
+      "id": "<id:1>",
+      "url": "https://fansly.com/synthetic_creator",
+      "title": "browser-capture-fansly-legacy",
+      "type": "video",
+      "status": "error",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "error": "Open this Fansly profile in VidBeep and map it using the dedicated browser session.",
+      "origin": "manual",
+      "taskKind": "video"
+    }
+  ]
+}

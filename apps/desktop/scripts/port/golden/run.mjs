@@ -4,6 +4,7 @@ import { homedir } from 'node:os'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
+import { buildBrowserCaptureFixture } from './browser-capture-fixture.mjs'
 import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -67,7 +68,15 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
 const launch = async (runDir, seed, profile) => {
   active = spawn(
     'bash',
-    [launchScript, build, runDir, '900', ...(profile ? ['', profile] : seed ? [seed] : [])],
+    [
+      launchScript,
+      build,
+      runDir,
+      '900',
+      seed ?? '',
+      profile ?? '',
+      path.join(here, 'browser-capture-display.sh')
+    ],
     {
       stdio: ['ignore', 'ignore', 'pipe']
     }
@@ -117,6 +126,7 @@ try {
   const runDir = path.join(work, 'run')
   await buildFixture(seed, { pathRoot: path.join(runDir, 'userdata') })
   await buildLoopbackFixture(seed, build, command)
+  await buildBrowserCaptureFixture(seed, build, command)
   const models = option('--models')
   if (models) {
     await cp(path.resolve(models), path.join(seed, 'models'), { recursive: true })
@@ -127,7 +137,10 @@ try {
     runDir,
     build,
     ...(args.includes('--update') ? ['--update'] : []),
-    ...(args.includes('--loopback-only') ? ['--loopback-only'] : []),
+    ...(args.includes('--loopback-only') || args.includes('--browser-capture-only')
+      ? ['--loopback-only']
+      : []),
+    ...(args.includes('--browser-capture-only') ? ['--browser-capture-only'] : []),
     ...(option('--subset') ? ['--subset', option('--subset')] : []),
     ...(models ? ['--models', path.resolve(models)] : [])
   ]

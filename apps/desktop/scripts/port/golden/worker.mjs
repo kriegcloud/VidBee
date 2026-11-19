@@ -2,6 +2,11 @@ import { spawn } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  prepareBrowserCaptureOnly,
+  runBrowserCaptureCases,
+  runBrowserCaptureRestart
+} from './browser-capture-cases.mjs'
 import { MCP_READ_TOOLS, runCases } from './cases.mjs'
 import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
@@ -34,6 +39,7 @@ await mkdir(output, { recursive: true })
 let count = 0
 let failures = 0
 const roots = [
+  [(await readFile(path.join(runDir, 'tmp-root'), 'utf8')).trim(), '<run>/tmp'],
   [runDir, '<run>'],
   [path.dirname(runDir), '<work>'],
   [build, '<build>'],
@@ -154,11 +160,19 @@ if (!args.includes('--loopback-only')) {
   await record('boot/log', boot)
   await client.rpc('tools/list')
 }
+let browserCaptureSkipped = false
 const restartIndex = args.indexOf('--loopback-restart')
 if (restartIndex >= 0) {
   await runLoopbackRestart({ client, runDir, originalRun: args[restartIndex + 1], record, roots })
+  await runBrowserCaptureRestart({ runDir, record })
 } else {
-  await runLoopbackCases({ client, runDir, build, record, roots, command })
+  if (args.includes('--browser-capture-only')) {
+    await prepareBrowserCaptureOnly({ client, runDir, root })
+  } else {
+    await runLoopbackCases({ client, runDir, build, record, roots, command })
+  }
+  browserCaptureSkipped =
+    (await runBrowserCaptureCases({ client, runDir, build, record, roots, command })) === false
 }
 if (!args.includes('--models')) {
   process.stdout.write('SKIP local ASR golden: --models not supplied\n')
@@ -166,6 +180,14 @@ if (!args.includes('--models')) {
 process.stdout.write(
   `${args.includes('--update') ? 'Recorded' : 'Compared'} ${count} cases; ${failures} failures\n`
 )
-if ((count === 0 && restartIndex < 0) || failures) {
+if (
+  (count === 0 && restartIndex < 0 && !(browserCaptureSkipped && subset === 'browser-capture')) ||
+  failures
+) {
   process.exitCode = 1
 }
+
+// CDP/Undici sockets can remain referenced after close on pinned Node 22.
+// All case cleanup and evidence writes above have completed before worker exit.
+await new Promise((resolve) => process.stdout.write('', resolve))
+process.exit(process.exitCode ?? 0)
