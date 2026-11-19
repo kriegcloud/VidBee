@@ -22,13 +22,13 @@
 
 import path from 'node:path'
 import { applySubscriptionsMigrations } from '@vidbee/db/legacy/subscriptions'
+import type { SubscriptionWithItems } from '@vidbee/subscriptions-core'
 import {
   createSqliteMetaStore,
   createSqliteSubscriptionsStore,
   RssParserFeedFetcher,
-  SubscriptionsApi,
-  type SubscriptionWithItems
-} from '@vidbee/subscriptions-core'
+  SubscriptionsApi
+} from '@vidbee/subscriptions-core-legacy'
 import type { SubscriptionFeedItem, SubscriptionRule } from '../../shared/types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

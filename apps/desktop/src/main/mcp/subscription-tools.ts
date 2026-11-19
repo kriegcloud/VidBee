@@ -1,4 +1,4 @@
-import { SubscriptionUpdateInputSchema } from '@vidbee/subscriptions-core/schemas'
+import { SubscriptionUpdateInputSchema } from '@vidbee/subscriptions-core-legacy/schemas'
 import { z } from 'zod'
 import {
   listAgentSubscriptions,

@@ -73,6 +73,8 @@
     "typescript": "catalog:",
     "@vidbee/task-queue-legacy": "workspace:^",
     "@vidbee/downloader-core-legacy": "workspace:^",
+    "@vidbee/subscriptions-core": "workspace:^",
+    "@vidbee/subscriptions-core-legacy": "workspace:^",
     "@vidbee/transcription": "workspace:^",
     "@vidbee/transcription-legacy": "workspace:^"
   },

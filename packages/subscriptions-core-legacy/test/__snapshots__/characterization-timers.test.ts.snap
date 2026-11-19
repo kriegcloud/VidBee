@@ -1,0 +1,215 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`failed single-ID triggers consume dedupe; boundary equality, pruning and backward clock retained 1`] = `
+[
+  [
+    "one",
+    "id",
+  ],
+  [
+    "result",
+    0,
+    {
+      "run": "failed",
+    },
+  ],
+  [
+    "log",
+    "info",
+    "scheduler: dropping triggerNow within dedupe window",
+    {
+      "ageMs": 0,
+      "subscriptionId": "id",
+    },
+  ],
+  [
+    "result",
+    0,
+    "fulfilled",
+  ],
+  [
+    "log",
+    "info",
+    "scheduler: dropping triggerNow within dedupe window",
+    {
+      "ageMs": -1,
+      "subscriptionId": "id",
+    },
+  ],
+  [
+    "result",
+    -1,
+    "fulfilled",
+  ],
+  [
+    "log",
+    "info",
+    "scheduler: dropping triggerNow within dedupe window",
+    {
+      "ageMs": 9,
+      "subscriptionId": "id",
+    },
+  ],
+  [
+    "result",
+    9,
+    "fulfilled",
+  ],
+  [
+    "one",
+    "id",
+  ],
+  [
+    "result",
+    10,
+    {
+      "run": "failed",
+    },
+  ],
+  [
+    "one",
+    "id",
+  ],
+  [
+    "result",
+    31,
+    {
+      "run": "failed",
+    },
+  ],
+  "all",
+]
+`;
+
+exports[`heartbeat/release CAS failures and callback errors retain exact state mutation order 1`] = `
+[
+  [
+    "info",
+    "leader: acquired lease",
+    true,
+  ],
+  [
+    "state",
+    true,
+    true,
+  ],
+  [
+    "warn",
+    "leader: heartbeat CAS failed; lease was stolen",
+    true,
+  ],
+  [
+    "clear",
+    1,
+  ],
+  [
+    "state",
+    false,
+    false,
+  ],
+  [
+    "info",
+    "leader: acquired lease",
+    true,
+  ],
+  [
+    "state",
+    true,
+    true,
+  ],
+  [
+    "warn",
+    "leader: release CAS failed; lease already moved on",
+    true,
+  ],
+  [
+    "clear",
+    1,
+  ],
+  [
+    "state",
+    false,
+    false,
+  ],
+]
+`;
+
+exports[`scheduler handles zero timers, replaces start, generations stop rearming, one-ID bypasses lease 1`] = `
+[
+  [
+    "schedule",
+    0,
+    0,
+  ],
+  [
+    "clear",
+    0,
+  ],
+  [
+    "schedule",
+    1,
+    5,
+  ],
+  "all",
+  [
+    "schedule",
+    2,
+    2,
+  ],
+  [
+    "clear",
+    2,
+  ],
+  [
+    "one",
+    "id",
+  ],
+  [
+    "log",
+    "info",
+    "scheduler: dropping triggerNow within dedupe window",
+    {
+      "ageMs": 0,
+      "subscriptionId": "id",
+    },
+  ],
+  [
+    "one",
+    "id",
+  ],
+]
+`;
+
+exports[`scheduler slow all-work coalesces pending rerun, captures runAll rejection and rearms 1`] = `
+[
+  [
+    "schedule",
+    0,
+  ],
+  [
+    "all",
+    1,
+  ],
+  "pending-trigger-settled",
+  [
+    "all",
+    2,
+  ],
+  [
+    "log",
+    "error",
+    "scheduler: runAll threw",
+    {
+      "err": [Error: run-failure],
+    },
+  ],
+  [
+    "schedule",
+    10800000,
+  ],
+  [
+    "clear",
+    2,
+  ],
+]
+`;

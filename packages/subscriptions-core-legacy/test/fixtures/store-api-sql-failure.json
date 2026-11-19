@@ -1,0 +1,575 @@
+{
+  "replacement": {
+    "events": [
+      {
+        "fetch": "https://fixture.invalid/feed"
+      },
+      {
+        "level": "warn",
+        "message": "subscriptions: feed-check failed",
+        "metadata": {
+          "id": "sub-1",
+          "err": {
+            "name": "SqliteError",
+            "message": "replacement refused",
+            "code": "SQLITE_CONSTRAINT_TRIGGER"
+          }
+        }
+      },
+      {
+        "changed": [
+          {
+            "status": "failed",
+            "last_error": "replacement refused"
+          }
+        ]
+      }
+    ],
+    "final": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "failed",
+      "createdAt": 101,
+      "updatedAt": 105,
+      "sourceKind": "feed",
+      "categories": [],
+      "lastCheckedAt": 1000,
+      "lastError": "replacement refused",
+      "items": [
+        {
+          "id": "old",
+          "url": "https://fixture.invalid/old",
+          "title": "Title old",
+          "publishedAt": 10,
+          "addedToQueue": false
+        }
+      ]
+    },
+    "raw": [
+      {
+        "subscription_id": "sub-1",
+        "item_id": "old",
+        "title": "Title old",
+        "url": "https://fixture.invalid/old",
+        "published_at": 10,
+        "thumbnail": null,
+        "added": 0,
+        "task_id": null,
+        "created_at": 10,
+        "updated_at": 102
+      }
+    ],
+    "queries": [
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, ?, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"last_checked_at\" = ?, \"status\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+        "params": [
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "checking",
+          101,
+          103,
+          "feed",
+          null,
+          "[]",
+          null,
+          null,
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "checking",
+          101,
+          103,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+        "params": [
+          "sub-1",
+          "new",
+          "New item",
+          "https://fixture.invalid/new",
+          1577836800000,
+          0,
+          1577836800000,
+          104
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, ?, null, ?, ?, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"last_checked_at\" = ?, \"status\" = ?, \"last_error\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+        "params": [
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "failed",
+          "replacement refused",
+          101,
+          105,
+          "feed",
+          null,
+          "[]",
+          null,
+          null,
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "failed",
+          "replacement refused",
+          101,
+          105,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "statements": [
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'https://fixture.invalid/source', 'https://fixture.invalid/source', 'https://fixture.invalid/feed', 'custom', '[]', '[]', 0.0, 1.0, 1.0, null, null, null, 1000.0, null, 'checking', null, 101.0, 103.0, null, null, null, null, null, 'feed', NULL, '[]', NULL, NULL) on conflict (\"subscriptions\".\"id\") do update set \"id\" = 'sub-1', \"title\" = 'https://fixture.invalid/source', \"source_url\" = 'https://fixture.invalid/source', \"feed_url\" = 'https://fixture.invalid/feed', \"platform\" = 'custom', \"keywords\" = '[]', \"tags\" = '[]', \"only_latest\" = 0.0, \"auto_download\" = 1.0, \"enabled\" = 1.0, \"last_checked_at\" = 1000.0, \"status\" = 'checking', \"created_at\" = 101.0, \"updated_at\" = 103.0, \"source_kind\" = 'feed', \"profile_owner\" = NULL, \"categories\" = '[]', \"check_interval_ms\" = NULL, \"next_check_at\" = NULL",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "BEGIN DEFERRED",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+      "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+      "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'new', 'New item', 'https://fixture.invalid/new', 1577836800000.0, null, 0.0, null, 1577836800000.0, 104.0)",
+      "ROLLBACK",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'https://fixture.invalid/source', 'https://fixture.invalid/source', 'https://fixture.invalid/feed', 'custom', '[]', '[]', 0.0, 1.0, 1.0, null, null, null, 1000.0, null, 'failed', 'replacement refused', 101.0, 105.0, null, null, null, null, null, 'feed', NULL, '[]', NULL, NULL) on conflict (\"subscriptions\".\"id\") do update set \"id\" = 'sub-1', \"title\" = 'https://fixture.invalid/source', \"source_url\" = 'https://fixture.invalid/source', \"feed_url\" = 'https://fixture.invalid/feed', \"platform\" = 'custom', \"keywords\" = '[]', \"tags\" = '[]', \"only_latest\" = 0.0, \"auto_download\" = 1.0, \"enabled\" = 1.0, \"last_checked_at\" = 1000.0, \"status\" = 'failed', \"last_error\" = 'replacement refused', \"created_at\" = 101.0, \"updated_at\" = 105.0, \"source_kind\" = 'feed', \"profile_owner\" = NULL, \"categories\" = '[]', \"check_interval_ms\" = NULL, \"next_check_at\" = NULL",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "SELECT status,last_error FROM subscriptions",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "SELECT * FROM subscription_items ORDER BY item_id"
+    ],
+    "handleSurvivesStop": true
+  },
+  "link": {
+    "events": [
+      {
+        "fetch": "https://fixture.invalid/feed"
+      },
+      {
+        "enqueue": {
+          "subscription": {
+            "id": "sub-1",
+            "title": "https://fixture.invalid/source",
+            "sourceUrl": "https://fixture.invalid/source",
+            "feedUrl": "https://fixture.invalid/feed",
+            "platform": "custom",
+            "keywords": [],
+            "tags": [],
+            "onlyDownloadLatest": false,
+            "autoDownload": true,
+            "enabled": true,
+            "status": "idle",
+            "createdAt": 101,
+            "updatedAt": 101,
+            "sourceKind": "feed",
+            "categories": [],
+            "items": [
+              {
+                "id": "old",
+                "url": "https://fixture.invalid/old",
+                "title": "Title old",
+                "publishedAt": 10,
+                "addedToQueue": false
+              }
+            ]
+          },
+          "item": {
+            "id": "new",
+            "url": "https://fixture.invalid/new",
+            "title": "New item",
+            "publishedAt": 1577836800000
+          },
+          "trigger": "auto"
+        }
+      },
+      {
+        "level": "warn",
+        "message": "subscriptions: enqueueItem failed",
+        "metadata": {
+          "subscriptionId": "sub-1",
+          "itemId": "new",
+          "err": {
+            "name": "SqliteError",
+            "message": "link refused",
+            "code": "SQLITE_CONSTRAINT_TRIGGER"
+          }
+        }
+      },
+      {
+        "changed": [
+          {
+            "status": "up-to-date",
+            "last_error": null
+          }
+        ]
+      }
+    ],
+    "final": {
+      "id": "sub-1",
+      "title": "Feed title",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "up-to-date",
+      "createdAt": 101,
+      "updatedAt": 106,
+      "sourceKind": "feed",
+      "categories": [],
+      "latestVideoTitle": "New item",
+      "latestVideoPublishedAt": 1577836800000,
+      "lastCheckedAt": 1000,
+      "lastSuccessAt": 1000,
+      "items": [
+        {
+          "id": "new",
+          "url": "https://fixture.invalid/new",
+          "title": "New item",
+          "publishedAt": 1577836800000,
+          "addedToQueue": false
+        }
+      ]
+    },
+    "raw": [
+      {
+        "subscription_id": "sub-1",
+        "item_id": "new",
+        "title": "New item",
+        "url": "https://fixture.invalid/new",
+        "published_at": 1577836800000,
+        "thumbnail": null,
+        "added": 0,
+        "task_id": null,
+        "created_at": 1577836800000,
+        "updated_at": 104
+      }
+    ],
+    "queries": [
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, ?, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"last_checked_at\" = ?, \"status\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+        "params": [
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "checking",
+          101,
+          103,
+          "feed",
+          null,
+          "[]",
+          null,
+          null,
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          1000,
+          "checking",
+          101,
+          103,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+        "params": [
+          "sub-1",
+          "new",
+          "New item",
+          "https://fixture.invalid/new",
+          1577836800000,
+          0,
+          1577836800000,
+          104
+        ]
+      },
+      {
+        "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+        "params": [
+          1,
+          "new-task",
+          105,
+          "sub-1",
+          "new"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, ?, ?, ?, ?, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"latest_video_title\" = ?, \"latest_video_published_at\" = ?, \"last_checked_at\" = ?, \"last_success_at\" = ?, \"status\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+        "params": [
+          "sub-1",
+          "Feed title",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          "New item",
+          1577836800000,
+          1000,
+          1000,
+          "up-to-date",
+          101,
+          106,
+          "feed",
+          null,
+          "[]",
+          null,
+          null,
+          "sub-1",
+          "Feed title",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          0,
+          1,
+          1,
+          "New item",
+          1577836800000,
+          1000,
+          1000,
+          "up-to-date",
+          101,
+          106,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "statements": [
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'https://fixture.invalid/source', 'https://fixture.invalid/source', 'https://fixture.invalid/feed', 'custom', '[]', '[]', 0.0, 1.0, 1.0, null, null, null, 1000.0, null, 'checking', null, 101.0, 103.0, null, null, null, null, null, 'feed', NULL, '[]', NULL, NULL) on conflict (\"subscriptions\".\"id\") do update set \"id\" = 'sub-1', \"title\" = 'https://fixture.invalid/source', \"source_url\" = 'https://fixture.invalid/source', \"feed_url\" = 'https://fixture.invalid/feed', \"platform\" = 'custom', \"keywords\" = '[]', \"tags\" = '[]', \"only_latest\" = 0.0, \"auto_download\" = 1.0, \"enabled\" = 1.0, \"last_checked_at\" = 1000.0, \"status\" = 'checking', \"created_at\" = 101.0, \"updated_at\" = 103.0, \"source_kind\" = 'feed', \"profile_owner\" = NULL, \"categories\" = '[]', \"check_interval_ms\" = NULL, \"next_check_at\" = NULL",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "BEGIN DEFERRED",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+      "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+      "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'new', 'New item', 'https://fixture.invalid/new', 1577836800000.0, null, 0.0, null, 1577836800000.0, 104.0)",
+      "COMMIT",
+      "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'new-task', \"updated_at\" = 105.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'new'))",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'Feed title', 'https://fixture.invalid/source', 'https://fixture.invalid/feed', 'custom', '[]', '[]', 0.0, 1.0, 1.0, null, 'New item', 1577836800000.0, 1000.0, 1000.0, 'up-to-date', null, 101.0, 106.0, null, null, null, null, null, 'feed', NULL, '[]', NULL, NULL) on conflict (\"subscriptions\".\"id\") do update set \"id\" = 'sub-1', \"title\" = 'Feed title', \"source_url\" = 'https://fixture.invalid/source', \"feed_url\" = 'https://fixture.invalid/feed', \"platform\" = 'custom', \"keywords\" = '[]', \"tags\" = '[]', \"only_latest\" = 0.0, \"auto_download\" = 1.0, \"enabled\" = 1.0, \"latest_video_title\" = 'New item', \"latest_video_published_at\" = 1577836800000.0, \"last_checked_at\" = 1000.0, \"last_success_at\" = 1000.0, \"status\" = 'up-to-date', \"created_at\" = 101.0, \"updated_at\" = 106.0, \"source_kind\" = 'feed', \"profile_owner\" = NULL, \"categories\" = '[]', \"check_interval_ms\" = NULL, \"next_check_at\" = NULL",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "SELECT status,last_error FROM subscriptions",
+      "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+      "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+      "SELECT * FROM subscription_items ORDER BY item_id"
+    ],
+    "handleSurvivesStop": true
+  }
+}

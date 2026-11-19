@@ -1,0 +1,93 @@
+{
+  "clearError": {
+    "name": "SqliteError",
+    "message": "second update refused",
+    "code": "SQLITE_CONSTRAINT_TRIGGER"
+  },
+  "original": [
+    {
+      "subscription_id": "sub-1",
+      "item_id": "a",
+      "title": "Title a",
+      "url": "https://fixture.invalid/a",
+      "published_at": 10,
+      "thumbnail": null,
+      "added": 1,
+      "task_id": "task-a",
+      "created_at": 10,
+      "updated_at": 103
+    },
+    {
+      "subscription_id": "sub-1",
+      "item_id": "b",
+      "title": "Title b",
+      "url": "https://fixture.invalid/b",
+      "published_at": 10,
+      "thumbnail": null,
+      "added": 1,
+      "task_id": "task-b",
+      "created_at": 10,
+      "updated_at": 104
+    }
+  ],
+  "afterClear": [
+    {
+      "subscription_id": "sub-1",
+      "item_id": "a",
+      "title": "Title a",
+      "url": "https://fixture.invalid/a",
+      "published_at": 10,
+      "thumbnail": null,
+      "added": 1,
+      "task_id": "task-a",
+      "created_at": 10,
+      "updated_at": 103
+    },
+    {
+      "subscription_id": "sub-1",
+      "item_id": "b",
+      "title": "Title b",
+      "url": "https://fixture.invalid/b",
+      "published_at": 10,
+      "thumbnail": null,
+      "added": 1,
+      "task_id": "task-b",
+      "created_at": 10,
+      "updated_at": 104
+    }
+  ],
+  "clearTrace": [
+    "BEGIN DEFERRED",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 105.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a') and (((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))))",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 105.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'b') and (((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))))",
+    "ROLLBACK",
+    "SELECT * FROM subscription_items ORDER BY item_id"
+  ],
+  "casError": {
+    "name": "SqliteError",
+    "message": "pid refused",
+    "code": "SQLITE_CONSTRAINT_TRIGGER"
+  },
+  "originalMeta": [
+    {
+      "key": "subscriptions_version",
+      "value": "1",
+      "updated_at": 0
+    }
+  ],
+  "afterMeta": [
+    {
+      "key": "subscriptions_version",
+      "value": "1",
+      "updated_at": 0
+    }
+  ],
+  "metaTrace": [
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_kind', 'api', 1.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'api', \"updated_at\" = 1.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_pid', '2', 1.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '2', \"updated_at\" = 1.0",
+    "ROLLBACK",
+    "SELECT * FROM subscriptions_meta ORDER BY key"
+  ]
+}

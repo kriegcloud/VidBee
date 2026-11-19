@@ -1,0 +1,174 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`stored unknown/empty/null download preferences and defaults retain nullish precedence 1`] = `
+[
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": "",
+    },
+    {},
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": "",
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": "",
+    },
+    {},
+    {
+      "containerFormat": "auto",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": "",
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": "future-type",
+    },
+    {},
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "future-type",
+    },
+  ],
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": "future-type",
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "future-type",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": "future-type",
+    },
+    {},
+    {
+      "containerFormat": "auto",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "future-type",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": "future-type",
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "future-type",
+    },
+  ],
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": null,
+    },
+    {},
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "video",
+    },
+  ],
+  [
+    {
+      "downloadContainer": "future",
+      "downloadType": null,
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": null,
+    },
+    {},
+    {
+      "containerFormat": "auto",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "video",
+    },
+  ],
+  [
+    {
+      "downloadContainer": null,
+      "downloadType": null,
+    },
+    {
+      "oneClickContainer": "future",
+      "oneClickDownloadType": "",
+      "oneClickQuality": null,
+    },
+    {
+      "containerFormat": "future",
+      "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+      "type": "",
+    },
+  ],
+]
+`;

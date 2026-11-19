@@ -1,0 +1,1567 @@
+{
+  "values": {
+    "empty": [],
+    "add": {
+      "id": "sub-1",
+      "title": "Feed",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [
+        "one",
+        "ONE"
+      ],
+      "tags": [
+        "x"
+      ],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "feed",
+      "categories": [
+        "posts"
+      ],
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "{title}",
+      "items": []
+    },
+    "duplicate": [
+      "sub-1",
+      null,
+      null
+    ],
+    "update": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/new",
+      "sourceUrl": "https://fixture.invalid/new",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [
+        "one",
+        "ONE"
+      ],
+      "tags": [
+        "x"
+      ],
+      "onlyDownloadLatest": true,
+      "autoDownload": false,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 102,
+      "sourceKind": "feed",
+      "categories": [
+        "posts"
+      ],
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "{title}",
+      "checkIntervalMs": 12,
+      "downloadQuality": "best",
+      "items": []
+    },
+    "missing": [
+      null,
+      null,
+      false
+    ],
+    "beforeReplacement": {
+      "subscriptions": [
+        {
+          "id": "sub-1",
+          "title": "https://fixture.invalid/new",
+          "source_url": "https://fixture.invalid/new",
+          "feed_url": "https://fixture.invalid/feed",
+          "platform": "custom",
+          "keywords": "[\"one\",\"ONE\"]",
+          "tags": "[\"x\"]",
+          "only_latest": 1,
+          "enabled": 1,
+          "cover_url": null,
+          "latest_video_title": null,
+          "latest_video_published_at": null,
+          "last_checked_at": null,
+          "last_success_at": null,
+          "status": "idle",
+          "last_error": null,
+          "created_at": 101,
+          "updated_at": 102,
+          "download_directory": "/fixture/downloads",
+          "naming_template": "{title}",
+          "auto_download": 0,
+          "source_kind": "feed",
+          "profile_owner": null,
+          "categories": "[\"posts\"]",
+          "check_interval_ms": 12,
+          "next_check_at": null,
+          "download_type": null,
+          "download_quality": "best",
+          "download_container": null
+        }
+      ],
+      "items": [
+        {
+          "subscription_id": "sub-1",
+          "item_id": "a",
+          "title": "Title a",
+          "url": "https://fixture.invalid/a",
+          "published_at": 10,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 10,
+          "updated_at": 104
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "b",
+          "title": "Title b",
+          "url": "https://fixture.invalid/b",
+          "published_at": 20,
+          "thumbnail": "https://fixture.invalid/image",
+          "added": 0,
+          "task_id": null,
+          "created_at": 20,
+          "updated_at": 103
+        }
+      ],
+      "meta": [
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "replacement": {
+      "subscriptions": [
+        {
+          "id": "sub-1",
+          "title": "https://fixture.invalid/new",
+          "source_url": "https://fixture.invalid/new",
+          "feed_url": "https://fixture.invalid/feed",
+          "platform": "custom",
+          "keywords": "[\"one\",\"ONE\"]",
+          "tags": "[\"x\"]",
+          "only_latest": 1,
+          "enabled": 1,
+          "cover_url": null,
+          "latest_video_title": null,
+          "latest_video_published_at": null,
+          "last_checked_at": null,
+          "last_success_at": null,
+          "status": "idle",
+          "last_error": null,
+          "created_at": 101,
+          "updated_at": 102,
+          "download_directory": "/fixture/downloads",
+          "naming_template": "{title}",
+          "auto_download": 0,
+          "source_kind": "feed",
+          "profile_owner": null,
+          "categories": "[\"posts\"]",
+          "check_interval_ms": 12,
+          "next_check_at": null,
+          "download_type": null,
+          "download_quality": "best",
+          "download_container": null
+        }
+      ],
+      "items": [
+        {
+          "subscription_id": "sub-1",
+          "item_id": "a",
+          "title": "Title a",
+          "url": "https://fixture.invalid/a",
+          "published_at": 30,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 10,
+          "updated_at": 105
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "c",
+          "title": "Title c",
+          "url": "https://fixture.invalid/c",
+          "published_at": 40,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 40,
+          "updated_at": 105
+        }
+      ],
+      "meta": [
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "merged": {
+      "subscriptions": [
+        {
+          "id": "sub-1",
+          "title": "https://fixture.invalid/new",
+          "source_url": "https://fixture.invalid/new",
+          "feed_url": "https://fixture.invalid/feed",
+          "platform": "custom",
+          "keywords": "[\"one\",\"ONE\"]",
+          "tags": "[\"x\"]",
+          "only_latest": 1,
+          "enabled": 1,
+          "cover_url": null,
+          "latest_video_title": null,
+          "latest_video_published_at": null,
+          "last_checked_at": null,
+          "last_success_at": null,
+          "status": "idle",
+          "last_error": null,
+          "created_at": 101,
+          "updated_at": 102,
+          "download_directory": "/fixture/downloads",
+          "naming_template": "{title}",
+          "auto_download": 0,
+          "source_kind": "feed",
+          "profile_owner": null,
+          "categories": "[\"posts\"]",
+          "check_interval_ms": 12,
+          "next_check_at": null,
+          "download_type": null,
+          "download_quality": "best",
+          "download_container": null
+        }
+      ],
+      "items": [
+        {
+          "subscription_id": "sub-1",
+          "item_id": "a",
+          "title": "Title a",
+          "url": "https://fixture.invalid/a",
+          "published_at": 50,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 10,
+          "updated_at": 106
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "c",
+          "title": "Title c",
+          "url": "https://fixture.invalid/c",
+          "published_at": 40,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 40,
+          "updated_at": 105
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "d",
+          "title": "Title d",
+          "url": "https://fixture.invalid/d",
+          "published_at": 60,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 106,
+          "updated_at": 106
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "empty",
+          "title": "empty",
+          "url": "",
+          "published_at": 108,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": "",
+          "created_at": 108,
+          "updated_at": 108
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "null",
+          "title": "null",
+          "url": "",
+          "published_at": 109,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 109,
+          "updated_at": 109
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "placeholder",
+          "title": "placeholder",
+          "url": "",
+          "published_at": 107,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "dead",
+          "created_at": 107,
+          "updated_at": 107
+        }
+      ],
+      "meta": [
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "replaceError": {
+      "name": "SqliteError",
+      "message": "UNIQUE constraint failed: subscription_items.subscription_id, subscription_items.item_id",
+      "code": "SQLITE_CONSTRAINT_PRIMARYKEY"
+    },
+    "mergeError": {
+      "name": "SqliteError",
+      "message": "UNIQUE constraint failed: subscription_items.subscription_id, subscription_items.item_id",
+      "code": "SQLITE_CONSTRAINT_PRIMARYKEY"
+    },
+    "clear": [
+      0,
+      2
+    ],
+    "orphanPrefix": [
+      "live:false"
+    ],
+    "orphanCount": 2,
+    "lookups": [
+      "live:false",
+      "dead:false",
+      "marker"
+    ],
+    "afterClear": {
+      "subscriptions": [
+        {
+          "id": "sub-1",
+          "title": "https://fixture.invalid/new",
+          "source_url": "https://fixture.invalid/new",
+          "feed_url": "https://fixture.invalid/feed",
+          "platform": "custom",
+          "keywords": "[\"one\",\"ONE\"]",
+          "tags": "[\"x\"]",
+          "only_latest": 1,
+          "enabled": 1,
+          "cover_url": null,
+          "latest_video_title": null,
+          "latest_video_published_at": null,
+          "last_checked_at": null,
+          "last_success_at": null,
+          "status": "idle",
+          "last_error": null,
+          "created_at": 101,
+          "updated_at": 102,
+          "download_directory": "/fixture/downloads",
+          "naming_template": "{title}",
+          "auto_download": 0,
+          "source_kind": "feed",
+          "profile_owner": null,
+          "categories": "[\"posts\"]",
+          "check_interval_ms": 12,
+          "next_check_at": null,
+          "download_type": null,
+          "download_quality": "best",
+          "download_container": null
+        }
+      ],
+      "items": [
+        {
+          "subscription_id": "sub-1",
+          "item_id": "a",
+          "title": "Title a",
+          "url": "https://fixture.invalid/a",
+          "published_at": 50,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 10,
+          "updated_at": 114
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "c",
+          "title": "Title c",
+          "url": "https://fixture.invalid/c",
+          "published_at": 40,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 40,
+          "updated_at": 117
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "d",
+          "title": "Title d",
+          "url": "https://fixture.invalid/d",
+          "published_at": 60,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 106,
+          "updated_at": 115
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "empty",
+          "title": "empty",
+          "url": "",
+          "published_at": 108,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": "",
+          "created_at": 108,
+          "updated_at": 108
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "null",
+          "title": "null",
+          "url": "",
+          "published_at": 109,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 109,
+          "updated_at": 117
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "placeholder",
+          "title": "placeholder",
+          "url": "",
+          "published_at": 107,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 107,
+          "updated_at": 113
+        }
+      ],
+      "meta": [
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "metaEmpty": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "cas": [
+      true,
+      false,
+      false,
+      true
+    ],
+    "meta": {
+      "kind": "api",
+      "pid": 7,
+      "startedAt": 1,
+      "heartbeatAt": 2,
+      "lockExpiresAt": 20,
+      "leaseId": "next",
+      "preferred": "desktop"
+    },
+    "metaCleared": {
+      "subscriptions": [
+        {
+          "id": "sub-1",
+          "title": "https://fixture.invalid/new",
+          "source_url": "https://fixture.invalid/new",
+          "feed_url": "https://fixture.invalid/feed",
+          "platform": "custom",
+          "keywords": "[\"one\",\"ONE\"]",
+          "tags": "[\"x\"]",
+          "only_latest": 1,
+          "enabled": 1,
+          "cover_url": null,
+          "latest_video_title": null,
+          "latest_video_published_at": null,
+          "last_checked_at": null,
+          "last_success_at": null,
+          "status": "idle",
+          "last_error": null,
+          "created_at": 101,
+          "updated_at": 102,
+          "download_directory": "/fixture/downloads",
+          "naming_template": "{title}",
+          "auto_download": 0,
+          "source_kind": "feed",
+          "profile_owner": null,
+          "categories": "[\"posts\"]",
+          "check_interval_ms": 12,
+          "next_check_at": null,
+          "download_type": null,
+          "download_quality": "best",
+          "download_container": null
+        }
+      ],
+      "items": [
+        {
+          "subscription_id": "sub-1",
+          "item_id": "a",
+          "title": "Title a",
+          "url": "https://fixture.invalid/a",
+          "published_at": 50,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 10,
+          "updated_at": 114
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "c",
+          "title": "Title c",
+          "url": "https://fixture.invalid/c",
+          "published_at": 40,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 40,
+          "updated_at": 117
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "d",
+          "title": "Title d",
+          "url": "https://fixture.invalid/d",
+          "published_at": 60,
+          "thumbnail": null,
+          "added": 1,
+          "task_id": "live",
+          "created_at": 106,
+          "updated_at": 115
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "empty",
+          "title": "empty",
+          "url": "",
+          "published_at": 108,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": "",
+          "created_at": 108,
+          "updated_at": 108
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "null",
+          "title": "null",
+          "url": "",
+          "published_at": 109,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 109,
+          "updated_at": 117
+        },
+        {
+          "subscription_id": "sub-1",
+          "item_id": "placeholder",
+          "title": "placeholder",
+          "url": "",
+          "published_at": 107,
+          "thumbnail": null,
+          "added": 0,
+          "task_id": null,
+          "created_at": 107,
+          "updated_at": 113
+        }
+      ],
+      "meta": [
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "metaCoercion": {
+      "kind": null,
+      "pid": 16,
+      "startedAt": 0,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": "",
+      "preferred": null
+    },
+    "permissive": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/new",
+      "sourceUrl": "https://fixture.invalid/new",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "unknown-platform",
+      "keywords": [
+        "x",
+        "X"
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "status": "unknown-status",
+      "createdAt": 101,
+      "updatedAt": 102,
+      "sourceKind": "feed",
+      "categories": [],
+      "checkIntervalMs": 0,
+      "nextCheckAt": 0,
+      "latestVideoPublishedAt": 0,
+      "lastCheckedAt": 0,
+      "lastSuccessAt": 0,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "{title}",
+      "downloadType": "unknown-type",
+      "downloadQuality": "unknown-quality",
+      "downloadContainer": "unknown-container",
+      "items": [
+        {
+          "id": "null",
+          "url": "",
+          "title": "null",
+          "publishedAt": 109,
+          "addedToQueue": false
+        },
+        {
+          "id": "empty",
+          "url": "",
+          "title": "empty",
+          "publishedAt": 108,
+          "addedToQueue": false
+        },
+        {
+          "id": "placeholder",
+          "url": "",
+          "title": "placeholder",
+          "publishedAt": 107,
+          "addedToQueue": false
+        },
+        {
+          "id": "d",
+          "url": "https://fixture.invalid/d",
+          "title": "Title d",
+          "publishedAt": 60,
+          "addedToQueue": true,
+          "taskId": "live"
+        },
+        {
+          "id": "a",
+          "url": "https://fixture.invalid/a",
+          "title": "Title a",
+          "publishedAt": 50,
+          "addedToQueue": true,
+          "taskId": "live"
+        },
+        {
+          "id": "c",
+          "url": "https://fixture.invalid/c",
+          "title": "Title c",
+          "publishedAt": 40,
+          "addedToQueue": false
+        }
+      ]
+    },
+    "removed": true,
+    "final": {
+      "subscriptions": [],
+      "items": [],
+      "meta": [
+        {
+          "key": "leader_heartbeat_at",
+          "value": "Infinity",
+          "updated_at": 0
+        },
+        {
+          "key": "leader_kind",
+          "value": "unknown",
+          "updated_at": 0
+        },
+        {
+          "key": "leader_lease_id",
+          "value": "",
+          "updated_at": 0
+        },
+        {
+          "key": "leader_pid",
+          "value": "0x10",
+          "updated_at": 0
+        },
+        {
+          "key": "leader_started_at",
+          "value": "",
+          "updated_at": 0
+        },
+        {
+          "key": "subscriptions_version",
+          "value": "1",
+          "updated_at": 0
+        }
+      ]
+    },
+    "markers": [
+      "add-prefix:1",
+      "microtask-after-add",
+      "add-settled",
+      "add-awaited"
+    ]
+  },
+  "queries": [
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" order by \"subscriptions\".\"updated_at\" desc",
+      "params": []
+    },
+    {
+      "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, ?, ?, null, null, null, ?, ?, ?, ?, ?)",
+      "params": [
+        "sub-1",
+        "Feed",
+        "https://fixture.invalid/source",
+        "https://fixture.invalid/feed",
+        "custom",
+        "[\"one\",\"ONE\"]",
+        "[\"x\"]",
+        1,
+        1,
+        1,
+        "idle",
+        101,
+        101,
+        "/fixture/downloads",
+        "{title}",
+        "feed",
+        null,
+        "[\"posts\"]",
+        null,
+        null
+      ]
+    },
+    {
+      "sql": "select \"id\", \"feed_url\" from \"subscriptions\"",
+      "params": []
+    },
+    {
+      "sql": "select \"id\", \"feed_url\" from \"subscriptions\"",
+      "params": []
+    },
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, ?, ?, null, ?, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"status\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"download_directory\" = ?, \"naming_template\" = ?, \"download_quality\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+      "params": [
+        "sub-1",
+        "https://fixture.invalid/new",
+        "https://fixture.invalid/new",
+        "https://fixture.invalid/feed",
+        "custom",
+        "[\"one\",\"ONE\"]",
+        "[\"x\"]",
+        1,
+        0,
+        1,
+        "idle",
+        101,
+        102,
+        "/fixture/downloads",
+        "{title}",
+        "best",
+        "feed",
+        null,
+        "[\"posts\"]",
+        12,
+        null,
+        "sub-1",
+        "https://fixture.invalid/new",
+        "https://fixture.invalid/new",
+        "https://fixture.invalid/feed",
+        "custom",
+        "[\"one\",\"ONE\"]",
+        "[\"x\"]",
+        1,
+        0,
+        1,
+        "idle",
+        101,
+        102,
+        "/fixture/downloads",
+        "{title}",
+        "best",
+        "feed",
+        null,
+        "[\"posts\"]",
+        12,
+        null
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "absent"
+      ]
+    },
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "absent"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "absent"
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "a",
+        "Title a",
+        "https://fixture.invalid/a",
+        10,
+        0,
+        10,
+        103
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, ?, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "b",
+        "Title b",
+        "https://fixture.invalid/b",
+        20,
+        "https://fixture.invalid/image",
+        0,
+        20,
+        103
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        1,
+        "live",
+        104,
+        "sub-1",
+        "a"
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, ?, ?, ?)",
+      "params": [
+        "sub-1",
+        "a",
+        "Title a",
+        "https://fixture.invalid/a",
+        30,
+        1,
+        "live",
+        10,
+        105
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "c",
+        "Title c",
+        "https://fixture.invalid/c",
+        40,
+        0,
+        40,
+        105
+      ]
+    },
+    {
+      "sql": "select \"item_id\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"title\" = ?, \"url\" = ?, \"published_at\" = ?, \"thumbnail\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        "Title a",
+        "https://fixture.invalid/a",
+        50,
+        null,
+        106,
+        "sub-1",
+        "a"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, ?, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "d",
+        "Title d",
+        "https://fixture.invalid/d",
+        60,
+        null,
+        0,
+        106,
+        106
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        1,
+        "dead",
+        107,
+        "sub-1",
+        "placeholder"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, ?, ?, ?) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ?",
+      "params": [
+        "sub-1",
+        "placeholder",
+        "placeholder",
+        "",
+        107,
+        1,
+        "dead",
+        107,
+        107,
+        1,
+        "dead",
+        107
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        0,
+        "",
+        108,
+        "sub-1",
+        "empty"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, ?, ?, ?) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ?",
+      "params": [
+        "sub-1",
+        "empty",
+        "empty",
+        "",
+        108,
+        0,
+        "",
+        108,
+        108,
+        0,
+        "",
+        108
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        0,
+        null,
+        109,
+        "sub-1",
+        "null"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, ?, ?, ?) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ?",
+      "params": [
+        "sub-1",
+        "null",
+        "null",
+        "",
+        109,
+        0,
+        null,
+        109,
+        109,
+        0,
+        null,
+        109
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "duplicate",
+        "Title duplicate",
+        "https://fixture.invalid/duplicate",
+        10,
+        0,
+        10,
+        110
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "duplicate",
+        "Title duplicate",
+        "https://fixture.invalid/duplicate",
+        10,
+        0,
+        10,
+        110
+      ]
+    },
+    {
+      "sql": "select \"item_id\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, ?, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "new",
+        "Title new",
+        "https://fixture.invalid/new",
+        10,
+        null,
+        0,
+        111,
+        111
+      ]
+    },
+    {
+      "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, ?, ?, null, ?, ?)",
+      "params": [
+        "sub-1",
+        "new",
+        "Title new",
+        "https://fixture.invalid/new",
+        10,
+        null,
+        0,
+        111,
+        111
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where \"subscription_items\".\"task_id\" in (?)",
+      "params": [
+        0,
+        null,
+        113,
+        "dead"
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?) and (((\"subscription_items\".\"added\" = ?) or ((\"subscription_items\".\"task_id\" is not null)))))",
+      "params": [
+        0,
+        null,
+        113,
+        "sub-1",
+        "a",
+        1
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?) and (((\"subscription_items\".\"added\" = ?) or ((\"subscription_items\".\"task_id\" is not null)))))",
+      "params": [
+        0,
+        null,
+        113,
+        "sub-1",
+        "a",
+        1
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        1,
+        "live",
+        114,
+        "sub-1",
+        "a"
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        1,
+        "live",
+        115,
+        "sub-1",
+        "d"
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+      "params": [
+        1,
+        "dead",
+        116,
+        "sub-1",
+        "c"
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"task_id\", \"added\" from \"subscription_items\" where ((\"subscription_items\".\"added\" = ?) or ((\"subscription_items\".\"task_id\" is not null)))",
+      "params": [
+        1
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where \"subscription_items\".\"task_id\" in (?)",
+      "params": [
+        0,
+        null,
+        117,
+        "dead"
+      ]
+    },
+    {
+      "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?) and (((\"subscription_items\".\"added\" = ?) or ((\"subscription_items\".\"task_id\" is not null)))))",
+      "params": [
+        0,
+        null,
+        117,
+        "sub-1",
+        "null",
+        1
+      ]
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "preferred_leader",
+        "desktop",
+        118,
+        "desktop",
+        118
+      ]
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_kind",
+        "api",
+        10,
+        "api",
+        10
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_pid",
+        "7",
+        10,
+        "7",
+        10
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_started_at",
+        "1",
+        10,
+        "1",
+        10
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_heartbeat_at",
+        "2",
+        10,
+        "2",
+        10
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_lock_expires_at",
+        "20",
+        10,
+        "20",
+        10
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_lease_id",
+        "lease",
+        10,
+        "lease",
+        10
+      ]
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_kind",
+        "api",
+        20,
+        "api",
+        20
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_pid",
+        "7",
+        20,
+        "7",
+        20
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_started_at",
+        "1",
+        20,
+        "1",
+        20
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_heartbeat_at",
+        "2",
+        20,
+        "2",
+        20
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_lock_expires_at",
+        "20",
+        20,
+        "20",
+        20
+      ]
+    },
+    {
+      "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+      "params": [
+        "leader_lease_id",
+        "next",
+        20,
+        "next",
+        20
+      ]
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_kind"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_pid"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_started_at"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_heartbeat_at"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_lock_expires_at"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "leader_lease_id"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = ?",
+      "params": [
+        "preferred_leader"
+      ]
+    },
+    {
+      "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+      "params": []
+    },
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "delete from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    },
+    {
+      "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+      "params": [
+        "sub-1"
+      ]
+    }
+  ],
+  "statements": [
+    "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" order by \"subscriptions\".\"updated_at\" desc",
+    "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'Feed', 'https://fixture.invalid/source', 'https://fixture.invalid/feed', 'custom', '[\"one\",\"ONE\"]', '[\"x\"]', 1.0, 1.0, 1.0, null, null, null, null, null, 'idle', null, 101.0, 101.0, '/fixture/downloads', '{title}', null, null, null, 'feed', NULL, '[\"posts\"]', NULL, NULL)",
+    "SELECT count(*) AS n FROM subscriptions",
+    "select \"id\", \"feed_url\" from \"subscriptions\"",
+    "select \"id\", \"feed_url\" from \"subscriptions\"",
+    "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+    "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values ('sub-1', 'https://fixture.invalid/new', 'https://fixture.invalid/new', 'https://fixture.invalid/feed', 'custom', '[\"one\",\"ONE\"]', '[\"x\"]', 1.0, 0.0, 1.0, null, null, null, null, null, 'idle', null, 101.0, 102.0, '/fixture/downloads', '{title}', null, 'best', null, 'feed', NULL, '[\"posts\"]', 12.0, NULL) on conflict (\"subscriptions\".\"id\") do update set \"id\" = 'sub-1', \"title\" = 'https://fixture.invalid/new', \"source_url\" = 'https://fixture.invalid/new', \"feed_url\" = 'https://fixture.invalid/feed', \"platform\" = 'custom', \"keywords\" = '[\"one\",\"ONE\"]', \"tags\" = '[\"x\"]', \"only_latest\" = 1.0, \"auto_download\" = 0.0, \"enabled\" = 1.0, \"status\" = 'idle', \"created_at\" = 101.0, \"updated_at\" = 102.0, \"download_directory\" = '/fixture/downloads', \"naming_template\" = '{title}', \"download_quality\" = 'best', \"source_kind\" = 'feed', \"profile_owner\" = NULL, \"categories\" = '[\"posts\"]', \"check_interval_ms\" = 12.0, \"next_check_at\" = NULL",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+    "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'absent'",
+    "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'absent'",
+    "delete from \"subscriptions\" where \"subscriptions\".\"id\" = 'absent'",
+    "BEGIN DEFERRED",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'a', 'Title a', 'https://fixture.invalid/a', 10.0, null, 0.0, null, 10.0, 103.0)",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'b', 'Title b', 'https://fixture.invalid/b', 20.0, 'https://fixture.invalid/image', 0.0, null, 20.0, 103.0)",
+    "COMMIT",
+    "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'live', \"updated_at\" = 104.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a'))",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "BEGIN DEFERRED",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'a', 'Title a', 'https://fixture.invalid/a', 30.0, null, 1.0, 'live', 10.0, 105.0)",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'c', 'Title c', 'https://fixture.invalid/c', 40.0, null, 0.0, null, 40.0, 105.0)",
+    "COMMIT",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "BEGIN DEFERRED",
+    "select \"item_id\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "update \"subscription_items\" set \"title\" = 'Title a', \"url\" = 'https://fixture.invalid/a', \"published_at\" = 50.0, \"thumbnail\" = NULL, \"updated_at\" = 106.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a'))",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'd', 'Title d', 'https://fixture.invalid/d', 60.0, NULL, 0.0, null, 106.0, 106.0)",
+    "COMMIT",
+    "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'dead', \"updated_at\" = 107.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'placeholder'))",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'placeholder', 'placeholder', '', 107.0, null, 1.0, 'dead', 107.0, 107.0) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = 1.0, \"task_id\" = 'dead', \"updated_at\" = 107.0",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = '', \"updated_at\" = 108.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'empty'))",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'empty', 'empty', '', 108.0, null, 0.0, '', 108.0, 108.0) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = 0.0, \"task_id\" = '', \"updated_at\" = 108.0",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 109.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'null'))",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'null', 'null', '', 109.0, null, 0.0, NULL, 109.0, 109.0) on conflict (\"subscription_items\".\"subscription_id\", \"subscription_items\".\"item_id\") do update set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 109.0",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "BEGIN DEFERRED",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'duplicate', 'Title duplicate', 'https://fixture.invalid/duplicat'/*+1 bytes*/, 10.0, null, 0.0, null, 10.0, 110.0)",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'duplicate', 'Title duplicate', 'https://fixture.invalid/duplicat'/*+1 bytes*/, 10.0, null, 0.0, null, 10.0, 110.0)",
+    "ROLLBACK",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "BEGIN DEFERRED",
+    "select \"item_id\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'new', 'Title new', 'https://fixture.invalid/new', 10.0, NULL, 0.0, null, 111.0, 111.0)",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'new', 'Title new', 'https://fixture.invalid/new', 10.0, NULL, 0.0, null, 111.0, 111.0)",
+    "ROLLBACK",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "BEGIN DEFERRED",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 113.0 where \"subscription_items\".\"task_id\" in ('dead')",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 113.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a') and (((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))))",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 113.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a') and (((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))))",
+    "COMMIT",
+    "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'live', \"updated_at\" = 114.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'a'))",
+    "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'live', \"updated_at\" = 115.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'd'))",
+    "update \"subscription_items\" set \"added\" = 1.0, \"task_id\" = 'dead', \"updated_at\" = 116.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'c'))",
+    "UPDATE subscription_items SET added=1,task_id=NULL WHERE item_id='null'",
+    "select \"subscription_id\", \"item_id\", \"task_id\", \"added\" from \"subscription_items\" where ((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))",
+    "BEGIN DEFERRED",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 117.0 where \"subscription_items\".\"task_id\" in ('dead')",
+    "update \"subscription_items\" set \"added\" = 0.0, \"task_id\" = NULL, \"updated_at\" = 117.0 where ((\"subscription_items\".\"subscription_id\" = 'sub-1') and (\"subscription_items\".\"item_id\" = 'null') and (((\"subscription_items\".\"added\" = 1.0) or ((\"subscription_items\".\"task_id\" is not null)))))",
+    "COMMIT",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('preferred_leader', 'desktop', 118.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'desktop', \"updated_at\" = 118.0",
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_kind', 'api', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'api', \"updated_at\" = 10.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_pid', '7', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '7', \"updated_at\" = 10.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_started_at', '1', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '1', \"updated_at\" = 10.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_heartbeat_at', '2', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '2', \"updated_at\" = 10.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_lock_expires_at', '20', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '20', \"updated_at\" = 10.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_lease_id', 'lease', 10.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'lease', \"updated_at\" = 10.0",
+    "COMMIT",
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "COMMIT",
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "COMMIT",
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_kind', 'api', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'api', \"updated_at\" = 20.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_pid', '7', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '7', \"updated_at\" = 20.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_started_at', '1', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '1', \"updated_at\" = 20.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_heartbeat_at', '2', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '2', \"updated_at\" = 20.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_lock_expires_at', '20', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = '20', \"updated_at\" = 20.0",
+    "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values ('leader_lease_id', 'next', 20.0) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = 'next', \"updated_at\" = 20.0",
+    "COMMIT",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "BEGIN DEFERRED",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_kind'",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_pid'",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_started_at'",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_heartbeat_at'",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_lock_expires_at'",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'leader_lease_id'",
+    "COMMIT",
+    "delete from \"subscriptions_meta\" where \"subscriptions_meta\".\"key\" = 'preferred_leader'",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key",
+    "INSERT INTO subscriptions_meta VALUES ('leader_pid','0x10',0),('leader_started_at','',0),('leader_heartbeat_at','Infinity',0),('leader_kind','unknown',0),('leader_lease_id','',0)",
+    "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+    "UPDATE subscriptions SET platform='unknown-platform',status='unknown-status',download_type='unknown-type',download_quality='unknown-quality',download_container='unknown-container',source_kind='unknown-source',keywords='[\" x \",\"x\",\"X\"]',tags='[\"ok\",3]',categories='not-json',only_latest=2,enabled=-1,cover_url='',profile_owner='',check_interval_ms=0,next_check_at=0,latest_video_published_at=0,last_checked_at=0,last_success_at=0",
+    "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in ('sub-1') order by \"subscription_items\".\"published_at\" desc",
+    "delete from \"subscriptions\" where \"subscriptions\".\"id\" = 'sub-1'",
+    "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "SELECT * FROM subscriptions ORDER BY id",
+    "SELECT * FROM subscription_items ORDER BY subscription_id,item_id",
+    "SELECT * FROM subscriptions_meta ORDER BY key"
+  ]
+}

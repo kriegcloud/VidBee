@@ -1,0 +1,298 @@
+[
+  {
+    "input": {
+      "categories": null
+    },
+    "value": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/0",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "platform": "instagram",
+      "categories": null
+    },
+    "value": {
+      "id": "sub-2",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/1",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 102,
+      "updatedAt": 102,
+      "sourceKind": "profile",
+      "categories": [
+        "stories",
+        "highlights",
+        "posts",
+        "reels",
+        "tagged"
+      ],
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "keywords": "a"
+    },
+    "value": {
+      "id": "sub-3",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/2",
+      "platform": "custom",
+      "keywords": [
+        "a"
+      ],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 103,
+      "updatedAt": 103,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "categories": "posts"
+    },
+    "value": {
+      "id": "sub-4",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "profile",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 104,
+      "updatedAt": 105,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "nextCheckAt": {
+        "$value": "undefined"
+      },
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "enabled": "true"
+    },
+    "value": {
+      "id": "sub-4",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "profile",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": "true",
+      "status": "idle",
+      "createdAt": 104,
+      "updatedAt": 106,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "checkIntervalMs": 0
+    },
+    "value": {
+      "id": "sub-4",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "profile",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 104,
+      "updatedAt": 107,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 0,
+      "nextCheckAt": {
+        "$value": "undefined"
+      },
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "checkIntervalMs": false
+    },
+    "engine": true,
+    "failed": true,
+    "name": "TypeError",
+    "message": "SQLite3 can only bind numbers, strings, bigints, buffers, and null"
+  },
+  {
+    "input": {
+      "checkIntervalMs": ""
+    },
+    "value": {
+      "id": "sub-4",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "profile",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 104,
+      "updatedAt": 109,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": "",
+      "nextCheckAt": {
+        "$value": "undefined"
+      },
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "items": []
+    }
+  },
+  {
+    "input": {
+      "feedUrl": ""
+    },
+    "value": {
+      "id": "sub-4",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 104,
+      "updatedAt": 110,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": "",
+      "downloadType": {
+        "$value": "undefined"
+      },
+      "downloadQuality": {
+        "$value": "undefined"
+      },
+      "downloadContainer": {
+        "$value": "undefined"
+      },
+      "items": []
+    }
+  }
+]

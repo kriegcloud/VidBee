@@ -18,43 +18,70 @@
     "./scheduler": "./src/scheduler.ts",
     "./leader": "./src/leader.ts",
     "./store": "./src/store.ts",
-    "./api": "./src/api.ts"
+    "./api": "./src/api.ts",
+    "./SubscriptionStore.service": "./src/SubscriptionStore.service.ts",
+    "./SubscriptionMeta.service": "./src/SubscriptionMeta.service.ts",
+    "./SubscriptionTimers.service": "./src/SubscriptionTimers.service.ts",
+    "./SubscriptionEntropy.service": "./src/SubscriptionEntropy.service.ts",
+    "./SubscriptionDispatch.service": "./src/SubscriptionDispatch.service.ts",
+    "./SubscriptionLog.service": "./src/SubscriptionLog.service.ts",
+    "./SubscriptionLeader.service": "./src/SubscriptionLeader.service.ts",
+    "./SubscriptionScheduler.service": "./src/SubscriptionScheduler.service.ts",
+    "./FeedCancellation.service": "./src/FeedCancellation.service.ts",
+    "./CheckCancellation.service": "./src/CheckCancellation.service.ts",
+    "./FeedHttp.service": "./src/FeedHttp.service.ts",
+    "./RssParser.service": "./src/RssParser.service.ts",
+    "./SubscriptionDates.service": "./src/SubscriptionDates.service.ts",
+    "./SubscriptionFeed.service": "./src/SubscriptionFeed.service.ts",
+    "./SubscriptionMeta.layer": "./src/SubscriptionMeta.layer.ts",
+    "./SubscriptionStore.layer": "./src/SubscriptionStore.layer.ts",
+    "./SubscriptionScheduler.layer": "./src/SubscriptionScheduler.layer.ts",
+    "./SubscriptionDispatch.layer": "./src/SubscriptionDispatch.layer.ts",
+    "./SubscriptionTimers.layer": "./src/SubscriptionTimers.layer.ts",
+    "./SubscriptionLog.layer": "./src/SubscriptionLog.layer.ts",
+    "./SubscriptionEntropy.layer": "./src/SubscriptionEntropy.layer.ts",
+    "./FeedCancellation.layer": "./src/FeedCancellation.layer.ts",
+    "./CheckCancellation.layer": "./src/CheckCancellation.layer.ts",
+    "./FeedHttp.layer": "./src/FeedHttp.layer.ts",
+    "./SubscriptionFeed.layer": "./src/SubscriptionFeed.layer.ts",
+    "./SubscriptionLeader.layer": "./src/SubscriptionLeader.layer.ts",
+    "./Subscription.model": "./src/Subscription.model.ts",
+    "./Feed.model": "./src/Feed.model.ts",
+    "./Rows.model": "./src/Rows.model.ts",
+    "./Leader.model": "./src/Leader.model.ts",
+    "./Subscriptions.errors": "./src/Subscriptions.errors.ts",
+    "./RssParser.driver": "./src/RssParser.driver.ts",
+    "./SubscriptionDates.driver": "./src/SubscriptionDates.driver.ts",
+    "./SubscriptionEvents.service": "./src/SubscriptionEvents.service.ts",
+    "./SubscriptionQueue.service": "./src/SubscriptionQueue.service.ts",
+    "./ProfileFeed.service": "./src/ProfileFeed.service.ts",
+    "./SubscriptionPolicy.service": "./src/SubscriptionPolicy.service.ts",
+    "./Subscriptions.service": "./src/Subscriptions.service.ts",
+    "./SubscriptionEvents.layer": "./src/SubscriptionEvents.layer.ts",
+    "./SubscriptionPolicy.layer": "./src/SubscriptionPolicy.layer.ts",
+    "./Subscriptions.layer": "./src/Subscriptions.layer.ts",
+    "./Subscriptions.model": "./src/Subscriptions.model.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "tsx --test test/*.test.ts"
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run && DB_TEST_CLIENT=borrowed bunx --bun vitest run test/native-persistence.test.ts && DB_TEST_CLIENT=node bunx --bun vitest run test/native-persistence.test.ts",
+    "build": "tsrs -p tsconfig.json"
   },
   "dependencies": {
+    "effect": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "@vidbee/db": "workspace:^",
+    "@vidbee/task-queue": "workspace:^",
     "@vidbee/downloader-core": "workspace:^",
-    "drizzle-orm": "catalog:",
-    "rss-parser": "catalog:",
-    "ulid": "catalog:",
-    "zod": "catalog:",
-    "@vidbee/downloader-core-legacy": "workspace:^"
-  },
-  "peerDependencies": {
-    "@vidbee/db": "workspace:*",
-    "better-sqlite3": "^13.0.3",
-    "@vidbee/task-queue-legacy": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@vidbee/db": {
-      "optional": true
-    },
-    "@vidbee/task-queue-legacy": {
-      "optional": true
-    },
-    "better-sqlite3": {
-      "optional": true
-    }
+    "rss-parser": "catalog:"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
-    "@vidbee/db": "workspace:^",
-    "better-sqlite3": "catalog:",
-    "tsx": "catalog:",
-    "typescript": "catalog:"
+    "@types/better-sqlite3": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:",
+    "typescript": "catalog:",
+    "better-sqlite3": "catalog:"
   }
 }

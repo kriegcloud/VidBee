@@ -1,19 +1,33 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { NODE } from './fixtures/node-runtime.js'
+
+const inNode = process.argv[2] === '--profile-node'
+const registered: Array<{ name: string; run: () => unknown }> = []
+const vitest = inNode ? undefined : await import('@effect/vitest')
+const sqlCases = new Set(['profile subscriptions check through the fetcher, merge history and re-plan', 'hosts without a profile fetcher never touch profile subscriptions'])
+const test = (name: string, run: () => unknown): void => {
+  if (inNode) { registered.push({ name, run }); return }
+  vitest!.it(name, () => {
+    if (sqlCases.has(name)) execFileSync(NODE, ['--import', 'tsx', fileURLToPath(import.meta.url), '--profile-node', name], { timeout: 120000, stdio: 'pipe' })
+    else return run()
+  }, 120000)
+}
 import { applySubscriptionsMigrations } from '@vidbee/db/legacy/subscriptions'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
-import { SubscriptionsApi } from '../src/api'
-import { buildFeedKey, resolveFeedFromInput } from '../src/feed-resolver'
+import { SubscriptionsApi } from '@vidbee/subscriptions-core-legacy/api'
+import { buildFeedKey, resolveFeedFromInput } from '@vidbee/subscriptions-core-legacy/feed-resolver'
 import {
   decideProfileDownloads,
   isSubscriptionDue,
   nextProfileCheckAt,
   summarizeProfileStatus
-} from '../src/profile-policy'
-import { createSqliteSubscriptionsStore, InMemoryMetaStore } from '../src/store'
-import type { ProfileCheckResult, SubscriptionFeedItem, SubscriptionRule } from '../src/types'
-import { profileItemCategory } from '../src/types'
+} from '@vidbee/subscriptions-core-legacy/profile-policy'
+import { createSqliteSubscriptionsStore, InMemoryMetaStore } from '@vidbee/subscriptions-core-legacy/store'
+import type { ProfileCheckResult, SubscriptionFeedItem, SubscriptionRule } from '@vidbee/subscriptions-core-legacy/types'
+import { profileItemCategory } from '@vidbee/subscriptions-core-legacy/types'
 
 const HOUR = 60 * 60 * 1000
 
@@ -375,3 +389,9 @@ test('hosts without a profile fetcher never touch profile subscriptions', async 
   assert.equal(current.status, 'idle')
   assert.equal(current.lastCheckedAt, undefined)
 })
+
+if (inNode) {
+  const selected = registered.find(entry => entry.name === process.argv[3])
+  assert.ok(selected, 'Requested profile SQL scenario is registered')
+  await selected.run()
+}
