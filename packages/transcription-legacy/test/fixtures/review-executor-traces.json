@@ -1,0 +1,745 @@
+{
+  "success": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    "pipeline-resumed",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "commit",
+      {
+        "downloadTaskId": "download",
+        "transcriptionTaskId": "task",
+        "sourceFilePath": "/source",
+        "result": {
+          "resultKind": "no-speech",
+          "language": null,
+          "modelVersion": "fixture",
+          "asrTier": null,
+          "speakers": [],
+          "segments": []
+        }
+      }
+    ],
+    [
+      "microtask",
+      3
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "/source",
+            "size": 1,
+            "durationMs": 12,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "record"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": ""
+      }
+    ],
+    "finish-observed"
+  ],
+  "cloud": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    "pipeline-resumed",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "commit",
+      {
+        "downloadTaskId": "download",
+        "transcriptionTaskId": "task",
+        "sourceFilePath": "/source",
+        "result": {
+          "resultKind": "no-speech",
+          "language": null,
+          "modelVersion": "fixture",
+          "asrTier": null,
+          "speakers": [],
+          "segments": []
+        }
+      }
+    ],
+    [
+      "microtask",
+      3
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "/source",
+            "size": 1,
+            "durationMs": 12,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "record"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": ""
+      }
+    ],
+    "finish-observed"
+  ],
+  "cloud-cleanup": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    "pipeline-resumed",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "commit",
+      {
+        "downloadTaskId": "download",
+        "transcriptionTaskId": "task",
+        "sourceFilePath": "/source",
+        "result": {
+          "resultKind": "no-speech",
+          "language": null,
+          "modelVersion": "fixture",
+          "asrTier": null,
+          "speakers": [],
+          "segments": []
+        }
+      }
+    ],
+    "cleanup",
+    [
+      "microtask",
+      3
+    ],
+    "cleanup-resumed",
+    [
+      "microtask",
+      4
+    ],
+    [
+      "microtask",
+      5
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "/source",
+            "size": 1,
+            "durationMs": 12,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "record"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": ""
+      }
+    ],
+    "finish-observed"
+  ],
+  "cloud-cleanup-error": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    "pipeline-resumed",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "commit",
+      {
+        "downloadTaskId": "download",
+        "transcriptionTaskId": "task",
+        "sourceFilePath": "/source",
+        "result": {
+          "resultKind": "no-speech",
+          "language": null,
+          "modelVersion": "fixture",
+          "asrTier": null,
+          "speakers": [],
+          "segments": []
+        }
+      }
+    ],
+    "cleanup",
+    [
+      "microtask",
+      3
+    ],
+    "cleanup-resumed",
+    [
+      "microtask",
+      4
+    ],
+    [
+      "microtask",
+      5
+    ],
+    [
+      "microtask",
+      6
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "error",
+          "error": {
+            "category": "unknown",
+            "exitCode": null,
+            "rawMessage": "cleanup rejected",
+            "uiMessageKey": "task.error.unknown",
+            "uiActionHints": [
+              "retry",
+              "report-bug"
+            ],
+            "retryable": true,
+            "suggestedRetryAfterMs": null
+          },
+          "exitCode": null
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": "cleanup rejected"
+      }
+    ],
+    "finish-observed"
+  ],
+  "rejection": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "microtask",
+      3
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "error",
+          "error": {
+            "category": "unknown",
+            "exitCode": null,
+            "rawMessage": "fixture rejected",
+            "uiMessageKey": "task.error.unknown",
+            "uiActionHints": [
+              "retry",
+              "report-bug"
+            ],
+            "retryable": true,
+            "suggestedRetryAfterMs": null
+          },
+          "exitCode": null
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": "fixture rejected"
+      }
+    ],
+    "finish-observed"
+  ],
+  "stage-error": [
+    "run-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      false
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "microtask",
+      1
+    ],
+    [
+      "microtask",
+      2
+    ],
+    [
+      "microtask",
+      3
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "error",
+          "error": {
+            "category": "unknown",
+            "exitCode": null,
+            "rawMessage": "progress rejected",
+            "uiMessageKey": "task.error.unknown",
+            "uiActionHints": [
+              "retry",
+              "report-bug"
+            ],
+            "retryable": true,
+            "suggestedRetryAfterMs": null
+          },
+          "exitCode": null
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": "progress rejected"
+      }
+    ],
+    "finish-observed"
+  ],
+  "cancel": [
+    "run-return",
+    "cancel-return",
+    [
+      "spawn",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "pid": "PID",
+        "pidStartedAt": 1000,
+        "kind": "ai-worker",
+        "spawnedAt": 1000
+      }
+    ],
+    [
+      "pipeline",
+      true
+    ],
+    [
+      "stage",
+      {
+        "taskId": "task",
+        "downloadTaskId": "download",
+        "stage": "recognizing"
+      }
+    ],
+    [
+      "progress",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "progress": {
+          "percent": 0.5,
+          "bytesDownloaded": null,
+          "bytesTotal": null,
+          "speedBps": null,
+          "etaMs": null,
+          "ticks": 1000
+        },
+        "enteredProcessing": false
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "stream": "stdout",
+        "line": "stage=recognizing"
+      }
+    ],
+    "after-progress",
+    "cancel-resolved",
+    [
+      "microtask",
+      1
+    ],
+    "pipeline-microtask",
+    "pipeline-resumed",
+    [
+      "microtask",
+      2
+    ],
+    [
+      "microtask",
+      3
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "cancelled"
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": ""
+      }
+    ],
+    "finish-observed"
+  ],
+  "invalid": [
+    "run-return",
+    [
+      "microtask",
+      1
+    ],
+    [
+      "microtask",
+      2
+    ],
+    [
+      "finish",
+      {
+        "taskId": "task",
+        "attemptId": "attempt",
+        "result": {
+          "type": "error",
+          "error": {
+            "category": "not-found",
+            "exitCode": null,
+            "rawMessage": "source file missing: transcription options incomplete",
+            "uiMessageKey": "task.error.notFound",
+            "uiActionHints": [
+              "remove-task"
+            ],
+            "retryable": false,
+            "suggestedRetryAfterMs": null
+          },
+          "exitCode": null
+        },
+        "closedAt": 1000,
+        "stdoutTail": "",
+        "stderrTail": "source file missing: transcription options incomplete"
+      }
+    ],
+    "finish-observed"
+  ]
+}

@@ -1,0 +1,3770 @@
+{
+  "abort-source-close": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "abort-before",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "abort-after",
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": true,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "abort-stream-close": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "abort-before",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "abort-after",
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": true,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": true,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "abort-convert-close": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "abort-before",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "abort-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": true,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "cached-probe-error": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "probe-error",
+        1,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "after-error",
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "cached",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": false,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "converted-probe-error": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "probe-error",
+        1,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "after-error",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-map",
+          "0:a:0",
+          "-vn",
+          "-sn",
+          "-dn",
+          "-c",
+          "copy",
+          "<ROOT>/out/audio-copy.m4a"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/out/audio-copy.m4a",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        15,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        16,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        17,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        18,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        19,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": false,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "remux-second-error": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "1"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-map",
+          "0:a:0",
+          "-vn",
+          "-sn",
+          "-dn",
+          "-c",
+          "copy",
+          "<ROOT>/out/audio-copy.m4a"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/out/audio-copy.m4a",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-before",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        15,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        16,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "rejected",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "ffmpeg conversion failed (exit 9): second decode fixture"
+      }
+    },
+    "state": {
+      "aborted": false,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "remux-success": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "1"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-map",
+          "0:a:0",
+          "-vn",
+          "-sn",
+          "-dn",
+          "-c",
+          "copy",
+          "<ROOT>/out/audio-copy.m4a"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/out/audio-copy.m4a",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        15,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        16,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        17,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        18,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        19,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": false,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "remux-probe-error": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "1"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-map",
+          "0:a:0",
+          "-vn",
+          "-sn",
+          "-dn",
+          "-c",
+          "copy",
+          "<ROOT>/out/audio-copy.m4a"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/out/audio-copy.m4a",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        15,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "probe-error",
+        2,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "after-error",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        16,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        17,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        18,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        19,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "rejected",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "ffmpeg conversion truncated: wav 0ms vs source 10000ms"
+      }
+    },
+    "state": {
+      "aborted": false,
+      "wav": "decoded",
+      "copy": null
+    }
+  },
+  "remux-abort-copy-close": {
+    "trace": [
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "call-return",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        1,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        2,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-select_streams",
+          "a",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "csv=p=0",
+          "<ROOT>/source"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        3,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "audio"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        4,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        5,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "-vn",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        6,
+        {
+          "aborted": false,
+          "wav": null,
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        7,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        8,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "1"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        9,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        10,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/source",
+          "-map",
+          "0:a:0",
+          "-vn",
+          "-sn",
+          "-dn",
+          "-c",
+          "copy",
+          "<ROOT>/out/audio-copy.m4a"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        11,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "abort-before",
+        {
+          "aborted": false,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "abort-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        12,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffmpeg",
+        [
+          "-y",
+          "-i",
+          "<ROOT>/out/audio-copy.m4a",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-threads",
+          "2",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        {
+          "stdio": [
+            "ignore",
+            "pipe",
+            "pipe"
+          ],
+          "detached": true
+        },
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        13,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "microtask",
+        14,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": "copied"
+        }
+      ],
+      [
+        "spawn",
+        "<ROOT>/ffprobe",
+        [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "default=noprint_wrappers=1:nokey=1",
+          "<ROOT>/out/audio-16k-mono.wav"
+        ],
+        null,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        15,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "stdout",
+        "10"
+      ],
+      [
+        "close-before",
+        0,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "close-after",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        16,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        17,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        18,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "microtask",
+        19,
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ],
+      [
+        "fulfilled",
+        {
+          "aborted": true,
+          "wav": "decoded",
+          "copy": null
+        }
+      ]
+    ],
+    "value": {
+      "result": {
+        "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+        "durationMs": 10000
+      }
+    },
+    "state": {
+      "aborted": true,
+      "wav": "decoded",
+      "copy": null
+    }
+  }
+}

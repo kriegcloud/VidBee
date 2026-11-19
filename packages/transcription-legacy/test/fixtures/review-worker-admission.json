@@ -1,0 +1,409 @@
+{
+  "two-probes": {
+    "outcome": {
+      "code": 0,
+      "signal": null
+    },
+    "messages": [
+      {
+        "type": "probe-ok"
+      },
+      {
+        "type": "probe-ok"
+      }
+    ],
+    "stderr": "",
+    "trace": [
+      [
+        "exit",
+        0
+      ]
+    ],
+    "files": [
+      {
+        "id": "first",
+        "manifest": null,
+        "result": null
+      },
+      {
+        "id": "second",
+        "manifest": null,
+        "result": null
+      }
+    ],
+    "gate": {
+      "fetched": false,
+      "spawned": false,
+      "probeReady": false,
+      "rejected": false
+    },
+    "descendantsRunning": false
+  },
+  "overlap-seeds": {
+    "outcome": {
+      "code": 0,
+      "signal": null
+    },
+    "messages": [
+      {
+        "type": "log",
+        "stream": "stdout",
+        "line": "compute.provider=cpu"
+      },
+      {
+        "type": "progress",
+        "stage": "preparing-audio",
+        "percent": 0,
+        "message": "extract"
+      },
+      {
+        "type": "log",
+        "stream": "stdout",
+        "line": "compute.provider=cpu"
+      },
+      {
+        "type": "progress",
+        "stage": "preparing-audio",
+        "percent": 0,
+        "message": "extract"
+      },
+      {
+        "type": "progress",
+        "stage": "detecting-speech",
+        "percent": 0.2
+      },
+      {
+        "type": "progress",
+        "stage": "diarizing",
+        "percent": 0.5
+      },
+      {
+        "type": "partial",
+        "speakerKey": "speaker-1",
+        "startMs": 0,
+        "endMs": 1000,
+        "text": "first",
+        "words": []
+      },
+      {
+        "type": "progress",
+        "stage": "committing",
+        "percent": 1
+      },
+      {
+        "type": "progress",
+        "stage": "detecting-speech",
+        "percent": 0.2
+      },
+      {
+        "type": "progress",
+        "stage": "diarizing",
+        "percent": 0.5
+      },
+      {
+        "type": "partial",
+        "speakerKey": "speaker-1",
+        "startMs": 0,
+        "endMs": 1000,
+        "text": "second",
+        "words": []
+      },
+      {
+        "type": "progress",
+        "stage": "committing",
+        "percent": 1
+      },
+      {
+        "type": "result",
+        "resultPath": "pipeline-result.json",
+        "durationMs": 1000
+      },
+      {
+        "type": "result",
+        "resultPath": "pipeline-result.json",
+        "durationMs": 1000
+      }
+    ],
+    "stderr": "",
+    "trace": [
+      [
+        "exit",
+        0
+      ]
+    ],
+    "files": [
+      {
+        "id": "first",
+        "manifest": {
+          "key": {
+            "taskId": "first",
+            "fingerprint": "fixture",
+            "modelVersion": "fixture"
+          },
+          "durationMs": null,
+          "speakers": [],
+          "turns": [],
+          "chunks": [],
+          "stages": []
+        },
+        "result": {
+          "resultKind": "transcript",
+          "language": "en",
+          "modelVersion": "fixture-seed",
+          "asrTier": "minimal",
+          "sourceKind": "asr",
+          "speakers": [
+            {
+              "speakerKey": "speaker-1",
+              "displayName": "Speaker 1"
+            }
+          ],
+          "segments": [
+            {
+              "speakerKey": "speaker-1",
+              "startMs": 0,
+              "endMs": 1000,
+              "text": "first",
+              "words": [],
+              "confidence": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "second",
+        "manifest": {
+          "key": {
+            "taskId": "second",
+            "fingerprint": "fixture",
+            "modelVersion": "fixture"
+          },
+          "durationMs": null,
+          "speakers": [],
+          "turns": [],
+          "chunks": [],
+          "stages": []
+        },
+        "result": {
+          "resultKind": "transcript",
+          "language": "en",
+          "modelVersion": "fixture-seed",
+          "asrTier": "minimal",
+          "sourceKind": "asr",
+          "speakers": [
+            {
+              "speakerKey": "speaker-1",
+              "displayName": "Speaker 1"
+            }
+          ],
+          "segments": [
+            {
+              "speakerKey": "speaker-1",
+              "startMs": 0,
+              "endMs": 1000,
+              "text": "second",
+              "words": [],
+              "confidence": null
+            }
+          ]
+        }
+      }
+    ],
+    "gate": {
+      "fetched": false,
+      "spawned": false,
+      "probeReady": false,
+      "rejected": false
+    },
+    "descendantsRunning": false
+  },
+  "overlap-seeds-cancel": {
+    "outcome": {
+      "code": 0,
+      "signal": null
+    },
+    "messages": [
+      {
+        "type": "log",
+        "stream": "stdout",
+        "line": "compute.provider=cpu"
+      },
+      {
+        "type": "progress",
+        "stage": "preparing-audio",
+        "percent": 0,
+        "message": "extract"
+      },
+      {
+        "type": "log",
+        "stream": "stdout",
+        "line": "compute.provider=cpu"
+      },
+      {
+        "type": "progress",
+        "stage": "preparing-audio",
+        "percent": 0,
+        "message": "extract"
+      },
+      {
+        "type": "error",
+        "message": "cancelled"
+      },
+      {
+        "type": "error",
+        "message": "cancelled"
+      }
+    ],
+    "stderr": "",
+    "trace": [
+      [
+        "exit",
+        0
+      ]
+    ],
+    "files": [
+      {
+        "id": "first",
+        "manifest": {
+          "key": {
+            "taskId": "first",
+            "fingerprint": "fixture",
+            "modelVersion": "fixture"
+          },
+          "durationMs": null,
+          "speakers": [],
+          "turns": [],
+          "chunks": [],
+          "stages": []
+        },
+        "result": null
+      },
+      {
+        "id": "second",
+        "manifest": {
+          "key": {
+            "taskId": "second",
+            "fingerprint": "fixture",
+            "modelVersion": "fixture"
+          },
+          "durationMs": null,
+          "speakers": [],
+          "turns": [],
+          "chunks": [],
+          "stages": []
+        },
+        "result": null
+      }
+    ],
+    "gate": {
+      "fetched": false,
+      "spawned": false,
+      "probeReady": false,
+      "rejected": false
+    },
+    "descendantsRunning": false
+  },
+  "prepare-rejection": {
+    "outcome": {
+      "code": 1,
+      "signal": null
+    },
+    "messages": [
+      {
+        "type": "log",
+        "stream": "stdout",
+        "line": "compute.provider=cpu"
+      },
+      {
+        "type": "progress",
+        "stage": "preparing-audio",
+        "percent": 0,
+        "message": "extract"
+      },
+      {
+        "type": "error",
+        "message": "fixture prepare failed"
+      }
+    ],
+    "stderr": "",
+    "trace": [
+      [
+        "child-spawn",
+        "ffprobe",
+        "CHILD-1"
+      ],
+      [
+        "fetch",
+        1
+      ],
+      "audio-prepare-gate",
+      "reject-prepare",
+      [
+        "fetch",
+        2
+      ],
+      [
+        "fetch",
+        3
+      ],
+      [
+        "fetch",
+        4
+      ],
+      [
+        "fetch",
+        5
+      ],
+      [
+        "fetch",
+        6
+      ],
+      [
+        "fetch",
+        7
+      ],
+      [
+        "unhandledRejection",
+        "fixture prepare failed"
+      ],
+      [
+        "exit",
+        1
+      ],
+      [
+        "cleanup-child",
+        "CHILD-1"
+      ]
+    ],
+    "files": [
+      {
+        "id": "first",
+        "manifest": {
+          "key": {
+            "taskId": "first",
+            "fingerprint": "fixture",
+            "modelVersion": "fixture"
+          },
+          "durationMs": null,
+          "speakers": [],
+          "turns": [],
+          "chunks": [],
+          "stages": []
+        },
+        "result": null
+      },
+      {
+        "id": "second",
+        "manifest": null,
+        "result": null
+      }
+    ],
+    "gate": {
+      "fetched": true,
+      "spawned": true,
+      "probeReady": true,
+      "rejected": true
+    },
+    "descendantsRunning": false
+  }
+}

@@ -1,0 +1,583 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cloud PCM parser keeps its separate four application errors and first-data-chunk rules 1`] = `
+[
+  {
+    "case": "non RIFF",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "truncated chunk",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "wrong sample rate",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "stereo",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "float format",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "odd payload",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "empty payload",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "missing data",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+  {
+    "case": "data before fmt",
+    "files": [
+      "audio-16k-mono.wav",
+      "cloud.json",
+    ],
+    "saved": {
+      "accountId": "account",
+      "clips": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+    ],
+  },
+]
+`;
+
+exports[`pre-port cloud runner paid-result persistence > persists request ID before callback, result before partial, returns cleanup after commit 1`] = `
+{
+  "durationMs": 100,
+  "result": {
+    "asrTier": "cloud:model",
+    "language": "en",
+    "modelVersion": "cloud:model",
+    "resultKind": "transcript",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 100,
+        "speakerKey": null,
+        "startMs": 0,
+        "text": "hello",
+        "words": [],
+      },
+    ],
+    "sourceKind": "asr",
+    "speakers": [],
+  },
+  "trace": [
+    [
+      "progress",
+      "preparing-audio",
+      null,
+    ],
+    [
+      "progress",
+      "recognizing",
+      0,
+    ],
+    [
+      "upload",
+      {
+        "bytes": 3244,
+        "files": [
+          "audio-16k-mono.wav",
+          "cloud.json",
+        ],
+        "idSaved": true,
+        "sameSignal": true,
+      },
+    ],
+    [
+      "partial",
+      {
+        "confidence": null,
+        "endMs": 100,
+        "speakerKey": null,
+        "startMs": 0,
+        "text": "hello",
+        "words": [],
+      },
+    ],
+    [
+      "progress",
+      "committing",
+      1,
+    ],
+  ],
+}
+`;
+
+exports[`pre-port cloud runner paid-result persistence > pins canonical complete WAV bytes including empty and odd PCM 1`] = `
+[
+  [
+    82,
+    73,
+    70,
+    70,
+    36,
+    0,
+    0,
+    0,
+    87,
+    65,
+    86,
+    69,
+    102,
+    109,
+    116,
+    32,
+    16,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    128,
+    62,
+    0,
+    0,
+    0,
+    125,
+    0,
+    0,
+    2,
+    0,
+    16,
+    0,
+    100,
+    97,
+    116,
+    97,
+    0,
+    0,
+    0,
+    0,
+  ],
+  [
+    82,
+    73,
+    70,
+    70,
+    37,
+    0,
+    0,
+    0,
+    87,
+    65,
+    86,
+    69,
+    102,
+    109,
+    116,
+    32,
+    16,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    128,
+    62,
+    0,
+    0,
+    0,
+    125,
+    0,
+    0,
+    2,
+    0,
+    16,
+    0,
+    100,
+    97,
+    116,
+    97,
+    1,
+    0,
+    0,
+    0,
+    1,
+  ],
+  [
+    82,
+    73,
+    70,
+    70,
+    40,
+    0,
+    0,
+    0,
+    87,
+    65,
+    86,
+    69,
+    102,
+    109,
+    116,
+    32,
+    16,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    128,
+    62,
+    0,
+    0,
+    0,
+    125,
+    0,
+    0,
+    2,
+    0,
+    16,
+    0,
+    100,
+    97,
+    116,
+    97,
+    4,
+    0,
+    0,
+    0,
+    0,
+    127,
+    128,
+    255,
+  ],
+]
+`;
+
+exports[`pre-port cloud runner paid-result persistence > pins section 9 old malformed saved results and consumed shape failures > section 9 old values 1`] = `
+[
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": null,
+      "modelVersion": "cloud:model",
+      "resultKind": "no-speech",
+      "segments": [],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": {
+      "language": null,
+      "text": "",
+    },
+  },
+  {
+    "calls": 1,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": "en",
+      "modelVersion": "cloud:model",
+      "resultKind": "transcript",
+      "segments": [
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": "fresh",
+          "words": [],
+        },
+      ],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "partial",
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": "fresh",
+          "words": [],
+        },
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": null,
+  },
+]
+`;
+
+exports[`pre-port cloud runner paid-result persistence > quiet-boundary equal energy picks last candidate and serial clip percentages use total samples 1`] = `
+{
+  "clips": [
+    {
+      "bytes": 638444,
+      "saved": [
+        {
+          "end": 319200,
+          "start": 0,
+        },
+      ],
+      "validId": true,
+    },
+    {
+      "bytes": 1644,
+      "saved": [
+        {
+          "end": 319200,
+          "start": 0,
+        },
+        {
+          "end": 320000,
+          "start": 319200,
+        },
+      ],
+      "validId": true,
+    },
+  ],
+  "durationMs": 20000,
+  "result": {
+    "asrTier": "cloud:model",
+    "language": null,
+    "modelVersion": "cloud:model",
+    "resultKind": "no-speech",
+    "segments": [],
+    "sourceKind": "asr",
+    "speakers": [],
+  },
+  "trace": [
+    [
+      "progress",
+      "preparing-audio",
+      null,
+    ],
+    [
+      "progress",
+      "recognizing",
+      0,
+    ],
+    [
+      "progress",
+      "recognizing",
+      0.9975,
+    ],
+    [
+      "progress",
+      "committing",
+      1,
+    ],
+  ],
+}
+`;
+
+exports[`pre-port cloud runner paid-result persistence > replays saved paid results without upload and preserves unknown persisted keys 1`] = `
+{
+  "durationMs": 100,
+  "result": {
+    "asrTier": "cloud:model",
+    "language": "xx",
+    "modelVersion": "cloud:model",
+    "resultKind": "transcript",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 100,
+        "speakerKey": null,
+        "startMs": 0,
+        "text": "saved",
+        "words": [],
+      },
+    ],
+    "sourceKind": "asr",
+    "speakers": [],
+  },
+  "trace": [
+    [
+      "progress",
+      "preparing-audio",
+      null,
+    ],
+    [
+      "progress",
+      "recognizing",
+      0,
+    ],
+    [
+      "partial",
+      {
+        "confidence": null,
+        "endMs": 100,
+        "speakerKey": null,
+        "startMs": 0,
+        "text": "saved",
+        "words": [],
+      },
+    ],
+    [
+      "progress",
+      "committing",
+      1,
+    ],
+  ],
+}
+`;

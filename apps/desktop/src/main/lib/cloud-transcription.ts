@@ -1,10 +1,10 @@
 import { join } from 'node:path'
-import type { TranscriptionExecutorOptions } from '@vidbee/transcription'
 import type {
   CloudTranscriptionCatalog,
   CloudTranscriptionResult
 } from '@vidbee/transcription/cloud'
-import { runCloudTranscription } from '@vidbee/transcription/cloud-runner'
+import type { TranscriptionExecutorOptions } from '@vidbee/transcription-legacy'
+import { runCloudTranscription } from '@vidbee/transcription-legacy/cloud-runner'
 import { app, BrowserWindow } from 'electron'
 import { ffmpegManager } from './ffmpeg-manager'
 

@@ -8,8 +8,8 @@ import {
   sanitizeOutput,
   virtualError
 } from '@vidbee/task-queue-legacy'
-import type { ModelManager } from '@vidbee/transcription'
 import { isAsrTierId } from '@vidbee/transcription/asr'
+import type { ModelManager } from '@vidbee/transcription-legacy'
 
 /** Load the shared model manager after queue initialization to avoid service import cycles. */
 async function desktopModels(): Promise<ModelManager> {

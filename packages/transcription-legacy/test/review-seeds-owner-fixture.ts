@@ -1,0 +1,9 @@
+import type * as Seeds from '../src/speaker-assign'
+import type {MemoryTranscriptStore} from '../src/memory-store'
+export function observeSeedOwners(api:Pick<typeof Seeds,'latestAsrSeed'|'latestTranscriptSeed'>,makeStore:()=>MemoryTranscriptStore){
+ const real=makeStore();const trace:unknown[]=[];const make=(id:string,kind:'asr'|'captions',language:string)=>real.commit({downloadTaskId:'download',transcriptionTaskId:id,transcriptId:id,sourceFilePath:null,result:{resultKind:'transcript',sourceKind:kind,language,modelVersion:'fixture',asrTier:kind==='captions'?null:'minimal',speakers:[{speakerKey:'speaker-1',displayName:'Speaker 1'}],segments:[{speakerKey:'speaker-1',startMs:0,endMs:100,text:id,confidence:null,words:[{text:id,startMs:0,endMs:100}]}]}})
+ const asr=make('asr','asr','en'),english=make('captions:en','captions','en'),french=make('captions:fr','captions','fr'),overlay=make('overlay','captions','en')
+ let latest:typeof overlay|null=overlay,call=0;let readHistory=()=>[french,english,asr]
+ const store={getLatestForDownload:(id:string)=>{trace.push(['latest',id]);return latest},listForDownload:(id:string)=>{trace.push(['list',id,++call]);return readHistory()}}
+ trace.push(['matching-caption',api.latestTranscriptSeed(store,'download')]);latest={...overlay,segments:[]};call=0;readHistory=()=>call===1?[]:[asr];trace.push(['history-changed-fallback',api.latestTranscriptSeed(store,'download')]);latest=asr;readHistory=()=>[asr];call=0;const seed=api.latestTranscriptSeed(store,'download');trace.push(['word-alias',seed?.segments[0]?.words===asr.segments[0]?.words]);if(seed?.segments[0]?.words?.[0])seed.segments[0].words[0].text='mutated seed word';trace.push(['read-after-word-mutation',real.getById('asr')?.segments[0]?.words]);trace.push(['asr-direct',api.latestAsrSeed(store,'download')]);return JSON.parse(JSON.stringify(trace)) as unknown
+}

@@ -1,0 +1,23 @@
+{
+  "nodeVersion": "v22.23.4",
+  "source": "unchanged extracted OLD bundle and reader module; no NEW output used as expectation",
+  "generatorScratch": "<lane scratch>/generate-review-orchestration.mts",
+  "observer": "test/review-orchestration-fixture.ts",
+  "test": "test/review-orchestration.node.ts",
+  "scenarioCount": 46,
+  "oldInputsSha256": {
+    "old.mjs": "43ae1d5a35d4aefc8ab6eab1de3dd0d41dba814556e353a3f2e1b80f05255ff7",
+    "modules/cloud-runner.js": "fba6536599c59efddd3a99e5f179dfd0aea1f15e85b2b2a1c876f6183f4c1b5d",
+    "packages/transcription/src/model-manager.ts": "a212967aac7881f2ce556b41e99de1198c232772512c77fd81764fb219f2f5f3",
+    "packages/transcription/src/qwen3-tokenizer.ts": "ef2361a428b88e5eb1ad83ca96deb7db94ba8e89113ad8066940d0933ef604c6",
+    "packages/transcription/src/coordinator.ts": "020eea49d75c095f4116c158df896813e3e44e4ad13c2d9e0fdf5300cbaa8712",
+    "packages/transcription/src/enqueue.ts": "710bec29cf615ce6ab054774ed299c6bc8c8cf4764209419508940a1443acac4",
+    "packages/transcription/src/cloud-runner.ts": "954611205ecb292f40670a1bd348278c8f7db1c7d739d067a1213c1bcf74678e",
+    "packages/transcription/src/import-captions.ts": "bb2839c091bf044f2786e2568398f920d4c435c9f52f0be6ede998cf857e5ee2",
+    "packages/transcription/src/extract-captions.ts": "a5878ca739979da6c6a9c4aaf1722585616205072154f6620f8381b19feb1205",
+    "packages/transcription/src/init-models.ts": "8613e515ac5cc05d22fbeb881e79025e19372153d9438f2c7fac970cab79e8c8"
+  },
+  "frozenResultsSha256": "fc1ae309149eb4a64b2c1499be1cc4e37a6226ffd71e27bd6932f36ee3868dbd",
+  "original23CasesRetained": true,
+  "original43CasesRetained": true
+}

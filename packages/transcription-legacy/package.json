@@ -1,0 +1,41 @@
+{
+  "name": "@vidbee/transcription-legacy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./asr": "./src/asr-tiers.ts",
+    "./concurrency": "./src/concurrency.ts",
+    "./cloud": "./src/cloud.ts",
+    "./cloud-runner": "./src/cloud-runner.ts",
+    "./download-mirrors": "./src/download-mirrors.ts",
+    "./worker": "./src/worker/entry.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "bun run typecheck && bun run check:characterization",
+    "check:characterization": "tsc --noEmit -p tsconfig.characterization.json",
+    "test": "bunx --bun vitest run"
+  },
+  "dependencies": {
+    "@vidbee/db": "workspace:^",
+    "@vidbee/i18n": "workspace:^",
+    "@vidbee/logger": "workspace:^",
+    "opencc-js": "catalog:",
+    "sherpa-onnx-node": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^",
+    "@vidbee/transcription": "workspace:^",
+    "effect": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@vidbee/task-queue": "workspace:^",
+    "@vidbee/downloader-core-legacy": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "catalog:",
+    "@types/node": "catalog:",
+    "better-sqlite3": "catalog:",
+    "typescript": "catalog:"
+  }
+}

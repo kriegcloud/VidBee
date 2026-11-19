@@ -26,6 +26,7 @@ const bundledWorkspacePackages = [
   '@vidbee/task-queue-legacy',
   '@vidbee/subscriptions-core',
   '@vidbee/transcription',
+  '@vidbee/transcription-legacy',
   '@earendil-works/pi-ai',
   '@earendil-works/pi-durable',
   '@earendil-works/chord',
@@ -82,7 +83,7 @@ export default defineConfig(({ mode }) => {
             index: resolve(import.meta.dirname, 'src/main/index.ts'),
             'transcription-worker': resolve(
               import.meta.dirname,
-              '../../packages/transcription/src/worker/entry.ts'
+              '../../packages/transcription-legacy/src/worker/entry.ts'
             ),
             'browser-capture-sidecar': resolve(
               import.meta.dirname,

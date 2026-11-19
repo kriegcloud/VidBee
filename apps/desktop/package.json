@@ -114,7 +114,8 @@
     "yt-dlp-wrap-plus": "catalog:",
     "zod": "catalog:",
     "@vidbee/task-queue-legacy": "workspace:^",
-    "@vidbee/downloader-core-legacy": "workspace:^"
+    "@vidbee/downloader-core-legacy": "workspace:^",
+    "@vidbee/transcription-legacy": "workspace:^"
   },
   "optionalDependencies": {
     "sherpa-onnx-darwin-arm64": "catalog:",
