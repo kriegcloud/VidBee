@@ -35,6 +35,30 @@ the tree it runs on and corrects the design where the source has moved.
   carries SQLite's message. A value that is not a top-level Drizzle wrapper passes through by
   identity.
 
+Corrections and rulings after the characterization of the old package (`reports/6a.md`), which
+was written against the unchanged source after this design was reviewed:
+
+- Zod schemas (section 3, "Zod liveness") and the characterization suite. The characterization
+  pins all twenty public zod schema exports: identities, acceptance, decoded outputs and zod
+  issues. The design's decision stands: schemas with no consumer are deleted, and
+  `SubscriptionUpdateInputSchema` with what it references moves unchanged to the compatibility
+  package. For the moved schemas every characterization case is kept and retargeted. For the
+  deleted schemas the cases that assert the export's existence, its identity and zod's issue
+  objects are removed with the export, listed in the report as part of the declared removal;
+  their acceptance and decoded-output fixtures are kept and become the differential oracle of the
+  Effect models that take over the modeling role, wherever such a model exists. Where the Effect
+  model deliberately does not inherit an unused refinement, the cases that differ are listed in
+  the report next to the declared change.
+- The six standalone type errors named as a prerequisite no longer exist on this tree: the
+  package's typecheck passes unchanged.
+- Malformed external XML: the exact `TypeError` text is an engine message that differs between
+  Node and Bun. The Node oracle pins the observable sequence (fetch, parse, the checking write,
+  traversal, warning, the failed write, the fulfilled refresh); the message itself is only
+  required where section 9 or 11 lists the item.
+- The copy of the owner's database available to this phase holds no subscription and no item
+  rows, so the decode audit on real data is vacuous for those tables (seven metadata rows
+  decoded). Mapping of non-empty rows is proven on synthetic rows only; the report must say so.
+
 ## 1. What the package is, and what makes its port risky
 
 Subscription configuration, feed discovery and parsing, RSS and profile download policies, SQLite persistence, feed-check scheduling and cooperative leader election. There are 3,696 source lines, one 377-line test file and fifteen export entries.
