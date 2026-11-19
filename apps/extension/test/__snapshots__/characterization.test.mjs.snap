@@ -5745,6 +5745,19 @@ exports[`scans to 27110, then stops; all failed ports exhaust 2`] = `
       },
     },
   ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
 ]
 `;
 
@@ -5919,6 +5932,136 @@ exports[`scans to 27120, then stops; all failed ports exhaust 1`] = `
       },
     },
   ],
+  [
+    "http://127.0.0.1:27113/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27114/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27115/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27116/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27117/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27118/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27119/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27120/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27120/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27120/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=7",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
 ]
 `;
 
@@ -5931,6 +6074,19 @@ exports[`scans to 27120, then stops; all failed ports exhaust 2`] = `
         "https://example.invalid/watch?v=a b&x=日本#part": {
           "fetchedAt": 1700000000000,
           "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {},
+          "status": "ready",
           "url": "https://example.invalid/watch?v=a b&x=日本#part",
         },
       },
@@ -6110,6 +6266,110 @@ exports[`scans to null, then stops; all failed ports exhaust 1`] = `
       },
     },
   ],
+  [
+    "http://127.0.0.1:27113/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27114/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27115/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27116/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27117/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27118/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27119/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "http://127.0.0.1:27120/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
 ]
 `;
 
@@ -6122,6 +6382,19 @@ exports[`scans to null, then stops; all failed ports exhaust 2`] = `
         "https://example.invalid/watch?v=a b&x=日本#part": {
           "fetchedAt": 1700000000000,
           "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "error": "VidBeep app not found on localhost.",
+          "fetchedAt": 1700000000000,
+          "status": "error",
           "url": "https://example.invalid/watch?v=a b&x=日本#part",
         },
       },

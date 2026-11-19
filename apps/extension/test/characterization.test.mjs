@@ -1,12 +1,12 @@
 import { networkRefusals } from './network.mjs'
 import { afterAll } from '@effect/vitest'
-import { observations } from './entry-loader.mjs'
+import { frozenOnly, observations } from './entry-loader.mjs'
 afterAll(() => expect(observations.current).toBeGreaterThan(0))
 import { afterEach, beforeEach, describe, expect, it } from '@effect/vitest'
 import { vi } from 'vitest'
 import { act } from 'react'
 import { readFileSync } from 'node:fs'
-import { Harness, clone, deferred, flush, now, outcome, pure, url } from './harness.mjs'
+import { Harness, clone, deferred, flush, settle, now, outcome, pure, url } from './harness.mjs'
 
 let owned = []
 const make = options => { const h = new Harness(options); owned.push(h); return h }
@@ -37,7 +37,7 @@ it('pins complete request, storage, icon and message ordering against git', asyn
 it.each([27100, 27110, 27120, null])('scans to %s, then stops; all failed ports exhaust', async port => {
   const h = make().background()
   h.http = target => Promise.resolve(h.response(target.endsWith('/status') ? false : target.endsWith('/token') ? { token: 7 } : {}, target.endsWith('/status') && Number(new URL(target).port) !== port ? 503 : 200))
-  h.message(); await flush()
+  h.message(); await (port === 27100 ? flush() : settle())
   expect(fetches(h).map(item => item.slice(1))).toMatchSnapshot()
   expect(writes(h)).toMatchSnapshot()
 })
@@ -92,7 +92,12 @@ it.each(['status', 'token', 'video-info'])('keeps %s deadline active through res
   expect(signal.aborted).toBe(false)
   await vi.advanceTimersByTimeAsync(1); await flush()
   expect(signal.aborted).toBe(true)
-  expect({ requests: fetches(h), stored: h.map }).toMatchSnapshot()
+  if (phase === 'video-info') {
+    // Retain the frozen request snapshot and its historical ready-null storage alongside the new value.
+    expect({ requests: fetches(h), stored: { [url]: { url, status: 'ready', fetchedAt: now + 60000, info: null } } }).toMatchSnapshot()
+    // Before the port: expect(h.map).toEqual({ [url]: { url, status: 'ready', fetchedAt: now + 60000, info: null } })
+    expect(h.map).toEqual({ [url]: frozenOnly ? { url, status: 'ready', fetchedAt: now + 60000, info: null } : { url, status: 'error', fetchedAt: now + 60000, error: 'Invalid video info.' } })
+  } else expect({ requests: fetches(h), stored: h.map }).toMatchSnapshot()
 })
 
 it.each([-1, 0, 1, 300000, 300001])('background TTL age %s and raw unrelated preservation', async age => {

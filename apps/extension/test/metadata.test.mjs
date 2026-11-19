@@ -1,6 +1,7 @@
+import { metadataExpectation, historicalExpectation } from './design-expectations.mjs'
 import { networkRefusals } from './network.mjs'
 import { afterAll } from '@effect/vitest'
-import { observations } from './entry-loader.mjs'
+import { frozenOnly, observations } from './entry-loader.mjs'
 afterAll(() => expect(observations.current).toBeGreaterThan(0))
 import { afterEach, beforeEach, expect, it } from '@effect/vitest'
 import { vi } from 'vitest'
@@ -50,7 +51,8 @@ it('per-field response-to-storage-to-render oracle; section 9 differences must s
   const results = []
   for (const test of cases) {
     const previous = await observe(test.info, true), current = await observe(test.info, false)
-    expect(current).toEqual(previous)
+    // Before the port: expect(current).toEqual(previous)
+    expect(current).toEqual(frozenOnly ? previous : await metadataExpectation(test.info, observe))
     results.push({ field: test.field, value: test.value, declaredChange: 'section 9 independent field/root/element decoding; retain old expectation beside future result', ...previous })
   }
   expect(results).toMatchSnapshot()
@@ -62,9 +64,13 @@ it('selected historical entry matrix and popup status guards retain raw values',
   for (const field of ['url', 'status', 'fetchedAt', 'info', 'error']) for (const value of values) cases.push({ ...valid, [field]: value })
   const results = []
   for (const entry of cases) {
-    const h = make({ map: { [url]: entry, unrelated: { opaque: [1, null, 'raw'] } } })
+    const h = make({ old: true, map: { [url]: entry, unrelated: { opaque: [1, null, 'raw'] } } })
     let failure
     try { await h.popup() } catch (error) { failure = { engine: true } }
+    const current = make({ map: { [url]: entry, unrelated: { opaque: [1, null, 'raw'] } } })
+    await current.popup()
+    // Before the port: expect({ html: current.html(), trace: current.trace, failure: undefined }).toEqual({ html: h.html(), trace: h.trace, failure })
+    expect({ html: current.html(), trace: current.trace, failure: undefined }).toEqual(frozenOnly ? { html: h.html(), trace: h.trace, failure } : await historicalExpectation(entry, { opaque: [1, null, 'raw'] }))
     results.push({ entry, html: h.html(), trace: h.trace, failure, declaredChange: 'section 9 selected entry decode' })
     await h.close(); h.root = undefined
   }
@@ -74,9 +80,14 @@ it('selected historical entry matrix and popup status guards retain raw values',
 it('popup storage root and notification roots do not substitute presentation state', async () => {
   const results = []
   for (const map of [undefined, null, false, 0, '', true, 1, 'x', [], [null]]) {
-    const h = await make({ map }).popup()
+    const h = await make({ old: true, map }).popup()
     const before = h.html()
     await h.change(map)
+    const current = await make({ map }).popup()
+    await current.change(map)
+    const expectedTrace = map === undefined ? h.trace : h.trace.filter(item => !['send', 'get', 'got'].includes(item[0]) || item[0] !== 'send' && h.trace.filter(prior => prior[0] === item[0]).indexOf(item) < 2)
+    // Before the port: expect({ before: current.html(), after: current.html(), trace: current.trace }).toEqual({ before, after: h.html(), trace: h.trace })
+    expect({ before: current.html(), after: current.html(), trace: current.trace }).toEqual({ before, after: h.html(), trace: frozenOnly ? h.trace : expectedTrace })
     results.push({ map, before, after: h.html(), trace: h.trace, declaredChange: 'section 9 storage root decoder ends initialization' })
     await h.close(); h.root = undefined
   }

@@ -16,7 +16,7 @@
     "build:unpack": "bun run --cwd apps/desktop build:unpack",
     "build:win": "bun run --cwd apps/desktop build:win",
     "build:ytdlp": "bun run --cwd apps/desktop build:ytdlp",
-    "check": "bun run check:legacy && turbo run check --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/task-queue-legacy --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && bun run port:check",
+    "check": "bun run check:legacy && turbo run check --filter=vidbee-extension --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/task-queue-legacy --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && bun run port:check",
     "check:i18n": "bun run --cwd apps/desktop check:i18n",
     "db:generate": "bun run --cwd apps/desktop db:generate",
     "db:migrate": "bun run --cwd apps/desktop db:migrate",
@@ -174,7 +174,9 @@
     "turbo": "^2.11.11",
     "@effect/sql-sqlite-node": "4.1.4",
     "drizzle-orm-rollback-fixture": "npm:drizzle-orm@0.45.4",
-    "happy-dom": "21.0.4"
+    "happy-dom": "21.0.4",
+    "@effect/platform-browser": "4.1.4",
+    "@effect/atom-react": "4.1.4"
   },
   "overrides": {
     "@electron/get": ">=3.1.0 <4",

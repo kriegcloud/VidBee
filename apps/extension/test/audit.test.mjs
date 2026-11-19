@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import { act } from 'react'
 import { readFileSync } from 'node:fs'
 import { Harness, deferred, flush, now, pure, url } from './harness.mjs'
-import { source, hashes, gitSource, observations } from './entry-loader.mjs'
+import { source, hashes, gitSource, frozenOnly, observations } from './entry-loader.mjs'
 
 let owned = []
 const make = options => { const h = new Harness(options); owned.push(h); return h }
@@ -42,7 +42,9 @@ it.each([undefined, null, false, 0, '', 7, {}, 'not a URL'])('message URL admiss
     await settle(); results.push(h.trace)
     if (!value) expect(h.trace).toEqual([['message:add']])
   }
-  expect(results[1]).toEqual(results[0]); expect(results[0]).toMatchSnapshot()
+  // Before the port: expect(results[1]).toEqual(results[0])
+  expect(results[1]).toEqual(!frozenOnly && value && typeof value !== 'string' ? [['message:add']] : results[0])
+  expect(results[0]).toMatchSnapshot()
 })
 
 it.each(['success', 'metadata failure', 'no ports'])('releases URL admission after %s, retaining icon/write order and target', async mode => {
@@ -94,19 +96,23 @@ it('byte unit labels and precision boundaries remain exact', () => {
 
 it('malformed notification entries keep complete UI or fail without invented transitions', async () => {
   const entries = [{ status: 'ready' }, { status: 'ready', info: null }, { status: 'error' }, { status: 'error', error: '' }, { status: 'error', error: 7 }, { status: 'unknown' }]
-  const results = []
+  const results = [], expected = []
   for (const old of [true, false]) {
     const side = []
     for (const next of entries) {
       const h = await make({ old, map: { [url]: entry() } }).popup()
       await h.change({ [url]: entry('pending') })
+      const pendingHtml = h.html()
       let failure
       try { await h.change({ [url]: next }) } catch { failure = { engine: true } }
       side.push({ next, failure, html: h.html(), trace: h.trace })
+      if (old) expected.push({ next, failure: undefined, html: pendingHtml, trace: h.trace })
     }
     results.push(side)
   }
-  expect(results[1]).toEqual(results[0]); expect(results[0]).toMatchSnapshot()
+  // Before the port: expect(results[1]).toEqual(results[0])
+  expect(results[1]).toEqual(frozenOnly ? results[0] : expected)
+  expect(results[0]).toMatchSnapshot()
 })
 
 it('released StrictMode initialization overwrites the visible title and navigation URL', async () => {

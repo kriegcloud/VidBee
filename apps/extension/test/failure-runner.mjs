@@ -33,7 +33,7 @@ if (scenario.repeat) {
   for (let i = 0; i < 8; i++) await new Promise(resolve => setImmediate(resolve))
 }
 // JSON normally discards named array properties; preserve those boundary writes explicitly.
-console.log(JSON.stringify({ node: process.versions.node, currentObservations: observations.current, networkRefusals, trace, failures }, (key, value) => {
+console.log(JSON.stringify({ node: process.versions.node, currentObservations: observations.current, loggedFailures: observations.logged ?? 0, networkRefusals, trace, failures }, (key, value) => {
   if (!Array.isArray(value)) return value
   const named = Object.entries(value).filter(([name]) => !/^\d+$/.test(name))
   return named.length ? { $array: Array.from(value), $properties: Object.fromEntries(named) } : value

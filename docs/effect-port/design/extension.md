@@ -872,12 +872,14 @@ The package scripts are:
   "check": "bun run compile && biome check .",
   "test": "bun run prepare:wxt && bunx --bun vitest run",
   "build": "bun run prepare:wxt && wxt build",
-  "build:firefox": "wxt prepare -b firefox && wxt build -b firefox",
+  "build:firefox": "bun run prepare:wxt && wxt build -b firefox",
   "zip": "bun run prepare:wxt && wxt zip",
-  "zip:firefox": "wxt prepare -b firefox && wxt zip -b firefox",
+  "zip:firefox": "bun run prepare:wxt && wxt zip -b firefox",
   "postinstall": "wxt prepare"
 }
 ```
+
+Implementation API correction: installed WXT 0.21.5 defines no `-b` option for `prepare` (`node_modules/wxt/dist/cli/commands.mjs:56–61`). The supported browser-neutral prepare command precedes both browser builds; the build/zip command selects Firefox. The former `wxt prepare -b firefox` example fails with `CACError: Unknown option -b`.
 
 WXT preparation registers the build configuration, discovers entrypoints and generates `.wxt` types (`node_modules/wxt/dist/prepare.mjs:5–9`). It must precede strict compilation. A package postinstall is not the sole guarantee that a fresh or cleaned checkout has the generated files.
 
@@ -911,6 +913,8 @@ The following changes are declared rather than hidden as consequences of adoptin
 
 | Boundary | Before | After |
 | --- | --- | --- |
+| Truthy non-string tab URL | admitted, stored raw as the entry's url | handled as an absent URL |
+| Detached popup initialization/navigation failure | Unhandled Promise rejection at query/read or navigation failure | Failed fiber logged at the same boundary; no new UI transition or retry (the existing sections 4 and 12 failure-reporting policy) |
 | Detached icon failure | Unhandled Promise rejection | Failed icon fiber logged through Effect Logger; metadata behavior unchanged |
 | Initial cache-read failure | Initialization/task rejection | Failed fiber logged; no new error entry or UI transition |
 | Pending-entry write failure | Rejection outside request catch | Failed fiber logged; no request and no error entry |

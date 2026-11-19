@@ -166,6 +166,10 @@
       "name": "vidbee-extension",
       "version": "0.0.1",
       "dependencies": {
+        "@effect/atom-react": "catalog:",
+        "@effect/platform-browser": "catalog:",
+        "@vidbee/schema": "workspace:^",
+        "effect": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",
       },
@@ -500,6 +504,8 @@
     "@earendil-works/pi-ai": "1.4.0",
     "@earendil-works/pi-durable": "1.4.0",
     "@earendil-works/pi-tui": "1.4.0",
+    "@effect/atom-react": "4.1.4",
+    "@effect/platform-browser": "4.1.4",
     "@effect/platform-node": "4.1.4",
     "@effect/sql-sqlite-node": "4.1.4",
     "@effect/tsgo": "0.70.0",
@@ -762,6 +768,10 @@
     "@earendil-works/pi-telemetry": ["@earendil-works/pi-telemetry@1.4.0", "", {}, "sha512-MLIfowwUYIY65jSjMX82paZOrX/NTvLk6D08h+3Jq42a99RzUOewzuCR0zOlPul3D6UBfddat76VT6LvsHEs1w=="],
 
     "@earendil-works/pi-tui": ["@earendil-works/pi-tui@1.4.0", "", { "dependencies": { "get-east-asian-width": "1.6.0", "marked": "18.0.11", "marked-cjk-friendly": "0.1.2" } }, "sha512-4obPOjgOD7g4mGSlngIvxyujC1UPdmyI9zdVthbr8GufacFEX+Ce0+scPgHg++k2xj5+QjESM2d5TxvIuzCVmg=="],
+
+    "@effect/atom-react": ["@effect/atom-react@4.1.4", "", { "peerDependencies": { "effect": "^4.1.4", "react": ">=19.0.0 <20.0.0", "scheduler": ">=0.25.0 <0.29.0" } }, "sha512-Xj58DcAzKsysHhzBCPaz2v1QAJq6NvMdGVmG7SV4zkw1RMiTZv8gaOXA1VqIRlpmvdspMwRe/BQ4eayuzRZTpQ=="],
+
+    "@effect/platform-browser": ["@effect/platform-browser@4.1.4", "", { "peerDependencies": { "effect": "^4.1.4" } }, "sha512-oh6SxR62VaU8xzpVloHRJwK4ADBXCzlnjgcvV6zHc9h4PwmdhQvlfrXFu38tvqJTgK31Z1VnzbkLtymWHbEUSA=="],
 
     "@effect/platform-node": ["@effect/platform-node@4.1.4", "", { "dependencies": { "@effect/platform-node-shared": "4.1.4", "undici": "^8.12.4" }, "peerDependencies": { "effect": "^4.1.4", "redis": ">=5.1.0 <7.0.0" } }, "sha512-h7QExTPq/RfYtHP/8tMlgfBvqYsuJKhxfkU6w0+NaF/ihqQ8Y3GH9t28ltupQjoqMM7P6W5gy8rOji7F0qVrmg=="],
 

@@ -43,4 +43,4 @@ const html = window.document.getElementById('root').innerHTML
 await React.act(async () => root.unmount())
 await window.happyDOM.abort()
 if (storedError?.navigation) mock.timers.reset()
-console.log(JSON.stringify({ node: process.versions.node, currentObservations: observations.current, networkRefusals, trace, html, failures, ...(storedError?.navigation ? { navigation } : {}) }))
+console.log(JSON.stringify({ node: process.versions.node, currentObservations: observations.current, loggedFailures: observations.logged ?? 0, networkRefusals, trace, html, failures, ...(storedError?.navigation ? { navigation } : {}) }))

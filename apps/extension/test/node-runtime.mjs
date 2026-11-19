@@ -8,11 +8,12 @@ export const NODE = candidates.map(candidate => realpathSync(candidate)).find(ca
   catch { return false }
 })
 if (!NODE) throw new Error(`Process fixtures require pinned Node ${expectedNode}; no matching executable on PATH`)
-export function runFixture(runner, scenario, old) {
+export function runFixture(runner, scenario, old, expectedLogs) {
   const result = JSON.parse(execFileSync(NODE, [new URL(runner, import.meta.url).pathname, scenario, old ? 'old' : 'current'], { encoding: 'utf8', timeout: 30000 }))
   if (result.node !== expectedNode) throw new Error('Runner did not execute pinned Node')
   if (!old && result.currentObservations < 1) throw new Error('Runner did not load current entry points')
   if (result.networkRefusals.length) throw new Error('Runner attempted real network access')
-  const { node, currentObservations, networkRefusals, ...observation } = result
+  if (expectedLogs !== undefined && result.loggedFailures !== expectedLogs) throw new Error(`Expected ${expectedLogs} logged failures, received ${result.loggedFailures}`)
+  const { node, currentObservations, networkRefusals, loggedFailures, ...observation } = result
   return observation
 }

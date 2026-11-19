@@ -7,17 +7,23 @@
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "build": "wxt build",
-    "build:firefox": "wxt build -b firefox",
-    "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox",
-    "compile": "tsc --noEmit",
+    "build": "bun run prepare:wxt && wxt build",
+    "build:firefox": "bun run prepare:wxt && wxt build -b firefox",
+    "zip": "bun run prepare:wxt && wxt zip",
+    "zip:firefox": "bun run prepare:wxt && wxt zip -b firefox",
+    "compile": "bun run prepare:wxt && tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json",
     "postinstall": "wxt prepare",
-    "test": "bunx --bun vitest run"
+    "test": "bun run prepare:wxt && bunx --bun vitest run",
+    "prepare:wxt": "wxt prepare",
+    "check": "bun run compile && biome check ."
   },
   "dependencies": {
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "effect": "catalog:",
+    "@effect/platform-browser": "catalog:",
+    "@effect/atom-react": "catalog:",
+    "@vidbee/schema": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "catalog:",
