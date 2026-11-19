@@ -1,0 +1,52 @@
+{
+  "asrTier": "minimal",
+  "creation": {
+    "origin": "manual"
+  },
+  "downloadTaskId": "<id:1>",
+  "error": null,
+  "listState": "completed",
+  "rediarize": false,
+  "sourceFilePath": "<run>/transcription-downloads/captions.mkv",
+  "sourceKind": "asr",
+  "speakerCount": "auto",
+  "stage": null,
+  "stageHistory": [],
+  "title": "captions",
+  "transcriptId": null,
+  "transcriptionTaskId": "<id:2>",
+  "updatedAt": "<timestamp>",
+  "sources": [
+    {
+      "auto": false,
+      "key": "captions:de",
+      "kind": "captions",
+      "language": "de",
+      "languageCode": "de",
+      "selected": false
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": null,
+      "languageCode": null,
+      "selected": true
+    }
+  ],
+  "segmentCount": 0,
+  "language": null,
+  "resultKind": null,
+  "speakers": [],
+  "items": [],
+  "total": 0,
+  "nextOffset": null
+}

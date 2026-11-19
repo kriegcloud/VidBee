@@ -1,0 +1,695 @@
+[
+  {
+    "scenario": "normal",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "selector",
+        9
+      ],
+      [
+        "style",
+        10
+      ],
+      [
+        "returned",
+        13
+      ],
+      [
+        "contextClose",
+        13
+      ],
+      [
+        "browserClose",
+        15
+      ],
+      [
+        "closed",
+        18
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "persistent",
+    "trace": [
+      [
+        "persistentLaunch",
+        0
+      ],
+      [
+        "init1",
+        1
+      ],
+      [
+        "init2",
+        3
+      ],
+      [
+        "goto",
+        5
+      ],
+      [
+        "evaluate",
+        6
+      ],
+      [
+        "selector",
+        7
+      ],
+      [
+        "style",
+        8
+      ],
+      [
+        "returned",
+        11
+      ],
+      [
+        "contextClose",
+        11
+      ],
+      [
+        "closed",
+        15
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "persistent-newPage",
+    "trace": [
+      [
+        "persistentLaunch",
+        0
+      ],
+      [
+        "init1",
+        1
+      ],
+      [
+        "init2",
+        3
+      ],
+      [
+        "newPage",
+        4
+      ],
+      [
+        "goto",
+        6
+      ],
+      [
+        "evaluate",
+        7
+      ],
+      [
+        "selector",
+        8
+      ],
+      [
+        "style",
+        9
+      ],
+      [
+        "returned",
+        12
+      ],
+      [
+        "contextClose",
+        12
+      ],
+      [
+        "closed",
+        16
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "cookies",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "cookies",
+        5
+      ],
+      [
+        "failed",
+        8
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "storage",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "init3",
+        5
+      ],
+      [
+        "newPage",
+        6
+      ],
+      [
+        "goto",
+        8
+      ],
+      [
+        "evaluate",
+        9
+      ],
+      [
+        "selector",
+        10
+      ],
+      [
+        "style",
+        11
+      ],
+      [
+        "returned",
+        14
+      ],
+      [
+        "contextClose",
+        14
+      ],
+      [
+        "browserClose",
+        16
+      ],
+      [
+        "closed",
+        19
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "launch",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "failed",
+        3
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "newContext",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "failed",
+        4
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "init1",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "failed",
+        6
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "init2",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "failed",
+        7
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "newPage",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "failed",
+        8
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "goto",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "contextClose",
+        9
+      ],
+      [
+        "browserClose",
+        11
+      ],
+      [
+        "failed",
+        15
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "evaluate",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "contextClose",
+        10
+      ],
+      [
+        "browserClose",
+        12
+      ],
+      [
+        "failed",
+        16
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "selector",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "selector",
+        9
+      ],
+      [
+        "contextClose",
+        11
+      ],
+      [
+        "browserClose",
+        13
+      ],
+      [
+        "failed",
+        17
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "style",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "selector",
+        9
+      ],
+      [
+        "style",
+        10
+      ],
+      [
+        "contextClose",
+        12
+      ],
+      [
+        "browserClose",
+        14
+      ],
+      [
+        "failed",
+        18
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "close-reject",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "selector",
+        9
+      ],
+      [
+        "style",
+        10
+      ],
+      [
+        "returned",
+        13
+      ],
+      [
+        "contextClose",
+        13
+      ],
+      [
+        "browserClose",
+        15
+      ],
+      [
+        "closed",
+        18
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "close-throw",
+    "trace": [
+      [
+        "launch",
+        0
+      ],
+      [
+        "newContext",
+        1
+      ],
+      [
+        "init1",
+        2
+      ],
+      [
+        "init2",
+        4
+      ],
+      [
+        "newPage",
+        5
+      ],
+      [
+        "goto",
+        7
+      ],
+      [
+        "evaluate",
+        8
+      ],
+      [
+        "selector",
+        9
+      ],
+      [
+        "style",
+        10
+      ],
+      [
+        "returned",
+        13
+      ],
+      [
+        "contextClose",
+        13
+      ],
+      [
+        "failed",
+        14
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  }
+]
