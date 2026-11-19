@@ -1,0 +1,5891 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`English locale resource and popup bootstrap HTML stay literal 1`] = `
+{
+  "downloadWithVidBee": {
+    "message": "Download with VidBeep",
+  },
+  "extensionDescription": {
+    "message": "Download videos from over 1,000 websites with VidBeep.",
+  },
+  "extensionName": {
+    "message": "VidBeep Video Downloader",
+  },
+  "hideButton": {
+    "message": "Hide",
+  },
+}
+`;
+
+exports[`English locale resource and popup bootstrap HTML stay literal 2`] = `
+"<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>VidBeep</title>
+    <meta content="browser_action" name="manifest.type">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="./main.tsx" type="module"></script>
+  </body>
+</html>
+"
+`;
+
+exports[`Open Client assigns string only, waits exactly two fake seconds then retries 1`] = `
+[
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "storage:remove",
+    0,
+  ],
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "error": "Failed to fetch",
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "error": "Failed to fetch",
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "storage:remove",
+    0,
+  ],
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "error": "Failed to fetch",
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "send",
+    {
+      "type": "video-info:fetch",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "error": "Failed to fetch",
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`acquisition timeout for status preserves string-reason fallback 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27111/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27112/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27113/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27114/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27115/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27116/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27117/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27118/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27119/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27120/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "VidBeep app not found on localhost.",
+      "fetchedAt": 1700000016800,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`acquisition timeout for token preserves string-reason fallback 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to fetch video info.",
+      "fetchedAt": 1700000000800,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`acquisition timeout for video-info preserves string-reason fallback 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to fetch video info.",
+      "fetchedAt": 1700000060000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`background TTL age -1 and raw unrelated preservation 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000001,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background TTL age 0 and raw unrelated preservation 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background TTL age 1 and raw unrelated preservation 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1699999999999,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background TTL age 300000 and raw unrelated preservation 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1699999700000,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background TTL age 300001 and raw unrelated preservation 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1699999699999,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1699999699999,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "old": {
+          "fetchedAt": 1699999699999,
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "raw": {
+          "extra": "preserved",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background cache status error 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "error",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background cache status pending 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`background cache status ready 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`deduplicates same URL using first tab, zero tab ID uses global icon, detached icon cannot block 1`] = `
+[
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+    },
+  ],
+]
+`;
+
+exports[`follows fetch redirect response without changing the requested URL or selecting another port 1`] = `
+[
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`keeps status deadline active through response body 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000800,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`keeps token deadline active through response body 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to fetch video info.",
+      "fetchedAt": 1700000000800,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`keeps video-info deadline active through response body 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000060000,
+      "info": null,
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pending storage settlement gates network, while delayed ready save gates success icon > pending write suspended 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`pending storage settlement gates network, while delayed ready save gates success icon > ready write suspended 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`pending storage settlement gates network, while delayed ready save gates success icon > settled 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`permanent pure scalar matrix plus boundaries 1`] = `
+[
+  {
+    "input": undefined,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": null,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": false,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "engine": true,
+    "input": true,
+    "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": 0,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": 1,
+    "name": "formatBytes",
+    "value": "1 B",
+  },
+  {
+    "input": -1,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": NaN,
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": "",
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "input": "0",
+    "name": "formatBytes",
+    "value": "-",
+  },
+  {
+    "engine": true,
+    "input": "1",
+    "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": "60",
+    "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": "1024",
+    "name": "formatBytes",
+    "value": "1.0 KB",
+  },
+  {
+    "engine": true,
+    "input": "x",
+    "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": 59.49,
+    "name": "formatBytes",
+    "value": "59 B",
+  },
+  {
+    "input": 59.5,
+    "name": "formatBytes",
+    "value": "60 B",
+  },
+  {
+    "input": 3599.5,
+    "name": "formatBytes",
+    "value": "3.5 KB",
+  },
+  {
+    "input": 1023,
+    "name": "formatBytes",
+    "value": "1023 B",
+  },
+  {
+    "input": 1024,
+    "name": "formatBytes",
+    "value": "1.0 KB",
+  },
+  {
+    "input": 1099511627776,
+    "name": "formatBytes",
+    "value": "1024 GB",
+  },
+  {
+    "input": undefined,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": null,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": false,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": true,
+    "name": "formatDuration",
+    "value": "0:01",
+  },
+  {
+    "input": 0,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": 1,
+    "name": "formatDuration",
+    "value": "0:01",
+  },
+  {
+    "input": -1,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": NaN,
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": "",
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": "0",
+    "name": "formatDuration",
+    "value": "Unknown",
+  },
+  {
+    "input": "1",
+    "name": "formatDuration",
+    "value": "0:01",
+  },
+  {
+    "input": "60",
+    "name": "formatDuration",
+    "value": "1:00",
+  },
+  {
+    "input": "1024",
+    "name": "formatDuration",
+    "value": "17:04",
+  },
+  {
+    "input": "x",
+    "name": "formatDuration",
+    "value": "NaN:NaN",
+  },
+  {
+    "input": 59.49,
+    "name": "formatDuration",
+    "value": "0:59",
+  },
+  {
+    "input": 59.5,
+    "name": "formatDuration",
+    "value": "1:00",
+  },
+  {
+    "input": 3599.5,
+    "name": "formatDuration",
+    "value": "1:00:00",
+  },
+  {
+    "input": 1023,
+    "name": "formatDuration",
+    "value": "17:03",
+  },
+  {
+    "input": 1024,
+    "name": "formatDuration",
+    "value": "17:04",
+  },
+  {
+    "input": 1099511627776,
+    "name": "formatDuration",
+    "value": "305419896:36:16",
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": undefined,
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": null,
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": false,
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": true,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 0,
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": -1,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": NaN,
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "",
+    },
+    "name": "isAudioFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "0",
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "1",
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "60",
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "1024",
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "x",
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 59.49,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 59.5,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 3599.5,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1023,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1024,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1099511627776,
+    },
+    "name": "isAudioFormat",
+    "value": false,
+  },
+  {
+    "input": undefined,
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": null,
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": false,
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "engine": true,
+    "input": true,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": 0,
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "engine": true,
+    "input": 1,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": -1,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": NaN,
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "0",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "1",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "60",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "1024",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "input": "x",
+    "name": "isValidHttpUrl",
+    "value": false,
+  },
+  {
+    "engine": true,
+    "input": 59.49,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 59.5,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 3599.5,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1023,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1024,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1099511627776,
+    "message": "value.startsWith is not a function. (In 'value.startsWith("http://")', 'value.startsWith' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": undefined,
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": null,
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": false,
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": true,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 0,
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": -1,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": NaN,
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "",
+    },
+    "name": "isVideoFormat",
+    "value": false,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "0",
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "1",
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "60",
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "1024",
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": "x",
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 59.49,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 59.5,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 3599.5,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1023,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1024,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "input": {
+      "acodec": "aac",
+      "vcodec": 1099511627776,
+    },
+    "name": "isVideoFormat",
+    "value": true,
+  },
+  {
+    "engine": true,
+    "input": undefined,
+    "message": "undefined is not an object (evaluating 'error.toLowerCase')",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": null,
+    "message": "null is not an object (evaluating 'error.toLowerCase')",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": false,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": true,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 0,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": -1,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": NaN,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "input": "",
+    "name": "sanitizeError",
+    "value": "",
+  },
+  {
+    "input": "0",
+    "name": "sanitizeError",
+    "value": "0",
+  },
+  {
+    "input": "1",
+    "name": "sanitizeError",
+    "value": "1",
+  },
+  {
+    "input": "60",
+    "name": "sanitizeError",
+    "value": "60",
+  },
+  {
+    "input": "1024",
+    "name": "sanitizeError",
+    "value": "1024",
+  },
+  {
+    "input": "x",
+    "name": "sanitizeError",
+    "value": "x",
+  },
+  {
+    "engine": true,
+    "input": 59.49,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 59.5,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 3599.5,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1023,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1024,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+  {
+    "engine": true,
+    "input": 1099511627776,
+    "message": "error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)",
+    "name": "TypeError",
+  },
+]
+`;
+
+exports[`pins all truthy/falsy HTTP error and details combinations 1`] = `
+[
+  {
+    "details": undefined,
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": undefined,
+    "stored": {
+      "error": "detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": undefined,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": undefined,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": undefined,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": undefined,
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": null,
+    "stored": {
+      "error": "detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": null,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": null,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": null,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": null,
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": false,
+    "stored": {
+      "error": "detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": false,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": false,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": false,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": false,
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": 0,
+    "stored": {
+      "error": "detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": 0,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": 0,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": 0,
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": 0,
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": "",
+    "stored": {
+      "error": "detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": "",
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": "",
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": "",
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": "",
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": "failure",
+    "stored": {
+      "error": "failure",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": "failure",
+    "stored": {
+      "error": "failure",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": "failure",
+    "stored": {
+      "error": "failure",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": "failure",
+    "stored": {
+      "error": "failure",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": "failure",
+    "stored": {
+      "error": "failure",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": "failure",
+    "stored": {
+      "error": "failure
+
+detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": "failure",
+    "stored": {
+      "error": "failure
+
+true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": "failure",
+    "stored": {
+      "error": "failure
+
+7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": "failure",
+    "stored": {
+      "error": "failure
+
+",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": "failure",
+    "stored": {
+      "error": "failure
+
+[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": true,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": true,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": true,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": true,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": true,
+    "stored": {
+      "error": "true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": true,
+    "stored": {
+      "error": "true
+
+detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": true,
+    "stored": {
+      "error": "true
+
+true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": true,
+    "stored": {
+      "error": "true
+
+7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": true,
+    "stored": {
+      "error": "true
+
+",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": true,
+    "stored": {
+      "error": "true
+
+[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": 7,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": 7,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": 7,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": 7,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": 7,
+    "stored": {
+      "error": "7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": 7,
+    "stored": {
+      "error": "7
+
+detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": 7,
+    "stored": {
+      "error": "7
+
+true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": 7,
+    "stored": {
+      "error": "7
+
+7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": 7,
+    "stored": {
+      "error": "7
+
+",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": 7,
+    "stored": {
+      "error": "7
+
+[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": [],
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": [],
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": [],
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": [],
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": [],
+    "stored": {
+      "error": "Request failed: 500",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": [],
+    "stored": {
+      "error": "
+
+detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": [],
+    "stored": {
+      "error": "
+
+true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": [],
+    "stored": {
+      "error": "
+
+7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": [],
+    "stored": {
+      "error": "
+
+",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": [],
+    "stored": {
+      "error": "
+
+[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": undefined,
+    "error": {},
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": null,
+    "error": {},
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": false,
+    "error": {},
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 0,
+    "error": {},
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "",
+    "error": {},
+    "stored": {
+      "error": "[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": "detail",
+    "error": {},
+    "stored": {
+      "error": "[object Object]
+
+detail",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": true,
+    "error": {},
+    "stored": {
+      "error": "[object Object]
+
+true",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": 7,
+    "error": {},
+    "stored": {
+      "error": "[object Object]
+
+7",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": [],
+    "error": {},
+    "stored": {
+      "error": "[object Object]
+
+",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  {
+    "details": {},
+    "error": {},
+    "stored": {
+      "error": "[object Object]
+
+[object Object]",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+]
+`;
+
+exports[`pins complete request, storage, icon and message ordering against git 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`pins token truthiness and encoding {"token":""} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to acquire token from VidBeep.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding {"token":["a","b"]} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=a%2Cb",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000000,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding {"token":0} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to acquire token from VidBeep.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding {"token":false} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to acquire token from VidBeep.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding {"token":true} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=true",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000000,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding {} 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to acquire token from VidBeep.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins token truthiness and encoding null 1`] = `
+{
+  "requests": [
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+      },
+    ],
+  ],
+  "stored": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Failed to fetch video info.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+}
+`;
+
+exports[`pins transport cause AbortError: abort 1`] = `
+{
+  "https://example.invalid/watch?v=a b&x=日本#part": {
+    "error": "Request timed out.",
+    "fetchedAt": 1700000000000,
+    "status": "error",
+    "url": "https://example.invalid/watch?v=a b&x=日本#part",
+  },
+}
+`;
+
+exports[`pins transport cause Error: Failed to fetch 1`] = `
+{
+  "https://example.invalid/watch?v=a b&x=日本#part": {
+    "error": "VidBeep app not responding on this port.",
+    "fetchedAt": 1700000000000,
+    "status": "error",
+    "url": "https://example.invalid/watch?v=a b&x=日本#part",
+  },
+}
+`;
+
+exports[`pins transport cause Error: other 1`] = `
+{
+  "https://example.invalid/watch?v=a b&x=日本#part": {
+    "error": "other",
+    "fetchedAt": 1700000000000,
+    "status": "error",
+    "url": "https://example.invalid/watch?v=a b&x=日本#part",
+  },
+}
+`;
+
+exports[`pins transport cause Error: signal is aborted 1`] = `
+{
+  "https://example.invalid/watch?v=a b&x=日本#part": {
+    "error": "Request timed out.",
+    "fetchedAt": 1700000000000,
+    "status": "error",
+    "url": "https://example.invalid/watch?v=a b&x=日本#part",
+  },
+}
+`;
+
+exports[`pins transport cause timeout 1`] = `
+{
+  "https://example.invalid/watch?v=a b&x=日本#part": {
+    "error": "Failed to fetch video info.",
+    "fetchedAt": 1700000000000,
+    "status": "error",
+    "url": "https://example.invalid/watch?v=a b&x=日本#part",
+  },
+}
+`;
+
+exports[`pins whole-map concurrent lost updates 1`] = `
+[
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://second.invalid/": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://second.invalid/",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+        "https://second.invalid/": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://second.invalid/",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://second.invalid/": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "https://second.invalid/",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Open a video page</h2><p class="error-description">Navigate to a supported video page, then try again.</p></div><div class="error-banner">Please open a valid video page first.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Open a supported video page, then retry.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "tab": "",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 2`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Open a video page</h2><p class="error-description">Navigate to a supported video page, then try again.</p></div><div class="error-banner">Please open a valid video page first.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Open a supported video page, then retry.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "tab": "about:blank",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 3`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Open a video page</h2><p class="error-description">Navigate to a supported video page, then try again.</p></div><div class="error-banner">Please open a valid video page first.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Open a supported video page, then retry.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "tab": "HTTPS://example.invalid",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 4`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Open a video page</h2><p class="error-description">Navigate to a supported video page, then try again.</p></div><div class="error-banner">Please open a valid video page first.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Open a supported video page, then retry.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "tab": null,
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 5`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+  "tab": "http://",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "http://",
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "http://",
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "got",
+      {},
+    ],
+  ],
+}
+`;
+
+exports[`popup StrictMode listener ordering, no tab, invalid and lowercase URL policy 6`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+  "tab": "https://example.invalid/watch?v=a b&x=日本#part",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "got",
+      {},
+    ],
+  ],
+}
+`;
+
+exports[`popup TTL age -1 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Untitled video</h2><div class="meta-row"><span>Unknown</span><span>•</span><span>0 formats</span></div></div></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="empty-state">No compatible formats.</div></section></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000001,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000001,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup TTL age 3600000 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Untitled video</h2><div class="meta-row"><span>Unknown</span><span>•</span><span>0 formats</span></div></div></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="empty-state">No compatible formats.</div></section></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996400000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996400000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup TTL age 3600001 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996399999,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996399999,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996399999,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1699996399999,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup cache, notifications, deleted entries, retry bypass and final read after send failure > connection error 1`] = `"<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Connect the VidBeep app</h2><p class="error-description">The extension needs the VidBeep desktop app to be running.</p></div><div class="error-banner">Client connection failed</div><div class="action-grid"><div class="action-card"><p class="action-title">Client installed</p><p class="action-text">Start VidBeep and keep it running, then we will retry automatically.</p><button class="secondary-button" type="button">Open Client</button></div><div class="action-card"><p class="action-title">Need the app?</p><p class="action-text">Download VidBeep once, install it, then come back here to try again.</p><a class="secondary-button" href="https://vidbee.app" rel="noopener noreferrer" target="_blank">Download VidBeep</a></div></div></div></div>"`;
+
+exports[`popup cache, notifications, deleted entries, retry bypass and final read after send failure > ignored removals 1`] = `"<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>"`;
+
+exports[`popup cache, notifications, deleted entries, retry bypass and final read after send failure > pending 1`] = `"<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>"`;
+
+exports[`popup cache, notifications, deleted entries, retry bypass and final read after send failure > retry final read 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Fixture</h2><div class="meta-row"><span>Unknown</span><span>•</span><span>0 formats</span></div></div></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="empty-state">No compatible formats.</div></section></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`popup no-tab and bootstrap without root > no tab 1`] = `"<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Open a video page</h2><p class="error-description">Navigate to a supported video page, then try again.</p></div><div class="error-banner">Please open a valid video page first.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Open a supported video page, then retry.</p><button class="secondary-button" type="button">Retry</button></div></div></div>"`;
+
+exports[`popup send failure still consumes the complete final cached error 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Something went wrong</h2><p class="error-description">Try again in a moment.</p></div><div class="error-banner">Final cache error</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Retry after a moment.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "send",
+      {
+        "type": "video-info:fetch",
+        "url": "https://example.invalid/watch?v=a b&x=日本#part",
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Final cache error",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Final cache error",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`pure classification substitutions include every codec, dimension and resolution field 1`] = `
+[
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": undefined,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": null,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": false,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": true,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": 0,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": 7,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": NaN,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": "",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": "none",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "vcodec",
+    "value": "1280x720",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": undefined,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": null,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": false,
+    "video": false,
+  },
+  {
+    "audio": true,
+    "field": "acodec",
+    "value": true,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": 0,
+    "video": false,
+  },
+  {
+    "audio": true,
+    "field": "acodec",
+    "value": 7,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": NaN,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": "",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "acodec",
+    "value": "none",
+    "video": false,
+  },
+  {
+    "audio": true,
+    "field": "acodec",
+    "value": "1280x720",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": undefined,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": null,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": false,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": true,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": 0,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": 7,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": NaN,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": "",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": "none",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "resolution",
+    "value": "1280x720",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": undefined,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": null,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": false,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": true,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": 0,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": 7,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": NaN,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": "",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": "none",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "width",
+    "value": "1280x720",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": undefined,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": null,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": false,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": true,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": 0,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": 7,
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": NaN,
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": "",
+    "video": false,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": "none",
+    "video": true,
+  },
+  {
+    "audio": false,
+    "field": "height",
+    "value": "1280x720",
+    "video": true,
+  },
+]
+`;
+
+exports[`released StrictMode initialization continues after listener removal, with suspended query/send/read 1`] = `
+[
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "storage:remove",
+    0,
+  ],
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "send",
+    {
+      "type": "video-info:fetch",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "send",
+    {
+      "type": "video-info:fetch",
+      "url": "https://older.invalid/",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+]
+`;
+
+exports[`render ordering, duplicate IDs, thumbnails, audio/other count and all exact download URI bytes 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Fixture title</h2><div class="meta-row"><span>1:00:00</span><span>•</span><span>6 formats</span></div></div><img alt="" class="thumbnail" src="https://image.invalid/cover.png"></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="format-group"><div class="group-title sticky-title">1080p</div><table class="format-table"><thead><tr><th class="col-id">ID</th><th class="col-ext">Ext</th><th class="col-size">Size</th></tr></thead><tbody><tr><td class="col-id">1080</td><td class="col-ext">-</td><td class="col-size">1024 GB</td></tr></tbody></table></div><div class="format-group"><div class="group-title sticky-title">720p</div><table class="format-table"><thead><tr><th class="col-id">ID</th><th class="col-ext">Ext</th><th class="col-size">Size</th></tr></thead><tbody><tr><td class="col-id">dup</td><td class="col-ext">webm</td><td class="col-size">2.0 KB</td></tr><tr><td class="col-id">dup</td><td class="col-ext">mp4</td><td class="col-size">1.0 KB</td></tr></tbody></table></div><div class="format-group"><div class="group-title sticky-title">Other</div><table class="format-table"><thead><tr><th class="col-id">ID</th><th class="col-ext">Ext</th><th class="col-size">Size</th></tr></thead><tbody><tr><td class="col-id">other-video</td><td class="col-ext">-</td><td class="col-size">-</td></tr></tbody></table></div><div class="format-group"><div class="group-title">Audio Only</div><table class="format-table"><thead><tr><th class="col-id">ID</th><th class="col-ext">Ext</th><th class="col-size">Size</th></tr></thead><tbody><tr><td class="col-id">audio</td><td class="col-ext">-</td><td class="col-size">-</td></tr></tbody></table></div></section></div>",
+  "navigation": [
+    "vidbee://download?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part",
+  ],
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "duration": 3599.5,
+              "formats": [
+                {
+                  "ext": "mp4",
+                  "filesize": 1024,
+                  "format_id": "dup",
+                  "height": 720,
+                  "vcodec": "h264",
+                },
+                {
+                  "ext": "webm",
+                  "filesize_approx": 2048,
+                  "format_id": "dup",
+                  "resolution": "1280x720",
+                },
+                {
+                  "filesize": 1099511627776,
+                  "format_id": "1080",
+                  "height": 1080,
+                },
+                {
+                  "format_id": "other-video",
+                  "vcodec": "h264",
+                },
+                {
+                  "acodec": "aac",
+                  "format_id": "audio",
+                  "vcodec": "none",
+                },
+                {
+                  "acodec": "none",
+                  "format_id": "hidden",
+                  "vcodec": "none",
+                },
+              ],
+              "thumbnail": "https://image.invalid/cover.png",
+              "title": "Fixture title",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "duration": 3599.5,
+              "formats": [
+                {
+                  "ext": "mp4",
+                  "filesize": 1024,
+                  "format_id": "dup",
+                  "height": 720,
+                  "vcodec": "h264",
+                },
+                {
+                  "ext": "webm",
+                  "filesize_approx": 2048,
+                  "format_id": "dup",
+                  "resolution": "1280x720",
+                },
+                {
+                  "filesize": 1099511627776,
+                  "format_id": "1080",
+                  "height": 1080,
+                },
+                {
+                  "format_id": "other-video",
+                  "vcodec": "h264",
+                },
+                {
+                  "acodec": "aac",
+                  "format_id": "audio",
+                  "vcodec": "none",
+                },
+                {
+                  "acodec": "none",
+                  "format_id": "hidden",
+                  "vcodec": "none",
+                },
+              ],
+              "thumbnail": "https://image.invalid/cover.png",
+              "title": "Fixture title",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`scans to 27100, then stops; all failed ports exhaust 1`] = `
+[
+  [
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=7",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`scans to 27100, then stops; all failed ports exhaust 2`] = `
+[
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "info": {},
+          "status": "ready",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`scans to 27110, then stops; all failed ports exhaust 1`] = `
+[
+  [
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27101/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27102/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27103/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27104/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27105/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27106/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27107/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27108/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27109/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27110/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27110/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://127.0.0.1:27110/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=7",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`scans to 27110, then stops; all failed ports exhaust 2`] = `
+[
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`scans to 27120, then stops; all failed ports exhaust 1`] = `
+[
+  [
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27101/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27102/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27103/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27104/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27105/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27106/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27107/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27108/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27109/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27110/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27111/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27112/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`scans to 27120, then stops; all failed ports exhaust 2`] = `
+[
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`scans to null, then stops; all failed ports exhaust 1`] = `
+[
+  [
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27101/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27102/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27103/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27104/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27105/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27106/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27107/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27108/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27109/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27110/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27111/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+  [
+    "http://127.0.0.1:27112/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`scans to null, then stops; all failed ports exhaust 2`] = `
+[
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "https://example.invalid/watch?v=a b&x=日本#part": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "https://example.invalid/watch?v=a b&x=日本#part",
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`startup has no UA or locale dependency; locale message APIs are never called 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Fixture</h2><div class="meta-row"><span>Unknown</span><span>•</span><span>0 formats</span></div></div></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="empty-state">No compatible formats.</div></section></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;

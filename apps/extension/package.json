@@ -12,7 +12,8 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "test": "bunx --bun vitest run"
   },
   "dependencies": {
     "react": "catalog:",
@@ -23,6 +24,10 @@
     "@types/react-dom": "catalog:",
     "@wxt-dev/module-react": "catalog:",
     "typescript": "catalog:",
-    "wxt": "catalog:"
+    "wxt": "catalog:",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:",
+    "happy-dom": "catalog:",
+    "esbuild": "catalog:"
   }
 }

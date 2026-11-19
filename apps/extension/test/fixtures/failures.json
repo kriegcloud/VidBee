@@ -1,0 +1,1936 @@
+[
+  {
+    "scenario": {
+      "failure": "read"
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": false,
+        "name": "Error",
+        "message": "read runtime failure"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "failure": "pending"
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ]
+    ],
+    "failures": [
+      {
+        "engine": false,
+        "name": "Error",
+        "message": "quota failure"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "failure": "ready"
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "error",
+              "fetchedAt": 1700000000000,
+              "error": "quota failure"
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/16.png",
+            "32": "icon/32.png",
+            "48": "icon/48.png",
+            "128": "icon/128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "failure": "error"
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "error",
+              "fetchedAt": 1700000000000,
+              "error": "metadata failure"
+            }
+          }
+        }
+      ]
+    ],
+    "failures": [
+      {
+        "engine": false,
+        "name": "Error",
+        "message": "quota failure"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "failure": "icon"
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": [
+      {
+        "engine": false,
+        "name": "Error",
+        "message": "icon runtime failure"
+      },
+      {
+        "engine": false,
+        "name": "Error",
+        "message": "icon runtime failure"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": null,
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": false,
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": 0,
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": "",
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": true,
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot create property 'https://example.invalid/watch' on boolean 'true'"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": 1,
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot create property 'https://example.invalid/watch' on number '1'"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": "x",
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot create property 'https://example.invalid/watch' on string 'x'"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": [],
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "$array": [],
+            "$properties": {
+              "https://example.invalid/watch": {
+                "url": "https://example.invalid/watch",
+                "status": "pending",
+                "fetchedAt": 1700000000000
+              }
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "$array": [],
+            "$properties": {
+              "https://example.invalid/watch": {
+                "url": "https://example.invalid/watch",
+                "status": "ready",
+                "fetchedAt": 1700000000000,
+                "info": {}
+              }
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": [
+        null
+      ],
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'fetchedAt')"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": {
+        "nullEntry": null
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'fetchedAt')"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": {
+        "old": {
+          "fetchedAt": "0"
+        },
+        "missing": {},
+        "bool": {
+          "fetchedAt": false
+        }
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "missing": {},
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "missing": {},
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": null
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ]
+    ],
+    "failures": [
+      {
+        "engine": true,
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'fetchedAt')"
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": false
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": 0
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": 7
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": "entry"
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": {}
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": {
+          "status": "ready"
+        }
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": {
+          "status": "ready",
+          "fetchedAt": 1700000000000,
+          "info": null
+        }
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": {
+          "status": "ready",
+          "fetchedAt": 1700000000000,
+          "url": false
+        }
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  },
+  {
+    "scenario": {
+      "map": {
+        "https://example.invalid/watch": {
+          "status": "unknown",
+          "fetchedAt": 1700000000000
+        }
+      },
+      "engine": true
+    },
+    "trace": [
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-loading-16.png",
+            "32": "icon/icon-loading-32.png",
+            "48": "icon/icon-loading-48.png",
+            "128": "icon/icon-loading-128.png"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "pending",
+              "fetchedAt": 1700000000000
+            }
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/status",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/token",
+        {
+          "method": "POST",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "fetch",
+        "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch&token=x",
+        {
+          "method": "GET",
+          "headers": {
+            "X-VidBee-Extension": "chrome-extension://fixture-id"
+          }
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "set",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch": {
+              "url": "https://example.invalid/watch",
+              "status": "ready",
+              "fetchedAt": 1700000000000,
+              "info": {}
+            }
+          }
+        }
+      ],
+      [
+        "icon",
+        {
+          "path": {
+            "16": "icon/icon-success-16.png",
+            "32": "icon/icon-success-32.png",
+            "48": "icon/icon-success-48.png",
+            "128": "icon/icon-success-128.png"
+          }
+        }
+      ]
+    ],
+    "failures": []
+  }
+]

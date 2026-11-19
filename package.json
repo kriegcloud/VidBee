@@ -37,7 +37,7 @@
     "zip:extension": "bun run --cwd apps/extension zip",
     "check:legacy": "bun run --cwd apps/desktop check",
     "lint:legacy": "bun run --cwd apps/desktop check",
-    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs packages/subscriptions-core/test/review",
+    "test": "bun run test:audit && turbo run test --filter=vidbee-extension --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs packages/subscriptions-core/test/review",
     "port:check": "node scripts/port-check.mjs"
   },
   "devDependencies": {
@@ -173,7 +173,8 @@
     "lefthook": "^2.2.2",
     "turbo": "^2.11.11",
     "@effect/sql-sqlite-node": "4.1.4",
-    "drizzle-orm-rollback-fixture": "npm:drizzle-orm@0.45.4"
+    "drizzle-orm-rollback-fixture": "npm:drizzle-orm@0.45.4",
+    "happy-dom": "21.0.4"
   },
   "overrides": {
     "@electron/get": ">=3.1.0 <4",
