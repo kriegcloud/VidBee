@@ -1,0 +1,36 @@
+{
+  "asrTier": "minimal",
+  "creation": {
+    "origin": "manual"
+  },
+  "downloadTaskId": "<id:1>",
+  "error": null,
+  "listState": "no-speech",
+  "rediarize": false,
+  "sourceFilePath": "<run>/transcription-downloads/silence.wav",
+  "sourceKind": "asr",
+  "speakerCount": "auto",
+  "stage": null,
+  "stageHistory": [],
+  "title": "silence",
+  "transcriptId": null,
+  "transcriptionTaskId": "<id:2>",
+  "updatedAt": "<timestamp>",
+  "sources": [
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": null,
+      "languageCode": null,
+      "selected": true
+    }
+  ],
+  "segmentCount": 0,
+  "language": null,
+  "resultKind": null,
+  "speakers": [],
+  "items": [],
+  "total": 0,
+  "nextOffset": null
+}

@@ -8,10 +8,11 @@ RUN="$(realpath -m "$2")"
 SECS="${3:-75}"
 SEED="${4:-}"
 PROFILE="${5:-}"
+GOLDEN_DISPLAY="${6:-}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 test ! -e "$RUN" || { echo "run directory already exists: $RUN" >&2; exit 1; }
 test -x "$APP/vidbee"
-mkdir -p "$RUN/home/.config" "$RUN/home/.cache" "$RUN/home/.local/share" "$RUN/userdata"
+mkdir -p "$RUN/home/.config" "$RUN/home/.cache" "$RUN/home/.local/share" "$RUN/userdata" "$RUN/tmp"
 if [ -n "$PROFILE" ]; then
   test -z "$SEED" || { echo "profile reuse cannot also seed a copy" >&2; exit 1; }
   PROFILE="$(realpath "$PROFILE")"
@@ -30,6 +31,9 @@ fi
 printf 'nameserver 127.0.0.1\noptions timeout:1 attempts:1\n' > "$RUN/resolv.conf"
 sed -E 's/^hosts:.*/hosts: files dns/' /etc/nsswitch.conf > "$RUN/nsswitch.conf"
 RESOLV="$(readlink -f /etc/resolv.conf)"
+TEMP_ALIAS="$(mktemp -d /tmp/vgb.XXXXXX)"
+ln -s "$RUN/tmp" "$TEMP_ALIAS/root"
+printf '%s\n' "$TEMP_ALIAS/root" > "$RUN/tmp-root"
 LAUNCHER=""
 cleanup() {
   trap - EXIT TERM INT
@@ -42,11 +46,13 @@ cleanup() {
     kill -KILL -- "-$LAUNCHER" 2>/dev/null || true
     wait "$LAUNCHER" 2>/dev/null || true
   fi
+  rm -f "$TEMP_ALIAS/root"
+  rmdir "$TEMP_ALIAS"
 }
 trap cleanup EXIT
 trap 'exit 143' TERM
 trap 'exit 130' INT
-env -i PATH="/usr/bin:/bin" HOME="$RUN/home" \
+env -i PATH="/usr/bin:/bin" HOME="$RUN/home" TMPDIR="$TEMP_ALIAS/root" \
   XDG_CONFIG_HOME="$RUN/home/.config" XDG_CACHE_HOME="$RUN/home/.cache" \
   XDG_DATA_HOME="$RUN/home/.local/share" XDG_RUNTIME_DIR="$RUN/home/.cache" \
   LANG="${LANG:-en_US.UTF-8}" VIDBEE_ALLOW_MULTIPLE_INSTANCES=1 \
@@ -64,6 +70,7 @@ env -i PATH="/usr/bin:/bin" HOME="$RUN/home" \
     done
     grep -q "# dns-logger ready" "$1/dns.log"
     getent hosts selftest.dns-logger.invalid > /dev/null
+    if [ -n "${4:-}" ]; then source "$4"; fi
     "$0" --no-sandbox --ozone-platform=headless --disable-gpu \
       --user-data-dir="$1/userdata" --remote-debugging-port=9230 > "$1/stdout.log" 2>&1 &
     APP_PID=$!
@@ -71,7 +78,7 @@ env -i PATH="/usr/bin:/bin" HOME="$RUN/home" \
     wait "$APP_PID"
     echo "unexpected early app exit" >&2
     exit 1
-  ' "$APP/vidbee" "$RUN" "$RESOLV" "$HERE" &
+  ' "$APP/vidbee" "$RUN" "$RESOLV" "$HERE" "$GOLDEN_DISPLAY" &
 LAUNCHER=$!
 printf '%s\n' "$LAUNCHER" > "$RUN/namespace.pid"
 for ((i=0; i<SECS*10; i++)); do

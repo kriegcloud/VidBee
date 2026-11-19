@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { buildSubscriptionsFixture } from './subscriptions-core-fixture.mjs'
 
 export const FIXTURE_IDS = Object.freeze({
   completed: 'golden-completed',
@@ -453,6 +454,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
 /** Generate tiny synthetic download inputs with the baseline's bundled encoder. */
 export async function buildLoopbackFixture(profileDir, build, command) {
+  await buildSubscriptionsFixture(profileDir)
   const directory = path.join(profileDir, 'loopback-fixtures')
   await mkdir(directory, { recursive: true })
   const ffmpeg = path.join(build, 'resources/resources/ffmpeg/ffmpeg')

@@ -1,14 +1,30 @@
 import { spawn } from 'node:child_process'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  prepareBrowserCaptureOnly,
+  runBrowserCaptureCases,
+  runBrowserCaptureRestart
+} from './browser-capture-cases.mjs'
 import { MCP_READ_TOOLS, runCases } from './cases.mjs'
 import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
+import { runSubscriptionsCases, runSubscriptionsRestart } from './subscriptions-core-cases.mjs'
+import { runTranscriptionCases, runTranscriptionRestart } from './transcription-cases.mjs'
+import { normalizeTranscription } from './transcription-normalize.mjs'
 
 const args = process.argv.slice(2)
+if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && !args.includes('--probe')) {
+  if (args.includes('--update')) {
+    throw new Error('Exploration cannot update goldens')
+  }
+  process.stdout.write(
+    'EXPLORATION ONLY: NOT ACCEPTANCE; no ASR goldens are recorded or compared\n'
+  )
+}
 const probe = args[0] === '--probe'
 const runDir = args[probe ? 1 : 0]
 const build = args[1]
@@ -34,6 +50,7 @@ await mkdir(output, { recursive: true })
 let count = 0
 let failures = 0
 const roots = [
+  [(await readFile(path.join(runDir, 'tmp-root'), 'utf8')).trim(), '<run>/tmp'],
   [runDir, '<run>'],
   [path.dirname(runDir), '<work>'],
   [build, '<build>'],
@@ -43,10 +60,16 @@ const record = async (name, value) => {
   if (subset && !name.includes(subset)) {
     return
   }
-  const actual = normalize(value, roots)
+  const actual = normalize(
+    name.startsWith('transcription/') ? normalizeTranscription(value) : value,
+    roots
+  )
   const file = `${name.replaceAll('/', '--')}.json`
   const text = `${JSON.stringify(actual, null, 2)}\n`
   await writeFile(path.join(actualDir, file), text)
+  if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && name.startsWith('transcription/')) {
+    return
+  }
   count++
   if (args.includes('--update')) {
     await writeFile(path.join(output, file), text)
@@ -66,7 +89,7 @@ const record = async (name, value) => {
     process.stdout.write(`FAIL ${name}\n${changes.slice(0, 30).join('\n')}\n`)
   }
 }
-if (!args.includes('--loopback-only')) {
+if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const listing = await client.rpc('tools/list')
   await record('mcp/tools-list', listing)
   const missingReads = listing.result.tools.filter(
@@ -104,7 +127,7 @@ const command = (cmd, argv, options = {}) =>
     child.on('error', reject)
     child.on('exit', (code) => resolve({ code, stdout, stderr }))
   })
-if (!args.includes('--loopback-only')) {
+if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const renderer = await command(process.execPath, [
     path.join(here, '../cdp-shots.mjs'),
     path.join(runDir, 'screenshots')
@@ -154,11 +177,58 @@ if (!args.includes('--loopback-only')) {
   await record('boot/log', boot)
   await client.rpc('tools/list')
 }
+let browserCaptureSkipped = false
+const subscriptionsOnly = args.includes('--subscriptions-only')
+// A run narrowed to another package's documents leaves the browser alone: its cases change
+// settings and occupy the queue, and none of their documents would be compared.
+const browserCaptureSelected = !subscriptionsOnly && (!subset || subset.includes('browser-capture'))
+const exists = (file) =>
+  stat(file).then(
+    () => true,
+    () => false
+  )
 const restartIndex = args.indexOf('--loopback-restart')
 if (restartIndex >= 0) {
-  await runLoopbackRestart({ client, runDir, originalRun: args[restartIndex + 1], record, roots })
+  const originalRun = args[restartIndex + 1]
+  if (!subscriptionsOnly) {
+    await runLoopbackRestart({ client, runDir, originalRun, record, roots })
+  }
+  // The restart worker always carries --loopback-only, so whether the first launch ran the
+  // subscription cases is read from the state they leave behind.
+  if (
+    (subscriptionsOnly || !subset || subset.includes('subscriptions')) &&
+    (await exists(path.join(originalRun, 'subscriptions-core/state.json')))
+  ) {
+    await runSubscriptionsRestart({ client, runDir, originalRun, record, roots })
+  }
+  if (browserCaptureSelected) {
+    await runBrowserCaptureRestart({ runDir, record })
+  }
+  await runTranscriptionRestart({ client, runDir, originalRun, record, roots })
 } else {
-  await runLoopbackCases({ client, runDir, build, record, roots, command })
+  if (args.includes('--browser-capture-only')) {
+    await prepareBrowserCaptureOnly({ client, runDir, root })
+  } else if (!subscriptionsOnly) {
+    await runLoopbackCases({ client, runDir, build, record, roots, command })
+  }
+  if (!args.includes('--loopback-only') || subscriptionsOnly) {
+    await runSubscriptionsCases({ client, runDir, build, record, roots, command })
+  }
+  if (browserCaptureSelected) {
+    browserCaptureSkipped =
+      (await runBrowserCaptureCases({ client, runDir, build, record, roots, command })) === false
+  }
+}
+if (args.includes('--models') && restartIndex < 0) {
+  await runTranscriptionCases({
+    client,
+    runDir,
+    record,
+    roots,
+    command,
+    build,
+    contractOnly: args.includes('--transcription-contract-only')
+  })
 }
 if (!args.includes('--models')) {
   process.stdout.write('SKIP local ASR golden: --models not supplied\n')
@@ -166,6 +236,17 @@ if (!args.includes('--models')) {
 process.stdout.write(
   `${args.includes('--update') ? 'Recorded' : 'Compared'} ${count} cases; ${failures} failures\n`
 )
-if ((count === 0 && restartIndex < 0) || failures) {
+if (
+  (count === 0 &&
+    restartIndex < 0 &&
+    !(browserCaptureSkipped && subset === 'browser-capture') &&
+    process.env.VIDBEE_TRANSCRIPTION_EXPLORE !== '1') ||
+  failures
+) {
   process.exitCode = 1
 }
+
+// CDP/Undici sockets can remain referenced after close on pinned Node 22.
+// All case cleanup and evidence writes above have completed before worker exit.
+await new Promise((resolve) => process.stdout.write('', resolve))
+process.exit(process.exitCode ?? 0)

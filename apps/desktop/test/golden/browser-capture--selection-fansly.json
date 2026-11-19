@@ -1,0 +1,4 @@
+{
+  "ok": false,
+  "message": "Error invoking remote method 'download.downloadFanslyProfile': Error: Select available mapped media. Locked and DRM media cannot be downloaded."
+}

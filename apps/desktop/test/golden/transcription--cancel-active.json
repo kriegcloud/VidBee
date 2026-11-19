@@ -1,0 +1,50 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "transcription",
+    "parentId": "<id:2>",
+    "title": "long.wav",
+    "url": "vidbee://download/<id:2>",
+    "status": "cancelled",
+    "attempt": 1,
+    "maxAttempts": 3,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "transcription",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null
+  },
+  "transcript": {
+    "asrTier": "minimal",
+    "creation": {
+      "origin": "manual"
+    },
+    "downloadTaskId": "<id:2>",
+    "error": null,
+    "listState": "cancelled",
+    "rediarize": false,
+    "sourceFilePath": "<run>/userdata/transcription-fixtures/long.wav",
+    "sourceKind": "asr",
+    "speakerCount": "auto",
+    "stage": null,
+    "stageHistory": [],
+    "title": "long.wav",
+    "transcriptId": null,
+    "transcriptionTaskId": "<id:1>",
+    "updatedAt": "<timestamp>",
+    "sources": [],
+    "segmentCount": 0,
+    "language": null,
+    "resultKind": null,
+    "speakers": [],
+    "items": [],
+    "total": 0,
+    "nextOffset": null
+  },
+  "statuses": ["queued", "running", "cancelled"]
+}

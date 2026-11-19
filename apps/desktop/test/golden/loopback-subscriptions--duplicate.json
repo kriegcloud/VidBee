@@ -1,0 +1,26 @@
+{
+  "exact": {
+    "status": 200,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "SUBSCRIPTION_DUPLICATE_FEED_URL"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "equivalent": {
+    "status": 200,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "SUBSCRIPTION_DUPLICATE_FEED_URL"
+        }
+      ],
+      "isError": true
+    }
+  }
+}
