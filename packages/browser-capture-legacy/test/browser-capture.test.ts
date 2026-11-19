@@ -6,13 +6,15 @@ import type {
   ExecutorRun
 } from '@vidbee/task-queue-legacy'
 import { virtualError } from '@vidbee/task-queue-legacy'
-import { describe, expect, it } from 'vitest'
-import { parseNetscapeCookieFile, toPlaywrightCookies } from '../src/cookies'
-import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '../src/drm'
-import { DrmFallbackExecutor } from '../src/drm-fallback'
+import { describe, expect, it, vi } from 'vitest'
+import { toPlaywrightCookies } from '../src/cookies'
+import { parseNetscapeCookieFile } from '@vidbee/browser-capture-legacy'
+import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '@vidbee/browser-capture-legacy'
+import { DrmFallbackExecutor } from '@vidbee/browser-capture-legacy'
 import { waitUntilPlaybackAdvances } from '../src/player'
-import { encodeSidecarEvent, parseCaptureJob, parseSidecarEvent } from '../src/protocol'
-import { evenSize } from '../src/quality'
+import { parseCaptureJob } from '../src/protocol'
+import { encodeSidecarEvent, parseSidecarEvent } from '@vidbee/browser-capture-legacy'
+import { evenSize } from '@vidbee/browser-capture-legacy'
 import { buildRecorderArgs } from '../src/recorder'
 
 describe('playbackPageUrl', () => {
@@ -48,7 +50,9 @@ describe('netscape cookies', () => {
       '# Netscape HTTP Cookie File',
       '#HttpOnly_.example.com\tTRUE\t/\tTRUE\t1999999999\tsess\ttest-value'
     ].join('\n')
-    const cookies = toPlaywrightCookies(parseNetscapeCookieFile(text))
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(1700000000000)
+    let cookies
+    try { cookies = toPlaywrightCookies(parseNetscapeCookieFile(text)) } finally { clock.mockRestore() }
     expect(cookies).toEqual([
       {
         name: 'sess',

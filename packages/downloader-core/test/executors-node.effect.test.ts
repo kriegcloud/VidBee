@@ -406,6 +406,8 @@ for (const cancelled of [false, true]) {
               _tag: "Acquired",
               run: {
                 pid: 42,
+                writeStdin: (_bytes: Uint8Array) => Effect.void,
+                observeClose: Effect.void,
                 signalChild: Effect.fn("fixture.failureChildSignal")((signal) =>
                   Effect.sync(() => {
                     signals.push(`child:${signal}`);

@@ -2,10 +2,24 @@ import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as PlatformError from "effect/PlatformError";
 import * as S from "effect/Schema";
 
-export const ProcessSignal = LiteralKit(["SIGTERM", "SIGKILL"]);
+export const ProcessBackend = LiteralKit(["Raw", "Native"]);
+export type ProcessBackend = typeof ProcessBackend.Type;
+export const ProcessSignal = LiteralKit(["SIGTERM", "SIGKILL", "SIGINT"]);
 export type ProcessSignal = typeof ProcessSignal.Type;
 export const ProcessDisposition = LiteralKit(["ignore", "pipe", "inherit"]);
 export type ProcessDisposition = typeof ProcessDisposition.Type;
+export const ProcessOutputConsumption = LiteralKit(["deliver", "unread"]);
+export type ProcessOutputConsumption = typeof ProcessOutputConsumption.Type;
+export const RawErrorObservation = LiteralKit(["observe", "once", "omit"]);
+export type RawErrorObservation = typeof RawErrorObservation.Type;
+export const RawSpawnObservationPolicy = LiteralKit(["once", "omit"]);
+export type RawSpawnObservationPolicy = typeof RawSpawnObservationPolicy.Type;
+export const RawExitObservation = LiteralKit(["observe", "omit"]);
+export type RawExitObservation = typeof RawExitObservation.Type;
+export const RawObservationStart = LiteralKit(["immediate", "on-demand"]);
+export type RawObservationStart = typeof RawObservationStart.Type;
+export const RawCloseObservation = LiteralKit(["observe", "once", "on-demand", "omit"]);
+export type RawCloseObservation = typeof RawCloseObservation.Type;
 export const ProcessSpec = S.Struct({
   command: S.String,
   argv: S.Array(S.String),
@@ -17,6 +31,13 @@ export const ProcessSpec = S.Struct({
   stdin: ProcessDisposition,
   stdout: ProcessDisposition,
   stderr: ProcessDisposition,
+  stdoutConsumption: S.optional(ProcessOutputConsumption),
+  stderrConsumption: S.optional(ProcessOutputConsumption),
+  rawObservationStart: S.optional(RawObservationStart),
+  rawErrorObservation: S.optional(RawErrorObservation),
+  rawSpawnObservation: S.optional(RawSpawnObservationPolicy),
+  rawExitObservation: S.optional(RawExitObservation),
+  rawCloseObservation: S.optional(RawCloseObservation),
   abortSignal: S.optional(S.instanceOf(AbortSignal)),
 });
 export type ProcessSpec = typeof ProcessSpec.Type;
@@ -28,7 +49,10 @@ export const ProcessOutcome = S.Union([
   S.TaggedStruct("Native", { result: NativeOutcome }),
 ]);
 export type ProcessOutcome = typeof ProcessOutcome.Type;
+export const RawSpawnObservation = S.TaggedStruct("rawSpawn", {});
+export type RawSpawnObservation = typeof RawSpawnObservation.Type;
 export const ProcessEvent = S.Union([
+  RawSpawnObservation,
   S.TaggedStruct("stdout", { chunk: S.Uint8Array }),
   S.TaggedStruct("stderr", { chunk: S.Uint8Array }),
   S.TaggedStruct("stdoutEnd", {}),

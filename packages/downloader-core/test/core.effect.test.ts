@@ -64,6 +64,8 @@ const fixture = (mode: typeof FixtureMode.Type) => {
           _tag: "Acquired" as const,
           run: {
             pid: 123,
+            writeStdin: (_bytes: Uint8Array) => Effect.void,
+            observeClose: Effect.void,
             signalChild: Effect.fn("fixture.child")(() => Effect.void),
             signalPid: Effect.fn("fixture.pid")(() => Effect.void),
             signalGroup: Effect.fn("fixture.group")(() => Effect.void),

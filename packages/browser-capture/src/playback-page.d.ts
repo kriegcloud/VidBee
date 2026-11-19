@@ -1,0 +1,12 @@
+import type { MediaClock, Position, Rectangle } from "./Playback.model.js";
+export const readMediaStateInPage: (expected: number) => MediaClock | null;
+export const stepToMedia: (id: string) => { active: number; index: number } | null;
+export const swiperPointInPage: (id: string) => Position | null;
+export const attachmentPointInPage: (input: { needles: string[]; labels: string[] }) => Position | null;
+export const clickMediaInPage: () => void;
+export const seekStartInPage: (expected: number) => void;
+export const placeVideoInPage: (input: { expected: number; width: number; height: number }) => Rectangle | null;
+export const removeMarkerInPage: () => void;
+export const profileScrollInPage: (input: { nested: boolean; chat: boolean }) => boolean;
+export const viewportInPage: () => { width: number; height: number };
+export const seedLocalStorageInPage: (values: Record<string, string>) => void;
