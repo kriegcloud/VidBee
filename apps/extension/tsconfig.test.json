@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "declaration": false,
+    "declarationMap": false,
+    "noEmit": true
+  },
+  "include": [
+    "entrypoints/**/*.ts",
+    "entrypoints/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "wxt.config.ts",
+    ".wxt/wxt.d.ts",
+    "test/**/*.ts",
+    "test/**/*.tsx"
+  ],
+  "exclude": [".output", "dist", "node_modules"]
+}

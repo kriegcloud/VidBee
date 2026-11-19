@@ -25,6 +25,26 @@
       "outputs": [
         "dist/**"
       ]
+    },
+    "vidbee-extension#check": {
+      "outputs": [
+        "dist/**",
+        ".wxt/**"
+      ]
+    },
+    "vidbee-extension#test": {
+      "outputs": [
+        ".wxt/**"
+      ],
+      "env": [
+        "TZ"
+      ]
+    },
+    "vidbee-extension#build": {
+      "outputs": [
+        ".output/**",
+        ".wxt/**"
+      ]
     }
   },
   "globalEnv": [

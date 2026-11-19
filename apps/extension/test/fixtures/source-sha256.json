@@ -1,0 +1,5 @@
+{
+  "entrypoints/background.ts": "490abba3713423c916fe26c864ef62edeff0ae4b5d9d00769ff483031a53033e",
+  "entrypoints/popup/App.tsx": "94fb3fc0c8cb42db0e3fed875c995f02d5a083c9d421b50afa82ed75e135efe8",
+  "entrypoints/popup/main.tsx": "b272148357b5f670b56ad03a2c5e616518a0b45d604a28710470a57ce7c1e938"
+}
