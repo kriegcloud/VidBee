@@ -115,6 +115,7 @@
     "zod": "catalog:",
     "@vidbee/task-queue-legacy": "workspace:^",
     "@vidbee/downloader-core-legacy": "workspace:^",
+    "@vidbee/browser-capture-legacy": "workspace:^",
     "@vidbee/subscriptions-core-legacy": "workspace:^"
   },
   "optionalDependencies": {

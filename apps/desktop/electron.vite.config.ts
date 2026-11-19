@@ -19,6 +19,7 @@ const bundledWorkspacePackages = [
   '@vidbee/downloader-core',
   '@vidbee/downloader-core-legacy',
   '@vidbee/browser-capture',
+  '@vidbee/browser-capture-legacy',
   '@vidbee/i18n',
   '@vidbee/ui',
   '@vidbee/logger',
@@ -87,7 +88,7 @@ export default defineConfig(({ mode }) => {
             ),
             'browser-capture-sidecar': resolve(
               import.meta.dirname,
-              '../../packages/browser-capture/src/sidecar.ts'
+              '../../packages/browser-capture-legacy/src/sidecar.ts'
             ),
             'speech-worker': resolve(import.meta.dirname, 'src/main/lib/local-speech-worker.ts')
           },

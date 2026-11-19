@@ -1,0 +1,132 @@
+{
+  "runtime": "v22.23.4",
+  "policy": "Type-violating engine errors must remain failures; historical text is not an assertion contract.",
+  "cases": [
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(null)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "Cannot read properties of null (reading 'split')"
+    },
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(false)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.split is not a function or its return value is not iterable"
+    },
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(true)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.split is not a function or its return value is not iterable"
+    },
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(0)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.split is not a function or its return value is not iterable"
+    },
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(42)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.split is not a function or its return value is not iterable"
+    },
+    {
+      "entry": ".",
+      "call": "parseNetscapeCookieFile(NaN)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.split is not a function or its return value is not iterable"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(null)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "Cannot read properties of null (reading 'trim')"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(false)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "line.trim is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(true)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "line.trim is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(0)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "line.trim is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(42)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "line.trim is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "parseSidecarEvent(NaN)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "line.trim is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(null)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "Cannot read properties of null (reading 'toLowerCase')"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(false)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.toLowerCase is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(true)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.toLowerCase is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(0)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.toLowerCase is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(42)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.toLowerCase is not a function"
+    },
+    {
+      "entry": ".",
+      "call": "isDrmProtectedMessage(NaN)",
+      "engine": true,
+      "class": "TypeError",
+      "message": "text.toLowerCase is not a function"
+    }
+  ]
+}

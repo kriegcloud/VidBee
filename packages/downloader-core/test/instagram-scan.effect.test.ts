@@ -93,6 +93,8 @@ const processLayer = Layer.effect(
           _tag: "Acquired",
           run: {
             pid: 123,
+            writeStdin: (_bytes: Uint8Array) => Effect.void,
+            observeClose: Effect.void,
             signalChild: (signal) =>
               Effect.sync(() => {
                 requests.push(`child:${signal}`);

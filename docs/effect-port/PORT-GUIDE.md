@@ -514,3 +514,39 @@ versus explicit undefined logger metadata through every host forwarding function
 is observable even when ordinary callbacks ignore the extra argument. Phase 9.2 still owns the
 documented native HTTP/SQL/entropy and detached-failure differences. The application retains
 compatibility host layers meanwhile.
+
+### Browser capture: callbacks, opening attempts and transport ownership
+
+Keep compatibility exports as plain positional wrappers when their original signatures were
+positional. Forward optional arguments explicitly into a native dual helper. Directly reexporting
+a dual changes omitted-argument calls into data-last functions; test the facade with omitted and
+explicitly undefined arguments as well as both valid native forms. Mutual type assignability is
+not sufficient to prove mutable public fields: include actual writes against the old public
+results and inputs in the compile fixture.
+
+Publish an opening-attempt record before starting an immediate child fiber. Clear it only when
+that same attempt finishes. A synchronously failing injected host otherwise lets the child clear
+the slot before its parent assigns the completed fiber, poisoning retries. Preserve the original
+Promise boundaries by name when public snapshots or callback reentry observe them: an async
+return, an awaited rejected operation and a finally-returned Promise can each affect the visible
+state. Record Promise settlement and per-microtask snapshots in a frozen old/new stateful oracle;
+a final-state assertion alone misses these changes.
+
+Raw process acquisition and observation registration are separate capabilities when a public
+spawn callback historically precedes listener attachment. Explicit on-demand activation preserves
+that callback window. Host invocation projection may preserve omitted Node options, string stdio
+and string stdin writes without changing the native byte-stream contract or duplicating capture
+orchestration. Test the default shared-process path separately so capture policy cannot change
+other consumers.
+
+A native HTTP response owns an attempt scope from acquisition through release. Install cleanup
+before an interruptible acquisition, and release rejected status/MIME responses even when no body
+copy starts. Body and callback failures must close the same scope. Compatibility release can be a
+no-op where the old host leaves body ownership to its transport. Preserve raw callback errors by
+identity; unwrap only recognized tagged failures, never arbitrary objects carrying similarly named
+metadata fields.
+
+The installed Effect timer declarations expose no public unref/keepAlive option. If a design
+requires an unreferenced native timer while strict rules prohibit global timers, record the API
+and diagnostic evidence and leave that branch explicitly unavailable. Do not hide a host timer
+behind an alias or mark liveness parity proven from compatibility-only tests.
