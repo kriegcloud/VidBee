@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { readFileSync } from 'node:fs'
 import * as T from '@vidbee/transcription-legacy'
 import * as Asr from '@vidbee/transcription-legacy/asr'

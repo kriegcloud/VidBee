@@ -442,15 +442,15 @@ exports[`sidecar discovery gates media existence, skips chat/empty/directory and
 [
   {
     "format": "vtt",
-    "language": "en",
-    "path": "movie.en.vtt",
+    "language": "ai-zh",
+    "path": "movie.ai-zh.vtt",
     "text": "00:00.0 --> 00:01.0
 hello",
   },
   {
     "format": "vtt",
-    "language": "ai-zh",
-    "path": "movie.ai-zh.vtt",
+    "language": "en",
+    "path": "movie.en.vtt",
     "text": "00:00.0 --> 00:01.0
 hello",
   },

@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createGithubMirrorFetch, fetchFirstOk, githubDownloadUrls, isDownloadMirror, isGithubDownloadUrl, modelDownloadUrls, modelScopeFileUrl, parseDownloadMirror, preferChinaMirrors } from '@vidbee/transcription-legacy/download-mirrors'
 

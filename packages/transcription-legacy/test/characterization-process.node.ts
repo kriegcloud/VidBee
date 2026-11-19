@@ -1,3 +1,5 @@
+import { readFixturePid, requireFixturePid, killFixtureProcess } from './fixtures/audit-pid'
+import './fixtures/audit-isolation'
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -9,7 +11,7 @@ import { extractEmbeddedCaptionTracks, extractMonoWav, readPcmWav } from '@vidbe
 import { executable, NODE, workerArgs } from './fixtures/process-runtime'
 
 function temporary(t: {after:(fn:()=>void)=>void}) {const dir=mkdtempSync(join(tmpdir(),'vidbee-process-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));return dir}
-const waitFor = async (condition:()=>boolean):Promise<void> => {for(let i=0;i<1000;i++){if(condition())return;await delay(5)}throw new Error('fixture condition not reached')}
+const waitFor = async (condition:()=>boolean):Promise<void> => {for(const deadline=Date.now()+25000;Date.now()<deadline;){if(condition())return;await delay(5)}throw new Error('fixture condition not reached')}
 function compare(name:string,value:unknown,root:string) {
   const normalized=JSON.parse(JSON.stringify(value).split(root).join('<ROOT>'))
   const file=new URL(`./fixtures/process-${name}.json`,import.meta.url)
@@ -42,16 +44,16 @@ test('caption extraction filters and orders tracks, keeps bytes and skips failed
 })
 test('caption timeout sends TERM and settles before a TERM-ignoring child closes', {timeout:30000},async(t)=>{
   const dir=temporary(t);const pidFile=join(dir,'pid');const terminated=join(dir,'term');const source=join(dir,'source');writeFileSync(source,'media')
-  executable(dir,'ffprobe',`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(terminated)},'term'));fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid));setInterval(()=>{},1000)`)
+  executable(dir,'ffprobe',`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(terminated)},'term'));fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid)+'\\n');setInterval(()=>{},1000)`)
   const ffmpeg=executable(dir,'ffmpeg','')
   t.mock.timers.enable({apis:['setTimeout']})
   const pending=extractEmbeddedCaptionTracks({ffmpegPath:ffmpeg,filePath:source})
-  await waitFor(()=>existsSync(pidFile));const pid=Number(readFileSync(pidFile,'utf8'));t.after(()=>{try{process.kill(pid,'SIGKILL')}catch{}})
+  await waitFor(()=>readFixturePid(pidFile)!==null);const pid=requireFixturePid(pidFile);t.after(()=>killFixtureProcess(pid,pidFile))
   t.mock.timers.tick(8000);assert.deepEqual(await pending,[])
-  await waitFor(()=>existsSync(terminated));assert.equal(existsSync(terminated),true);assert.doesNotThrow(()=>process.kill(pid,0));process.kill(pid,'SIGKILL')
+  await waitFor(()=>existsSync(terminated));assert.equal(existsSync(terminated),true);assert.doesNotThrow(()=>process.kill(pid,0));killFixtureProcess(pid,pidFile)
 })
 for(const input of ['garbage\n{"type":"probe"}\n','{"type":"probe"}', '{"type":"probe","modelsDir":"/fixture/models"}\n'] as const) test(`exported worker entry input framing ${JSON.stringify(input)}`,{timeout:30000},async(t)=>{
-  const child=spawn(NODE,workerArgs,{env:{...process.env,VIDBEE_TRANSCRIPTION_BACKEND:'fake'},stdio:['pipe','pipe','pipe']});t.after(()=>child.kill('SIGKILL'))
+  const child=spawn(NODE,workerArgs,{env:{...process.env,VIDBEE_TRANSCRIPTION_BACKEND:'fake'},detached:process.platform!=='win32',stdio:['pipe','pipe','pipe']});t.after(()=>child.kill('SIGKILL'))
   let stdout='';let stderr='';child.stdout.on('data',chunk=>stdout+=chunk);child.stderr.on('data',chunk=>stderr+=chunk)
   if(input.endsWith('\n')){child.stdin.end(input);const code=await new Promise(resolve=>child.once('close',resolve));assert.equal(code,0);assert.equal(stdout,'{"type":"probe-ok"}\n');assert.equal(stderr,'')}
   else{child.stdin.end(input);const code=await new Promise(resolve=>child.once('close',resolve));assert.equal(code,0);assert.equal(stdout,'');assert.equal(stderr,'')}
@@ -64,7 +66,7 @@ test('PCM wav retains float32 nonfinite values, channel averaging and unsupporte
 })
 for(const cancelled of [false,true])test(`exported fake worker start full wire, checkpoint/result file and cooperative cancel=${cancelled}`,{timeout:30000},async(t)=>{
   const dir=temporary(t);const source=join(dir,'source');writeFileSync(source,'media');const ffmpeg=executable(dir,'ffmpeg',"require('node:fs').writeFileSync(process.argv.at(-1),'wave')")
-  const child=spawn(NODE,workerArgs,{env:{...process.env,VIDBEE_TRANSCRIPTION_BACKEND:'fake'},stdio:['pipe','pipe','pipe']});t.after(()=>child.kill('SIGKILL'));let stdout='';let stderr='';child.stdout.on('data',chunk=>stdout+=chunk);child.stderr.on('data',chunk=>stderr+=chunk)
+  const child=spawn(NODE,workerArgs,{env:{...process.env,VIDBEE_TRANSCRIPTION_BACKEND:'fake'},detached:process.platform!=='win32',stdio:['pipe','pipe','pipe']});t.after(()=>child.kill('SIGKILL'));let stdout='';let stderr='';child.stdout.on('data',chunk=>stdout+=chunk);child.stderr.on('data',chunk=>stderr+=chunk)
   const request={type:'start',taskId:'task',attemptId:'attempt',sourceFilePath:source,ffmpegPath:ffmpeg,workDir:dir,modelsDir:dir,skipVad:true,autoSkipAllowed:false,backend:'fake',fingerprint:'fixture-fingerprint',modelVersion:'fixture-model',asrTier:'minimal',provider:'cpu',speakerCount:1}
   child.stdin.end(`${cancelled?'{"type":"cancel"}\n':''}${JSON.stringify(request)}\n`);const code=await new Promise(resolve=>child.once('close',resolve));assert.equal(code,0);assert.equal(stderr,'');const resultFile=join(dir,'pipeline-result.json')
   compare(`worker-start-${cancelled}`,{messages:stdout.trim().split('\n').map(line=>JSON.parse(line)),result:existsSync(resultFile)?JSON.parse(readFileSync(resultFile,'utf8')):null,audio:existsSync(join(dir,'audio-16k-mono.wav')),manifest:existsSync(join(dir,'chunks.json'))},dir)

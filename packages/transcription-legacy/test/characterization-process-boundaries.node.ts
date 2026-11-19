@@ -1,3 +1,6 @@
+import './fixtures/audit-isolation'
+import childProcess from 'node:child_process'
+import { syncBuiltinESMExports } from 'node:module'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -8,7 +11,7 @@ import type { PipelineResult } from '@vidbee/transcription-legacy'
 import type { ExecutorFinishEvent } from '@vidbee/task-queue-legacy'
 import { executable, NODE } from './fixtures/process-runtime'
 function temporary(t:{after:(fn:()=>void)=>void}){const root=mkdtempSync(join(tmpdir(),'vidbee-boundaries-'));t.after(()=>rmSync(root,{recursive:true,force:true}));return root}
-function compare(name:string,value:unknown,root:string){const text=JSON.stringify(value,(key,item)=>['pid','pidStartedAt','spawnedAt','closedAt','ticks','startedAt'].includes(key)?1000:key==='transcriptId'?'ID':typeof item==='number'&&!Number.isFinite(item)?{number:String(item)}:item);const normalized=JSON.parse(text.split(root).join('<ROOT>').split(NODE).join('<NODE>'));const file=new URL(`./fixtures/process-boundary-${name}.json`,import.meta.url);if(process.env.VIDBEE_RECORD_CHARACTERIZATION==='1')writeFileSync(file,`${JSON.stringify(normalized,null,2)}\n`);assert.deepEqual(normalized,JSON.parse(readFileSync(file,'utf8')))}
+function compare(name:string,value:unknown,root:string){const text=JSON.stringify(value,(key,item)=>['pid','pidStartedAt','spawnedAt','closedAt','ticks','startedAt'].includes(key)?1000:key==='transcriptId'?'ID':typeof item==='number'&&!Number.isFinite(item)?{number:String(item)}:item);const normalized=JSON.parse(text.split(root).join('<ROOT>').split(NODE).join('<NODE>').split(`runtime.version=${process.versions.node}`).join('runtime.version=<NODE_VERSION>'));const file=new URL(`./fixtures/process-boundary-${name}.json`,import.meta.url);if(process.env.VIDBEE_RECORD_CHARACTERIZATION==='1')writeFileSync(file,`${JSON.stringify(normalized,null,2)}\n`);assert.deepEqual(normalized,JSON.parse(readFileSync(file,'utf8')))}
 function chunk(name:string,data:Buffer,size=data.length){const header=Buffer.alloc(8);header.write(name);header.writeUInt32LE(size,4);return Buffer.concat([header,data,data.length%2?Buffer.alloc(1):Buffer.alloc(0)])}
 function format(bits:number,channels=1,sampleRate=16000,code=1){const data=Buffer.alloc(16);data.writeUInt16LE(code);data.writeUInt16LE(channels,2);data.writeUInt32LE(sampleRate,4);data.writeUInt16LE(bits,14);return chunk('fmt ',data)}
 function wav(parts:Buffer[]){const header=Buffer.alloc(12);header.write('RIFF');header.write('WAVE',8);return Buffer.concat([header,...parts])}
@@ -75,14 +78,15 @@ for(const mode of workerCases)test(`worker external-data consumption and result 
     'malformed-log':`send({type:'log',line:{unexpected:true}});send({type:'result',result:good,durationMs:1})`,
     'malformed-error':`send({type:'error',message:{unexpected:true}})`,
     'unknown-and-scalars':`process.stdout.write('null\\nfalse\\n42\\n"string"\\n{"type":"future-kind","payload":42}\\n{broken\\n');send({type:'result',result:good,durationMs:1})`,
-    'split-utf8':`const bytes=Buffer.from(JSON.stringify({type:'log',stream:'stdout',line:'é漢字😀'})+'\\n');const index=bytes.indexOf(Buffer.from('é'))+1;process.stdout.write(bytes.subarray(0,index));setTimeout(()=>{process.stdout.write(bytes.subarray(index));send({type:'result',result:good,durationMs:1})},20)`,
+    'split-utf8':`const bytes=Buffer.from(JSON.stringify({type:'log',stream:'stdout',line:'é漢字😀'})+'\\n');const index=bytes.indexOf(Buffer.from('é'))+1;process.stdout.write(bytes.subarray(0,index));const timer=setInterval(()=>{if(fs.existsSync(${JSON.stringify(join(root,'utf8-release'))})){clearInterval(timer);process.stdout.write(bytes.subarray(index));send({type:'result',result:good,durationMs:1})}},1)`,
     'late-output':`process.stdout.write([{type:'result',result:good,durationMs:1},{type:'log',stream:'stdout',line:'after-result'},{type:'progress',stage:'recognizing',percent:0.4},{type:'partial',speakerKey:null,startMs:0,endMs:1,text:'late'},{type:'result',result:{...good,extra:'second'},durationMs:2}].map(value=>JSON.stringify(value)+'\\n').join(''))`
   }
+  const reads:string[]=[];if(mode==='split-utf8'){const original=childProcess.spawn;t.mock.method(childProcess,'spawn',(...args:Parameters<typeof childProcess.spawn>)=>{const child=original(...args);child.stdout?.on('data',chunk=>{reads.push(String(chunk));if(reads.length===1)writeFileSync(join(root,'utf8-release'),'release')});return child});syncBuiltinESMExports();t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports()})}
   const worker=executable(root,'worker',`const fs=require('node:fs'),path=require('node:path'),good=${JSON.stringify(good)};const send=m=>process.stdout.write(JSON.stringify(m)+'\\n');let b='';process.stdin.on('data',x=>{b+=x;if(!b.includes('\\n'))return;const m=JSON.parse(b.split('\\n')[0]);process.stdin.removeAllListeners('data');${scripts[mode]};setInterval(()=>{},1000)})`)
   let done:(event:ExecutorFinishEvent)=>void=()=>{};const finished=new Promise<ExecutorFinishEvent>(resolve=>done=resolve);const executor=new TranscriptionExecutor({store:new RecordingStore({clock:()=>1000}),workerScript:worker,modelsDir:root,workDir:root,resolveFfmpegPath:()=>'/fixture/ffmpeg',execPath:NODE,forceLayer:'electron',skipProbe:true,backend:'fake',onPartial:event=>capture.push(['partial',event]),onStage:event=>capture.push(['stage',event])})
   const context={taskId:`boundary-${mode}`,attemptId:'attempt',attemptNumber:1,input:buildTranscriptionInput({downloadTaskId:'download',sourceFilePath:source,trigger:'manual'})}
   executor.run(context,{onSpawn:event=>capture.push(['spawn',event]),onProgress:event=>capture.push(['progress',event]),onStd:event=>capture.push(['std',event]),onFinish:event=>{capture.push(['finish',event]);done(event)}})
-  const terminal=await finished;capture.push(['partial-state',transcriptionPartials.getByTask(context.taskId)]);
+  const terminal=await finished;if(mode==='split-utf8'){assert.ok(reads.length>=2);assert.equal(reads[0],'{"type":"log","stream":"stdout","line":"');assert.ok(reads.slice(1).join('').startsWith('é漢字😀'))}capture.push(['partial-state',transcriptionPartials.getByTask(context.taskId)]);
   const invalidResult=mode==='null-file'||mode==='scalar-file';
   const invalidMessage=mode==='unusable-result'||mode==='nonfinite-result'||mode==='malformed-progress'||mode==='malformed-partial'||mode==='malformed-log'||mode==='malformed-error';
   if(invalidResult||invalidMessage){

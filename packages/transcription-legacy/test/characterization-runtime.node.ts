@@ -1,3 +1,5 @@
+import { readFixturePid, requireFixturePid, killFixtureProcess } from './fixtures/audit-pid'
+import './fixtures/audit-isolation'
 import assert from 'node:assert/strict'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -7,7 +9,7 @@ import {
   createFileProbeCache, formatRuntimeLog, isElectronBinary, nodeBinaryName,
   probeCacheKey, probeWorkerProvider, resolveBundledNodePath, resolveWorkerExecPath, resolveWorkerRuntime
 } from '@vidbee/transcription-legacy'
-import { executable, NODE } from './fixtures/process-runtime'
+import { executable, NODE, expected } from './fixtures/process-runtime'
 
 const temporary = (t: { after: (fn: () => void) => void }) => {
   const dir = mkdtempSync(join(tmpdir(), 'vidbee-runtime-'))
@@ -15,7 +17,7 @@ const temporary = (t: { after: (fn: () => void) => void }) => {
   return dir
 }
 test('runtime oracle uses pinned Node and retains formatting and binary-name rules', () => {
-  assert.equal(process.version, 'v22.23.4'); assert.equal(process.execPath, NODE)
+  assert.equal(process.version, `v${expected}`); assert.equal(process.execPath, NODE)
   assert.deepEqual(['linux', 'darwin', 'win32'].map((platform) => nodeBinaryName(platform as NodeJS.Platform)), ['node', 'node', 'node.exe'])
   assert.deepEqual(['Electron', '/x/electron-helper', 'node'].map(isElectronBinary), [true, true, false])
   assert.deepEqual(formatRuntimeLog({execPath:'/fixture/node',version:'22.1',layer:'env',guarded:false},3), ['runtime.path=/fixture/node','runtime.version=22.1','runtime.layer=env','runtime.restarts=3'])
@@ -32,7 +34,7 @@ test('runtime computes all candidate versions before probing, caches each failed
   assert.deepEqual(trace,[['get','env'],['probe','env','env\nbundled\nElectron\n'],'returned',['set','env',false],['get','bundled'],['probe','bundled','env\nbundled\nElectron\n'],'microtask',['set','bundled',false],['get','Electron'],['probe','electron','env\nbundled\nElectron\n'],['set','Electron',false]])
 })
 test('runtime cached false skips nonfinal candidate, never re-probes last, and forced missing layer falls back to electron', {timeout:30000}, async (t) => {
-  const dir = temporary(t); const node = executable(dir,'node',"console.log('v22.23.4')")
+  const dir = temporary(t); const node = executable(dir,'node',`console.log('v${expected}')`)
   const calls: unknown[] = []
   const result = await resolveWorkerRuntime({envPath:node,electronPath:node,lookUpSystem:false,cache:{get:()=>false,set:()=>assert.fail('cache write')},probe:async () => {calls.push('probe');return true}})
   assert.equal(result.layer,'electron');assert.deepEqual(calls,[])
@@ -63,7 +65,7 @@ for(const scenario of ['timeout','max-buffer'] as const)test(`runtime synchronou
     assert.deepEqual(args,['-v']);assert.deepEqual(Object.keys(options).sort(),['encoding','env','timeout']);assert.equal(options.encoding,'utf8');assert.equal(options.timeout,8000);assert.equal(options.env.ELECTRON_RUN_AS_NODE,'1')
     try{return original(file,args,options)}catch(error){assert.ok(error instanceof Error);assert.ok('code' in error);assert.equal(error.code,scenario==='timeout'?'ETIMEDOUT':'ENOBUFS');assert.ok('stdout' in error);assert.equal(typeof error.stdout,'string');const out=error.stdout;if(typeof out==='string'){if(scenario==='timeout')assert.equal(out,'partial-version');else{assert.ok(out.length>1024*1024);assert.equal(out,'v22.'.repeat(Math.ceil(out.length/4)).slice(0,out.length))}}observations.push({code:error.code,capturedOutputVerified:true});throw error}
   });syncBuiltinESMExports();t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports()})
-  const runtime=await resolveWorkerRuntime({envPath:candidate,electronPath:NODE,lookUpSystem:false,bundledPath:join(root,'missing')});assert.deepEqual(runtime,{execPath:NODE,layer:'electron',version:'22.23.4',guarded:true});assert.deepEqual(observations,[{code:scenario==='timeout'?'ETIMEDOUT':'ENOBUFS',capturedOutputVerified:true}])
+  const runtime=await resolveWorkerRuntime({envPath:candidate,electronPath:NODE,lookUpSystem:false,bundledPath:join(root,'missing')});assert.deepEqual(runtime,{execPath:NODE,layer:'electron',version:expected,guarded:true});assert.deepEqual(observations,[{code:scenario==='timeout'?'ETIMEDOUT':'ENOBUFS',capturedOutputVerified:true}])
 })
 
 test('bundled and path-only runtime exports preserve explicit environment, resource and preferred ordering without baseline validation',(t)=>{
@@ -73,21 +75,21 @@ test('bundled and path-only runtime exports preserve explicit environment, resou
   delete process.env.VIDBEE_TRANSCRIPTION_NODE;assert.equal(resolveWorkerExecPath(),bundled);delete process.env.VIDBEE_BUNDLED_NODE;assert.equal(resolveBundledNodePath([resources]),resourceBinary)
 })
 test('provider probe timeout reaps the owned TERM-ignoring process before resolving', {timeout:30000},async(t)=>{
-  const root=temporary(t);const ready=join(root,'ready');const term=join(root,'term');const worker=executable(root,'worker',`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(term)},'term'));fs.writeFileSync(${JSON.stringify(ready)},String(process.pid));setInterval(()=>{},1000)`)
+  const root=temporary(t);const ready=join(root,'ready');const term=join(root,'term');const worker=executable(root,'worker',`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(term)},'term'));fs.writeFileSync(${JSON.stringify(ready)},String(process.pid)+'\\n');setInterval(()=>{},1000)`)
   const {setTimeout:delay}=await import('node:timers/promises');t.mock.timers.enable({apis:['setTimeout']});let settled=false;const pending=probeWorkerProvider({execPath:NODE,workerScript:worker,modelsDir:'/fixture/models',provider:'cuda',timeoutMs:10}).then(result=>{settled=true;return result})
-  for(let index=0;index<2000&&!existsSync(ready);index++)await delay(5);assert.equal(existsSync(ready),true);const pid=Number(readFileSync(ready,'utf8'));t.after(()=>{try{process.kill(pid,'SIGKILL')}catch{}});t.mock.timers.tick(10)
-  for(let index=0;index<2000&&!existsSync(term);index++)await delay(5);assert.equal(existsSync(term),true);assert.equal(settled,false);assert.doesNotThrow(()=>process.kill(pid,0));t.mock.timers.tick(1000)
+  for(const deadline=Date.now()+25000;Date.now()<deadline&&readFixturePid(ready)===null;)await delay(5);assert.equal(existsSync(ready),true);const pid=requireFixturePid(ready);t.after(()=>killFixtureProcess(pid,ready));t.mock.timers.tick(10)
+  for(const deadline=Date.now()+25000;Date.now()<deadline&&!existsSync(term);)await delay(5);assert.equal(existsSync(term),true);assert.equal(settled,false);assert.doesNotThrow(()=>process.kill(pid,0));t.mock.timers.tick(1000)
   assert.deepEqual(await pending,{durationMs:null,error:'provider probe timed out',ok:false,provider:'cuda',stderr:''});assert.throws(()=>process.kill(pid,0))
 })
 test('provider probe missing executable failure resolves its exact public failure', {timeout:30000},async(t)=>{
   const root=temporary(t);assert.deepEqual(await probeWorkerProvider({execPath:join(root,'missing'),workerScript:'/fixture/worker',modelsDir:'/fixture/models',provider:'cpu',timeoutMs:1000}),{durationMs:null,error:'provider probe process failed',ok:false,provider:'cpu',stderr:''})
 })
 test('provider probe clips stderr to 12000 characters and waits its trailing 50ms flush before reaping', {timeout:30000},async(t)=>{
-  const root=temporary(t);const ready=join(root,'ready');const later=join(root,'later');const marker='native-tail';const worker=executable(root,'worker',`const fs=require('node:fs');process.stdin.once('data',()=>{process.stderr.write('x'.repeat(13000));process.stdout.write(JSON.stringify({type:'probe-ok',durationMs:42})+'\\n');fs.writeFileSync(${JSON.stringify(ready)},String(process.pid));const timer=setInterval(()=>{if(fs.existsSync(${JSON.stringify(later)})){clearInterval(timer);process.stderr.write(${JSON.stringify(marker)})}},1)})`)
+  const root=temporary(t);const ready=join(root,'ready');const later=join(root,'later');const marker='native-tail';const worker=executable(root,'worker',`const fs=require('node:fs');process.stdin.once('data',()=>{process.stderr.write('x'.repeat(13000));process.stdout.write(JSON.stringify({type:'probe-ok',durationMs:42})+'\\n');fs.writeFileSync(${JSON.stringify(ready)},String(process.pid)+'\\n');const timer=setInterval(()=>{if(fs.existsSync(${JSON.stringify(later)})){clearInterval(timer);process.stderr.write(${JSON.stringify(marker)})}},1)})`)
   const childProcess=await import('node:child_process');const {syncBuiltinESMExports}=await import('node:module');const originalSpawn=childProcess.default.spawn;let stdoutSeen:()=>void=()=>{};let stderrSeen:()=>void=()=>{};const stdoutReady=new Promise<void>(resolve=>stdoutSeen=resolve);const stderrReady=new Promise<void>(resolve=>stderrSeen=resolve)
   t.mock.method(childProcess.default,'spawn',(...args:Parameters<typeof childProcess.default.spawn>)=>{const child=originalSpawn(...args);child.stdout?.on('data',(chunk:Buffer)=>{if(chunk.toString().includes('probe-ok'))stdoutSeen()});let tail='';child.stderr?.on('data',(chunk:Buffer)=>{tail+=chunk.toString();if(tail.includes(marker))stderrSeen()});return child});syncBuiltinESMExports();t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports()})
   const {setTimeout:delay}=await import('node:timers/promises');t.mock.timers.enable({apis:['setTimeout']});let settled=false;const pending=probeWorkerProvider({execPath:NODE,workerScript:worker,modelsDir:'/fixture/models',provider:'cpu',timeoutMs:500}).then(result=>{settled=true;return result})
-  for(let index=0;index<2000&&!existsSync(ready);index++)await delay(5);assert.equal(existsSync(ready),true);const pid=Number(readFileSync(ready,'utf8'));t.after(()=>{try{process.kill(pid,'SIGKILL')}catch{}})
+  for(const deadline=Date.now()+25000;Date.now()<deadline&&readFixturePid(ready)===null;)await delay(5);assert.equal(existsSync(ready),true);const pid=requireFixturePid(ready);t.after(()=>killFixtureProcess(pid,ready))
   await stdoutReady;assert.equal(settled,false);writeFileSync(later,'release');await stderrReady;t.mock.timers.tick(49);assert.equal(settled,false);assert.doesNotThrow(()=>process.kill(pid,0));t.mock.timers.tick(1)
   assert.deepEqual(await pending,{durationMs:42,error:null,ok:true,provider:'cpu',stderr:'x'.repeat(12000-marker.length)+marker});assert.throws(()=>process.kill(pid,0))
 })

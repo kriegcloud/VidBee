@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { expect, it } from 'vitest'
 import * as T from '@vidbee/transcription-legacy'
 const segment = (id: string, startMs = 100, endMs = 200): T.TranscriptSegment => ({ id, startMs, endMs, speakerId: 'speaker', text: 'hello', words: [{ text: 'hello', startMs, endMs }], confidence: 0.8, sortIndex: 0 })

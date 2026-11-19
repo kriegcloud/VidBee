@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
@@ -8,7 +9,7 @@ const roots:string[]=[]
 const root=()=>{const dir=mkdtempSync(join(tmpdir(),'transcription-file-boundary-'));roots.push(dir);return dir}
 const seed={language:null,modelVersion:'v',asrTier:null,speakers:[],segments:[{startMs:0,endMs:1,text:'hello',speakerKey:null,confidence:null}]}
 afterEach(()=>{for(const dir of roots.splice(0))rmSync(dir,{recursive:true,force:true})})
-it('unreadable sidecars are skipped and denied manifest/seed reads recover to null', {timeout:30000},()=>{
+it.skipIf(process.getuid?.()===0)('unreadable sidecars are skipped and denied manifest/seed reads recover to null (root bypasses mode bits)', {timeout:30000},()=>{
   const dir=root();const media=join(dir,'movie.mp4');writeFileSync(media,'');const sidecar=join(dir,'movie.en.vtt');writeFileSync(sidecar,'00:00.0 --> 00:01.0\nhello');const manifest=ensureChunkManifest({workDir:dir,taskId:'t',fingerprint:'f',modelVersion:'v'}).path;const seedPath=join(dir,'seed.json');writePipelineSeed(seedPath,seed)
   for(const path of [sidecar,manifest,seedPath])chmodSync(path,0)
   try {expect(()=>readFileSync(sidecar)).toThrow();expect(findSidecarCaptionTracks(media)).toEqual([]);expect(loadChunkManifest(manifest)).toBeNull();expect(loadPipelineSeed(seedPath)).toBeNull()}

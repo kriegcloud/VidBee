@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -41,9 +42,10 @@ describe('pre-port cloud runner paid-result persistence',()=>{
   for(const status of [409,500]){
    const f=fixture();const error=Object.assign(new Error('reservation'),{code:'AI_TRANSCRIPTION_FAILED',status});const ids:string[]=[]
    f.input.transcribe=async(_bytes,id)=>{ids.push(id);if(ids.length===1)throw error;return {text:'retry',language:null,requestId:'fixed',modelId:'model',audioSeconds:0.1,credits:1}}
-   if(status===409){const run=await runCloudTranscription(f.input);expect(run.result.segments[0]?.text).toBe('retry');expect(ids.length).toBe(2);expect(ids[0]).not.toBe(ids[1])}
-   else{await expect(runCloudTranscription(f.input)).rejects.toBe(error);const saved=JSON.parse(readFileSync(f.path,'utf8'));expect(saved.clips[0].requestId).not.toBe(ids[0]);expect(saved.clips[0].result).toBeUndefined()}
+   if(status===409){const run=await runCloudTranscription(f.input);expect(run.result.segments[0]?.text).toBe('retry');expect(ids.length).toBe(2);expect(ids[0]).not.toBe(ids[1]);expect(JSON.parse(readFileSync(f.path,'utf8')).clips[0].requestId).toBe(ids[1])}
+   else{await expect(runCloudTranscription(f.input)).rejects.toBe(error);const saved=JSON.parse(readFileSync(f.path,'utf8'));expect(saved.clips[0].requestId).toMatch(/^[a-f0-9-]{36}$/);expect(saved.clips[0].requestId).not.toBe(ids[0]);expect(saved.clips[0].result).toBeUndefined()}
   }
+  const capped=fixture();const cappedError=Object.assign(new Error('reservation cap'),{code:'AI_TRANSCRIPTION_FAILED',status:409});const cappedIds:string[]=[];capped.input.transcribe=async(_bytes,id)=>{cappedIds.push(id);expect(JSON.parse(readFileSync(capped.path,'utf8')).clips[0].requestId).toBe(id);throw cappedError};await expect(runCloudTranscription(capped.input)).rejects.toBe(cappedError);expect(cappedIds).toHaveLength(2);expect(cappedIds[0]).not.toBe(cappedIds[1]);const rotated=JSON.parse(readFileSync(capped.path,'utf8')).clips[0].requestId;expect(rotated).toMatch(/^[a-f0-9-]{36}$/);expect(cappedIds).not.toContain(rotated)
   const f=fixture();const error=Object.assign(new Error('ambiguous'),{status:502});let id='';f.input.transcribe=async(_bytes,request)=>{id=request;throw error};await expect(runCloudTranscription(f.input)).rejects.toBe(error);expect(JSON.parse(readFileSync(f.path,'utf8')).clips[0]).toEqual({start:0,end:1600,requestId:id})
  },30000)
  it('pins account mismatch, checkpoint mismatch and syntax failures as rejected errors',async()=>{

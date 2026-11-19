@@ -44,3 +44,13 @@ fs.writeSync = function(fd, buffer, offset, length) {
   return Number(process.env.VIDBEE_WRITE_MODE)
 }
 require('node:module').syncBuiltinESMExports()
+if (process.env.VIDBEE_WRITE_MODE === 'backpressure') {
+  const on = process.stdin.on
+  process.stdin.on = function(event, listener) {
+    if (event !== 'data') return on.call(this, event, listener)
+    return on.call(this, event, function(chunk) {
+      fs.appendFileSync(process.env.VIDBEE_ADDON_TRACE + '.parsed', String(chunk).split('\n').length - 1 + '\n')
+      return listener.call(this, chunk)
+    })
+  }
+}

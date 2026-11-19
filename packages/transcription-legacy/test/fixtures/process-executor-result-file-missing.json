@@ -26,7 +26,7 @@
       "taskId": "task-process",
       "attemptId": "attempt",
       "stream": "stdout",
-      "line": "runtime.version=22.23.4"
+      "line": "runtime.version=<NODE_VERSION>"
     }
   ],
   [
@@ -69,7 +69,7 @@
         "exitCode": null
       },
       "closedAt": 1000,
-      "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=<NODE_VERSION>\nruntime.layer=electron\nruntime.restarts=0\n",
       "stderrTail": "worker result missing: <ROOT>/vidbee-transcript/4150d3364d04febc167e92f9/missing.json"
     }
   ],
