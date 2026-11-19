@@ -4,6 +4,7 @@ import * as Layer from "effect/Layer";
 import * as MutableHashMap from "effect/MutableHashMap";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
@@ -114,31 +115,32 @@ export const layer = Layer.sync(TaskStore, () => {
     ),
     list: Effect.fn("TaskStore.list")((options) =>
       Effect.sync(() => {
-        const query = options?.query === undefined ? undefined : Str.toLocaleLowerCase()(Str.trim(options.query));
+        const query = options?.query == null ? undefined : Str.toLocaleLowerCase()(Str.trim(options.query));
         const kind = options?.kind;
-        const cacheable = (query === undefined || query === "") && kind === undefined;
+        const cacheable = !P.isTruthy(query) && !P.isTruthy(kind);
         const encodedKey = listingKey([options?.status, options?.groupKey, options?.parentId]);
         // Schema's Unknown JSON encoder accepts this array of strings and undefined.
         const key = Result.isSuccess(encodedKey) ? encodedKey.success : "";
         let listing = cacheable ? Option.getOrUndefined(MutableHashMap.get(listings, key)) : undefined;
         if (listing === undefined) {
           const candidates =
-            options?.parentId !== undefined && options.parentId !== ""
+            P.isTruthy(options?.parentId) && options?.parentId !== undefined
               ? Option.getOrElse(MutableHashMap.get(parents, options.parentId), () => [])
-              : options?.status !== undefined
+              : P.isTruthy(options?.status) && options?.status !== undefined
                 ? Option.getOrElse(MutableHashMap.get(statuses, options.status), () => [])
-                : options?.groupKey !== undefined && options.groupKey !== ""
+                : P.isTruthy(options?.groupKey) && options?.groupKey !== undefined
                   ? Option.getOrElse(MutableHashMap.get(groups, options.groupKey), () => [])
                   : A.map(A.fromIterable(tasks), ([id]) => id);
           const all = A.filterMap(A.fromIterable(candidates), (id) => {
             const task = get(id);
             if (task === undefined) return Result.failVoid;
-            if (options?.status !== undefined && task.status !== options.status) return Result.failVoid;
-            if (options?.groupKey !== undefined && options.groupKey !== "" && task.groupKey !== options.groupKey)
+            if (P.isTruthy(options?.status) && options?.status !== undefined && task.status !== options.status)
               return Result.failVoid;
-            if (options?.parentId !== undefined && options.parentId !== "" && task.parentId !== options.parentId)
+            if (P.isTruthy(options?.groupKey) && options?.groupKey !== undefined && task.groupKey !== options.groupKey)
               return Result.failVoid;
-            if (kind !== undefined && task.kind !== kind) return Result.failVoid;
+            if (P.isTruthy(options?.parentId) && options?.parentId !== undefined && task.parentId !== options.parentId)
+              return Result.failVoid;
+            if (P.isTruthy(kind) && task.kind !== kind) return Result.failVoid;
             if (
               query !== undefined &&
               query !== "" &&
@@ -160,7 +162,7 @@ export const layer = Layer.sync(TaskStore, () => {
           }
         }
         const start =
-          options?.cursor != null && options.cursor !== ""
+          P.isTruthy(options?.cursor) && options?.cursor != null
             ? Option.getOrElse(MutableHashMap.get(listing.positions, options.cursor), () => -1) + 1
             : 0;
         const limit = options?.limit ?? 100;

@@ -1,34 +1,37 @@
+import { DrizzleQueryError } from "drizzle-orm/errors";
+import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as HashSet from "effect/HashSet";
 import * as ManagedRuntime from "effect/ManagedRuntime";
-import * as MutableHashMap from "effect/MutableHashMap";
 import * as Option from "effect/Option";
 import * as P from "effect/Predicate";
 import * as SqlError from "effect/sql/SqlError";
 import { layerFromHandle } from "../BetterSqlite.driver.js";
 import type BetterSqlite3 from "better-sqlite3";
 
-const runtimes = MutableHashMap.empty<
-  BetterSqlite3.Database,
-  ReturnType<
-    typeof ManagedRuntime.make<
-      import("effect/sql/SqlClient").SqlClient | import("@effect/sql-sqlite-node/SqliteClient").SqliteClient,
-      never
-    >
+type HandleRuntime = ReturnType<
+  typeof ManagedRuntime.make<
+    import("effect/sql/SqlClient").SqlClient | import("@effect/sql-sqlite-node/SqliteClient").SqliteClient,
+    never
   >
->();
+>;
+const runtimes: Array<{ readonly handle: BetterSqlite3.Database; readonly runtime: HandleRuntime }> = [];
 export const runtimeForHandle = (handle: BetterSqlite3.Database) => {
-  const cached = MutableHashMap.get(runtimes, handle);
-  if (Option.isSome(cached)) return cached.value;
+  const cached = Option.getOrUndefined(A.findFirst(runtimes, (entry) => entry.handle === handle));
+  if (cached !== undefined) return cached.runtime;
   const runtime = ManagedRuntime.make(layerFromHandle(handle));
-  MutableHashMap.set(runtimes, handle, runtime);
+  runtimes.push({ handle, runtime });
   return runtime;
 };
 export const releaseHandle = (handle: BetterSqlite3.Database): void => {
-  const cached = MutableHashMap.get(runtimes, handle);
-  if (Option.isSome(cached)) {
-    cached.value.runSync(cached.value.disposeEffect);
-    MutableHashMap.remove(runtimes, handle);
+  const index = Option.getOrElse(
+    A.findFirstIndex(runtimes, (entry) => entry.handle === handle),
+    () => -1
+  );
+  const cached = runtimes[index];
+  if (cached !== undefined) {
+    cached.runtime.runSync(cached.runtime.disposeEffect);
+    runtimes.splice(index, 1);
   }
 };
 export const rethrowDriverError = (cause: Cause.Cause<unknown>): never => {
@@ -48,4 +51,9 @@ export const rethrowDriverError = (cause: Cause.Cause<unknown>): never => {
     } else if (P.hasProperty(current, "cause")) pending.push(current.cause);
   }
   throw Cause.squash(cause);
+};
+
+export const rethrowQueryError = (error: unknown): never => {
+  if (error instanceof DrizzleQueryError && error.cause instanceof Error) throw error.cause;
+  throw error;
 };

@@ -1,12 +1,15 @@
 import * as A from "effect/Array";
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as MutableHashMap from "effect/MutableHashMap";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
 import * as R from "effect/Record";
 import * as Semaphore from "effect/Semaphore";
 import { LegacyTiming } from "../LegacyTiming.service.js";
+import { RegistryInspection } from "../RegistryInspection.service.js";
 import { SourceAdmission } from "../SourceAdmission.service.js";
 import { InvalidConcurrency } from "../TaskQueue.errors.js";
 import { TaskQueueHooks } from "../TaskQueue.service.js";
@@ -27,6 +30,7 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
   const admission = yield* SourceAdmission;
   const timing = yield* LegacyTiming;
   const scope = yield* Effect.scope;
+  const owner = yield* Effect.context<never>();
   const mutex = yield* Semaphore.make(1);
   const ready = new MinHeap<{ taskId: string; priority: number; seq: number }>((a, b) =>
     a.priority === b.priority ? a.seq - b.seq : a.priority - b.priority
@@ -43,6 +47,16 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
   const groups = MutableHashMap.empty<string, number>();
   const caps = MutableHashMap.empty<string, number | null>();
   const leases = MutableHashMap.empty<string, Release>();
+  const inspection = yield* Effect.serviceOption(RegistryInspection);
+  if (Option.isSome(inspection))
+    inspection.value.register("scheduler", () => ({
+      running: MutableHashSet.size(running),
+      dispatching: MutableHashSet.size(dispatching),
+      reservations: MutableHashMap.size(reservations),
+      leases: MutableHashMap.size(leases),
+      groups: MutableHashMap.size(groups),
+      ready: ready.size(),
+    }));
   let seq = 0;
   let max = options.maxConcurrency;
   let downloadMax: number | null = null;
@@ -59,13 +73,12 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
     if (Option.isSome(release)) yield* release.value;
   });
   const lock = Effect.fnUntraced(function* <A, E, R>(body: Effect.Effect<A, E, R>) {
-    yield* mutex.take(1);
     return yield* Effect.gen(function* () {
       yield* timing.turn("scheduler.lock.acquire");
       const result = yield* body;
       yield* timing.turn("scheduler.lock.body");
       return result;
-    }).pipe(Effect.ensuring(mutex.release(1)));
+    }).pipe(mutex.withPermits(1));
   });
   const pop = Effect.fnUntraced(function* () {
     const skipped: Array<{ taskId: string; priority: number; seq: number }> = [];
@@ -103,42 +116,77 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
     for (const entry of skipped) ready.push(entry);
     return chosen;
   });
-  const dispatch = Effect.fnUntraced(function* () {
-    const ids: string[] = [];
+  const rollback = Effect.fnUntraced(function* (id: string) {
+    MutableHashSet.remove(dispatching, id);
     yield* lock(
       Effect.gen(function* () {
-        while (MutableHashSet.size(running) < max && ready.size() > 0) {
-          const candidate = yield* pop();
-          if (candidate === undefined) break;
-          const task = yield* store.get(candidate.taskId);
-          if (task === undefined) continue;
-          MutableHashSet.add(running, candidate.taskId);
-          MutableHashMap.set(reservations, candidate.taskId, ++reservationSeq);
-          MutableHashSet.add(dispatching, candidate.taskId);
-          inc(task.groupKey);
-          ids.push(candidate.taskId);
+        yield* releaseAdmission(id);
+        if (MutableHashSet.has(running, id)) {
+          MutableHashSet.remove(running, id);
+          MutableHashMap.remove(reservations, id);
+          const task = yield* store.get(id);
+          if (task !== undefined && P.isTruthy(task.groupKey)) dec(task.groupKey);
         }
       })
     );
-    for (const id of ids) {
-      const ok = yield* options
-        .dispatch(id)
-        .pipe(Effect.catchCause((cause) => Effect.logError("task_queue_dispatch_threw", cause).pipe(Effect.as(false))));
-      yield* timing.turn("scheduler.dispatch.callback");
-      MutableHashSet.remove(dispatching, id);
-      if (!ok)
+  });
+  const dispatch = Effect.fnUntraced(function* () {
+    const ids: string[] = [];
+    const undispatched = new MinHeap<{ taskId: string; priority: number; seq: number }>((a, b) => a.seq - b.seq);
+    yield* Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
         yield* lock(
           Effect.gen(function* () {
-            yield* releaseAdmission(id);
-            if (MutableHashSet.has(running, id)) {
-              MutableHashSet.remove(running, id);
-              MutableHashMap.remove(reservations, id);
-              const task = yield* store.get(id);
-              if (task !== undefined && task.groupKey !== "") dec(task.groupKey);
+            while (MutableHashSet.size(running) < max && ready.size() > 0) {
+              const candidate = yield* pop();
+              if (candidate === undefined) break;
+              const task = yield* store.get(candidate.taskId);
+              if (task === undefined) {
+                yield* releaseAdmission(candidate.taskId);
+                continue;
+              }
+              MutableHashSet.add(running, candidate.taskId);
+              MutableHashMap.set(reservations, candidate.taskId, ++reservationSeq);
+              MutableHashSet.add(dispatching, candidate.taskId);
+              inc(task.groupKey);
+              ids.push(candidate.taskId);
+              undispatched.push(candidate);
             }
           })
         );
-    }
+        for (const id of ids) {
+          const ok = yield* restore(
+            Effect.suspend(() => {
+              undispatched.remove((entry) => entry.taskId === id);
+              return options.dispatch(id);
+            }).pipe(
+              Effect.catchCause((cause) => Effect.logError("task_queue_dispatch_threw", cause).pipe(Effect.as(false))),
+              Effect.onExit((exit) =>
+                Effect.sync(() => {
+                  // Acceptance transfers the reservation before any later timing/adoption turn.
+                  if (Exit.isSuccess(exit) && exit.value) MutableHashSet.remove(dispatching, id);
+                })
+              ),
+              Effect.tap(() => timing.turn("scheduler.dispatch.callback"))
+            )
+          );
+          if (ok) MutableHashSet.remove(dispatching, id);
+          else yield* rollback(id);
+        }
+      }).pipe(
+        Effect.ensuring(
+          Effect.gen(function* () {
+            for (const id of ids) if (MutableHashSet.has(dispatching, id)) yield* rollback(id);
+            if (undispatched.size() > 0)
+              yield* lock(
+                Effect.sync(() => {
+                  for (const entry of undispatched.toArray()) ready.push(entry);
+                })
+              );
+          })
+        )
+      )
+    );
   });
   const ensureEnqueued = Effect.fnUntraced(function* (id: string, priority: number) {
     yield* lock(
@@ -151,8 +199,8 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
     yield* timing.turn("scheduler.enqueue.dispatch");
   });
   const detach = (effect: Effect.Effect<void>) =>
-    effect.pipe(Effect.forkIn(scope, { startImmediately: true }), Effect.asVoid);
-  yield* admission.subscribe(detach(dispatch()));
+    effect.pipe(Effect.provideContext(owner), Effect.forkIn(scope, { startImmediately: true }), Effect.asVoid);
+  yield* Effect.acquireRelease(admission.subscribe(detach(dispatch())), (off) => Effect.sync(off));
   return Scheduler.of({
     enqueue: ensureEnqueued,
     ensureEnqueued,
@@ -171,7 +219,7 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
           MutableHashSet.remove(running, id);
           MutableHashMap.remove(reservations, id);
           const task = yield* store.get(id);
-          if (task !== undefined && task.groupKey !== "") dec(task.groupKey);
+          if (task !== undefined && P.isTruthy(task.groupKey)) dec(task.groupKey);
         })
       );
       yield* dispatch();
@@ -180,7 +228,9 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
       yield* lock(
         Effect.gen(function* () {
           for (const id of runningIds()) {
-            if (MutableHashSet.has(dispatching, id) || isLive(id)) continue;
+            if (MutableHashSet.has(dispatching, id)) continue;
+            const live = isLive(id);
+            if (Effect.isEffect(live) ? yield* live : live) continue;
             MutableHashSet.remove(running, id);
             MutableHashMap.remove(reservations, id);
             yield* releaseAdmission(id);
@@ -211,12 +261,12 @@ export const make = Effect.fnUntraced(function* <E>(options: SchedulerOptions<E>
                 victim = id;
               }
             }
-            if (victim === undefined || victim === "") break;
+            if (!P.isTruthy(victim) || victim === undefined) break;
             demote.push(victim);
             MutableHashSet.remove(running, victim);
             MutableHashMap.remove(reservations, victim);
             const task = yield* store.get(victim);
-            if (task !== undefined && task.groupKey !== "") dec(task.groupKey);
+            if (task !== undefined && P.isTruthy(task.groupKey)) dec(task.groupKey);
           }
         })
       );

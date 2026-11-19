@@ -193,6 +193,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | 2 | `i18n` | 351 | | | 3 | merged ([report](reports/2.md)) |
 | 3 | `db` | 638 | yes | unit | 2 | merged ([report](reports/3.md), [design](design/db.md)) |
 | 4 | `task-queue` | 6.9k | yes | | | merged ([report](reports/4.md), [design](design/task-queue.md)) |
+| review | Code-review fixes for phases 1a to 4 | | | | | merged ([report](reports/review-fixes.md)) |
 | 5 | `downloader-core` | 14.6k | yes | | | not started |
 | 6a | `subscriptions-core` | 4.1k | yes | unit | 6b, 6c | not started |
 | 6b | `browser-capture` | 4.8k | | | 6a, 6c | not started |
@@ -484,6 +485,16 @@ Additions:
 - Phase 1b: the harness must be able to check whatever a later phase ports. A later phase that finds
   a tool or endpoint without a golden records one on the build before its change.
 - Phase 10 also removes anything the run left behind that the finished port does not need.
+
+## Amendments (2026-11-18)
+
+Made by the orchestrator in the owner's place and listed in `OWNER-REVIEW.md` (entries 40 and 45).
+
+| Plan | Changed to |
+| --- | --- |
+| Section 6, phase gate | Adds a sixth item: before the pull request, the phase's diff is reviewed by independent reviewer sessions that did not write it, one per concern (facade parity, logic parity, processes and resources, the standard and test integrity), and each finding is re-verified by a second reviewer; findings are fixed and the fixes verified again, until no confirmed major finding remains. The review, its findings and their resolutions go into the phase report. |
+| Section 6, phase gate | A package port keeps a differential oracle as a permanent test: the pre-port functions and schemas, run from git, against the ported ones over generated inputs (each field of each options object substituted in turn), with the old results stored as a fixture. |
+| A2, A6: parity | For inputs outside a function's declared types, parity is owed where the old code returned a result for `null`, a JSON scalar of the wrong kind or `NaN`. Where the old code threw an engine error, the port only has to fail. `PORT-GUIDE.md` has the rule. |
 
 ## 10. Deferred to the architecture session (phase 11)
 

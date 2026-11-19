@@ -5,6 +5,7 @@ import * as MutableHashMap from "effect/MutableHashMap";
 import * as Option from "effect/Option";
 import * as PubSub from "effect/PubSub";
 import * as Stream from "effect/Stream";
+import { RegistryInspection } from "./RegistryInspection.service.js";
 import { TaskEvents } from "./TaskEvents.service.js";
 import type { TaskQueueEvent } from "./Events.model.js";
 import type { TaskQueueListener } from "./TaskEvents.service.js";
@@ -22,6 +23,9 @@ export const layer = Layer.effect(
   Effect.gen(function* () {
     const listeners = MutableHashMap.empty<TaskQueueEvent["type"] | "*", Bucket>();
     const pubsub = yield* PubSub.sliding<TaskQueueEvent>(1024);
+    const inspection = yield* Effect.serviceOption(RegistryInspection);
+    if (Option.isSome(inspection))
+      inspection.value.register("events", () => ({ buckets: MutableHashMap.size(listeners) }));
     const get = (key: TaskQueueEvent["type"] | "*") => Option.getOrUndefined(MutableHashMap.get(listeners, key));
     const prune = (bucket: Bucket) => {
       if (bucket.depth === 0) bucket.entries = A.filter(bucket.entries, (entry) => entry.active);
@@ -35,8 +39,7 @@ export const layer = Layer.effect(
         return () => {
           const current = A.findFirst(bucket.entries, (item) => item.active && item.listener === listener);
           if (Option.isSome(current)) current.value.active = false;
-          if (!A.some(bucket.entries, (item) => item.active) && get(key) === bucket)
-            MutableHashMap.remove(listeners, key);
+          if (!A.some(bucket.entries, (item) => item.active)) MutableHashMap.remove(listeners, key);
           prune(bucket);
         };
       });

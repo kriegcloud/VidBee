@@ -17,7 +17,7 @@ export interface SchedulerShape {
   readonly setMaxConcurrentDownloads: (n: number) => Effect.Effect<void, InvalidConcurrency>;
   readonly setMaxPerGroup: (key: string, n: number | null) => Effect.Effect<void, InvalidConcurrency>;
   readonly stats: Effect.Effect<SchedulerStats>;
-  readonly sweepDeadSlots: (isLive: (id: string) => boolean) => Effect.Effect<void>;
+  readonly sweepDeadSlots: (isLive: (id: string) => boolean | Effect.Effect<boolean>) => Effect.Effect<void>;
 }
 export class Scheduler extends Context.Service<Scheduler, SchedulerShape>()(
   "@vidbee/task-queue/scheduler/Scheduler.service/Scheduler"

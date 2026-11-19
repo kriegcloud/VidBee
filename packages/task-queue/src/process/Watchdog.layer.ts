@@ -4,6 +4,7 @@ import * as Layer from "effect/Layer";
 import * as MutableHashMap from "effect/MutableHashMap";
 import * as Option from "effect/Option";
 import { QueueTimers } from "../QueueTimers.service.js";
+import { RegistryInspection } from "../RegistryInspection.service.js";
 import { TaskQueueHooks } from "../TaskQueue.service.js";
 import { Watchdog } from "./Watchdog.service.js";
 import type { Cancel } from "../QueueTimers.service.js";
@@ -18,6 +19,9 @@ export const make = Effect.fnUntraced(function* (
 ) {
   const timers = yield* QueueTimers;
   const entries = MutableHashMap.empty<string, WatchdogEntry>();
+  const inspection = yield* Effect.serviceOption(RegistryInspection);
+  if (Option.isSome(inspection))
+    inspection.value.register("watchdog", () => ({ entries: MutableHashMap.size(entries) }));
   const get = (id: string) => Option.getOrUndefined(MutableHashMap.get(entries, id));
   const schedule = Effect.fnUntraced(function* (entry: WatchdogEntry): Effect.fn.Return<Cancel> {
     const idle =
@@ -44,16 +48,18 @@ export const make = Effect.fnUntraced(function* (
   const disarm = Effect.fnUntraced(function* (id: string) {
     const entry = get(id);
     if (entry === undefined) return;
-    if (entry.timer !== null) yield* entry.timer;
     MutableHashMap.remove(entries, id);
+    if (entry.timer !== null) yield* entry.timer;
   });
   return Watchdog.of({
     arm: Effect.fnUntraced(function* (id, status) {
       yield* disarm(id);
       const now = yield* timers.now;
       const entry: WatchdogEntry = { taskId: id, status, lastBumpAt: now, timer: null };
-      entry.timer = yield* schedule(entry);
       MutableHashMap.set(entries, id, entry);
+      entry.timer = yield* schedule(entry).pipe(
+        Effect.onError(() => Effect.sync(() => MutableHashMap.remove(entries, id)))
+      );
     }),
     promoteToProcessing: Effect.fnUntraced(function* (id) {
       const entry = get(id);

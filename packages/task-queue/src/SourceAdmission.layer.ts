@@ -5,6 +5,7 @@ import * as MutableHashMap from "effect/MutableHashMap";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
 import * as Str from "effect/String";
+import { RegistryInspection } from "./RegistryInspection.service.js";
 import { SourceAdmission } from "./SourceAdmission.service.js";
 import type { AdmissionState, Release } from "./SourceAdmission.service.js";
 
@@ -35,10 +36,18 @@ const keyOf = (url: string): string | undefined => {
     return undefined;
   }
 };
-export const makeState = (): AdmissionState => {
+export const makeState = (
+  inspect?: (snapshot: () => import("./RegistryInspection.service.js").RegistryCounts) => void
+): AdmissionState => {
   const held = MutableHashSet.empty<string>();
   const waiting = MutableHashMap.empty<string, Waiter[]>();
   const listeners: { entries: Listener[]; depth: number } = { entries: [], depth: 0 };
+  inspect?.(() => ({
+    held: MutableHashSet.size(held),
+    waiting: A.reduce(A.fromIterable(waiting), 0, (n, [, entries]) => n + entries.length),
+    waitingKeys: MutableHashMap.size(waiting),
+    listeners: listeners.entries.length,
+  }));
   const pruneListeners = () => {
     if (listeners.depth === 0) listeners.entries = A.filter(listeners.entries, (entry) => entry.active);
   };
@@ -110,4 +119,12 @@ export const makeState = (): AdmissionState => {
   };
 };
 export const layerFromShared = (state: AdmissionState) => Layer.succeed(SourceAdmission, state);
-export const layer = Layer.sync(SourceAdmission, makeState);
+export const layer = Layer.effect(
+  SourceAdmission,
+  Effect.gen(function* () {
+    const inspection = yield* Effect.serviceOption(RegistryInspection);
+    return makeState(
+      Option.isSome(inspection) ? (snapshot) => inspection.value.register("admission", snapshot) : undefined
+    );
+  })
+);

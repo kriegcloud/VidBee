@@ -5,6 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as M from "effect/MutableHashMap";
 import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
 import * as S from "effect/Schema";
 import * as Issue from "effect/SchemaIssue";
 import * as SqlClient from "effect/sql/SqlClient";
@@ -121,8 +122,8 @@ const readTask = Effect.fnUntraced(function* (raw: unknown) {
 const bindTask = Effect.fnUntraced(function* (t: Task) {
   const input = yield* encode(t.input, t.id, "input_json");
   const progress = yield* encode(t.progress, t.id, "progress_json");
-  const output = t.output !== null ? yield* encode(t.output, t.id, "output_json") : null;
-  const error = t.lastError !== null ? yield* encode(t.lastError, t.id, "last_error_json") : null;
+  const output = P.isTruthy(t.output) ? yield* encode(t.output, t.id, "output_json") : null;
+  const error = P.isTruthy(t.lastError) ? yield* encode(t.lastError, t.id, "last_error_json") : null;
   return [
     t.id,
     t.kind,
