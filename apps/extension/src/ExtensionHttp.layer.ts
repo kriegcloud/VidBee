@@ -4,9 +4,9 @@ import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientRequest from "effect/http/HttpClientRequest";
 import * as Layer from "effect/Layer";
 import * as Ref from "effect/Ref";
-import * as Str from "effect/String";
 import { ExtensionRequestFailure } from "./Extension.errors.js";
 import { isRecord } from "./Extension.model.js";
+import { requestFailureMessage } from "./Extension.pure.js";
 import { ExtensionBrowser } from "./ExtensionBrowser.service.js";
 import { ExtensionHttp } from "./ExtensionHttp.service.js";
 
@@ -19,6 +19,12 @@ const result = (status: number, body: unknown) => {
   }).pipe(
     Effect.flatMap((combined) =>
       Effect.fail(ExtensionRequestFailure.make({ message: combined || `Request failed: ${status}`, status }))
+    ),
+    Effect.mapError((error) =>
+      ExtensionRequestFailure.make({
+        message: requestFailureMessage(error),
+        ...(error.status === undefined ? {} : { status: error.status }),
+      })
     )
   );
 };
@@ -31,7 +37,7 @@ export const ExtensionHttpLive = Layer.effect(
     return ExtensionHttp.of({
       requestJson: Effect.fn("ExtensionHttp.requestJson")(function* (method, url, deadlineMs) {
         const origin = yield* browser.origin.pipe(
-          Effect.mapError(() => ExtensionRequestFailure.make({ message: "Failed to fetch video info." }))
+          Effect.mapError((error) => ExtensionRequestFailure.make({ message: error.message }))
         );
         const responseStatus = yield* Ref.make<number | undefined>(undefined);
         const request = HttpClientRequest.setHeader(
@@ -41,22 +47,13 @@ export const ExtensionHttpLive = Layer.effect(
         );
         return yield* Effect.scoped(
           Effect.gen(function* () {
-            const response = yield* client.execute(request).pipe(
-              Effect.mapError((error) => {
-                const cause = error.reason.cause;
-                if (!(cause instanceof Error))
-                  return ExtensionRequestFailure.make({ message: "Failed to fetch video info." });
-                const message = cause.message;
-                const timeout = cause.name === "AbortError" || Str.includes("signal is aborted")(message);
-                return ExtensionRequestFailure.make({
-                  message: timeout
-                    ? "Request timed out."
-                    : Str.includes("Failed to fetch")(message)
-                      ? "VidBeep app not responding on this port."
-                      : message,
-                });
-              })
-            );
+            const response = yield* client
+              .execute(request)
+              .pipe(
+                Effect.mapError((error) =>
+                  ExtensionRequestFailure.make({ message: requestFailureMessage(error.reason.cause) })
+                )
+              );
             yield* Ref.set(responseStatus, response.status);
             const body = yield* response.json.pipe(Effect.orElseSucceed(() => null));
             return yield* result(response.status, body);

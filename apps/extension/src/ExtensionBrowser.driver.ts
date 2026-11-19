@@ -6,6 +6,7 @@ import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { ExtensionHostFailure } from "./Extension.errors.js";
 import { isRecord } from "./Extension.model.js";
+import { requestFailureMessage } from "./Extension.pure.js";
 import { ExtensionBrowser } from "./ExtensionBrowser.service.js";
 import type { IconOptions, StorageChanges } from "./ExtensionBrowser.service.js";
 export interface BrowserHost {
@@ -53,7 +54,15 @@ const failure = (operation: string) => (cause: unknown) =>
 const decodeUrl = S.decodeUnknownOption(S.String);
 export const makeBrowserDriver = (browser: BrowserHost) =>
   ExtensionBrowser.of({
-    origin: Effect.try({ try: () => Str.replace(/\/$/, "")(browser.runtime.getURL("")), catch: failure("origin") }),
+    origin: Effect.try({
+      try: () => Str.replace(/\/$/, "")(browser.runtime.getURL("")),
+      catch: (cause) =>
+        ExtensionHostFailure.make({
+          operation: "origin",
+          cause: "Browser API failure",
+          message: requestFailureMessage(cause),
+        }),
+    }),
     queryActiveTabs: Effect.tryPromise({
       try: () => browser.tabs.query({ active: true, currentWindow: true }),
       catch: failure("queryActiveTabs"),

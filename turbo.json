@@ -30,6 +30,9 @@
       "outputs": [
         "dist/**",
         ".wxt/**"
+      ],
+      "dependsOn": [
+        "^check"
       ]
     },
     "vidbee-extension#test": {
@@ -38,12 +41,18 @@
       ],
       "env": [
         "TZ"
+      ],
+      "dependsOn": [
+        "^check"
       ]
     },
     "vidbee-extension#build": {
       "outputs": [
         ".output/**",
         ".wxt/**"
+      ],
+      "dependsOn": [
+        "^build"
       ]
     }
   },

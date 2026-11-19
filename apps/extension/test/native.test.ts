@@ -1,4 +1,4 @@
-import { expect, it, vi } from "@effect/vitest";
+import { expect, it } from "@effect/vitest";
 import * as A from "effect/Array";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
@@ -13,6 +13,7 @@ import * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import * as Scope from "effect/Scope";
 import * as Str from "effect/String";
 import * as TestClock from "effect/testing/TestClock";
+import { vi } from "vitest";
 import { ExtensionHostFailure, ExtensionRequestFailure } from "../src/Extension.errors.js";
 import { decodeVideoInfoResponse, pruneCache } from "../src/Extension.model.js";
 import { ExtensionBackgroundLive } from "../src/ExtensionBackground.layer.js";
@@ -385,6 +386,31 @@ it.layer(popup)("popup", (it) => {
         state.query = Effect.succeed([{ url }]);
       })
   );
+  it.effect("cached ready and error preserve the opposite atom while reads are suspended", () =>
+    Effect.gen(function* () {
+      const state = yield* Fixture;
+      const controller = yield* PopupController;
+      const registry = yield* AtomRegistry.AtomRegistry;
+      const info = { title: "Retained info", formats: [] };
+      state.query = Effect.succeed([{ url }]);
+      for (const status of ["ready", "error"] as const) {
+        const read = yield* Deferred.make<unknown>();
+        state.read = Deferred.await(read);
+        const session = yield* controller.beginSession(0);
+        registry.set(infoAtom, info);
+        registry.set(errorAtom, "Retained error");
+        yield* Deferred.succeed(read, {
+          [url]: { url, status, fetchedAt: yield* Clock.currentTimeMillis, info, error: "Retained error" },
+        });
+        yield* Effect.yieldNow;
+        expect(registry.get(infoAtom)).toEqual(info);
+        expect(registry.get(errorAtom)).toBe("Retained error");
+        expect(registry.get(loadingAtom)).toBe(false);
+        yield* session.release;
+      }
+      state.read = undefined;
+    })
+  );
   it.effect("pending only changes loading; invalid notification has no transition", () =>
     Effect.gen(function* () {
       const state = yield* Fixture;
@@ -656,3 +682,31 @@ it.layer(cache)("cache key presence", (it) => {
     })
   );
 });
+
+it.effect("released popup sessions detach all their finalizers from the controller scope", () =>
+  Effect.gen(function* () {
+    const owner = yield* Scope.make();
+    const services = yield* Layer.buildWithScope(popup, owner);
+    const controller = Context.get(services, PopupController);
+    const state = Context.get(services, Fixture);
+    state.query = Effect.succeed([]);
+    const registrations = vi.mocked(Scope.addFinalizer);
+    registrations.mockClear();
+    for (let index = 0; index < 100; index++) {
+      const session = yield* controller.beginSession(0);
+      yield* Effect.yieldNow;
+      yield* session.release;
+      yield* session.release;
+    }
+    expect(state.listeners).toEqual([]);
+    const retained = A.map(registrations.mock.calls, ([scope]) => scope.state._tag);
+    const parents = A.map(registrations.mock.calls, ([scope]) => scope.parent?.state._tag);
+    yield* Scope.close(owner, Exit.void);
+    for (const parent of parents) expect(parent).toBe("Empty");
+    expect(retained).toHaveLength(100);
+    expect(retained).not.toContain("Open");
+  })
+);
+
+// Observe the public scopes passed by the controller, preserving actual finalization.
+vi.mock("effect/Scope", { spy: true });

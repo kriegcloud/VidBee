@@ -1,8 +1,9 @@
 import * as Effect from "effect/Effect";
-import { ExtensionHostFailure } from "../src/Extension.errors.js";
+import * as ManagedRuntime from "effect/ManagedRuntime";
+import { extensionNavigationLayer } from "../src/ExtensionNavigation.driver.js";
+import { ExtensionNavigation } from "../src/ExtensionNavigation.service.js";
 import { incrementRetry, makePopupCommands } from "../src/PopupCommands.js";
-// Test composition adapter for the original closure-only control oracle.
-// Production and this adapter execute the same Effect commands.
+// Compose the actual navigation driver and commands; only the host setter is fake.
 export const createControls = ({
   currentUrl,
   assign,
@@ -12,25 +13,18 @@ export const createControls = ({
   readonly assign: (uri: string) => void;
   readonly retry: (update: (count: number) => number) => void;
 }) => {
+  const runtime = ManagedRuntime.make(extensionNavigationLayer(assign));
+  const navigation = runtime.runSync(ExtensionNavigation);
   const commands = makePopupCommands({
     currentUrl: () => currentUrl,
-    navigation: {
-      assign: (uri) =>
-        Effect.try({
-          try: () => assign(uri),
-          catch: () =>
-            ExtensionHostFailure.make({
-              operation: "navigation",
-              cause: "Navigation assignment failed",
-              message: "Navigation assignment failed",
-            }),
-        }),
-    },
+    navigation,
     retry: Effect.sync(() => retry(incrementRetry)),
   });
   return {
-    handleOpenClient: () => Effect.runSync(commands.download),
-    handleOpenClientAndRetry: () => Effect.runPromise(commands.openClientAndRetry),
-    handleRetry: () => Effect.runSync(commands.retry),
+    handleOpenClient: () => runtime.runSync(commands.download),
+    handleOpenClientAndRetry: () => runtime.runPromise(commands.openClientAndRetry),
+    handleRetry: () => runtime.runSync(commands.retry),
+    inspectDownload: () => runtime.runSync(Effect.result(commands.download)),
+    close: () => runtime.dispose(),
   };
 };

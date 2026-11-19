@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -45,6 +46,13 @@ export function check(root) {
     if (plugin.overrides && Object.keys(plugin.overrides).length > 0) add('tsconfig.base.json', 'overrides', 1, 'Diagnostic overrides must stay empty')
   }
   const roots = [...new Set(units.filter((unit) => unit.ported).map((unit) => dirname(unit.file)))]
+  if (existsSync(join(root, '.git'))) {
+    const paths = roots.flatMap((directory) => ['src', 'test'].map((name) => join(directory, name)))
+    if (paths.length) {
+      const files = execFileSync('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '-z', '--', ...paths], { cwd: root, encoding: 'utf8' })
+      for (const file of files.split('\0').filter(Boolean).sort()) add(file, 'ignored-source', 1, 'Git-ignored file in a ported source or test tree')
+    }
+  }
   for (const directory of roots) {
     for (const absolute of walk(join(root, directory)).filter((file) => /\.[cm]?[jt]sx?$/.test(file))) {
       const file = relative(root, absolute)

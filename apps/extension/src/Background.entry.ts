@@ -8,7 +8,7 @@ import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as P from "effect/Predicate";
 import * as References from "effect/References";
 import * as Scope from "effect/Scope";
-import { logFailure } from "./Extension.logging.js";
+import { logFailure } from "./Extension.diagnostics.js";
 import { isRecord } from "./Extension.model.js";
 import { ExtensionBackgroundLive } from "./ExtensionBackground.layer.js";
 import { ExtensionBackground } from "./ExtensionBackground.service.js";

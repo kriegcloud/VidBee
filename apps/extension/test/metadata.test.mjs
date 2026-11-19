@@ -84,10 +84,11 @@ it('popup storage root and notification roots do not substitute presentation sta
     const before = h.html()
     await h.change(map)
     const current = await make({ map }).popup()
+    const currentBefore = current.html()
     await current.change(map)
     const expectedTrace = map === undefined ? h.trace : h.trace.filter(item => !['send', 'get', 'got'].includes(item[0]) || item[0] !== 'send' && h.trace.filter(prior => prior[0] === item[0]).indexOf(item) < 2)
-    // Before the port: expect({ before: current.html(), after: current.html(), trace: current.trace }).toEqual({ before, after: h.html(), trace: h.trace })
-    expect({ before: current.html(), after: current.html(), trace: current.trace }).toEqual({ before, after: h.html(), trace: frozenOnly ? h.trace : expectedTrace })
+    // Before the port: snapshot { map, before: HTML before notification, after: HTML after notification, trace } from the side under test.
+    expect({ before: currentBefore, after: current.html(), trace: current.trace }).toEqual({ before, after: h.html(), trace: frozenOnly ? h.trace : expectedTrace })
     results.push({ map, before, after: h.html(), trace: h.trace, declaredChange: 'section 9 storage root decoder ends initialization' })
     await h.close(); h.root = undefined
   }
