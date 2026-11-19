@@ -1,0 +1,45 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "browser-capture-unavailable",
+    "url": "http://127.0.0.1:<port>/drm.html",
+    "status": "retry-scheduled",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": "<timestamp>",
+    "error": {
+      "category": "unknown",
+      "exitCode": null,
+      "rawMessage": "WARNING: [generic] Falling back on generic information extractor\nERROR: [html5] drm-1: This video is DRM protected\n\n\nError code: 1\n\nStderr:\nWARNING: [generic] Falling back on generic information extractor\nERROR: [html5] drm-1: This video is DRM protected\n",
+      "uiMessageKey": "task.error.unknown",
+      "uiActionHints": ["retry", "report-bug"],
+      "retryable": true,
+      "suggestedRetryAfterMs": null
+    },
+    "filename": null,
+    "automaticRetry": true,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "retry-scheduled"],
+  "history": [],
+  "browserMediaRequested": false,
+  "captureStarted": false,
+  "configuration": {
+    "VIDBEE_BROWSER_CAPTURE": "0"
+  }
+}

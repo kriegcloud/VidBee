@@ -1,0 +1,2020 @@
+[
+  {
+    "window": "before-return",
+    "kind": "profile",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "profile",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "profile",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "capture",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "capture",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        },
+        "cancelled"
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "capture",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        },
+        "success"
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "drm",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "drm",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "before-return",
+    "kind": "drm",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "profile",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "transition:paused",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "profile",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "profile",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "capture",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "cancelled"
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "transition:paused",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "paused",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": [
+      [
+        "pid-signal",
+        42,
+        "SIGTERM"
+      ],
+      [
+        "pid-signal",
+        42,
+        "SIGKILL"
+      ]
+    ]
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "capture",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": [
+      [
+        "pid-signal",
+        42,
+        "SIGTERM"
+      ],
+      [
+        "pid-signal",
+        42,
+        "SIGTERM"
+      ]
+    ]
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "capture",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        },
+        "success"
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "drm",
+    "action": "pause",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:pause",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "drm",
+    "action": "cancel",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:cancel",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "transition:cancelled",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control-settled:cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-cancel",
+        {
+          "status": "cancelled",
+          "pid": null,
+          "running": 1
+        }
+      ]
+    ],
+    "processTrace": []
+  },
+  {
+    "window": "spawn-callback",
+    "kind": "drm",
+    "action": "sync-finish",
+    "trace": [
+      [
+        "transition:queued",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "queued",
+          "pid": null,
+          "running": 0
+        }
+      ],
+      [
+        "transition:running",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "enter-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "primary-run",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "spawn",
+        {
+          "status": "running",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "control:sync-finish",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "return-run",
+        {
+          "status": "running",
+          "pid": 42,
+          "running": 1
+        }
+      ],
+      [
+        "transition:completed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "snapshot-changed",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 1
+        }
+      ],
+      [
+        "drained",
+        {
+          "status": "completed",
+          "pid": null,
+          "running": 0
+        }
+      ]
+    ],
+    "processTrace": []
+  }
+]

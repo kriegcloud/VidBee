@@ -111,13 +111,13 @@ export const requestLayerForPlatform = (platform: string) =>
     Effect.gen(function* () {
       const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
       const scope = yield* Effect.scope;
-      const command = (pid: number, signal: "SIGTERM" | "SIGKILL", group: boolean, tree: boolean) =>
+      const command = (pid: number, signal: "SIGTERM" | "SIGKILL" | "SIGINT", group: boolean, tree: boolean) =>
         platform === "win32"
           ? ChildProcess.make("taskkill", ["/PID", String(pid), ...(tree ? ["/T"] : []), "/F"])
           : ChildProcess.make("kill", [`-${Str.slice(3)(signal)}`, "--", String(group ? -pid : pid)]);
       const request = Effect.fn("ProcessRequests.request")(function* (
         pid: number,
-        signal: "SIGTERM" | "SIGKILL",
+        signal: "SIGTERM" | "SIGKILL" | "SIGINT",
         target: "pid" | "group" | "tree"
       ) {
         if (pid <= 0) return;

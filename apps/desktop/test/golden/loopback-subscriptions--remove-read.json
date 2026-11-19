@@ -1,0 +1,62 @@
+{
+  "removed": {
+    "removed": true
+  },
+  "get": {
+    "status": 200,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Subscription not found: <id:1>"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "items": {
+    "status": 200,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Subscription not found: <id:1>"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "list": {
+    "subscriptions": [
+      {
+        "id": "<id:2>",
+        "title": "Loopback automatic A",
+        "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+        "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/auto.xml",
+        "platform": "custom",
+        "keywords": [],
+        "tags": ["loopback", "science"],
+        "onlyDownloadLatest": false,
+        "autoDownload": true,
+        "enabled": false,
+        "status": "up-to-date",
+        "createdAt": "<timestamp>",
+        "updatedAt": "<timestamp>",
+        "sourceKind": "feed",
+        "categories": [],
+        "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "latestVideoTitle": "River retained",
+        "latestVideoPublishedAt": 1735819200000,
+        "lastCheckedAt": "<timestamp>",
+        "lastSuccessAt": "<timestamp>",
+        "downloadDirectory": "<run>/subscription-downloads",
+        "namingTemplate": "%(id)s.%(ext)s",
+        "downloadType": "video",
+        "downloadQuality": "best",
+        "itemCount": 2
+      }
+    ],
+    "total": 1,
+    "nextOffset": null
+  }
+}

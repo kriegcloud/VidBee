@@ -1,0 +1,36 @@
+{
+  "name": "@vidbee/browser-capture-legacy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sidecar": "./src/sidecar.ts",
+    "./onlyfans-profile": "./src/onlyfans-profile.ts",
+    "./fansly-profile": "./src/fansly-profile.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun run test:unit && bun run test:audit",
+    "check": "bun run typecheck",
+    "test:audit": "tsx --test test/*.node.ts",
+    "test:unit": "bunx --bun vitest run"
+  },
+  "dependencies": {
+    "@vidbee/downloader-core": "workspace:^",
+    "playwright-core": "catalog:",
+    "@vidbee/task-queue-legacy": "workspace:^",
+    "@vidbee/downloader-core-legacy": "workspace:^",
+    "@vidbee/browser-capture": "workspace:^",
+    "effect": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@vidbee/task-queue": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "@effect/vitest": "catalog:"
+  }
+}

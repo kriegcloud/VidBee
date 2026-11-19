@@ -1,0 +1,387 @@
+{
+  "ok": true,
+  "value": [
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345/gallery",
+      "chatId": "12345",
+      "chatRoute": "gallery",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345/gallery/opened",
+      "chatId": "12345",
+      "chatRoute": "opened",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345/gallery/photos",
+      "chatId": "12345",
+      "chatRoute": "photos",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345/gallery/purchased",
+      "chatId": "12345",
+      "chatRoute": "purchased",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345/gallery/videos",
+      "chatId": "12345",
+      "chatRoute": "videos",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "12345",
+      "profileUrl": "https://onlyfans.com/my/chats/chat/12345",
+      "chatId": "12345",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "67890",
+      "profileUrl": "https://onlyfans.com/my/collections/user-lists/purchased/posts/67890",
+      "purchasedUserId": "67890",
+      "purchasedRoute": "all",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "67890",
+      "profileUrl": "https://onlyfans.com/my/collections/user-lists/purchased/posts/67890?entityType=messages",
+      "purchasedUserId": "67890",
+      "purchasedRoute": "messages",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "67890",
+      "profileUrl": "https://onlyfans.com/my/collections/user-lists/purchased/posts/67890?postType=photos",
+      "purchasedUserId": "67890",
+      "purchasedRoute": "photos",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "67890",
+      "profileUrl": "https://onlyfans.com/my/collections/user-lists/purchased/posts/67890?entityType=posts",
+      "purchasedUserId": "67890",
+      "purchasedRoute": "posts",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "67890",
+      "profileUrl": "https://onlyfans.com/my/collections/user-lists/purchased/posts/67890?postType=videos",
+      "purchasedUserId": "67890",
+      "purchasedRoute": "videos",
+      "state": "partial",
+      "updatedAt": 1735689600000,
+      "pages": 3,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    },
+    {
+      "username": "synthetic_creator",
+      "profileUrl": "https://onlyfans.com/synthetic_creator",
+      "state": "auth-required",
+      "category": "media",
+      "updatedAt": "<timestamp>",
+      "pages": 0,
+      "items": [
+        {
+          "id": "1001",
+          "postId": "2001",
+          "category": "videos",
+          "state": "available",
+          "downloaded": false
+        },
+        {
+          "id": "1002",
+          "postId": "2002",
+          "category": "photos",
+          "state": "locked",
+          "downloaded": false
+        },
+        {
+          "id": "1003",
+          "postId": "2003",
+          "category": "videos",
+          "state": "drm",
+          "downloaded": false
+        }
+      ]
+    }
+  ]
+}

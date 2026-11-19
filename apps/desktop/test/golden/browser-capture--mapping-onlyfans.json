@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "value": {
+    "username": "synthetic_creator",
+    "profileUrl": "https://onlyfans.com/synthetic_creator",
+    "state": "auth-required",
+    "updatedAt": "<timestamp>",
+    "pages": 0,
+    "items": [
+      {
+        "id": "1001",
+        "postId": "2001",
+        "category": "videos",
+        "state": "available",
+        "downloaded": false
+      },
+      {
+        "id": "1002",
+        "postId": "2002",
+        "category": "photos",
+        "state": "locked",
+        "downloaded": false
+      },
+      {
+        "id": "1003",
+        "postId": "2003",
+        "category": "videos",
+        "state": "drm",
+        "downloaded": false
+      }
+    ],
+    "category": "media"
+  }
+}

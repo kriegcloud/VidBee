@@ -1,0 +1,244 @@
+{
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "<id:1>",
+      "title": "Loopback manual B",
+      "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+      "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/rss.xml",
+      "platform": "custom",
+      "keywords": [],
+      "tags": ["loopback", "science"],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": false,
+      "status": "up-to-date",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "sourceKind": "feed",
+      "categories": [],
+      "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+      "latestVideoTitle": "Mountain newer",
+      "latestVideoPublishedAt": 1735905600000,
+      "lastCheckedAt": "<timestamp>",
+      "lastSuccessAt": "<timestamp>",
+      "downloadDirectory": "<run>/subscription-downloads",
+      "namingTemplate": "%(id)s.%(ext)s",
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "items": [
+        {
+          "id": "manual-newer",
+          "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+          "title": "Mountain newer",
+          "publishedAt": 1735905600000,
+          "addedToQueue": true,
+          "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+          "taskId": "<id:2>"
+        },
+        {
+          "id": "manual-retained",
+          "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+          "title": "River retained",
+          "publishedAt": 1735819200000,
+          "addedToQueue": true,
+          "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+          "taskId": "<id:3>"
+        }
+      ]
+    }
+  },
+  "subscription": {
+    "id": "<id:1>",
+    "title": "Loopback manual B",
+    "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+    "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/rss.xml",
+    "platform": "custom",
+    "keywords": [],
+    "tags": ["loopback", "science"],
+    "onlyDownloadLatest": false,
+    "autoDownload": true,
+    "enabled": false,
+    "status": "up-to-date",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "sourceKind": "feed",
+    "categories": [],
+    "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+    "latestVideoTitle": "Mountain newer",
+    "latestVideoPublishedAt": 1735905600000,
+    "lastCheckedAt": "<timestamp>",
+    "lastSuccessAt": "<timestamp>",
+    "downloadDirectory": "<run>/subscription-downloads",
+    "namingTemplate": "%(id)s.%(ext)s",
+    "downloadType": "video",
+    "downloadQuality": "best",
+    "items": [
+      {
+        "id": "manual-newer",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+        "title": "Mountain newer",
+        "publishedAt": 1735905600000,
+        "addedToQueue": true,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "taskId": "<id:2>"
+      },
+      {
+        "id": "manual-retained",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "title": "River retained",
+        "publishedAt": 1735819200000,
+        "addedToQueue": true,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "taskId": "<id:3>"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/rss.xml",
+      "revision": "B",
+      "status": 200,
+      "completed": true
+    }
+  ],
+  "newerTask": {
+    "task": {
+      "id": "<id:2>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "title": "Mountain newer",
+      "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+      "status": "completed",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "error": null,
+      "filename": "manual-newer.mp4",
+      "automaticRetry": false,
+      "children": [],
+      "childrenNextCursor": null,
+      "groupKey": "<id:1>",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-newer.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "automation": {
+      "id": "<id:2>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+        "kind": "subscription-item",
+        "title": "Mountain newer",
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "subscriptionId": "<id:1>",
+        "options": {
+          "type": "video",
+          "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+          "containerFormat": "auto",
+          "customDownloadPath": "<run>/subscription-downloads",
+          "customFilenameTemplate": "%(id)s.%(ext)s",
+          "tags": ["custom", "loopback", "science"],
+          "origin": "subscription",
+          "subscriptionId": "<id:1>",
+          "itemId": "manual-newer",
+          "settings": {
+            "downloadPath": "<run>/subscription-downloads",
+            "browserForCookies": "none",
+            "cookiesPath": "",
+            "proxy": "",
+            "configPath": "",
+            "downloadSubtitles": false,
+            "subtitleLanguages": ["interface"],
+            "interfaceLanguage": "en",
+            "embedSubs": false,
+            "writeAutoSubs": false,
+            "embedThumbnail": false,
+            "embedMetadata": false,
+            "embedChapters": false,
+            "filenameStyle": "pretty",
+            "filenameViaVidBee": false,
+            "shareWatermark": false
+          },
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 10,
+      "groupKey": "<id:1>",
+      "status": "completed",
+      "prevStatus": "running",
+      "statusReason": null,
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-newer.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "history": [
+      {
+        "id": "<id:2>",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+        "title": "Mountain newer",
+        "type": "video",
+        "status": "completed",
+        "createdAt": "<timestamp>",
+        "startedAt": "<timestamp>",
+        "downloadedAt": "<timestamp>",
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "completedAt": "<timestamp>",
+        "fileSize": 35476,
+        "downloadPath": "<run>/subscription-downloads",
+        "savedFileName": "manual-newer.mp4",
+        "filePath": "<run>/subscription-downloads/manual-newer.mp4",
+        "resolvedFormatId": "mp4",
+        "cookieSources": [],
+        "tags": ["custom", "loopback", "science"],
+        "origin": "subscription",
+        "taskKind": "subscription-item",
+        "subscriptionId": "<id:1>"
+      }
+    ],
+    "file": {
+      "name": "manual-newer.mp4",
+      "size": 35476
+    },
+    "statuses": ["queued", "running", "completed"]
+  }
+}

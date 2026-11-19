@@ -1,0 +1,69 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "transcription",
+    "parentId": "<id:2>",
+    "title": "silence",
+    "url": "vidbee://download/<id:2>",
+    "status": "completed",
+    "attempt": 1,
+    "maxAttempts": 3,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "transcription",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": {
+      "filePath": "<run>/transcription-downloads/silence.wav",
+      "size": 1,
+      "durationMs": 4000,
+      "sha256": null,
+      "transcript": {
+        "resultKind": "no-speech",
+        "transcriptId": "<id:3>"
+      }
+    }
+  },
+  "transcript": {
+    "asrTier": "minimal",
+    "creation": {
+      "origin": "manual"
+    },
+    "downloadTaskId": "<id:2>",
+    "error": null,
+    "listState": "no-speech",
+    "rediarize": false,
+    "sourceFilePath": "<run>/transcription-downloads/silence.wav",
+    "sourceKind": "asr",
+    "speakerCount": "auto",
+    "stage": null,
+    "stageHistory": [],
+    "title": "silence",
+    "transcriptId": null,
+    "transcriptionTaskId": "<id:1>",
+    "updatedAt": "<timestamp>",
+    "sources": [
+      {
+        "auto": false,
+        "key": "asr",
+        "kind": "asr",
+        "language": null,
+        "languageCode": null,
+        "selected": true
+      }
+    ],
+    "segmentCount": 0,
+    "language": null,
+    "resultKind": null,
+    "speakers": [],
+    "items": [],
+    "total": 0,
+    "nextOffset": null
+  },
+  "statuses": ["queued", "running", "processing", "completed"],
+  "provider": "<provider>"
+}

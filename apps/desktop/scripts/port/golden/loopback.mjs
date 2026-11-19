@@ -1,9 +1,11 @@
 import { appendFile, mkdir, readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
+import { subscriptionsRoutes } from './subscriptions-core-loopback.mjs'
 
 /** Serve only generated fixtures in the worker's offline network namespace. */
-export async function startLoopback(runDir) {
+export async function startLoopback(runDir, { subscriptions = false } = {}) {
+  const subscriptionRoutes = subscriptions ? await subscriptionsRoutes(runDir) : undefined
   const fixtures = path.join(runDir, 'userdata/loopback-fixtures')
   const files = {
     video: { data: await readFile(path.join(fixtures, 'video.mp4')), type: 'video/mp4' },
@@ -20,6 +22,9 @@ export async function startLoopback(runDir) {
   await mkdir(path.join(runDir, 'loopback'), { recursive: true })
   const server = createServer((request, response) => {
     const url = new URL(request.url, 'http://127.0.0.1')
+    if (subscriptionRoutes?.handle(request, response, url)) {
+      return
+    }
     const entry = {
       method: request.method,
       path: url.pathname,
@@ -98,6 +103,7 @@ export async function startLoopback(runDir) {
   return {
     url: `http://127.0.0.1:${server.address().port}`,
     requests,
+    subscriptions: subscriptionRoutes,
     recover: () => {
       recover = true
     },
@@ -110,6 +116,7 @@ export async function startLoopback(runDir) {
         server.close((error) => (error ? reject(error) : resolve()))
       )
       await logWrites
+      await subscriptionRoutes?.flush()
     }
   }
 }
