@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 // Sidecar-only preload: real production page programs run in a fresh Chromium context.
 import childProcess from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -36,6 +37,12 @@ fetch('https://onlyfans.com/api2/v2/chats/7/messages?firstId=100');
 const messages = { list: [{ id: 100, media: [{ id: 22, type: 'video', duration: 8, files: { drm: { manifest: true } } }] }] }
 const launch = chromium.launch.bind(chromium)
 chromium.launch = async (options) => {
+  assert.equal(options.env.DBUS_SESSION_BUS_ADDRESS, 'disabled:')
+  assert.equal(options.env.XDG_RUNTIME_DIR, `${process.env.HOME}/runtime`)
+  assert.equal(options.env.PULSE_SERVER, `unix:${process.env.HOME}/runtime/no-pulse`)
+  const version = spawnSync('/usr/bin/chromium', ['--version'], { encoding: 'utf8' }).stdout.trim()
+  const expectedVersion = JSON.parse(readFileSync(new URL('./audit-chromium-version.json', import.meta.url), 'utf8'))
+  assert.equal(version, expectedVersion, `Chromium changed from ${expectedVersion} to ${version}; re-characterize layout before accepting the fixture`)
   const browser = await launch(options)
   const newContext = browser.newContext.bind(browser)
   browser.newContext = async (contextOptions) => {

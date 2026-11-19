@@ -1,3 +1,4 @@
+// Frozen oracle fixtures must never be rewritten by tests.
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
@@ -48,7 +49,6 @@ for (const scenario of ['normal-close', 'early-close', 'readiness-timeout']) tes
     const oracle = lines.find((line) => line.startsWith('__ORACLE__')); assert.ok(oracle)
     const trace: unknown[][] = JSON.parse(oracle.slice('__ORACLE__'.length))
     const fixture = new URL(`./fixtures/process-${scenario}.json`, import.meta.url)
-    if (process.env.VIDBEE_RECORD_CHARACTERIZATION === '1') writeFileSync(fixture, JSON.stringify(trace, null, 2) + '\n')
     assert.deepEqual(trace, JSON.parse(readFileSync(fixture, 'utf8')))
     const selected = trace.filter((row) => ['xvfb-observers', 'pactl-observers', 'scan-observers', 'recorder-observers', 'stdin-write', 'child-signal', 'pid-signal', 'context-close', 'browser-close', 'early-close', 'recorder-final-observers'].includes(String(row[0])))
     assert.deepEqual(selected, [
@@ -76,6 +76,7 @@ for (const site of ['xvfb', 'recorder']) test(`public sidecar isolated ${site} m
     const events = result.stdout.split('\n').filter((line) => line.startsWith(prefix)).map((line) => JSON.parse(line.slice(prefix.length)))
     assert.equal(events[0].type, 'spawn')
     // Recorder failure can escape in the unhandled error turn before the sidecar catch resumes.
+    if (site === 'recorder') assert.deepEqual(events.filter((event) => event.type === 'error'), [])
     if (site === 'xvfb') assert.deepEqual(events.at(-1), { message: 'Failed to start Xvfb', type: 'error' })
   } finally { rmSync(directory, { recursive: true, force: true }) }
 })

@@ -14,7 +14,7 @@ import { NODE } from './fixtures/node-runtime.js'
 const seams = vi.hoisted(() => ({ launch: vi.fn(), now: 1000, jump: 0, delays: [] as number[], fileOps: [] as string[], renameFailure: undefined as Error | undefined, renameSuffix: '', statFailure: undefined as Error | undefined }))
 vi.mock('node:fs', async (original) => {
   const real = await original<typeof import('node:fs')>()
-  return { ...real,
+  return { ...real, existsSync: (file: string) => file === '/synthetic/chromium' || (!file.startsWith('/usr/') && !file.startsWith('/opt/') && real.existsSync(file)),
     renameSync: (...args: Parameters<typeof real.renameSync>) => {
       seams.fileOps.push(`rename:${String(args[0])}`)
       if (seams.renameFailure && String(args[0]).endsWith(seams.renameSuffix)) throw seams.renameFailure
@@ -28,7 +28,6 @@ vi.mock('node:fs', async (original) => {
   }
 })
 vi.mock('playwright-core', () => ({ chromium: { launchPersistentContext: seams.launch } }))
-vi.mock('../src/availability', () => ({ resolveBrowserExecutable: () => '/synthetic/chromium' }))
 vi.mock('node:timers/promises', async (original) => {
   const real = await original<typeof import('node:timers/promises')>()
   return { ...real, setTimeout: async (ms: number, _value: undefined, options: { signal: AbortSignal }) => {
@@ -119,7 +118,7 @@ describe('serialized browser response characterization', () => {
     expect(feed.json).not.toHaveBeenCalled()
     gate.resolve({ id: 7 })
     const result = await settled(fixture)
-    expect(result).toMatchObject({ state: 'complete', pages: 1, items: [{ id: '1', downloaded: false }] })
+    expectComplete(fixture, result, 'complete')
     expect(feed.json).toHaveBeenCalledOnce()
     expect(fixture.context.cookies).toHaveBeenCalledWith('https://onlyfans.com')
   }, 15_000)
@@ -136,7 +135,7 @@ describe('serialized browser response characterization', () => {
     })
     await fixture.profiles.command({ url, action: 'map' })
     const result = await settled(fixture)
-    expect(result).toMatchObject({ state: 'complete', pages: 1, items: [{ id: '1' }] })
+    expectComplete(fixture, result, 'complete')
     expect(result.error).toBeUndefined()
   }, 15_000)
 
@@ -147,7 +146,7 @@ describe('serialized browser response characterization', () => {
       fixture.events.emit('response', response(feedUrl, {}, status))
     })
     await fixture.profiles.command({ url, action: 'map' })
-    expect(await settled(fixture)).toMatchObject({ state: [401, 403].includes(status) ? 'auth-required' : 'error', pages: 0,
+    expect(await settled(fixture)).toEqual({ username: 'example', profileUrl: url, category: 'media', items: [], updatedAt: seams.now, state: [401, 403].includes(status) ? 'auth-required' : 'error', pages: 0,
       error: status === 429 ? 'OnlyFans asked to slow down. Stop and retry later.' : 'OnlyFans could not load this page. Check the dedicated browser.' })
   }, 15_000)
 
@@ -168,7 +167,7 @@ describe('serialized browser response characterization', () => {
       fixture.events.emit('response', response(feedUrl, payload()))
     })
     await fixture.profiles.command({ url, action: 'map' })
-    expect(await settled(fixture)).toMatchObject({ state: 'error', pages: 1, items: [{ id: '1' }], error: 'Mapping stopped while processing a response (RangeError). The saved map has been retained.' })
+    expectComplete(fixture, await settled(fixture), 'error', 'Mapping stopped while processing a response (RangeError). The saved map has been retained.')
   }, 15_000)
 
   it.each([{ error: 'denied' }, { success: false }])('retains auth-required for feed application error %j', async (body) => {
@@ -203,6 +202,7 @@ describe('serialized browser response characterization', () => {
     expect(result.error).toBe(observed
       ? `No matching media response was captured. Observed API paths: ${Array.from({ length: 12 }, (_, index) => `/api2/v2/unknown/${index}`).join(', ')}`
       : 'No media API response was captured. Check that the page loaded in the dedicated browser.')
+    expect(seams.delays.length).toBeGreaterThan(0)
     expect(seams.delays.every((ms) => ms === 250)).toBe(true)
   }, 15_000)
 
@@ -216,7 +216,7 @@ describe('serialized browser response characterization', () => {
       fixture.events.emit('response', unreadable)
     })
     await fixture.profiles.command({ url, action: 'map' })
-    expect(await settled(fixture)).toMatchObject({ state: 'partial', pages: 1, items: [{ id: '1' }], error: 'The site did not finish loading older media. 1 response bodies could not be read; mapped items were retained.' })
+    expectComplete(fixture, await settled(fixture), 'partial', 'The site did not finish loading older media. 1 response bodies could not be read; mapped items were retained.')
   }, 15_000)
 
   it('stopping before page assignment does not close a page acquired afterward', async () => {
@@ -255,7 +255,7 @@ describe('refresh status and covered-media characterization', () => {
     const fixture = setup(true)
     fixture.page.waitForResponse.mockResolvedValueOnce(response('https://onlyfans.com/api2/v2/posts/100', {}, 500))
     const fetchMedia = vi.fn(async () => new Response(new Uint8Array([1]), { headers: { 'content-type': 'image/jpeg' } })); vi.stubGlobal('fetch', fetchMedia)
-    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toMatchObject({ size: 1 })
+    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toEqual({ filePath: path.join(fixture.directory, 'OnlyFans/example/photos/100_1.jpg'), size: 1 })
     expect(seams.delays).toEqual([1500]); expect(fixture.page.goto).toHaveBeenCalledTimes(2)
     expect(fetchMedia).toHaveBeenCalledOnce()
   }, 15_000)
@@ -290,7 +290,7 @@ describe('covered-media matching and transfer finalization faults', () => {
       return response('https://onlyfans.com/api2/v2/posts/100', payload().list[0])
     })
     vi.stubGlobal('fetch', vi.fn(async () => new Response(new Uint8Array([1]), { headers: { 'content-type': 'image/jpeg' } })))
-    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toMatchObject({ size: 1 })
+    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toEqual({ filePath: path.join(fixture.directory, 'OnlyFans/example/photos/100_1.jpg'), size: 1 })
     expect(order).toEqual(['wait-opened', 'click'])
     expect(click).toHaveBeenCalledWith({ timeout: 5000 })
     expect(fixture.page.waitForResponse.mock.calls[1]?.[1]).toEqual({ timeout: 15_000 })
@@ -388,7 +388,7 @@ describe('profile admission, interruption and save-failure characterization', ()
       await expect(fixture.profiles.enqueue(queue, { url, itemIds: ['1'] })).resolves.toEqual({ count: 1 })
       expect(queue.list().tasks).toHaveLength(1)
       closeBody?.(); closeBody = undefined
-      await expect(download).resolves.toMatchObject({ size: 1 })
+      await expect(download).resolves.toEqual({ filePath: path.join(fixture.directory, 'OnlyFans/example/photos/100_1.jpg'), size: 1 })
     } finally { closeBody?.(); await queue.stop() }
   }, 15_000)
 
@@ -396,20 +396,28 @@ describe('profile admission, interruption and save-failure characterization', ()
     const fixture = setup(true)
     const controller = new AbortController()
     vi.stubGlobal('fetch', vi.fn(async () => new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/jpeg' } })))
-    const progress = vi.fn(() => controller.abort(new Error('synthetic abort during progress')))
-    await expect(fixture.profiles.download(url, '1', fixture.directory, controller.signal, progress)).rejects.toThrow()
+    const reason = new Error('synthetic abort during progress')
+    const progress = vi.fn(() => controller.abort(reason))
+    await expect(fixture.profiles.download(url, '1', fixture.directory, controller.signal, progress)).rejects.toMatchObject({ name: 'AbortError', cause: reason })
     expect(progress).toHaveBeenCalledOnce()
     expect(fixture.profiles.get(url).items[0].downloaded).toBe(false)
-    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toMatchObject({ size: 3 })
+    await expect(fixture.profiles.download(url, '1', fixture.directory, new AbortController().signal, vi.fn())).resolves.toEqual({ filePath: path.join(fixture.directory, 'OnlyFans/example/photos/100_1.jpg'), size: 3 })
   }, 15_000)
 })
 
 // The native addon belongs to pinned Node; Bun only hosts the outer suite.
 it.each(['borrowed', 'node'])('integrates public enqueue with a real %s SQLite queue in pinned Node', (client) => {
   const interpreter = NODE
-  const fixture = fileURLToPath(new URL('./characterization-profile-queue.node.ts', import.meta.url))
+  const fixture = fileURLToPath(new URL('./fixtures/audit-profile-queue.mts', import.meta.url))
   const run = spawnSync(interpreter, ['--import', 'tsx', fixture], { encoding: 'utf8', timeout: 30_000, env: { ...process.env, VIDBEE_QUEUE_DRIVER: client } })
   expect(run.error).toBeUndefined()
   expect(run.status, run.stderr).toBe(0)
-  expect(JSON.parse(run.stdout.trim())).toEqual({ node: 'v22.23.4', client, hostClientStillOpen: true, tasksPersisted: 3, deduplicated: true, retryCancelled: true, partialFailureRetained: true })
+  expect(JSON.parse(run.stdout.trim())).toEqual({ node: `v${readFileSync(new URL('../../../.node-version', import.meta.url), 'utf8').trim()}`, client, hostClientStillOpen: true, tasksPersisted: 3, deduplicated: true, retryCancelled: true, partialFailureRetained: true })
 }, 40_000)
+
+vi.mock('node:child_process', async (original) => { const real = await original<typeof import('node:child_process')>(); return { ...real, spawnSync: (...args: Parameters<typeof real.spawnSync>) => args[0] === 'which' ? { stdout: '/synthetic/chromium' } : real.spawnSync(...args) } })
+
+function expectComplete(fixture: ReturnType<typeof setup>, result: unknown, state: string, error?: string) {
+  expect(result).toEqual({ username: 'example', profileUrl: url, category: 'media', state, updatedAt: seams.now, pages: 1, items: [{ id: '1', postId: '100', category: 'photos', state: 'available', downloaded: false }], error })
+  expect(JSON.parse(readFileSync(fixture.filename, 'utf8'))).toEqual(JSON.parse(JSON.stringify(result)))
+}

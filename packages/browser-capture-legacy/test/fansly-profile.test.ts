@@ -2,7 +2,7 @@ import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import { FanslyCommandSchema } from '@vidbee/downloader-core-legacy/fansly-profile'
 import type { OnlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { describe, expect, it } from 'vitest'
-import { fanslyAdapter, fanslyItems, fanslyMediaUrl } from '../src/fansly-profile'
+import { fanslyAdapter, fanslyItems, fanslyMediaUrl } from '@vidbee/browser-capture/fansly-profile'
 
 const media = (id: string, access = true) => ({
   id,

@@ -13,7 +13,7 @@ import {
   onlyFansItems,
   onlyFansMediaUrl,
   onlyFansPurchasedResponse
-} from '../src/onlyfans-profile'
+} from '@vidbee/browser-capture/onlyfans-profile'
 
 const fixture = {
   list: [
@@ -57,7 +57,6 @@ const galleryFixture = {
 
 const mocks = vi.hoisted(() => ({ launch: vi.fn() }))
 vi.mock('playwright-core', () => ({ chromium: { launchPersistentContext: mocks.launch } }))
-vi.mock('../src/availability', () => ({ resolveBrowserExecutable: () => '/usr/bin/google-chrome' }))
 
 const dirs: string[] = []
 afterEach(() => {
@@ -730,3 +729,6 @@ describe('OnlyFans browser mapping', () => {
     expect(events.onFinish.mock.calls[0][0].result.type).toBe('error')
   })
 })
+
+vi.mock('node:child_process', async (original) => { const real = await original<typeof import('node:child_process')>(); return { ...real, spawnSync: (...args: Parameters<typeof real.spawnSync>) => args[0] === 'which' ? { stdout: '/synthetic/chromium' } : real.spawnSync(...args) } })
+vi.mock('node:fs', async (original) => { const real = await original<typeof import('node:fs')>(); return { ...real, existsSync: (file: string) => file === '/synthetic/chromium' || (!file.startsWith('/usr/') && !file.startsWith('/opt/') && real.existsSync(file)) } })

@@ -11,15 +11,10 @@ const host = vi.hoisted(() => ({
   profile: '', spawn: vi.fn(), candidates: vi.fn(),
   temporary: [] as string[], copied: [] as string[], removed: [] as string[], failCleanup: false
 }))
-vi.mock('../src/availability', () => ({
-  isBrowserCaptureAvailable: () => true,
-  resolveBrowserExecutable: () => '/synthetic/chromium',
-  userHomeDir: () => '/synthetic/home',
-  DEFAULT_CAPTURE_SIZE: { width: 3840, height: 3840 }
-}))
+vi.mock('node:fs', async (original) => ({ ...await original<typeof import('node:fs')>(), existsSync: (file: string) => ['/synthetic/Xvfb', '/synthetic/chromium'].includes(file) }))
 vi.mock('@vidbee/downloader-core/cookie-browser-paths', () => ({ getBrowserProfileCandidates: host.candidates }))
 vi.mock('node:child_process', async (importOriginal) => ({
-  ...await importOriginal<typeof import('node:child_process')>(), spawn: host.spawn
+  ...await importOriginal<typeof import('node:child_process')>(), spawn: host.spawn, spawnSync: (_command: string, args: string[]) => ({ stdout: args[0] === 'Xvfb' ? '/synthetic/Xvfb' : '/synthetic/chromium' })
 }))
 vi.mock('node:fs/promises', async (importOriginal) => {
   const original = await importOriginal<typeof import('node:fs/promises')>()
@@ -132,7 +127,7 @@ function expectJob(job: unknown, token: string | null): void {
     ffmpegPath: '/synthetic/ffmpeg', browserExecutable: '/synthetic/chromium', width: 3840, height: 3840,
     ...(token === null ? {} : { localStorage: { bcTokenSha: token } })
   })
-  expect(host.candidates.mock.calls).toEqual([[process.platform, '/synthetic/home', 'chrome']])
+  expect(host.candidates.mock.calls).toEqual([[process.platform, os.homedir(), 'chrome']])
   expect(host.removed).toEqual(host.temporary.filter((directory) => path.basename(directory).startsWith('vidbee-ls-')))
 }
 
