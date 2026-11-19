@@ -1,3 +1,4 @@
+import { isolatedEnvironment, runOffline } from './fixtures/audit-offline.js'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
@@ -8,7 +9,7 @@ import { offline, REAL_BROWSER_SKIP } from './fixtures/real-browser.js'
 // These run the public sidecar and serialized production functions in a real headed browser.
 // The preload supplies synthetic pages/player objects and observes evaluations; no source import.
 describe('public sidecar real page-program characterization', () => {
-  it.skipIf(REAL_BROWSER_SKIP !== false).each(['carousel', 'cover'])('pins DOM state and duration-selected placement for %s', (scenario) => {
+  it.skipIf(REAL_BROWSER_SKIP !== false).each(['carousel', 'cover'])('pins DOM state and duration-selected placement for %s', async (scenario) => {
     const directory = mkdtempSync('/tmp/vbp-')
     try {
       const jobPath = path.join(directory, 'job.json')
@@ -20,14 +21,10 @@ describe('public sidecar real page-program characterization', () => {
         width: 1024, height: 1024, durationHintSec: 8
       }))
       const program = `process.argv=['node','sidecar','--job',${JSON.stringify(jobPath)}];await import('@vidbee/browser-capture/sidecar')`
-      const result = spawnSync(...offline(NODE, [
+      const result = await runOffline(...offline(NODE, [
         '--import', 'tsx', '--import', new URL('./fixtures/page-program-driver.mjs', import.meta.url).href,
         '--input-type=module', '-e', program
-      ]), {
-        encoding: 'utf8', timeout: 180000,
-        env: { ...process.env, TMPDIR: directory, HOME: directory, XDG_CONFIG_HOME: directory,
-          XDG_CACHE_HOME: directory, VIDBEE_PAGE_SCENARIO: scenario, VIDBEE_PAGE_SNAPSHOT: snapshotPath }
-      })
+      ]), { ...isolatedEnvironment(directory), VIDBEE_PAGE_SCENARIO: scenario, VIDBEE_PAGE_SNAPSHOT: snapshotPath })
       expect(result.error, result.stdout + result.stderr).toBeUndefined()
       expect(result.status, result.stdout + result.stderr).toBe(0)
       const snapshots: unknown = JSON.parse(readFileSync(snapshotPath, 'utf8'))

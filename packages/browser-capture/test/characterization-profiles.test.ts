@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, wri
 import os from 'node:os'
 import path from 'node:path'
 import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
+import { virtualError } from '@vidbee/task-queue-legacy'
 import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
 import { onlyFansChatRoutes, onlyFansChatUrl, onlyFansPurchasedRoutes, onlyFansPurchasedUrl, onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { afterEach, describe, expect, it } from '@effect/vitest'
@@ -9,7 +10,6 @@ import { vi } from 'vitest'
 
 const browser = vi.hoisted(() => ({ launch: vi.fn() }))
 vi.mock('playwright-core', () => ({ chromium: { launchPersistentContext: browser.launch } }))
-vi.mock('../src/availability', () => ({ resolveBrowserExecutable: () => '/synthetic/chromium' }))
 
 const url = 'https://onlyfans.com/example'
 const signedUrl = 'https://cdn2.onlyfans.com/files/photo.jpg?Signature=synthetic'
@@ -159,9 +159,9 @@ describe('profile transfer characterization through public entries', () => {
     }]))
     if (total === -Infinity) expect(Object.is(callbacks.onProgress.mock.calls[1]?.[0].progress.percent, -0)).toBe(true)
     const finish = callbacks.onFinish.mock.calls[0]?.[0]
-    expect(finish).toMatchObject({ taskId: 'profile-task', attemptId: 'profile-attempt', closedAt: 1234, stdoutTail: '', stderrTail: '' })
+    expect(finish).toEqual({ taskId: 'profile-task', attemptId: 'profile-attempt', closedAt: 1234, stdoutTail: '', stderrTail: '', result: succeeds ? { type: 'success', output: { filePath: fixture.target, size: 3, durationMs: null, sha256: null } } : { type: 'error', error: virtualError('auth-required', 'The downloaded file is incomplete.'), exitCode: null } })
     if (succeeds) expect(finish.result).toEqual({ type: 'success', output: { filePath: fixture.target, size: 3, durationMs: null, sha256: null } })
-    else expect(finish.result).toMatchObject({ type: 'error', exitCode: null, error: { category: 'auth-required', rawMessage: 'The downloaded file is incomplete.' } })
+    else expect(finish.result).toEqual({ type: 'error', exitCode: null, error: virtualError('auth-required', 'The downloaded file is incomplete.') })
     expect(fixture.profiles.get(url).items[0].downloaded).toBe(succeeds)
     expect(existsSync(`${fixture.target}.part`)).toBe(!succeeds)
     await control.cancel()
@@ -340,3 +340,6 @@ describe('profile persistence characterization through public entries', () => {
     expect(() => profiles.get(url)).toThrow('Enter a Fansly profile URL.')
   }, 10_000)
 })
+
+vi.mock('node:child_process', async (original) => { const real = await original<typeof import('node:child_process')>(); return { ...real, spawnSync: (...args: Parameters<typeof real.spawnSync>) => args[0] === 'which' ? { stdout: '/synthetic/chromium' } : real.spawnSync(...args) } })
+vi.mock('node:fs', async (original) => { const real = await original<typeof import('node:fs')>(); return { ...real, existsSync: (file: string) => file === '/synthetic/chromium' || (!file.startsWith('/usr/') && !file.startsWith('/opt/') && real.existsSync(file)) } })

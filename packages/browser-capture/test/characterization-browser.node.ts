@@ -1,3 +1,4 @@
+import { isolatedEnvironment, runOffline } from './fixtures/audit-offline.js'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, statSync } from 'node:fs'
@@ -7,13 +8,13 @@ import { NODE } from './fixtures/node-runtime.js'
 import { offline, REAL_BROWSER_SKIP } from './fixtures/real-browser.js'
 
 // Browser-process, timer and media work receives over ten times its local runtime budget.
-test('public sidecar real headed Chromium loopback playback and serialized quality programs', { timeout: 240000, skip: REAL_BROWSER_SKIP }, () => {
+test('public sidecar real headed Chromium loopback playback and serialized quality programs', { timeout: 240000, skip: REAL_BROWSER_SKIP }, async () => {
   const directory = mkdtempSync(join('/tmp', 'vbc-'))
   try {
     const output = join(directory, 'capture.mp4'); const job = join(directory, 'job.json')
     writeFileSync(job, JSON.stringify({ url: 'http://127.0.0.1/fixture', outputPath: output, ffmpegPath: '/usr/bin/ffmpeg', browserExecutable: '/usr/bin/chromium', width: 1024, height: 1024, durationHintSec: 8 }))
     const program = `process.argv=['node','sidecar','--job',${JSON.stringify(job)}];await import('@vidbee/browser-capture/sidecar')`
-    const result = spawnSync(...offline(NODE, ['--import', 'tsx', '--import', new URL('./fixtures/real-browser-driver.mjs', import.meta.url).href, '--input-type=module', '-e', program]), { encoding: 'utf8', timeout: 180000, env: { ...process.env, TMPDIR: directory, HOME: directory, XDG_CONFIG_HOME: directory, XDG_CACHE_HOME: directory } })
+    const result = await runOffline(...offline(NODE, ['--import', 'tsx', '--import', new URL('./fixtures/real-browser-driver.mjs', import.meta.url).href, '--input-type=module', '-e', program]), isolatedEnvironment(directory))
     assert.equal(result.error, undefined); assert.equal(result.status, 0, result.stdout + result.stderr)
     const events = result.stdout.trim().split('\n').filter((line) => line.startsWith('__VIDBEE_CAPTURE__')).map((line) => JSON.parse(line.slice('__VIDBEE_CAPTURE__'.length)))
     assert.equal(events[0].type, 'spawn')

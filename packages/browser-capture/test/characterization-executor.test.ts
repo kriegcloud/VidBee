@@ -5,15 +5,14 @@ import { virtualError } from '@vidbee/task-queue-legacy'
 import { afterEach, beforeEach, describe, expect, it } from '@effect/vitest'
 import { vi } from 'vitest'
 
-const host = vi.hoisted(() => ({ available: true, browser: '/fixture/chromium' as string | null, spawn: vi.fn(), mkdir: vi.fn(), stat: vi.fn(), write: vi.fn(), temp: vi.fn(), kill: vi.fn() }))
-vi.mock('../src/availability', () => ({ isBrowserCaptureAvailable: () => host.available, resolveBrowserExecutable: () => host.browser,  userHomeDir: () => '/fixture/home', DEFAULT_CAPTURE_SIZE: { width: 3840, height: 3840 } }))
-vi.mock('../src/local-storage', () => ({ readLocalStorageValue: async () => null }))
+const host = vi.hoisted(() => ({ available: true, browser: '/fixture/chromium' as string | null, spawn: vi.fn(), mkdir: vi.fn(), stat: vi.fn(), write: vi.fn(), temp: vi.fn(), kill: vi.fn(), paths: [] as string[] }))
+vi.mock('node:fs', async (original) => ({ ...await original<typeof import('node:fs')>(), existsSync: (file: string) => { host.paths.push(file); return file === '/fixture/Xvfb' || file === host.browser } }))
 // Token lookup is isolated at its public dependency rather than reading any real browser directory.
-vi.mock('@vidbee/downloader-core/cookie-browser-paths', () => ({ getBrowserProfileCandidates: () => [] }))
-vi.mock('node:child_process', async (original) => ({ ...await original<typeof import('node:child_process')>(), spawn: host.spawn }))
+vi.mock('@vidbee/downloader-core/cookie-browser-paths', () => ({ getBrowserProfileCandidates: vi.fn(() => []) }))
+vi.mock('node:child_process', async (original) => ({ ...await original<typeof import('node:child_process')>(), spawn: host.spawn, spawnSync: (_command: string, args: string[]) => ({ stdout: args[0] === 'Xvfb' ? (host.available ? '/fixture/Xvfb' : '') : (host.browser ?? '') }) }))
 vi.mock('node:fs/promises', () => ({ mkdir: host.mkdir, stat: host.stat, writeFile: host.write, mkdtemp: host.temp }))
 vi.mock('@vidbee/task-queue-legacy/process', () => ({ killProcessTree: host.kill }))
-import { BrowserCaptureExecutor, DrmFallbackExecutor, DRM_FALLBACK_MESSAGE } from '@vidbee/browser-capture'
+import { BrowserCaptureExecutor, DrmFallbackExecutor, DRM_FALLBACK_MESSAGE, VIRTUAL_DISPLAY_SIZE } from '@vidbee/browser-capture'
 
 const ctx: ExecutorContext = { taskId: 'task', attemptId: 'attempt', attemptNumber: 1, input: { kind: 'video', url: 'https://fixture.invalid/video', title: 'Fixture' } }
 const turns = async () => { for (let i = 0; i < 40; i++) await Promise.resolve() }
@@ -29,7 +28,7 @@ function setup() {
   return { child, trace, callbacks, executor }
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(1000); vi.clearAllMocks(); host.available = true; host.browser = '/fixture/chromium'
+  vi.useFakeTimers(); vi.setSystemTime(1000); vi.clearAllMocks(); host.paths.length = 0; host.available = true; host.browser = '/fixture/chromium'
   host.mkdir.mockResolvedValue(undefined); host.temp.mockResolvedValue('/fixture/job-dir'); host.write.mockResolvedValue(undefined)
   host.stat.mockImplementation(async (p: string) => { if (p === '/fixture/result.mp4') return { size: 3 }; throw new Error('absent') })
 })

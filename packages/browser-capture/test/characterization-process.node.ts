@@ -21,6 +21,7 @@ async function run(site: 'pactl' | 'recorder', drained: boolean) {
   let closed = false
   let exit: number | null = null
   let killedForCleanup = false
+  let originalFailure: unknown
   try {
     const job = join(root, 'job.json')
     const output = join(root, 'output.mp4')
@@ -64,7 +65,8 @@ async function run(site: 'pactl' | 'recorder', drained: boolean) {
       assert.equal(selected.some((row) => row.event === 'eof'), false)
     }
     return { drained, blocked: !drained, completedBytes: complete?.bytes ?? null, qWithoutEof: site === 'recorder', consumedControlBytes: observations.find((row) => row.event === 'control-bytes')?.bytes ?? null, ownedChildren: observations.filter((row) => row.event === 'owned-child').length, observations: selected.filter((row) => row.event !== 'backpressure').map(({ pid: _pid, ...row }) => row), backpressureObservations: selected.filter((row) => row.event === 'backpressure').length }
-  } finally {
+  } catch (error) { originalFailure = error; throw error } finally {
+    try {
     // Every PID came from this preload's actualSpawn result. No group/broad kills.
     if (child && !closed) child.kill('SIGKILL')
     const ownedPids = trace(root).filter((row) => row.event === 'owned-child' && row.pid).map((row) => row.pid).filter((pid): pid is number => pid !== undefined)
@@ -75,9 +77,9 @@ async function run(site: 'pactl' | 'recorder', drained: boolean) {
     for (const pid of ownedPids) if (stillOwned(pid)) {
       try { process.kill(pid, 'SIGKILL') } catch { /* Already reaped by its owning sidecar. */ }
     }
-    if (child && !closed) await until(() => closed, 'owned sidecar did not exit during cleanup', 5000)
-    await until(() => ownedPids.every((pid) => !stillOwned(pid)), 'owned child remained alive after cleanup', 5000)
-    rmSync(root, { recursive: true, force: true })
+    if (child && !closed) await until(() => closed, 'owned sidecar did not exit during cleanup', 20000)
+    await until(() => ownedPids.every((pid) => !stillOwned(pid)), 'owned child remained alive after cleanup', 20000)
+    } catch (error) { if (!originalFailure) throw error } finally { rmSync(root, { recursive: true, force: true }) }
   }
 }
 

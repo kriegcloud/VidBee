@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import * as Layer from 'effect/Layer'
@@ -13,7 +13,7 @@ import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/task-queue'
 import { PRIORITY_USER, TaskQueueAPI } from '@vidbee/task-queue-legacy'
 import { SqlitePersistAdapter, type SqlitePersistOptions, type PersistAdapter } from '@vidbee/task-queue-legacy/persist'
 
-assert.equal(process.version, 'v22.23.4')
+assert.equal(process.version, `v${readFileSync(new URL('../../../../.node-version', import.meta.url), 'utf8').trim()}`)
 const directory = mkdtempSync(path.join(tmpdir(), 'vidbee-profile-queue-'))
 const client = process.env.VIDBEE_QUEUE_DRIVER ?? 'borrowed'
 assert.ok(client === 'borrowed' || client === 'node', 'Unknown fixture SQL client')
