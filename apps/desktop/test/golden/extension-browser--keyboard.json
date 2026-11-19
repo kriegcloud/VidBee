@@ -1,0 +1,45 @@
+{
+  "name": "keyboard",
+  "focus": [
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Download with VidBeep",
+      "href": null
+    }
+  ]
+}

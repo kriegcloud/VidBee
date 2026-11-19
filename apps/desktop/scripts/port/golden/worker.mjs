@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -10,6 +10,10 @@ import { capture } from './capture.mjs'
 import { MCP_READ_TOOLS, runCases } from './cases.mjs'
 import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
+import { runExtensionBrowser } from './extension-browser.mjs'
+import { extensionBrowserFixture } from './extension-browser-fixture.mjs'
+import { compareBrowserRecordings } from './extension-browser-recordings.mjs'
+import { startLoopback } from './loopback.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
 import { runPhase8Cases } from './phase8-cases.mjs'
@@ -42,6 +46,84 @@ await client.rpc('notifications/initialized', {}, true)
 if (probe) {
   await client.rpc('tools/list')
   process.exit(0)
+}
+if (args.includes('--extension-browser-only')) {
+  const results = []
+  let failed = false
+  const fixturePage = path.join(runDir, 'userdata/phase8-fixtures/page.html')
+  await writeFile(fixturePage, extensionBrowserFixture(await readFile(fixturePage, 'utf8')))
+  const fixtureServer = await startLoopback(runDir, { phase8: true })
+  try {
+    for (const [label, extension] of [
+      ['old', process.env.VIDBEE_EXTENSION_BEFORE],
+      ['new', path.join(root, 'apps/extension/.output/chrome-mv3')]
+    ]) {
+      try {
+        if (!extension) {
+          throw new Error('VIDBEE_EXTENSION_BEFORE must name an archived, built pre-port extension')
+        }
+        results.push({
+          label,
+          ...(await runExtensionBrowser({
+            runDir,
+            extension,
+            label,
+            fixtureServer,
+            normalizationRoots: [
+              [build, '<build>'],
+              [root, '<repo>']
+            ]
+          }))
+        })
+      } catch (error) {
+        failed = true
+        results.push({ label, status: 'failed', error: String(error) })
+      }
+    }
+  } finally {
+    await fixtureServer.close()
+  }
+  if (results.every((value) => value.status === 'passed')) {
+    const changes = compareBrowserRecordings(results[0].recordings, results[1].recordings)
+    await writeFile(
+      path.join(runDir, 'extension-browser/parity.json'),
+      JSON.stringify(
+        {
+          status: changes.length ? 'review-required' : 'equal',
+          differences: changes,
+          declaredChanges: []
+        },
+        null,
+        2
+      )
+    )
+    if (changes.length) {
+      failed = true
+    }
+    const documents = path.join(root, 'apps/desktop/test/golden')
+    for (const file of (await readdir(documents)).filter((value) =>
+      /^extension-browser--.*\.json$/.test(value)
+    )) {
+      const name = file.slice('extension-browser--'.length, -5)
+      const actual = results[1].recordings.find((value) => value.name === name)
+      const expected = JSON.parse(await readFile(path.join(documents, file), 'utf8'))
+      const differences = compareBrowserRecordings(expected, actual)
+      if (differences.length) {
+        failed = true
+        process.stdout.write(`FAIL extension-browser/${name}\n${differences.join('\n')}\n`)
+      }
+    }
+  }
+  await mkdir(path.join(runDir, 'extension-browser'), { recursive: true })
+  await writeFile(
+    path.join(runDir, 'extension-browser/results.json'),
+    JSON.stringify(results, null, 2)
+  )
+  process.stdout.write(
+    `${JSON.stringify(results.map(({ recordings, attempts, ...value }) => value))}\n`
+  )
+  await new Promise((resolve) => process.stdout.write('', resolve))
+  process.exit(failed ? 1 : 0)
 }
 const subsetIndex = args.indexOf('--subset')
 const subset = subsetIndex < 0 ? '' : args[subsetIndex + 1]

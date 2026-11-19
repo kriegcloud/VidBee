@@ -141,11 +141,15 @@ const launch = async (runDir, seed, profile) => {
 const start = Date.now()
 // The browser-capture selector runs inside the loopback family: it skips the boot, MCP and
 // subscription cases exactly as --loopback-only does.
+const extensionBrowserOnly = args.includes('--extension-browser-only')
 const phase8Only = ['--phase8-only', '--extension-api-only', '--cli-additions-only'].some((flag) =>
   args.includes(flag)
 )
 const loopbackOnly =
-  phase8Only || args.includes('--loopback-only') || args.includes('--browser-capture-only')
+  extensionBrowserOnly ||
+  phase8Only ||
+  args.includes('--loopback-only') ||
+  args.includes('--browser-capture-only')
 try {
   if (option('--models')) {
     const cpuBuild = await verifyTranscriptionCpuBuild(build)
@@ -179,6 +183,7 @@ try {
     runDir,
     build,
     ...(args.includes('--update') ? ['--update'] : []),
+    ...(extensionBrowserOnly ? ['--extension-browser-only'] : []),
     ...args.filter((arg) =>
       ['--phase8-only', '--extension-api-only', '--cli-additions-only'].includes(arg)
     ),
@@ -196,7 +201,7 @@ try {
   )
   process.stdout.write(output)
   await stop()
-  if (!phase8Only) {
+  if (!(phase8Only || extensionBrowserOnly)) {
     if (!loopbackOnly || args.includes('--subscriptions-only')) {
       await prepareSubscriptionsRestart(runDir)
     }
@@ -241,7 +246,10 @@ try {
     throw new Error('Offline launcher exited unexpectedly before suite completion')
   }
   await stop()
-  await auditDns(work, phase8Only ? ['bootstrap', 'run'] : ['bootstrap', 'run', 'restart'])
+  await auditDns(
+    work,
+    phase8Only || extensionBrowserOnly ? ['bootstrap', 'run'] : ['bootstrap', 'run', 'restart']
+  )
   const result = { elapsedSeconds: (Date.now() - start) / 1000, build, work, status: 'passed' }
   await writeFile(path.join(work, 'result.json'), JSON.stringify(result, null, 2))
   process.stdout.write(
@@ -249,6 +257,9 @@ try {
   )
 } finally {
   await stop()
+  if (extensionBrowserOnly) {
+    await auditDns(work, ['bootstrap', 'run'])
+  }
   if (!loopbackOnly || args.includes('--subscriptions-only')) {
     await cleanupSubscriptionsRestart(path.join(work, 'run'))
   }

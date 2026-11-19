@@ -526,3 +526,80 @@ bundled media-tool or optional seam-module prerequisites produce one clear skip.
 Every suite's DNS audit checks readiness/self-test and the exact full-suite
 hostname union documented in phase 6b; DNS A answers and all interfaces remain
 loopback-only. Raw evidence is never committed.
+
+## Real Chromium extension worker
+
+The independent `--extension-browser-only` selector launches one disposable
+Chromium at a time inside the fixture application's offline namespace. Supply a
+pre-port output built from an untouched `git archive main` and a current Chrome
+MV3 build:
+
+```sh
+bun run build:extension
+VIDBEE_EXTENSION_BEFORE=/path/to/archive/apps/extension/.output/chrome-mv3 \
+  bun run test:golden --extension-browser-only --build /path/to/linux-unpacked \
+  --scratch /path/to/disk-backed/lane-scratch
+```
+
+`VIDBEE_EXTENSION_CHROMIUM` explicitly selects the executable; otherwise the
+worker tries host Chromium candidates. It records the version actually launched,
+manifest-derived identity, API invocation and separate unpacked-load/action-popup
+results. It uses an owned Xvfb display when available, and headless Chromium
+otherwise. Missing capabilities print exactly one of:
+
+```text
+SKIP extension browser proof: no available Chromium loads the unpacked extension
+SKIP extension browser proof: available Chromium cannot open the extension action popup
+```
+
+A capability skip is missing integration proof. Missing extension build inputs
+and failures after popup capability passes fail the selector. Both labels are
+attempted and independently reported. There is no substitution of old bytes for
+a missing new build. A failed selector still stops its fixture and audits DNS.
+
+Receipts are under `run/extension-browser/{old,new}/`: capability, raw network
+requests/responses, browser exceptions, per-step storage/DOM/accessibility,
+screenshots and listener/timer diagnostics. The worker observes the popup's own
+`tabs.query` result and requires the namespace-local fixture URL. It never clicks
+Open Client or a Download control and checks isolated handler discovery before
+launch. Scratch HOME/XDG and the short disposable temporary alias prevent real
+profile use and Chromium Unix socket path overflow.
+
+The final matrix completes 20 observations old/new in each of five consecutive
+runs, with actual rendered 180p rows. Only keyboard focus and the instrumented
+cleanup counters are stable; their two `extension-browser--*.json` documents
+are admitted. Eighteen observations stay in receipts with both differing values
+listed in [the exclusions](reports/8-extension-browser-exclusions.json). Cleanup
+counters cover post-attachment registrations, not an absolute initial-listener
+count or a heap/GC proof.
+
+Strict old/new comparison still fails on `X-VidBee-Extension` versus
+`x-vidbee-extension`. The admission helper accepts a complete digest-bound
+classification of declared section 9 changes, reported defects and observed
+instability; characterization admission does not waive that parity failure.
+The initial new build also exposed an ignored `Extension.logging.ts` source
+missing from HEAD; a reproducible clean checkout still needs that source.
+See [the browser report](reports/8-extension-browser.md) for the complete proof
+and the separate full-suite CLI failures.
+
+The browser selector alone annotates its disposable HTML5 source with dimensions
+and an `180p` label consumed by the vendored extractor. This enables an actual
+format table without changing shared fixtures, existing API goldens or the
+fixture's User-Agent configuration.
+
+After collecting five complete consecutive suite directories, inspect strict
+old/new parity and the stability receipt before admitting any new document:
+
+```sh
+node apps/desktop/scripts/port/golden/extension-browser-admit.mjs /scratch/suite-1 /scratch/suite-2 /scratch/suite-3 /scratch/suite-4 /scratch/suite-5
+```
+
+Adding `--update` writes only stable `extension-browser--*.json` documents. It
+refuses partial runs and unresolved parity differences. A design-section-9
+change still requires an explicit row and both recordings; the helper has no
+blanket malformed-data waiver. Raw CDP transport IDs/timings stay in receipts.
+The browser projection keeps wire headers, request order/body, response body,
+storage, rendered body DOM, AX names/properties and screenshot hashes. It
+normalizes stored `fetchedAt` and token query values. Encoded fixture ports remain
+literal, matching the phase-8 request-sequence exclusion. These browser-specific
+rules do not change any existing golden normalizer.
