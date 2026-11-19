@@ -23,7 +23,8 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test test/*.test.ts"
+    "test": "tsx --test test/profile-subscriptions.test.ts test/*.node.ts && bunx --bun vitest run test/characterization-*.test.ts test/review",
+    "check": "tsc -p tsconfig.characterization.json"
   },
   "dependencies": {
     "@vidbee/downloader-core": "workspace:^",
