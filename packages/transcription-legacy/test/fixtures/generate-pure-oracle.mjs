@@ -14,13 +14,14 @@ const fixtures = []
 for (const [module, names] of Object.entries(seeds)) {
 const old = await import(new URL('modules/'+module+'.js',oldBase).href);
 for (const [name, cases] of Object.entries(names)) {
- for (const args of substitutions(cases)) {
+ for (const [seed, args] of cases.flatMap((seed, index) => substitutions([seed]).map(args => [index, args]))) {
   const saved = pack(args)
   const expected = observe(old[name], args)
   // Old engine errors are compared (the new call must still fail) except where a non-array was
-  // supplied in a declared array position: no parity is owed there, so those rows are excluded.
-  const excluded = expected.failed && expected.engine && cases.some(seed=>wrongArray(seed,args)) ? 'old-engine-error' : undefined
-  fixtures.push({module,name,args:saved,expected,...(excluded ? {excluded} : {})})
+  // supplied in a declared array position of the seed that generated the row: no parity is owed
+  // there, so those rows are excluded. Excluded rows record that seed's index.
+  const excluded = expected.failed && expected.engine && wrongArray(cases[seed],args) ? 'old-engine-error' : undefined
+  fixtures.push({module,name,args:saved,expected,...(excluded ? {excluded,seed} : {})})
  }
 }}
 const bytes='[\n'+fixtures.map(f=>JSON.stringify(f)).join(',\n')+'\n]\n'
