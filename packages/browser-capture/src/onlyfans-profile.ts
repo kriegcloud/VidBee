@@ -1,1211 +1,316 @@
-import { type ChildProcess, spawn } from 'node:child_process'
-import { createHash } from 'node:crypto'
-import {
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  renameSync,
-  statSync,
-  writeFileSync
-} from 'node:fs'
-import path from 'node:path'
-import { Readable, Transform } from 'node:stream'
-import { pipeline } from 'node:stream/promises'
-import { setTimeout as delay } from 'node:timers/promises'
-import { isOnlyFansSite, type OnlyFansChatRoute, type OnlyFansCommand, type OnlyFansDownload, type OnlyFansItem, type OnlyFansProfile, onlyFansChatTargets, onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
-import { OnlyFansCommandSchema, OnlyFansDownloadSchema, OnlyFansProfileSchema } from '@vidbee/downloader-core-legacy/onlyfans-profile'
-import {
-  type Executor,
-  type ExecutorContext,
-  type ExecutorEvents,
-  type ExecutorRun,
-  PRIORITY_USER,
-  type TaskOutput,
-  type TaskQueueAPI,
-  virtualError
-} from '@vidbee/task-queue-legacy'
-import type { BrowserContext, Locator, Page, Response } from 'playwright-core'
-import { resolveBrowserExecutable } from './availability'
+import { isOnlyFansSite, onlyFansChatTargets, onlyFansProfile } from "@vidbee/downloader-core/onlyfans-profile";
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as MutableHashMap from "effect/MutableHashMap";
+import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
+import * as R from "effect/Record";
+import * as Str from "effect/String";
+import { browserProfilesLayer } from "./BrowserProfiles.layer.js";
+import type { OnlyFansChatRoute, OnlyFansItem, OnlyFansProfile } from "@vidbee/downloader-core/onlyfans-profile";
 
-const record = (value: unknown): Record<string, unknown> =>
-  value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
+const record = (value: unknown): Record<string, unknown> => (P.isObject(value) ? value : {});
 const id = (value: unknown): string | null =>
-  (typeof value === 'string' || typeof value === 'number') && /^\d+$/.test(String(value))
-    ? String(value)
-    : null
+  (typeof value === "string" || typeof value === "number") && /^\d+$/.test(String(value)) ? String(value) : null;
 
 /** Only signed media URLs from the site's CDN are eligible; never send account cookies. */
 export function onlyFansMediaUrl(value: unknown): string | null {
-  if (typeof value !== 'string') {
-    return null
+  if (typeof value !== "string") {
+    return null;
   }
   try {
-    const url = new URL(value)
-    return url.protocol === 'https:' &&
+    const url = new URL(value);
+    return url.protocol === "https:" &&
       /^cdn\d*\.onlyfans\.com$/.test(url.hostname) &&
-      !url.username &&
-      !url.password &&
-      !url.port &&
-      url.pathname.startsWith('/files/')
+      !P.isTruthy(url.username) &&
+      !P.isTruthy(url.password) &&
+      !P.isTruthy(url.port) &&
+      Str.startsWith("/files/")(url.pathname)
       ? url.href
-      : null
+      : null;
   } catch {
-    return null
+    return null;
   }
 }
 
 /** Extract references only. Signed CDN URLs live in memory and are not saved in profiles. */
-export function onlyFansItems(payload: unknown): { item: OnlyFansItem; mediaUrl: string | null }[] {
-  const body = record(payload)
-  const entries = ['list', 'items', 'data', 'media', 'messages', 'posts']
-    .map((key) => body[key])
-    .find(Array.isArray)
-  const posts = Array.isArray(payload)
+export function onlyFansItems(payload: unknown): {
+  item: OnlyFansItem;
+  mediaUrl: string | null;
+}[] {
+  const body = record(payload);
+  const entries = Option.getOrUndefined(
+    A.findFirst(
+      A.map(["list", "items", "data", "media", "messages", "posts"], (key) => body[key]),
+      (value): value is unknown[] => A.isArray(value)
+    )
+  );
+  const posts = A.isArray(payload)
     ? payload
-    : id(body.id) && Array.isArray(body.media)
+    : P.isTruthy(id(body.id)) && A.isArray(body.media)
       ? [body]
-      : (entries ?? [body])
-  const output: { item: OnlyFansItem; mediaUrl: string | null }[] = []
+      : (entries ?? [body]);
+  const output: {
+    item: OnlyFansItem;
+    mediaUrl: string | null;
+  }[] = [];
   for (const value of posts) {
-    const post = record(value)
-    const postId = id(post.id)
-    const mediaEntries = Array.isArray(post.media) ? post.media : [post]
-    if (!postId) {
-      continue
+    const post = record(value);
+    const postId = id(post.id);
+    const mediaEntries = A.isArray(post.media) ? post.media : [post];
+    if (postId === null || !P.isTruthy(postId)) {
+      continue;
     }
     for (const raw of mediaEntries) {
-      const media = record(raw)
-      const mediaId = id(media.id)
-      if (!(mediaId && ['photo', 'gif', 'video'].includes(String(media.type)))) {
-        continue
+      const media = record(raw);
+      const mediaId = id(media.id);
+      if (mediaId === null || !P.isTruthy(mediaId) || !A.contains(["photo", "gif", "video"], String(media.type))) {
+        continue;
       }
-      const files = record(media.files)
-      const full = record(files.full)
-      const sources = record(media.videoSources)
-      const candidate = Object.entries(sources)
-        .sort(([a], [b]) => Number(b) - Number(a))
-        .map(([, url]) => onlyFansMediaUrl(url))
-        .find(Boolean)
+      const files = record(media.files);
+      const full = record(files.full);
+      const sources = record(media.videoSources);
+      const candidate = Option.getOrUndefined(
+        A.findFirst(
+          A.map(
+            R.toEntries(sources).sort(([a], [b]) => Number(b) - Number(a)),
+            ([, url]) => onlyFansMediaUrl(url)
+          ),
+          Boolean
+        )
+      );
       const mediaUrl =
         onlyFansMediaUrl(full.url) ??
         onlyFansMediaUrl(record(files.source).url) ??
         onlyFansMediaUrl(media.src) ??
         candidate ??
-        null
-      const drm = Object.keys(record(files.drm)).length > 0
+        null;
+      const drm = R.keys(record(files.drm)).length > 0;
       output.push({
         item: {
           id: mediaId,
           postId: id(post.messageId) ?? id(post.postId) ?? postId,
-          category: media.type === 'video' ? 'videos' : 'photos',
+          category: media.type === "video" ? "videos" : "photos",
           state:
             media.canView === false || post.canViewMedia === false
-              ? 'locked'
-              : mediaUrl
-                ? 'available'
+              ? "locked"
+              : P.isTruthy(mediaUrl)
+                ? "available"
                 : drm
-                  ? 'drm'
-                  : 'locked',
-          downloaded: false
+                  ? "drm"
+                  : "locked",
+          downloaded: false,
         },
-        mediaUrl: media.canView === false || post.canViewMedia === false ? null : mediaUrl
-      })
+        mediaUrl: media.canView === false || post.canViewMedia === false ? null : mediaUrl,
+      });
     }
   }
-  return output
+  return output;
 }
+export type { ChatVideoAttachment } from "./Profile.model.js";
 
-export interface ChatVideoAttachment {
-  id: string
-  postId: string
-  state: OnlyFansItem['state']
-  durationSec: number | null
-  previewPath: string | null
-}
+import type { ChatVideoAttachment } from "./Profile.model.js";
 
 const previewPath = (media: Record<string, unknown>): string | null => {
-  const files = record(media.files)
-  for (const key of ['thumb', 'preview', 'squarePreview', 'miniPreview']) {
-    const raw = record(files[key]).url
-    if (typeof raw !== 'string') {
-      continue
+  const files = record(media.files);
+  for (const key of ["thumb", "preview", "squarePreview", "miniPreview"]) {
+    const raw = record(files[key]).url;
+    if (typeof raw !== "string") {
+      continue;
     }
     try {
-      const url = new URL(raw)
-      if (url.protocol === 'https:' && /^cdn\d*\.onlyfans\.com$/.test(url.hostname)) {
-        return url.pathname
+      const url = new URL(raw);
+      if (url.protocol === "https:" && /^cdn\d*\.onlyfans\.com$/.test(url.hostname)) {
+        return url.pathname;
       }
     } catch {
       /* ignore unreadable preview urls */
     }
   }
-  return null
-}
+  return null;
+};
 
 /**
  * Videos in the order `onlyFansItems` walks a chat message payload.
  * Photos and other attachments are skipped and do not shift the index.
  */
 export function chatVideoAttachments(payload: unknown): ChatVideoAttachment[] {
-  const body = record(payload)
-  const posts = Array.isArray(body.list) ? body.list : [body]
-  const extras = new Map<string, { durationSec: number | null; previewPath: string | null }>()
+  const body = record(payload);
+  const posts = A.isArray(body.list) ? body.list : [body];
+  const extras = MutableHashMap.empty<
+    string,
+    {
+      durationSec: number | null;
+      previewPath: string | null;
+    }
+  >();
   for (const value of posts) {
-    const post = record(value)
-    if (!Array.isArray(post.media)) {
-      continue
+    const post = record(value);
+    if (!A.isArray(post.media)) {
+      continue;
     }
     for (const raw of post.media) {
-      const media = record(raw)
-      const mediaId = id(media.id)
-      if (!(mediaId && media.type === 'video')) {
-        continue
+      const media = record(raw);
+      const mediaId = id(media.id);
+      if (!(P.isTruthy(mediaId) && media.type === "video")) {
+        continue;
       }
-      const duration = Number(media.duration)
-      extras.set(mediaId, {
+      const duration = Number(media.duration);
+      MutableHashMap.set(extras, mediaId, {
         durationSec: Number.isFinite(duration) && duration > 0 ? duration : null,
-        previewPath: previewPath(media)
-      })
+        previewPath: previewPath(media),
+      });
     }
   }
-  return onlyFansItems(payload)
-    .filter(({ item }) => item.category === 'videos')
-    .map(({ item }) => {
-      const extra = extras.get(item.id)
+  return A.map(
+    A.filter(onlyFansItems(payload), ({ item }) => item.category === "videos"),
+    ({ item }) => {
+      const extra = Option.getOrUndefined(MutableHashMap.get(extras, item.id));
       return {
         id: item.id,
         postId: item.postId,
         state: item.state,
         durationSec: extra?.durationSec ?? null,
-        previewPath: extra?.previewPath ?? null
-      }
-    })
+        previewPath: extra?.previewPath ?? null,
+      };
+    }
+  );
 }
 
 /** 1-based video index in message-list order. A missing index is null, not a later video. */
-export function chatVideoByOrdinal(payload: unknown, ordinal: number): ChatVideoAttachment | null {
+function chatVideoByOrdinalDataFirst(payload: unknown, ordinal: number): ChatVideoAttachment | null {
   if (!Number.isInteger(ordinal) || ordinal < 1) {
-    return null
+    return null;
   }
-  return chatVideoAttachments(payload)[ordinal - 1] ?? null
+  return chatVideoAttachments(payload)[ordinal - 1] ?? null;
 }
 
 /** Match only the selected conversation, never the chat list or another conversation. */
-export function onlyFansChatResponse(url: URL, chatId: string): boolean {
-  return (
-    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/chats/${chatId}/messages`
-  )
+function onlyFansChatResponseDataFirst(url: URL, chatId: string): boolean {
+  return url.origin === "https://onlyfans.com" && url.pathname === `/api2/v2/chats/${chatId}/messages`;
 }
-
-export function onlyFansChatMediaResponse(
-  url: URL,
-  chatId: string,
-  route?: OnlyFansChatRoute
-): boolean {
-  if (url.origin !== 'https://onlyfans.com' || url.pathname !== `/api2/v2/chats/${chatId}/media`) {
-    return false
+function onlyFansChatMediaResponseDataFirst(url: URL, chatId: string, route?: OnlyFansChatRoute): boolean {
+  if (url.origin !== "https://onlyfans.com" || url.pathname !== `/api2/v2/chats/${chatId}/media`) {
+    return false;
   }
-  if (!route) {
-    return true
+  if (route === undefined || !P.isTruthy(route)) {
+    return true;
   }
-  const target = onlyFansChatTargets[route]
-  return target.feed === 'media'
+  const target = onlyFansChatTargets[route];
+  return target.feed === "media";
 }
-
-export function onlyFansPurchasedResponse(url: URL, userId: string): boolean {
-  if (url.origin !== 'https://onlyfans.com' || url.pathname !== '/api2/v2/posts/paid') {
-    return false
+function onlyFansPurchasedResponseDataFirst(url: URL, userId: string): boolean {
+  if (url.origin !== "https://onlyfans.com" || url.pathname !== "/api2/v2/posts/paid") {
+    return false;
   }
   const requestedUser =
-    url.searchParams.get('userId') ??
-    url.searchParams.get('user_id') ??
-    url.searchParams.get('user')
-  return requestedUser === userId
+    url.searchParams.get("userId") ?? url.searchParams.get("user_id") ?? url.searchParams.get("user");
+  return requestedUser === userId;
 }
-
 function onlyFansMessageUrl(item: OnlyFansItem, profile: OnlyFansProfile): string | null {
-  if (!profile.chatId) {
-    return null
+  if (!P.isTruthy(profile.chatId)) {
+    return null;
   }
-  const base = `https://onlyfans.com/my/chats/chat/${profile.chatId}`
-  return profile.chatRoute && profile.chatRoute !== 'messages'
+  const base = `https://onlyfans.com/my/chats/chat/${profile.chatId}`;
+  return P.isTruthy(profile.chatRoute) && profile.chatRoute !== "messages"
     ? `${base}/media/${item.id}`
-    : `${base}?firstId=${item.postId}`
+    : `${base}?firstId=${item.postId}`;
 }
-
-async function* readBody(body: ReadableStream<Uint8Array>): AsyncGenerator<Uint8Array> {
-  const reader = body.getReader()
-  try {
-    while (true) {
-      const chunk = await reader.read()
-      if (chunk.done) {
-        return
-      }
-      yield chunk.value
-    }
-  } finally {
-    reader.releaseLock()
-  }
-}
-
 export interface BrowserProfileAdapter {
-  name: string
-  key: string
-  origin: string
-  normalize: typeof onlyFansProfile
-  isSite: typeof isOnlyFansSite
-  items: typeof onlyFansItems
-  ownerResponse: (url: URL, username: string) => boolean
-  ownerId: (payload: unknown, username: string) => string | null
-  feedResponse: (url: URL, ownerId: string, profile: OnlyFansProfile) => boolean
-  complete: (payload: unknown) => boolean
-  queueUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
-  refreshUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string
-  refreshResponse: (url: URL, item: OnlyFansItem, profile: OnlyFansProfile) => boolean
-  scrollMode: (profile: OnlyFansProfile) => { nested: boolean; chat: boolean }
-  requiresCookies: boolean
+  complete: (payload: unknown) => boolean;
+  feedResponse: (url: URL, ownerId: string, profile: OnlyFansProfile) => boolean;
+  isSite: typeof isOnlyFansSite;
+  items: typeof onlyFansItems;
+  key: string;
+  name: string;
+  normalize: typeof onlyFansProfile;
+  origin: string;
+  ownerId: (payload: unknown, username: string) => string | null;
+  ownerResponse: (url: URL, username: string) => boolean;
+  queueUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string;
+  refreshResponse: (url: URL, item: OnlyFansItem, profile: OnlyFansProfile) => boolean;
+  refreshUrl: (item: OnlyFansItem, profile: OnlyFansProfile) => string;
+  requiresCookies: boolean;
+  scrollMode: (profile: OnlyFansProfile) => {
+    nested: boolean;
+    chat: boolean;
+  };
 }
-
-const onlyFansAdapter: BrowserProfileAdapter = {
-  name: 'OnlyFans',
-  key: 'onlyfans',
-  origin: 'https://onlyfans.com',
+export const onlyFansAdapter: BrowserProfileAdapter = {
+  name: "OnlyFans",
+  key: "onlyfans",
+  origin: "https://onlyfans.com",
   normalize: onlyFansProfile,
   isSite: isOnlyFansSite,
   items: onlyFansItems,
   ownerResponse: (url, username) =>
-    url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/users/${username}`,
+    url.origin === "https://onlyfans.com" && url.pathname === `/api2/v2/users/${username}`,
   ownerId: (payload) => id(record(payload).id),
   feedResponse: (url, ownerId, profile) =>
-    profile.chatId
-      ? profile.chatRoute && onlyFansChatTargets[profile.chatRoute].feed === 'media'
-        ? onlyFansChatMediaResponse(url, profile.chatId, profile.chatRoute)
-        : onlyFansChatResponse(url, profile.chatId)
-      : profile.purchasedUserId
-        ? onlyFansPurchasedResponse(url, profile.purchasedUserId)
-        : url.origin === 'https://onlyfans.com' &&
-          url.pathname.startsWith(`/api2/v2/users/${ownerId}/posts`),
+    profile.chatId !== undefined && P.isTruthy(profile.chatId)
+      ? profile.chatRoute !== undefined &&
+        P.isTruthy(profile.chatRoute) &&
+        onlyFansChatTargets[profile.chatRoute].feed === "media"
+        ? onlyFansChatMediaResponseDataFirst(url, profile.chatId, profile.chatRoute)
+        : onlyFansChatResponseDataFirst(url, profile.chatId)
+      : profile.purchasedUserId !== undefined && P.isTruthy(profile.purchasedUserId)
+        ? onlyFansPurchasedResponseDataFirst(url, profile.purchasedUserId)
+        : url.origin === "https://onlyfans.com" && Str.startsWith(`/api2/v2/users/${ownerId}/posts`)(url.pathname),
   complete: (payload) => record(payload).hasMore === false,
   queueUrl: (item, profile) =>
     onlyFansMessageUrl(item, profile) ??
-    (profile.purchasedUserId
+    (profile.purchasedUserId !== undefined && P.isTruthy(profile.purchasedUserId)
       ? `${profile.profileUrl}#media=${item.id}`
       : `https://onlyfans.com/${item.postId}/${profile.username}`),
   refreshUrl: (item, profile) =>
     onlyFansMessageUrl(item, profile) ??
-    (profile.purchasedUserId
+    (profile.purchasedUserId !== undefined && P.isTruthy(profile.purchasedUserId)
       ? profile.profileUrl
       : `https://onlyfans.com/${item.postId}/${profile.username}`),
   refreshResponse: (url, item, profile) =>
-    profile.chatId
-      ? onlyFansChatResponse(url, profile.chatId) ||
-        onlyFansChatMediaResponse(url, profile.chatId) ||
-        (url.origin === 'https://onlyfans.com' &&
+    profile.chatId !== undefined && P.isTruthy(profile.chatId)
+      ? onlyFansChatResponseDataFirst(url, profile.chatId) ||
+        onlyFansChatMediaResponseDataFirst(url, profile.chatId) ||
+        (url.origin === "https://onlyfans.com" &&
           (url.pathname === `/api2/v2/chats/${profile.chatId}/messages/${item.postId}` ||
             url.pathname === `/api2/v2/chats/${profile.chatId}/media/${item.id}`))
-      : profile.purchasedUserId
-        ? onlyFansPurchasedResponse(url, profile.purchasedUserId)
-        : url.origin === 'https://onlyfans.com' && url.pathname === `/api2/v2/posts/${item.postId}`,
+      : profile.purchasedUserId !== undefined && P.isTruthy(profile.purchasedUserId)
+        ? onlyFansPurchasedResponseDataFirst(url, profile.purchasedUserId)
+        : url.origin === "https://onlyfans.com" && url.pathname === `/api2/v2/posts/${item.postId}`,
   scrollMode: (profile) => ({
-    nested: Boolean(profile.chatId || profile.purchasedUserId),
-    chat: Boolean(
+    nested: P.isTruthy(profile.chatId || profile.purchasedUserId),
+    chat: P.isTruthy(
       profile.chatId &&
-        (!profile.chatRoute || onlyFansChatTargets[profile.chatRoute].feed === 'messages')
-    )
+        (profile.chatRoute === undefined ||
+          !P.isTruthy(profile.chatRoute) ||
+          onlyFansChatTargets[profile.chatRoute].feed === "messages")
+    ),
   }),
-  requiresCookies: true
-}
+  requiresCookies: true,
+};
+export const chatVideoByOrdinal: {
+  (ordinal: number): (payload: unknown) => ChatVideoAttachment | null;
+  (payload: unknown, ordinal: number): ChatVideoAttachment | null;
+} = dual(2, chatVideoByOrdinalDataFirst);
+export const onlyFansChatResponse: {
+  (chatId: string): (url: URL) => boolean;
+  (url: URL, chatId: string): boolean;
+} = dual(2, onlyFansChatResponseDataFirst);
+export const onlyFansChatMediaResponse: {
+  (chatId: string, route?: OnlyFansChatRoute): (url: URL) => boolean;
+  (url: URL, chatId: string, route?: OnlyFansChatRoute): boolean;
+} = dual(
+  (args) => args.length >= 3 || (args.length >= 2 && typeof args[0] !== "string"),
+  onlyFansChatMediaResponseDataFirst
+);
+export const onlyFansPurchasedResponse: {
+  (userId: string): (url: URL) => boolean;
+  (url: URL, userId: string): boolean;
+} = dual(2, onlyFansPurchasedResponseDataFirst);
 
-export class OnlyFansProfiles {
-  private loginBrowser: ChildProcess | null = null
-  private context: BrowserContext | null = null
-  private opening: Promise<BrowserContext> | null = null
-  private page: Page | null = null
-  private active: { profileUrl: string; controller: AbortController; done: Promise<void> } | null =
-    null
-  private downloading = false
-  private readonly profiles = new Map<string, OnlyFansProfile>()
-  private readonly media = new Map<string, string>()
-
-  readonly adapter: BrowserProfileAdapter
-  private readonly storageDir: string
-  private readonly defaultDownloadDir: () => string
-
-  constructor(
-    storageDir: string,
-    defaultDownloadDir: () => string,
-    adapter: BrowserProfileAdapter = onlyFansAdapter
-  ) {
-    this.adapter = adapter
-    this.storageDir = storageDir
-    this.defaultDownloadDir = defaultDownloadDir
-  }
-
-  private key(username: string, mediaId: string): string {
-    return `${username}/${mediaId}`
-  }
-
-  private profileKey(
-    profile: Pick<
-      OnlyFansProfile,
-      'username' | 'chatId' | 'chatRoute' | 'purchasedUserId' | 'purchasedRoute'
-    >
-  ): string {
-    if (profile.purchasedUserId) {
-      return `purchased-${profile.purchasedUserId}-${profile.purchasedRoute ?? 'all'}`
-    }
-    return profile.chatId && profile.chatRoute && profile.chatRoute !== 'messages'
-      ? `${profile.username}-${profile.chatRoute}`
-      : profile.username
-  }
-
-  private save(profile: OnlyFansProfile): void {
-    mkdirSync(this.storageDir, { recursive: true, mode: 0o700 })
-    profile.updatedAt = Date.now()
-    const target = path.join(this.storageDir, `${this.profileKey(profile)}.json`)
-    writeFileSync(`${target}.tmp`, JSON.stringify(profile), { mode: 0o600 })
-    renameSync(`${target}.tmp`, target)
-  }
-
-  private linkChatCreatorUsername(profile: OnlyFansProfile, username: string): void {
-    if (!(profile.chatId && this.adapter.key === 'onlyfans')) {
-      return
-    }
-    const owner = this.adapter.normalize(`${this.adapter.origin}/${username}`)
-    if (!owner || owner.chatId) {
-      return
-    }
-    for (const route of this.list()) {
-      if (route.chatId !== profile.chatId) {
-        continue
-      }
-      const saved = this.profiles.get(this.profileKey(route))
-      if (saved && saved.creatorUsername !== owner.username) {
-        saved.creatorUsername = owner.username
-        this.save(saved)
-      }
-    }
-    profile.creatorUsername = owner.username
-    this.save(profile)
-    const creator = this.get(owner.profileUrl)
-    const savedCreator = this.profiles.get(this.profileKey(creator))
-    if (savedCreator && savedCreator.linkedChatId !== profile.chatId) {
-      savedCreator.linkedChatId = profile.chatId
-      this.save(savedCreator)
-    }
-  }
-
-  private async linkChatCreator(page: Page, profile: OnlyFansProfile): Promise<void> {
-    if (!(profile.chatId && this.adapter.key === 'onlyfans')) {
-      return
-    }
-    let href: string | null = null
-    try {
-      href = await page
-        .locator('h1.g-page-title a.g-user-name[href]')
-        .first()
-        .getAttribute('href', { timeout: 5000 })
-    } catch {
-      return
-    }
-    if (!href) {
-      return
-    }
-    let owner: ReturnType<BrowserProfileAdapter['normalize']> = null
-    try {
-      owner = this.adapter.normalize(new URL(href, this.adapter.origin).href)
-    } catch {
-      return
-    }
-    if (owner && !owner.chatId) {
-      this.linkChatCreatorUsername(profile, owner.username)
-    }
-  }
-
-  get(url: string): OnlyFansProfile {
-    const normalized = this.adapter.normalize(url)
-    if (!normalized) {
-      throw new Error(`Enter a ${this.adapter.name} profile URL.`)
-    }
-    const profileKey = this.profileKey(normalized)
-    let profile = this.profiles.get(profileKey)
-    if (!profile) {
-      const filename = path.join(this.storageDir, `${profileKey}.json`)
-      if (existsSync(filename)) {
-        profile = OnlyFansProfileSchema.parse(JSON.parse(readFileSync(filename, 'utf8')))
-        if (
-          profile.username !== normalized.username ||
-          profile.profileUrl !== normalized.profileUrl ||
-          profile.chatId !== normalized.chatId ||
-          profile.chatRoute !== normalized.chatRoute ||
-          profile.purchasedUserId !== normalized.purchasedUserId ||
-          profile.purchasedRoute !== normalized.purchasedRoute
-        ) {
-          throw new Error('Saved profile identity does not match.')
-        }
-        if (profile.state === 'mapping') {
-          profile.state = 'partial'
-        }
-      } else {
-        profile = { ...normalized, state: 'idle', updatedAt: Date.now(), pages: 0, items: [] }
-      }
-      this.profiles.set(profileKey, profile)
-    }
-    return structuredClone(profile)
-  }
-
-  list(): OnlyFansProfile[] {
-    if (!existsSync(this.storageDir)) {
-      return []
-    }
-    return readdirSync(this.storageDir)
-      .filter((name) => /^[a-z0-9._-]+\.json$/.test(name))
-      .flatMap((name) => {
-        try {
-          const saved: unknown = JSON.parse(readFileSync(path.join(this.storageDir, name), 'utf8'))
-          const profile = OnlyFansProfileSchema.parse(saved)
-          return [this.get(profile.profileUrl)]
-        } catch {
-          return []
-        }
-      })
-  }
-
-  private async browser(): Promise<BrowserContext> {
-    if (this.context) {
-      return this.context
-    }
-    if (
-      this.loginBrowser &&
-      this.loginBrowser.exitCode === null &&
-      this.loginBrowser.signalCode === null
-    ) {
-      throw new Error('Close the dedicated login window after signing in, then map the profile.')
-    }
-    if (!this.opening) {
-      this.opening = (async () => {
-        const executablePath = resolveBrowserExecutable('chrome')
-        if (!executablePath) {
-          throw new Error(
-            `Install Chrome or Chromium on the VidBeep host to open its ${this.adapter.name} session.`
-          )
-        }
-        const { chromium } = await import('playwright-core')
-        const directory = path.join(this.storageDir, 'browser-session')
-        mkdirSync(directory, { recursive: true, mode: 0o700 })
-        const context = await chromium.launchPersistentContext(directory, {
-          executablePath,
-          headless: false,
-          viewport: null,
-          ignoreDefaultArgs: ['--enable-automation'],
-          args: ['--no-first-run']
-        })
-        this.context = context
-        context.on('close', () => {
-          this.context = null
-          this.page = null
-        })
-        return context
-      })().finally(() => {
-        this.opening = null
-      })
-    }
-    return this.opening
-  }
-
-  private async browserPage(): Promise<Page> {
-    const context = await this.browser()
-    if (!this.page || this.page.isClosed()) {
-      this.page = context.pages()[0] ?? (await context.newPage())
-    }
-    return this.page
-  }
-
-  async command(raw: OnlyFansCommand): Promise<OnlyFansProfile> {
-    const input = OnlyFansCommandSchema.parse(raw)
-    const snapshot = this.get(input.url)
-    const profile = this.profiles.get(this.profileKey(snapshot))
-    if (!profile) {
-      throw new Error('Saved profile is unavailable.')
-    }
-    if (input.action === 'get') {
-      return snapshot
-    }
-    if (input.action === 'stop') {
-      if (this.active?.profileUrl === profile.profileUrl) {
-        this.active.controller.abort()
-        await this.active.done
-      }
-      return this.get(input.url)
-    }
-    if (this.active || this.downloading) {
-      throw new Error(
-        `Another ${this.adapter.name} operation is running. Stop it or wait for it to finish.`
-      )
-    }
-    if (input.action === 'open' && this.adapter.key === 'fansly') {
-      if (this.context) {
-        await this.context.close()
-      }
-      const executable = resolveBrowserExecutable('chrome')
-      if (!executable) {
-        throw new Error('Install Chrome or Chromium to sign in.')
-      }
-      const directory = path.join(this.storageDir, 'browser-session')
-      mkdirSync(directory, { recursive: true, mode: 0o700 })
-      if (
-        !(
-          this.loginBrowser &&
-          this.loginBrowser.exitCode === null &&
-          this.loginBrowser.signalCode === null
-        )
-      ) {
-        const child = spawn(
-          executable,
-          [`--user-data-dir=${directory}`, '--no-first-run', profile.profileUrl],
-          { stdio: 'ignore' }
-        )
-        this.loginBrowser = child
-        await new Promise<void>((resolve, reject) => {
-          child.once('spawn', resolve)
-          child.once('error', reject)
-        })
-      }
-      this.save(profile)
-      return this.get(input.url)
-    }
-    if (input.action === 'open') {
-      const page = await this.browserPage()
-      await page.goto(profile.profileUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 })
-      await this.linkChatCreator(page, profile)
-      await page.bringToFront()
-      this.save(profile)
-      return this.get(input.url)
-    }
-    const controller = new AbortController()
-    profile.state = 'mapping'
-    profile.category = input.category
-    profile.pages = 0
-    profile.error = undefined
-    this.save(profile)
-    const done = this.map(profile, input.category, controller.signal).finally(() => {
-      this.active = null
-    })
-    this.active = { profileUrl: profile.profileUrl, controller, done }
-    return this.get(input.url)
-  }
-
-  private collect(profile: OnlyFansProfile, payload: unknown): void {
-    const items = new Map(profile.items.map((item) => [item.id, item]))
-    for (const { item, mediaUrl } of this.adapter.items(payload)) {
-      const routeCategory = profile.chatRoute ?? profile.purchasedRoute
-      if (
-        (routeCategory === 'photos' || routeCategory === 'videos') &&
-        item.category !== routeCategory
-      ) {
-        continue
-      }
-      const previous = items.get(item.id)
-      items.set(item.id, { ...item, downloaded: previous?.downloaded ?? false })
-      if (mediaUrl) {
-        this.media.set(this.key(profile.username, item.id), mediaUrl)
-      }
-    }
-    profile.items = [...items.values()]
-    this.save(profile)
-  }
-
-  private async map(
-    profile: OnlyFansProfile,
-    category: 'media' | 'photos' | 'videos' | 'posts',
-    signal: AbortSignal
-  ): Promise<void> {
-    let page: Page | null = null
-    let finished = false
-    let lastResponse = Date.now()
-    let ownerId: string | null = profile.chatId ?? profile.purchasedUserId ?? null
-    const observedApiPaths = new Set<string>()
-    let unreadableResponses = 0
-    const readJson = async (response: Response): Promise<unknown | undefined> => {
-      try {
-        return await response.json()
-      } catch {
-        unreadableResponses += 1
-        return undefined
-      }
-    }
-    let closing: Promise<void> | undefined
-    const abort = (): void => {
-      closing = page
-        ?.context()
-        .close()
-        .catch(() => undefined)
-        .finally(() => {
-          this.context = null
-          this.page = null
-        })
-    }
-    signal.addEventListener('abort', abort, { once: true })
-    const pending = new Set<Promise<void>>()
-    let responseChain: Promise<void> = Promise.resolve()
-    const handle = async (response: Response): Promise<void> => {
-      const url = new URL(response.url())
-      if (
-        url.origin === this.adapter.origin &&
-        url.pathname.startsWith('/api2/v2/') &&
-        observedApiPaths.size < 12
-      ) {
-        observedApiPaths.add(url.pathname)
-      }
-      if (
-        profile.chatId &&
-        this.adapter.key === 'onlyfans' &&
-        url.origin === this.adapter.origin &&
-        url.pathname === `/api2/v2/chats/${profile.chatId}` &&
-        response.ok()
-      ) {
-        const payload = await readJson(response)
-        if (payload === undefined) {
-          return
-        }
-        const chat = record(payload)
-        const username = record(chat.withUser).username
-        if (typeof username === 'string') {
-          this.linkChatCreatorUsername(profile, username)
-        }
-        return
-      }
-      if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && !response.ok()) {
-        profile.state = [401, 403].includes(response.status()) ? 'auth-required' : 'error'
-        finished = true
-        return
-      }
-      if (!profile.chatId && this.adapter.ownerResponse(url, profile.username) && response.ok()) {
-        const payload = await readJson(response)
-        if (payload !== undefined) {
-          ownerId = this.adapter.ownerId(payload, profile.username)
-        }
-        return
-      }
-      const isFeed = Boolean(ownerId && this.adapter.feedResponse(url, ownerId, profile))
-      if (!isFeed) {
-        return
-      }
-      if (!response.ok()) {
-        profile.state = [401, 403].includes(response.status()) ? 'auth-required' : 'error'
-        profile.error =
-          response.status() === 429
-            ? `${this.adapter.name} asked to slow down. Stop and retry later.`
-            : `${this.adapter.name} could not load this page. Check the dedicated browser.`
-        finished = true
-        return
-      }
-      const payload = await readJson(response)
-      if (payload === undefined) {
-        return
-      }
-      if (record(payload).error || record(payload).success === false) {
-        profile.state = 'auth-required'
-        finished = true
-        return
-      }
-      this.collect(profile, payload)
-      profile.pages += 1
-      lastResponse = Date.now()
-      finished = finished || this.adapter.complete(payload)
-    }
-    const listener = (response: Response): void => {
-      const work = responseChain.then(() => handle(response))
-      responseChain = work.catch(() => undefined)
-      const settled = work
-        .catch((cause: unknown) => {
-          profile.state = 'error'
-          const errorKind = cause instanceof Error ? cause.name : 'UnknownError'
-          profile.error = `Mapping stopped while processing a response (${errorKind}). The saved map has been retained.`
-          finished = true
-        })
-        .finally(() => pending.delete(settled))
-      pending.add(settled)
-    }
-    try {
-      page = await this.browserPage()
-      const cookies = this.adapter.requiresCookies
-        ? await page.context().cookies(this.adapter.origin)
-        : []
-      if (
-        this.adapter.requiresCookies &&
-        !(
-          cookies.some((cookie) => cookie.name === 'sess') &&
-          cookies.some((cookie) => cookie.name === 'auth_id')
-        )
-      ) {
-        profile.state = 'auth-required'
-        return
-      }
-      page.on('response', listener)
-      await page.goto(
-        profile.chatId || profile.purchasedUserId
-          ? profile.profileUrl
-          : `${profile.profileUrl}/${category}`,
-        {
-          waitUntil: 'domcontentloaded',
-          timeout: 45_000
-        }
-      )
-      await this.linkChatCreator(page, profile)
-      const deadline = Date.now() + 2 * 60 * 60 * 1000
-      while (!finished && Date.now() < deadline && Date.now() - lastResponse < 8 * 60_000) {
-        signal.throwIfAborted()
-        const current = this.adapter.normalize(page.url())
-        if (
-          current?.username !== profile.username ||
-          (profile.chatId && current.profileUrl !== profile.profileUrl)
-        ) {
-          throw new Error('The browser left the mapped profile.')
-        }
-        const responseAtScroll = lastResponse
-        const moved = await page.evaluate(({ nested, chat }) => {
-          const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1)
-          if (!nested) {
-            const before = window.scrollY
-            window.scrollBy(0, step)
-            return window.scrollY !== before
-          }
-          const candidates = [...document.querySelectorAll<HTMLElement>('main, section, div')]
-            .map((element) => ({ element, bounds: element.getBoundingClientRect() }))
-            .filter(({ element, bounds }) => {
-              return (
-                bounds.width > 300 &&
-                bounds.height > 200 &&
-                bounds.bottom > 0 &&
-                bounds.top < window.innerHeight &&
-                element.scrollHeight > element.clientHeight + 10 &&
-                /auto|scroll/.test(getComputedStyle(element).overflowY)
-              )
-            })
-          const contentPane = candidates.filter(
-            ({ bounds }) => bounds.left >= window.innerWidth * 0.45
-          )
-          const choices = contentPane.length > 0 ? contentPane : candidates
-          choices.sort((a, b) =>
-            contentPane.length > 0
-              ? b.bounds.left - a.bounds.left
-              : b.element.scrollHeight -
-                b.element.clientHeight -
-                (a.element.scrollHeight - a.element.clientHeight)
-          )
-          for (const { element } of choices) {
-            const before = element.scrollTop
-            element.scrollTop += step
-            if (element.scrollTop !== before) {
-              return true
-            }
-          }
-          const before = window.scrollY
-          window.scrollBy(0, step)
-          return window.scrollY !== before
-        }, this.adapter.scrollMode(profile))
-        const pauseMs = moved ? 1500 : 4000
-        for (let waited = 0; waited < pauseMs && !finished; waited += 250) {
-          await delay(Math.min(250, pauseMs - waited), undefined, { signal })
-          if (lastResponse !== responseAtScroll) {
-            break
-          }
-        }
-      }
-      if (profile.state === 'mapping') {
-        profile.state = finished ? 'complete' : 'partial'
-        if (profile.pages === 0 && !finished) {
-          profile.error = observedApiPaths.size
-            ? `No matching media response was captured. Observed API paths: ${[...observedApiPaths].join(', ')}`
-            : 'No media API response was captured. Check that the page loaded in the dedicated browser.'
-        } else if (!finished && unreadableResponses > 0) {
-          profile.error = `The site did not finish loading older media. ${unreadableResponses} response bodies could not be read; mapped items were retained.`
-        }
-      }
-    } catch {
-      if (profile.state === 'mapping') {
-        profile.state = signal.aborted ? 'partial' : 'error'
-        profile.error = signal.aborted
-          ? undefined
-          : this.loginBrowser &&
-              this.loginBrowser.exitCode === null &&
-              this.loginBrowser.signalCode === null
-            ? 'Close the dedicated login window after signing in, then map the profile.'
-            : 'The browser could not finish mapping. Reopen it and retry; saved items are retained.'
-      }
-    } finally {
-      signal.removeEventListener('abort', abort)
-      page?.off('response', listener)
-      await Promise.allSettled(pending)
-      await closing
-      if (signal.aborted && profile.state === 'mapping') {
-        profile.state = 'partial'
-      }
-      this.save(profile)
-    }
-  }
-
-  async enqueue(queue: TaskQueueAPI, raw: OnlyFansDownload): Promise<{ count: number }> {
-    if (this.active) {
-      throw new Error(`Finish or stop ${this.adapter.name} mapping before downloading.`)
-    }
-    const input = OnlyFansDownloadSchema.parse(raw)
-    const profile = this.get(input.url)
-    const wanted = new Set(input.itemIds)
-    const selected = profile.items.filter(
-      (item) => wanted.has(item.id) && item.state === 'available'
-    )
-    if (selected.length !== wanted.size) {
-      throw new Error('Select available mapped media. Locked and DRM media cannot be downloaded.')
-    }
-    await queue.setMaxPerGroup(`${this.adapter.key}-browser`, 1)
-    let count = 0
-    for (const item of selected) {
-      const directory = path.resolve(input.customDownloadPath || this.defaultDownloadDir())
-      const taskId = `${this.adapter.key}_${profile.username}_${item.id}_${createHash('sha256').update(directory).digest('hex').slice(0, 16)}`
-      const existing = queue.get(taskId)
-      if (existing && !['failed', 'cancelled'].includes(existing.status)) {
-        continue
-      }
-      if (existing) {
-        await queue.retryManual(taskId)
-      } else {
-        await queue.add({
-          id: taskId,
-          priority: PRIORITY_USER,
-          groupKey: `${this.adapter.key}-browser`,
-          input: {
-            kind: item.category === 'videos' ? 'video' : 'social-media',
-            url: this.adapter.queueUrl(item, profile),
-            title: `@${profile.creatorUsername ?? profile.username} · ${item.category} · ${item.id}`,
-            options: {
-              onlyFansProfile: profile.profileUrl,
-              onlyFansMediaId: item.id,
-              customDownloadPath: directory
-            }
-          }
-        })
-      }
-      count += 1
-    }
-    return { count }
-  }
-
-  async download(
-    profileUrl: string,
-    mediaId: string,
-    destination: string,
-    signal: AbortSignal,
-    progress: (bytes: number, total: number) => void
-  ): Promise<{ filePath: string; size: number }> {
-    if (this.active || this.downloading) {
-      throw new Error(`Finish or stop ${this.adapter.name} mapping before downloading.`)
-    }
-    const snapshot = this.get(profileUrl)
-    const profile = this.profiles.get(this.profileKey(snapshot))
-    if (!profile) {
-      throw new Error('Saved profile is unavailable.')
-    }
-    const item = profile.items.find((entry) => entry.id === mediaId && entry.state === 'available')
-    if (!item) {
-      throw new Error('Map this available media before downloading.')
-    }
-    this.downloading = true
-    try {
-      signal.throwIfAborted()
-      const page = await this.browserPage()
-      // Refresh expiring CDN URLs through a normal site navigation in the same session.
-      let response: Response | null = null
-      let payload: unknown = null
-      for (let attempt = 0; attempt < 2; attempt += 1) {
-        const responsePromise = page.waitForResponse(
-          async (candidate) => {
-            const url = new URL(candidate.url())
-            const matches = this.adapter.refreshResponse(url, item, profile)
-            if (!(matches && profile.chatId && candidate.ok())) {
-              return matches
-            }
-            // A chat can load several message batches; wait for the requested attachment.
-            return this.adapter
-              .items(await candidate.json())
-              .some(({ item: entry }) => entry.id === mediaId)
-          },
-          { timeout: 8000 }
-        )
-        // Register a rejection handler before navigation can fail.
-        const responseResult = responsePromise.then(
-          (matched) => matched,
-          () => null
-        )
-        await page.goto(this.adapter.refreshUrl(item, profile), {
-          waitUntil: 'domcontentloaded',
-          timeout: 45_000
-        })
-        response = await responseResult
-        payload = response?.ok() ? await response.json() : null
-        if (
-          !this.adapter
-            .items(payload)
-            .some(({ item: entry, mediaUrl }) => entry.id === mediaId && mediaUrl)
-        ) {
-          const opened = await this.openCoveredMedia(page, item, profile, signal)
-          if (opened) {
-            response = opened
-            payload = await opened.json()
-          }
-        }
-        if (response?.ok() || !response || response.status() === 429) {
-          break
-        }
-        if (attempt === 0) {
-          await delay(1500, undefined, { signal })
-        }
-      }
-      if (!response) {
-        throw new Error(
-          'The post did not return media in the dedicated browser. Reopen it and retry.'
-        )
-      }
-      if (!response.ok()) {
-        if (response.status() === 429) {
-          throw new Error(`${this.adapter.name} asked to slow down. Retry later.`)
-        }
-        throw new Error(
-          `The post request failed (HTTP ${response.status()}). Check access in the dedicated browser.`
-        )
-      }
-      this.media.delete(this.key(profile.username, mediaId))
-      this.collect(profile, payload)
-      const mediaUrl = this.media.get(this.key(profile.username, mediaId))
-      if (!mediaUrl) {
-        throw new Error('This media is locked or has no downloadable original.')
-      }
-      signal.throwIfAborted()
-      const extension = path.extname(new URL(mediaUrl).pathname).toLowerCase()
-      if (!/^\.(?:jpe?g|png|webp|gif|mp4|mov|m4v)$/.test(extension)) {
-        throw new Error('Unsupported original media format.')
-      }
-      const folder = path.join(destination, this.adapter.name, profile.username, item.category)
-      mkdirSync(folder, { recursive: true })
-      const target = path.join(folder, `${item.postId}_${item.id}${extension}`)
-      const responseMedia = await fetch(mediaUrl, {
-        headers: { Referer: `${this.adapter.origin}/` },
-        redirect: 'error',
-        signal: AbortSignal.any([signal, AbortSignal.timeout(30 * 60 * 1000)])
-      })
-      if (!(responseMedia.ok && responseMedia.body)) {
-        throw new Error(
-          `${this.adapter.name} media download failed (HTTP ${responseMedia.status}). Remap and retry.`
-        )
-      }
-      const contentType = responseMedia.headers.get('content-type') ?? ''
-      if (!/^(?:image\/|video\/|application\/octet-stream)/i.test(contentType)) {
-        throw new Error('The server returned a page instead of a media file.')
-      }
-      let bytes = 0
-      const total = Number(responseMedia.headers.get('content-length')) || 0
-      const meter = new Transform({
-        transform(chunk: Buffer, _encoding, callback) {
-          bytes += chunk.length
-          progress(bytes, total)
-          callback(null, chunk)
-        }
-      })
-      await pipeline(
-        Readable.from(readBody(responseMedia.body)),
-        meter,
-        createWriteStream(`${target}.part`),
-        { signal }
-      )
-      if (!bytes || (total && bytes !== total)) {
-        throw new Error('The downloaded file is incomplete.')
-      }
-      renameSync(`${target}.part`, target)
-      const saved = profile.items.find((entry) => entry.id === mediaId)
-      if (saved) {
-        saved.downloaded = true
-      }
-      this.save(profile)
-      return { filePath: target, size: statSync(target).size }
-    } finally {
-      this.downloading = false
-    }
-  }
-
-  private async openCoveredMedia(
-    page: Page,
-    item: OnlyFansItem,
-    profile: OnlyFansProfile,
-    signal: AbortSignal
-  ): Promise<Response | null> {
-    if (!this.adapter.isSite(page.url())) {
-      return null
-    }
-    const viewport = await page.evaluate(() => ({
-      width: window.innerWidth,
-      height: window.innerHeight
-    }))
-    const visibleCovers: Locator[] = []
-    for (const cover of await page.getByText('Click to open', { exact: true }).all()) {
-      if (!(await cover.isVisible())) {
-        continue
-      }
-      const box = await cover.boundingBox()
-      if (
-        box &&
-        box.x < viewport.width &&
-        box.x + box.width > 0 &&
-        box.y < viewport.height &&
-        box.y + box.height > 0
-      ) {
-        visibleCovers.push(cover)
-      }
-    }
-    if (visibleCovers.length !== 1) {
-      return null
-    }
-    signal.throwIfAborted()
-    const opened = page.waitForResponse(
-      async (candidate) => {
-        const url = new URL(candidate.url())
-        if (!(candidate.ok() && this.adapter.refreshResponse(url, item, profile))) {
-          return false
-        }
-        return this.adapter
-          .items(await candidate.json())
-          .some(({ item: entry, mediaUrl }) => entry.id === item.id && mediaUrl)
-      },
-      { timeout: 15_000 }
-    )
-    const result = opened.then(
-      (matched) => matched,
-      () => null
-    )
-    await visibleCovers[0].click({ timeout: 5000 })
-    return result
-  }
-
-  async stop(): Promise<void> {
-    this.active?.controller.abort()
-    await this.active?.done
-    await this.context?.close()
-  }
-}
-
-/** Route OnlyFans ahead of yt-dlp, including old queued URLs, so Chrome cookies never leave Chrome. */
-export class OnlyFansBrowserExecutor implements Executor {
-  private readonly profiles: OnlyFansProfiles
-  private readonly fallback: Executor
-  private readonly defaultDirectory: () => string
-
-  constructor(profiles: OnlyFansProfiles, fallback: Executor, defaultDirectory: () => string) {
-    this.profiles = profiles
-    this.fallback = fallback
-    this.defaultDirectory = defaultDirectory
-  }
-
-  run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
-    if (!this.profiles.adapter.isSite(ctx.input.url)) {
-      return this.fallback.run(ctx, events)
-    }
-    const controller = new AbortController()
-    const done = (async () => {
-      await Promise.resolve()
-      events.onSpawn({
-        taskId: ctx.taskId,
-        attemptId: ctx.attemptId,
-        pid: process.pid,
-        pidStartedAt: Date.now(),
-        kind: 'ai-worker',
-        spawnedAt: Date.now()
-      })
-      try {
-        const options = ctx.input.options
-        if (
-          typeof options?.onlyFansProfile !== 'string' ||
-          typeof options.onlyFansMediaId !== 'string'
-        ) {
-          throw new Error(
-            `Open this ${this.profiles.adapter.name} profile in VidBeep and map it using the dedicated browser session.`
-          )
-        }
-        const output = await this.profiles.download(
-          options.onlyFansProfile,
-          options.onlyFansMediaId,
-          typeof options.customDownloadPath === 'string'
-            ? options.customDownloadPath
-            : this.defaultDirectory(),
-          controller.signal,
-          (bytes, total) =>
-            events.onProgress({
-              taskId: ctx.taskId,
-              attemptId: ctx.attemptId,
-              enteredProcessing: false,
-              progress: {
-                percent: total ? bytes / total : null,
-                bytesDownloaded: bytes,
-                bytesTotal: total || null,
-                speedBps: null,
-                etaMs: null,
-                ticks: Date.now()
-              }
-            })
-        )
-        const completed: TaskOutput = { ...output, durationMs: null, sha256: null }
-        if (ctx.input.kind === 'social-media') {
-          const manifestPath = `${output.filePath}.manifest.json`
-          const summary = {
-            posts: 1,
-            images: 1,
-            videos: 0,
-            downloaded: 1,
-            existing: 0,
-            failed: 0,
-            totalSize: output.size,
-            reason: 'exhausted' as const,
-            manifestPath,
-            startedAt: Date.now(),
-            finishedAt: Date.now()
-          }
-          writeFileSync(manifestPath, JSON.stringify({ files: [output.filePath], ...summary }), {
-            mode: 0o600
-          })
-          completed.outputDirectory = path.dirname(output.filePath)
-          completed.fileCount = 1
-          completed.collectionSummary = summary
-        }
-        events.onFinish({
-          taskId: ctx.taskId,
-          attemptId: ctx.attemptId,
-          closedAt: Date.now(),
-          stdoutTail: '',
-          stderrTail: '',
-          result: { type: 'success', output: completed }
-        })
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : `${this.profiles.adapter.name} download failed.`
-        events.onFinish({
-          taskId: ctx.taskId,
-          attemptId: ctx.attemptId,
-          closedAt: Date.now(),
-          stdoutTail: '',
-          stderrTail: '',
-          result: controller.signal.aborted
-            ? { type: 'cancelled' }
-            : { type: 'error', error: virtualError('auth-required', message), exitCode: null }
-        })
-      }
-    })()
-    const cancel = async (): Promise<void> => {
-      controller.abort()
-      await done
-    }
-    return { cancel, pause: cancel }
-  }
-}
+export { BrowserProfiles, ProfileCodec, ProfileHost, ProfileQueue } from "./BrowserProfiles.service.js";
+export { ProfileExecutorLive } from "./ProfileExecutor.layer.js";
+export { ProfileExecutorOptions } from "./ProfileExecutor.service.js";
+export { ProfileExecutorNativeDependencies } from "./ProfileExecutorNative.layer.js";
+export const onlyFansProfilesLayer = (storageDir: string) =>
+  browserProfilesLayer({ storageDir, adapter: onlyFansAdapter });

@@ -1,0 +1,38 @@
+import childProcess from 'node:child_process';
+import fs from 'node:fs';
+import fsp from 'node:fs/promises';
+import { syncBuiltinESMExports } from 'node:module';
+import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
+import { TaskQueueAPI, MemoryPersistAdapter } from '@vidbee/task-queue-legacy';
+import * as newProfile from '../../src/onlyfans-profile.ts';
+import * as newCapture from '../../src/executor.ts';
+import * as newDrm from '../../src/drm-fallback.ts';
+process.env.HOME='/fixture/home'; Date.now=()=>1000;
+const originalExists=fs.existsSync;
+globalThis.setTimeout=(callback,_ms,...args)=>{queueMicrotask(()=>callback(...args));return {unref(){}}}; globalThis.clearTimeout=()=>{};
+fs.existsSync=p=>p==='/usr/bin/brave'||p==='/fixture/Xvfb'||p==='/fixture/sidecar.js'||p==='/fixture/ffmpeg'?true:String(p).startsWith('/tmp/.X')?false:originalExists(p);
+fsp.readdir=()=>Promise.resolve([]);fsp.copyFile=()=>Promise.resolve();fsp.rm=()=>Promise.resolve();fsp.readFile=()=>Promise.reject(new Error('absent fixture'));fsp.mkdir=()=>Promise.resolve();fsp.mkdtemp=()=>Promise.resolve('/fixture/job');fsp.writeFile=()=>Promise.resolve();fsp.stat=p=>p==='/fixture/result.mp4'?Promise.resolve({size:3}):Promise.reject(new Error('missing'));
+childProcess.spawnSync=(cmd,args)=>({stdout:cmd==='which'?`/fixture/${args[0]}\n`:'',status:0});
+let processTrace=[];process.kill=(pid,signal)=>{processTrace.push(['pid-signal',42,signal]);return true};
+childProcess.spawn=()=>{const child=new EventEmitter();child.pid=42;child.stdout=new PassThrough();child.stderr=new PassThrough();child.stdin=new PassThrough();child.kill=signal=>{processTrace.push(['signal',signal]);return true};queueMicrotask(()=>{child.stdout.emit('data',Buffer.from('__VIDBEE_CAPTURE__'+JSON.stringify({type:'done',filePath:'/fixture/result.mp4',size:3,durationMs:1000})));child.emit('close',0)});return child;};
+syncBuiltinESMExports();
+const runs=[];
+for(const window of ['before-return','spawn-callback'])for(const kind of ['profile','capture','drm'])for(const action of ['pause','cancel','sync-finish'])for(const [name,modules]of [['new',{profile:newProfile,capture:newCapture,drm:newDrm}]]){
+ const trace=[];processTrace=[];let queue;const pending=[];let hooked=false,finished=false;
+ const state=()=>{const task=queue.get('task');return {status:task?.status??null,pid:task?.pid==null?null:42,running:queue.stats().running}};
+ const mark=(label,value)=>trace.push([label,state(),...(value===undefined?[]:[value])]);
+ const output={filePath:'/fixture/result.mp4',size:3,durationMs:null,sha256:null};
+ const control=(ctx,events)=>{if(hooked)return;hooked=true;mark('control:'+action);if(action==='sync-finish')events.onFinish({taskId:ctx.taskId,attemptId:ctx.attemptId,closedAt:1000,stdoutTail:'',stderrTail:'',result:{type:'success',output}});else pending.push(queue[action]('task').then(()=>mark('control-settled:'+action)));};
+ const fallback={run(ctx,events){mark('fallback-run');return{cancel:async()=>mark('fallback-cancel'),pause:async()=>mark('fallback-pause')}}};
+ let subject;
+ if(kind==='profile')subject=new modules.profile.OnlyFansBrowserExecutor({adapter:{name:'Fixture',isSite:()=>true},download:()=>Promise.resolve({filePath:'/fixture/result.mp4',size:3})},fallback,()=>'/fixture/downloads');
+ if(kind==='capture')subject=new modules.capture.BrowserCaptureExecutor({resolveSidecarScript:()=>'/fixture/sidecar.js',resolveFfmpegPath:()=>'/fixture/ffmpeg',defaultDownloadDir:'/fixture/downloads',execPath:'/fixture/node',execArgv:[]});
+ if(kind==='drm')subject=new modules.drm.DrmFallbackExecutor({run(ctx,events){mark('primary-run');events.onSpawn({taskId:ctx.taskId,attemptId:ctx.attemptId,pid:42,pidStartedAt:1000,kind:'yt-dlp',spawnedAt:1000});return{cancel:async()=>mark('primary-cancel'),pause:async()=>mark('primary-pause')}}},fallback);
+ const executor={run(ctx,events){mark('enter-run');if(window==='before-return')control(ctx,events);const handle=subject.run(ctx,{...events,onSpawn:e=>{mark('spawn');events.onSpawn(e);if(window==='spawn-callback')control(ctx,events)},onFinish:e=>{finished=true;mark('finish',e.result.type);events.onFinish(e)}});mark('return-run');return handle}};
+ queue=new TaskQueueAPI({persist:new MemoryPersistAdapter(),executor,idleQueueKickMs:0,clock:()=>1000,rng:()=>0.5,setTimer:()=>({}),clearTimer:()=>{},filePresent:()=>true,killProcess:()=>{}});
+ queue.subscribe(event=>mark(event.type==='transition'?`transition:${event.to}`:event.type));await queue.start();
+ await queue.add({id:'task',input:{kind:'video',url:'https://onlyfans.com/fixture',title:'Fixture',options:{onlyFansProfile:'https://onlyfans.com/fixture',onlyFansMediaId:'1'}}});
+ for(let i=0;i<5000;i++){await Promise.resolve();if(finished||kind==='drm'&&hooked)break;}if(kind!=='drm'&&!finished)throw new Error('fixture did not finish '+name+' '+kind+' '+action);for(let i=0;i<50;i++)await Promise.resolve();await Promise.all(pending);mark('drained');await queue.stop();runs.push({window,kind,action,name,trace,processTrace:[...processTrace]});
+}
+console.log(JSON.stringify(runs.map(({name,...run})=>run)));

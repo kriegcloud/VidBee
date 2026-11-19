@@ -88,6 +88,7 @@
         "@tanstack/react-router": "catalog:",
         "@tanstack/react-virtual": "catalog:",
         "@vidbee/browser-capture": "workspace:^",
+        "@vidbee/browser-capture-legacy": "workspace:^",
         "@vidbee/db": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
         "@vidbee/downloader-core-legacy": "workspace:^",
@@ -181,9 +182,31 @@
       "name": "@vidbee/browser-capture",
       "version": "0.1.0",
       "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/schema": "workspace:^",
+        "@vidbee/task-queue": "workspace:^",
+        "effect": "catalog:",
+        "playwright-core": "catalog:",
+      },
+      "devDependencies": {
+        "@effect/vitest": "catalog:",
+        "@types/node": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:",
+      },
+    },
+    "packages/browser-capture-legacy": {
+      "name": "@vidbee/browser-capture-legacy",
+      "version": "0.1.0",
+      "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "@vidbee/browser-capture": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
         "@vidbee/downloader-core-legacy": "workspace:^",
+        "@vidbee/task-queue": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
+        "effect": "catalog:",
         "playwright-core": "catalog:",
       },
       "devDependencies": {
@@ -1332,6 +1355,8 @@
     "@ungap/structured-clone": ["@ungap/structured-clone@1.4.0", "", {}, "sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ=="],
 
     "@vidbee/browser-capture": ["@vidbee/browser-capture@workspace:packages/browser-capture"],
+
+    "@vidbee/browser-capture-legacy": ["@vidbee/browser-capture-legacy@workspace:packages/browser-capture-legacy"],
 
     "@vidbee/cli": ["@vidbee/cli@workspace:apps/cli"],
 
