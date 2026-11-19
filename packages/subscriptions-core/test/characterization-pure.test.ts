@@ -39,7 +39,7 @@ import {nextProfileCheckAt, decideProfileDownloads} from '@vidbee/subscriptions-
 import {rule} from './fixtures/pure-oracle'
 const dates: Record<string, unknown> = JSON.parse(readFileSync(new URL('./fixtures/date-oracle.json', import.meta.url), 'utf8'))
 for (const TZ of ['UTC', 'Asia/Tokyo', 'America/New_York']) it(`pinned Node date coercion and DST (${TZ})`, () => {
- const observed = JSON.parse(execFileSync(NODE, ['--import', 'tsx', fileURLToPath(new URL('./fixtures/date-oracle.ts', import.meta.url))], {encoding: 'utf8', env: {...process.env, TZ}}))
+ const observed = JSON.parse(execFileSync(NODE, ['--import', 'tsx', fileURLToPath(new URL('./fixtures/date-oracle.ts', import.meta.url))], {encoding: 'utf8', env: {...process.env, TZ}, timeout: 60000, killSignal: 'SIGKILL'}))
  expect(observed).toEqual(dates[TZ])
 }, 30000)
 it('policy and normalization callback failures escape synchronously by identity', () => {
