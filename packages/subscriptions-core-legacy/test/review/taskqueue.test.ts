@@ -1,4 +1,4 @@
-import { expect, it } from '@effect/vitest'
+import { expect, it, vi } from '@effect/vitest'
 import { TaskQueueAPI, MemoryPersistAdapter } from '@vidbee/task-queue-legacy'
 import { classify, defaultMaxAttempts, parseRetryAfter, takeStderrTail, virtualError } from '@vidbee/task-queue-legacy/classifier'
 
@@ -7,7 +7,7 @@ it('M12/M13: legacy unknown-category and invalid-stderr errors preserve delibera
     try { fn(); throw new Error('did not throw') } catch (error) {
       expect(error).toBeInstanceOf(Error)
       expect(error?.constructor).toBe(Error)
-      expect(error?.message).toBe('no rule for category bad')
+      expect(error instanceof Error ? error.message : undefined).toBe('no rule for category bad')
     }
   }
   for (const value of [undefined, null, 0, false, Number.NaN, 42]) {
@@ -16,16 +16,19 @@ it('M12/M13: legacy unknown-category and invalid-stderr errors preserve delibera
   expect(() => Reflect.apply(classify, undefined, [{ stderr: 42 }])).toThrow()
 })
 it('M4/M11: legacy date parsing matches Date.parse including local times and named zones', () => {
-  const now = Date.now()
+  const now = 1700000000000
+  const clock = vi.spyOn(Date, 'now').mockReturnValue(now)
+  try {
   for (const year of [2000, 2099, 2100]) for (const suffix of ['', ' UTC', ' EST', ' GMT', ' +0000', ' +0530']) {
     const header = `Wed, 21 Oct ${year} 07:28:00${suffix}`
     const expected = Math.max(0, Date.parse(header) - now)
     const result = parseRetryAfter(header)
     if (Number.isNaN(expected)) expect(result).toBe(null)
-    else expect(Math.abs((result ?? -1) - expected)).toBeLessThan(100)
+    else expect(result).toBe(expected)
   }
   expect(parseRetryAfter('garbage')).toBe(null)
   expect(parseRetryAfter('12')).toBe(12000)
+  } finally { clock.mockRestore() }
 })
 it('M2/M9: falsy request ids, subscription ids and raw arguments retain old admission behavior', async () => {
   for (const value of [null, 0, '', Number.NaN, false, undefined]) {

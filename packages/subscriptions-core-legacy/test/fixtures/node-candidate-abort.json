@@ -1,0 +1,16 @@
+[
+  [
+    [
+      "https://fixture.invalid/page",
+      "GET",
+      "follow"
+    ],
+    [
+      "https://fixture.invalid/one",
+      "GET",
+      "follow"
+    ]
+  ],
+  "reason-identity",
+  true
+]

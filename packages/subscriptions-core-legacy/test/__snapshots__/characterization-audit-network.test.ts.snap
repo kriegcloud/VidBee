@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`probe skips page-self candidate and successful direct empty URL falls back to request 1`] = `
+{
+  "calls": [
+    [
+      "https://fixture.invalid/start",
+      2,
+    ],
+    [
+      "https://fixture.invalid/feed",
+      2,
+    ],
+    [
+      "https://fixture.invalid/feed",
+      2,
+    ],
+  ],
+  "direct": {
+    "discovered": false,
+    "feed": {
+      "items": [],
+      "itunes": {
+        "image": "https://fixture.invalid/cover",
+      },
+      "link": "https://fixture.invalid/",
+      "title": "T",
+    },
+    "feedUrl": "https://fixture.invalid/feed",
+  },
+  "discovered": {
+    "discovered": true,
+    "feed": {
+      "items": [],
+      "itunes": {
+        "image": "https://fixture.invalid/cover",
+      },
+      "link": "https://fixture.invalid/",
+      "title": "T",
+    },
+    "feedUrl": "https://fixture.invalid/feed",
+  },
+}
+`;
+
+exports[`third-party parser permissive metadata mapping stays wide 1`] = `
+{
+  "items": [],
+}
+`;

@@ -1,0 +1,530 @@
+{
+  "nonfinite": {
+    "old": [
+      {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": {
+          "nonfinite": "Infinity"
+        },
+        "sourceKind": "feed",
+        "categories": [],
+        "items": [
+          {
+            "id": "a",
+            "url": "https://fixture.invalid/a",
+            "title": "Title a",
+            "publishedAt": 10,
+            "addedToQueue": false
+          }
+        ]
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": 0
+      }
+    ],
+    "expectedNewPath": "subscriptions.updatedAt"
+  },
+  "blob": {
+    "old": [
+      {
+        "id": "sub-1",
+        "title": {
+          "type": "Buffer",
+          "data": [
+            1,
+            2
+          ]
+        },
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": [
+          {
+            "id": "a",
+            "url": "https://fixture.invalid/a",
+            "title": "Title a",
+            "publishedAt": 10,
+            "addedToQueue": false
+          }
+        ]
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": 0
+      }
+    ],
+    "expectedNewPath": "subscriptions.title"
+  },
+  "null-primary-key": {
+    "old": [
+      {
+        "id": null,
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": 0
+      }
+    ],
+    "expectedNewPath": "subscriptions.id"
+  },
+  "real-numeric": {
+    "old": [
+      {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": false,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 1.5,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": [
+          {
+            "id": "a",
+            "url": "https://fixture.invalid/a",
+            "title": "Title a",
+            "publishedAt": 10,
+            "addedToQueue": false
+          }
+        ]
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": 0
+      }
+    ],
+    "expectedNewPath": null
+  },
+  "item-nonfinite": {
+    "old": [
+      {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": [
+          {
+            "id": "a",
+            "url": "https://fixture.invalid/a",
+            "title": "Title a",
+            "publishedAt": {
+              "nonfinite": "Infinity"
+            },
+            "addedToQueue": false
+          }
+        ]
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": 0
+      }
+    ],
+    "expectedNewPath": "subscription_items.publishedAt"
+  },
+  "meta-nonfinite": {
+    "old": [
+      {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": [
+          {
+            "id": "a",
+            "url": "https://fixture.invalid/a",
+            "title": "Title a",
+            "publishedAt": 10,
+            "addedToQueue": false
+          }
+        ]
+      }
+    ],
+    "oldMeta": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "rawMeta": [
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": {
+          "nonfinite": "Infinity"
+        }
+      }
+    ],
+    "expectedNewPath": "subscriptions_meta.updatedAt"
+  },
+  "listRecovery": [
+    {
+      "input": "",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "null",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "false",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "123",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "\"scalar\"",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "{}",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "{",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "[]",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "[\" a \",\"a\",\"A\",\"\"]",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [
+          "a",
+          "A"
+        ],
+        "tags": [
+          "a",
+          "A"
+        ],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [
+          "a",
+          "A"
+        ],
+        "items": []
+      }
+    },
+    {
+      "input": "[\"before\",null]",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    },
+    {
+      "input": "[\"before\",{}]",
+      "old": {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    }
+  ]
+}

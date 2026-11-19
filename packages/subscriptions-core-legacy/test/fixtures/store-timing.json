@@ -1,0 +1,522 @@
+{
+  "add": {
+    "prefix": [
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+        "params": [
+          "sub-1",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          101,
+          101,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  },
+  "list": {
+    "prefix": [
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" order by \"subscriptions\".\"updated_at\" desc",
+        "params": []
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": [
+      {
+        "id": "sub-1",
+        "title": "https://fixture.invalid/source",
+        "sourceUrl": "https://fixture.invalid/source",
+        "feedUrl": "https://fixture.invalid/feed",
+        "platform": "custom",
+        "keywords": [],
+        "tags": [],
+        "onlyDownloadLatest": true,
+        "autoDownload": true,
+        "enabled": true,
+        "status": "idle",
+        "createdAt": 101,
+        "updatedAt": 101,
+        "sourceKind": "feed",
+        "categories": [],
+        "items": []
+      }
+    ]
+  },
+  "get": {
+    "prefix": [
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  },
+  "duplicate": {
+    "prefix": [
+      {
+        "sql": "select \"id\", \"feed_url\" from \"subscriptions\"",
+        "params": []
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": "sub-1"
+  },
+  "update": {
+    "prefix": [
+      {
+        "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?) on conflict (\"subscriptions\".\"id\") do update set \"id\" = ?, \"title\" = ?, \"source_url\" = ?, \"feed_url\" = ?, \"platform\" = ?, \"keywords\" = ?, \"tags\" = ?, \"only_latest\" = ?, \"auto_download\" = ?, \"enabled\" = ?, \"status\" = ?, \"created_at\" = ?, \"updated_at\" = ?, \"source_kind\" = ?, \"profile_owner\" = ?, \"categories\" = ?, \"check_interval_ms\" = ?, \"next_check_at\" = ?",
+        "params": [
+          "sub-1",
+          "updated",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          101,
+          102,
+          "feed",
+          null,
+          "[]",
+          null,
+          null,
+          "sub-1",
+          "updated",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          101,
+          102,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" in (?) order by \"subscription_items\".\"published_at\" desc",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": {
+      "id": "sub-1",
+      "title": "updated",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 102,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  },
+  "replace": {
+    "prefix": [
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, null, ?, null, ?, ?)",
+        "params": [
+          "sub-1",
+          "a",
+          "Title a",
+          "https://fixture.invalid/a",
+          10,
+          0,
+          10,
+          103
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ]
+  },
+  "merge": {
+    "prefix": [
+      {
+        "sql": "select \"item_id\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values (?, ?, ?, ?, ?, ?, ?, null, ?, ?)",
+        "params": [
+          "sub-1",
+          "b",
+          "Title b",
+          "https://fixture.invalid/b",
+          10,
+          null,
+          0,
+          104,
+          104
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ]
+  },
+  "mark": {
+    "prefix": [
+      {
+        "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where ((\"subscription_items\".\"subscription_id\" = ?) and (\"subscription_items\".\"item_id\" = ?))",
+        "params": [
+          1,
+          "task",
+          105,
+          "sub-1",
+          "a"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ]
+  },
+  "clear": {
+    "prefix": [
+      {
+        "sql": "update \"subscription_items\" set \"added\" = ?, \"task_id\" = ?, \"updated_at\" = ? where \"subscription_items\".\"task_id\" in (?)",
+        "params": [
+          0,
+          null,
+          106,
+          "task"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": 1
+  },
+  "orphan": {
+    "prefix": [
+      {
+        "sql": "select \"subscription_id\", \"item_id\", \"task_id\", \"added\" from \"subscription_items\" where ((\"subscription_items\".\"added\" = ?) or ((\"subscription_items\".\"task_id\" is not null)))",
+        "params": [
+          1
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "marker-2",
+      "settled",
+      "awaited"
+    ],
+    "value": 1
+  },
+  "readLeader": {
+    "prefix": [
+      {
+        "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+        "params": []
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    }
+  },
+  "writePreferred": {
+    "prefix": [
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "preferred_leader",
+          "desktop",
+          109,
+          "desktop",
+          109
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ]
+  },
+  "readPreferred": {
+    "prefix": [
+      {
+        "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+        "params": []
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": "desktop"
+  },
+  "cas": {
+    "prefix": [
+      {
+        "sql": "select \"key\", \"value\", \"updated_at\" from \"subscriptions_meta\"",
+        "params": []
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_kind",
+          "api",
+          1,
+          "api",
+          1
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_pid",
+          "2",
+          1,
+          "2",
+          1
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_started_at",
+          "3",
+          1,
+          "3",
+          1
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_heartbeat_at",
+          "4",
+          1,
+          "4",
+          1
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_lock_expires_at",
+          "5",
+          1,
+          "5",
+          1
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions_meta\" (\"key\", \"value\", \"updated_at\") values (?, ?, ?) on conflict (\"subscriptions_meta\".\"key\") do update set \"value\" = ?, \"updated_at\" = ?",
+        "params": [
+          "leader_lease_id",
+          "lease",
+          1,
+          "lease",
+          1
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": true
+  },
+  "remove": {
+    "prefix": [
+      {
+        "sql": "delete from \"subscriptions\" where \"subscriptions\".\"id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      },
+      {
+        "sql": "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = ?",
+        "params": [
+          "sub-1"
+        ]
+      }
+    ],
+    "markers": [
+      "returned",
+      "marker-1",
+      "settled",
+      "awaited",
+      "marker-2"
+    ],
+    "value": true
+  }
+}

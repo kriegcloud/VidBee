@@ -1,0 +1,899 @@
+{
+  "UTC": {
+    "dates": [
+      {
+        "index": 0,
+        "result": [
+          {
+            "id": "id-0",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 1,
+        "result": [
+          {
+            "id": "id-1",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577880000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 2,
+        "result": [
+          {
+            "id": "id-2",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577880000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 3,
+        "result": [
+          {
+            "id": "id-3",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577847600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 4,
+        "result": [
+          {
+            "id": "id-4",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583634600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 5,
+        "result": [
+          {
+            "id": "id-5",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583634600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 6,
+        "result": [
+          {
+            "id": "id-6",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1604194200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 7,
+        "result": [
+          {
+            "id": "id-7",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1546300800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 8,
+        "result": [
+          {
+            "id": "id-8",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577908800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 9,
+        "result": [
+          {
+            "id": "id-9",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 10,
+        "result": [
+          {
+            "id": "id-10",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 11,
+        "result": [
+          {
+            "id": "id-11",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 12,
+        "result": [
+          {
+            "id": "id-12",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 13,
+        "result": [
+          {
+            "id": "id-13",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 14,
+        "result": [
+          {
+            "id": "id-14",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 15,
+        "result": [
+          {
+            "id": "id-15",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 978307200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 16,
+        "result": [
+          {
+            "id": "id-16",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 993945600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 17,
+        "result": [
+          {
+            "id": "id-17",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 18,
+        "result": [
+          {
+            "id": "id-18",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 19,
+        "error": "Error",
+        "message": "date coercion fixture",
+        "calls": 0
+      }
+    ],
+    "customIdentity": {
+      "error": "TypeError",
+      "message": "candidate.trim is not a function"
+    }
+  },
+  "Asia/Tokyo": {
+    "dates": [
+      {
+        "index": 0,
+        "result": [
+          {
+            "id": "id-0",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 1,
+        "result": [
+          {
+            "id": "id-1",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577847600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 2,
+        "result": [
+          {
+            "id": "id-2",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577880000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 3,
+        "result": [
+          {
+            "id": "id-3",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577847600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 4,
+        "result": [
+          {
+            "id": "id-4",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583602200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 5,
+        "result": [
+          {
+            "id": "id-5",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583602200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 6,
+        "result": [
+          {
+            "id": "id-6",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1604161800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 7,
+        "result": [
+          {
+            "id": "id-7",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1546300800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 8,
+        "result": [
+          {
+            "id": "id-8",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577908800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 9,
+        "result": [
+          {
+            "id": "id-9",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 10,
+        "result": [
+          {
+            "id": "id-10",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 11,
+        "result": [
+          {
+            "id": "id-11",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 12,
+        "result": [
+          {
+            "id": "id-12",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 13,
+        "result": [
+          {
+            "id": "id-13",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 14,
+        "result": [
+          {
+            "id": "id-14",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 15,
+        "result": [
+          {
+            "id": "id-15",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 978274800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 16,
+        "result": [
+          {
+            "id": "id-16",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 993913200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 17,
+        "result": [
+          {
+            "id": "id-17",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 18,
+        "result": [
+          {
+            "id": "id-18",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 19,
+        "error": "Error",
+        "message": "date coercion fixture",
+        "calls": 0
+      }
+    ],
+    "customIdentity": {
+      "error": "TypeError",
+      "message": "candidate.trim is not a function"
+    }
+  },
+  "America/New_York": {
+    "dates": [
+      {
+        "index": 0,
+        "result": [
+          {
+            "id": "id-0",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 1,
+        "result": [
+          {
+            "id": "id-1",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577898000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 2,
+        "result": [
+          {
+            "id": "id-2",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577880000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 3,
+        "result": [
+          {
+            "id": "id-3",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577847600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 4,
+        "result": [
+          {
+            "id": "id-4",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583652600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 5,
+        "result": [
+          {
+            "id": "id-5",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1583652600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 6,
+        "result": [
+          {
+            "id": "id-6",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1604208600000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 7,
+        "result": [
+          {
+            "id": "id-7",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1546300800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 8,
+        "result": [
+          {
+            "id": "id-8",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577908800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 9,
+        "result": [
+          {
+            "id": "id-9",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 10,
+        "result": [
+          {
+            "id": "id-10",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 11,
+        "result": [
+          {
+            "id": "id-11",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 12,
+        "result": [
+          {
+            "id": "id-12",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 13,
+        "result": [
+          {
+            "id": "id-13",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 14,
+        "result": [
+          {
+            "id": "id-14",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 15,
+        "result": [
+          {
+            "id": "id-15",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 978325200000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 16,
+        "result": [
+          {
+            "id": "id-16",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 993960000000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 17,
+        "result": [
+          {
+            "id": "id-17",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 123,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 1
+      },
+      {
+        "index": 18,
+        "result": [
+          {
+            "id": "id-18",
+            "url": "url",
+            "title": "Title",
+            "publishedAt": 1577836800000,
+            "thumbnail": {
+              "$value": "undefined"
+            }
+          }
+        ],
+        "calls": 0
+      },
+      {
+        "index": 19,
+        "error": "Error",
+        "message": "date coercion fixture",
+        "calls": 0
+      }
+    ],
+    "customIdentity": {
+      "error": "TypeError",
+      "message": "candidate.trim is not a function"
+    }
+  }
+}

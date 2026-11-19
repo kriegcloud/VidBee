@@ -3,7 +3,7 @@ import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { rethrowQueryError } from '@vidbee/db/legacy'
 import { DrizzleQueryError } from 'drizzle-orm/errors'
-import { createSqliteMetaStore, createSqliteSubscriptionsStore } from '../../src/store'
+import { createSqliteMetaStore, createSqliteSubscriptionsStore } from '@vidbee/subscriptions-core-legacy/store'
 
 it('M16: every supplied-store surface rethrows the original SQLite object and message', async () => {
   const handle = new Database(':memory:')

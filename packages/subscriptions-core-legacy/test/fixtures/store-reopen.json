@@ -1,0 +1,89 @@
+{
+  "before": {
+    "rule": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "downloadType": "audio",
+      "items": [
+        {
+          "id": "saved",
+          "url": "https://fixture.invalid/saved",
+          "title": "Title saved",
+          "publishedAt": 10,
+          "addedToQueue": true,
+          "taskId": "saved-task"
+        }
+      ]
+    },
+    "leader": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": "desktop"
+    }
+  },
+  "after": {
+    "rule": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": true,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 101,
+      "updatedAt": 101,
+      "sourceKind": "profile",
+      "categories": [
+        "posts"
+      ],
+      "downloadType": "audio",
+      "items": [
+        {
+          "id": "saved",
+          "url": "https://fixture.invalid/saved",
+          "title": "Title saved",
+          "publishedAt": 10,
+          "addedToQueue": true,
+          "taskId": "saved-task"
+        }
+      ]
+    },
+    "leader": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": "desktop"
+    }
+  },
+  "integrity": "ok",
+  "residue": [
+    "reopen.db"
+  ],
+  "mode": 384
+}

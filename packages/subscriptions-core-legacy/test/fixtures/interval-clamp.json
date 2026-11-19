@@ -1,0 +1,38 @@
+[
+  {
+    "delay": "0",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  },
+  {
+    "delay": "-5",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  },
+  {
+    "delay": "0.5",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  },
+  {
+    "delay": "NaN",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  },
+  {
+    "delay": "2147483648",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  },
+  {
+    "delay": "Infinity",
+    "period": 1,
+    "window": 5,
+    "ticks": 5
+  }
+]

@@ -1,0 +1,167 @@
+[
+  [
+    "2020-01-02",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1577923200000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    "2020-01-02T03:04:05",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1577901845000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    "2020-01-02T03:04:05Z",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1577934245000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    "2020-03-08T02:30:00",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1583602200000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    "2020-11-01T01:30:00",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1604161800000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    "bad",
+    [
+      {
+        "id": "a",
+        "url": "u",
+        "title": "A",
+        "publishedAt": 1577836800000,
+        "thumbnail": {
+          "$undefined": true
+        }
+      },
+      {
+        "id": "b",
+        "url": "v",
+        "title": "B",
+        "publishedAt": 1,
+        "thumbnail": {
+          "$undefined": true
+        }
+      }
+    ],
+    1
+  ],
+  [
+    {
+      "id": "a",
+      "url": "u",
+      "title": "A",
+      "publishedAt": 978274800000,
+      "thumbnail": {
+        "$undefined": true
+      }
+    },
+    {
+      "id": "b",
+      "url": "v",
+      "title": "B",
+      "publishedAt": 7,
+      "thumbnail": {
+        "$undefined": true
+      }
+    }
+  ],
+  "coercion-identity"
+]

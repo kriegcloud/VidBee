@@ -1,0 +1,197 @@
+{
+  "instance": [
+    [
+      "reconcile",
+      true
+    ],
+    "schedule",
+    "started",
+    [
+      "all",
+      true,
+      []
+    ],
+    "schedule",
+    "ticked",
+    [
+      "one",
+      true,
+      [
+        "s"
+      ]
+    ],
+    [
+      "get",
+      "s"
+    ],
+    "refreshed",
+    [
+      "release",
+      true,
+      [
+        [
+          "t1"
+        ]
+      ]
+    ],
+    "flushed",
+    "clear"
+  ],
+  "subclass": [
+    [
+      "reconcile",
+      true
+    ],
+    "schedule",
+    "started",
+    [
+      "all",
+      true,
+      []
+    ],
+    "schedule",
+    "ticked",
+    [
+      "one",
+      true,
+      [
+        "s"
+      ]
+    ],
+    [
+      "get",
+      "s"
+    ],
+    "refreshed",
+    [
+      "release",
+      true,
+      [
+        [
+          "t1"
+        ]
+      ]
+    ],
+    "flushed",
+    "clear"
+  ],
+  "prototype": [
+    [
+      "reconcile",
+      true
+    ],
+    "schedule",
+    "started",
+    [
+      "all",
+      true,
+      []
+    ],
+    "schedule",
+    "ticked",
+    [
+      "one",
+      true,
+      [
+        "s"
+      ]
+    ],
+    [
+      "get",
+      "s"
+    ],
+    "refreshed",
+    [
+      "release",
+      true,
+      [
+        [
+          "t1"
+        ]
+      ]
+    ],
+    "flushed",
+    "clear"
+  ],
+  "neighbors:instance": [
+    [
+      "one",
+      true,
+      "s"
+    ],
+    [
+      "heartbeat",
+      true
+    ],
+    [
+      "fetch",
+      true,
+      [
+        "https://fixture.invalid/candidate",
+        "undefined"
+      ]
+    ]
+  ],
+  "neighbors:subclass": [
+    [
+      "one",
+      true,
+      "s"
+    ],
+    [
+      "heartbeat",
+      true
+    ],
+    [
+      "fetch",
+      true,
+      [
+        "https://fixture.invalid/candidate",
+        "undefined"
+      ]
+    ]
+  ],
+  "orphan:false": {
+    "events": [
+      "now",
+      "now"
+    ],
+    "count": 2,
+    "items": [
+      {
+        "id": "a",
+        "added": false,
+        "taskId": null
+      },
+      {
+        "id": "b",
+        "added": true,
+        "taskId": "task2"
+      }
+    ]
+  },
+  "orphan:true": {
+    "events": [
+      [
+        "live",
+        "old"
+      ],
+      "now",
+      "marked during await",
+      "now"
+    ],
+    "count": 2,
+    "items": [
+      {
+        "id": "a",
+        "added": false,
+        "taskId": null
+      },
+      {
+        "id": "b",
+        "added": false,
+        "taskId": null
+      }
+    ]
+  }
+}

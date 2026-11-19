@@ -1,0 +1,33 @@
+[
+  [
+    "schedule",
+    1,
+    0
+  ],
+  [
+    "run",
+    1
+  ],
+  [
+    "callback-return",
+    {
+      "$undefined": true
+    }
+  ],
+  "pending-trigger-fulfilled",
+  [
+    "run",
+    2
+  ],
+  "log",
+  [
+    "schedule",
+    2,
+    10800000
+  ],
+  [
+    "unhandled",
+    1,
+    "identity"
+  ]
+]

@@ -1,0 +1,63 @@
+[
+  "request",
+  [
+    "traversal",
+    "TypeError",
+    "candidate.trim is not a function"
+  ],
+  "request",
+  [
+    "log",
+    "warn",
+    "subscriptions: feed-check failed",
+    "TypeError",
+    "candidate.trim is not a function"
+  ],
+  "refresh-fulfilled",
+  [
+    [
+      "get",
+      "sub"
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "status": "checking",
+        "lastCheckedAt": 1000,
+        "lastError": {
+          "$undefined": true
+        }
+      }
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "status": "failed",
+        "lastError": "candidate.trim is not a function",
+        "lastCheckedAt": 1000
+      }
+    ]
+  ],
+  {
+    "id": "sub",
+    "title": "Fixture",
+    "sourceUrl": "https://fixture.invalid/page",
+    "feedUrl": "https://fixture.invalid/feed",
+    "platform": "custom",
+    "keywords": [],
+    "tags": [],
+    "onlyDownloadLatest": false,
+    "autoDownload": true,
+    "enabled": true,
+    "status": "failed",
+    "createdAt": 10,
+    "updatedAt": 10,
+    "sourceKind": "feed",
+    "categories": [],
+    "items": [],
+    "lastCheckedAt": 1000,
+    "lastError": "candidate.trim is not a function"
+  }
+]

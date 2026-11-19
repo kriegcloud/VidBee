@@ -1,0 +1,199 @@
+{
+  "old": {
+    "id": "sub-1",
+    "title": "https://fixture.invalid/source",
+    "sourceUrl": "https://fixture.invalid/source",
+    "feedUrl": "https://fixture.invalid/feed",
+    "platform": "custom",
+    "keywords": [],
+    "tags": [],
+    "onlyDownloadLatest": false,
+    "autoDownload": false,
+    "enabled": false,
+    "status": "idle",
+    "createdAt": {
+      "bigint": "9007199254740993"
+    },
+    "updatedAt": {
+      "bigint": "101"
+    },
+    "sourceKind": "feed",
+    "categories": [],
+    "checkIntervalMs": {
+      "bigint": "9"
+    },
+    "nextCheckAt": {
+      "bigint": "9007199254740993"
+    },
+    "latestVideoPublishedAt": {
+      "bigint": "0"
+    },
+    "lastCheckedAt": {
+      "bigint": "0"
+    },
+    "lastSuccessAt": {
+      "bigint": "0"
+    },
+    "items": [
+      {
+        "id": "missing-link",
+        "url": "",
+        "title": "missing-link",
+        "publishedAt": {
+          "bigint": "104"
+        },
+        "addedToQueue": false
+      },
+      {
+        "id": "a",
+        "url": "https://fixture.invalid/a",
+        "title": "Title a",
+        "publishedAt": {
+          "bigint": "10"
+        },
+        "addedToQueue": false,
+        "taskId": "task"
+      }
+    ]
+  },
+  "raw": {
+    "rule": {
+      "id": "sub-1",
+      "title": "https://fixture.invalid/source",
+      "source_url": "https://fixture.invalid/source",
+      "feed_url": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": "[]",
+      "tags": "[]",
+      "only_latest": {
+        "bigint": "1"
+      },
+      "enabled": {
+        "bigint": "1"
+      },
+      "cover_url": null,
+      "latest_video_title": null,
+      "latest_video_published_at": {
+        "bigint": "0"
+      },
+      "last_checked_at": {
+        "bigint": "0"
+      },
+      "last_success_at": {
+        "bigint": "0"
+      },
+      "status": "idle",
+      "last_error": null,
+      "created_at": {
+        "bigint": "9007199254740993"
+      },
+      "updated_at": {
+        "bigint": "101"
+      },
+      "download_directory": null,
+      "naming_template": null,
+      "auto_download": {
+        "bigint": "1"
+      },
+      "source_kind": "feed",
+      "profile_owner": null,
+      "categories": "[]",
+      "check_interval_ms": {
+        "bigint": "9"
+      },
+      "next_check_at": {
+        "bigint": "9007199254740993"
+      },
+      "download_type": null,
+      "download_quality": null,
+      "download_container": null
+    },
+    "item": {
+      "subscription_id": "sub-1",
+      "item_id": "a",
+      "title": "Title a",
+      "url": "https://fixture.invalid/a",
+      "published_at": {
+        "bigint": "10"
+      },
+      "thumbnail": null,
+      "added": {
+        "bigint": "1"
+      },
+      "task_id": "task",
+      "created_at": {
+        "bigint": "10"
+      },
+      "updated_at": {
+        "bigint": "103"
+      }
+    },
+    "meta": [
+      {
+        "key": "preferred_leader",
+        "value": "api",
+        "updated_at": {
+          "bigint": "105"
+        }
+      },
+      {
+        "key": "subscriptions_version",
+        "value": "1",
+        "updated_at": {
+          "bigint": "0"
+        }
+      }
+    ]
+  },
+  "leader": {
+    "kind": null,
+    "pid": null,
+    "startedAt": null,
+    "heartbeatAt": null,
+    "lockExpiresAt": null,
+    "leaseId": null,
+    "preferred": "api"
+  },
+  "orphan": 1,
+  "modeSurvives": "bigint",
+  "expectedNew": {
+    "id": "sub-1",
+    "title": "https://fixture.invalid/source",
+    "sourceUrl": "https://fixture.invalid/source",
+    "feedUrl": "https://fixture.invalid/feed",
+    "platform": "custom",
+    "keywords": [],
+    "tags": [],
+    "onlyDownloadLatest": true,
+    "autoDownload": true,
+    "enabled": true,
+    "status": "idle",
+    "createdAt": 9007199254740992,
+    "updatedAt": 101,
+    "sourceKind": "feed",
+    "categories": [],
+    "checkIntervalMs": 9,
+    "nextCheckAt": 9007199254740992,
+    "latestVideoPublishedAt": 0,
+    "lastCheckedAt": 0,
+    "lastSuccessAt": 0,
+    "items": [
+      {
+        "id": "missing-link",
+        "url": "",
+        "title": "missing-link",
+        "publishedAt": 104,
+        "addedToQueue": true
+      },
+      {
+        "id": "a",
+        "url": "https://fixture.invalid/a",
+        "title": "Title a",
+        "publishedAt": 10,
+        "addedToQueue": true,
+        "taskId": "task"
+      }
+    ]
+  },
+  "expectedNewOrphanCount": 2
+}

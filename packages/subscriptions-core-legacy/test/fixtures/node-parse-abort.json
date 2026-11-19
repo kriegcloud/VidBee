@@ -1,0 +1,11 @@
+[
+  [
+    [
+      "https://fixture.invalid/feed",
+      "GET",
+      "follow"
+    ]
+  ],
+  "reason-identity",
+  true
+]
