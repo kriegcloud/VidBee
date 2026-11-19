@@ -1,6 +1,6 @@
 /** Native worker composition. Application consumers still select the compatibility entrypoint. */
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { capabilitiesLayer } from "@vidbee/downloader-core/Process.driver";
+import { layer as capabilitiesLayer } from "@vidbee/downloader-core/ProcessCapabilities.layer";
 import { LegacyTiming } from "@vidbee/task-queue/LegacyTiming.service";
 import { requestLayer } from "@vidbee/task-queue/ProcessControl.driver";
 import * as SecureRandom from "effect/crypto/SecureRandom";

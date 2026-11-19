@@ -89,8 +89,8 @@ layer(testLayer)("native caption owner shutdown", (it) => {
               stdin: "ignore",
               stdout: "pipe",
               stderr: "pipe",
-              stdoutConsumption: "events",
-              stderrConsumption: "events",
+              stdoutConsumption: "deliver",
+              stderrConsumption: "deliver",
             },
             50
           )

@@ -24,8 +24,8 @@ const spec: ProcessCapabilitiesSpec = {
   stdin: "pipe",
   stdout: "pipe",
   stderr: "pipe",
-  stdoutConsumption: "leaveUnread",
-  stderrConsumption: "leaveUnread",
+  stdoutConsumption: "unread",
+  stderrConsumption: "unread",
 };
 const exit = Deferred.makeUnsafe<ChildProcessSpawner.ExitCode>();
 const inputGate = Deferred.makeUnsafe<void>();
@@ -113,8 +113,8 @@ layer(testLayer)("additive native capabilities", (it) => {
         if (started._tag !== "Acquired") return yield* Effect.die("fixture did not start");
         const state = yield* started.run.signallingState;
         expect(state).toEqual({ _tag: "Native" });
-        yield* started.run.writeInput(new Uint8Array([1, 2]));
-        yield* started.run.writeInput(new Uint8Array([3]));
+        yield* started.run.process.writeStdin(new Uint8Array([1, 2]));
+        yield* started.run.process.writeStdin(new Uint8Array([3]));
         expect(input).toEqual([]);
         expect(sinkRuns).toBe(1);
         expect(outputRuns).toBe(0);

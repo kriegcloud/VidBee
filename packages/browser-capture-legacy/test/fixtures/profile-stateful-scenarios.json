@@ -1,0 +1,1701 @@
+[
+  {
+    "name": "get-list-clone-and-validation",
+    "result": {
+      "again": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "idle",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": []
+      },
+      "listBefore": [],
+      "invalid": {
+        "error": {
+          "name": "ZodError",
+          "message": "[\n  {\n    \"code\": \"invalid_format\",\n    \"format\": \"url\",\n    \"path\": [\n      \"url\"\n    ],\n    \"message\": \"Invalid URL\"\n  }\n]",
+          "injected": false
+        }
+      },
+      "get": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "idle",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": []
+        }
+      },
+      "listAfter": []
+    }
+  },
+  {
+    "name": "saved-get-list-deep-clone",
+    "result": {
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      },
+      "list": [
+        {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "concurrent-open-same-resolve",
+    "result": {
+      "before": {
+        "profiles": [],
+        "trace": [
+          [
+            "launch"
+          ]
+        ]
+      },
+      "values": [
+        {
+          "value": {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "idle",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": []
+          }
+        },
+        {
+          "value": {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "idle",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": []
+          }
+        }
+      ],
+      "profiles": [
+        {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "idle",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": []
+        }
+      ],
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example"
+        ],
+        [
+          "front"
+        ],
+        [
+          "front"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "concurrent-open-same-reject",
+    "result": {
+      "before": {
+        "profiles": [],
+        "trace": [
+          [
+            "launch"
+          ]
+        ]
+      },
+      "values": [
+        {
+          "error": {
+            "name": "Error",
+            "message": "controlled launch rejection",
+            "injected": false
+          }
+        },
+        {
+          "error": {
+            "name": "Error",
+            "message": "controlled launch rejection",
+            "injected": false
+          }
+        }
+      ],
+      "profiles": [],
+      "trace": [
+        [
+          "launch"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "concurrent-open-different-resolve",
+    "result": {
+      "before": {
+        "profiles": [],
+        "trace": [
+          [
+            "launch"
+          ]
+        ]
+      },
+      "values": [
+        {
+          "value": {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "idle",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": []
+          }
+        },
+        {
+          "value": {
+            "username": "second",
+            "profileUrl": "https://onlyfans.com/second",
+            "state": "idle",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": []
+          }
+        }
+      ],
+      "profiles": [
+        {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "idle",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": []
+        },
+        {
+          "username": "second",
+          "profileUrl": "https://onlyfans.com/second",
+          "state": "idle",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": []
+        }
+      ],
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/second"
+        ],
+        [
+          "front"
+        ],
+        [
+          "front"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "concurrent-open-different-reject",
+    "result": {
+      "before": {
+        "profiles": [],
+        "trace": [
+          [
+            "launch"
+          ]
+        ]
+      },
+      "values": [
+        {
+          "error": {
+            "name": "Error",
+            "message": "controlled launch rejection",
+            "injected": false
+          }
+        },
+        {
+          "error": {
+            "name": "Error",
+            "message": "controlled launch rejection",
+            "injected": false
+          }
+        }
+      ],
+      "profiles": [],
+      "trace": [
+        [
+          "launch"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "open-stop-during-navigation",
+    "result": {
+      "stop": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "opening": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "idle",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": []
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "idle",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": []
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example"
+        ],
+        [
+          "close"
+        ],
+        [
+          "front"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "queue-concurrent-reentry",
+    "result": {
+      "a": {
+        "value": {
+          "count": 1
+        }
+      },
+      "b": {
+        "value": {
+          "count": 0
+        }
+      },
+      "nested": {
+        "value": {
+          "count": 0
+        }
+      },
+      "trace": [
+        [
+          "cap",
+          "onlyfans-browser",
+          1
+        ],
+        [
+          "add",
+          {
+            "id": "onlyfans_example_1_02f6f76c8ce44dc4",
+            "priority": 0,
+            "groupKey": "onlyfans-browser",
+            "input": {
+              "kind": "social-media",
+              "url": "https://onlyfans.com/100/example",
+              "title": "@example \u00b7 photos \u00b7 1",
+              "options": {
+                "onlyFansProfile": "https://onlyfans.com/example",
+                "onlyFansMediaId": "1",
+                "customDownloadPath": "/fixture/downloads"
+              }
+            }
+          }
+        ],
+        [
+          "cap",
+          "onlyfans-browser",
+          1
+        ],
+        [
+          "reentrant-get",
+          "complete"
+        ],
+        [
+          "cap",
+          "onlyfans-browser",
+          1
+        ]
+      ],
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "queue-partial-failure",
+    "result": {
+      "outcome": {
+        "error": {
+          "name": "RangeError",
+          "message": "controlled second admission",
+          "injected": false
+        }
+      },
+      "trace": [
+        [
+          "add",
+          "onlyfans_example_1_02f6f76c8ce44dc4"
+        ],
+        [
+          "add",
+          "onlyfans_example_2_02f6f76c8ce44dc4"
+        ]
+      ],
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "download-failure-response",
+    "result": {
+      "value": {
+        "error": {
+          "name": "Error",
+          "message": "The post did not return media in the dedicated browser. Reopen it and retry.",
+          "injected": false
+        }
+      },
+      "progress": [],
+      "residue": [],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-failure-goto",
+    "result": {
+      "value": {
+        "error": {
+          "name": "RangeError",
+          "message": "controlled navigation failure",
+          "injected": true
+        }
+      },
+      "progress": [],
+      "residue": [],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-failure-fetch",
+    "result": {
+      "value": {
+        "error": {
+          "name": "TypeError",
+          "message": "controlled fetch failure",
+          "injected": true
+        }
+      },
+      "progress": [],
+      "residue": [],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1700000000000,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/posts/100"
+        ],
+        [
+          "fetch",
+          "error",
+          {
+            "Referer": "https://onlyfans.com/"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-failure-mime",
+    "result": {
+      "value": {
+        "error": {
+          "name": "Error",
+          "message": "The server returned a page instead of a media file.",
+          "injected": false
+        }
+      },
+      "progress": [],
+      "residue": [],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1700000000000,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/posts/100"
+        ],
+        [
+          "fetch",
+          "error",
+          {
+            "Referer": "https://onlyfans.com/"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-failure-length",
+    "result": {
+      "value": {
+        "error": {
+          "name": "Error",
+          "message": "The downloaded file is incomplete.",
+          "injected": false
+        }
+      },
+      "progress": [
+        [
+          3,
+          4
+        ]
+      ],
+      "residue": [
+        [
+          "100_1.jpg.part",
+          [
+            1,
+            2,
+            3
+          ]
+        ]
+      ],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1700000000000,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/posts/100"
+        ],
+        [
+          "fetch",
+          "error",
+          {
+            "Referer": "https://onlyfans.com/"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-failure-overflow",
+    "result": {
+      "value": {
+        "error": {
+          "name": "Error",
+          "message": "The downloaded file is incomplete.",
+          "injected": false
+        }
+      },
+      "progress": [
+        [
+          3,
+          {
+            "__number": "Infinity"
+          }
+        ]
+      ],
+      "residue": [
+        [
+          "100_1.jpg.part",
+          [
+            1,
+            2,
+            3
+          ]
+        ]
+      ],
+      "afterFailure": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "complete",
+          "updatedAt": 1700000000000,
+          "pages": 1,
+          "items": [
+            {
+              "id": "1",
+              "postId": "100",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            },
+            {
+              "id": "2",
+              "postId": "101",
+              "category": "photos",
+              "state": "available",
+              "downloaded": false
+            }
+          ]
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/posts/100"
+        ],
+        [
+          "fetch",
+          "error",
+          {
+            "Referer": "https://onlyfans.com/"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "name": "download-stop-does-not-abort",
+    "result": {
+      "otherDownload": {
+        "error": {
+          "name": "Error",
+          "message": "Finish or stop OnlyFans mapping before downloading.",
+          "injected": false
+        }
+      },
+      "open": {
+        "error": {
+          "name": "Error",
+          "message": "Another OnlyFans operation is running. Stop it or wait for it to finish.",
+          "injected": false
+        }
+      },
+      "stop": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "active": {
+        "value": {
+          "filePath": "/fixture/root/15/downloads/OnlyFans/example/photos/100_1.jpg",
+          "size": 3
+        }
+      },
+      "progress": [
+        [
+          3,
+          3
+        ]
+      ],
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1700000000000,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": true
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "waitResponse"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/100/example"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/posts/100"
+        ],
+        [
+          "fetch",
+          "error",
+          {
+            "Referer": "https://onlyfans.com/"
+          }
+        ],
+        [
+          "close"
+        ],
+        [
+          "reentrant-get",
+          false
+        ]
+      ]
+    }
+  },
+  {
+    "name": "independent-owner-transfers",
+    "result": {
+      "values": [
+        {
+          "value": {
+            "filePath": "/fixture/root/16/downloads/OnlyFans/example/photos/100_1.jpg",
+            "size": 3
+          }
+        },
+        {
+          "value": {
+            "filePath": "/fixture/root/17/downloads/OnlyFans/example/photos/100_1.jpg",
+            "size": 3
+          }
+        }
+      ],
+      "first": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1700000000000,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": true
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      },
+      "second": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1700000000000,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": true
+          },
+          {
+            "id": "2",
+            "postId": "101",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ]
+      },
+      "traces": [
+        [
+          [
+            "launch"
+          ],
+          [
+            "waitResponse"
+          ],
+          [
+            "goto",
+            "https://onlyfans.com/100/example"
+          ],
+          [
+            "json",
+            "https://onlyfans.com/api2/v2/posts/100"
+          ],
+          [
+            "fetch",
+            "error",
+            {
+              "Referer": "https://onlyfans.com/"
+            }
+          ]
+        ],
+        [
+          [
+            "launch"
+          ],
+          [
+            "waitResponse"
+          ],
+          [
+            "goto",
+            "https://onlyfans.com/100/example"
+          ],
+          [
+            "json",
+            "https://onlyfans.com/api2/v2/posts/100"
+          ],
+          [
+            "fetch",
+            "error",
+            {
+              "Referer": "https://onlyfans.com/"
+            }
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "mapping-stop-drains-queued-responses",
+    "result": {
+      "immediate": {
+        "profile": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "mapping",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": [],
+          "category": "media",
+          "error": {
+            "__undefined": true
+          }
+        },
+        "trace": [
+          [
+            "launch"
+          ],
+          [
+            "goto",
+            "https://onlyfans.com/example/media"
+          ]
+        ]
+      },
+      "blockedOpen": {
+        "error": {
+          "name": "Error",
+          "message": "Another OnlyFans operation is running. Stop it or wait for it to finish.",
+          "injected": false
+        }
+      },
+      "beforeRelease": {
+        "stopped": false,
+        "profile": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "partial",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": [],
+          "category": "media",
+          "error": {
+            "__undefined": true
+          }
+        },
+        "trace": [
+          [
+            "launch"
+          ],
+          [
+            "goto",
+            "https://onlyfans.com/example/media"
+          ],
+          [
+            "json",
+            "https://onlyfans.com/api2/v2/users/example"
+          ],
+          [
+            "close"
+          ]
+        ]
+      },
+      "stop": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "partial",
+        "updatedAt": 1700000000000,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": false
+          }
+        ],
+        "category": "media",
+        "error": {
+          "__undefined": true
+        }
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example/media"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/users/example"
+        ],
+        [
+          "close"
+        ],
+        [
+          "json",
+          "https://onlyfans.com/api2/v2/users/7/posts/medias"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "duplicate-saved-items-collapse-on-collect",
+    "result": {
+      "value": {
+        "value": {
+          "filePath": "/fixture/root/19/downloads/OnlyFans/example/photos/100_1.jpg",
+          "size": 3
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "complete",
+        "updatedAt": 1700000000000,
+        "pages": 1,
+        "items": [
+          {
+            "id": "1",
+            "postId": "100",
+            "category": "photos",
+            "state": "available",
+            "downloaded": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "response-projection-failure-url",
+    "result": {
+      "during": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "stopped": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example/media"
+        ],
+        [
+          "response-projection",
+          "url"
+        ],
+        [
+          "close"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "response-projection-failure-ok",
+    "result": {
+      "during": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "stopped": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example/media"
+        ],
+        [
+          "response-projection",
+          "ok"
+        ],
+        [
+          "close"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "response-projection-failure-status",
+    "result": {
+      "during": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "stopped": {
+        "value": {
+          "__undefined": true
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "Mapping stopped while processing a response (RangeError). The saved map has been retained."
+      },
+      "trace": [
+        [
+          "launch"
+        ],
+        [
+          "goto",
+          "https://onlyfans.com/example/media"
+        ],
+        [
+          "response-projection",
+          "status"
+        ],
+        [
+          "close"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "mapping-fast-failure-browserAbsent",
+    "result": {
+      "markers": [
+        [
+          "returned",
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "settled",
+          {
+            "value": {
+              "username": "example",
+              "profileUrl": "https://onlyfans.com/example",
+              "state": "mapping",
+              "updatedAt": 1700000000000,
+              "pages": 0,
+              "items": [],
+              "category": "media",
+              "error": {
+                "__undefined": true
+              }
+            }
+          }
+        ],
+        [
+          "turn",
+          1,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          2,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          3,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          4,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          5,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          6,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ],
+        [
+          "turn",
+          7,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ],
+        [
+          "turn",
+          8,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ]
+      ],
+      "result": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "mapping",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": [],
+          "category": "media",
+          "error": {
+            "__undefined": true
+          }
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+      },
+      "stop": {
+        "value": {
+          "__undefined": true
+        }
+      }
+    }
+  },
+  {
+    "name": "mapping-fast-failure-discoveryFailure",
+    "result": {
+      "markers": [
+        [
+          "returned",
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "settled",
+          {
+            "value": {
+              "username": "example",
+              "profileUrl": "https://onlyfans.com/example",
+              "state": "mapping",
+              "updatedAt": 1700000000000,
+              "pages": 0,
+              "items": [],
+              "category": "media",
+              "error": {
+                "__undefined": true
+              }
+            }
+          }
+        ],
+        [
+          "turn",
+          1,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          2,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          3,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          4,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          5,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "mapping",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": {
+              "__undefined": true
+            }
+          }
+        ],
+        [
+          "turn",
+          6,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ],
+        [
+          "turn",
+          7,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ],
+        [
+          "turn",
+          8,
+          {
+            "username": "example",
+            "profileUrl": "https://onlyfans.com/example",
+            "state": "error",
+            "updatedAt": 1700000000000,
+            "pages": 0,
+            "items": [],
+            "category": "media",
+            "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+          }
+        ]
+      ],
+      "result": {
+        "value": {
+          "username": "example",
+          "profileUrl": "https://onlyfans.com/example",
+          "state": "mapping",
+          "updatedAt": 1700000000000,
+          "pages": 0,
+          "items": [],
+          "category": "media",
+          "error": {
+            "__undefined": true
+          }
+        }
+      },
+      "profile": {
+        "username": "example",
+        "profileUrl": "https://onlyfans.com/example",
+        "state": "error",
+        "updatedAt": 1700000000000,
+        "pages": 0,
+        "items": [],
+        "category": "media",
+        "error": "The browser could not finish mapping. Reopen it and retry; saved items are retained."
+      },
+      "stop": {
+        "value": {
+          "__undefined": true
+        }
+      }
+    }
+  }
+]

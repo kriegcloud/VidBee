@@ -57,8 +57,8 @@ layer(testLayer)("native unread pipe ownership", (it) => {
               stdin: "ignore",
               stdout: "pipe",
               stderr: "pipe",
-              stdoutConsumption: unread === "stdout" ? "leaveUnread" : "events",
-              stderrConsumption: unread === "stderr" ? "leaveUnread" : "events",
+              stdoutConsumption: unread === "stdout" ? "unread" : "deliver",
+              stderrConsumption: unread === "stderr" ? "unread" : "deliver",
             },
             {
               abort: Effect.void,
@@ -88,6 +88,51 @@ layer(testLayer)("native unread pipe ownership", (it) => {
     );
   }
   it.effect(
+    "ending the one feeder delivers EOF and reaps a real stdin reader",
+    () =>
+      Effect.gen(function* () {
+        const node = yield* pinnedNode;
+        const service = yield* ProcessCapabilities;
+        const owner = yield* Effect.scope;
+        let output = "";
+        const started = yield* service.start(
+          {
+            command: node,
+            argv: [
+              "-e",
+              "let text='';process.stdin.on('data',b=>text+=b);process.stdin.on('end',()=>process.stdout.write(text+' eof'))",
+            ],
+            env: undefined,
+            extendEnv: false,
+            cwd: undefined,
+            detached: false,
+            windowsHide: true,
+            stdin: "pipe",
+            stdout: "pipe",
+            stderr: "pipe",
+            stdoutConsumption: "deliver",
+            stderrConsumption: "deliver",
+          },
+          {
+            abort: Effect.void,
+            emit: (event) =>
+              Effect.sync(() => {
+                if (event._tag === "stdout") output += new TextDecoder().decode(event.chunk);
+              }),
+          },
+          owner
+        );
+        if (started._tag !== "Acquired") return yield* Effect.die("fixture did not start");
+        yield* started.run.process.writeStdin(new TextEncoder().encode("one"));
+        yield* started.run.process.writeStdin(new TextEncoder().encode("two"));
+        yield* started.run.endInput;
+        const outcome = yield* started.run.awaitReaped;
+        expect(outcome).toEqual({ _tag: "Native", result: { _tag: "ExitCode", code: 0 } });
+        expect(output).toBe("onetwo eof");
+      }),
+    { timeout: 30000 }
+  );
+  it.effect(
     "a TERM-ignoring owned worker is killed after grace and reaped before terminate returns",
     () =>
       Effect.gen(function* () {
@@ -111,8 +156,8 @@ layer(testLayer)("native unread pipe ownership", (it) => {
             stdin: "ignore",
             stdout: "pipe",
             stderr: "pipe",
-            stdoutConsumption: "events",
-            stderrConsumption: "events",
+            stdoutConsumption: "deliver",
+            stderrConsumption: "deliver",
           },
           {
             abort: Effect.void,

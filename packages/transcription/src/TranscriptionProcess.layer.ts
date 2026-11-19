@@ -26,8 +26,8 @@ export const layer = Layer.effect(
           run: {
             process: run.process,
             signallingState: run.signallingState.pipe(Effect.mapError(translate)),
-            writeInput: Effect.fn("TranscriptionProcess.writeInput")((bytes) =>
-              run.writeInput(bytes).pipe(Effect.mapError(translate))
+            writeStdin: Effect.fn("TranscriptionProcess.writeStdin")((bytes) =>
+              run.process.writeStdin(bytes).pipe(Effect.mapError(translate))
             ),
             endInput: run.endInput.pipe(Effect.mapError(translate)),
             awaitReaped: run.awaitReaped.pipe(Effect.mapError(translate)),

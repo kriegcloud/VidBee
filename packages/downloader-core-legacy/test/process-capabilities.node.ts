@@ -20,7 +20,7 @@ const unwrap = (cause: Cause.Cause<HostFailure>) => {
 }
 const spec: ProcessCapabilitiesSpec = { command: 'fixture', argv: [], env: undefined, extendEnv: false,
   cwd: undefined, detached: true, windowsHide: true, stdin: 'pipe', stdout: 'pipe', stderr: 'pipe',
-  stdoutConsumption: 'leaveUnread', stderrConsumption: 'events' }
+  stdoutConsumption: 'unread', stderrConsumption: 'deliver' }
 
 test('raw live signalling observes killed while alive; writes/callbacks stay synchronous and reap means close', { timeout: 30000 }, async () => {
   const child = new ChildProcess()
@@ -45,7 +45,7 @@ test('raw live signalling observes killed while alive; writes/callbacks stay syn
     assert.deepEqual(runLegacySync(runtime, started.run.signallingState, unwrap), { _tag: 'Raw', killed: true })
     assert.equal(child.exitCode, null)
     assert.deepEqual(calls, ['SIGTERM'])
-    runLegacySync(runtime, started.run.writeInput(new Uint8Array([1, 2])), unwrap)
+    runLegacySync(runtime, started.run.process.writeStdin(new Uint8Array([1, 2])), unwrap)
     assert.deepEqual(stdin.read(), Buffer.from([1, 2]))
     stderr.emit('data', Buffer.from('fixture'))
     assert.equal(events[0]?._tag, 'stderr')
@@ -59,7 +59,7 @@ test('raw live signalling observes killed while alive; writes/callbacks stay syn
     assert.equal(events.at(-1)?._tag, 'complete')
     const sentinel = new Error('write sentinel')
     stdin.write = () => { throw sentinel }
-    assert.throws(() => runLegacySync(runtime, started.run.writeInput(new Uint8Array([3])), unwrap), error => error === sentinel)
+    assert.throws(() => runLegacySync(runtime, started.run.process.writeStdin(new Uint8Array([3])), unwrap), error => error === sentinel)
   } finally { await runtime.dispose() }
 })
 
@@ -74,7 +74,7 @@ test('raw worker termination ends stdin, sends child TERM and reaps after close'
   runtime = ManagedRuntime.make(makeProcessCapabilitiesLayer(() => runtime, Cause.squash, () => child))
   try {
     const service = runLegacySync(runtime, ProcessCapabilities, Cause.squash)
-    const started = runLegacySync(runtime, service.start({ ...spec, stdout: 'ignore', stdoutConsumption: 'events' }, { abort: Effect.void, emit: () => Effect.void }, Scope.makeUnsafe()), unwrap)
+    const started = runLegacySync(runtime, service.start({ ...spec, stdout: 'ignore', stdoutConsumption: 'deliver' }, { abort: Effect.void, emit: () => Effect.void }, Scope.makeUnsafe()), unwrap)
     if (started._tag !== 'Acquired') throw new Error('missing process')
     const stopped = runLegacyPromise(runtime, started.run.terminate(10000), unwrap)
     assert.deepEqual(calls, ['SIGTERM'])
@@ -97,7 +97,7 @@ test('raw TERM-ignoring worker escalates child-only and still waits for close', 
   const keepAlive = setInterval(() => {}, 10000)
   try {
     const service = runLegacySync(runtime, ProcessCapabilities, Cause.squash)
-    const started = runLegacySync(runtime, service.start({ ...spec, stdin: 'ignore', stdout: 'ignore', stdoutConsumption: 'events' }, { abort: Effect.void, emit: () => Effect.void }, Scope.makeUnsafe()), unwrap)
+    const started = runLegacySync(runtime, service.start({ ...spec, stdin: 'ignore', stdout: 'ignore', stdoutConsumption: 'deliver' }, { abort: Effect.void, emit: () => Effect.void }, Scope.makeUnsafe()), unwrap)
     if (started._tag !== 'Acquired') throw new Error('missing process')
     let completed = false
     const stopping = runLegacyPromise(runtime, started.run.terminate(0), unwrap).then(() => { completed = true })

@@ -155,13 +155,15 @@ const process = Layer.effect(
           _tag: "Acquired",
           run: {
             process: {
+              observeClose: Effect.void,
+              writeStdin: () => Effect.void,
               pid: 10,
               signalChild: () => Effect.void,
               signalGroup: () => Effect.void,
               signalTree: () => Effect.void,
               signalPid: () => Effect.void,
             },
-            writeInput: () => Effect.void,
+            writeStdin: () => Effect.void,
             endInput: Effect.void,
             awaitReaped: Effect.succeed(outcome),
             terminate: () => Effect.void,
@@ -214,12 +216,12 @@ layer(services, { buildPerTest: true })("native audio services", (it) => {
       expect(state.reaped).toBe(4);
       const probe = state.calls[0];
       expect(probe?.stdin).toBe("pipe");
-      expect(probe?.stderrConsumption).toBe("leaveUnread");
-      expect(probe?.stdoutConsumption).toBe("events");
+      expect(probe?.stderrConsumption).toBe("unread");
+      expect(probe?.stdoutConsumption).toBe("deliver");
       expect(probe?.detached).toBe(false);
       const convert = state.calls[2];
-      expect(convert?.stdoutConsumption).toBe("leaveUnread");
-      expect(convert?.stderrConsumption).toBe("events");
+      expect(convert?.stdoutConsumption).toBe("unread");
+      expect(convert?.stderrConsumption).toBe("deliver");
       expect(convert?.stdin).toBe("ignore");
       expect(convert?.detached).toBe(true);
       expect(convert?.argv).toEqual([

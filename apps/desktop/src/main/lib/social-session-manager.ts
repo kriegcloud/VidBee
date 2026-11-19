@@ -1,7 +1,7 @@
 import { type ChildProcess, spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
-import { resolveBrowserExecutable } from '@vidbee/browser-capture'
+import { resolveBrowserExecutable } from '@vidbee/browser-capture-legacy'
 import {
   type DedicatedSessionPlatform,
   isDedicatedSessionPlatform

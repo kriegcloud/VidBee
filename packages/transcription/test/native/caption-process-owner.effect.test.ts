@@ -26,8 +26,8 @@ const spec: TranscriptionProcessSpec = {
   stdin: "ignore",
   stdout: "pipe",
   stderr: "pipe",
-  stdoutConsumption: "events",
-  stderrConsumption: "events",
+  stdoutConsumption: "deliver",
+  stderrConsumption: "deliver",
 };
 const reaped = Deferred.makeUnsafe<ProcessOutcome>();
 const started = Deferred.makeUnsafe<void>();
@@ -56,6 +56,8 @@ const processLayer = Layer.succeed(TranscriptionProcess, {
       _tag: "Acquired",
       run: {
         process: {
+          observeClose: Effect.void,
+          writeStdin: () => Effect.void,
           pid: 42,
           signalChild: (signal) =>
             Effect.sync(() => {
@@ -66,7 +68,7 @@ const processLayer = Layer.succeed(TranscriptionProcess, {
           signalTree: () => Effect.void,
         },
         signallingState: Effect.succeed({ _tag: "Native" }),
-        writeInput: () => Effect.void,
+        writeStdin: () => Effect.void,
         endInput: Effect.void,
         awaitReaped: Deferred.await(reaped),
         terminate: () => Effect.die("caption timeout must not escalate"),

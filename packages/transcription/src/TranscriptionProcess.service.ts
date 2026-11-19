@@ -12,7 +12,7 @@ export interface WorkerProcessRun {
   readonly process: ProcessRun;
   readonly signallingState: Effect.Effect<LiveSignallingState, HostFailure>;
   readonly terminate: (graceMs: number) => Effect.Effect<void, HostFailure>;
-  readonly writeInput: (bytes: Uint8Array) => Effect.Effect<void, HostFailure>;
+  readonly writeStdin: (bytes: Uint8Array) => Effect.Effect<void, HostFailure>;
 }
 export interface AcquiredWorkerProcess {
   readonly _tag: "Acquired";

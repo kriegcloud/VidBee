@@ -77,8 +77,8 @@ export const ModelFileIOLive = Layer.effect(
             stdin: "ignore",
             stdout: "pipe",
             stderr: "pipe",
-            stdoutConsumption: "events",
-            stderrConsumption: "events",
+            stdoutConsumption: "deliver",
+            stderrConsumption: "deliver",
             ...(signal === undefined ? {} : { abortSignal: signal }),
           },
           {

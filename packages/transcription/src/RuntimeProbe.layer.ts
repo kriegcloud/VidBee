@@ -134,8 +134,8 @@ export const make = Effect.fnUntraced(function* () {
             stdin: "pipe",
             stdout: "pipe",
             stderr: "pipe",
-            stdoutConsumption: "events",
-            stderrConsumption: "events",
+            stdoutConsumption: "deliver",
+            stderrConsumption: "deliver",
           },
           {
             abort: Effect.void,
@@ -192,7 +192,7 @@ export const make = Effect.fnUntraced(function* () {
         asrTier: input.asrTier,
         benchmark: input.benchmark,
       });
-      yield* started.run.writeInput(new TextEncoder().encode(encoded));
+      yield* started.run.writeStdin(new TextEncoder().encode(encoded));
       yield* started.run.endInput;
       return yield* Deferred.await(result).pipe(
         Effect.onExit(() =>

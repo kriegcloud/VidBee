@@ -196,7 +196,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | review | Code-review fixes for phases 1a to 4 | | | | | merged ([report](reports/review-fixes.md)) |
 | 5 | `downloader-core` | 14.6k | yes | | | merged ([report](reports/5.md), [design](design/downloader-core.md)) |
 | 6a | `subscriptions-core` | 4.1k | yes | unit | 6b, 6c | not started |
-| 6b | `browser-capture` | 4.8k | | | 6a, 6c | not started |
+| 6b | `browser-capture` | 4.8k | | | 6a, 6c | merged ([report](reports/6b.md), [design](design/browser-capture.md)) |
 | 6c | `transcription` | 13.2k | yes | unit | 6a, 6b | not started |
 | 7 | `ui` | 28.2k | | | 8 | not started |
 | 8 | `cli`, `extension` | 3.2k, 1k | | | 7 | not started |

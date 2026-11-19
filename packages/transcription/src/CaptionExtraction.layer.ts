@@ -66,8 +66,8 @@ export const layer = Layer.effect(
           stdin: "ignore",
           stdout: "pipe",
           stderr: "pipe",
-          stdoutConsumption: "events",
-          stderrConsumption: "events",
+          stdoutConsumption: "deliver",
+          stderrConsumption: "deliver",
         },
         timeout
       );

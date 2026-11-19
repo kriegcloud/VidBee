@@ -12,7 +12,6 @@ export interface ProcessCapabilitiesRun {
   readonly process: ProcessRun;
   readonly signallingState: Effect.Effect<LiveSignallingState, HostFailure>;
   readonly terminate: (graceMs: number) => Effect.Effect<void, HostFailure>;
-  readonly writeInput: (bytes: Uint8Array) => Effect.Effect<void, HostFailure>;
 }
 export interface AcquiredProcessCapabilities {
   readonly _tag: "Acquired";

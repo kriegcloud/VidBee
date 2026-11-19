@@ -16,9 +16,12 @@ import { EventEmitter, once } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture'
-import { FanslyProfiles } from '@vidbee/browser-capture/fansly-profile'
-import { OnlyFansBrowserExecutor, OnlyFansProfiles } from '@vidbee/browser-capture/onlyfans-profile'
+import { BrowserCaptureExecutor, DrmFallbackExecutor } from '@vidbee/browser-capture-legacy'
+import { FanslyProfiles } from '@vidbee/browser-capture-legacy/fansly-profile'
+import {
+  OnlyFansBrowserExecutor,
+  OnlyFansProfiles
+} from '@vidbee/browser-capture-legacy/onlyfans-profile'
 import { TASK_QUEUE_DDL_V1 } from '@vidbee/db/legacy/task-queue'
 import { TRANSCRIPT_DDL_V1 } from '@vidbee/db/legacy/transcripts'
 import type { YtDlpTaskOptions } from '@vidbee/downloader-core'

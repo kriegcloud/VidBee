@@ -130,8 +130,8 @@ export const make = Effect.fnUntraced(function* () {
     stdin: "pipe",
     stdout: "pipe",
     stderr: "pipe",
-    stdoutConsumption: "events",
-    stderrConsumption: "leaveUnread",
+    stdoutConsumption: "deliver",
+    stderrConsumption: "unread",
   });
   const recoverProbe = (error: HostFailure) =>
     error.operation === "audioProcessEvent" || error.operation === "nativeSpawn";
@@ -200,8 +200,8 @@ export const make = Effect.fnUntraced(function* () {
         stdin: "ignore",
         stdout: "pipe",
         stderr: "pipe",
-        stdoutConsumption: "leaveUnread",
-        stderrConsumption: "events",
+        stdoutConsumption: "unread",
+        stderrConsumption: "deliver",
       },
       true,
       signal

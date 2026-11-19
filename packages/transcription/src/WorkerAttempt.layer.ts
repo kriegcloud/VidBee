@@ -119,8 +119,8 @@ export const make = Effect.fnUntraced(function* () {
             stdin: "pipe",
             stdout: "pipe",
             stderr: "pipe",
-            stdoutConsumption: "events",
-            stderrConsumption: "events",
+            stdoutConsumption: "deliver",
+            stderrConsumption: "deliver",
           },
           {
             abort: Effect.void,
@@ -200,7 +200,7 @@ export const make = Effect.fnUntraced(function* () {
         const start = input.start;
         const ffmpegPath = sink.ffmpegPath === undefined ? start.ffmpegPath : yield* sink.ffmpegPath;
         const startText = yield* protocol.encode({ ...start, ffmpegPath });
-        yield* run.writeInput(new TextEncoder().encode(startText));
+        yield* run.writeStdin(new TextEncoder().encode(startText));
         stopAlive = yield* time.every(
           10000,
           Effect.gen(function* () {
@@ -213,7 +213,7 @@ export const make = Effect.fnUntraced(function* () {
         const onAbort = Effect.gen(function* () {
           terminationRequested = true;
           const cancelText = yield* protocol.encode({ type: "cancel" });
-          yield* run.writeInput(new TextEncoder().encode(cancelText));
+          yield* run.writeStdin(new TextEncoder().encode(cancelText));
           yield* run.terminate(1000).pipe(Effect.catch((error) => settle(error)));
         });
         unsubscribe = yield* aborts.subscribe(input.signal, onAbort).pipe(Effect.provideService(Scope.Scope, scope));
