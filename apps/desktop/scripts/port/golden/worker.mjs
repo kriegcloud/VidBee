@@ -8,6 +8,7 @@ import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
 import { runTranscriptionCases, runTranscriptionRestart } from './transcription-cases.mjs'
+import { normalizeTranscription } from './transcription-normalize.mjs'
 
 const args = process.argv.slice(2)
 if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && !args.includes('--probe')) {
@@ -49,16 +50,19 @@ const roots = [
   [root, '<repo>']
 ]
 const record = async (name, value) => {
-  if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && name.startsWith('transcription/')) {
-    return
-  }
   if (subset && !name.includes(subset)) {
     return
   }
-  const actual = normalize(value, roots)
+  const actual = normalize(
+    name.startsWith('transcription/') ? normalizeTranscription(value) : value,
+    roots
+  )
   const file = `${name.replaceAll('/', '--')}.json`
   const text = `${JSON.stringify(actual, null, 2)}\n`
   await writeFile(path.join(actualDir, file), text)
+  if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && name.startsWith('transcription/')) {
+    return
+  }
   count++
   if (args.includes('--update')) {
     await writeFile(path.join(output, file), text)

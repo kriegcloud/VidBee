@@ -1,7 +1,12 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from '@effect/vitest'
+import {
+  assertTranscriptionCpuProviders,
+  verifyTranscriptionCpuBuild
+} from './transcription-cpu.mjs'
 import { startTranscriptionLoopback } from './transcription-loopback.mjs'
+import { normalizeTranscription } from './transcription-normalize.mjs'
 
 let runDir
 let server
@@ -81,5 +86,85 @@ describe('transcription loopback public media contract', () => {
       { method: 'HEAD', path: '/captions.mkv', range: null },
       { method: 'GET', path: '/speech.wav', range: 'bytes=0-1' }
     ])
+  })
+})
+
+describe('transcription CPU execution boundary', () => {
+  it('requires the CPU-only build inventory and rejects execution-provider libraries', async () => {
+    const directory = path.join(
+      runDir,
+      'resources/app.asar.unpacked/node_modules/sherpa-onnx-linux-x64'
+    )
+    await mkdir(directory, { recursive: true })
+    for (const name of [
+      'index.js',
+      'libonnxruntime.so',
+      'libsherpa-onnx-c-api.so',
+      'libsherpa-onnx-cxx-api.so',
+      'package.json',
+      'sherpa-onnx.node'
+    ]) {
+      await writeFile(path.join(directory, name), '')
+    }
+    await expect(verifyTranscriptionCpuBuild(runDir)).resolves.toMatchObject({
+      executionProviders: ['CPUExecutionProvider']
+    })
+    await writeFile(path.join(directory, 'libonnxruntime_providers_cuda.so'), '')
+    await expect(verifyTranscriptionCpuBuild(runDir)).rejects.toThrow(
+      'CPU build prerequisite failed'
+    )
+    await rm(path.join(directory, 'libonnxruntime_providers_cuda.so'))
+    await writeFile(path.join(directory, 'alternate-provider.so'), '')
+    await expect(verifyTranscriptionCpuBuild(runDir)).rejects.toThrow(
+      'CPU build prerequisite failed'
+    )
+  })
+
+  it('accepts silent tasks and CPU-only diagnostics but rejects every non-CPU list', () => {
+    expect(() => assertTranscriptionCpuProviders({ log: 'compute.provider=cpu' })).not.toThrow()
+    const cpu = 'Available providers: CPUExecutionProvider, . Fallback to cpu!'
+    expect(() => assertTranscriptionCpuProviders({ tasks: [{ log: cpu }] })).not.toThrow()
+    for (const log of [
+      'Available providers: CUDAExecutionProvider, CPUExecutionProvider',
+      `${cpu}\nAvailable providers: CUDAExecutionProvider`,
+      'Available providers:'
+    ]) {
+      expect(() => assertTranscriptionCpuProviders({ log })).toThrow(
+        'CPU provider prerequisite failed'
+      )
+    }
+  })
+
+  it('normalizes only named benchmark fields while preserving transcript and errors', () => {
+    const value = {
+      provider: 'cuda',
+      log: 'compute.provider=cuda reason=accelerator-faster candidates=cuda,cpu\ncompute.probe=cuda ok=true durationMs=51.25 error=none',
+      transcript: { text: 'compute.provider=cuda', durationMs: 6625, words: [], speaker: 'cuda' },
+      error: 'compute.provider=cuda',
+      attempt: 1,
+      cloud: { provider: 'cloud' }
+    }
+    expect(normalizeTranscription(value)).toEqual({
+      ...value,
+      provider: '<provider>',
+      log: 'compute.provider=<provider> reason=<benchmark-choice> candidates=cuda,cpu\ncompute.probe=<provider> ok=true durationMs=<probe-duration> error=none'
+    })
+    expect(
+      normalizeTranscription({
+        log: 'compute.probe=cuda ok=false durationMs=51.25 error=timeout durationMs=999'
+      }).log
+    ).toBe(
+      'compute.probe=<provider> ok=false durationMs=<probe-duration> error=timeout durationMs=999'
+    )
+    expect(normalizeTranscription({ log: 'error=compute.provider=cuda' }).log).toBe(
+      'error=compute.provider=cuda'
+    )
+    expect(value.provider).toBe('cuda')
+    for (const reason of ['process-cache', 'in-flight-probe', 'accelerator-probes-failed']) {
+      expect(
+        normalizeTranscription({ log: `compute.provider=cpu reason=${reason} candidates=cuda,cpu` })
+          .log
+      ).toBe(`compute.provider=<provider> reason=${reason} candidates=cuda,cpu`)
+    }
   })
 })

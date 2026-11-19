@@ -5,6 +5,7 @@ import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
+import { verifyTranscriptionCpuBuild } from './transcription-cpu.mjs'
 import { buildTranscriptionFixture } from './transcription-fixture.mjs'
 import { verifyTranscriptionModels } from './transcription-models.mjs'
 import { runTranscriptionSuite } from './transcription-run.mjs'
@@ -115,6 +116,13 @@ const launch = async (runDir, seed, profile) => {
 }
 const start = Date.now()
 try {
+  if (option('--models')) {
+    const cpuBuild = await verifyTranscriptionCpuBuild(build)
+    await writeFile(
+      path.join(work, 'transcription-cpu-build.json'),
+      JSON.stringify(cpuBuild, null, 2)
+    )
+  }
   const bootstrap = path.join(work, 'bootstrap')
   process.stdout.write(`Bootstrapping real schema (${work})\n`)
   await launch(bootstrap)

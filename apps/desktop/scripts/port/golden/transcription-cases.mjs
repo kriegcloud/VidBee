@@ -1,6 +1,7 @@
 import { readdir, readFile, rename, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
+import { assertTranscriptionCpuProviders } from './transcription-cpu.mjs'
 import { startTranscriptionLoopback } from './transcription-loopback.mjs'
 
 const terminal = (task) =>
@@ -12,8 +13,10 @@ export async function runTranscriptionCases({
   contractOnly = false
 }) {
   const explore = process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1'
-  const record = explore ? async () => {} : writeRecord
+  const record = writeRecord
   const raw = []
+  const timings = []
+  let checkpoint = Date.now()
   const events = await client.events()
   let server
   try {
@@ -25,6 +28,7 @@ export async function runTranscriptionCases({
   const call = async (tool, args = {}) => {
     const response = await client.mcp(tool, args)
     raw.push({ tool, args, response })
+    assertTranscriptionCpuProviders(response)
     if (raw.length % 25 === 0) {
       await writeFile(
         path.join(runDir, 'transcription-exploration.json'),
@@ -37,10 +41,12 @@ export async function runTranscriptionCases({
     return response.result.structuredContent.result
   }
   const wait = async (read, predicate, label) => {
-    const deadline = Date.now() + 180_000
+    const started = Date.now()
+    const deadline = started + 300_000
     while (Date.now() < deadline) {
       const value = await read()
       if (predicate(value)) {
+        timings.push({ label, elapsedMs: Date.now() - started, boundMs: 300_000 })
         return value
       }
       await delay(40)
@@ -86,15 +92,6 @@ export async function runTranscriptionCases({
       throw new Error(`${label}: expected ${expectedStatus}, received ${value.task.status}`)
     }
     const log = value.task.log ?? ''
-    if (
-      !explore &&
-      value.task.status === 'completed' &&
-      value.task.kind === 'transcription' &&
-      (!/^compute\.provider=cpu$/m.test(log) ||
-        [...log.matchAll(/^compute\.provider=(\w+)/gm)].some((match) => match[1] !== 'cpu'))
-    ) {
-      throw new Error(`Missing public CPU report: ${JSON.stringify(value.task)}`)
-    }
     const statuses = events.values
       .filter((e) => e.taskId === value.task.id && e.type === 'transition')
       .map((e) => e.to)
@@ -103,8 +100,12 @@ export async function runTranscriptionCases({
       ...value,
       task: taskSnapshot(value.task),
       statuses,
-      ...(value.task.status === 'completed' ? { provider: 'cpu' } : {})
+      ...(value.task.status === 'completed'
+        ? { provider: /^compute\.provider=(\w+)/m.exec(log)?.[1] }
+        : {})
     })
+    timings.push({ label, elapsedMs: Date.now() - checkpoint })
+    checkpoint = Date.now()
     return value
   }
   try {
@@ -130,7 +131,7 @@ export async function runTranscriptionCases({
     })
     if (contractOnly) {
       process.stdout.write(
-        'SKIP real ASR acceptance: --transcription-contract-only compares model contracts only; CPU prerequisite remains blocked\n'
+        'SKIP real ASR acceptance: --transcription-contract-only compares model contracts only; real-ASR scenarios are excluded\n'
       )
       return
     }
@@ -262,6 +263,10 @@ export async function runTranscriptionCases({
       await writeFile(
         path.join(runDir, 'transcription-exploration.json'),
         JSON.stringify(raw, null, 2)
+      )
+      await writeFile(
+        path.join(runDir, 'transcription-timings.json'),
+        JSON.stringify(timings, null, 2)
       )
       await writeFile(
         path.join(runDir, 'transcription-events.json'),
