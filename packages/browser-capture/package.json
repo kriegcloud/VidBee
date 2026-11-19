@@ -12,7 +12,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "bunx --bun vitest run"
   },
   "dependencies": {
     "@vidbee/downloader-core": "workspace:^",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "@effect/vitest": "catalog:"
   }
 }

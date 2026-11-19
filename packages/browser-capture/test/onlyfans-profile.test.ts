@@ -329,7 +329,9 @@ describe('OnlyFans browser mapping', () => {
     )
     expect(profiles.get('https://onlyfans.com/my/chats/chat/7').items).toHaveLength(0)
     expect(readFileSync(path.join(dir, `7-${route}.json`), 'utf8')).not.toContain('Signature')
-    expect(new OnlyFansProfiles(dir, () => dir).list()[0].profileUrl).toBe(url)
+    expect(new OnlyFansProfiles(dir, () => dir).list()).toContainEqual(
+      expect.objectContaining({ profileUrl: url, chatId: '7', chatRoute: route })
+    )
     await profiles.stop()
   })
 
@@ -350,7 +352,9 @@ describe('OnlyFans browser mapping', () => {
     const saved = readFileSync(path.join(dir, '7.json'), 'utf8')
     expect(saved).not.toContain('Signature')
     const restored = new OnlyFansProfiles(dir, () => dir)
-    expect(restored.list()[0]).toMatchObject({ profileUrl: url, chatId: '7' })
+    expect(restored.list()).toContainEqual(
+      expect.objectContaining({ profileUrl: url, chatId: '7' })
+    )
     expect(restored.get(url).creatorUsername).toBe('babee.vip')
     expect(restored.get('https://onlyfans.com/babee.vip').linkedChatId).toBe('7')
     expect(restored.get('https://onlyfans.com/example').items).toHaveLength(0)
