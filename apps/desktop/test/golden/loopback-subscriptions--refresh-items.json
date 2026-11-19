@@ -1,0 +1,118 @@
+{
+  "response": {
+    "subscription": {
+      "id": "<id:1>",
+      "title": "http://127.0.0.1:<port>/subscriptions-core/site",
+      "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+      "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/rss.xml",
+      "platform": "custom",
+      "keywords": [],
+      "tags": ["loopback", "science"],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "status": "up-to-date",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "sourceKind": "feed",
+      "categories": [],
+      "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+      "latestVideoTitle": "River retained",
+      "latestVideoPublishedAt": 1735819200000,
+      "lastCheckedAt": "<timestamp>",
+      "lastSuccessAt": "<timestamp>",
+      "downloadDirectory": "<run>/subscription-downloads",
+      "namingTemplate": "%(id)s.%(ext)s",
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "items": [
+        {
+          "id": "manual-retained",
+          "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+          "title": "River retained",
+          "publishedAt": 1735819200000,
+          "addedToQueue": false,
+          "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+        },
+        {
+          "id": "manual-dropped",
+          "url": "http://127.0.0.1:<port>/subscriptions-core/manual-dropped.mp4",
+          "title": "Forest dropped",
+          "publishedAt": 1735732800000,
+          "addedToQueue": false,
+          "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+        }
+      ]
+    }
+  },
+  "subscription": {
+    "id": "<id:1>",
+    "title": "http://127.0.0.1:<port>/subscriptions-core/site",
+    "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+    "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/rss.xml",
+    "platform": "custom",
+    "keywords": [],
+    "tags": ["loopback", "science"],
+    "onlyDownloadLatest": false,
+    "autoDownload": false,
+    "enabled": false,
+    "status": "up-to-date",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "sourceKind": "feed",
+    "categories": [],
+    "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+    "latestVideoTitle": "River retained",
+    "latestVideoPublishedAt": 1735819200000,
+    "lastCheckedAt": "<timestamp>",
+    "lastSuccessAt": "<timestamp>",
+    "downloadDirectory": "<run>/subscription-downloads",
+    "namingTemplate": "%(id)s.%(ext)s",
+    "downloadType": "video",
+    "downloadQuality": "best",
+    "items": [
+      {
+        "id": "manual-retained",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "title": "River retained",
+        "publishedAt": 1735819200000,
+        "addedToQueue": false,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      },
+      {
+        "id": "manual-dropped",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-dropped.mp4",
+        "title": "Forest dropped",
+        "publishedAt": 1735732800000,
+        "addedToQueue": false,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/rss.xml",
+      "revision": "A",
+      "status": 200,
+      "completed": true
+    }
+  ],
+  "page": {
+    "items": [
+      {
+        "id": "manual-dropped",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-dropped.mp4",
+        "title": "Forest dropped",
+        "publishedAt": 1735732800000,
+        "addedToQueue": false,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      }
+    ],
+    "total": 2
+  },
+  "pastEnd": {
+    "items": [],
+    "total": 2
+  }
+}

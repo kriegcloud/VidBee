@@ -1,61 +1,60 @@
-import type {
-  Executor,
-  ExecutorContext,
-  ExecutorEvents,
-  ExecutorFinishEvent,
-  ExecutorRun
-} from '@vidbee/task-queue-legacy'
-import { isBrowserCaptureAvailable } from './availability'
-import { DRM_FALLBACK_MESSAGE, isDrmProtectedMessage } from './drm'
+import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
+import * as Context from "effect/Context";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import { DRM_FALLBACK_MESSAGE, isDrmProtectedMessage } from "./drm.js";
+import type { ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
+import type { ExecutorHandle } from "@vidbee/task-queue/TaskExecutor.service";
 
-const isDrmFinish = (event: ExecutorFinishEvent): boolean => {
-  if (event.result.type !== 'error') {
-    return false
+export class DrmFallbackDependencies extends Context.Service<
+  DrmFallbackDependencies,
+  {
+    readonly primary: typeof TaskExecutor.Service;
+    readonly capture: typeof TaskExecutor.Service;
+    readonly available: Effect.Effect<boolean>;
   }
-  return isDrmProtectedMessage(
-    `${event.result.error.rawMessage}\n${event.stderrTail}\n${event.stdoutTail}`
-  )
-}
-
-/**
- * Run yt-dlp (or another primary executor) first. When decoding is impossible
- * because of CDM DRM, fall back to recording headed Chromium on Xvfb.
- */
-export class DrmFallbackExecutor implements Executor {
-  constructor(
-    private readonly primary: Executor,
-    private readonly capture: Executor,
-    private readonly isAvailable: () => boolean = isBrowserCaptureAvailable
-  ) {}
-
-  run(ctx: ExecutorContext, events: ExecutorEvents): ExecutorRun {
-    let active: ExecutorRun | null = null
-    let captureStarted = false
-
-    const wrapped: ExecutorEvents = {
-      onSpawn: events.onSpawn,
-      onProgress: events.onProgress,
-      onStd: events.onStd,
-      onFinish: (event) => {
-        if (captureStarted || !isDrmFinish(event) || !this.isAvailable()) {
-          events.onFinish(event)
-          return
-        }
-        captureStarted = true
-        events.onStd({
-          taskId: ctx.taskId,
-          attemptId: ctx.attemptId,
-          stream: 'stderr',
-          line: DRM_FALLBACK_MESSAGE
-        })
-        active = this.capture.run(ctx, events)
-      }
-    }
-
-    active = this.primary.run(ctx, wrapped)
-    return {
-      cancel: (timeout) => active?.cancel(timeout) ?? Promise.resolve(),
-      pause: () => active?.pause() ?? Promise.resolve()
-    }
-  }
-}
+>()("@vidbee/browser-capture/drm-fallback/DrmFallbackDependencies") {}
+const isDrmFinish = (event: ExecutorFinishEvent): boolean =>
+  event.result.type === "error" &&
+  isDrmProtectedMessage(`${event.result.error.rawMessage}\n${event.stderrTail}\n${event.stdoutTail}`);
+export const DrmFallbackExecutorLive = Layer.effect(
+  TaskExecutor,
+  Effect.gen(function* () {
+    const dependencies = yield* DrmFallbackDependencies;
+    return TaskExecutor.of({
+      run: Effect.fn("DrmFallbackExecutor.run")(function* (ctx, sink) {
+        let active: ExecutorHandle | null = null;
+        let captureStarted = false;
+        active = yield* dependencies.primary.run(ctx, {
+          emit: Effect.fn("DrmFallbackExecutor.emit")(function* (event) {
+            // The old wrapper does not supply the optional processing callback.
+            if (event.type === "processing") return;
+            if (event.type !== "finish") {
+              yield* sink.emit(event);
+              return;
+            }
+            if (captureStarted || !isDrmFinish(event) || !(yield* dependencies.available)) {
+              yield* sink.emit(event);
+              return;
+            }
+            captureStarted = true;
+            yield* sink.emit({
+              type: "std",
+              taskId: ctx.taskId,
+              attemptId: ctx.attemptId,
+              stream: "stderr",
+              line: DRM_FALLBACK_MESSAGE,
+            });
+            active = yield* dependencies.capture.run(ctx, sink).pipe(Effect.orDie);
+          }),
+        });
+        return {
+          cancel: Effect.fn("DrmFallbackExecutor.cancel")((timeout) =>
+            active === null ? Effect.void : active.cancel(timeout)
+          ),
+          pause: Effect.suspend(() => (active === null ? Effect.void : active.pause)),
+        };
+      }),
+    });
+  })
+);

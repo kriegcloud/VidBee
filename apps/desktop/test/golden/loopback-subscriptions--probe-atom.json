@@ -1,0 +1,41 @@
+{
+  "response": {
+    "valid": true,
+    "resolved": {
+      "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/atom.xml",
+      "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/atom.xml",
+      "platform": "custom",
+      "sourceKind": "feed",
+      "availableCategories": []
+    },
+    "discovered": false,
+    "corrected": false,
+    "title": "Loopback Atom",
+    "parsedItems": 2,
+    "usableItems": 2,
+    "samples": [
+      {
+        "id": "urn:loopback:atom:1",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/atom-1.mp4",
+        "title": "Atom item 1",
+        "publishedAt": 1735819200000
+      },
+      {
+        "id": "urn:loopback:atom:2",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/atom-2.mp4",
+        "title": "Atom item 2",
+        "publishedAt": 1735732800000
+      }
+    ],
+    "downloadsTested": false
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/atom.xml",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    }
+  ]
+}

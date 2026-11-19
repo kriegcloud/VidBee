@@ -105,6 +105,8 @@ const processLayer = Layer.effect(
             _tag: "Acquired" as const,
             run: {
               pid: 1,
+              writeStdin: (_bytes: Uint8Array) => Effect.void,
+              observeClose: Effect.void,
               signalChild: Effect.fn("fixture.child")((signal) =>
                 Effect.sync(() => {
                   state.signals.push(signal);

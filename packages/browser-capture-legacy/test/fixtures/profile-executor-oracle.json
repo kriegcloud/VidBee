@@ -1,0 +1,783 @@
+[
+  {
+    "scenario": "normal",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0.1,
+            "bytesDownloaded": 1,
+            "bytesTotal": 10,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "success",
+            "output": {
+              "filePath": "/fixture/result.mp4",
+              "size": 3,
+              "durationMs": null,
+              "sha256": null
+            }
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "invalid",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "finish",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "auth-required",
+              "exitCode": null,
+              "rawMessage": "Open this Fixture profile in VidBeep and map it using the dedicated browser session.",
+              "uiMessageKey": "task.error.authRequired",
+              "uiActionHints": [
+                "import-cookies"
+              ],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "download-error",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0.1,
+            "bytesDownloaded": 1,
+            "bytesTotal": 10,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "auth-required",
+              "exitCode": null,
+              "rawMessage": "sentinel",
+              "uiMessageKey": "task.error.authRequired",
+              "uiActionHints": [
+                "import-cookies"
+              ],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "download-throw",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "finish",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "auth-required",
+              "exitCode": null,
+              "rawMessage": "sentinel",
+              "uiMessageKey": "task.error.authRequired",
+              "uiActionHints": [
+                "import-cookies"
+              ],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "progress-throw",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0.1,
+            "bytesDownloaded": 1,
+            "bytesTotal": 10,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "auth-required",
+              "exitCode": null,
+              "rawMessage": "sentinel",
+              "uiMessageKey": "task.error.authRequired",
+              "uiActionHints": [
+                "import-cookies"
+              ],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "finish-throw",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0.1,
+            "bytesDownloaded": 1,
+            "bytesTotal": 10,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "success",
+            "output": {
+              "filePath": "/fixture/result.mp4",
+              "size": 3,
+              "durationMs": null,
+              "sha256": null
+            }
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "error",
+            "error": {
+              "category": "auth-required",
+              "exitCode": null,
+              "rawMessage": "sentinel",
+              "uiMessageKey": "task.error.authRequired",
+              "uiActionHints": [
+                "import-cookies"
+              ],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "exitCode": null
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "spawn-throw",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "rejected",
+        3
+      ]
+    ],
+    "error": {
+      "message": "sentinel",
+      "same": true
+    }
+  },
+  {
+    "scenario": "cancel-before-start",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": true
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0.1,
+            "bytesDownloaded": 1,
+            "bytesTotal": 10,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "success",
+            "output": {
+              "filePath": "/fixture/result.mp4",
+              "size": 3,
+              "durationMs": null,
+              "sha256": null
+            }
+          }
+        }
+      ],
+      [
+        "settled",
+        4
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "fallback",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "fallback",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "fallback-pause",
+        20
+      ],
+      [
+        "settled",
+        21
+      ]
+    ],
+    "error": null
+  },
+  {
+    "scenario": "totals",
+    "trace": [
+      [
+        "run",
+        0
+      ],
+      [
+        "returned",
+        0
+      ],
+      [
+        "spawn",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "pid": 42,
+          "pidStartedAt": 1000,
+          "kind": "ai-worker",
+          "spawnedAt": 1000
+        }
+      ],
+      [
+        "download",
+        1,
+        {
+          "profile": "https://fixture.invalid/profile",
+          "id": "1",
+          "destination": "/fixture/downloads",
+          "aborted": false
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": 0,
+            "bytesDownloaded": 1,
+            "bytesTotal": "Infinity",
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": -1,
+            "bytesDownloaded": 1,
+            "bytesTotal": -1,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": null,
+            "bytesDownloaded": 1,
+            "bytesTotal": null,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": null,
+            "bytesDownloaded": 1,
+            "bytesTotal": null,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "progress",
+        1,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "percent": null,
+            "bytesDownloaded": 1,
+            "bytesTotal": null,
+            "speedBps": null,
+            "etaMs": null,
+            "ticks": 1000
+          }
+        }
+      ],
+      [
+        "finish",
+        2,
+        {
+          "taskId": "task",
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "stdoutTail": "",
+          "stderrTail": "",
+          "result": {
+            "type": "success",
+            "output": {
+              "filePath": "/fixture/result.mp4",
+              "size": 3,
+              "durationMs": null,
+              "sha256": null
+            }
+          }
+        }
+      ],
+      [
+        "pause",
+        20
+      ],
+      [
+        "settled",
+        22
+      ]
+    ],
+    "error": null
+  }
+]

@@ -1,0 +1,85 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "transcription",
+    "parentId": "<id:2>",
+    "title": "speech.wav",
+    "url": "vidbee://download/<id:2>",
+    "status": "failed",
+    "attempt": 1,
+    "maxAttempts": 3,
+    "nextRetryAt": null,
+    "error": {
+      "category": "not-found",
+      "exitCode": null,
+      "rawMessage": "ENOENT: no such file or directory, stat '<run>/userdata/transcription-fixtures/speech.wav'",
+      "uiMessageKey": "task.error.notFound",
+      "uiActionHints": ["remove-task"],
+      "retryable": false,
+      "suggestedRetryAfterMs": null
+    },
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "transcription",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null
+  },
+  "transcript": {
+    "asrTier": "minimal",
+    "creation": {
+      "origin": "agent"
+    },
+    "downloadTaskId": "<id:2>",
+    "error": "ENOENT: no such file or directory, stat '<run>/userdata/transcription-fixtures/speech.wav'",
+    "listState": "failed",
+    "rediarize": false,
+    "sourceFilePath": null,
+    "sourceKind": "asr",
+    "speakerCount": 1,
+    "stage": null,
+    "stageHistory": [],
+    "title": "speech.wav",
+    "transcriptId": "<id:3>",
+    "transcriptionTaskId": "<id:1>",
+    "updatedAt": "<timestamp>",
+    "sources": [
+      {
+        "auto": false,
+        "key": "asr",
+        "kind": "asr",
+        "language": null,
+        "languageCode": null,
+        "selected": true
+      }
+    ],
+    "segmentCount": 1,
+    "language": null,
+    "resultKind": "transcript",
+    "speakers": [
+      {
+        "id": "<id:4>",
+        "speakerKey": "speaker-1",
+        "displayName": "Speaker 1",
+        "sortIndex": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "<id:5>",
+        "speakerId": "<id:4>",
+        "startMs": 0,
+        "endMs": 6625,
+        "text": "After early nightfall, the yellow lamps would light up here and there the squalid quarter of the brothels.",
+        "confidence": null,
+        "sortIndex": 0,
+        "words": []
+      }
+    ],
+    "total": 1,
+    "nextOffset": null
+  },
+  "statuses": ["queued", "running", "failed"]
+}

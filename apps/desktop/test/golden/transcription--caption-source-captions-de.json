@@ -1,0 +1,63 @@
+{
+  "asrTier": "minimal",
+  "creation": {
+    "origin": "manual"
+  },
+  "downloadTaskId": "<id:1>",
+  "error": null,
+  "listState": "completed",
+  "rediarize": false,
+  "sourceFilePath": "<run>/transcription-downloads/captions.mkv",
+  "sourceKind": "captions",
+  "speakerCount": "auto",
+  "stage": null,
+  "stageHistory": [],
+  "title": "captions",
+  "transcriptId": "<id:2>",
+  "transcriptionTaskId": "<id:3>",
+  "updatedAt": "<timestamp>",
+  "sources": [
+    {
+      "auto": false,
+      "key": "captions:de",
+      "kind": "captions",
+      "language": "de",
+      "languageCode": "de",
+      "selected": true
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": null,
+      "languageCode": null,
+      "selected": false
+    }
+  ],
+  "segmentCount": 1,
+  "language": "de",
+  "resultKind": "transcript",
+  "speakers": [],
+  "items": [
+    {
+      "id": "<id:4>",
+      "speakerId": null,
+      "startMs": 0,
+      "endMs": 2000,
+      "text": "[ AI ] Bob : Eine synthetische Untertitelzeile .。",
+      "confidence": null,
+      "sortIndex": 0,
+      "words": []
+    }
+  ],
+  "total": 1,
+  "nextOffset": null
+}
