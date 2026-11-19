@@ -297,3 +297,86 @@ startup reconciliation.
 Raw requests/responses, events, XML request log, renderer evidence and restart
 setup remain under the run's `subscriptions-core/` directory. The report
 [records baseline findings and acceptance evidence](reports/6a-goldens.md).
+
+## Browser capture pre-port cases (phase 6b)
+
+The package-specific files `browser-capture-fixture.mjs`,
+`browser-capture-loopback.mjs`, `browser-capture-cdp.mjs` and
+`browser-capture-cases.mjs` own these additions. Shared harness files contain
+registration only. The optional sixth offline-launcher argument sources the
+owned `browser-capture-display.sh` inside the offline namespace before app
+startup, providing a throwaway Xvfb display for dedicated profile Chromium.
+The original five-argument launch contract is unchanged.
+
+The fixture builder writes thirteen synthetic saved inventories: one creator,
+six chat/gallery routes, five purchased routes and one Fansly creator. It also
+writes malformed JSON that list must omit. Saved `mapping` state must recover as
+`partial`; unknown outer/item keys must disappear and omitted `downloaded`
+defaults to false. Renderer observations invoke the existing
+`window.electron.ipcRenderer.invoke('download.<method>', ...)` bridge, exactly
+as `electron-ipc-decorator`'s renderer proxy does. No main-process service is
+imported by a golden case.
+
+Bundled ffmpeg generates 24-second landscape, portrait and video-only media.
+The separate loopback server serves deterministic HTML, a DRM-marked DASH
+manifest, and clear media with fixed MIME/length/Last-Modified, HEAD, ranges and
+request logs. The candidate HTML declares the DRM manifest statically but
+selects clear loopback playback through JavaScript. Automation add bypasses
+metadata hydration so the actual primary extractor can reach DRM failure and
+select the actual capture executor. All traffic remains inside the existing
+offline namespace.
+
+```sh
+bun run test:golden --build /path/to/pre-port/linux-unpacked --loopback-only --subset browser-capture
+bunx --bun vitest run apps/desktop/scripts/port/golden/browser-capture.test.mjs
+```
+
+The new cases execute after loopback downloads, with profile-list restart cases
+after the existing same-physical-profile restart. `--subset` retains its original
+comparison-filter meaning. Recording with `--update --subset browser-capture`
+must never rewrite existing golden files. Cases require executable host
+`/usr/bin/Xvfb`, `/usr/bin/chromium`, `/usr/bin/pactl` and `/usr/bin/xdpyinfo`;
+when absent, both new observation phases print a clear SKIP. Local acceptance
+requires these prerequisites and no skips. Binary/version receipts are retained
+in `run/browser-capture/configuration.json`.
+
+Pause and cancel subscribe to SSE before admission and require a new clear-media
+GET after the request-log cursor plus positive public capture progress. Task
+snapshots use the existing narrow loopback projection: only progress values and
+log text are excluded; raw MCP/IPC/HTTP answers and all SSE events stay in
+`browser-capture/raw.json` and `events.json`. A short per-run symlink to the
+physical run downloads directory is an exact known-root normalization, removed
+in cleanup. There are no new general normalization rules.
+
+The baseline reaches fallback and playback but its bundled ffmpeg rejects the
+recorder's input `-thread_queue_size` argument. It therefore produces no recording
+file. The report distinguishes this observed failure from success; no fabricated
+recording bounds or unchecked size/duration placeholders are accepted. A future
+recording-success golden requires a separately reviewed baseline repair and
+repeated pre-port measurements establishing the design's structural contract.
+See [the phase report](reports/6b-goldens.md) for the precise proof gaps.
+
+`--browser-capture-only --subset browser-capture` is an independent scenario:
+it skips the original and download cases, pins the same relevant settings and
+retains the normal same-physical-profile restart. Full runs still execute every
+original case. Launches also give app processes a run-owned temporary directory
+through a short `/tmp/vgb.*/root` alias, avoiding Chromium's Unix socket path
+limit on deep scratch paths. The exact alias root normalizes to `<run>/tmp` and
+is removed during launcher cleanup. The worker exits after awaited case cleanup,
+evidence writes and stdout flushing, matching the existing CDP entrypoint's
+process boundary; this avoids a referenced CDP/Undici TCP socket delaying exit.
+
+The separately pinned unavailable-host configuration uses the existing
+`VIDBEE_BROWSER_CAPTURE=0` switch. After a primary run has generated its synthetic
+`seed/`, compare it with:
+
+```sh
+node apps/desktop/scripts/port/golden/browser-capture-unavailable.mjs --build /path/to/baseline/linux-unpacked --scratch /path/to/scratch --seed /path/to/owned-suite/seed
+```
+
+This companion runs inside a fresh offline namespace, writes its own request,
+SSE and raw-answer evidence, and compares `browser-capture--unavailable.json`.
+It does not import application services or mutate the baseline. It is a separate
+host-configuration gate; the ordinary full invocation still has 407 documents.
+The final clear playback fixture uses the generated video-only input; the report
+retains the audio/video run's watchdog failure and its proof limits.

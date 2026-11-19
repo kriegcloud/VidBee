@@ -1,0 +1,45 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "browser-capture-drm-candidate",
+    "url": "http://127.0.0.1:<port>/drm.html",
+    "status": "retry-scheduled",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": "<timestamp>",
+    "error": {
+      "category": "unknown",
+      "exitCode": null,
+      "rawMessage": "ENOENT: no such file or directory, stat '<run>/downloads/browser-capture-drm-candidate (browser capture).mp4'",
+      "uiMessageKey": "task.error.unknown",
+      "uiActionHints": ["retry", "report-bug"],
+      "retryable": true,
+      "suggestedRetryAfterMs": null
+    },
+    "filename": null,
+    "automaticRetry": true,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "processing", "retry-scheduled"],
+  "history": [],
+  "reachability": {
+    "browserPlayback": true,
+    "recorderStarted": true,
+    "positiveProgress": true
+  }
+}
