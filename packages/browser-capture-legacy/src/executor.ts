@@ -36,10 +36,14 @@ export class BrowserCaptureExecutor implements Executor {
       promise:effect=>runLegacyPromise(this.runtime,effect,captureError),
     })
     const opts=Layer.succeed(CaptureExecutorOptions,{
-      ...options,
+      get defaultDownloadDir(){return options.defaultDownloadDir},
+      get execPath(){return options.execPath},
+      get execArgv(){return options.execArgv},
+      get env(){return options.env},
+      get killGraceMs(){return options.killGraceMs},
       cancelBeforeSpawn:Effect.sync(()=>killProcessTree(undefined,'SIGTERM')),
-      resolveSidecarScript:invoke('sidecar path',options.resolveSidecarScript),
-      resolveFfmpegPath:invoke('ffmpeg path',options.resolveFfmpegPath),
+      resolveSidecarScript:invoke('sidecar path',()=>options.resolveSidecarScript()),
+      resolveFfmpegPath:invoke('ffmpeg path',()=>options.resolveFfmpegPath()),
     })
     this.runtime=ManagedRuntime.make(BrowserCaptureExecutorLive.pipe(Layer.provide(Layer.mergeAll(platform,callbacks,opts)),Layer.provideMerge(Layer.succeed(Scheduler.PreventSchedulerYield,true))))
     this.runtime.runSync(Effect.void)

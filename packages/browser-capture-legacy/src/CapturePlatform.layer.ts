@@ -8,6 +8,7 @@ import * as NodePath from '@effect/platform-node/NodePath'
 import * as Effect from 'effect/Effect'
 import * as Layer from 'effect/Layer'
 import type * as Cause from 'effect/Cause'
+import * as Exit from 'effect/Exit'
 import type * as ManagedRuntime from 'effect/ManagedRuntime'
 import { runLegacySync } from '@vidbee/task-queue-legacy/runtime'
 import { makeProcessLayer, type RawProcessInvocation } from '../../downloader-core-legacy/src/Process.layer.js'
@@ -67,7 +68,15 @@ export const makeLegacyCaptureTimers = <R, ER>(runtime: () => ManagedRuntime.Man
     now: Effect.sync(() => Date.now()),
     sleepProbe: ms=>Effect.promise(()=>probeDelay(ms)),
     sleep: ms => Effect.callback<void>(resume => { const timer = setTimeout(() => queueMicrotask(() => resume(Effect.void)), ms); return Effect.sync(() => clearTimeout(timer)) }),
-    defer: action => Effect.sync(() => { queueMicrotask(() => { runtime().runFork(action) }) }),
+    defer: (action, options) => Effect.sync(() => { queueMicrotask(() => {
+      if (!options?.rejectOnFailure) { runLegacySync(runtime(), action, mapError); return }
+      runtime().runFork(action).addObserver(exit => {
+        if (Exit.isFailure(exit)) {
+          const error = mapError(exit.cause)
+          void Promise.reject(error)
+        }
+      })
+    }) }),
     after: (ms, action, options) => Effect.sync(() => {
       const timer = setTimeout(() => runLegacySync(runtime(), action, mapError), ms)
       if (!options.keepAlive) timer.unref()

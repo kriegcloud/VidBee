@@ -16,7 +16,7 @@ export class DrmFallbackExecutor implements Executor {
     this.runtime=ManagedRuntime.make(DrmFallbackExecutorLive.pipe(Layer.provide(Layer.succeed(DrmFallbackDependencies,{
       primary:executorBridge(primary,()=>this.runtime,captureError),
       capture:executorBridge(capture,()=>this.runtime,captureError),
-      available:Effect.sync(isAvailable),
+      available:Effect.sync(()=>isAvailable.call(this)),
     })),Layer.provideMerge(Layer.succeed(Scheduler.PreventSchedulerYield,true))))
     this.runtime.runSync(Effect.void)
   }

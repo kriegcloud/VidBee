@@ -344,6 +344,7 @@ const makePlaywright = Effect.fn("makePlaywright")(function* () {
     }),
     launchProfile: Effect.fn("Playwright.launchProfile")(function* (input) {
       const { chromium } = yield* host("import.playwright", () => import("playwright-core"));
+      yield* input.prepareDirectory;
       const context = yield* host("chromium.launchPersistentContext", () =>
         chromium.launchPersistentContext(input.userDataDir, {
           executablePath: input.executablePath,

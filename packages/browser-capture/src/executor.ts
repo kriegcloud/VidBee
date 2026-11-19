@@ -143,7 +143,12 @@ export const BrowserCaptureExecutorLive = Layer.effect(
           const settings = record(options.settings);
           const ffmpegPath = yield* opts.resolveFfmpegPath;
           const preference = settings.browserForCookies;
-          const browserExecutable = yield* host.browser(typeof preference === "string" ? preference : undefined);
+          const browserPreference = P.isTruthy(preference)
+            ? yield* S.decodeUnknownEffect(S.String)(preference).pipe(
+                Effect.mapError((cause) => failure("browser preference", cause))
+              )
+            : undefined;
+          const browserExecutable = yield* host.browser(browserPreference);
           if (browserExecutable === null || !P.isTruthy(browserExecutable))
             return yield* fail("No Chromium-family browser found to play DRM media");
           // Typed caller defaults retain old truthiness. These fields originate in unported task options.
@@ -152,11 +157,12 @@ export const BrowserCaptureExecutorLive = Layer.effect(
             if (typeof value !== "string") return Result.getOrThrow(S.decodeUnknownResult(S.String)(value));
             return Str.trim(value);
           };
+          const defaultDirectory = opts.defaultDownloadDir;
           const directoryValue =
             trimmed(options.customDownloadPath) ||
             trimmed(settings.downloadPath) ||
             trimmed(options.downloadPath) ||
-            opts.defaultDownloadDir;
+            defaultDirectory;
           const directory = yield* S.decodeEffect(S.String)(directoryValue).pipe(
             Effect.mapError((cause) => failure("output directory", cause))
           );
@@ -164,9 +170,9 @@ export const BrowserCaptureExecutorLive = Layer.effect(
             recursive: true,
           });
           const titleValue = ctx.input.title || options.title || "video";
-          const titleText = yield* S.decodeUnknownEffect(S.String)(titleValue).pipe(
-            Effect.mapError((cause) => failure("capture title", cause))
-          );
+          const titleText = yield* S.decodeUnknownEffect(S.String)(
+            typeof titleValue === "number" || typeof titleValue === "boolean" ? "" : titleValue
+          ).pipe(Effect.mapError((cause) => failure("capture title", cause)));
           const title = sanitizePathSegment(titleText) || "video";
           const base = path.join(directory, `${title} (browser capture).mp4`);
           const exists = yield* files.stat(base).pipe(
@@ -176,7 +182,7 @@ export const BrowserCaptureExecutorLive = Layer.effect(
           const suffix = exists ? yield* timers.now : 0;
           const outputPath = exists ? path.join(directory, `${title} (browser capture) ${suffix}.mp4`) : base;
           const snapshot = yield* host.snapshot;
-          const browser = parseBrowserCookiesSetting(typeof preference === "string" ? preference : undefined).browser;
+          const browser = parseBrowserCookiesSetting(browserPreference).browser;
           const names =
             P.isTruthy(browser) && browser !== "none"
               ? [browser]
@@ -284,7 +290,7 @@ export const BrowserCaptureExecutorLive = Layer.effect(
           });
           const emit = Effect.fn("BrowserCaptureExecutor.processEvent")(function* (event: ProcessEvent) {
             if (event._tag === "stdout" || event._tag === "stderr") {
-              for (const line of Str.split(new TextDecoder().decode(event.chunk), /\r?\n/))
+              for (const line of Str.split(new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk), /\r?\n/))
                 yield* handleLine(event._tag, line);
             } else if (event._tag === "rawError") yield* Deferred.fail(complete, failure("sidecar", event.error));
             else if (event._tag === "complete") {
@@ -394,7 +400,8 @@ export const BrowserCaptureExecutorLive = Layer.effect(
                 Effect.andThen(finish(result))
               );
             })
-          )
+          ),
+          { rejectOnFailure: true }
         );
         const cancel = Effect.fn("BrowserCaptureExecutor.cancel")(function* (timeout?: number) {
           controller.abort();

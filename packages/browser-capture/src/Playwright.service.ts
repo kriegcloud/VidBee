@@ -83,6 +83,7 @@ export interface PlaywrightShape {
   readonly launchProfile: (input: {
     readonly executablePath: string;
     readonly userDataDir: string;
+    readonly prepareDirectory: BrowserEffect<void>;
   }) => BrowserEffect<BrowserSession>;
 }
 export class Playwright extends Context.Service<Playwright, PlaywrightShape>()(

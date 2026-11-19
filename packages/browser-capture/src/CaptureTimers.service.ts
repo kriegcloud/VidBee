@@ -8,7 +8,10 @@ export class CaptureTimers extends Context.Service<
     readonly now: Effect.Effect<number>;
     readonly sleepProbe?: ((ms: number) => Effect.Effect<void>) | undefined;
     readonly sleep: (ms: number) => Effect.Effect<void>;
-    readonly defer: (action: Effect.Effect<void, CaptureError>) => Effect.Effect<void>;
+    readonly defer: (
+      action: Effect.Effect<void, CaptureError>,
+      options?: { readonly rejectOnFailure: boolean }
+    ) => Effect.Effect<void>;
     readonly after: (
       ms: number,
       action: Effect.Effect<void, CaptureError>,

@@ -257,14 +257,14 @@ export const browserProfilesLayer = (options: ProfileOptions) =>
                 `Install Chrome or Chromium on the VidBeep host to open its ${adapter.name} session.`
               );
             const directory = path.join(storageDir, "browser-session");
-            yield* files.mkdir(directory, {
-              recursive: true,
-              mode: 0o700,
-              sync: true,
-            });
             const opened = yield* playwright.launchProfile({
               executablePath,
               userDataDir: directory,
+              prepareDirectory: files.mkdir(directory, {
+                recursive: true,
+                mode: 0o700,
+                sync: true,
+              }),
             });
             context = opened;
             yield* opened.onClosed(() => {

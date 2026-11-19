@@ -44,7 +44,7 @@ export const VirtualDisplayLive = Layer.effect(
           {
             abort: Effect.void,
             emit: Effect.fn("VirtualDisplay.pactlEvent")(function* (event) {
-              if (event._tag === "stdout") stdout += new TextDecoder().decode(event.chunk);
+              if (event._tag === "stdout") stdout += new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk);
               if (event._tag === "rawError") yield* Deferred.succeed(completed, "");
               if (event._tag === "complete") {
                 const outcome = event.outcome;

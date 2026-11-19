@@ -60,7 +60,8 @@ export const RecorderLive = Layer.effect(
               abort: Effect.void,
               emit: Effect.fn("Recorder.scanEvent")(function* (event) {
                 if (event._tag === "stdout") chunks.push(event.chunk);
-                if (event._tag === "stderr") stderr += new TextDecoder().decode(event.chunk);
+                if (event._tag === "stderr")
+                  stderr += new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk);
                 if (event._tag === "rawError")
                   yield* Deferred.fail(
                     completed,
