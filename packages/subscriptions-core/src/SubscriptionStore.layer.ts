@@ -1,4 +1,4 @@
-import { decodeRow } from "@vidbee/db";
+import { DbRowDecodeError } from "@vidbee/db";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
@@ -7,13 +7,17 @@ import * as HashSet from "effect/HashSet";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Rec from "effect/Record";
+import * as S from "effect/Schema";
+import * as Semaphore from "effect/Semaphore";
 import * as Str from "effect/String";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as F from "./Feed.model.js";
 import { buildFeedKey } from "./feed-resolver.js";
 import * as R from "./Rows.model.js";
+import { decodeRow } from "./Rows.model.js";
 import { SubscriptionEntropy } from "./SubscriptionEntropy.service.js";
 import { SubscriptionStore } from "./SubscriptionStore.service.js";
+import { HostFailure } from "./Subscriptions.errors.js";
 import { SubscriptionTimers } from "./SubscriptionTimers.service.js";
 import type * as M from "./Subscription.model.js";
 import type { StoreEffect } from "./SubscriptionStore.service.js";
@@ -50,6 +54,16 @@ export const SubscriptionStoreSqlLive = Layer.effect(
   SubscriptionStore,
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient;
+    const mutex = yield* Semaphore.make(1);
+    // Depth -1 reserves the connection without opening a transaction; the first
+    // withTransaction inside the segment still emits BEGIN (depth 0).
+    const reserved = Effect.fnUntraced(function* <A, E, R>(work: Effect.Effect<A, E, R>) {
+      const active = yield* Effect.serviceOption(sql.transactionService);
+      if (Option.isSome(active)) return yield* work;
+      const connection = yield* sql.reserve;
+      return yield* work.pipe(Effect.provideService(sql.transactionService, [connection, -1]));
+    });
+    const segment = <A, E, R>(work: Effect.Effect<A, E, R>) => work.pipe(reserved, Effect.scoped, mutex.withPermits(1));
     const timers = yield* SubscriptionTimers;
     const entropy = yield* SubscriptionEntropy;
     const insert = Effect.fn("SubscriptionStore.insert")(function* (
@@ -82,12 +96,13 @@ export const SubscriptionStoreSqlLive = Layer.effect(
       const row = yield* decodeRow("subscription_items")(R.ChangesRow)(rows[0]);
       return row.changes;
     });
-    const attach = Effect.fn("SubscriptionStore.attach")(function* <
-      Rule extends { id: string; sourceKind: M.SubscriptionSourceKind },
-    >(rules: Rule[], limit?: number) {
+    const attach = Effect.fn("SubscriptionStore.attach")(function* <Rule extends { id: unknown; sourceKind: unknown }>(
+      rules: Rule[],
+      limit?: number
+    ) {
       if (rules.length === 0) return [];
       const rows =
-        yield* sql`SELECT * FROM subscription_items WHERE subscription_id IN ${sql.in(Arr.map(rules, (rule) => rule.id))} ORDER BY published_at DESC`;
+        yield* sql`SELECT * FROM subscription_items WHERE subscription_id IN ${sql.in(Arr.map(rules, (rule) => rule.id ?? null))} ORDER BY published_at DESC`;
       let grouped = HashMap.empty<string, M.SubscriptionFeedItem[]>();
       for (const value of rows) {
         const row = yield* decodeRow("subscription_items")(R.SubscriptionItemRawRowFromSql)(value);
@@ -96,7 +111,10 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         grouped = HashMap.set(grouped, row.subscriptionId, list);
       }
       return Arr.map(rules, (rule) => {
-        const items = Option.getOrElse(HashMap.get(grouped, rule.id), () => []);
+        const items = Option.getOrElse(
+          typeof rule.id === "string" ? HashMap.get(grouped, rule.id) : Option.none(),
+          () => []
+        );
         return { ...rule, items: limit !== undefined && rule.sourceKind === "profile" ? items.slice(0, limit) : items };
       });
     });
@@ -130,7 +148,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         )
         .pipe(Effect.provideService(SqlClient.BeginTransaction, "BEGIN"));
     });
-    return SubscriptionStore.of({
+    const store = SubscriptionStore.of({
       list: Effect.gen(function* () {
         const values = yield* sql`SELECT * FROM subscriptions ORDER BY updated_at DESC`;
         const rules: F.StoredSubscriptionRule[] = [];
@@ -157,7 +175,8 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         const id = yield* entropy.subscriptionId;
         const rule: F.StoredSubscriptionRule = {
           id,
-          title: (input.title === undefined ? undefined : Str.trim(input.title)) || input.sourceUrl,
+          title:
+            (input.title === undefined || input.title === null ? undefined : Str.trim(input.title)) || input.sourceUrl,
           sourceUrl: input.sourceUrl,
           feedUrl: input.feedUrl,
           platform: input.platform,
@@ -214,8 +233,10 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         if (hasSourceUrl && patch.sourceUrl !== undefined && !hasTitle && patch.sourceUrl !== existing.sourceUrl)
           next.title = patch.sourceUrl;
         const payload = R.subscriptionToInsert(next, at);
+        const returned = { ...next, items: [] };
+        if (!S.is(F.SubscriptionMutationResult)(returned))
+          return yield* DbRowDecodeError.make({ table: "subscriptions", issue: "Invalid constructed mutation" });
         yield* insert("subscriptions", payload, ["id"]);
-        const returned = yield* decodeRow("subscriptions")(F.SubscriptionMutationResult)({ ...next, items: [] });
         return (yield* attach([returned]))[0] ?? null;
       }),
       remove: Effect.fn(function* (id) {
@@ -311,8 +332,9 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         return yield* clear(at, R.sanitizeList(selector.taskIds), selector.items ?? []);
       }),
       clearOrphanedQueueLinks: Effect.fn(function* (isLive: (taskId: string) => StoreEffect<boolean>) {
-        const raw =
-          yield* sql`SELECT subscription_id,item_id,task_id,added FROM subscription_items WHERE added=1 OR task_id IS NOT NULL`;
+        const raw = yield* segment(
+          sql`SELECT subscription_id,item_id,task_id,added FROM subscription_items WHERE added=1 OR task_id IS NOT NULL`
+        );
         const tasks: string[] = [];
         const items: { subscriptionId: string; itemId: string }[] = [];
         let seen = HashSet.empty<string>();
@@ -334,8 +356,38 @@ export const SubscriptionStoreSqlLive = Layer.effect(
           }
         }
         const at = yield* timers.now;
-        return yield* clear(at, tasks, items);
+        return yield* segment(clear(at, tasks, items));
       }),
+    });
+    return SubscriptionStore.of({
+      ...store,
+      list: segment(store.list),
+      get: Effect.fn("SubscriptionStore.get")((id) => segment(store.get(id))),
+      findDuplicateFeed: Effect.fn("SubscriptionStore.findDuplicateFeed")((url, ignoreId) =>
+        segment(store.findDuplicateFeed(url, ignoreId))
+      ),
+      add: Effect.fn("SubscriptionStore.add")((input) => segment(store.add(input))),
+      update: Effect.fn("SubscriptionStore.update")((id, patch) =>
+        segment(store.update(id, patch)).pipe(
+          Effect.catchDefect((original) =>
+            Effect.fail(
+              HostFailure.make({
+                original,
+                legacyMessage: original instanceof Error ? original.message : String(original),
+              })
+            )
+          )
+        )
+      ),
+      remove: Effect.fn("SubscriptionStore.remove")((id) => segment(store.remove(id))),
+      replaceItems: Effect.fn("SubscriptionStore.replaceItems")((id, items) => segment(store.replaceItems(id, items))),
+      mergeItems: Effect.fn("SubscriptionStore.mergeItems")((id, items) => segment(store.mergeItems(id, items))),
+      markItemQueued: Effect.fn("SubscriptionStore.markItemQueued")((id, item, task) =>
+        segment(store.markItemQueued(id, item, task))
+      ),
+      clearQueueLinks: Effect.fn("SubscriptionStore.clearQueueLinks")((selector) =>
+        segment(store.clearQueueLinks(selector))
+      ),
     });
   })
 );

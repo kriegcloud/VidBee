@@ -6,6 +6,10 @@ export class SubscriptionFeed extends Context.Service<
   SubscriptionFeed,
   {
     readonly fetch: (url: string, cancellation?: FeedCancellationToken) => Operation<InterpretableFeed>;
-    readonly probe: (url: string, cancellation?: FeedCancellationToken) => Operation<FeedProbe>;
+    readonly probe: (
+      url: string,
+      cancellation?: FeedCancellationToken,
+      candidateFetch?: (url: string, fallback: Operation<InterpretableFeed>) => Operation<InterpretableFeed>
+    ) => Operation<FeedProbe>;
   }
 >()("@vidbee/subscriptions-core/SubscriptionFeed.service/SubscriptionFeed") {}

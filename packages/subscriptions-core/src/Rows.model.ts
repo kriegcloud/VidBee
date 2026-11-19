@@ -1,8 +1,12 @@
+import { DbRowDecodeError } from "@vidbee/db";
+import * as Arr from "effect/Array";
+import * as Effect from "effect/Effect";
 import { dual } from "effect/Function";
 import * as HashSet from "effect/HashSet";
 import * as Result from "effect/Result";
 import * as S from "effect/Schema";
 import * as Getter from "effect/SchemaGetter";
+import * as Issue from "effect/SchemaIssue";
 import * as Str from "effect/String";
 import type { StoredSubscriptionRule } from "./Feed.model.js";
 import type { SubscriptionFeedItem } from "./Subscription.model.js";
@@ -290,3 +294,29 @@ export const subscriptionToInsert: {
   }
   return payload;
 });
+
+/** Schema paths only; neither schema messages nor private row values escape. */
+type SubscriptionTable = "subscriptions" | "subscription_items" | "subscriptions_meta";
+const formatRowIssue = (
+  table: "subscriptions" | "subscription_items" | "subscriptions_meta",
+  issue: Issue.Issue
+): string => {
+  const formatted = Issue.makeFormatterStandardSchemaV1({ leafHook: () => "invalid", checkHook: () => "invalid" })(
+    issue
+  );
+  return Arr.join(
+    Arr.map(formatted.issues, (entry) => Arr.join([table, ...Arr.map(entry.path ?? [], String)], ".")),
+    ", "
+  );
+};
+export const rowIssue: {
+  (table: SubscriptionTable, issue: Issue.Issue): string;
+  (issue: Issue.Issue): (table: SubscriptionTable) => string;
+} = dual(2, formatRowIssue);
+export const decodeRow =
+  (table: "subscriptions" | "subscription_items" | "subscriptions_meta") =>
+  <Schema extends S.Constraint>(schema: Schema) =>
+  (input: unknown) =>
+    S.decodeUnknownEffect(schema)(input).pipe(
+      Effect.mapError((error) => DbRowDecodeError.make({ table, issue: rowIssue(table, error.issue) }))
+    );

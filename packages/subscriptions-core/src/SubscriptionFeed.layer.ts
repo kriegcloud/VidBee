@@ -22,7 +22,7 @@ import {
 import { SubscriptionTimers } from "./SubscriptionTimers.service.js";
 import type { InterpretableFeed } from "./Feed.model.js";
 import type { FeedCancellationToken } from "./FeedCancellation.service.js";
-import type { SubscriptionFailure } from "./SubscriptionTimers.service.js";
+import type { Operation, SubscriptionFailure } from "./SubscriptionTimers.service.js";
 
 export const RSS_FETCH_TIMEOUT_MS = 180_000;
 const RawRoot = S.Struct({
@@ -144,16 +144,21 @@ const make = Effect.fnUntraced(function* () {
     yield* cancellation.check;
     return feed;
   });
-  const probe = Effect.fnUntraced(function* (url: string, cancellation: FeedCancellationToken = inactive) {
+  const probe = Effect.fnUntraced(function* (
+    url: string,
+    cancellation: FeedCancellationToken = inactive,
+    candidateFetch?: (url: string, fallback: Operation<InterpretableFeed>) => Operation<InterpretableFeed>
+  ) {
     const response = yield* xml(url, cancellation).pipe(withLegacyFinally(timing.turn("feed:probe:xml")));
     const recover = Effect.fnUntraced(function* (initialFailure: SubscriptionFailure) {
       yield* cancellation.check;
       for (const candidate of discoverFeedUrls(response.body, response.url)) {
         if (candidate === response.url) continue;
-        const result = yield* fetch(candidate, cancellation).pipe(
-          withLegacyFinally(timing.turn("feed:probe:candidate")),
-          Effect.result
-        );
+        const result = yield* (
+          candidateFetch === undefined
+            ? fetch(candidate, cancellation)
+            : candidateFetch(candidate, fetch(candidate, cancellation))
+        ).pipe(withLegacyFinally(timing.turn("feed:probe:candidate")), Effect.result);
         if (result._tag === "Success") return { feed: result.success, feedUrl: candidate, discovered: true };
         yield* cancellation.check;
       }

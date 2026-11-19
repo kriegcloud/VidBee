@@ -45,7 +45,7 @@ export const hostServices=(dispatch:(operation:Operation<void>)=>void,options:Ho
  return {
   timers:SubscriptionTimers.of({
    now:sync(now),
-   after:(ms,command)=>sync(()=>{const handle=after(()=>{dispatch(command.run)},ms);return sync(()=>clearAfter(handle))}),
+   after:(ms,command)=>sync(()=>{const handle=after(()=>{dispatch(command.run)},ms);return sync(()=>{if(handle != null)clearAfter(handle)})}),
    every:(ms,command)=>sync(()=>{const handle=every(()=>{dispatch(command.run)},ms);return sync(()=>{if(handle)clearEvery(handle)})}),
   }),
   dispatch:SubscriptionDispatch.of({detach:operation=>Effect.sync(()=>dispatch(operation))}),

@@ -10,7 +10,7 @@ import { RssParserLive } from '@vidbee/subscriptions-core/RssParser.driver'
 import type { ParsedFeed } from './types.js'
 import { CallerFeedSignal, feedHttpHost } from './FeedHttp.driver.js'
 import { feedCancellationHost } from './FeedCancellation.driver.js'
-import { hostLayers, legacyError } from './Host.driver.js'
+import { hostLayers, legacyError, promise } from './Host.driver.js'
 
 import {discoverFeedUrls as discover} from '@vidbee/subscriptions-core/feed-parser'
 export const discoverFeedUrls:(html:string,pageUrl:string)=>string[]=discover
@@ -51,7 +51,7 @@ export class RssParserFeedFetcher implements FeedFetcher {
   probe(feedUrl: string, signal?: AbortSignal): Promise<{ feed: ParsedFeed; feedUrl: string; discovered: boolean }> {
     const operation = Effect.suspend(() => {
       const borrowed = signal == null ? undefined : this.cancellations.borrow(signal)
-      return Effect.flatMap(SubscriptionFeed, feed => feed.probe(feedUrl, borrowed?.token)).pipe(
+      return Effect.flatMap(SubscriptionFeed, feed => feed.probe(feedUrl, borrowed?.token, (candidate,fallback) => this.fetch === RssParserFeedFetcher.prototype.fetch ? fallback : promise(() => this.fetch(candidate, signal)) as Effect.Effect<import("@vidbee/subscriptions-core/Feed.model").InterpretableFeed, import("@vidbee/subscriptions-core/Subscriptions.errors").HostFailure>)).pipe(
         Effect.onExit(() => borrowed?.dispose ?? Effect.void),
         Effect.provideService(CallerFeedSignal, signal),
       )

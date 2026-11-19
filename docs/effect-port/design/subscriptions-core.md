@@ -245,17 +245,27 @@ Do not cast undecoded SQL rows. Decode them first with the db models or the safe
 ### Amendment: mutation result view (2026-11-19)
 
 Store `update` and API `update` return `SubscriptionMutationResult` (nullable only for
-store absence). This named schema in `Feed.model.ts` extends the stored subscription
-with items, replacing `coverUrl` and `latestVideoTitle` with the interpreted patch's
-optional unknown fields and `checkIntervalMs` with its optional nullable finite field.
-All other fields retain the stored model's types. The result describes the constructed
-value after applying the patch, including own undefined, null, empty strings and raw
-interpreted values. Attach children without rereading the subscription. Do not decode
-this value as `StoredSubscriptionRule`, normalize it to SQLite's representation, or
-widen the stored model. `get` and `list` continue decoding the narrow stored view.
-Compatibility continues projecting the result into its unchanged old declaration.
-This ruling replaces the update result types in the contract tables below; it resolves
-the implementation hold and adds no deliberate behavior change.
+store absence). Its small `mutationField` schema helper expresses each patchable field's
+declared value together with null, JSON scalars of another kind, NaN and own undefined.
+Artwork additionally retains the already characterized bigint binding. Scalar positions
+reject arrays and objects before any write; the declared list fields retain their arrays.
+The native store constructs and validates the complete result BEFORE the upsert, then
+returns that original constructed object with its original property order and own undefined
+keys. It never returns a schema-reordered decoded copy. After the write, only children are
+read and decoded. SQLite coercion determines the stored row independently. The permanent
+old-source matrix pins both observations for every store/API patchable field and scalar.
+`get` and `list` continue decoding the narrow stored view; compatibility retains its old
+public declarations. This completes the earlier ruling without declaring a behavior change.
+
+Native `every` uses timer-time sleeps followed by detached work: no wall-clock-derived
+cadence, no catch-up burst, and overlapping heartbeat runs remain allowed. Each native SQL
+store layer builds one one-permit semaphore. Old synchronous methods are exclusive segments;
+the subscription store also reserves one connection, without adding a transaction. Its
+reservation uses the public transaction connection service at depth -1 so explicit inner
+transactions still issue BEGIN at depth 0. Existing transactions are borrowed. Metadata CAS
+already reserves its connection through withTransaction. Orphan checks keep the old await
+points: reserve the initial read and final clearing segment separately, leaving host lookups
+outside both. Content-free subscription decode issues report table/property paths.
 
 ### Parser values stay wide through interpretation
 

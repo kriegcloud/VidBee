@@ -97,7 +97,7 @@ export class LeaderElection {
   const owner=Object.assign(this,captured)
   const dependencies=Layer.mergeAll(
    hostLayers(operation=>{void runLegacyPromise(this.runtime,operation,legacyError)}, {
-    now:()=>owner.now.call(owner),log:(...args)=>owner.log.call(owner,...args),every:(cb,ms)=>owner.scheduleInterval.call(owner,cb,ms),clearEvery:handle=>owner.clearIntervalImpl.call(owner,handle),
+    now:()=>owner.now.call(owner),log:(...args)=>owner.log.call(owner,...args),every:(cb,ms)=>owner.scheduleInterval.call(owner,()=>{if(owner.heartbeat===LeaderElection.prototype.heartbeat)cb();else void owner.heartbeat()},ms),clearEvery:handle=>owner.clearIntervalImpl.call(owner,handle),
    }),
    Layer.succeed(SubscriptionMeta,SubscriptionMeta.of({
     readLeader:promise(()=>owner.metaStore.readLeader()),

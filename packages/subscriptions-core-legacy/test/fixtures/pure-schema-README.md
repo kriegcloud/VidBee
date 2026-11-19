@@ -58,3 +58,24 @@ typechecking, avoiding accidental inclusion of unrelated source diagnostics.
 `declaration-contract.ts` adds positive compile-time uses for explicit undefined,
 nullable interval updates, nested mutations, mutable elements in readonly
 selector arrays, timeline/dedupe inference, and callback/Promise signatures.
+
+
+`review-fixes.json` adds the review-baseline omissions. It was recorded from unchanged
+`main` subscription sources extracted with git archive and bundled with external workspace
+dependencies, under the pinned Node. The lane receipt hashes every extracted source file.
+There are 469 observations: 290 store-update cells, 160 API-update cells, ten lookup values,
+five scheduler handles, feed candidate dispatch, two other public-method override traces,
+and native add's null-title fallback. Each update cell encodes ordered object entries and
+the complete physical rows, or records failure and unchanged rows. Ordinary tests replay
+compatibility, borrowed native SQL, and node native SQL in separate Node processes. An
+explicit REVIEW_OLD path is a deliberate recorder invocation and is never set by the suite.
+The optional REVIEW_PART switch selects a group for before-fix verification without changing
+the fixture; it does not relax any selected assertion.
+
+
+Portability correction during review remediation: the historical `review-pure-oracle.json`
+contains numeric Date.parse inputs recorded in America/Chicago. Its child process now selects
+that recorded timezone explicitly. All 4,228 historical expectations are unchanged; the
+separate date oracle continues selecting UTC, Asia/Tokyo and America/New_York and comparing
+old results separately. This fixes ambient-runtime dependence without deleting date cases
+or rewriting old expected values.

@@ -85,7 +85,7 @@ const decode = <S extends Schema.ConstraintDecoder<unknown, never>>(
 ): S['Type'] => {
   const result = Schema.decodeUnknownResult(schema)(value)
   if (Result.isFailure(result)) {
-    throw DbRowDecodeError.make({ table, issue: 'Stored row does not match the table schema' })
+    throw DbRowDecodeError.make({ table, issue: Rows.rowIssue(table, result.failure.issue) })
   }
   return result.success
 }

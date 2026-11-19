@@ -35,3 +35,11 @@ export class Subscriptions extends Context.Service<
     readonly on: (sink: SubscriptionChangedSink) => import("effect/Effect").Effect<Unsubscribe>;
   }
 >()("@vidbee/subscriptions-core/Subscriptions.service/Subscriptions") {}
+
+/** Public-method dispatch supplied by compatibility owners that support overrides. */
+export class SubscriptionMethodDispatch extends Context.Service<
+  SubscriptionMethodDispatch,
+  {
+    readonly refreshOne?: (id: string, fallback: Operation<void>) => Operation<void>;
+  }
+>()("@vidbee/subscriptions-core/Subscriptions.service/SubscriptionMethodDispatch") {}

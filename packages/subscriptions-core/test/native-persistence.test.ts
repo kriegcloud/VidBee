@@ -5,10 +5,13 @@ import * as Arr from "effect/Array";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import * as Reactivity from "effect/reactivity/Reactivity";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import * as SqlClient from "effect/sql/SqlClient";
+import * as Statement from "effect/sql/Statement";
 import { testDriver } from "../../db/test/legacy/io.js";
 import { nodeLayer } from "../../db/test/legacy/subscription-client.js";
 import * as F from "../src/Feed.model.js";
@@ -19,6 +22,7 @@ import { SubscriptionMeta } from "../src/SubscriptionMeta.service.js";
 import { SubscriptionStoreSqlLive } from "../src/SubscriptionStore.layer.js";
 import { SubscriptionStore } from "../src/SubscriptionStore.service.js";
 import { SubscriptionTimers } from "../src/SubscriptionTimers.service.js";
+import type * as Connection from "effect/sql/SqlConnection";
 
 const driver = testDriver;
 class SqlTrace extends Context.Service<
@@ -75,7 +79,7 @@ const traceEmpty = Layer.succeed(SqlTrace, {
 const client = driver === "node" ? Layer.merge(nodeLayer(":memory:"), traceEmpty) : borrowed;
 const host = Layer.merge(
   Layer.succeed(SubscriptionTimers, {
-    now: Effect.succeed(1000),
+    now: Effect.yieldNow.pipe(Effect.as(1000)),
     after: Effect.fn("SubscriptionTimers.after")(() => Effect.succeed(Effect.void)),
     every: Effect.fn("SubscriptionTimers.every")(() => Effect.succeed(Effect.void)),
   }),
@@ -102,6 +106,23 @@ const input = {
 const item = (id: string, publishedAt = 1) => ({ id, title: id, url: `https://example.com/${id}`, publishedAt });
 layer(services, { buildPerTest: true })((it) => {
   const run = driver === "node" || driver === "borrowed" ? it.effect : it.effect.skip;
+  run(
+    `${driver}: synchronous update/remove segments cannot resurrect rows across a controlled clock yield`,
+    Effect.fnUntraced(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const created = yield* store.add(input);
+      const updating = yield* store
+        .update(created.id, { title: "updated" })
+        .pipe(Effect.forkChild({ startImmediately: true }));
+      const removing = yield* store.remove(created.id).pipe(Effect.forkChild({ startImmediately: true }));
+      yield* Fiber.join(updating);
+      const removed = yield* Fiber.join(removing);
+      expect(removed).toBe(true);
+      const after = yield* store.get(created.id);
+      expect(after).toBeNull();
+    })
+  );
   run(
     `${driver}: mutation results retain patch values while SQL retains its own representation`,
     () =>
@@ -461,5 +482,80 @@ layer(SubscriptionMetaMemoryLive, { buildPerTest: true })((it) => {
         expect((yield* meta.readLeader).preferred).toBe("desktop");
       }),
     10_000
+  );
+});
+
+class ConnectionTrace extends Context.Service<
+  ConnectionTrace,
+  {
+    readonly events: Effect.Effect<readonly { connection: number; statement: string }[]>;
+    readonly clear: Effect.Effect<void>;
+  }
+>()("@vidbee/subscriptions-core/test/native-persistence.test/ConnectionTrace") {}
+// Each acquisition gets a new identity. Unreserved methods therefore expose
+// separate connections even on the single-handle SQLite test clients.
+const recordedClient = Layer.effectContext(
+  Effect.gen(function* () {
+    const original = yield* SqlClient.SqlClient;
+    const statements = yield* SqlTrace;
+    const events: { connection: number; statement: string }[] = [];
+    let next = 0;
+    const acquirer = Effect.map(original.reserve, (connection) => {
+      const id = ++next;
+      const wrapped: Connection.Connection = {
+        ...connection,
+        execute: Effect.fn("ConnectionTrace.execute")(function* (
+          ...args: Parameters<Connection.Connection["execute"]>
+        ) {
+          events.push({ connection: id, statement: args[0] });
+          yield* Effect.yieldNow;
+          return yield* connection.execute(...args);
+        }),
+      };
+      return wrapped;
+    });
+    const recorded = yield* SqlClient.make({
+      acquirer,
+      compiler: Statement.makeCompilerSqlite(),
+      driver: "recording",
+      spanAttributes: [],
+    });
+    return Context.make(SqlClient.SqlClient, recorded).pipe(
+      Context.add(SqlTrace, statements),
+      Context.add(ConnectionTrace, {
+        events: Effect.sync(() => [...events]),
+        clear: Effect.sync(() => {
+          events.length = 0;
+        }),
+      })
+    );
+  })
+).pipe(Layer.provide(Layer.merge(client, Reactivity.layer)));
+const recordedServices = Layer.merge(SubscriptionStoreSqlLive, Migrations.layer).pipe(
+  Layer.provideMerge(Layer.merge(recordedClient, host))
+);
+layer(recordedServices, { buildPerTest: true })((it) => {
+  const run = driver === "node" || driver === "borrowed" ? it.effect : it.effect.skip;
+  run(
+    `${driver}: reserves the mutation connection through changes() and child statements`,
+    Effect.fnUntraced(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const trace = yield* ConnectionTrace;
+      const created = yield* store.add(input);
+      yield* trace.clear;
+      yield* store.markItemQueued(created.id, "placeholder", "task");
+      const marking = yield* trace.events;
+      expect(marking).toHaveLength(3);
+      expect(Arr.every(marking, (event) => event.connection === marking[0]?.connection)).toBe(true);
+      expect(marking[1]?.statement).toBe("SELECT changes() AS changes");
+      yield* trace.clear;
+      const removed = yield* store.remove(created.id);
+      expect(removed).toBe(true);
+      const removing = yield* trace.events;
+      expect(removing).toHaveLength(3);
+      expect(Arr.every(removing, (event) => event.connection === removing[0]?.connection)).toBe(true);
+      expect(removing[1]?.statement).toBe("SELECT changes() AS changes");
+    })
   );
 });

@@ -1,5 +1,4 @@
 import { dual } from "effect/Function";
-import type { SubscriptionStatus } from "./types.js";
 
 export type { SubscriptionStatusMeta } from "./Subscription.model.js";
 
@@ -11,7 +10,7 @@ const fallbackStatusMeta: SubscriptionStatusMeta = {
   label: "subscriptions.status.idle",
 };
 
-const enabledStatusMeta: Record<SubscriptionStatus, SubscriptionStatusMeta> = {
+const enabledStatusMeta: Record<string, SubscriptionStatusMeta> = {
   "up-to-date": {
     dotClass: "bg-emerald-500",
     textClass: "text-emerald-600",
@@ -59,7 +58,7 @@ const statusMeta = (status: string | undefined, enabled: boolean): SubscriptionS
   }
 
   if (status !== undefined && Boolean(status) && status in enabledStatusMeta) {
-    return enabledStatusMeta[status as SubscriptionStatus];
+    return enabledStatusMeta[status] ?? fallbackStatusMeta;
   }
 
   return fallbackStatusMeta;
@@ -84,9 +83,11 @@ const itemStatus = (
     return "notQueued";
   }
   const id = item.taskId ?? item.downloadId;
-  const matched = Boolean(id) && id !== undefined ? downloadById.get(id) : undefined;
+  const hasId = Boolean(id);
+  const matched = hasId && id !== undefined ? downloadById.get(id) : undefined;
   // No live task means the stored queue link is stale.
-  if (matched === undefined) {
+  const hasMatch = Boolean(matched);
+  if (matched === undefined || !hasMatch) {
     return "notQueued";
   }
   switch (matched.status) {

@@ -1,4 +1,5 @@
 import { assert, it } from "@effect/vitest";
+import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -429,6 +430,53 @@ it.layer(deadlineFeeds)((test) => {
       assert.strictEqual(result._tag, "Failure");
       if (result._tag === "Failure") assert.strictEqual(result.failure._tag, "FeedRequestTimeout");
       assert.strictEqual(transportReleased, true);
+    })
+  );
+});
+
+class WallStep extends Context.Service<WallStep, { readonly step: (ms: number) => Effect.Effect<void> }>()(
+  "@vidbee/subscriptions-core/test/native-feed.test/WallStep"
+) {}
+const wallClock = Layer.unwrap(
+  Effect.map(Clock.Clock, (clock) => {
+    let offset = 0;
+    return Layer.mergeAll(
+      Layer.succeed(Clock.Clock, {
+        ...clock,
+        currentTimeMillisUnsafe: () => clock.currentTimeMillisUnsafe() + offset,
+        currentTimeMillis: Effect.sync(() => clock.currentTimeMillisUnsafe() + offset),
+      }),
+      Layer.succeed(WallStep, {
+        step: Effect.fn("WallStep.step")((ms) =>
+          Effect.sync(() => {
+            offset += ms;
+          })
+        ),
+      })
+    );
+  })
+);
+it.layer(NativeTimers.pipe(Layer.provide(NativeDispatch), Layer.provideMerge(wallClock)))((test) => {
+  test.effect(
+    "heartbeat uses timer time through backward and forward wall-clock steps without catch-up",
+    Effect.fnUntraced(function* () {
+      const timers = yield* SubscriptionTimers;
+      const wall = yield* WallStep;
+      let ticks = 0;
+      const cancel = yield* timers.every(30_000, {
+        run: Effect.sync(() => {
+          ticks++;
+        }),
+      });
+      yield* TestClock.adjust(30_000);
+      assert.strictEqual(ticks, 1);
+      yield* wall.step(-300_000);
+      yield* TestClock.adjust(30_000);
+      assert.strictEqual(ticks, 2);
+      yield* wall.step(3_600_000);
+      yield* TestClock.adjust(30_000);
+      assert.strictEqual(ticks, 3);
+      yield* cancel;
     })
   );
 });

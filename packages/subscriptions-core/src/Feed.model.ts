@@ -80,12 +80,42 @@ export const InterpretedFeedPatch = S.Struct({
   coverUrl: S.Unknown.pipe(S.optional, S.mutableKey),
 });
 export type InterpretedFeedPatch = typeof InterpretedFeedPatch.Type;
-// Mutations retain the constructed patch values; reads decode the narrow stored view.
+// A mutation returns constructed values, independently of SQLite's coercions.
+// Raw constructed numbers include NaN; they are not finite stored domain numbers.
+const MutationNumber = S.declare((value): value is number => typeof value === "number");
+const mutationField = <Field extends S.Constraint>(field: Field) =>
+  S.Union([field, S.Null, S.String, MutationNumber, S.Boolean, S.Undefined]).pipe(S.optional, S.mutableKey);
 export const SubscriptionMutationResult = S.Struct({
-  ...StoredSubscriptionWithItems.fields,
-  coverUrl: InterpretedFeedPatch.fields.coverUrl,
-  latestVideoTitle: InterpretedFeedPatch.fields.latestVideoTitle,
-  checkIntervalMs: StoredSubscriptionPatch.fields.checkIntervalMs,
+  id: mutationField(StoredSubscriptionRule.fields.id),
+  title: mutationField(StoredSubscriptionRule.fields.title),
+  sourceUrl: mutationField(StoredSubscriptionRule.fields.sourceUrl),
+  feedUrl: mutationField(StoredSubscriptionRule.fields.feedUrl),
+  platform: mutationField(StoredSubscriptionRule.fields.platform),
+  keywords: mutationField(StoredSubscriptionRule.fields.keywords),
+  tags: mutationField(StoredSubscriptionRule.fields.tags),
+  onlyDownloadLatest: mutationField(StoredSubscriptionRule.fields.onlyDownloadLatest),
+  autoDownload: mutationField(StoredSubscriptionRule.fields.autoDownload),
+  enabled: mutationField(StoredSubscriptionRule.fields.enabled),
+  coverUrl: mutationField(S.Union([StoredSubscriptionRule.fields.coverUrl, S.BigInt])),
+  latestVideoTitle: mutationField(StoredSubscriptionRule.fields.latestVideoTitle),
+  latestVideoPublishedAt: mutationField(StoredSubscriptionRule.fields.latestVideoPublishedAt),
+  lastCheckedAt: mutationField(StoredSubscriptionRule.fields.lastCheckedAt),
+  lastSuccessAt: mutationField(StoredSubscriptionRule.fields.lastSuccessAt),
+  status: mutationField(StoredSubscriptionRule.fields.status),
+  lastError: mutationField(StoredSubscriptionRule.fields.lastError),
+  createdAt: mutationField(StoredSubscriptionRule.fields.createdAt),
+  updatedAt: mutationField(StoredSubscriptionRule.fields.updatedAt),
+  downloadDirectory: mutationField(StoredSubscriptionRule.fields.downloadDirectory),
+  namingTemplate: mutationField(StoredSubscriptionRule.fields.namingTemplate),
+  sourceKind: mutationField(StoredSubscriptionRule.fields.sourceKind),
+  profileOwner: mutationField(StoredSubscriptionRule.fields.profileOwner),
+  categories: mutationField(StoredSubscriptionRule.fields.categories),
+  checkIntervalMs: mutationField(StoredSubscriptionRule.fields.checkIntervalMs),
+  nextCheckAt: mutationField(StoredSubscriptionRule.fields.nextCheckAt),
+  downloadType: mutationField(StoredSubscriptionRule.fields.downloadType),
+  downloadQuality: mutationField(StoredSubscriptionRule.fields.downloadQuality),
+  downloadContainer: mutationField(StoredSubscriptionRule.fields.downloadContainer),
+  items: StoredSubscriptionWithItems.fields.items,
 });
 export type SubscriptionMutationResult = typeof SubscriptionMutationResult.Type;
 export const StoredAutoDownloadInputs = S.Struct({

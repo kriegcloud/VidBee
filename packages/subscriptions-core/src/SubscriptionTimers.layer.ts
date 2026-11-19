@@ -19,20 +19,12 @@ export const layer = Layer.effect(
         )
       ),
       every: Effect.fn("SubscriptionTimers.every")((ms, command) =>
-        Effect.flatMap(Clock.currentTimeMillis, (started) => {
-          let next = started + ms;
-          const tick = Effect.gen(function* () {
-            const now = yield* Clock.currentTimeMillis;
-            yield* Effect.sleep(Math.max(0, next - now));
-            next += ms;
-            yield* dispatch.detach(command.run);
-          });
-          return tick.pipe(
-            Effect.forever,
-            Effect.forkIn(scope, { startImmediately: true }),
-            Effect.map((fiber) => Fiber.interrupt(fiber).pipe(Effect.asVoid))
-          );
-        })
+        Effect.sleep(ms).pipe(
+          Effect.andThen(dispatch.detach(command.run)),
+          Effect.forever,
+          Effect.forkIn(scope, { startImmediately: true }),
+          Effect.map((fiber) => Fiber.interrupt(fiber).pipe(Effect.asVoid))
+        )
       ),
     });
   })

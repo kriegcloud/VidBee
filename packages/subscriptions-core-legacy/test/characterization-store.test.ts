@@ -64,7 +64,7 @@ it('legacy supplied-Drizzle store-invalid: declared decode failures preserve raw
   for (const [name, table] of [['nonfinite', 'subscriptions'], ['blob', 'subscriptions'], ['null-primary-key', 'subscriptions'], ['item-nonfinite', 'subscription_items'], ['meta-nonfinite', 'subscriptions_meta']] as const) {
     const observed = actual[name]!
     // Before the port: assert.equal(serialize(await invalidRowScenario()), expected)
-    assert.deepEqual(observed.rejection, { tag: 'DbRowDecodeError', table, issue: 'Stored row does not match the table schema' })
+    assert.deepEqual(observed.rejection, { tag: 'DbRowDecodeError', table, issue: expected[name]!.expectedNewPath })
     assert.equal(observed.rawUnchanged, true)
     assert.deepEqual(observed.rawMeta, expected[name]!.rawMeta)
     if (table === 'subscriptions_meta') assert.deepEqual(observed.old, expected[name]!.old)

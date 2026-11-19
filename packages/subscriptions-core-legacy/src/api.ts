@@ -5,7 +5,7 @@ import * as ManagedRuntime from 'effect/ManagedRuntime'
 import * as Scheduler from 'effect/Scheduler'
 import {runLegacyPromise,runLegacySync} from '@vidbee/task-queue-legacy/runtime'
 import {LegacyTiming} from '@vidbee/task-queue/LegacyTiming.service'
-import {Subscriptions as NativeApi} from '@vidbee/subscriptions-core/Subscriptions.service'
+import {Subscriptions as NativeApi,SubscriptionMethodDispatch} from '@vidbee/subscriptions-core/Subscriptions.service'
 import {layer as apiLayer} from '@vidbee/subscriptions-core/Subscriptions.layer'
 import {SubscriptionStore} from '@vidbee/subscriptions-core/SubscriptionStore.service'
 import {SubscriptionMeta} from '@vidbee/subscriptions-core/SubscriptionMeta.service'
@@ -116,6 +116,7 @@ export class SubscriptionsApi {
   Object.defineProperty(leaderReceiver,'runtime',{get:()=>this.runtime})
   const leaderHost=Object.assign(leaderReceiver,{metaStore,kind:opts.kind,pid:opts.pid,heartbeatIntervalMs:opts.leader?.heartbeatIntervalMs??30000,lockTtlMs:opts.leader?.lockTtlMs??90000,now:opts.now??opts.leader?.now??(()=>Date.now()),log:owner.log,scheduleInterval:opts.leader?.scheduleInterval??((cb:()=>void,ms:number)=>setInterval(cb,ms)),clearIntervalImpl:opts.leader?.clearInterval??((handle:unknown)=>clearInterval(handle as ReturnType<typeof setInterval>))})
   const base=Layer.mergeAll(
+   Layer.succeed(SubscriptionMethodDispatch,{refreshOne:(id,fallback)=>this.refreshOne===SubscriptionsApi.prototype.refreshOne?fallback:promise(()=>this.refreshOne(id))}),
    hostLayers(dispatch,{now:()=>owner.now(),log:(...args)=>owner.log(...args)}),
    Layer.succeed(SubscriptionQueue,SubscriptionQueue.of({
     enqueue:context=>promise(()=>owner.enqueueItem(context as EnqueueItemContext)),

@@ -1,10 +1,11 @@
-import { decodeRow } from "@vidbee/db";
 import * as Effect from "effect/Effect";
 import * as HashMap from "effect/HashMap";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Semaphore from "effect/Semaphore";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as R from "./Rows.model.js";
+import { decodeRow } from "./Rows.model.js";
 import { SubscriptionMeta } from "./SubscriptionMeta.service.js";
 import { SubscriptionTimers } from "./SubscriptionTimers.service.js";
 import type { LeaderKind, LeaderState } from "./Subscription.model.js";
@@ -42,6 +43,7 @@ export const SubscriptionMetaSqlLive = Layer.effect(
   SubscriptionMeta,
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient;
+    const mutex = yield* Semaphore.make(1);
     const timers = yield* SubscriptionTimers;
     const read = Effect.fn("SubscriptionMeta.read")(function* () {
       const raw = yield* sql`SELECT * FROM subscriptions_meta`;
@@ -72,7 +74,7 @@ export const SubscriptionMetaSqlLive = Layer.effect(
       }
       yield* sql`INSERT INTO subscriptions_meta (key,value,updated_at) VALUES (${key},${String(value)},${at}) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at`;
     });
-    return SubscriptionMeta.of({
+    const store = SubscriptionMeta.of({
       readLeader: read(),
       readPreferred: read().pipe(Effect.map((s) => s.preferred)),
       writePreferred: Effect.fn(function* (value) {
@@ -96,6 +98,16 @@ export const SubscriptionMetaSqlLive = Layer.effect(
           )
           .pipe(Effect.provideService(SqlClient.BeginTransaction, "BEGIN"));
       }),
+    });
+    return SubscriptionMeta.of({
+      readLeader: store.readLeader.pipe(mutex.withPermits(1)),
+      readPreferred: store.readPreferred.pipe(mutex.withPermits(1)),
+      writePreferred: Effect.fn("SubscriptionMeta.writePreferred")((kind) =>
+        store.writePreferred(kind).pipe(mutex.withPermits(1))
+      ),
+      casLeader: Effect.fn("SubscriptionMeta.casLeader")((request) =>
+        store.casLeader(request).pipe(mutex.withPermits(1))
+      ),
     });
   })
 );

@@ -39,7 +39,7 @@ import {
   ProfileHostRequired,
   SubscriptionNotFound,
 } from "./Subscriptions.errors.js";
-import { Subscriptions } from "./Subscriptions.service.js";
+import { SubscriptionMethodDispatch, Subscriptions } from "./Subscriptions.service.js";
 import { SubscriptionTimers } from "./SubscriptionTimers.service.js";
 import {
   DEFAULT_FEED_CHECK_INTERVAL_MS,
@@ -83,6 +83,7 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
   Layer.effect(
     Subscriptions,
     Effect.gen(function* () {
+      const methods = yield* Effect.serviceOption(SubscriptionMethodDispatch);
       const store = yield* SubscriptionStore;
       const election = yield* SubscriptionLeader;
       const queue = yield* SubscriptionQueue;
@@ -203,8 +204,8 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
           yield* store.update(sub.id, patch);
           return true;
         }).pipe(
-          Effect.catch((error) =>
-            Effect.gen(function* () {
+          Effect.catch(
+            Effect.fnUntraced(function* (error) {
               yield* warn("subscriptions: profile check failed", { id: sub.id }, error);
               if ((yield* store.get(sub.id)) !== null) {
                 const failedAt = yield* timers.now;
@@ -288,8 +289,8 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
           });
           yield* store.update(id, patch);
         }).pipe(
-          Effect.catch((error) =>
-            Effect.gen(function* () {
+          Effect.catch(
+            Effect.fnUntraced(function* (error) {
               yield* warn("subscriptions: feed-check failed", { id }, error);
               yield* store.update(id, {
                 status: "failed",
@@ -361,7 +362,11 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
                   now - sub.lastCheckedAt >= (sub.checkIntervalMs ?? DEFAULT_FEED_CHECK_INTERVAL_MS));
             if (!due) continue;
           }
-          yield* refreshOne(sub.id).pipe(
+          yield* (
+            O.isSome(methods) && methods.value.refreshOne !== undefined
+              ? methods.value.refreshOne(sub.id, refreshOne(sub.id))
+              : refreshOne(sub.id)
+          ).pipe(
             withLegacyFinally(timing.turn("api:refreshAll:refreshOne")),
             Effect.catch((error) => warn("subscriptions: refreshOne failed", { id: sub.id }, error))
           );
@@ -451,30 +456,40 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
           yield* changed;
           return created;
         }),
-        update: Effect.fnUntraced(function* (input) {
-          const { id, ...patch } = input;
-          if (patch.feedUrl !== undefined && Boolean(patch.feedUrl)) {
-            const duplicate = yield* store.findDuplicateFeed(patch.feedUrl, id);
-            if (duplicate !== null && Boolean(duplicate))
-              return yield* DuplicateFeed.make({
-                duplicateOf: duplicate,
-                legacyMessage: SUBSCRIPTION_DUPLICATE_FEED_ERROR,
-              });
-          }
-          const existing = yield* store.get(id);
-          if (existing === null) return yield* missing(id);
-          if (patch.categories !== undefined && Boolean(patch.categories))
-            patch.categories = yield* validateCategories(existing.platform, patch.categories);
-          const { checkIntervalMs, ...rest } = patch;
-          const update: F.StoredSubscriptionPatch = rest;
-          if (checkIntervalMs !== undefined) update.checkIntervalMs = checkIntervalMs ?? undefined;
-          if (checkIntervalMs !== undefined || Boolean(patch.categories) || patch.enabled === true)
-            update.nextCheckAt = undefined;
-          const next = yield* store.update(id, update);
-          if (next === null) return yield* missing(id);
-          yield* changed;
-          return next;
-        }),
+        update: Effect.fnUntraced(
+          function* (input) {
+            const { id, ...patch } = input;
+            if (patch.feedUrl !== undefined && Boolean(patch.feedUrl)) {
+              const duplicate = yield* store.findDuplicateFeed(patch.feedUrl, id);
+              if (duplicate !== null && Boolean(duplicate))
+                return yield* DuplicateFeed.make({
+                  duplicateOf: duplicate,
+                  legacyMessage: SUBSCRIPTION_DUPLICATE_FEED_ERROR,
+                });
+            }
+            const existing = yield* store.get(id);
+            if (existing === null) return yield* missing(id);
+            if (patch.categories !== undefined && Boolean(patch.categories))
+              patch.categories = yield* validateCategories(existing.platform, patch.categories);
+            const { checkIntervalMs, ...rest } = patch;
+            const update: F.StoredSubscriptionPatch = rest;
+            if (checkIntervalMs !== undefined) update.checkIntervalMs = checkIntervalMs ?? undefined;
+            if (checkIntervalMs !== undefined || Boolean(patch.categories) || patch.enabled === true)
+              update.nextCheckAt = undefined;
+            const next = yield* store.update(id, update);
+            if (next === null) return yield* missing(id);
+            yield* changed;
+            return next;
+          },
+          Effect.catchDefect((original) =>
+            Effect.fail(
+              HostFailure.make({
+                original,
+                legacyMessage: original instanceof Error ? original.message : String(original),
+              })
+            )
+          )
+        ),
         remove: Effect.fnUntraced(function* (input) {
           const token = O.getOrUndefined(MutableHashMap.get(controllers, input.id));
           if (token !== undefined) yield* token.cancel;
