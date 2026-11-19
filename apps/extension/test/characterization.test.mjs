@@ -1,3 +1,7 @@
+import { networkRefusals } from './network.mjs'
+import { afterAll } from '@effect/vitest'
+import { observations } from './entry-loader.mjs'
+afterAll(() => expect(observations.current).toBeGreaterThan(0))
 import { afterEach, beforeEach, describe, expect, it } from '@effect/vitest'
 import { vi } from 'vitest'
 import { act } from 'react'
@@ -11,7 +15,7 @@ beforeEach(() => {
   vi.setSystemTime(now)
   vi.stubGlobal('fetch', () => { throw new Error('Real network prohibited') })
 })
-afterEach(async () => { for (const h of owned) await h.close(); owned = []; vi.useRealTimers(); vi.unstubAllGlobals() })
+afterEach(async () => { expect(networkRefusals).toEqual([]); networkRefusals.length = 0; for (const h of owned) await h.close(); owned = []; vi.useRealTimers(); vi.unstubAllGlobals() })
 const entry = (status = 'ready', info = { title: 'Fixture', formats: [] }, fetchedAt = now) => ({ url, status, fetchedAt, info })
 const fetches = h => h.trace.filter(item => item[0] === 'fetch')
 const writes = h => h.trace.filter(item => item[0] === 'set')
@@ -126,7 +130,7 @@ it('permanent pure scalar matrix plus boundaries', () => {
       const previous = outcome(() => old[name](input)), next = outcome(() => current[name](input))
       if (previous.engine) expect(next.engine).toBe(true)
       else expect(next).toEqual(previous)
-      results.push({ name, input, ...previous })
+      results.push({ name, input, ...(previous.engine ? { engine: true } : previous) })
     }
   }
   expect(results).toMatchSnapshot()
@@ -282,6 +286,7 @@ it('message ingress keeps discriminator and URL truthiness without URL grammar v
   const h = make().background()
   expect(() => h.message(null)).toThrow()
   for (const value of [undefined, null, false, 0, '']) expect(h.message({ type: 'video-info:fetch', url: value })).toBeUndefined()
+  await flush(); expect(h.trace).toEqual([['message:add']])
   expect(fetches(h)).toEqual([])
   h.message({ type: 'video-info:fetch', url: 'not a URL' }, {})
   await flush(); expect(fetches(h).at(-1)[1]).toBe('http://127.0.0.1:27100/video-info?url=not%20a%20URL&token=t%20%2B%2F%E6%97%A5%E6%9C%AC')

@@ -1,0 +1,52 @@
+{
+  "scenario": {
+    "error": "Failed to fetch",
+    "navigation": true
+  },
+  "trace": [
+    [
+      "add"
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true
+      }
+    ],
+    [
+      "remove"
+    ],
+    [
+      "add"
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true
+      }
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl"
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl"
+    ],
+    [
+      "remove"
+    ]
+  ],
+  "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot error\"></div> Error</span></header><div class=\"error-container\"><div class=\"error-header\"><h2 class=\"error-title\">Connect the VidBeep app</h2><p class=\"error-description\">The extension needs the VidBeep desktop app to be running.</p></div><div class=\"error-banner\">Client connection failed</div><div class=\"action-grid\"><div class=\"action-card\"><p class=\"action-title\">Client installed</p><p class=\"action-text\">Start VidBeep and keep it running, then we will retry automatically.</p><button class=\"secondary-button\" type=\"button\">Open Client</button></div><div class=\"action-card\"><p class=\"action-title\">Need the app?</p><p class=\"action-text\">Download VidBeep once, install it, then come back here to try again.</p><a class=\"secondary-button\" href=\"https://vidbee.app\" rel=\"noopener noreferrer\" target=\"_blank\">Download VidBeep</a></div></div></div></div>",
+  "failures": [
+    {
+      "name": "Error",
+      "message": "Protocol assignment blocked: vidbee://"
+    }
+  ],
+  "navigation": [
+    "vidbee://"
+  ]
+}

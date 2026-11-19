@@ -1,3 +1,7 @@
+import { networkRefusals } from './network.mjs'
+import { afterAll } from '@effect/vitest'
+import { observations } from './entry-loader.mjs'
+afterAll(() => expect(observations.current).toBeGreaterThan(0))
 import { afterEach, beforeEach, expect, it } from '@effect/vitest'
 import { vi } from 'vitest'
 import { act } from 'react'
@@ -10,14 +14,14 @@ beforeEach(() => {
   vi.stubGlobal('fetch', () => { throw new Error('Real network prohibited') })
   vi.spyOn(console, 'error').mockImplementation(() => {})
 })
-afterEach(async () => { for (const h of owned) await h.close(); owned = []; vi.restoreAllMocks(); vi.useRealTimers(); vi.unstubAllGlobals() })
+afterEach(async () => { expect(networkRefusals).toEqual([]); networkRefusals.length = 0; for (const h of owned) await h.close(); owned = []; vi.restoreAllMocks(); vi.useRealTimers(); vi.unstubAllGlobals() })
 
 const values = [undefined, null, false, true, 0, 7, NaN, '', '0', '1', '60', '1024', 'x', [], {}, [1024]]
 const sample = () => ({ title: 'Neighbor title', duration: 90, thumbnail: 'https://image.invalid/cover.png', extra: { untouched: true }, formats: [{ format_id: 'id', ext: 'mp4', height: 720, vcodec: 'h264', acodec: 'aac', filesize: 1024, extra: 1 }] })
 async function observe(info, old) {
   const h = make({ old, info }).background(); h.message(); await flush()
   let failure
-  try { await h.popup() } catch (error) { failure = { name: error.name, message: error.message } }
+  try { await h.popup() } catch (error) { failure = { engine: true } }
   const result = { writes: h.trace.filter(item => item[0] === 'set'), html: h.html(), failure }
   await h.close(); h.root = undefined
   return result
@@ -60,7 +64,7 @@ it('selected historical entry matrix and popup status guards retain raw values',
   for (const entry of cases) {
     const h = make({ map: { [url]: entry, unrelated: { opaque: [1, null, 'raw'] } } })
     let failure
-    try { await h.popup() } catch (error) { failure = { name: error.name, message: error.message } }
+    try { await h.popup() } catch (error) { failure = { engine: true } }
     results.push({ entry, html: h.html(), trace: h.trace, failure, declaredChange: 'section 9 selected entry decode' })
     await h.close(); h.root = undefined
   }

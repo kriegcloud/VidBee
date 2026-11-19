@@ -733,8 +733,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "Objects are not valid as a React child (found: object with keys {}). If you meant to render a collection of children, use an array instead.",
-      "name": "Error",
+      "engine": true,
     },
     "field": "title",
     "html": "",
@@ -2600,8 +2599,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "false is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -2645,8 +2643,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "true is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -2690,8 +2687,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "number is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -2735,8 +2731,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "number is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -2780,8 +2775,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "number is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -3119,8 +3113,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "{} is not iterable",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats",
     "html": "",
@@ -3938,8 +3931,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "Objects are not valid as a React child (found: object with keys {}). If you meant to render a collection of children, use an array instead.",
-      "name": "Error",
+      "engine": true,
     },
     "field": "formats[0].format_id",
     "html": "",
@@ -4777,8 +4769,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "Objects are not valid as a React child (found: object with keys {}). If you meant to render a collection of children, use an array instead.",
-      "name": "Error",
+      "engine": true,
     },
     "field": "formats[0].ext",
     "html": "",
@@ -10960,8 +10951,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats[0].filesize",
     "html": "",
@@ -11275,8 +11265,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats[0].filesize",
     "html": "",
@@ -11330,8 +11319,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats[0].filesize",
     "html": "",
@@ -11437,8 +11425,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats[0].filesize",
     "html": "",
@@ -11544,8 +11531,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "formats[0].filesize",
     "html": "",
@@ -15047,8 +15033,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "f.resolution?.match is not a function. (In 'f.resolution?.match(/x(\\d+)/)', 'f.resolution?.match' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "isolated signal.resolution",
     "html": "",
@@ -15146,8 +15131,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "f.resolution?.match is not a function. (In 'f.resolution?.match(/x(\\d+)/)', 'f.resolution?.match' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "isolated signal.resolution",
     "html": "",
@@ -15533,8 +15517,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "f.resolution?.match is not a function. (In 'f.resolution?.match(/x(\\d+)/)', 'f.resolution?.match' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "isolated signal.resolution",
     "html": "",
@@ -15584,8 +15567,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "f.resolution?.match is not a function. (In 'f.resolution?.match(/x(\\d+)/)', 'f.resolution?.match' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "isolated signal.resolution",
     "html": "",
@@ -15635,8 +15617,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "f.resolution?.match is not a function. (In 'f.resolution?.match(/x(\\d+)/)', 'f.resolution?.match' is undefined)",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "isolated signal.resolution",
     "html": "",
@@ -17616,8 +17597,7 @@ exports[`per-field response-to-storage-to-render oracle; section 9 differences m
   {
     "declaredChange": "section 9 independent field/root/element decoding; retain old expectation beside future result",
     "failure": {
-      "message": "null is not an object (evaluating 'format.vcodec')",
-      "name": "TypeError",
+      "engine": true,
     },
     "field": "element",
     "html": "",

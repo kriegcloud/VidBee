@@ -1,8 +1,9 @@
 // Isolate the old entrypoint's intentional unhandled rejections from Vitest.
 // No browser, sockets, profile or real fetch is available in this VM.
-import vm from 'node:vm'
-import { readFileSync } from 'node:fs'
-import { transformSync } from 'esbuild'
+import { loadEntry, observations } from './entry-loader.mjs'
+import { denyNetwork, requestOptions, networkRefusals } from './network.mjs'
+denyNetwork()
+const old = process.argv[3] === 'old'
 const scenario = JSON.parse(process.argv[2])
 const now = 1700000000000
 const url = 'https://example.invalid/watch'
@@ -20,18 +21,19 @@ const browser = {
   } }
 }
 const response = data => ({ ok: true, status: 200, json: () => Promise.resolve(data) })
-const text = readFileSync(new URL('fixtures/background.ts.txt', import.meta.url), 'utf8')
-const code = transformSync(text, { loader: 'ts', format: 'cjs' }).code
-const module = { exports: {} }
-vm.runInNewContext(`"use strict";\n${code}`, {
-  browser, defineBackground: fn => fn(), module, exports: module.exports, Error, DOMException, AbortController,
+loadEntry('entrypoints/background.ts', { old, context: {
+  browser, defineBackground: fn => fn(), Error, DOMException, AbortController,
   Date: class extends Date { static now() { return now } }, setTimeout, clearTimeout,
-  fetch: (target, options) => { trace.push(['fetch', target, { method: options.method, headers: options.headers, body: options.body }]); if (scenario.failure === 'error' && target.includes('/video-info')) return Promise.reject(new Error('metadata failure')); return Promise.resolve(response(target.endsWith('/token') ? { token: 'x' } : {})) }
-})
+  fetch: (target, options) => { trace.push(['fetch', target, requestOptions(options)]); if (scenario.failure === 'error' && target.includes('/video-info')) return Promise.reject(new Error('metadata failure')); return Promise.resolve(response(target.endsWith('/token') ? { token: 'x' } : {})) }
+} })
 globalThis.listener({ type: 'video-info:fetch', url }, {})
 for (let i = 0; i < 8; i++) await new Promise(resolve => setImmediate(resolve))
+if (scenario.repeat) {
+  globalThis.listener({ type: 'video-info:fetch', url }, {})
+  for (let i = 0; i < 8; i++) await new Promise(resolve => setImmediate(resolve))
+}
 // JSON normally discards named array properties; preserve those boundary writes explicitly.
-console.log(JSON.stringify({ trace, failures }, (key, value) => {
+console.log(JSON.stringify({ node: process.versions.node, currentObservations: observations.current, networkRefusals, trace, failures }, (key, value) => {
   if (!Array.isArray(value)) return value
   const named = Object.entries(value).filter(([name]) => !/^\d+$/.test(name))
   return named.length ? { $array: Array.from(value), $properties: Object.fromEntries(named) } : value

@@ -105,6 +105,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -115,6 +118,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -125,6 +131,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -219,6 +228,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -229,6 +241,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -239,6 +254,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -311,6 +329,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -321,6 +342,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -331,6 +355,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -419,6 +446,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -429,6 +459,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -439,6 +472,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -517,6 +553,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -527,6 +566,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -537,6 +579,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -615,6 +660,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -625,6 +673,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -635,6 +686,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -713,6 +767,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -723,6 +780,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -733,6 +793,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -811,6 +874,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -821,6 +887,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -831,6 +900,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1014,6 +1086,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1024,6 +1099,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1034,6 +1112,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1166,6 +1247,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1176,6 +1260,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1186,6 +1273,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1288,6 +1378,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1298,6 +1391,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1308,6 +1404,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1388,6 +1487,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1398,6 +1500,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1408,6 +1513,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1488,6 +1596,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1498,6 +1609,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1508,6 +1622,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1588,6 +1705,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1598,6 +1718,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1608,6 +1731,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1688,6 +1814,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1698,6 +1827,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1708,6 +1840,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1879,6 +2014,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1889,6 +2027,9 @@
           "method": "POST",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
@@ -1899,6 +2040,9 @@
           "method": "GET",
           "headers": {
             "X-VidBee-Extension": "chrome-extension://fixture-id"
+          },
+          "signal": {
+            "abortSignal": true
           }
         }
       ],
