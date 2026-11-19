@@ -1,0 +1,170 @@
+{
+  "queued": {
+    "queued": true,
+    "taskId": "<id:1>"
+  },
+  "task": {
+    "task": {
+      "id": "<id:1>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "title": "River retained",
+      "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+      "status": "completed",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "error": null,
+      "filename": "manual-retained.mp4",
+      "automaticRetry": false,
+      "children": [],
+      "childrenNextCursor": null,
+      "groupKey": "<id:2>",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-retained.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "automation": {
+      "id": "<id:1>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "kind": "subscription-item",
+        "title": "River retained",
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "subscriptionId": "<id:2>",
+        "options": {
+          "type": "video",
+          "format": "bestvideo+bestaudio[abr<=320]/bestvideo+bestaudio/best",
+          "containerFormat": "auto",
+          "customDownloadPath": "<run>/subscription-downloads",
+          "customFilenameTemplate": "%(id)s.%(ext)s",
+          "tags": ["custom", "loopback", "science"],
+          "origin": "agent",
+          "subscriptionId": "<id:2>",
+          "itemId": "manual-retained",
+          "settings": {
+            "downloadPath": "<run>/subscription-downloads",
+            "browserForCookies": "none",
+            "cookiesPath": "",
+            "proxy": "",
+            "configPath": "",
+            "downloadSubtitles": false,
+            "subtitleLanguages": ["interface"],
+            "interfaceLanguage": "en",
+            "embedSubs": false,
+            "writeAutoSubs": false,
+            "embedThumbnail": false,
+            "embedMetadata": false,
+            "embedChapters": false,
+            "filenameStyle": "pretty",
+            "filenameViaVidBee": false,
+            "shareWatermark": false
+          },
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 10,
+      "groupKey": "<id:2>",
+      "status": "completed",
+      "prevStatus": "running",
+      "statusReason": null,
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-retained.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "history": [
+      {
+        "id": "<id:1>",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "title": "River retained",
+        "type": "video",
+        "status": "completed",
+        "createdAt": "<timestamp>",
+        "startedAt": "<timestamp>",
+        "downloadedAt": "<timestamp>",
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "completedAt": "<timestamp>",
+        "fileSize": 35476,
+        "downloadPath": "<run>/subscription-downloads",
+        "savedFileName": "manual-retained.mp4",
+        "filePath": "<run>/subscription-downloads/manual-retained.mp4",
+        "resolvedFormatId": "mp4",
+        "cookieSources": [],
+        "tags": ["custom", "loopback", "science"],
+        "origin": "agent",
+        "taskKind": "subscription-item",
+        "subscriptionId": "<id:2>"
+      }
+    ],
+    "file": {
+      "name": "manual-retained.mp4",
+      "size": 35476
+    },
+    "statuses": ["queued", "running", "completed"]
+  },
+  "repeat": {
+    "queued": false,
+    "taskId": "<id:1>"
+  },
+  "items": {
+    "items": [
+      {
+        "id": "manual-retained",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "title": "River retained",
+        "publishedAt": 1735819200000,
+        "addedToQueue": true,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "taskId": "<id:1>"
+      },
+      {
+        "id": "manual-dropped",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-dropped.mp4",
+        "title": "Forest dropped",
+        "publishedAt": 1735732800000,
+        "addedToQueue": false,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      }
+    ],
+    "total": 2
+  }
+}

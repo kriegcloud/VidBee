@@ -1,0 +1,54 @@
+{
+  "asrTier": "minimal",
+  "creation": {
+    "origin": "agent"
+  },
+  "downloadTaskId": "<id:1>",
+  "error": null,
+  "listState": "completed",
+  "rediarize": false,
+  "sourceFilePath": "<run>/userdata/transcription-fixtures/speech.wav",
+  "sourceKind": "asr",
+  "speakerCount": 1,
+  "stage": null,
+  "stageHistory": [],
+  "title": "speech.wav",
+  "transcriptId": "<id:2>",
+  "transcriptionTaskId": "<id:3>",
+  "updatedAt": "<timestamp>",
+  "sources": [
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": null,
+      "languageCode": null,
+      "selected": true
+    }
+  ],
+  "segmentCount": 1,
+  "language": null,
+  "resultKind": "transcript",
+  "speakers": [
+    {
+      "id": "<id:4>",
+      "speakerKey": "speaker-1",
+      "displayName": "Speaker 1",
+      "sortIndex": 0
+    }
+  ],
+  "items": [
+    {
+      "id": "<id:5>",
+      "speakerId": "<id:4>",
+      "startMs": 0,
+      "endMs": 6625,
+      "text": "After early nightfall, the yellow lamps would light up here and there the squalid quarter of the brothels.",
+      "confidence": null,
+      "sortIndex": 0,
+      "words": []
+    }
+  ],
+  "total": 1,
+  "nextOffset": null
+}

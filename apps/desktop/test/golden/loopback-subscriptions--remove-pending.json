@@ -1,0 +1,75 @@
+{
+  "removed": {
+    "removed": true
+  },
+  "tasks": [
+    {
+      "id": "<id:1>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "title": "River retained",
+      "url": "http://127.0.0.1:<port>/slow-subscription-retained.mp4",
+      "status": "cancelled",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "error": null,
+      "filename": null,
+      "automaticRetry": false,
+      "children": [],
+      "childrenNextCursor": null,
+      "groupKey": "<id:2>",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": null,
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    {
+      "id": "<id:3>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "title": "Forest dropped",
+      "url": "http://127.0.0.1:<port>/slow-subscription-dropped.mp4",
+      "status": "cancelled",
+      "attempt": 0,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "error": null,
+      "filename": null,
+      "automaticRetry": false,
+      "children": [],
+      "childrenNextCursor": null,
+      "groupKey": "<id:2>",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": null,
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    }
+  ],
+  "items": {
+    "status": 200,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Subscription not found: <id:2>"
+        }
+      ],
+      "isError": true
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "video",
+    "parentId": null,
+    "title": "browser-capture-drm-cancel",
+    "url": "http://127.0.0.1:<port>/drm-cancel.html",
+    "status": "cancelled",
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  },
+  "statuses": ["queued", "running", "cancelled"],
+  "history": [
+    {
+      "id": "<id:1>",
+      "url": "http://127.0.0.1:<port>/drm-cancel.html",
+      "title": "browser-capture-drm-cancel",
+      "type": "video",
+      "status": "cancelled",
+      "createdAt": "<timestamp>",
+      "startedAt": "<timestamp>",
+      "downloadedAt": "<timestamp>",
+      "completedAt": "<timestamp>",
+      "origin": "manual",
+      "taskKind": "video"
+    }
+  ],
+  "reachability": {
+    "positiveProgress": true,
+    "mediaBodyObserved": true
+  }
+}
