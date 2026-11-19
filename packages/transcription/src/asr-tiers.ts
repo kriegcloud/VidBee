@@ -316,12 +316,15 @@ const LEGACY_ASR_TIERS: Record<string, AsrTierId> = {
 /**
  * Coerce an unknown setting/task value to a valid ASR model id.
  */
-export const parseAsrTier = (value: unknown, fallback: AsrTierId = DEFAULT_ASR_TIER): AsrTierId => {
+export const parseAsrTier: {
+  (value: unknown, fallback: AsrTierId): AsrTierId;
+  (fallback: AsrTierId): (value: unknown) => AsrTierId;
+} = dual(2, (value: unknown, fallback: AsrTierId): AsrTierId => {
   if (typeof value === "string" && value in LEGACY_ASR_TIERS) {
     return LEGACY_ASR_TIERS[value] ?? fallback;
   }
   return isAsrTierId(value) ? value : fallback;
-};
+});
 
 /**
  * Models ranked above the current one, lowest rank first.

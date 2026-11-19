@@ -1,7 +1,6 @@
 {
   "nodeVersion": "v22.23.4",
   "source": "unchanged extracted OLD bundle and reader module; no NEW output used as expectation",
-  "generatorScratch": "<lane scratch>/generate-review-orchestration.mts",
   "observer": "test/review-orchestration-fixture.ts",
   "test": "test/review-orchestration.node.ts",
   "scenarioCount": 46,
@@ -19,5 +18,8 @@
   },
   "frozenResultsSha256": "fc1ae309149eb4a64b2c1499be1cc4e37a6226ffd71e27bd6932f36ee3868dbd",
   "original23CasesRetained": true,
-  "original43CasesRetained": true
+  "original43CasesRetained": true,
+  "generator": "test/fixtures/generate-review-orchestration.mjs",
+  "prepare": "test/fixtures/prepare-old-oracle.mjs",
+  "sourceRevision": "9dab889b0b1d5328721802d65699a5f8593bf2e2"
 }

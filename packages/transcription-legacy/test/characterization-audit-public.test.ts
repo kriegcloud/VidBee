@@ -3,12 +3,12 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
-import * as T from '@vidbee/transcription'
-import * as Asr from '@vidbee/transcription/asr'
-import * as Cloud from '@vidbee/transcription/cloud'
-import * as CloudRunner from '@vidbee/transcription/cloud-runner'
-import * as Concurrency from '@vidbee/transcription/concurrency'
-import * as Mirrors from '@vidbee/transcription/download-mirrors'
+import * as T from '@vidbee/transcription-legacy'
+import * as Asr from '@vidbee/transcription-legacy/asr'
+import * as Cloud from '@vidbee/transcription-legacy/cloud'
+import * as CloudRunner from '@vidbee/transcription-legacy/cloud-runner'
+import * as Concurrency from '@vidbee/transcription-legacy/concurrency'
+import * as Mirrors from '@vidbee/transcription-legacy/download-mirrors'
 const roots:string[]=[]
 afterEach(()=>{vi.useRealTimers();for(const root of roots.splice(0))rmSync(root,{recursive:true,force:true})})
 it('audit every non-callable public constant value and cross-entry identity',()=>{

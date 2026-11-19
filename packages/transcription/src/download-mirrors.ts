@@ -41,10 +41,13 @@ export const isDownloadMirror = (value: unknown): value is DownloadMirror =>
 /**
  * Coerce an unknown setting/env value to a download-mirror id.
  */
-export const parseDownloadMirror = (
-  value: unknown,
-  fallback: DownloadMirror = DEFAULT_DOWNLOAD_MIRROR
-): DownloadMirror => (isDownloadMirror(value) ? value : fallback);
+export const parseDownloadMirror: {
+  (value: unknown, fallback: DownloadMirror): DownloadMirror;
+  (fallback: DownloadMirror): (value: unknown) => DownloadMirror;
+} = Fn.dual(
+  2,
+  (value: unknown, fallback: DownloadMirror): DownloadMirror => (isDownloadMirror(value) ? value : fallback)
+);
 /**
  * True when the URL is a GitHub release, API, or user-content download.
  */

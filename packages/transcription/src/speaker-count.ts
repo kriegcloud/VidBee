@@ -1,3 +1,4 @@
+import { dual } from "effect/Function";
 import type { SpeakerCount } from "./Literal.model.js";
 
 export type { SpeakerCount } from "./Literal.model.js";
@@ -23,7 +24,10 @@ export const isSpeakerCount = (value: unknown): value is SpeakerCount => {
  * @param value Raw setting or task option.
  * @param fallback Value used when parsing fails.
  */
-export const parseSpeakerCount = (value: unknown, fallback: SpeakerCount = DEFAULT_SPEAKER_COUNT): SpeakerCount => {
+export const parseSpeakerCount: {
+  (value: unknown, fallback: SpeakerCount): SpeakerCount;
+  (fallback: SpeakerCount): (value: unknown) => SpeakerCount;
+} = dual(2, (value: unknown, fallback: SpeakerCount): SpeakerCount => {
   if (value === "auto" || value === "" || value == null) {
     return "auto";
   }
@@ -35,7 +39,7 @@ export const parseSpeakerCount = (value: unknown, fallback: SpeakerCount = DEFAU
     return n as SpeakerCount;
   }
   return fallback;
-};
+});
 
 /**
  * Map a product speaker count onto sherpa `numClusters` (-1 means auto).

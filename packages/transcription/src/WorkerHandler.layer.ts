@@ -9,7 +9,7 @@ import { ASR_TIER_IDS } from "./asr-tiers.js";
 import { Checkpoints } from "./Checkpoints.service.js";
 import { SeedFiles } from "./SeedFiles.service.js";
 import { seedDurationMs } from "./speaker-assign.js";
-import { parseSpeakerCount } from "./speaker-count.js";
+import { DEFAULT_SPEAKER_COUNT, parseSpeakerCount } from "./speaker-count.js";
 import { BoundaryDecodeError } from "./Transcription.errors.js";
 import { TranscriptionTime } from "./TranscriptionTime.service.js";
 import { WorkerProbeMessage } from "./Worker.model.js";
@@ -98,7 +98,7 @@ export const WorkerHandlerLive = Layer.effect(
             P.isTruthy(message.existingTranscriptPath) && message.existingTranscriptPath !== undefined
               ? yield* seeds.load(message.existingTranscriptPath)
               : null;
-          const skipAudio = existing !== null && parseSpeakerCount(message.speakerCount) === 1;
+          const skipAudio = existing !== null && parseSpeakerCount(message.speakerCount, DEFAULT_SPEAKER_COUNT) === 1;
           const session = yield* factory.create(message.modelsDir);
           const preparation = yield* session.beginPrepare(
             message.asrTier,

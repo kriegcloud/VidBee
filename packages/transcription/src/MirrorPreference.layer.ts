@@ -19,7 +19,7 @@ export const MirrorPreferenceLive = Layer.effect(
             const fromEnv = parseDownloadMirror(env.VIDBEE_DOWNLOAD_MIRROR, DEFAULT_DOWNLOAD_MIRROR);
             if (fromEnv === "cn") return true;
             if (fromEnv === "global") return false;
-            const fromSetting = parseDownloadMirror(input.mirror);
+            const fromSetting = parseDownloadMirror(input.mirror, DEFAULT_DOWNLOAD_MIRROR);
             if (fromSetting === "cn") return true;
             if (fromSetting === "global") return false;
             const locales =

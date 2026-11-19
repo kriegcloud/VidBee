@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync, writeFileSync } from 'node:fs'
 import Database from 'better-sqlite3'
-import * as T from '@vidbee/transcription'
+import * as T from '@vidbee/transcription-legacy'
 
 for (const kind of ['memory', 'sql'] as const) test(`audit complete ${kind} mutations, live identity, promotion and clock order`, {timeout: 30000}, t => {
   const db = kind === 'sql' ? new Database(':memory:') : null

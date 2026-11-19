@@ -6,7 +6,7 @@ import * as Layer from "effect/Layer";
 import * as Num from "effect/Number";
 import * as Option from "effect/Option";
 import * as Order from "effect/Order";
-import { parseAsrTier } from "./asr-tiers.js";
+import { DEFAULT_ASR_TIER, parseAsrTier } from "./asr-tiers.js";
 import { DEFAULT_CLOUD_TRANSCRIPTION_MODEL, parseTranscriptionProvider } from "./cloud.js";
 import { Enqueue } from "./Enqueue.service.js";
 import { buildTranscriptionInput } from "./options.js";
@@ -70,7 +70,8 @@ export const layer = Layer.effect(
           (input.provider === "cloud"
             ? sameCloud
             : input.asrTier === undefined ||
-              parseAsrTier(input.asrTier) === parseAsrTier(latest?.input.options?.asrTier));
+              parseAsrTier(input.asrTier, DEFAULT_ASR_TIER) ===
+                parseAsrTier(latest?.input.options?.asrTier, DEFAULT_ASR_TIER));
         if (
           latest !== undefined &&
           (latest.status === "failed" || latest.status === "cancelled") &&

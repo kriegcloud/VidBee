@@ -3,8 +3,8 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { ModelManager, type ModelManagerOptions } from '@vidbee/transcription'
-import { preferChinaMirrors } from '@vidbee/transcription/download-mirrors'
+import { ModelManager, type ModelManagerOptions } from '@vidbee/transcription-legacy'
+import { preferChinaMirrors } from '@vidbee/transcription-legacy/download-mirrors'
 const roots:string[]=[]
 const root=()=>{const dir=mkdtempSync(join(tmpdir(),'audit-models-'));roots.push(dir);return dir}
 const spec={id:'audit',fileName:'sherpa-onnx-whisper-tiny/tokens.txt',url:'https://github.com/fixture/releases/download/v/tokens.txt',required:true,group:'asr' as const,role:'asr-tokens' as const,tier:'minimal' as const}

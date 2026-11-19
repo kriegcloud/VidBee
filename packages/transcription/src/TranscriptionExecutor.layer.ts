@@ -351,7 +351,10 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
               operation: "executor",
               legacyMessage: "Cloud transcription is unavailable in this application",
             });
-          output = yield* hooks.cloud(inline, inlineSink);
+          output = yield* hooks.cloud(
+            { taskId: inline.taskId, sourceFilePath: inline.sourceFilePath, modelId: inline.modelId, signal },
+            inlineSink
+          );
         } else if (hooks.inProcess !== undefined) output = yield* hooks.inProcess(inline, inlineSink);
         else {
           const fingerprint = yield* checkpoints.sourceFingerprint(parsed.sourceFilePath);

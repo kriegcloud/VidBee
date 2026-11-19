@@ -1,7 +1,7 @@
 import './fixtures/audit-isolation'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import * as T from '@vidbee/transcription'
+import * as T from '@vidbee/transcription-legacy'
 import type { ExecutorContext, ExecutorFinishEvent } from '@vidbee/task-queue-legacy'
 const result:T.PipelineResult={resultKind:'no-speech',modelVersion:'cloud-v',asrTier:null,language:null,speakers:[],segments:[]}
 const segment:T.PipelineSegment={speakerKey:null,startMs:0,endMs:10,text:'partial',confidence:null}

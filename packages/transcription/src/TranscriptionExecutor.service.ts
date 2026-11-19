@@ -19,7 +19,10 @@ export class ExecutorHooks extends Context.Service<
     readonly ffmpegPath: Effect.Effect<string, HostFailure>;
     readonly gpuKinds: Effect.Effect<readonly GpuKind[], HostFailure>;
     readonly cloud:
-      | ((input: InlineExecutionInput, sink: InlineExecutionSink) => Effect.Effect<ExecutionResult, HostFailure>)
+      | ((
+          input: Pick<InlineExecutionInput, "taskId" | "sourceFilePath" | "modelId" | "signal">,
+          sink: InlineExecutionSink
+        ) => Effect.Effect<ExecutionResult, HostFailure>)
       | undefined;
     readonly inProcess:
       | ((input: InlineExecutionInput, sink: InlineExecutionSink) => Effect.Effect<ExecutionResult, HostFailure>)

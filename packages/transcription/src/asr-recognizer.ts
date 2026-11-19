@@ -146,7 +146,10 @@ export const familySupportsAsrLanguage = (family: AsrFamily): boolean =>
 /**
  * Always auto-detect. Chinese script is applied after recognition, not as an ASR language.
  */
-export const asrLanguageForFamily = (_family?: AsrFamily, _language?: string | null): string => "";
+export const asrLanguageForFamily: {
+  (family: AsrFamily | undefined, language: string | null | undefined): string;
+  (language: string | null | undefined): (family: AsrFamily | undefined) => string;
+} = dual(2, (_family: AsrFamily | undefined, _language: string | null | undefined): string => "");
 
 export interface AsrLanguageStream {
   setOption?: (key: string, value: string) => void;

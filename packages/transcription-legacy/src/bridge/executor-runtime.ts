@@ -42,7 +42,7 @@ export const removeScratch=async(path:string):Promise<void>=>{if(!path.includes(
 export function makeExecutorRuntime(options:TranscriptionExecutorOptions){
  let runtime:ManagedRuntime.ManagedRuntime<TaskExecutor,never>
  const run=<A,E>(effect:Effect.Effect<A,E,TaskExecutor>):A=>runLegacySync(runtime,effect,executorCause)
- const capabilities=makeProcessCapabilitiesLayer(()=>runtime,executorCause,(command,argv,spawnOptions)=>{const child=spawn(command,[...argv],{env:spawnOptions.env,stdio:['pipe','pipe','pipe'],...backgroundChildSpawnOptions()});lowerChildPriority(child.pid);child.stdin?.on('error',()=>{});return child})
+ const capabilities=makeProcessCapabilitiesLayer(()=>runtime,executorCause,(command,argv,spawnOptions)=>{const child=spawn(command,[...argv],{env:spawnOptions.env,stdio:['pipe','pipe','pipe'],...backgroundChildSpawnOptions()});lowerChildPriority(child.pid);child.stdout?.setEncoding('utf8');child.stderr?.setEncoding('utf8');child.stdin?.on('error',()=>{});return child})
  const host=Layer.effect(TranscriptionHost,Effect.map(TranscriptionHost,base=>({...base,lowerPriority:()=>Effect.void}))).pipe(Layer.provide(TranscriptionHostLegacy))
  const time=Layer.effect(TranscriptionTime,Effect.map(TranscriptionTime,base=>({...base,microtask:(action:Effect.Effect<void,HostFailure>)=>Effect.sync(()=>queueMicrotask(()=>{runtime.runFork(action)}))}))).pipe(Layer.provide(legacyTimeLayer(action=>{run(action)})))
  const aborts=Layer.succeed(AudioAbort,{subscribe:(signal,action)=>Effect.sync(()=>{const listener=()=>{runtime.runFork(action)};signal.addEventListener('abort',listener,{once:true});return Effect.sync(()=>signal.removeEventListener('abort',listener))})})

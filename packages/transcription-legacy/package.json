@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit",
     "check": "bun run typecheck && bun run check:characterization",
     "check:characterization": "tsc --noEmit -p tsconfig.characterization.json",
-    "test": "bunx --bun vitest run"
+    "test": "tsx --test test/*.node.ts && bunx --bun vitest run"
   },
   "dependencies": {
     "@vidbee/db": "workspace:^",

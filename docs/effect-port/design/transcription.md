@@ -667,7 +667,7 @@ The installed Clock and queue timer layer do not expose Node timer `unref`; the 
 
 ## 7. Pure modules
 
-Tier selection, recommendation calculations, word grouping, caption parsing, source selection, transcript edits, punctuation alignment, speaker clustering/refinement and waveform envelope construction retain their algorithms and synchronous signatures wherever representable.
+Tier selection, recommendation calculations, word grouping, caption parsing, source selection, transcript edits, punctuation alignment, speaker clustering/refinement and waveform envelope construction retain their algorithms. Unchanged synchronous call signatures are locked on the compatibility package. Native `asrLanguageForFamily`, `parseAsrTier`, `parseDownloadMirror`, `parseSpeakerCount` and `captionsTaskId` require every argument explicitly (using `T | undefined` where absence was accepted) and use fixed-arity `dual`; compatibility wrappers apply the exported defaults and retain every original optional call shape.
 
 Changes forced by the rule set:
 

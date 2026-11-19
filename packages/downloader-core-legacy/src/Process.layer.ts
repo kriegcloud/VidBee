@@ -41,11 +41,11 @@ const services = <R, ER>(
       const reaped = Deferred.makeUnsafe<ProcessOutcome>()
       const emit = (event: ProcessEvent) => runLegacySync(runtime(), sink.emit(event), mapError)
       if (spec.stdoutConsumption === 'events') {
-        child.stdout?.on('data', (chunk: Buffer) => emit({ _tag: 'stdout', chunk }))
+        child.stdout?.on('data', (chunk: Buffer | string) => emit({ _tag: 'stdout', chunk: typeof chunk === 'string' ? Buffer.from(chunk, 'utf8') : chunk }))
         child.stdout?.on('end', () => emit({ _tag: 'stdoutEnd' }))
       }
       if (spec.stderrConsumption === 'events') {
-        child.stderr?.on('data', (chunk: Buffer) => emit({ _tag: 'stderr', chunk }))
+        child.stderr?.on('data', (chunk: Buffer | string) => emit({ _tag: 'stderr', chunk: typeof chunk === 'string' ? Buffer.from(chunk, 'utf8') : chunk }))
         child.stderr?.on('end', () => emit({ _tag: 'stderrEnd' }))
       }
       child.on('error', error => emit({ _tag: 'rawError', error }))

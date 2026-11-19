@@ -473,11 +473,21 @@ retain native `HashMap`/`HashSet` results only behind the legacy Map/Set adapter
 `Context.Service` called `TranscriptStore` is not the legacy class type: consumer type imports
 for existing store instances must remain on the compatibility package.
 
-An unknown-valued unary parser with an optional fallback cannot use that same unary argument
-shape as an unambiguous curried call. Optional zero-argument APIs can have the same problem.
-Do not dispatch by truthiness or membership in the accepted literals, remove an original call
-form, or weaken `missingPipeableSignature`. Preserve the old compatibility API and record the
-precise native signature conflict for owner review when the locked design cannot be expressed.
+Native dual functions take every argument explicitly and use fixed arity when an optional
+fallback would overlap the data argument. The compatibility wrapper keeps the original optional
+arguments and applies exported defaults. Never dispatch by truthiness or literal membership,
+or weaken `missingPipeableSignature`.
+
+```ts
+// Wrong: the unary call could mean either data or fallback.
+const parse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => body(value, fallback);
+// Right: native forms have fixed arity; compatibility applies the default.
+const parse: {
+  (value: unknown, fallback: Tier): Tier;
+  (fallback: Tier): (value: unknown) => Tier;
+} = dual(2, body);
+const legacyParse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => parse(value, fallback);
+```
 
 Wire envelopes and consumed data are different schemas. A worker result keeps its inline value
 and path unknown until truthy-inline/file-fallback selection; a probe success can carry metadata
