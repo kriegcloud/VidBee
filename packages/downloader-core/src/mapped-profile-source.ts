@@ -2,7 +2,7 @@ import { dual } from "effect/Function";
 import * as Str from "effect/String";
 import { normalizeFacebookGalleryUrl } from "./facebook-gallery.js";
 import { normalizePinterestUrl } from "./pinterest.js";
-import { normalizeSnapchatUrl, snapchatCategoryUrl } from "./snapchat.js";
+import { normalizeSnapchatUrl, DataFirst as SnapchatFunctions } from "./snapchat.js";
 import { resolveSocialSource } from "./social-media.js";
 import { normalizeThreadsUrl } from "./threads.js";
 import { normalizeVscoUrl } from "./vsco.js";
@@ -57,10 +57,7 @@ const REDGIFS_POST = /^[A-Za-z0-9-]{2,100}$/;
 export const redGifsWatchUrl = (id: string): string | null =>
   REDGIFS_POST.test(id) ? `https://www.redgifs.com/watch/${Str.toLowerCase(id)}` : null;
 
-export const isMappedProfilePostUrl: {
-  (value: string): (platform: MappedProfilePlatform) => boolean;
-  (platform: MappedProfilePlatform, value: string): boolean;
-} = dual(2, (platform: MappedProfilePlatform, value: string): boolean => {
+const isMappedProfilePostUrlDataFirst = (platform: MappedProfilePlatform, value: string): boolean => {
   if (platform === "snapchat") {
     const snap = normalizeSnapchatUrl(value);
     return (snap?.kind === "story-snap" || snap?.kind === "spotlight") && snap.url === value;
@@ -118,7 +115,12 @@ export const isMappedProfilePostUrl: {
   } catch {
     return false;
   }
-});
+};
+
+export const isMappedProfilePostUrl: {
+  (value: string): (platform: MappedProfilePlatform) => boolean;
+  (platform: MappedProfilePlatform, value: string): boolean;
+} = dual(2, isMappedProfilePostUrlDataFirst);
 
 export const resolveMappedProfileSource = (value: string): MappedProfileSource | null => {
   const pinterest = normalizePinterestUrl(value);
@@ -151,12 +153,12 @@ export const resolveMappedProfileSource = (value: string): MappedProfileSource |
       categories: [
         {
           key: "stories",
-          url: snapchatCategoryUrl(snapchat.username, "stories"),
+          url: SnapchatFunctions.snapchatCategoryUrl(snapchat.username, "stories"),
           requiresAuth: false,
         },
         {
           key: "spotlight",
-          url: snapchatCategoryUrl(snapchat.username, "spotlight"),
+          url: SnapchatFunctions.snapchatCategoryUrl(snapchat.username, "spotlight"),
           requiresAuth: false,
         },
       ],
@@ -259,4 +261,9 @@ export const resolveMappedProfileSource = (value: string): MappedProfileSource |
   } catch {
     return null;
   }
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  isMappedProfilePostUrl: isMappedProfilePostUrlDataFirst,
 };

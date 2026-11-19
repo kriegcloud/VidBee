@@ -24,10 +24,7 @@ export const parseBrowserCookiesSetting = (value: string | undefined): BrowserCo
   return { browser: browser || "none", profile };
 };
 
-export const buildBrowserCookiesSetting: {
-  (profile: string): (browser: string) => string;
-  (browser: string, profile: string): string;
-} = dual(2, (browser: string, profile: string): string => {
+const buildBrowserCookiesSettingDataFirst = (browser: string, profile: string): string => {
   const trimmedBrowser = Str.trim(browser);
   if (
     !(trimmedBrowser !== undefined && trimmedBrowser !== null && trimmedBrowser !== "") ||
@@ -40,4 +37,14 @@ export const buildBrowserCookiesSetting: {
   return trimmedProfile !== undefined && trimmedProfile !== null && trimmedProfile !== ""
     ? `${trimmedBrowser}:${trimmedProfile}`
     : trimmedBrowser;
-});
+};
+
+export const buildBrowserCookiesSetting: {
+  (profile: string): (browser: string) => string;
+  (browser: string, profile: string): string;
+} = dual(2, buildBrowserCookiesSettingDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  buildBrowserCookiesSetting: buildBrowserCookiesSettingDataFirst,
+};

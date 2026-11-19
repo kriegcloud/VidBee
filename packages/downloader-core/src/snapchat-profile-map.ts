@@ -2,8 +2,8 @@ import * as Effect from "effect/Effect";
 import * as Str from "effect/String";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
-import { finalizeProfile } from "./ProfileFinalization.js";
-import { snapchatCategoryUrl, snapchatSpotlightUrl, snapchatStorySnapUrl } from "./snapchat.js";
+import { DataFirst as ProfileFinalizationFunctions } from "./ProfileFinalization.js";
+import { DataFirst as SnapchatFunctions } from "./snapchat.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type { SocialMappedItem } from "./ProfilePersistence.model.js";
 import type { SnapchatCategory } from "./snapchat.js";
@@ -28,7 +28,7 @@ const mapSnapchatProfileUnchecked = Effect.fn("snapchat-profile-map.mapSnapchatP
   signal: AbortSignal,
   onItem: (item: SocialMappedItem) => Effect.Effect<void>
 ) {
-  const url = snapchatCategoryUrl(owner, category);
+  const url = SnapchatFunctions.snapchatCategoryUrl(owner, category);
   const onLine = Effect.fn("snapchat-profile-map.onLine")(function* (line: string) {
     const metadata = galleryDlUrlMetadata(line);
     if (!(metadata !== null) || metadata.vidbee_category !== category) {
@@ -51,7 +51,10 @@ const mapSnapchatProfileUnchecked = Effect.fn("snapchat-profile-map.mapSnapchatP
         : undefined;
     const item: SocialMappedItem = {
       id,
-      url: category === "spotlight" ? snapchatSpotlightUrl(owner, id) : snapchatStorySnapUrl(owner, id),
+      url:
+        category === "spotlight"
+          ? SnapchatFunctions.snapchatSpotlightUrl(owner, id)
+          : SnapchatFunctions.snapchatStorySnapUrl(owner, id),
       author: owner,
       images: video ? 0 : 1,
       videos: video ? 1 : 0,
@@ -95,9 +98,9 @@ export const mapSnapchatProfile = Effect.fn("snapchat-profile-map.mapSnapchatPro
   signal: AbortSignal,
   onItem: (item: SocialMappedItem) => Effect.Effect<void>
 ) {
-  const url = snapchatCategoryUrl(owner, category);
+  const url = SnapchatFunctions.snapchatCategoryUrl(owner, category);
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  return yield* finalizeProfile(
+  return yield* ProfileFinalizationFunctions.finalizeProfile(
     mapSnapchatProfileUnchecked(owner, category, runtime, settings, signal, onItem),
     Effect.gen(function* () {
       if (release !== undefined) yield* release;

@@ -18,11 +18,10 @@ import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
 import {
   buildInstagramCategoryUrl,
   galleryItems,
-  inspectionFailureCode,
+  DataFirst as InstagramScanServiceFunctions,
   readString,
   resolveUserRecord,
   runGalleryJson,
-  toCategorySummary,
 } from "./InstagramScan.service.js";
 import { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl } from "./instagram-url.js";
 import { InstagramInventory } from "./ProfilePersistence.model.js";
@@ -87,11 +86,11 @@ export class InstagramProfileInspector extends Context.Service<
   }
 >()("@vidbee/downloader-core/instagram-profile/InstagramProfileInspector") {}
 const categoryUrlsFor = (username: string): Record<InstagramProfileCategory, string> => ({
-  posts: buildInstagramCategoryUrl(username, "posts"),
-  reels: buildInstagramCategoryUrl(username, "reels"),
-  stories: buildInstagramCategoryUrl(username, "stories"),
-  highlights: buildInstagramCategoryUrl(username, "highlights"),
-  tagged: buildInstagramCategoryUrl(username, "tagged"),
+  posts: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "posts"),
+  reels: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "reels"),
+  stories: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "stories"),
+  highlights: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "highlights"),
+  tagged: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "tagged"),
 });
 const missing = (failure: HostFailure): boolean => {
   const cause = failure.cause;
@@ -155,11 +154,11 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
       >();
       let cache = HashMap.empty<string, InspectionCacheEntry>();
       let cacheOrder: string[] = [];
-      let controllers = HashMap.empty<
-        AbortController,
-        { url: string; mapping: NonNullable<InstagramProfileInspection["mapping"]> }
-      >();
-      const controllerOrder: AbortController[] = [];
+      const controllers: {
+        controller: AbortController;
+        url: string;
+        mapping: NonNullable<InstagramProfileInspection["mapping"]>;
+      }[] = [];
       let pending = HashMap.empty<string, Deferred.Deferred<InstagramProfileInspection, InspectionError>>();
       let tail: Effect.Effect<void> = Effect.void;
       let rateLimitedUntil = 0;
@@ -236,12 +235,10 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
         }
         const snapshot = structuredClone(inspection);
         snapshot.mapping = undefined;
-        for (const controller of controllerOrder) {
-          const state = HashMap.get(controllers, controller);
-          if (controller.signal.aborted || Option.isNone(state) || state.value.url !== inspection.profile.profileUrl)
-            continue;
-          snapshot.mapping = { ...state.value.mapping };
-          if (state.value.mapping.state === "running") break;
+        for (const state of controllers) {
+          if (state.controller.signal.aborted || state.url !== inspection.profile.profileUrl) continue;
+          snapshot.mapping = { ...state.mapping };
+          if (state.mapping.state === "running") break;
         }
         return snapshot;
       });
@@ -410,7 +407,7 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
                       assetCount: 0,
                       cursor: result.cursor ?? previous?.cursor,
                     }
-                  : toCategorySummary(category, result);
+                  : InstagramScanServiceFunctions.toCategorySummary(category, result);
               next.incremental = incremental;
               const items = A.map(galleryItems(result), (item) => ({ ...item, id: `${category}:${item.id}` }));
               next.items = orderedMerge(previous?.items ?? [], items, result.cancelled === true);
@@ -438,7 +435,10 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
                   state: "unavailable",
                   sourceCount: previous?.sourceCount ?? 0,
                   assetCount: previous?.assetCount ?? 0,
-                  errorCode: inspectionFailureCode(message, /ENOENT|not found/i.test(message)),
+                  errorCode: InstagramScanServiceFunctions.inspectionFailureCode(
+                    message,
+                    /ENOENT|not found/i.test(message)
+                  ),
                 });
               })
             );
@@ -503,8 +503,7 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
           category: categories?.[0] ?? "posts",
           state: "queued",
         };
-        controllers = HashMap.set(controllers, controller, { url: normalized.profileUrl, mapping });
-        controllerOrder.push(controller);
+        controllers.push({ controller, url: normalized.profileUrl, mapping });
         const prepared = yield* Effect.exit(scan(normalized.profileUrl, settings, []));
         const previous = tail;
         const result = yield* Deferred.make<InstagramProfileInspection, InspectionError>();
@@ -519,20 +518,23 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
         });
         const work = Effect.gen(function* () {
           yield* timing.turn("instagram.inspect.prepared");
-          yield* Effect.raceFirst(previous, stopped);
           yield* prepared;
+          yield* Effect.raceFirst(previous, stopped);
           yield* timing.turn("instagram.inspect.ready");
           return yield* scan(normalized.profileUrl, settings, categories, controller.signal, mapping);
         });
         yield* Effect.forkIn(
           Effect.gen(function* () {
             const exit = yield* Effect.exit(work);
-            controllers = HashMap.remove(controllers, controller);
-            const index = controllerOrder.indexOf(controller);
-            if (index !== -1) controllerOrder.splice(index, 1);
+            const index = A.findFirstIndex(controllers, (entry) => entry.controller === controller);
+            if (Option.isSome(index)) controllers.splice(index.value, 1);
             pending = HashMap.remove(pending, key);
             yield* Deferred.done(result, exit);
             yield* previous;
+            // The old allSettled continuation follows the request's finally and snapshot observers.
+            yield* timing.turn("instagram.inspect.finally");
+            yield* timing.turn("instagram.inspect.settled");
+            yield* timing.turn("instagram.inspect.tail");
             yield* Deferred.succeed(nextTail, undefined);
           }),
           scope,
@@ -552,17 +554,16 @@ export const instagramProfileInspectorLayer = (options: InstagramProfileInspecto
       const cancel = Effect.fn("InstagramInspector.cancel")(function* (url: string) {
         const normalized = yield* normalize(url);
         let cancelled = false;
-        for (const controller of controllerOrder) {
-          const state = HashMap.get(controllers, controller);
-          if (Option.isSome(state) && state.value.url === normalized.profileUrl) {
-            controller.abort();
+        for (const state of controllers) {
+          if (state.url === normalized.profileUrl) {
+            state.controller.abort();
             cancelled = true;
           }
         }
         return cancelled;
       });
       const stop = Effect.gen(function* () {
-        for (const controller of controllerOrder) controller.abort();
+        for (const state of controllers) state.controller.abort();
         yield* Effect.forEach(HashMap.values(pending), (result) => Deferred.await(result).pipe(Effect.ignore), {
           concurrency: "unbounded",
           discard: true,

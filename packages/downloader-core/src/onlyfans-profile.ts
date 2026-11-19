@@ -26,14 +26,13 @@ export const onlyFansChatTargets: Record<OnlyFansChatRoute, { path: string; feed
   videos: { path: "/gallery/videos", feed: "media" },
 };
 
+const onlyFansChatUrlDataFirst = (chatId: string, route: OnlyFansChatRoute): string =>
+  `https://onlyfans.com/my/chats/chat/${chatId}${onlyFansChatTargets[route].path}`;
+
 export const onlyFansChatUrl: {
   (route: OnlyFansChatRoute): (chatId: string) => string;
   (chatId: string, route: OnlyFansChatRoute): string;
-} = dual(
-  2,
-  (chatId: string, route: OnlyFansChatRoute): string =>
-    `https://onlyfans.com/my/chats/chat/${chatId}${onlyFansChatTargets[route].path}`
-);
+} = dual(2, onlyFansChatUrlDataFirst);
 export const onlyFansPurchasedRoutes = ["all", "photos", "videos", "posts", "messages"] as const;
 export type OnlyFansPurchasedRoute = (typeof onlyFansPurchasedRoutes)[number];
 export const onlyFansPurchasedTargets: Record<OnlyFansPurchasedRoute, string> = {
@@ -44,14 +43,13 @@ export const onlyFansPurchasedTargets: Record<OnlyFansPurchasedRoute, string> = 
   messages: "?entityType=messages",
 };
 
+const onlyFansPurchasedUrlDataFirst = (userId: string, route: OnlyFansPurchasedRoute): string =>
+  `https://onlyfans.com/my/collections/user-lists/purchased/posts/${userId}${onlyFansPurchasedTargets[route]}`;
+
 export const onlyFansPurchasedUrl: {
   (route: OnlyFansPurchasedRoute): (userId: string) => string;
   (userId: string, route: OnlyFansPurchasedRoute): string;
-} = dual(
-  2,
-  (userId: string, route: OnlyFansPurchasedRoute): string =>
-    `https://onlyfans.com/my/collections/user-lists/purchased/posts/${userId}${onlyFansPurchasedTargets[route]}`
-);
+} = dual(2, onlyFansPurchasedUrlDataFirst);
 export const OnlyFansChatRouteSchema = LiteralKit(onlyFansChatRoutes);
 export const OnlyFansPurchasedRouteSchema = LiteralKit(onlyFansPurchasedRoutes);
 export const OnlyFansItemState = LiteralKit(["available", "locked", "drm", "unsupported"]);
@@ -136,7 +134,7 @@ export function onlyFansProfile(value: string): {
     if (A.join(parts.slice(0, 3), "/") === "my/chats/chat" && /^\d{1,20}$/.test(parts[3] ?? "")) {
       const chatId = parts[3] ?? "";
       if (parts.length === 4) {
-        return { username: chatId, chatId, profileUrl: onlyFansChatUrl(chatId, "messages") };
+        return { username: chatId, chatId, profileUrl: onlyFansChatUrlDataFirst(chatId, "messages") };
       }
       const suffix = `/${A.join(parts.slice(4), "/")}`;
       const route = Option.getOrUndefined(
@@ -152,7 +150,7 @@ export function onlyFansProfile(value: string): {
         username: chatId,
         chatId,
         chatRoute: route,
-        profileUrl: onlyFansChatUrl(chatId, route),
+        profileUrl: onlyFansChatUrlDataFirst(chatId, route),
       };
     }
     if (
@@ -175,7 +173,7 @@ export function onlyFansProfile(value: string): {
         username: userId,
         purchasedUserId: userId,
         purchasedRoute: route,
-        profileUrl: onlyFansPurchasedUrl(userId, route),
+        profileUrl: onlyFansPurchasedUrlDataFirst(userId, route),
       };
     }
     if (
@@ -216,3 +214,9 @@ export function assertOnlyFansBrowserSession(value: string): Result.Result<void,
       )
     : Result.succeed(undefined);
 }
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  onlyFansChatUrl: onlyFansChatUrlDataFirst,
+  onlyFansPurchasedUrl: onlyFansPurchasedUrlDataFirst,
+};

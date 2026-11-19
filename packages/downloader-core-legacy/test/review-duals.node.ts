@@ -69,3 +69,11 @@ test("review formerly ambiguous helpers use one strict options object and preser
   else assert.equal(legacyArgs.validateDownloadTimeRange(startTime,endTime),undefined);
  }
 });
+
+test('review filename dispatch covers every valid optional flag form',async()=>{
+ const {resolveFilenameTemplate,applyViaVidBeeFilename}=await import('../../downloader-core/src/filename-style.ts');
+ for(const style of [undefined,'classic','basic','pretty','nerdy'] as const)for(const type of ['audio','video'] as const)for(const watermark of [undefined,false,true])for(const via of [undefined,false,true]){
+  assert.equal(resolveFilenameTemplate(type,watermark,via)(style),resolveFilenameTemplate(style,type,watermark,via));
+ }
+ for(const via of [undefined,false,true])assert.equal(applyViaVidBeeFilename(via)('title.mp4'),applyViaVidBeeFilename('title.mp4',via));
+});

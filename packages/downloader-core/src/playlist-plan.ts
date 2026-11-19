@@ -88,10 +88,10 @@ export const resolvePlaylistEntryUrl = (entry: RawPlaylistEntry): string | undef
   return undefined;
 };
 
-export const mapPlaylistInfo: {
-  (fallbackId: string): (raw: { id?: unknown; title?: unknown; entries?: unknown }) => PlaylistInfo;
-  (raw: { id?: unknown; title?: unknown; entries?: unknown }, fallbackId: string): PlaylistInfo;
-} = dual(2, (raw: { id?: unknown; title?: unknown; entries?: unknown }, fallbackId: string): PlaylistInfo => {
+const mapPlaylistInfoDataFirst = (
+  raw: { id?: unknown; title?: unknown; entries?: unknown },
+  fallbackId: string
+): PlaylistInfo => {
   const rawEntries = A.isArray(raw.entries) ? raw.entries : [];
   const entries = A.filter(
     A.map(rawEntries, (item, index): PlaylistEntry | null => {
@@ -124,7 +124,12 @@ export const mapPlaylistInfo: {
     entries,
     entryCount: entries.length,
   };
-});
+};
+
+export const mapPlaylistInfo: {
+  (fallbackId: string): (raw: { id?: unknown; title?: unknown; entries?: unknown }) => PlaylistInfo;
+  (raw: { id?: unknown; title?: unknown; entries?: unknown }, fallbackId: string): PlaylistInfo;
+} = dual(2, mapPlaylistInfoDataFirst);
 
 const kindRank = (kind: PlaylistMediaKind | undefined): number => {
   const hasKind = Boolean(kind);
@@ -142,14 +147,21 @@ export const planPlaylistDownloadOrder = <T extends PlaylistEntry>(entries: read
   });
 
 /** Recordings share a global capture cap; other items stay on the playlist group. */
+const playlistEntryGroupKeyDataFirst = (entry: Pick<PlaylistEntry, "mediaKind">, playlistGroupKey: string): string =>
+  entry.mediaKind === "recording" ? BROWSER_CAPTURE_GROUP_KEY : playlistGroupKey;
+
 export const playlistEntryGroupKey: {
   (playlistGroupKey: string): (entry: Pick<PlaylistEntry, "mediaKind">) => string;
   (entry: Pick<PlaylistEntry, "mediaKind">, playlistGroupKey: string): string;
-} = dual(2, (entry: Pick<PlaylistEntry, "mediaKind">, playlistGroupKey: string): string =>
-  entry.mediaKind === "recording" ? BROWSER_CAPTURE_GROUP_KEY : playlistGroupKey
-);
+} = dual(2, playlistEntryGroupKeyDataFirst);
 
 export const restoreBrowserCaptureGroupCap = Effect.fn("Playlist.restoreBrowserCaptureGroupCap")(function* () {
   const queue = yield* DownloadQueue;
   yield* queue.setMaxPerGroup(BROWSER_CAPTURE_GROUP_KEY, BROWSER_CAPTURE_MAX_PER_GROUP);
 });
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  mapPlaylistInfo: mapPlaylistInfoDataFirst,
+  playlistEntryGroupKey: playlistEntryGroupKeyDataFirst,
+};

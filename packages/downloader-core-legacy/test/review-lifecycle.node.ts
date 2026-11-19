@@ -68,3 +68,36 @@ for(const cancel of [false,true])test(`review fallback spawn throw cancellation=
  if(cancel)assert.deepEqual(result,{type:"cancelled"});
  else {assert.equal(result.type,"error");if(result.type==="error")assert.equal(result.error.category,"permission-denied");}
 });
+
+for (const mode of ['cancel-first', 'cancel-middle', 'finish-first', 'prepare-failure']) test(`review third-round inspector concurrency: ${mode}`, {timeout:30000}, async()=>{
+ const {InstagramProfileInspector}=await import('../src/instagram-profile.ts');
+ const {inspectorConcurrency}=await import('./review-stateful-harness.mjs');
+ const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/review-concurrency-oracle.json',import.meta.url),'utf8'));
+ const trace=await inspectorConcurrency(InstagramProfileInspector,mode);
+ assert.deepEqual(JSON.parse(JSON.stringify(trace)),fixture[mode]);
+});
+
+test('review third-round stateful per-field main oracle', {timeout:180000}, async()=>{
+ const {runStateful}=await import('./review-stateful-harness.mjs');
+ const modules={instagram:await import('../src/instagram-profile.ts'),social:await import('../src/social-media-service.ts'),manager:await import('../src/social-profile-manager.ts'),core:await import('../src/downloader-core.ts')};
+ const actual=await runStateful(modules);
+ const expected=JSON.parse(fs.readFileSync(new URL('./fixtures/review-stateful-oracle.json',import.meta.url),'utf8'));
+ assert.equal(actual.length,expected.length);
+ for(let index=0;index<expected.length;index++){
+  const before=expected[index],after=actual[index];
+  assert.equal(after.name,before.name);assert.deepEqual(after.path,before.path);
+  if(before.excluded)continue;
+  if(before.result.engine)assert.ok(after.result.error,`${before.name}.${before.path.join('.')} must fail`);
+  else assert.deepEqual(after.result,before.result,`${before.name}.${before.path.join('.')} index ${index}`);
+ }
+ const browserActual=await runStateful(modules,{browserOnly:true});
+ const browserExpected=JSON.parse(fs.readFileSync(new URL('./fixtures/review-stateful-browser-oracle.json',import.meta.url),'utf8'));
+ assert.equal(browserActual.length,browserExpected.length);
+ for(let index=0;index<browserExpected.length;index++){
+  const before=browserExpected[index],after=browserActual[index];
+  assert.equal(after.name,before.name);assert.deepEqual(after.path,before.path);
+  if(before.result.engine)assert.ok(after.result.error,`${before.name}.${before.path.join('.')} must fail`);
+  else assert.deepEqual(after.result,before.result,`${before.name}.${before.path.join('.')} browser index ${index}`);
+ }
+
+});

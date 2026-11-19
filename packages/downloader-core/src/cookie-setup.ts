@@ -175,10 +175,7 @@ const LINUX_KEYRING_PATTERNS = ["secretstorage not available"];
  * @param platform Node `os.platform()` value.
  * @param browser Browser id from settings.
  */
-export const isBrowserCookieReadSupported: {
-  (browser: string): (platform: string) => boolean;
-  (platform: string, browser: string): boolean;
-} = dual(2, (platform: string, browser: string): boolean => {
+const isBrowserCookieReadSupportedDataFirst = (platform: string, browser: string): boolean => {
   if (!(browser !== undefined && browser !== null && browser !== "") || browser === "none") {
     return false;
   }
@@ -192,7 +189,12 @@ export const isBrowserCookieReadSupported: {
     return browser === "firefox";
   }
   return true;
-});
+};
+
+export const isBrowserCookieReadSupported: {
+  (browser: string): (platform: string) => boolean;
+  (platform: string, browser: string): boolean;
+} = dual(2, isBrowserCookieReadSupportedDataFirst);
 
 /**
  * True when the id is a known cookies-from-browser target.
@@ -232,7 +234,7 @@ export const cookieBrowserLabel = (browserForCookies: string | undefined): strin
  * @param platform Node `os.platform()` value.
  */
 export const listSelectableCookieBrowsers = (platform: string): CookieBrowserId[] =>
-  A.filter(COOKIE_BROWSER_IDS, (id) => isBrowserCookieReadSupported(platform, id));
+  A.filter(COOKIE_BROWSER_IDS, (id) => isBrowserCookieReadSupportedDataFirst(platform, id));
 
 /**
  * True when the value is a Chromium-family browser that Windows cannot read.
@@ -254,7 +256,7 @@ export const recommendCookieSetup = (input: {
   const supportedInstalled = A.map(
     A.filter(
       input.installedBrowsers,
-      (entry) => entry.supported && isBrowserCookieReadSupported(input.platform, entry.id)
+      (entry) => entry.supported && isBrowserCookieReadSupportedDataFirst(input.platform, entry.id)
     ),
     (entry) => entry.id
   );
@@ -281,17 +283,22 @@ export const recommendCookieSetup = (input: {
  * @param browserForCookies Raw `browserForCookies` setting.
  * @param cookiesPath Raw `cookiesPath` setting.
  */
-export const hasConfiguredCookieSettings: {
-  (cookiesPath: string | undefined): (browserForCookies: string | undefined) => boolean;
-  (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean;
-} = dual(2, (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean => {
+const hasConfiguredCookieSettingsDataFirst = (
+  browserForCookies: string | undefined,
+  cookiesPath: string | undefined
+): boolean => {
   const trimmedPath = cookiesPath == null ? undefined : Str.trim(cookiesPath);
   if (trimmedPath !== undefined && trimmedPath !== null && trimmedPath !== "") {
     return true;
   }
   const trimmedBrowser = browserForCookies == null ? undefined : Str.trim(browserForCookies);
   return Boolean(trimmedBrowser && trimmedBrowser !== "none");
-});
+};
+
+export const hasConfiguredCookieSettings: {
+  (cookiesPath: string | undefined): (browserForCookies: string | undefined) => boolean;
+  (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean;
+} = dual(2, hasConfiguredCookieSettingsDataFirst);
 
 /**
  * Health record used when nothing is configured yet.
@@ -308,52 +315,19 @@ export const unconfiguredCookieHealth = (): CookieHealth => ({
  * @param text File contents.
  * @param cookiesPath Optional path to echo back.
  */
-export const inspectNetscapeCookies: {
-  (now: number, cookiesPath?: string): (text: string) => CookieHealth;
-  (text: string, now: number, cookiesPath?: string): CookieHealth;
-} = dual(
-  (args) => typeof args[0] === "string",
-  (text: string, now: number, cookiesPath?: string): CookieHealth => {
-    if (!looksLikeNetscapeCookies(text)) {
-      return {
-        cookiesPath,
-        reason: "invalid-format",
-        source: "file",
-        status: "invalid",
-        sites: [],
-      };
-    }
+const inspectNetscapeCookiesDataFirst = (text: string, now: number, cookiesPath?: string): CookieHealth => {
+  if (!looksLikeNetscapeCookies(text)) {
+    return {
+      cookiesPath,
+      reason: "invalid-format",
+      source: "file",
+      status: "invalid",
+      sites: [],
+    };
+  }
 
-    const cookies = parseNetscapeCookieLines(text);
-    if (cookies.length === 0) {
-      return {
-        cookiesPath,
-        reason: "no-session",
-        source: "file",
-        status: "empty",
-        sites: [],
-      };
-    }
-
-    const sites = matchCookieSites(cookies, now);
-    if (A.some(sites, (site) => !site.expired)) {
-      return {
-        cookiesPath,
-        source: "file",
-        status: "ok",
-        sites: A.filter(sites, (site) => !site.expired),
-      };
-    }
-    if (A.some(sites, (site) => site.expired)) {
-      return {
-        cookiesPath,
-        reason: "expired",
-        source: "file",
-        status: "expired",
-        sites,
-      };
-    }
-
+  const cookies = parseNetscapeCookieLines(text);
+  if (cookies.length === 0) {
     return {
       cookiesPath,
       reason: "no-session",
@@ -362,24 +336,56 @@ export const inspectNetscapeCookies: {
       sites: [],
     };
   }
-);
+
+  const sites = matchCookieSitesDataFirst(cookies, now);
+  if (A.some(sites, (site) => !site.expired)) {
+    return {
+      cookiesPath,
+      source: "file",
+      status: "ok",
+      sites: A.filter(sites, (site) => !site.expired),
+    };
+  }
+  if (A.some(sites, (site) => site.expired)) {
+    return {
+      cookiesPath,
+      reason: "expired",
+      source: "file",
+      status: "expired",
+      sites,
+    };
+  }
+
+  return {
+    cookiesPath,
+    reason: "no-session",
+    source: "file",
+    status: "empty",
+    sites: [],
+  };
+};
+
+export const inspectNetscapeCookies: {
+  (now: number, cookiesPath?: string): (text: string) => CookieHealth;
+  (text: string, now: number, cookiesPath?: string): CookieHealth;
+} = dual((args) => typeof args[0] === "string", inspectNetscapeCookiesDataFirst);
 
 /**
  * Map cookie domain/name rows onto the supported signed-in sites.
  *
  * @param cookies Domain, name, and expiry rows.
  */
-export const matchCookieSites: {
-  (now: number): (cookies: readonly { domain: string; name: string; expires: number }[]) => CookieSiteMatch[];
-  (cookies: readonly { domain: string; name: string; expires: number }[], now: number): CookieSiteMatch[];
-} = dual(2, (cookies: readonly { domain: string; name: string; expires: number }[], now: number): CookieSiteMatch[] => {
+const matchCookieSitesDataFirst = (
+  cookies: readonly { domain: string; name: string; expires: number }[],
+  now: number
+): CookieSiteMatch[] => {
   const nowSeconds = Math.floor(now / 1000);
   const sites: CookieSiteMatch[] = [];
   for (const spec of COOKIE_SITE_SPECS) {
     const matches = A.filter(
       cookies,
       (cookie) =>
-        A.some(spec.domainIncludes, (domain) => cookieDomainMatches(cookie.domain, domain)) &&
+        A.some(spec.domainIncludes, (domain) => cookieDomainMatchesDataFirst(cookie.domain, domain)) &&
         A.some(spec.cookieNames, (name) => name === cookie.name)
     );
     if (matches.length === 0) {
@@ -389,7 +395,12 @@ export const matchCookieSites: {
     sites.push({ expired: !hasFresh, id: spec.id, label: spec.label });
   }
   return sites;
-});
+};
+
+export const matchCookieSites: {
+  (now: number): (cookies: readonly { domain: string; name: string; expires: number }[]) => CookieSiteMatch[];
+  (cookies: readonly { domain: string; name: string; expires: number }[], now: number): CookieSiteMatch[];
+} = dual(2, matchCookieSitesDataFirst);
 
 /**
  * Cookie lookup domains for a download URL, including sibling auth hosts.
@@ -418,7 +429,7 @@ export const cookieDomainsForUrl = (url: string): string[] => {
   const domains: string[] = [];
   const seen = MutableHashSet.empty<string>();
   for (const spec of COOKIE_SITE_SPECS) {
-    if (A.some(spec.domainIncludes, (domain) => cookieDomainMatches(hostname, domain))) {
+    if (A.some(spec.domainIncludes, (domain) => cookieDomainMatchesDataFirst(hostname, domain))) {
       for (const fragment of spec.domainIncludes) {
         if (!MutableHashSet.has(seen, fragment)) {
           MutableHashSet.add(seen, fragment);
@@ -436,31 +447,35 @@ export const cookieDomainsForUrl = (url: string): string[] => {
 };
 
 /** Match a cookie host to a domain boundary, never an arbitrary substring. */
-export const cookieDomainMatches: {
-  (domain: string): (host: string) => boolean;
-  (host: string, domain: string): boolean;
-} = dual(2, (host: string, domain: string): boolean => {
+const cookieDomainMatchesDataFirst = (host: string, domain: string): boolean => {
   const normalized = Str.replace(/^\./, "")(Str.toLowerCase(host));
   const normalizedDomain = Str.replace(/^\./, "")(Str.toLowerCase(domain));
   return (
     Boolean(normalizedDomain) && (normalized === normalizedDomain || Str.endsWith(`.${normalizedDomain}`)(normalized))
   );
-});
+};
+
+export const cookieDomainMatches: {
+  (domain: string): (host: string) => boolean;
+  (host: string, domain: string): boolean;
+} = dual(2, cookieDomainMatchesDataFirst);
 
 /** Accept configured auth hosts and parent-domain cookies applicable to the requested URL. */
-export const cookieMatchesUrlScope: {
-  (url: string): (cookieDomain: string) => boolean;
-  (cookieDomain: string, url: string): boolean;
-} = dual(2, (cookieDomain: string, url: string): boolean => {
+const cookieMatchesUrlScopeDataFirst = (cookieDomain: string, url: string): boolean => {
   const domains = cookieDomainsForUrl(url);
   if (domains.length === 0) {
     return false;
   }
   return (
-    A.some(domains, (domain) => cookieDomainMatches(cookieDomain, domain)) ||
-    cookieDomainMatches(new URL(url).hostname, cookieDomain)
+    A.some(domains, (domain) => cookieDomainMatchesDataFirst(cookieDomain, domain)) ||
+    cookieDomainMatchesDataFirst(new URL(url).hostname, cookieDomain)
   );
-});
+};
+
+export const cookieMatchesUrlScope: {
+  (url: string): (cookieDomain: string) => boolean;
+  (cookieDomain: string, url: string): boolean;
+} = dual(2, cookieMatchesUrlScopeDataFirst);
 
 /**
  * Serialize browser cookie rows to a Netscape cookies.txt body for yt-dlp.
@@ -620,4 +635,14 @@ export const parseNetscapeCookieLines = (text: string): ParsedNetscapeCookie[] =
     });
   }
   return cookies;
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  isBrowserCookieReadSupported: isBrowserCookieReadSupportedDataFirst,
+  hasConfiguredCookieSettings: hasConfiguredCookieSettingsDataFirst,
+  inspectNetscapeCookies: inspectNetscapeCookiesDataFirst,
+  matchCookieSites: matchCookieSitesDataFirst,
+  cookieDomainMatches: cookieDomainMatchesDataFirst,
+  cookieMatchesUrlScope: cookieMatchesUrlScopeDataFirst,
 };

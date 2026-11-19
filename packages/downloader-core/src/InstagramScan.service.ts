@@ -69,10 +69,7 @@ export const resolveUserRecord = (metadata: Record<string, unknown> | undefined)
 };
 export const resolveSourceId = (metadata: Record<string, unknown>): string | undefined =>
   readString(metadata, "post_id", "post_shortcode", "media_id", "id", "pk");
-export const parseGalleryJsonMessage: {
-  (result: GalleryJsonResult): (message: unknown) => void;
-  (message: unknown, result: GalleryJsonResult): void;
-} = dual(2, (message: unknown, result: GalleryJsonResult): void => {
+const parseGalleryJsonMessageDataFirst = (message: unknown, result: GalleryJsonResult): void => {
   if (!A.isArray(message) || message.length < 2) {
     result.parseError = true;
     return;
@@ -160,43 +157,50 @@ export const parseGalleryJsonMessage: {
       result.sourceIds = HashSet.add(result.sourceIds, sourceId);
     }
   }
-});
+};
+
+export const parseGalleryJsonMessage: {
+  (result: GalleryJsonResult): (message: unknown) => void;
+  (message: unknown, result: GalleryJsonResult): void;
+} = dual(2, parseGalleryJsonMessageDataFirst);
+const inspectionFailureCodeDataFirst = (
+  stderr: string,
+  binaryMissing: boolean = Boolean()
+): InstagramInspectionErrorCode => {
+  if (binaryMissing) {
+    return "binary-missing";
+  }
+  // Instagram throttles with 429s, "please wait" 401s, and soft redirects to
+  // the home page; none of these are cookie problems.
+  if (
+    /429|too many requests|rate.?limit|please wait a few minutes|redirect to home page|temporarily blocked/i.test(
+      stderr
+    )
+  ) {
+    return "rate-limited";
+  }
+  if (/login required|private profile|cookies|redirect to (?:login|challenge)|authentication/i.test(stderr)) {
+    return "auth-required";
+  }
+  if (/404|notfound|not found|does not exist/i.test(stderr)) {
+    return "not-found";
+  }
+  if (/timeout|connection|econn|network|dns/i.test(stderr)) {
+    return "network";
+  }
+  return "unavailable";
+};
+
 export const inspectionFailureCode: {
   (binaryMissing?: boolean): (stderr: string) => InstagramInspectionErrorCode;
   (stderr: string, binaryMissing?: boolean): InstagramInspectionErrorCode;
-} = dual(
-  (args) => typeof args[0] === "string",
-  (stderr: string, binaryMissing: boolean = Boolean()): InstagramInspectionErrorCode => {
-    if (binaryMissing) {
-      return "binary-missing";
-    }
-    // Instagram throttles with 429s, "please wait" 401s, and soft redirects to
-    // the home page; none of these are cookie problems.
-    if (
-      /429|too many requests|rate.?limit|please wait a few minutes|redirect to home page|temporarily blocked/i.test(
-        stderr
-      )
-    ) {
-      return "rate-limited";
-    }
-    if (/login required|private profile|cookies|redirect to (?:login|challenge)|authentication/i.test(stderr)) {
-      return "auth-required";
-    }
-    if (/404|notfound|not found|does not exist/i.test(stderr)) {
-      return "not-found";
-    }
-    if (/timeout|connection|econn|network|dns/i.test(stderr)) {
-      return "network";
-    }
-    return "unavailable";
-  }
-);
-export const toCategorySummary: {
-  (result: GalleryJsonResult): (category: InstagramProfileCategory) => InstagramCategorySummary;
-  (category: InstagramProfileCategory, result: GalleryJsonResult): InstagramCategorySummary;
-} = dual(2, (category: InstagramProfileCategory, result: GalleryJsonResult): InstagramCategorySummary => {
+} = dual((args) => typeof args[0] === "string", inspectionFailureCodeDataFirst);
+const toCategorySummaryDataFirst = (
+  category: InstagramProfileCategory,
+  result: GalleryJsonResult
+): InstagramCategorySummary => {
   if (result.exitCode !== 0 || result.parseError) {
-    const errorCode = inspectionFailureCode(result.stderr);
+    const errorCode = inspectionFailureCodeDataFirst(result.stderr);
     return {
       category,
       state: errorCode === "auth-required" ? "auth-required" : "unavailable",
@@ -219,17 +223,24 @@ export const toCategorySummary: {
     sourceCount: HashSet.size(result.sourceIds) || result.assetCount,
     assetCount: result.assetCount,
   };
-});
-export const buildInstagramCategoryUrl: {
-  (category: InstagramProfileCategory): (username: string) => string;
-  (username: string, category: InstagramProfileCategory): string;
-} = dual(2, (username: string, category: InstagramProfileCategory): string => {
+};
+
+export const toCategorySummary: {
+  (result: GalleryJsonResult): (category: InstagramProfileCategory) => InstagramCategorySummary;
+  (category: InstagramProfileCategory, result: GalleryJsonResult): InstagramCategorySummary;
+} = dual(2, toCategorySummaryDataFirst);
+const buildInstagramCategoryUrlDataFirst = (username: string, category: InstagramProfileCategory): string => {
   if (category === "stories") {
     return `https://www.instagram.com/stories/${username}/`;
   }
   const extractorPath = category;
   return `https://www.instagram.com/${username}/${extractorPath}/`;
-});
+};
+
+export const buildInstagramCategoryUrl: {
+  (category: InstagramProfileCategory): (username: string) => string;
+  (username: string, category: InstagramProfileCategory): string;
+} = dual(2, buildInstagramCategoryUrlDataFirst);
 
 export const galleryItems = (result: GalleryJsonResult): InstagramProfileItem[] => {
   const items: InstagramProfileItem[] = [];
@@ -317,7 +328,7 @@ export const runGalleryJson = Effect.fn("InstagramScan.run")(function* (
         result.items = HashMap.empty();
         result.itemOrder = [];
         result.directoryMetadata = [];
-        for (const message of parsed.success) parseGalleryJsonMessage(message, result);
+        for (const message of parsed.success) parseGalleryJsonMessageDataFirst(message, result);
       } else result.parseError = true;
     }
     result.exitCode = exitCode;
@@ -358,7 +369,7 @@ export const runGalleryJson = Effect.fn("InstagramScan.run")(function* (
               const parsed = S.decodeResult(json)(Str.slice("VIDBEE_MAP:".length)(line));
               if (Result.isFailure(parsed)) result.parseError = true;
               else {
-                parseGalleryJsonMessage(parsed.success, result);
+                parseGalleryJsonMessageDataFirst(parsed.success, result);
                 const now = yield* Clock.currentTimeMillis;
                 if (now - checkpointAt >= 1000 || Str.includes("vidbee_cursor")(line)) {
                   checkpointAt = yield* Clock.currentTimeMillis;
@@ -437,3 +448,11 @@ export const runGalleryJson = Effect.fn("InstagramScan.run")(function* (
   }
   return yield* Deferred.await(done).pipe(Effect.ensuring(cleanup()));
 });
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  parseGalleryJsonMessage: parseGalleryJsonMessageDataFirst,
+  inspectionFailureCode: inspectionFailureCodeDataFirst,
+  toCategorySummary: toCategorySummaryDataFirst,
+  buildInstagramCategoryUrl: buildInstagramCategoryUrlDataFirst,
+};

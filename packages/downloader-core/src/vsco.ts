@@ -89,12 +89,19 @@ export const normalizeVscoUrl = (value: string): NormalizedVscoUrl | null => {
 };
 
 /** A single VSCO post, which the profile mapper enumerates and queues one by one. */
-export const vscoPostUrl: {
-  (id: string, video: boolean): (username: string) => string | null;
-  (username: string, id: string, video: boolean): string | null;
-} = dual(3, (username: string, id: string, video: boolean): string | null => {
+const vscoPostUrlDataFirst = (username: string, id: string, video: boolean): string | null => {
   if (!(VSCO_USER.test(username) && (video ? /^[A-Za-z0-9-]+$/ : /^[0-9a-f]+$/i).test(id))) {
     return null;
   }
   return video ? `https://vsco.co/${username}/video/${id}` : `https://vsco.co/${username}/media/${Str.toLowerCase(id)}`;
-});
+};
+
+export const vscoPostUrl: {
+  (id: string, video: boolean): (username: string) => string | null;
+  (username: string, id: string, video: boolean): string | null;
+} = dual(3, vscoPostUrlDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  vscoPostUrl: vscoPostUrlDataFirst,
+};

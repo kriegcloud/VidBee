@@ -3,8 +3,8 @@ import * as Str from "effect/String";
 import { cookieBrowserLabel } from "./cookie-setup.js";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
-import { finalizeProfile } from "./ProfileFinalization.js";
-import { vscoPostUrl } from "./vsco.js";
+import { DataFirst as ProfileFinalizationFunctions } from "./ProfileFinalization.js";
+import { DataFirst as VscoFunctions } from "./vsco.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type { SocialMappedItem } from "./ProfilePersistence.model.js";
 import type { DownloadRuntimeSettings } from "./types.js";
@@ -93,7 +93,7 @@ const mapVscoProfileUnchecked = Effect.fn("vsco-profile-map.mapVscoProfileUnchec
     }
     const id = String(metadata.id);
     const video = metadata.video === true;
-    const postUrl = vscoPostUrl(owner, id, video);
+    const postUrl = VscoFunctions.vscoPostUrl(owner, id, video);
     if (!(postUrl !== undefined && postUrl !== null && postUrl !== "")) {
       return;
     }
@@ -160,7 +160,7 @@ export const mapVscoProfile = Effect.fn("vsco-profile-map.mapVscoProfile")(funct
   options: VscoProfileMapOptions = {}
 ) {
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  return yield* finalizeProfile(
+  return yield* ProfileFinalizationFunctions.finalizeProfile(
     mapVscoProfileUnchecked(url, owner, runtime, settings, signal, onItem, options),
     Effect.gen(function* () {
       if (release !== undefined) yield* release;

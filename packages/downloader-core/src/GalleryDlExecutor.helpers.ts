@@ -52,10 +52,7 @@ export const normalizeVscoGalleryUrl = (value: string): NormalizedVscoGalleryUrl
   const vsco = normalizeVscoUrl(value);
   return vsco?.kind === "gallery" ? { username: vsco.username, profileUrl: vsco.url } : null;
 };
-export const resolveDownloadTaskKind: {
-  (requestedType: typeof DownloadMediaType.Type): (url: string) => TaskKind;
-  (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind;
-} = dual(2, (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind => {
+const resolveDownloadTaskKindDataFirst = (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind => {
   if (normalizePinterestUrl(url) !== null) {
     return "pinterest-gallery";
   }
@@ -76,7 +73,12 @@ export const resolveDownloadTaskKind: {
     return "tiktok-photo";
   }
   return normalizeVscoUrl(url) !== null ? "vsco-gallery" : requestedType;
-});
+};
+
+export const resolveDownloadTaskKind: {
+  (requestedType: typeof DownloadMediaType.Type): (url: string) => TaskKind;
+  (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind;
+} = dual(2, resolveDownloadTaskKindDataFirst);
 export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => {
   if (normalizeSnapchatUrl(url) !== null) {
     // Snap file ids are unique per asset; the date keeps folders chronological.
@@ -93,10 +95,7 @@ export const resolveDefaultGalleryDlFilenameTemplate = (url: string): string => 
     ? "{id}.{extension}"
     : "{sidecar_media_id:?/_/}{media_id}.{extension}";
 };
-export const resolveGalleryDlFilenameTemplate: {
-  (options: GalleryDlTaskOptions): (url: string) => string;
-  (url: string, options: GalleryDlTaskOptions): string;
-} = dual(2, (url: string, options: GalleryDlTaskOptions): string => {
+const resolveGalleryDlFilenameTemplateDataFirst = (url: string, options: GalleryDlTaskOptions): string => {
   if (
     normalizePinterestUrl(url) !== null ||
     normalizeVscoUrl(url) !== null ||
@@ -126,7 +125,12 @@ export const resolveGalleryDlFilenameTemplate: {
     return `${sequential[1]}.{num}.{extension}`;
   }
   return "{sidecar_media_id:?/_/}{media_id}.{extension}";
-});
+};
+
+export const resolveGalleryDlFilenameTemplate: {
+  (options: GalleryDlTaskOptions): (url: string) => string;
+  (url: string, options: GalleryDlTaskOptions): string;
+} = dual(2, resolveGalleryDlFilenameTemplateDataFirst);
 export const galleryWaitDurationMs = (line: string): number | undefined => {
   const match = /\[(?:info|warning)\] Waiting for (\d+(?:\.\d+)?) (seconds?|minutes?) (?:until|\()/i.exec(line);
   if (!(match !== null)) {
@@ -156,4 +160,10 @@ export const shouldUseGalleryDl = (url: string): boolean => {
   } catch {
     return false;
   }
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  resolveDownloadTaskKind: resolveDownloadTaskKindDataFirst,
+  resolveGalleryDlFilenameTemplate: resolveGalleryDlFilenameTemplateDataFirst,
 };

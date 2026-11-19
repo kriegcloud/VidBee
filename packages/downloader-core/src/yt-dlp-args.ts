@@ -12,9 +12,9 @@ import { DownloadHost } from "./DownloadHost.service.js";
 import { DownloadTiming } from "./DownloadTiming.service.js";
 import { normalizeDzenProfileUrl } from "./dzen-profile.js";
 import { isFanslySite } from "./fansly-profile.js";
-import { DEFAULT_FILENAME_TEMPLATE, resolveFilenameTemplate } from "./filename-style.js";
+import { DEFAULT_FILENAME_TEMPLATE, DataFirst as FilenameStyleFunctions } from "./filename-style.js";
 import { isOnlyFansSite } from "./onlyfans-profile.js";
-import { expandSubtitleLanguageAliases, resolveSubtitleLanguages } from "./subtitle-languages.js";
+import { expandSubtitleLanguageAliases, DataFirst as SubtitleLanguagesFunctions } from "./subtitle-languages.js";
 import type { DownloadCookieSource } from "@vidbee/task-queue";
 import type { SubtitleSkipReason, SubtitleSourceKeys } from "./DownloadLiterals.model.js";
 import type { OneClickContainerOption } from "./format-preferences.js";
@@ -51,10 +51,11 @@ const DEFAULT_SOCKET_TIMEOUT = "30";
  * so `--write-auto-subs` alone cannot select them. Common extractor aliases are
  * always included; Bilibili AI aliases are added only while automatic captions are on.
  */
-export const resolveDownloadSubtitleLanguages: {
-  (url: string, writeAutoSubs: boolean): (languages: readonly string[]) => string[];
-  (languages: readonly string[], url: string, writeAutoSubs: boolean): string[];
-} = dual(3, (languages: readonly string[], url: string, writeAutoSubs: boolean): string[] => {
+const resolveDownloadSubtitleLanguagesDataFirst = (
+  languages: readonly string[],
+  url: string,
+  writeAutoSubs: boolean
+): string[] => {
   let resolved = HashMap.empty<string, string>();
   const order: string[] = [];
   const put = (key: string, value: string): void => {
@@ -77,7 +78,12 @@ export const resolveDownloadSubtitleLanguages: {
   }
 
   return A.map(order, (key) => HashMap.getUnsafe(resolved, key));
-});
+};
+
+export const resolveDownloadSubtitleLanguages: {
+  (url: string, writeAutoSubs: boolean): (languages: readonly string[]) => string[];
+  (languages: readonly string[], url: string, writeAutoSubs: boolean): string[];
+} = dual(3, resolveDownloadSubtitleLanguagesDataFirst);
 
 /** Share subtitle language, automatic-caption and sidecar flags between media and caption downloads. */
 const appendSubtitleDownloadArgs = (
@@ -87,7 +93,7 @@ const appendSubtitleDownloadArgs = (
   writeAutoSubs: boolean,
   embedSubs: boolean
 ): void => {
-  const resolved = resolveDownloadSubtitleLanguages(languages, url, writeAutoSubs);
+  const resolved = resolveDownloadSubtitleLanguagesDataFirst(languages, url, writeAutoSubs);
   args.push("--sub-langs", A.join(resolved, ",") || "all", "--sleep-subtitles", "1");
   args.push(writeAutoSubs ? "--write-auto-subs" : "--no-write-auto-subs");
   args.push("--write-subs", embedSubs ? "--embed-subs" : "--no-embed-subs");
@@ -349,6 +355,27 @@ export type SubtitleDownloadSkipReason = typeof SubtitleSkipReason.Type;
  * @param settings Effective runtime subtitle and authentication settings.
  * @returns A stable skip reason, or null when subtitle arguments should be emitted.
  */
+const resolveSubtitleDownloadSkipReasonDataFirst = (
+  options: Pick<YtDlpDownloadOptions, typeof SubtitleSourceKeys.Type>,
+  settings: YtDlpDownloadSettings,
+  browserForCookies: string
+): SubtitleDownloadSkipReason | null => {
+  if (options.type !== "video" || !(settings.downloadSubtitles ?? true)) {
+    return null;
+  }
+  if (isTikTokUrl(options.url) && !(settings.writeAutoSubs ?? true)) {
+    return "automatic-captions-disabled";
+  }
+
+  const hasSubtitleAuth =
+    (nonempty(browserForCookies) && browserForCookies !== "none") || Boolean(trim(settings.cookiesPath));
+  if ((isBilibiliUrl(options.url) || isTwitchUrl(options.url)) && !hasSubtitleAuth) {
+    return "auth-required";
+  }
+
+  return null;
+};
+
 export const resolveSubtitleDownloadSkipReason: {
   (
     settings: YtDlpDownloadSettings,
@@ -359,57 +386,38 @@ export const resolveSubtitleDownloadSkipReason: {
     settings: YtDlpDownloadSettings,
     browserForCookies: string
   ): SubtitleDownloadSkipReason | null;
-} = dual(
-  3,
-  (
-    options: Pick<YtDlpDownloadOptions, typeof SubtitleSourceKeys.Type>,
-    settings: YtDlpDownloadSettings,
-    browserForCookies: string
-  ): SubtitleDownloadSkipReason | null => {
-    if (options.type !== "video" || !(settings.downloadSubtitles ?? true)) {
-      return null;
-    }
-    if (isTikTokUrl(options.url) && !(settings.writeAutoSubs ?? true)) {
-      return "automatic-captions-disabled";
-    }
+} = dual(3, resolveSubtitleDownloadSkipReasonDataFirst);
 
-    const hasSubtitleAuth =
-      (nonempty(browserForCookies) && browserForCookies !== "none") || Boolean(trim(settings.cookiesPath));
-    if ((isBilibiliUrl(options.url) || isTwitchUrl(options.url)) && !hasSubtitleAuth) {
-      return "auth-required";
-    }
-
-    return null;
+const resolvePathWithHomeDataFirst = (
+  rawPath: string | null | undefined,
+  homeDirectory: string,
+  path: Pick<Path.Path, "join">
+): string | undefined => {
+  const trimmed = trim(rawPath);
+  if (!nonempty(trimmed)) {
+    return undefined;
   }
-);
+
+  if (trimmed === "~") {
+    return homeDirectory;
+  }
+
+  if (Str.startsWith("~/")(trimmed) || Str.startsWith("~\\")(trimmed)) {
+    return path.join(homeDirectory, Str.slice(2)(trimmed));
+  }
+
+  return trimmed;
+};
 
 export const resolvePathWithHome: {
   (homeDirectory: string, path: Pick<Path.Path, "join">): (rawPath: string | null | undefined) => string | undefined;
   (rawPath: string | null | undefined, homeDirectory: string, path: Pick<Path.Path, "join">): string | undefined;
-} = dual(
-  3,
-  (rawPath: string | null | undefined, homeDirectory: string, path: Pick<Path.Path, "join">): string | undefined => {
-    const trimmed = trim(rawPath);
-    if (!nonempty(trimmed)) {
-      return undefined;
-    }
+} = dual(3, resolvePathWithHomeDataFirst);
 
-    if (trimmed === "~") {
-      return homeDirectory;
-    }
-
-    if (Str.startsWith("~/")(trimmed) || Str.startsWith("~\\")(trimmed)) {
-      return path.join(homeDirectory, Str.slice(2)(trimmed));
-    }
-
-    return trimmed;
-  }
-);
-
-export const sanitizeFilenameTemplateWithFallback: {
-  (fallbackTemplate: string): (template: string) => string;
-  (template: string, fallbackTemplate: string): string;
-} = dual(2, (template: string, fallbackTemplate: string): string => {
+const sanitizeFilenameTemplateWithFallbackDataFirst = (
+  template: string,
+  fallbackTemplate: string = DEFAULT_FILENAME_TEMPLATE
+): string => {
   const trimmed = Str.trim(template);
   if (!nonempty(trimmed)) {
     return fallbackTemplate;
@@ -426,18 +434,20 @@ export const sanitizeFilenameTemplateWithFallback: {
     (part) => part !== ""
   );
   return safeParts.length === 0 ? fallbackTemplate : A.join(safeParts, "/");
-});
+};
+
+export const sanitizeFilenameTemplateWithFallback: {
+  (fallbackTemplate: string): (template: string) => string;
+  (template: string, fallbackTemplate: string): string;
+} = dual(2, sanitizeFilenameTemplateWithFallbackDataFirst);
 
 export const sanitizeFilenameTemplate = (template: string): string =>
-  sanitizeFilenameTemplateWithFallback(template, DEFAULT_FILENAME_TEMPLATE);
+  sanitizeFilenameTemplateWithFallbackDataFirst(template, DEFAULT_FILENAME_TEMPLATE);
 
 /**
  * Appends platform-specific filename safety flags.
  */
-export const appendPlatformFilenameSafetyArgs: {
-  (platform: string): (args: string[]) => void;
-  (args: string[], platform: string): void;
-} = dual(2, (args: string[], platform: string): void => {
+const appendPlatformFilenameSafetyArgsDataFirst = (args: string[], platform: string): void => {
   if (platform === "win32") {
     args.push("--windows-filenames");
   }
@@ -446,7 +456,12 @@ export const appendPlatformFilenameSafetyArgs: {
     args.push("--trim-filenames", WINDOWS_FILENAME_TRIM_LENGTH);
     return;
   }
-});
+};
+
+export const appendPlatformFilenameSafetyArgs: {
+  (platform: string): (args: string[]) => void;
+  (args: string[], platform: string): void;
+} = dual(2, appendPlatformFilenameSafetyArgsDataFirst);
 
 export const isYouTubeUrl = (url: string): boolean => {
   try {
@@ -457,15 +472,17 @@ export const isYouTubeUrl = (url: string): boolean => {
   }
 };
 
-export const appendYouTubeSafeExtractorArgs: {
-  (url: string): (args: string[]) => void;
-  (args: string[], url: string): void;
-} = dual(2, (args: string[], url: string): void => {
+const appendYouTubeSafeExtractorArgsDataFirst = (args: string[], url: string): void => {
   if (!isYouTubeUrl(url)) {
     return;
   }
   args.push("--extractor-args", `youtube:player_client=${YOUTUBE_SAFE_PLAYER_CLIENTS}`);
-});
+};
+
+export const appendYouTubeSafeExtractorArgs: {
+  (url: string): (args: string[]) => void;
+  (args: string[], url: string): void;
+} = dual(2, appendYouTubeSafeExtractorArgsDataFirst);
 
 const isOnlyFansUrl = (value: string): boolean => {
   try {
@@ -514,10 +531,13 @@ export const formatYtDlpCommand = (args: string[]): string => {
   return `yt-dlp ${A.join(quoted, " ")}`;
 };
 
+const resolveFfmpegLocationFromPathDataFirst = (ffmpegPath: string, path: Pick<Path.Path, "dirname">): string =>
+  path.dirname(ffmpegPath);
+
 export const resolveFfmpegLocationFromPath: {
   (path: Pick<Path.Path, "dirname">): (ffmpegPath: string) => string;
   (ffmpegPath: string, path: Pick<Path.Path, "dirname">): string;
-} = dual(2, (ffmpegPath: string, path: Pick<Path.Path, "dirname">): string => path.dirname(ffmpegPath));
+} = dual(2, resolveFfmpegLocationFromPathDataFirst);
 
 const BEST_FORMAT_FALLBACK = "bestvideo+bestaudio/best";
 
@@ -586,6 +606,20 @@ export const THUMBNAIL_EMBED_UNSUPPORTED_LOG =
  * download after the video is saved (GitHub issue #467). Write a separate
  * thumbnail file instead. MP4, MKV, and Auto still embed the cover.
  */
+const resolveThumbnailDownloadArgsDataFirst = (
+  type: YtDlpDownloadOptions["type"],
+  container: OneClickContainerOption | undefined,
+  embedThumbnail: boolean
+): string[] => {
+  if (!embedThumbnail) {
+    return ["--no-embed-thumbnail"];
+  }
+  if (type === "video" && container === "webm") {
+    return ["--no-embed-thumbnail", "--write-thumbnail"];
+  }
+  return ["--embed-thumbnail"];
+};
+
 export const resolveThumbnailDownloadArgs: {
   (
     container: OneClickContainerOption | undefined,
@@ -596,22 +630,7 @@ export const resolveThumbnailDownloadArgs: {
     container: OneClickContainerOption | undefined,
     embedThumbnail: boolean
   ): string[];
-} = dual(
-  3,
-  (
-    type: YtDlpDownloadOptions["type"],
-    container: OneClickContainerOption | undefined,
-    embedThumbnail: boolean
-  ): string[] => {
-    if (!embedThumbnail) {
-      return ["--no-embed-thumbnail"];
-    }
-    if (type === "video" && container === "webm") {
-      return ["--no-embed-thumbnail", "--write-thumbnail"];
-    }
-    return ["--embed-thumbnail"];
-  }
-);
+} = dual(3, resolveThumbnailDownloadArgsDataFirst);
 
 /**
  * Return whether yt-dlp failed only because cover art cannot be embedded.
@@ -699,7 +718,10 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
   }
 
   const downloadSubtitles = settings.downloadSubtitles ?? true;
-  const selectedSubtitleLanguages = resolveSubtitleLanguages(settings.subtitleLanguages, settings.interfaceLanguage);
+  const selectedSubtitleLanguages = SubtitleLanguagesFunctions.resolveSubtitleLanguages(
+    settings.subtitleLanguages,
+    settings.interfaceLanguage
+  );
   const embedSubs = settings.embedSubs ?? true;
   const writeAutoSubs = settings.writeAutoSubs ?? true;
   const embedThumbnail = settings.embedThumbnail ?? false;
@@ -713,7 +735,7 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
   // exposes its generated captions as normal subtitles, so the automatic-captions
   // switch must gate subtitle fetching there instead of relying on yt-dlp's flag.
   const subtitleCookies = yield* normalizeBrowserCookiesSettingForYtDlp(settings.browserForCookies);
-  const subtitleSkipReason = resolveSubtitleDownloadSkipReason(options, settings, subtitleCookies);
+  const subtitleSkipReason = resolveSubtitleDownloadSkipReasonDataFirst(options, settings, subtitleCookies);
   const shouldAttemptSubtitles = options.type === "video" && downloadSubtitles && subtitleSkipReason === null;
   // GitHub issues #129, #196, #199, #291, #347: Bilibili lists danmaku as a
   // subtitle track (`danmaku.xml`). ffmpeg cannot mux XML into MP4/MKV and
@@ -730,18 +752,18 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
     args.push("--no-write-subs", "--no-write-auto-subs", "--no-embed-subs");
   }
 
-  args.push(...resolveThumbnailDownloadArgs(options.type, container, embedThumbnail));
+  args.push(...resolveThumbnailDownloadArgsDataFirst(options.type, container, embedThumbnail));
   args.push(embedMetadata ? "--embed-metadata" : "--no-embed-metadata");
   args.push(embedChapters ? "--embed-chapters" : "--no-embed-chapters");
 
   const baseDownloadPath = trim(options.customDownloadPath) || trim(settings.downloadPath) || fallbackDownloadPath;
-  const defaultFilenameTemplate = resolveFilenameTemplate(
+  const defaultFilenameTemplate = FilenameStyleFunctions.resolveFilenameTemplate(
     settings.filenameStyle,
     options.type,
     settings.shareWatermark,
     settings.filenameViaVidBee
   );
-  const filenameTemplate = sanitizeFilenameTemplateWithFallback(
+  const filenameTemplate = sanitizeFilenameTemplateWithFallbackDataFirst(
     options.customFilenameTemplate ?? defaultFilenameTemplate,
     defaultFilenameTemplate
   );
@@ -761,7 +783,7 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
     "--no-quiet"
   );
 
-  appendPlatformFilenameSafetyArgs(args, host.platform());
+  appendPlatformFilenameSafetyArgsDataFirst(args, host.platform());
   appendNetworkResilienceArgs(args);
   appendOnlyFansIdentityArgs(args, options.url);
 
@@ -778,12 +800,12 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
     args.push("--proxy", proxy);
   }
 
-  const configPath = resolvePathWithHome(settings.configPath, host.homeDirectory(), path);
+  const configPath = resolvePathWithHomeDataFirst(settings.configPath, host.homeDirectory(), path);
   if (nonempty(configPath)) {
     args.push("--config-location", configPath);
   } else {
     args.push("--ignore-config");
-    appendYouTubeSafeExtractorArgs(args, options.url);
+    appendYouTubeSafeExtractorArgsDataFirst(args, options.url);
   }
 
   if (jsRuntimeArgs.length > 0) {
@@ -824,14 +846,14 @@ export const buildVideoInfoArgs = Effect.fn("DownloadArguments.buildVideoInfoArg
     args.push("--cookies", cookiesPath);
   }
 
-  const configPath = resolvePathWithHome(settings.configPath, host.homeDirectory(), path);
+  const configPath = resolvePathWithHomeDataFirst(settings.configPath, host.homeDirectory(), path);
   if (nonempty(configPath)) {
     args.push("--config-location", configPath);
   } else {
     // GitHub issue #294: an implicit user yt-dlp config can inject a strict
     // format selector into `-j` and make metadata discovery fail.
     args.push("--ignore-config");
-    appendYouTubeSafeExtractorArgs(args, url);
+    appendYouTubeSafeExtractorArgsDataFirst(args, url);
   }
 
   if (jsRuntimeArgs.length > 0) {
@@ -894,12 +916,12 @@ export const buildCaptionExtractArgs = Effect.fn("DownloadArguments.buildCaption
     args.push("--cookies", cookiesPath);
   }
 
-  const configPath = resolvePathWithHome(settings.configPath, host.homeDirectory(), path);
+  const configPath = resolvePathWithHomeDataFirst(settings.configPath, host.homeDirectory(), path);
   if (nonempty(configPath)) {
     args.push("--config-location", configPath);
   } else {
     args.push("--ignore-config");
-    appendYouTubeSafeExtractorArgs(args, url);
+    appendYouTubeSafeExtractorArgsDataFirst(args, url);
   }
 
   if (jsRuntimeArgs.length > 0) {
@@ -941,12 +963,12 @@ export const buildPlaylistInfoArgs = Effect.fn("DownloadArguments.buildPlaylistI
     args.push("--cookies", cookiesPath);
   }
 
-  const configPath = resolvePathWithHome(settings.configPath, host.homeDirectory(), path);
+  const configPath = resolvePathWithHomeDataFirst(settings.configPath, host.homeDirectory(), path);
   if (nonempty(configPath)) {
     args.push("--config-location", configPath);
   } else {
     args.push("--ignore-config");
-    appendYouTubeSafeExtractorArgs(args, url);
+    appendYouTubeSafeExtractorArgsDataFirst(args, url);
   }
 
   if (jsRuntimeArgs.length > 0) {
@@ -983,10 +1005,10 @@ function assertBrowserProfileSession(url: string): Result.Result<void, InvalidDo
 }
 
 /** Capture explicit cookie sources from the executed arguments without retaining credentials. */
-export const cookieSourcesFromArgs: {
-  (settings: DownloadRuntimeSettings): (args: readonly string[]) => DownloadCookieSource[];
-  (args: readonly string[], settings: DownloadRuntimeSettings): DownloadCookieSource[];
-} = dual(2, (args: readonly string[], settings: DownloadRuntimeSettings): DownloadCookieSource[] => {
+const cookieSourcesFromArgsDataFirst = (
+  args: readonly string[],
+  settings: DownloadRuntimeSettings
+): DownloadCookieSource[] => {
   let browser: string | undefined;
   let cookieFile: string | undefined;
   let hasConfig = false;
@@ -1023,4 +1045,22 @@ export const cookieSourcesFromArgs: {
     sources.push({ type: "config" });
   }
   return sources;
-});
+};
+
+export const cookieSourcesFromArgs: {
+  (settings: DownloadRuntimeSettings): (args: readonly string[]) => DownloadCookieSource[];
+  (args: readonly string[], settings: DownloadRuntimeSettings): DownloadCookieSource[];
+} = dual(2, cookieSourcesFromArgsDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  resolveDownloadSubtitleLanguages: resolveDownloadSubtitleLanguagesDataFirst,
+  resolveSubtitleDownloadSkipReason: resolveSubtitleDownloadSkipReasonDataFirst,
+  resolvePathWithHome: resolvePathWithHomeDataFirst,
+  sanitizeFilenameTemplateWithFallback: sanitizeFilenameTemplateWithFallbackDataFirst,
+  appendPlatformFilenameSafetyArgs: appendPlatformFilenameSafetyArgsDataFirst,
+  appendYouTubeSafeExtractorArgs: appendYouTubeSafeExtractorArgsDataFirst,
+  resolveFfmpegLocationFromPath: resolveFfmpegLocationFromPathDataFirst,
+  resolveThumbnailDownloadArgs: resolveThumbnailDownloadArgsDataFirst,
+  cookieSourcesFromArgs: cookieSourcesFromArgsDataFirst,
+};

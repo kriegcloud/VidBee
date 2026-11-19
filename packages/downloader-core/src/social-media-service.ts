@@ -65,7 +65,7 @@ export const writeKnownItemsFile = Effect.fn("SocialMedia.writeKnownItems")(func
   const path = yield* Path.Path;
   const files = yield* DownloadFiles;
   const file = path.join(directory, "known-items.json");
-  const text = yield* S.encodeEffect(S.String.pipe(S.Array, S.fromJsonString))(knownIds).pipe(
+  const text = yield* S.encodeEffect(S.fromJsonString(S.Unknown))(knownIds).pipe(
     Effect.mapError((cause) =>
       BoundaryDecodeError.make({ operation: "social.knownItems", legacyMessage: cause.message, cause })
     )

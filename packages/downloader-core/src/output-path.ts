@@ -61,17 +61,19 @@ export const sanitizePathSegment = (value: string): string => {
  * @param fallback Used when the value is empty after sanitizing.
  * @returns A usable folder name.
  */
-export const sanitizeFolderName: {
-  (fallback: string): (value: string) => string;
-  (value: string, fallback: string): string;
-} = dual(2, (value: string, fallback: string): string => {
+const sanitizeFolderNameDataFirst = (value: string, fallback: string): string => {
   const trimmed = Str.trim(value);
   if (!(trimmed !== undefined && trimmed !== null && trimmed !== "")) {
     return fallback;
   }
   const sanitized = sanitizePathSegment(trimmed);
   return sanitized || fallback;
-});
+};
+
+export const sanitizeFolderName: {
+  (fallback: string): (value: string) => string;
+  (value: string, fallback: string): string;
+} = dual(2, sanitizeFolderNameDataFirst);
 
 /**
  * Resolve the on-disk folder for a single-video download.
@@ -84,23 +86,32 @@ export const sanitizeFolderName: {
  * @param skipChannelSubfolders When true, skip the channel folder.
  * @returns Destination directory.
  */
+const resolveAutoVideoDownloadPathDataFirst = (
+  basePath: string,
+  info?: VideoDownloadPathInfo | null,
+  skipChannelSubfolders: boolean = Boolean()
+): string => {
+  if (info === undefined || info === null || skipChannelSubfolders) {
+    return basePath;
+  }
+  const label =
+    (info.uploader === undefined || info.uploader === null ? undefined : Str.trim(info.uploader)) ||
+    (info.title === undefined || info.title === null ? undefined : Str.trim(info.title));
+  if (!(label !== undefined && label !== null && label !== "")) {
+    return basePath;
+  }
+  const separator = Str.includes("\\")(basePath) && !Str.includes("/")(basePath) ? "\\" : "/";
+  const trimmedBase = Str.replace(/[\\/]+$/, "")(basePath);
+  return `${trimmedBase}${separator}${sanitizeFolderNameDataFirst(label, "Video")}`;
+};
+
 export const resolveAutoVideoDownloadPath: {
   (info?: VideoDownloadPathInfo | null, skipChannelSubfolders?: boolean): (basePath: string) => string;
   (basePath: string, info?: VideoDownloadPathInfo | null, skipChannelSubfolders?: boolean): string;
-} = dual(
-  (args) => typeof args[0] === "string",
-  (basePath: string, info?: VideoDownloadPathInfo | null, skipChannelSubfolders: boolean = Boolean()): string => {
-    if (info === undefined || info === null || skipChannelSubfolders) {
-      return basePath;
-    }
-    const label =
-      (info.uploader === undefined || info.uploader === null ? undefined : Str.trim(info.uploader)) ||
-      (info.title === undefined || info.title === null ? undefined : Str.trim(info.title));
-    if (!(label !== undefined && label !== null && label !== "")) {
-      return basePath;
-    }
-    const separator = Str.includes("\\")(basePath) && !Str.includes("/")(basePath) ? "\\" : "/";
-    const trimmedBase = Str.replace(/[\\/]+$/, "")(basePath);
-    return `${trimmedBase}${separator}${sanitizeFolderName(label, "Video")}`;
-  }
-);
+} = dual((args) => typeof args[0] === "string", resolveAutoVideoDownloadPathDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  sanitizeFolderName: sanitizeFolderNameDataFirst,
+  resolveAutoVideoDownloadPath: resolveAutoVideoDownloadPathDataFirst,
+};

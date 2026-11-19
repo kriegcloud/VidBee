@@ -18,6 +18,17 @@ export const ONE_CLICK_CONTAINER_OPTIONS: OneClickContainerOption[] = ["auto", "
  * selection wins, otherwise the global Container setting is used. Audio
  * downloads do not remux into a video container.
  */
+const resolvePlaylistContainerFormatDataFirst = (
+  downloadType: typeof DownloadMediaType.Type,
+  selectedContainer: OneClickContainerOption | undefined,
+  fallbackContainer: OneClickContainerOption | undefined
+): OneClickContainerOption | undefined => {
+  if (downloadType !== "video") {
+    return undefined;
+  }
+  return selectedContainer ?? fallbackContainer;
+};
+
 export const resolvePlaylistContainerFormat: {
   (
     selectedContainer: OneClickContainerOption | undefined,
@@ -28,19 +39,7 @@ export const resolvePlaylistContainerFormat: {
     selectedContainer: OneClickContainerOption | undefined,
     fallbackContainer: OneClickContainerOption | undefined
   ): OneClickContainerOption | undefined;
-} = dual(
-  3,
-  (
-    downloadType: typeof DownloadMediaType.Type,
-    selectedContainer: OneClickContainerOption | undefined,
-    fallbackContainer: OneClickContainerOption | undefined
-  ): OneClickContainerOption | undefined => {
-    if (downloadType !== "video") {
-      return undefined;
-    }
-    return selectedContainer ?? fallbackContainer;
-  }
-);
+} = dual(3, resolvePlaylistContainerFormatDataFirst);
 
 export interface OneClickFormatSettings {
   oneClickQuality?: OneClickQualityPreset;
@@ -124,4 +123,9 @@ export const buildVideoFormatPreference = (settings: OneClickFormatSettings): st
 export const buildAudioFormatPreference = (settings: OneClickFormatSettings): string => {
   const selectors = buildAudioSelectors(getQualityPreset(settings));
   return A.join(dedupe([...selectors, "best"]), "/");
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  resolvePlaylistContainerFormat: resolvePlaylistContainerFormatDataFirst,
 };

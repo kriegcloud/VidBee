@@ -3,6 +3,7 @@ import * as S from "effect/Schema";
 import * as Model from "./Download.model.js";
 import { InstagramCategory, InstagramInventory } from "./ProfilePersistence.model.js";
 import { ProfileUrl } from "./ProfileUrl.model.js";
+import { MAX_SUBTITLE_LANGUAGES } from "./subtitle-languages.js";
 
 // Public validation boundaries preserve the original zod constraints. Native
 // in-process data models keep their existing types and construction behavior.
@@ -14,7 +15,6 @@ export {
   DirectoryEntry as DirectoryEntrySchema,
   DirectoryListInput as DirectoryListInputSchema,
   DownloadProgress as DownloadProgressSchema,
-  DownloadRuntimeSettings as DownloadRuntimeSettingsSchema,
   DownloadStatus as DownloadStatusSchema,
   DownloadType as DownloadTypeSchema,
   FileExistsOutput as FileExistsOutputSchema,
@@ -38,13 +38,27 @@ export {
   OneClickQualityPreset as OneClickQualityPresetSchema,
 } from "./format-preferences.js";
 
+const { cookieSource: _cookieSource, ...publicRuntimeFields } = Model.DownloadRuntimeSettings.fields;
+export const DownloadRuntimeSettingsSchema = S.Struct({
+  ...publicRuntimeFields,
+  subtitleLanguages: S.Array(S.String)
+    .check(S.isMaxLength(MAX_SUBTITLE_LANGUAGES))
+    .pipe(S.mutable, S.optional, S.mutableKey),
+});
+
 export const CreateDownloadInputSchema = S.Struct({
   ...Model.CreateDownloadInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
   url: ProfileUrl.pipe(S.mutableKey),
 });
-export const VideoInfoInputSchema = S.Struct({ ...Model.VideoInfoInput.fields, url: ProfileUrl.pipe(S.mutableKey) });
+export const VideoInfoInputSchema = S.Struct({
+  ...Model.VideoInfoInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
+  url: ProfileUrl.pipe(S.mutableKey),
+});
 export const PlaylistInfoInputSchema = S.Struct({
   ...Model.PlaylistInfoInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
   url: ProfileUrl.pipe(S.mutableKey),
 });
 export const PlaylistEntrySchema = S.Struct({ ...Model.PlaylistEntry.fields, url: ProfileUrl.pipe(S.mutableKey) });
@@ -54,6 +68,7 @@ export const PlaylistInfoSchema = S.Struct({
 });
 export const PlaylistDownloadInputSchema = S.Struct({
   ...Model.PlaylistDownloadInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
   url: ProfileUrl.pipe(S.mutableKey),
   startIndex: PositiveInteger.pipe(S.optional, S.mutableKey),
   endIndex: PositiveInteger.pipe(S.optional, S.mutableKey),
@@ -68,10 +83,12 @@ export const PlaylistDownloadResultSchema = S.Struct({
 });
 export const InstagramProfileInspectInputSchema = S.Struct({
   ...Model.InstagramProfileInspectInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
   url: ProfileUrl.pipe(S.mutableKey),
 });
 export const InstagramProfileDownloadInputSchema = S.Struct({
   ...Model.InstagramProfileDownloadInput.fields,
+  settings: DownloadRuntimeSettingsSchema.pipe(S.optional, S.mutableKey),
   inspectionId: NonEmpty.pipe(S.mutableKey),
   categories: S.Array(Model.InstagramProfileCategory).check(S.isMinLength(1)).pipe(S.mutable, S.mutableKey),
 });

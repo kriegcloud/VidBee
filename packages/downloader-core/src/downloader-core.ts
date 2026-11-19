@@ -16,7 +16,7 @@ import { Downloader } from "./Downloader.service.js";
 import { DownloaderHost } from "./DownloaderHost.service.js";
 import { DownloadTiming } from "./DownloadTiming.service.js";
 import { PlaylistInfo } from "./MediaInfo.model.js";
-import { mapPlaylistInfo, planPlaylistDownloadOrder } from "./playlist-plan.js";
+import { DataFirst as PlaylistPlanFunctions, planPlaylistDownloadOrder } from "./playlist-plan.js";
 import { YtDlpProcess } from "./YtDlpProcess.service.js";
 import { formatYtDlpCommand, isTransientYtDlpNetworkError } from "./yt-dlp-args.js";
 import type { HostFailure, InvalidDownload } from "./Downloader.errors.js";
@@ -31,14 +31,19 @@ import type {
 
 const terminal = (task: DownloadTask): boolean =>
   task.status === "completed" || task.status === "error" || task.status === "cancelled";
-const formatCopy = (format: VideoFormat | undefined): VideoFormat | undefined =>
-  format === undefined ? undefined : { ...format };
-const cloneTask = (task: DownloadTask): DownloadTask => ({
-  ...task,
-  progress: task.progress === undefined ? undefined : { ...task.progress },
-  tags: task.tags === undefined ? undefined : [...task.tags],
-  selectedFormat: formatCopy(task.selectedFormat),
-});
+const formatCopy = (format: VideoFormat | undefined): VideoFormat | undefined => {
+  const hasFormat = Boolean(format);
+  return hasFormat && format !== undefined ? { ...format } : undefined;
+};
+const cloneTask = (task: DownloadTask): DownloadTask => {
+  const hasTags = Boolean(task.tags);
+  return {
+    ...task,
+    progress: task.progress === undefined ? undefined : { ...task.progress },
+    tags: !hasTags || task.tags === undefined ? undefined : [...task.tags],
+    selectedFormat: formatCopy(task.selectedFormat),
+  };
+};
 const clamp = (value: unknown): number =>
   typeof value !== "number" || Number.isNaN(value) ? 0 : Math.max(0, Math.min(100, value));
 const trimLog = (value: string): string => (value.length <= 80000 ? value : Str.slice(value.length - 80000)(value));
@@ -131,9 +136,8 @@ export const layer = Layer.effect(
       return snapshot;
     });
     const settingsFor = (settings?: DownloadRuntimeSettings): DownloadRuntimeSettings => {
-      const requested = settings?.downloadPath === undefined ? "" : Str.trim(settings.downloadPath);
-      const fallback =
-        host.runtimeSettings.downloadPath === undefined ? "" : Str.trim(host.runtimeSettings.downloadPath);
+      const requested = settings?.downloadPath == null ? "" : Str.trim(settings.downloadPath);
+      const fallback = host.runtimeSettings.downloadPath == null ? "" : Str.trim(host.runtimeSettings.downloadPath);
       return {
         ...host.runtimeSettings,
         ...settings,
@@ -157,7 +161,7 @@ export const layer = Layer.effect(
           return;
         }
         const settings = settingsFor(input.settings);
-        const customPath = input.customDownloadPath === undefined ? "" : Str.trim(input.customDownloadPath);
+        const customPath = input.customDownloadPath == null ? "" : Str.trim(input.customDownloadPath);
         const resolvedPath = customPath.length > 0 ? customPath : (settings.downloadPath ?? host.downloadDir);
         const built = argumentsService.download(
           {
@@ -299,8 +303,9 @@ export const layer = Layer.effect(
       yield* timing.turn("core.initialize");
       const id = host.uuid();
       const settings = settingsFor(input.settings);
-      const custom = input.customDownloadPath === undefined ? "" : Str.trim(input.customDownloadPath);
-      const customTemplate = input.customFilenameTemplate === undefined ? "" : Str.trim(input.customFilenameTemplate);
+      const custom = input.customDownloadPath == null ? "" : Str.trim(input.customDownloadPath);
+      const customTemplate = input.customFilenameTemplate == null ? "" : Str.trim(input.customFilenameTemplate);
+      const hasTags = Boolean(input.tags);
       const task: DownloadTask = {
         id,
         url: input.url,
@@ -314,7 +319,7 @@ export const layer = Layer.effect(
         channel: input.channel,
         uploader: input.uploader,
         viewCount: input.viewCount,
-        tags: input.tags === undefined ? undefined : [...input.tags],
+        tags: !hasTags || input.tags === undefined ? undefined : [...input.tags],
         selectedFormat: formatCopy(input.selectedFormat),
         playlistId: input.playlistId,
         playlistTitle: input.playlistTitle,
@@ -456,7 +461,7 @@ export const layer = Layer.effect(
         )
       );
       const mapped = yield* Effect.try({
-        try: () => mapPlaylistInfo(document, target),
+        try: () => PlaylistPlanFunctions.mapPlaylistInfo(document, target),
         catch: (cause) =>
           MetadataFailure.make({
             operation: "playlist",

@@ -4,8 +4,8 @@ import * as S from "effect/Schema";
 import { MetadataFailure } from "./Downloader.errors.js";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
-import { finalizeProfile } from "./ProfileFinalization.js";
-import { mapPlaylistInfo } from "./playlist-plan.js";
+import { DataFirst as ProfileFinalizationFunctions } from "./ProfileFinalization.js";
+import { DataFirst as PlaylistPlanFunctions } from "./playlist-plan.js";
 import { buildPlaylistInfoArgs } from "./yt-dlp-args.js";
 import type { FacebookMapCategory } from "./DownloadLiterals.model.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
@@ -41,7 +41,7 @@ const mapFacebookProfileUnchecked = Effect.fn("facebook-profile-map.mapFacebookP
       try: () => {
         if (document === null) throw new TypeError("Cannot read properties of null (reading 'entries')");
         const fields = S.decodeUnknownOption(S.Record(S.String, S.Unknown))(document);
-        return mapPlaylistInfo(
+        return PlaylistPlanFunctions.mapPlaylistInfo(
           Option.getOrElse(fields, () => ({})),
           url
         );
@@ -112,7 +112,7 @@ export const mapFacebookProfile = Effect.fn("facebook-profile-map.mapFacebookPro
   onItem: (item: SocialMappedItem) => Effect.Effect<void>
 ) {
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  return yield* finalizeProfile(
+  return yield* ProfileFinalizationFunctions.finalizeProfile(
     mapFacebookProfileUnchecked(url, category, owner, runtime, settings, signal, onItem),
     Effect.gen(function* () {
       if (release !== undefined) yield* release;

@@ -33,28 +33,29 @@ export const snapchatProfileUrl = (username: string): string =>
   `https://www.snapchat.com/@${Str.toLowerCase(username)}`;
 
 /** Category page the VidBee gallery-dl module maps. */
+const snapchatCategoryUrlDataFirst = (username: string, category: SnapchatCategory): string =>
+  `${snapchatProfileUrl(username)}/${category === "stories" ? "stories" : "spotlights"}`;
+
 export const snapchatCategoryUrl: {
   (category: SnapchatCategory): (username: string) => string;
   (username: string, category: SnapchatCategory): string;
-} = dual(
-  2,
-  (username: string, category: SnapchatCategory): string =>
-    `${snapchatProfileUrl(username)}/${category === "stories" ? "stories" : "spotlights"}`
-);
+} = dual(2, snapchatCategoryUrlDataFirst);
+
+const snapchatStorySnapUrlDataFirst = (username: string, fileId: string): string =>
+  `${snapchatCategoryUrlDataFirst(username, "stories")}?${SNAPCHAT_SNAP_PARAM}=${encodeURIComponent(fileId)}`;
 
 export const snapchatStorySnapUrl: {
   (fileId: string): (username: string) => string;
   (username: string, fileId: string): string;
-} = dual(
-  2,
-  (username: string, fileId: string): string =>
-    `${snapchatCategoryUrl(username, "stories")}?${SNAPCHAT_SNAP_PARAM}=${encodeURIComponent(fileId)}`
-);
+} = dual(2, snapchatStorySnapUrlDataFirst);
+
+const snapchatSpotlightUrlDataFirst = (username: string, id: string): string =>
+  `${snapchatProfileUrl(username)}/spotlight/${id}`;
 
 export const snapchatSpotlightUrl: {
   (id: string): (username: string) => string;
   (username: string, id: string): string;
-} = dual(2, (username: string, id: string): string => `${snapchatProfileUrl(username)}/spotlight/${id}`);
+} = dual(2, snapchatSpotlightUrlDataFirst);
 
 const result = (
   kind: NormalizedSnapchatUrl["kind"],
@@ -68,7 +69,7 @@ const result = (
         kind,
         username: user,
         id,
-        url: snapchatStorySnapUrl(user, id as string),
+        url: snapchatStorySnapUrlDataFirst(user, id as string),
         directorySegments: ["Snapchat", user, "Stories"],
       };
     case "spotlight":
@@ -76,21 +77,21 @@ const result = (
         kind,
         username: user,
         id,
-        url: snapchatSpotlightUrl(user, id as string),
+        url: snapchatSpotlightUrlDataFirst(user, id as string),
         directorySegments: ["Snapchat", user, "Spotlight"],
       };
     case "stories":
       return {
         kind,
         username: user,
-        url: snapchatCategoryUrl(user, "stories"),
+        url: snapchatCategoryUrlDataFirst(user, "stories"),
         directorySegments: ["Snapchat", user, "Stories"],
       };
     case "spotlights":
       return {
         kind,
         username: user,
-        url: snapchatCategoryUrl(user, "spotlight"),
+        url: snapchatCategoryUrlDataFirst(user, "spotlight"),
         directorySegments: ["Snapchat", user, "Spotlight"],
       };
     default:
@@ -155,4 +156,11 @@ export const normalizeSnapchatUrl = (value: string): NormalizedSnapchatUrl | nul
   } catch {
     return null;
   }
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  snapchatCategoryUrl: snapchatCategoryUrlDataFirst,
+  snapchatStorySnapUrl: snapchatStorySnapUrlDataFirst,
+  snapchatSpotlightUrl: snapchatSpotlightUrlDataFirst,
 };

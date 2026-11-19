@@ -76,28 +76,27 @@ export const isFilenameStyle = (value: unknown): value is FilenameStyle =>
  * @param enabled Whether the via VidBeep suffix should be applied.
  * @returns The original value, or the same name with `via VidBeep` added.
  */
+const applyViaVidBeeFilenameDataFirst = (value: string, enabled: boolean = DEFAULT_FILENAME_VIA_VIDBEE): string => {
+  if (!enabled || Str.includes(VIA_VIDBEE_LABEL)(value)) {
+    return value;
+  }
+
+  if (Str.endsWith(YTDLP_EXT_TOKEN)(value)) {
+    return `${Str.slice(0, -YTDLP_EXT_TOKEN.length)(value)}${VIA_VIDBEE_SUFFIX}${YTDLP_EXT_TOKEN}`;
+  }
+
+  const lastDot = Option.getOrElse(Str.lastIndexOf(".")(value), () => -1);
+  if (lastDot > 0) {
+    return `${Str.slice(0, lastDot)(value)}${VIA_VIDBEE_SUFFIX}${Str.slice(lastDot)(value)}`;
+  }
+
+  return `${value}${VIA_VIDBEE_SUFFIX}`;
+};
+
 export const applyViaVidBeeFilename: {
   (enabled?: boolean): (value: string) => string;
   (value: string, enabled?: boolean): string;
-} = dual(
-  (args) => typeof args[0] === "string",
-  (value: string, enabled: boolean = DEFAULT_FILENAME_VIA_VIDBEE): string => {
-    if (!enabled || Str.includes(VIA_VIDBEE_LABEL)(value)) {
-      return value;
-    }
-
-    if (Str.endsWith(YTDLP_EXT_TOKEN)(value)) {
-      return `${Str.slice(0, -YTDLP_EXT_TOKEN.length)(value)}${VIA_VIDBEE_SUFFIX}${YTDLP_EXT_TOKEN}`;
-    }
-
-    const lastDot = Option.getOrElse(Str.lastIndexOf(".")(value), () => -1);
-    if (lastDot > 0) {
-      return `${Str.slice(0, lastDot)(value)}${VIA_VIDBEE_SUFFIX}${Str.slice(lastDot)(value)}`;
-    }
-
-    return `${value}${VIA_VIDBEE_SUFFIX}`;
-  }
-);
+} = dual((args) => typeof args[0] === "string", applyViaVidBeeFilenameDataFirst);
 
 /**
  * Resolve the yt-dlp output template for a filename style and download type.
@@ -112,6 +111,20 @@ export const applyViaVidBeeFilename: {
  * @param filenameViaVidBee Whether to append via VidBeep before the extension.
  * @returns A yt-dlp `-o` template without the download directory.
  */
+const resolveFilenameTemplateDataFirst = (
+  style: FilenameStyle | undefined,
+  type: typeof DownloadMediaType.Type,
+  shareWatermark: boolean = Boolean(),
+  filenameViaVidBee: boolean = DEFAULT_FILENAME_VIA_VIDBEE
+): string => {
+  if (shareWatermark) {
+    return SHARED_FILENAME_TEMPLATE;
+  }
+
+  const resolvedStyle = isFilenameStyle(style) ? style : DEFAULT_FILENAME_STYLE;
+  return applyViaVidBeeFilenameDataFirst(FILENAME_STYLE_TEMPLATES[resolvedStyle][type], filenameViaVidBee);
+};
+
 export const resolveFilenameTemplate: {
   (
     type: typeof DownloadMediaType.Type,
@@ -124,19 +137,10 @@ export const resolveFilenameTemplate: {
     shareWatermark?: boolean,
     filenameViaVidBee?: boolean
   ): string;
-} = dual(
-  (args) => args[1] === "audio" || args[1] === "video",
-  (
-    style: FilenameStyle | undefined,
-    type: typeof DownloadMediaType.Type,
-    shareWatermark: boolean = Boolean(),
-    filenameViaVidBee: boolean = DEFAULT_FILENAME_VIA_VIDBEE
-  ): string => {
-    if (shareWatermark) {
-      return SHARED_FILENAME_TEMPLATE;
-    }
+} = dual((args) => typeof args[1] === "string", resolveFilenameTemplateDataFirst);
 
-    const resolvedStyle = isFilenameStyle(style) ? style : DEFAULT_FILENAME_STYLE;
-    return applyViaVidBeeFilename(FILENAME_STYLE_TEMPLATES[resolvedStyle][type], filenameViaVidBee);
-  }
-);
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  applyViaVidBeeFilename: applyViaVidBeeFilenameDataFirst,
+  resolveFilenameTemplate: resolveFilenameTemplateDataFirst,
+};

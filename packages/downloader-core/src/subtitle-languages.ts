@@ -87,30 +87,32 @@ export const normalizeSubtitleLanguages = (languages: readonly string[] | null |
  * @param interfaceLanguage Current VidBee interface language.
  * @returns Exact language codes, de-duplicated after interface-language expansion.
  */
+const resolveSubtitleLanguagesDataFirst = (
+  languages: readonly string[] | null | undefined,
+  interfaceLanguage: string | null | undefined
+): string[] => {
+  const resolved: string[] = [];
+  const seen = MutableHashSet.empty<string>();
+
+  for (const preference of normalizeSubtitleLanguages(languages)) {
+    const language = interfaceSubtitleLanguage(
+      preference === FOLLOW_INTERFACE_SUBTITLE_LANGUAGE ? interfaceLanguage : preference
+    );
+    const key = Str.toLowerCase(language);
+    if (MutableHashSet.has(seen, key)) {
+      continue;
+    }
+    MutableHashSet.add(seen, key);
+    resolved.push(language);
+  }
+
+  return resolved;
+};
+
 export const resolveSubtitleLanguages: {
   (interfaceLanguage: string | null | undefined): (languages: readonly string[] | null | undefined) => string[];
   (languages: readonly string[] | null | undefined, interfaceLanguage: string | null | undefined): string[];
-} = dual(
-  2,
-  (languages: readonly string[] | null | undefined, interfaceLanguage: string | null | undefined): string[] => {
-    const resolved: string[] = [];
-    const seen = MutableHashSet.empty<string>();
-
-    for (const preference of normalizeSubtitleLanguages(languages)) {
-      const language = interfaceSubtitleLanguage(
-        preference === FOLLOW_INTERFACE_SUBTITLE_LANGUAGE ? interfaceLanguage : preference
-      );
-      const key = Str.toLowerCase(language);
-      if (MutableHashSet.has(seen, key)) {
-        continue;
-      }
-      MutableHashSet.add(seen, key);
-      resolved.push(language);
-    }
-
-    return resolved;
-  }
-);
+} = dual(2, resolveSubtitleLanguagesDataFirst);
 
 /**
  * Expand canonical preferences into common extractor-specific subtitle tags.
@@ -144,4 +146,9 @@ export const expandSubtitleLanguageAliases = (languages: readonly string[]): str
   }
 
   return expanded;
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  resolveSubtitleLanguages: resolveSubtitleLanguagesDataFirst,
 };

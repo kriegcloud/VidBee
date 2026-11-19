@@ -23,12 +23,13 @@ const isAudioFormat = (format: VideoFormat): boolean => {
   );
 };
 
+const filterFormatsByTypeDataFirst = <T extends VideoFormat>(formats: readonly T[], type: FormatType): T[] =>
+  A.filter(formats, type === "video" ? isVideoFormat : isAudioFormat);
+
 export const filterFormatsByType: {
   (type: FormatType): <T extends VideoFormat>(formats: readonly T[]) => T[];
   <T extends VideoFormat>(formats: readonly T[], type: FormatType): T[];
-} = dual(2, <T extends VideoFormat>(formats: readonly T[], type: FormatType): T[] =>
-  A.filter(formats, type === "video" ? isVideoFormat : isAudioFormat)
-);
+} = dual(2, filterFormatsByTypeDataFirst);
 
 const getFileSize = (format: VideoFormat): number => format.filesize ?? format.filesizeApprox ?? 0;
 
@@ -121,4 +122,9 @@ export const getDisplayFormats = <T extends VideoFormat>({
   const audioFormats =
     type === "audio" && codec === "auto" ? pickGroups(audios, audioGroupKey, compareAudioQuality) : audios;
   return { videoFormats, audioFormats: audioFormats.sort(compareAudioQuality) };
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  filterFormatsByType: filterFormatsByTypeDataFirst,
 };

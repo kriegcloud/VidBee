@@ -10,7 +10,7 @@ import { DownloadFiles } from "./DownloadFiles.service.js";
 import { DownloadHost } from "./DownloadHost.service.js";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
-import { finalizeProfile } from "./ProfileFinalization.js";
+import { DataFirst as ProfileFinalizationFunctions } from "./ProfileFinalization.js";
 import { writeKnownItemsFile } from "./social-media-service.js";
 import { normalizeThreadsUrl } from "./threads.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
@@ -126,7 +126,7 @@ export const mapThreadsProfile = Effect.fn("threads-profile-map.mapThreadsProfil
     options.knownIds !== undefined && options.knownIds.length > 0
       ? yield* files.makeTempDirectory(path.join(host.tempDirectory(), "vidbee-threads-map-"))
       : undefined;
-  return yield* finalizeProfile(
+  return yield* ProfileFinalizationFunctions.finalizeProfile(
     Effect.gen(function* () {
       const knownItemsFile =
         directory !== undefined && directory !== null && directory !== ""

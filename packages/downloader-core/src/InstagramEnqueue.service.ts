@@ -77,7 +77,8 @@ export const enqueueInstagramProfileDownload = Effect.fn("Instagram.enqueue")(fu
     batch?.id ?? `instagram_profile_group_${yield* Clock.currentTimeMillis}_${Str.slice(0, 8)(host.uuid())}`;
   yield* queue.setMaxPerGroup("instagram-profile", 1);
   const requested = Str.trim(input.customDownloadPath ?? "");
-  const configured = Str.trim(input.settings?.downloadPath ?? "");
+  const configured =
+    requested.length > 0 || input.settings?.downloadPath == null ? "" : Str.trim(input.settings.downloadPath);
   const base = requested.length > 0 ? requested : configured.length > 0 ? configured : defaultDownloadDir;
   const profileDirectory = path.join(base, "Instagram", cleanSegment(cached.inspection.profile.username));
   const tasks: InstagramProfileDownloadResult["tasks"] = [];
@@ -97,7 +98,11 @@ export const enqueueInstagramProfileDownload = Effect.fn("Instagram.enqueue")(fu
             },
           ];
     for (const reference of references) {
-      if (reference.downloaded === true || (input.itemIds !== undefined && !A.contains(input.itemIds, reference.id)))
+      const hasItemIds = Boolean(input.itemIds);
+      if (
+        reference.downloaded === true ||
+        (hasItemIds && input.itemIds !== undefined && !input.itemIds.includes(reference.id))
+      )
         continue;
       const encoded = yield* S.encodeEffect(InstagramTaskIdentityJson)([
         input.inspectionId,

@@ -1,0 +1,164 @@
+{
+  "cancel-first": [
+    [
+      {
+        "owner": "aaa",
+        "mapping": {
+          "category": "posts",
+          "state": "running"
+        }
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "queued"
+        }
+      }
+    ],
+    true,
+    [
+      {
+        "owner": "aaa"
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "running"
+        }
+      }
+    ],
+    [
+      "/aaa/posts/",
+      "/bbb/posts/"
+    ],
+    [
+      {
+        "owner": "aaa"
+      },
+      {
+        "owner": "bbb"
+      }
+    ]
+  ],
+  "cancel-middle": [
+    [
+      {
+        "owner": "aaa",
+        "mapping": {
+          "category": "posts",
+          "state": "running"
+        }
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "queued"
+        }
+      }
+    ],
+    [
+      {
+        "owner": "aaa",
+        "mapping": {
+          "category": "reels",
+          "state": "running"
+        }
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "queued"
+        }
+      }
+    ],
+    true,
+    [
+      "/aaa/posts/",
+      "/aaa/reels/",
+      "/bbb/posts/"
+    ],
+    [
+      {
+        "owner": "aaa"
+      },
+      {
+        "owner": "bbb"
+      }
+    ]
+  ],
+  "finish-first": [
+    [
+      {
+        "owner": "aaa",
+        "mapping": {
+          "category": "posts",
+          "state": "running"
+        }
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "queued"
+        }
+      }
+    ],
+    {
+      "snapshot": {
+        "category": "reels",
+        "state": "queued"
+      }
+    },
+    [
+      {
+        "owner": "aaa",
+        "mapping": {
+          "category": "reels",
+          "state": "running"
+        }
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "queued"
+        }
+      }
+    ],
+    [
+      {
+        "owner": "aaa"
+      },
+      {
+        "owner": "bbb",
+        "mapping": {
+          "category": "posts",
+          "state": "running"
+        }
+      }
+    ],
+    [
+      "/aaa/posts/",
+      "/aaa/reels/",
+      "/bbb/posts/"
+    ],
+    [
+      {
+        "owner": "aaa"
+      },
+      {
+        "owner": "bbb"
+      }
+    ]
+  ],
+  "prepare-failure": [
+    "Saved Instagram profile could not be read. Restore its backup before rescanning.",
+    {
+      "cancel": false
+    }
+  ]
+}

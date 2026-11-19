@@ -35,10 +35,7 @@ export const resolvePreferredAudioExt = (videoExt: string | undefined): string |
   return undefined;
 };
 
-export const buildSingleVideoFormatSelector: {
-  (format: FormatSelectorInput | undefined): (formatId: string) => string;
-  (formatId: string, format: FormatSelectorInput | undefined): string;
-} = dual(2, (formatId: string, format: FormatSelectorInput | undefined): string => {
+const buildSingleVideoFormatSelectorDataFirst = (formatId: string, format: FormatSelectorInput | undefined): string => {
   const hasFormat = Boolean(format);
   if (format === undefined || format === null || !hasFormat || isMuxedVideoFormat(format)) {
     return `${formatId}/${SINGLE_FORMAT_FALLBACK}`;
@@ -50,4 +47,14 @@ export const buildSingleVideoFormatSelector: {
   }
 
   return `${formatId}+bestaudio[ext=${preferredAudioExt}]/${formatId}+bestaudio/${SINGLE_FORMAT_FALLBACK}`;
-});
+};
+
+export const buildSingleVideoFormatSelector: {
+  (format: FormatSelectorInput | undefined): (formatId: string) => string;
+  (formatId: string, format: FormatSelectorInput | undefined): string;
+} = dual(2, buildSingleVideoFormatSelectorDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  buildSingleVideoFormatSelector: buildSingleVideoFormatSelectorDataFirst,
+};

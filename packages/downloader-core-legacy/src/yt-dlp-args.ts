@@ -19,10 +19,10 @@ const sync = <A, E>(effect: Effect.Effect<A, E, Effect.Services<ReturnType<typeo
 export const normalizeBrowserCookiesSettingForYtDlp = (value?: string | null): string => sync(Native.normalizeBrowserCookiesSettingForYtDlp(value))
 export const validateDownloadTimeRange = (start?: string, end?: string): void => sync(Effect.fromResult(Native.validateDownloadTimeRange({ startTime: start, endTime: end })))
 export const assertDownloadSourceUrl = (value: string): void => sync(Effect.fromResult(Native.assertDownloadSourceUrl(value)))
-export const resolveSubtitleDownloadSkipReason = (options: Pick<Native.YtDlpDownloadOptions, 'type' | 'url'>, settings: Native.YtDlpDownloadSettings) => Native.resolveSubtitleDownloadSkipReason(options, settings, normalizeBrowserCookiesSettingForYtDlp(settings.browserForCookies))
-export const resolvePathWithHome = (raw?: string | null): string | undefined => sync(Effect.map(Path.Path, path => Native.resolvePathWithHome(raw, os.homedir(), path)))
-export const appendPlatformFilenameSafetyArgs = (args: string[], platform: NodeJS.Platform = process.platform): void => Native.appendPlatformFilenameSafetyArgs(args, platform)
-export const resolveFfmpegLocationFromPath = (file: string): string => sync(Effect.map(Path.Path, path => Native.resolveFfmpegLocationFromPath(file, path)))
+export const resolveSubtitleDownloadSkipReason = (options: Pick<Native.YtDlpDownloadOptions, 'type' | 'url'>, settings: Native.YtDlpDownloadSettings) => Native.DataFirst.resolveSubtitleDownloadSkipReason(options, settings, normalizeBrowserCookiesSettingForYtDlp(settings.browserForCookies))
+export const resolvePathWithHome = (raw?: string | null): string | undefined => sync(Effect.map(Path.Path, path => Native.DataFirst.resolvePathWithHome(raw, os.homedir(), path)))
+export const appendPlatformFilenameSafetyArgs = (args: string[], platform: NodeJS.Platform = process.platform): void => Native.DataFirst.appendPlatformFilenameSafetyArgs(args, platform)
+export const resolveFfmpegLocationFromPath = (file: string): string => sync(Effect.map(Path.Path, path => Native.DataFirst.resolveFfmpegLocationFromPath(file, path)))
 export const buildDownloadArgs = (...args: Parameters<typeof Native.buildDownloadArgs>): string[] => sync(Native.buildDownloadArgs(...args))
 export const buildVideoInfoArgs = (...args: Parameters<typeof Native.buildVideoInfoArgs>): string[] => sync(Native.buildVideoInfoArgs(...args))
 export const buildPlaylistInfoArgs = (...args: Parameters<typeof Native.buildPlaylistInfoArgs>): string[] => sync(Native.buildPlaylistInfoArgs(...args))
@@ -40,4 +40,4 @@ const retryError = (cause: Parameters<typeof argumentError>[0]): unknown => {
 export const retryTransientYtDlpNetworkError = <A>(run: () => Promise<A>, sleep: (ms: number) => Promise<void> = ms => new Promise(resolve => setTimeout(resolve, ms))): Promise<A> => runLegacyPromise(argumentsRuntime, Native.retryTransientYtDlpNetworkError(() => Effect.tryPromise({ try: run, catch: error => new RetryRejection(error) })).pipe(Effect.provideService(DownloadTiming, { turn: () => Effect.void, sleep: milliseconds => Effect.tryPromise({ try: () => sleep(milliseconds), catch: error => new RetryRejection(error) }).pipe(Effect.orDie) })), retryError)
 
 
-export const sanitizeFilenameTemplate = (template: string, fallbackTemplate?: string): string => fallbackTemplate === undefined ? Native.sanitizeFilenameTemplate(template) : Native.sanitizeFilenameTemplateWithFallback(template, fallbackTemplate)
+export const sanitizeFilenameTemplate = (template: string, fallbackTemplate?: string): string => fallbackTemplate === undefined ? Native.sanitizeFilenameTemplate(template) : Native.DataFirst.sanitizeFilenameTemplateWithFallback(template, fallbackTemplate)

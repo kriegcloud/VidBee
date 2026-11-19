@@ -1,5 +1,5 @@
 export * from "@vidbee/downloader-core/cookie-setup";
-import { parseNetscapeCookieLines, looksLikeNetscapeCookies, matchCookieSites as calculateCookieSites } from "@vidbee/downloader-core/cookie-setup";
+import { parseNetscapeCookieLines, looksLikeNetscapeCookies, DataFirst as CookieSetupFunctions } from "@vidbee/downloader-core/cookie-setup";
 import type { CookieHealth, CookieSiteMatch } from "@vidbee/downloader-core/cookie-setup";
 export const inspectNetscapeCookies = (text: string, cookiesPath?: string): CookieHealth => {
   if (!looksLikeNetscapeCookies(text)) {
@@ -50,4 +50,4 @@ export const inspectNetscapeCookies = (text: string, cookiesPath?: string): Cook
     sites: []
   }
 }
-export const matchCookieSites = (cookies: readonly {domain: string; name: string; expires: number}[]): CookieSiteMatch[] => calculateCookieSites(cookies, Date.now());
+export const matchCookieSites = (cookies: readonly {domain: string; name: string; expires: number}[]): CookieSiteMatch[] => CookieSetupFunctions.matchCookieSites(cookies, Date.now());

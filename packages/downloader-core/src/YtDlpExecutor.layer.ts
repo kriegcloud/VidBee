@@ -13,9 +13,9 @@ import * as Helpers from "./YtDlpExecutor.helpers.js";
 import { YtDlpExecutorHost } from "./YtDlpExecutorHost.service.js";
 import { YtDlpProcess } from "./YtDlpProcess.service.js";
 import {
-  cookieSourcesFromArgs,
   isUnsupportedThumbnailEmbedOnlyFailure,
   THUMBNAIL_EMBED_UNSUPPORTED_LOG,
+  DataFirst as YtDlpArgsFunctions,
 } from "./yt-dlp-args.js";
 import { DownloadProgressAggregator } from "./yt-dlp-progress.js";
 import type { ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
@@ -145,7 +145,7 @@ export const layer = Layer.effect(
           }
           const { args, initialSubtitleStatus, canRetryWithoutSubtitles } = command.success;
           const subtitlesRequested = Helpers.hasSubtitleDownloadArgs(args);
-          const cookieSources = cookieSourcesFromArgs(args, command.success.settings);
+          const cookieSources = YtDlpArgsFunctions.cookieSourcesFromArgs(args, command.success.settings);
           const ffmpeg = yield* host.ffmpeg;
           if (ffmpeg === undefined || ffmpeg === "") {
             yield* finishOnce({

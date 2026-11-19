@@ -67,10 +67,7 @@ const pathForPlatform = (platform: string) => ({
  * @param homeDir User home directory.
  * @param browser Browser id.
  */
-export const getBrowserProfileBaseDirs: {
-  (homeDir: string, browser: string): (platform: string) => string[];
-  (platform: string, homeDir: string, browser: string): string[];
-} = dual(3, (platform: string, homeDir: string, browser: string): string[] => {
+const getBrowserProfileBaseDirsDataFirst = (platform: string, homeDir: string, browser: string): string[] => {
   const join = pathForPlatform(platform).join;
   if (platform === "win32") {
     if (browser === "edge") {
@@ -167,7 +164,12 @@ export const getBrowserProfileBaseDirs: {
   }
 
   return [];
-});
+};
+
+export const getBrowserProfileBaseDirs: {
+  (homeDir: string, browser: string): (platform: string) => string[];
+  (platform: string, homeDir: string, browser: string): string[];
+} = dual(3, getBrowserProfileBaseDirsDataFirst);
 
 /**
  * Candidate profile folders to probe for a browser.
@@ -176,12 +178,9 @@ export const getBrowserProfileBaseDirs: {
  * @param homeDir User home directory.
  * @param browser Browser id.
  */
-export const getBrowserProfileCandidates: {
-  (homeDir: string, browser: string): (platform: string) => string[];
-  (platform: string, homeDir: string, browser: string): string[];
-} = dual(3, (platform: string, homeDir: string, browser: string): string[] => {
+const getBrowserProfileCandidatesDataFirst = (platform: string, homeDir: string, browser: string): string[] => {
   const join = pathForPlatform(platform).join;
-  const baseDirs = getBrowserProfileBaseDirs(platform, homeDir, browser);
+  const baseDirs = getBrowserProfileBaseDirsDataFirst(platform, homeDir, browser);
   if (browser === "firefox" || browser === "safari") {
     return baseDirs;
   }
@@ -195,7 +194,12 @@ export const getBrowserProfileCandidates: {
     candidates.push(join(baseDir, "Default"), join(baseDir, "Profile 1"));
   }
   return candidates;
-});
+};
+
+export const getBrowserProfileCandidates: {
+  (homeDir: string, browser: string): (platform: string) => string[];
+  (platform: string, homeDir: string, browser: string): string[];
+} = dual(3, getBrowserProfileCandidatesDataFirst);
 
 /**
  * Cookie database filename expected inside a browser profile.
@@ -226,4 +230,10 @@ export const getBrowserCookieDatabaseRelativeSegments = (browser: string): strin
     return [["Cookies.binarycookies"]];
   }
   return [["Cookies"], ["Network", "Cookies"]];
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  getBrowserProfileBaseDirs: getBrowserProfileBaseDirsDataFirst,
+  getBrowserProfileCandidates: getBrowserProfileCandidatesDataFirst,
 };

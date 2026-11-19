@@ -5,7 +5,7 @@ import * as Option from "effect/Option";
 import * as Str from "effect/String";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
-import { finalizeProfile } from "./ProfileFinalization.js";
+import { DataFirst as ProfileFinalizationFunctions } from "./ProfileFinalization.js";
 import { normalizePinterestUrl, PINTEREST_EXTRACTOR_ARGS } from "./pinterest.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type { SocialMappedItem } from "./ProfilePersistence.model.js";
@@ -24,7 +24,7 @@ export const mapPinterestProfile = Effect.fn("pinterest-profile-map.mapPinterest
   onItem: (item: SocialMappedItem) => Effect.Effect<void>
 ) {
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  return yield* finalizeProfile(
+  return yield* ProfileFinalizationFunctions.finalizeProfile(
     Effect.gen(function* () {
       const posts = MutableHashMap.empty<string, SocialMappedItem>();
       const assets = MutableHashSet.empty<string>();
