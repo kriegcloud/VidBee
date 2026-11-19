@@ -13,7 +13,7 @@ import {
   onlyFansItems,
   onlyFansMediaUrl,
   onlyFansPurchasedResponse
-} from '@vidbee/browser-capture/onlyfans-profile'
+} from '@vidbee/browser-capture-legacy/onlyfans-profile'
 
 const fixture = {
   list: [

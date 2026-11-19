@@ -629,6 +629,8 @@ export const browserProfilesLayer = (options: ProfileOptions) =>
                   stdin: "ignore",
                   stdout: "ignore",
                   stderr: "ignore",
+                  stdoutConsumption: "unread",
+                  stderrConsumption: "unread",
                   rawErrorObservation: "once",
                   rawSpawnObservation: "once",
                   rawExitObservation: "omit",

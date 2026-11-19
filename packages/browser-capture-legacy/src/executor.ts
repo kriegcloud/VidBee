@@ -1,3 +1,4 @@
+import { killProcessTree } from '@vidbee/task-queue-legacy/process'
 import { CaptureHost } from '../../browser-capture/src/CaptureHost.service.js'
 import { resolveBrowserExecutable, isBrowserCaptureAvailable, userHomeDir } from './availability.js'
 import type { Executor, ExecutorContext, ExecutorEvents, ExecutorRun } from '@vidbee/task-queue-legacy'
@@ -36,6 +37,7 @@ export class BrowserCaptureExecutor implements Executor {
     })
     const opts=Layer.succeed(CaptureExecutorOptions,{
       ...options,
+      cancelBeforeSpawn:Effect.sync(()=>killProcessTree(undefined,'SIGTERM')),
       resolveSidecarScript:invoke('sidecar path',options.resolveSidecarScript),
       resolveFfmpegPath:invoke('ffmpeg path',options.resolveFfmpegPath),
     })

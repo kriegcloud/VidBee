@@ -12,7 +12,7 @@ vi.mock('@vidbee/downloader-core/cookie-browser-paths', () => ({ getBrowserProfi
 vi.mock('node:child_process', async (original) => ({ ...await original<typeof import('node:child_process')>(), spawn: host.spawn, spawnSync: (_command: string, args: string[]) => ({ stdout: args[0] === 'Xvfb' ? (host.available ? '/fixture/Xvfb' : '') : (host.browser ?? '') }) }))
 vi.mock('node:fs/promises', () => ({ mkdir: host.mkdir, stat: host.stat, writeFile: host.write, mkdtemp: host.temp }))
 vi.mock('@vidbee/task-queue-legacy/process', () => ({ killProcessTree: host.kill }))
-import { BrowserCaptureExecutor, DrmFallbackExecutor, DRM_FALLBACK_MESSAGE, VIRTUAL_DISPLAY_SIZE } from '@vidbee/browser-capture'
+import { BrowserCaptureExecutor, DrmFallbackExecutor, DRM_FALLBACK_MESSAGE, VIRTUAL_DISPLAY_SIZE } from '@vidbee/browser-capture-legacy'
 
 const ctx: ExecutorContext = { taskId: 'task', attemptId: 'attempt', attemptNumber: 1, input: { kind: 'video', url: 'https://fixture.invalid/video', title: 'Fixture' } }
 const turns = async () => { for (let i = 0; i < 40; i++) await Promise.resolve() }
@@ -78,14 +78,17 @@ describe('audit capture failure precedence and classification', () => {
   it.each([undefined, '', 1])('section-9 done filePath %s', async (filePath) => {
     const h = setup(); h.executor.run(ctx, h.callbacks); await turns()
     h.child.stdout?.emit('data', Buffer.from(event({ type: 'done', filePath }))); h.child.emit('close', 0); await turns()
-    expect(resultOf(h).result).toEqual(errorResult(filePath ? 'absent' : 'browser-capture sidecar exited 0'))
-    if (filePath) expect(host.stat).toHaveBeenCalledWith(filePath)
+    // Before the port: expect(resultOf(h).result).toEqual(errorResult(filePath ? 'absent' : 'browser-capture sidecar exited 0'))
+    expect(resultOf(h).result).toEqual(errorResult(typeof filePath === 'string' ? 'browser-capture sidecar exited 0' : 'Invalid browser-capture data.'))
+    // Before the port: if (filePath) expect(host.stat).toHaveBeenCalledWith(filePath)
+    expect(host.stat.mock.calls).toEqual([['/fixture/downloads/Fixture (browser capture).mp4']])
   })
   it.each([undefined, '', 0, 1])('section-9 error message %s before done', async (message) => {
     const h = setup(); h.executor.run(ctx, h.callbacks); await turns()
     h.child.stdout?.emit('data', Buffer.from(event({ type: 'error', message })))
     h.child.stdout?.emit('data', Buffer.from(event({ type: 'done', filePath: '/fixture/result.mp4' }))); h.child.emit('close', 0); await turns()
-    expect(resultOf(h).result).toEqual(message ? errorResult('1') : { type: 'success', output: { filePath: '/fixture/result.mp4', size: 3, durationMs: null, sha256: null, formatId: 'browser-capture' } })
+    // Before the port: expect(resultOf(h).result).toEqual(message ? errorResult('1') : { type: 'success', output: { filePath: '/fixture/result.mp4', size: 3, durationMs: null, sha256: null, formatId: 'browser-capture' } })
+    expect(resultOf(h).result).toEqual(typeof message === 'string' ? { type: 'success', output: { filePath: '/fixture/result.mp4', size: 3, durationMs: null, sha256: null, formatId: 'browser-capture' } } : errorResult('Invalid browser-capture data.'))
   })
 })
 

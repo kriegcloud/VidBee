@@ -2,6 +2,7 @@ import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 import type { CaptureError } from "./Capture.errors.js";
 export interface BrowserCaptureOptions {
+  readonly cancelBeforeSpawn?: Effect.Effect<void> | undefined;
   readonly defaultDownloadDir: string;
   readonly env?: Readonly<Record<string, string | undefined>> | undefined;
   readonly execArgv?: readonly string[] | undefined;

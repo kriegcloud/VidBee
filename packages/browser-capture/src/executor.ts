@@ -399,6 +399,7 @@ export const BrowserCaptureExecutorLive = Layer.effect(
         const cancel = Effect.fn("BrowserCaptureExecutor.cancel")(function* (timeout?: number) {
           controller.abort();
           if (child !== undefined) yield* child.signalTree("SIGTERM").pipe(Effect.ignore);
+          else if (opts.cancelBeforeSpawn !== undefined) yield* opts.cancelBeforeSpawn;
           yield* timers.sleep(Math.min(timeout ?? opts.killGraceMs ?? 10000, 2000));
           if (!settled && child !== undefined) yield* child.signalTree("SIGKILL").pipe(Effect.ignore);
         });

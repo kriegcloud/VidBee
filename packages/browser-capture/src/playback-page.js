@@ -201,13 +201,16 @@ const profileScrollInPage = ({ nested, chat }) => {
   return window.scrollY !== before;
 };
 const viewportInPage = () => ({ width: window.innerWidth, height: window.innerHeight });
-const seedLocalStorageInPage = (values) => {
-  for (const [key, value] of Object.entries(values)) {
-    try {
-      window.localStorage.setItem(key, value);
-    } catch {}
-  }
-};
+// The original inline Playwright init callback is anonymous.
+const seedLocalStorageInPage =
+  (0,
+  (values) => {
+    for (const [key, value] of Object.entries(values)) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch {}
+    }
+  });
 
 export {
   attachmentPointInPage,

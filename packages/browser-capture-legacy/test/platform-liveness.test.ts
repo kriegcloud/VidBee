@@ -14,8 +14,11 @@ describe('isolated capture timer liveness', () => {
         import { captureError } from './packages/browser-capture-legacy/src/errors.ts';
         const runtime=ManagedRuntime.make(makeLegacyCaptureTimers(()=>runtime,captureError));
         const timers=runtime.runSync(CaptureTimers);
-        runtime.runSync(timers.after(100,Effect.sync(()=>console.log('action')),{keepAlive:${keepAlive}}));
-        console.log('scheduled');
+        // Wait for tsx loader activity to drain before measuring timer ownership.
+        process.once('beforeExit',()=>{
+          runtime.runSync(timers.after(100,Effect.sync(()=>console.log('action')),{keepAlive:${keepAlive}}));
+          console.log('scheduled');
+        });
       `
       const result = spawnSync(NODE, ['--import', 'tsx', '--input-type=module', '-e', program], { cwd: root, encoding: 'utf8', timeout: 30000 })
       expect(result.error).toBeUndefined()
@@ -32,8 +35,10 @@ describe('isolated capture timer liveness', () => {
       import { CaptureTimersLive } from './packages/browser-capture/src/CaptureTimers.driver.ts';
       const runtime=ManagedRuntime.make(CaptureTimersLive);
       const timers=runtime.runSync(CaptureTimers);
-      runtime.runSync(timers.after(100,Effect.sync(()=>console.log('action')),{keepAlive:true}));
-      console.log('scheduled');
+      process.once('beforeExit',()=>{
+        runtime.runSync(timers.after(100,Effect.sync(()=>console.log('action')),{keepAlive:true}));
+        console.log('scheduled');
+      });
     `
     const result = spawnSync(NODE, ['--import', 'tsx', '--input-type=module', '-e', program], { cwd: root, encoding: 'utf8', timeout: 30000 })
     expect(result.error).toBeUndefined()

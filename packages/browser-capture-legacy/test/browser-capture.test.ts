@@ -8,13 +8,13 @@ import type {
 import { virtualError } from '@vidbee/task-queue-legacy'
 import { describe, expect, it, vi } from 'vitest'
 import { toPlaywrightCookies } from '../src/cookies'
-import { parseNetscapeCookieFile } from '@vidbee/browser-capture'
-import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '@vidbee/browser-capture'
-import { DrmFallbackExecutor } from '@vidbee/browser-capture'
+import { parseNetscapeCookieFile } from '@vidbee/browser-capture-legacy'
+import { capturePageUrl, isDrmProtectedMessage, playbackPageUrl } from '@vidbee/browser-capture-legacy'
+import { DrmFallbackExecutor } from '@vidbee/browser-capture-legacy'
 import { waitUntilPlaybackAdvances } from '../src/player'
 import { parseCaptureJob } from '../src/protocol'
-import { encodeSidecarEvent, parseSidecarEvent } from '@vidbee/browser-capture'
-import { evenSize } from '@vidbee/browser-capture'
+import { encodeSidecarEvent, parseSidecarEvent } from '@vidbee/browser-capture-legacy'
+import { evenSize } from '@vidbee/browser-capture-legacy'
 import { buildRecorderArgs } from '../src/recorder'
 
 describe('playbackPageUrl', () => {

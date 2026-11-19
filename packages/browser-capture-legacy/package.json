@@ -12,8 +12,10 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bunx --bun vitest run",
-    "check": "bun run typecheck"
+    "test": "bun run test:unit && bun run test:audit",
+    "check": "bun run typecheck",
+    "test:audit": "tsx --test test/*.node.ts",
+    "test:unit": "bunx --bun vitest run"
   },
   "dependencies": {
     "@vidbee/downloader-core": "workspace:^",

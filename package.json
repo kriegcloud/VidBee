@@ -31,14 +31,15 @@
     "setup": "bun run --cwd apps/desktop setup",
     "start": "bun run --cwd apps/desktop start",
     "test:golden": "node apps/desktop/scripts/port/golden/run.mjs",
-    "test:audit": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/browser-capture-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts",
+    "test:audit": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts && bun run --cwd packages/browser-capture-legacy test:audit",
     "typecheck": "bun run --cwd apps/desktop typecheck",
     "verify:ytdlp": "bun run --cwd apps/desktop verify:ytdlp",
     "zip:extension": "bun run --cwd apps/extension zip",
     "check:legacy": "bun run --cwd apps/desktop check",
     "lint:legacy": "bun run --cwd apps/desktop check",
-    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/browser-capture --filter=@vidbee/browser-capture-legacy && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs apps/desktop/scripts/port/golden/subscriptions-core.test.mjs apps/desktop/scripts/port/golden/browser-capture.test.mjs apps/desktop/scripts/port/golden/transcription.test.mjs packages/subscriptions-core/test/review",
-    "port:check": "node scripts/port-check.mjs"
+    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/browser-capture && bun run --cwd packages/browser-capture-legacy test:unit && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs apps/desktop/scripts/port/golden/subscriptions-core.test.mjs apps/desktop/scripts/port/golden/browser-capture.test.mjs apps/desktop/scripts/port/golden/transcription.test.mjs packages/subscriptions-core/test/review",
+    "port:check": "node scripts/port-check.mjs",
+    "test:audit:shared": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
