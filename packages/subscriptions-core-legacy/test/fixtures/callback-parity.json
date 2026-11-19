@@ -1,0 +1,181 @@
+{
+  "provenance": {
+    "source": "archived unchanged pre-port subscriptions-core implementation",
+    "revision": "9dab889b0b1d5328721802d65699a5f8593bf2e2",
+    "node": "v22.23.4"
+  },
+  "scenarios": {
+    "options-capture": {
+      "scheduler": [
+        "all-original",
+        "one-original:s"
+      ],
+      "leader": [
+        "meta-original",
+        "sink-original",
+        "meta-original",
+        "sink-original"
+      ]
+    },
+    "normalized-receivers": {
+      "scheduler": [
+        10800000
+      ],
+      "leader": [
+        true,
+        true
+      ]
+    },
+    "timer-receivers": {
+      "scheduler": [
+        [
+          "after",
+          10800000,
+          false
+        ],
+        [
+          "now",
+          10800000,
+          false
+        ],
+        [
+          "now",
+          10800000,
+          false
+        ],
+        [
+          "log",
+          10800000,
+          false
+        ],
+        [
+          "clearAfter",
+          10800000,
+          false
+        ]
+      ],
+      "leader": [
+        [
+          "now",
+          true,
+          false
+        ],
+        [
+          "every",
+          true,
+          false
+        ],
+        [
+          "log",
+          true,
+          false
+        ],
+        [
+          "now",
+          true,
+          false
+        ],
+        [
+          "clearEvery",
+          true,
+          false
+        ]
+      ]
+    },
+    "receiver-mutation": [
+      "mutated-interval",
+      "mutated-one:s",
+      [
+        "schedule",
+        123
+      ],
+      "mutated-interval",
+      [
+        "schedule",
+        7
+      ]
+    ],
+    "api-callbacks": {
+      "receivers": [
+        [
+          "now",
+          true
+        ],
+        [
+          "fetch",
+          true
+        ],
+        [
+          "history-original",
+          false,
+          true
+        ],
+        [
+          "history-original",
+          true,
+          false
+        ],
+        [
+          "enqueue-original",
+          true
+        ],
+        [
+          "log",
+          "subscriptions: enqueueItem failed",
+          true
+        ],
+        [
+          "now",
+          true
+        ],
+        [
+          "task-original",
+          true
+        ]
+      ],
+      "capture": [
+        [
+          "now",
+          true
+        ],
+        [
+          "fetch",
+          true
+        ],
+        [
+          "history-original",
+          false,
+          true
+        ],
+        [
+          "history-original",
+          true,
+          false
+        ],
+        [
+          "enqueue-original",
+          true
+        ],
+        [
+          "log",
+          "subscriptions: enqueueItem failed",
+          true
+        ],
+        [
+          "now",
+          true
+        ],
+        [
+          "task-original",
+          true
+        ]
+      ]
+    },
+    "global-fetch": [
+      {
+        "global": false,
+        "undefined": true
+      }
+    ]
+  }
+}

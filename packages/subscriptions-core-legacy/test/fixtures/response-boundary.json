@@ -1,0 +1,1262 @@
+{
+  "ok:undefined/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:undefined/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:null/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:undefined": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:null": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:false": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:true": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:zero": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:number": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:NaN": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:empty": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:string": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:zero/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:undefined": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:null": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:false": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:true": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:zero": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:number": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:NaN": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:empty": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:number/status:string": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:NaN/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:null": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code null"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code false"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code true"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 0"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code NaN"
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code "
+    },
+    "engineFailure": false
+  },
+  "ok:empty/status:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 503"
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:undefined": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:null": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:false": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:true": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:zero": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:number": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:NaN": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:empty": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:string/status:string": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:negative": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code -1"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:negative": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:below-success": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 199"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:below-success": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:success-low": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 200"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:success-low": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:success-high": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 299"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:success-high": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:above-success": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code 300"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:above-success": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:Infinity": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code Infinity"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:Infinity": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "ok:false/status:-Infinity": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code -Infinity"
+    },
+    "engineFailure": false
+  },
+  "ok:true/status:-Infinity": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:undefined/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:undefined/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:null/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:null/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:false/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:false/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:true/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:true/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": true,
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:zero/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:zero/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:number/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:number/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": 503,
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:NaN/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:NaN/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:empty/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:empty/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "https://fixture.invalid/feed",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "url:string/fetch": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "items": [],
+        "title": "Fixture"
+      }
+    },
+    "engineFailure": false
+  },
+  "url:string/probe": {
+    "outcome": {
+      "ok": true,
+      "value": {
+        "feed": {
+          "items": [],
+          "title": "Fixture"
+        },
+        "feedUrl": "503",
+        "discovered": false
+      }
+    },
+    "engineFailure": false
+  },
+  "text-method:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:null": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:false": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:true": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:number": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-method:string": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "response.text is not a function"
+    },
+    "engineFailure": true
+  },
+  "text-result:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'toString')"
+    },
+    "engineFailure": true
+  },
+  "text-result:null": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'toString')"
+    },
+    "engineFailure": true
+  },
+  "text-result:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: f"
+    },
+    "engineFailure": false
+  },
+  "text-result:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Unable to parse XML."
+    },
+    "engineFailure": false
+  },
+  "text-result:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: 0"
+    },
+    "engineFailure": false
+  },
+  "text-result:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: 5"
+    },
+    "engineFailure": false
+  },
+  "text-result:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Unable to parse XML."
+    },
+    "engineFailure": false
+  },
+  "text-result:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Unable to parse XML."
+    },
+    "engineFailure": false
+  },
+  "text-result:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: 5"
+    },
+    "engineFailure": false
+  },
+  "response-root:undefined": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'ok')"
+    },
+    "engineFailure": true
+  },
+  "response-root:null": {
+    "outcome": {
+      "ok": false,
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'ok')"
+    },
+    "engineFailure": true
+  },
+  "response-root:false": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:true": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:zero": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:number": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:NaN": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:empty": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  },
+  "response-root:string": {
+    "outcome": {
+      "ok": false,
+      "name": "Error",
+      "message": "Status code undefined"
+    },
+    "engineFailure": false
+  }
+}

@@ -1,11 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { linkSync, lstatSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
-import {
-  normalizeFeedItems,
-  RssParserFeedFetcher,
-  type SubscriptionUpdateInput
-} from '@vidbee/subscriptions-core'
+import type { SubscriptionUpdateInput } from '@vidbee/subscriptions-core'
+import { normalizeFeedItems, RssParserFeedFetcher } from '@vidbee/subscriptions-core-legacy'
 import {
   isMediaTaskKind,
   ListInputSchema,

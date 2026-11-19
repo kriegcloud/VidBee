@@ -19,15 +19,15 @@ import {
 } from '@vidbee/downloader-core-legacy/instagram-profile'
 import { downloadSocialMedia } from '@vidbee/downloader-core-legacy/social-media-service'
 import type { SocialProfileManager } from '@vidbee/downloader-core-legacy/social-profile-manager'
-import type { EnqueueItemContext } from '@vidbee/subscriptions-core/api'
 import type {
   ProfileCategoryError,
   ProfileCheckResult,
   ProfileFeedItem,
-  ProfileSourceFetcher,
   SubscriptionRule
 } from '@vidbee/subscriptions-core/types'
 import { profileItemCategory } from '@vidbee/subscriptions-core/types'
+import type { EnqueueItemContext } from '@vidbee/subscriptions-core-legacy/api'
+import type { ProfileSourceFetcher } from '@vidbee/subscriptions-core-legacy/types'
 import type { TaskQueueAPI } from '@vidbee/task-queue-legacy'
 
 /** Matches the Instagram inspector's own throttle cooldown. */

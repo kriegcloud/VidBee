@@ -1,0 +1,2792 @@
+{
+  "ResolvedFeedSchema:sourceUrl:16": {
+    "value": {
+      "sourceUrl": "",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "availableCategories": [
+        "unknown"
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "sourceUrl"
+        ]
+      }
+    ]
+  },
+  "ResolvedFeedSchema:feedUrl:16": {
+    "value": {
+      "sourceUrl": "source",
+      "feedUrl": "",
+      "platform": "custom",
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "availableCategories": [
+        "unknown"
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "feedUrl"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:createdAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 1.5,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "createdAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:createdAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 9007199254740992,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "createdAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:updatedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 1.5,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "updatedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:updatedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 9007199254740992,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "updatedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:latestVideoPublishedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 1.5,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "latestVideoPublishedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:latestVideoPublishedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 9007199254740992,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "latestVideoPublishedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:lastCheckedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 1.5,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "lastCheckedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:lastCheckedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 9007199254740992,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "lastCheckedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:lastSuccessAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 1.5,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "lastSuccessAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:lastSuccessAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 9007199254740992,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "lastSuccessAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:checkIntervalMs:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1.5,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "checkIntervalMs"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:checkIntervalMs:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 9007199254740992,
+      "nextCheckAt": 200
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:nextCheckAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 1.5
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "nextCheckAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionRuleSchema:nextCheckAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 9007199254740992
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "nextCheckAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionFeedItemSchema:publishedAt:7": {
+    "value": {
+      "id": "item",
+      "url": "https://fixture.invalid/item",
+      "title": "Item",
+      "publishedAt": 1.5,
+      "thumbnail": "image",
+      "addedToQueue": false,
+      "taskId": "task"
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "publishedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionFeedItemSchema:publishedAt:12": {
+    "value": {
+      "id": "item",
+      "url": "https://fixture.invalid/item",
+      "title": "Item",
+      "publishedAt": 9007199254740992,
+      "thumbnail": "image",
+      "addedToQueue": false,
+      "taskId": "task"
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "publishedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:createdAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 1.5,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "createdAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:createdAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 9007199254740992,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "createdAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:updatedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 1.5,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "updatedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:updatedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 9007199254740992,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "updatedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:latestVideoPublishedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 1.5,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "latestVideoPublishedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:latestVideoPublishedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 9007199254740992,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "latestVideoPublishedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:lastCheckedAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 1.5,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "lastCheckedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:lastCheckedAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 9007199254740992,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "lastCheckedAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:lastSuccessAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 1.5,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "lastSuccessAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:lastSuccessAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 9007199254740992,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "lastSuccessAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:checkIntervalMs:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1.5,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "checkIntervalMs"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:checkIntervalMs:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 9007199254740992,
+      "nextCheckAt": 200,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:nextCheckAt:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 1.5,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "nextCheckAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionWithItemsSchema:nextCheckAt:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "id": "subscription",
+      "title": "Fixture",
+      "sourceUrl": "https://fixture.invalid/source",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "instagram",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "coverUrl": "cover",
+      "latestVideoTitle": "latest",
+      "latestVideoPublishedAt": 100,
+      "lastCheckedAt": 100,
+      "lastSuccessAt": 100,
+      "status": "idle",
+      "lastError": "error",
+      "createdAt": 100,
+      "updatedAt": 100,
+      "downloadDirectory": "/fixture/downloads",
+      "namingTemplate": "%(title)s",
+      "sourceKind": "profile",
+      "profileOwner": "owner",
+      "categories": [
+        "posts",
+        "reels"
+      ],
+      "checkIntervalMs": 1800000,
+      "nextCheckAt": 9007199254740992,
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ]
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "nextCheckAt"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:sourceUrl:16": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "sourceUrl"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:feedUrl:16": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "feedUrl"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:categories:21": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "Posts"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:categories:23": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "a1"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:categories:25": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "-a"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:categories:26": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts"
+      ],
+      "checkIntervalMs": 1800000
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "categories"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:4": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 0
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:5": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": -1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:6": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1.5
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "checkIntervalMs"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:10": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 604800001
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:11": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 9007199254740991
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionCreateInputSchema:checkIntervalMs:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "sourceUrl": "source",
+      "feedUrl": "feed",
+      "platform": "custom",
+      "title": "",
+      "keywords": [
+        ""
+      ],
+      "tags": [
+        "tag"
+      ],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "enabled": false,
+      "sourceKind": "feed",
+      "profileOwner": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 9007199254740992
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      },
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:categories:21": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "Posts"
+      ],
+      "checkIntervalMs": null
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:categories:23": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "a1"
+      ],
+      "checkIntervalMs": null
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:categories:25": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "-a"
+      ],
+      "checkIntervalMs": null
+    },
+    "removed": [
+      {
+        "code": "invalid_format",
+        "path": [
+          "categories",
+          0
+        ],
+        "format": "regex"
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:categories:26": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts",
+        "posts"
+      ],
+      "checkIntervalMs": null
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "categories"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:4": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 0
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:5": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": -1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:6": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:7": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 1.5
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "checkIntervalMs"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:10": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 604800001
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:11": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 9007199254740991
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionUpdateInputSchema:checkIntervalMs:12": {
+    "value": {
+      "downloadType": "video",
+      "downloadQuality": "best",
+      "downloadContainer": "auto",
+      "title": "",
+      "sourceUrl": "",
+      "feedUrl": "",
+      "platform": "custom",
+      "keywords": [
+        ""
+      ],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": false,
+      "enabled": false,
+      "downloadDirectory": "",
+      "namingTemplate": "",
+      "categories": [
+        "posts"
+      ],
+      "checkIntervalMs": 9007199254740992
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      },
+      {
+        "code": "too_big",
+        "path": [
+          "checkIntervalMs"
+        ]
+      }
+    ]
+  },
+  "SubscriptionListOutputSchema:total:5": {
+    "value": {
+      "items": [
+        {
+          "downloadType": "video",
+          "downloadQuality": "best",
+          "downloadContainer": "auto",
+          "id": "subscription",
+          "title": "Fixture",
+          "sourceUrl": "https://fixture.invalid/source",
+          "feedUrl": "https://fixture.invalid/feed",
+          "platform": "instagram",
+          "keywords": [],
+          "tags": [],
+          "onlyDownloadLatest": false,
+          "autoDownload": true,
+          "enabled": true,
+          "coverUrl": "cover",
+          "latestVideoTitle": "latest",
+          "latestVideoPublishedAt": 100,
+          "lastCheckedAt": 100,
+          "lastSuccessAt": 100,
+          "status": "idle",
+          "lastError": "error",
+          "createdAt": 100,
+          "updatedAt": 100,
+          "downloadDirectory": "/fixture/downloads",
+          "namingTemplate": "%(title)s",
+          "sourceKind": "profile",
+          "profileOwner": "owner",
+          "categories": [
+            "posts",
+            "reels"
+          ],
+          "checkIntervalMs": 1800000,
+          "nextCheckAt": 200,
+          "items": [
+            {
+              "id": "item",
+              "url": "https://fixture.invalid/item",
+              "title": "Item",
+              "publishedAt": 100,
+              "thumbnail": "image",
+              "addedToQueue": false,
+              "taskId": "task"
+            }
+          ]
+        }
+      ],
+      "total": -1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "total"
+        ]
+      }
+    ]
+  },
+  "SubscriptionListOutputSchema:total:7": {
+    "value": {
+      "items": [
+        {
+          "downloadType": "video",
+          "downloadQuality": "best",
+          "downloadContainer": "auto",
+          "id": "subscription",
+          "title": "Fixture",
+          "sourceUrl": "https://fixture.invalid/source",
+          "feedUrl": "https://fixture.invalid/feed",
+          "platform": "instagram",
+          "keywords": [],
+          "tags": [],
+          "onlyDownloadLatest": false,
+          "autoDownload": true,
+          "enabled": true,
+          "coverUrl": "cover",
+          "latestVideoTitle": "latest",
+          "latestVideoPublishedAt": 100,
+          "lastCheckedAt": 100,
+          "lastSuccessAt": 100,
+          "status": "idle",
+          "lastError": "error",
+          "createdAt": 100,
+          "updatedAt": 100,
+          "downloadDirectory": "/fixture/downloads",
+          "namingTemplate": "%(title)s",
+          "sourceKind": "profile",
+          "profileOwner": "owner",
+          "categories": [
+            "posts",
+            "reels"
+          ],
+          "checkIntervalMs": 1800000,
+          "nextCheckAt": 200,
+          "items": [
+            {
+              "id": "item",
+              "url": "https://fixture.invalid/item",
+              "title": "Item",
+              "publishedAt": 100,
+              "thumbnail": "image",
+              "addedToQueue": false,
+              "taskId": "task"
+            }
+          ]
+        }
+      ],
+      "total": 1.5
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "total"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionListOutputSchema:total:12": {
+    "value": {
+      "items": [
+        {
+          "downloadType": "video",
+          "downloadQuality": "best",
+          "downloadContainer": "auto",
+          "id": "subscription",
+          "title": "Fixture",
+          "sourceUrl": "https://fixture.invalid/source",
+          "feedUrl": "https://fixture.invalid/feed",
+          "platform": "instagram",
+          "keywords": [],
+          "tags": [],
+          "onlyDownloadLatest": false,
+          "autoDownload": true,
+          "enabled": true,
+          "coverUrl": "cover",
+          "latestVideoTitle": "latest",
+          "latestVideoPublishedAt": 100,
+          "lastCheckedAt": 100,
+          "lastSuccessAt": 100,
+          "status": "idle",
+          "lastError": "error",
+          "createdAt": 100,
+          "updatedAt": 100,
+          "downloadDirectory": "/fixture/downloads",
+          "namingTemplate": "%(title)s",
+          "sourceKind": "profile",
+          "profileOwner": "owner",
+          "categories": [
+            "posts",
+            "reels"
+          ],
+          "checkIntervalMs": 1800000,
+          "nextCheckAt": 200,
+          "items": [
+            {
+              "id": "item",
+              "url": "https://fixture.invalid/item",
+              "title": "Item",
+              "publishedAt": 100,
+              "thumbnail": "image",
+              "addedToQueue": false,
+              "taskId": "task"
+            }
+          ]
+        }
+      ],
+      "total": 9007199254740992
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "total"
+        ]
+      }
+    ]
+  },
+  "SubscriptionItemsListOutputSchema:total:5": {
+    "value": {
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ],
+      "total": -1
+    },
+    "removed": [
+      {
+        "code": "too_small",
+        "path": [
+          "total"
+        ]
+      }
+    ]
+  },
+  "SubscriptionItemsListOutputSchema:total:7": {
+    "value": {
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ],
+      "total": 1.5
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "total"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "SubscriptionItemsListOutputSchema:total:12": {
+    "value": {
+      "items": [
+        {
+          "id": "item",
+          "url": "https://fixture.invalid/item",
+          "title": "Item",
+          "publishedAt": 100,
+          "thumbnail": "image",
+          "addedToQueue": false,
+          "taskId": "task"
+        }
+      ],
+      "total": 9007199254740992
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "total"
+        ]
+      }
+    ]
+  },
+  "LeaderStateSchema:pid:7": {
+    "value": {
+      "kind": null,
+      "pid": 1.5,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "pid"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "LeaderStateSchema:pid:12": {
+    "value": {
+      "kind": null,
+      "pid": 9007199254740992,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "pid"
+        ]
+      }
+    ]
+  },
+  "LeaderStateSchema:startedAt:7": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": 1.5,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "startedAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "LeaderStateSchema:startedAt:12": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": 9007199254740992,
+      "heartbeatAt": null,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "startedAt"
+        ]
+      }
+    ]
+  },
+  "LeaderStateSchema:heartbeatAt:7": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": 1.5,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "heartbeatAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "LeaderStateSchema:heartbeatAt:12": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": 9007199254740992,
+      "lockExpiresAt": null,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "heartbeatAt"
+        ]
+      }
+    ]
+  },
+  "LeaderStateSchema:lockExpiresAt:7": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": 1.5,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "invalid_type",
+        "path": [
+          "lockExpiresAt"
+        ],
+        "expected": "int",
+        "format": "safeint"
+      }
+    ]
+  },
+  "LeaderStateSchema:lockExpiresAt:12": {
+    "value": {
+      "kind": null,
+      "pid": null,
+      "startedAt": null,
+      "heartbeatAt": null,
+      "lockExpiresAt": 9007199254740992,
+      "leaseId": null,
+      "preferred": null
+    },
+    "removed": [
+      {
+        "code": "too_big",
+        "path": [
+          "lockExpiresAt"
+        ]
+      }
+    ]
+  }
+}
