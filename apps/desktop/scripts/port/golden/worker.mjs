@@ -7,6 +7,7 @@ import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
+import { runSubscriptionsCases, runSubscriptionsRestart } from './subscriptions-core-cases.mjs'
 
 const args = process.argv.slice(2)
 const probe = args[0] === '--probe'
@@ -66,7 +67,7 @@ const record = async (name, value) => {
     process.stdout.write(`FAIL ${name}\n${changes.slice(0, 30).join('\n')}\n`)
   }
 }
-if (!args.includes('--loopback-only')) {
+if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const listing = await client.rpc('tools/list')
   await record('mcp/tools-list', listing)
   const missingReads = listing.result.tools.filter(
@@ -104,7 +105,7 @@ const command = (cmd, argv, options = {}) =>
     child.on('error', reject)
     child.on('exit', (code) => resolve({ code, stdout, stderr }))
   })
-if (!args.includes('--loopback-only')) {
+if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const renderer = await command(process.execPath, [
     path.join(here, '../cdp-shots.mjs'),
     path.join(runDir, 'screenshots')
@@ -156,9 +157,30 @@ if (!args.includes('--loopback-only')) {
 }
 const restartIndex = args.indexOf('--loopback-restart')
 if (restartIndex >= 0) {
-  await runLoopbackRestart({ client, runDir, originalRun: args[restartIndex + 1], record, roots })
+  if (!args.includes('--subscriptions-only')) {
+    await runLoopbackRestart({ client, runDir, originalRun: args[restartIndex + 1], record, roots })
+  }
+  if (
+    !args.includes('--loopback-only') ||
+    args.includes('--subscriptions-only') ||
+    !subset ||
+    subset.includes('subscriptions')
+  ) {
+    await runSubscriptionsRestart({
+      client,
+      runDir,
+      originalRun: args[restartIndex + 1],
+      record,
+      roots
+    })
+  }
 } else {
-  await runLoopbackCases({ client, runDir, build, record, roots, command })
+  if (!args.includes('--subscriptions-only')) {
+    await runLoopbackCases({ client, runDir, build, record, roots, command })
+  }
+  if (!args.includes('--loopback-only') || args.includes('--subscriptions-only')) {
+    await runSubscriptionsCases({ client, runDir, build, record, roots, command })
+  }
 }
 if (!args.includes('--models')) {
   process.stdout.write('SKIP local ASR golden: --models not supplied\n')

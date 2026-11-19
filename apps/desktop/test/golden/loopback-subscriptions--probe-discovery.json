@@ -1,0 +1,57 @@
+{
+  "response": {
+    "valid": true,
+    "resolved": {
+      "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/redirect",
+      "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/rss.xml",
+      "platform": "custom",
+      "sourceKind": "feed",
+      "availableCategories": []
+    },
+    "discovered": true,
+    "corrected": true,
+    "title": "Loopback manual A",
+    "parsedItems": 2,
+    "usableItems": 2,
+    "samples": [
+      {
+        "id": "manual-retained",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+        "title": "River retained",
+        "publishedAt": 1735819200000,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      },
+      {
+        "id": "manual-dropped",
+        "url": "http://127.0.0.1:<port>/subscriptions-core/manual-dropped.mp4",
+        "title": "Forest dropped",
+        "publishedAt": 1735732800000,
+        "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+      }
+    ],
+    "downloadsTested": false
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/redirect",
+      "revision": null,
+      "status": 302,
+      "completed": true
+    },
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/site/index.html",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    },
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/rss.xml",
+      "revision": "A",
+      "status": 200,
+      "completed": true
+    }
+  ]
+}

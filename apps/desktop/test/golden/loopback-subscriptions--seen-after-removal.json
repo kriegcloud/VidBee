@@ -1,0 +1,77 @@
+{
+  "retainedLink": {
+    "id": "manual-retained",
+    "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+    "title": "River retained",
+    "publishedAt": 1735819200000,
+    "addedToQueue": true,
+    "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+    "taskId": "<id:1>"
+  },
+  "newTask": "<id:1>",
+  "oldTask": "<id:2>",
+  "tasks": [
+    {
+      "id": "<id:1>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "groupKey": "<id:3>",
+      "url": "http://127.0.0.1:<port>/subscriptions-core/manual-retained.mp4",
+      "title": "River retained",
+      "status": "completed",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-retained.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "error": null,
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    {
+      "id": "<id:4>",
+      "kind": "subscription-item",
+      "parentId": null,
+      "groupKey": "<id:3>",
+      "url": "http://127.0.0.1:<port>/subscriptions-core/manual-newer.mp4",
+      "title": "Mountain newer",
+      "status": "completed",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "nextRetryAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "output": {
+        "filePath": "<run>/subscription-downloads/manual-newer.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": []
+      },
+      "error": null,
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    }
+  ]
+}

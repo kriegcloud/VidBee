@@ -235,3 +235,65 @@ The download suite deliberately omits the stalled-download watchdog case: its
 running threshold is 60 seconds and no public preference lowers it. A server
 contract test still proves the stall route and connection cleanup. Remote-media
 extractors, authenticated sites, live ASR and hosted CI remain outside this proof.
+
+## Offline subscription cases (phase 6a)
+
+`subscriptions-core-fixture.mjs` generates fixed RSS 2.0, Atom and HTML discovery
+inputs; `subscriptions-core-loopback.mjs` handles their explicit routes before
+`loopback.mjs`'s media fallback. It replaces only the fixture origin with the
+namespace-local numeric address. Publication dates, GUIDs, titles, cover and item
+links are fixed. Revision B keeps the retained identity, drops the older identity
+and adds a newer one. Discovery includes relative, duplicate, invalid,
+credential-bearing and more-than-three candidates. Candidate failures and
+malformed XML remain real parser failures. No external service is involved.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --subscriptions-only --subset loopback-subscriptions
+bunx --bun vitest run apps/desktop/scripts/port/golden/subscriptions-core.test.mjs
+```
+
+`--subscriptions-only` skips the original and download scenarios, while retaining
+bootstrap and same-physical-profile restart. A normal full invocation appends the
+subscription scenario after the download scenario. Package-specific helpers and
+18 new documents live under `subscriptions-core-*` and
+`loopback-subscriptions--*`; existing documents remain unchanged.
+
+To add one of these cases, use public MCP tools or automation HTTP routes. Create
+disabled subscriptions so creation probing and periodic scheduling cannot consume
+the intended first refresh. Every explicit refresh takes a request-log cursor
+immediately before its public call, awaits a completed XML response after that
+cursor, awaits the public result, then checks successful persisted processing.
+Later refreshes must advance last-success time. The same subscription is used
+for revision and no-duplicate scenarios. A monotonic 30.5-second deadline starts
+at completion of each initial public refresh, so the real 30-second scheduler
+dedupe interval has elapsed; the waits overlap across subscriptions. Do not replace
+this with an empty subscription or restart. Task polling has bounded deadlines;
+SSE subscriptions start before admission.
+
+Goldens retain full item arrays/order, configuration, statuses, parser errors,
+queue links, automation task input/options/priority/group, task lifecycle,
+history, physical output filenames and file sizes. As with download cases,
+progress values and log strings are retained only in raw evidence; their ordered
+field names remain pinned. `normalizeSubscriptionClocks` replaces only numeric
+`lastCheckedAt` and `lastSuccessAt` fields with `<timestamp>`. It preserves null
+and missing fields, feed publication dates and latest-publication metadata. All
+other normalization uses the existing named rules. Request sequence cursors are
+asserted but omitted from the document projection; matching method/path/revision,
+HTTP status and completed-response evidence remain pinned.
+
+The renderer smoke sets an explicit 1280×900 CDP viewport and waits for a
+successful item title, selecting a visible subscription button if needed;
+it rejects renderer exceptions and console errors and keeps a screenshot in
+scratch. Output uses an exact short alias into the run's physical
+`subscription-downloads/`; it is removed in `finally`. After the app stops,
+`subscriptions-core-restart-fixture.mjs` changes exactly one synthetic item's link
+to a fixed nonexistent task ID and recreates the output alias as a symlink for
+startup. The runner removes it after the restarted app stops. Startup must clear
+that orphan while retaining
+the other valid link. Reopen also checks the database device/inode matches the
+original physical profile. No explicit refresh or server restart substitutes for
+startup reconciliation.
+
+Raw requests/responses, events, XML request log, renderer evidence and restart
+setup remain under the run's `subscriptions-core/` directory. The report
+[records baseline findings and acceptance evidence](reports/6a-goldens.md).

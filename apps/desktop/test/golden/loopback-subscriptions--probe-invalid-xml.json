@@ -1,0 +1,16 @@
+{
+  "response": {
+    "valid": false,
+    "error": "Unexpected close tag\nLine: 0\nColumn: 19\nChar: >",
+    "downloadsTested": false
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/invalid.xml",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    }
+  ]
+}

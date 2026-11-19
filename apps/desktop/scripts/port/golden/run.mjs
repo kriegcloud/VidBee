@@ -5,6 +5,10 @@ import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
+import {
+  cleanupSubscriptionsRestart,
+  prepareSubscriptionsRestart
+} from './subscriptions-core-restart-fixture.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../../../..')
@@ -128,6 +132,7 @@ try {
     build,
     ...(args.includes('--update') ? ['--update'] : []),
     ...(args.includes('--loopback-only') ? ['--loopback-only'] : []),
+    ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
     ...(option('--subset') ? ['--subset', option('--subset')] : []),
     ...(models ? ['--models', path.resolve(models)] : [])
   ]
@@ -138,8 +143,15 @@ try {
   )
   process.stdout.write(output)
   await stop()
-  const state = JSON.parse(await readFile(path.join(runDir, 'loopback/state.json'), 'utf8'))
-  await symlink(path.join(runDir, 'downloads'), state.alias)
+  if (!args.includes('--loopback-only') || args.includes('--subscriptions-only')) {
+    await prepareSubscriptionsRestart(runDir)
+  }
+  const state = args.includes('--subscriptions-only')
+    ? undefined
+    : JSON.parse(await readFile(path.join(runDir, 'loopback/state.json'), 'utf8'))
+  if (state) {
+    await symlink(path.join(runDir, 'downloads'), state.alias)
+  }
   try {
     const restartDir = path.join(work, 'restart')
     const restartPid = await launch(restartDir, undefined, path.join(runDir, 'userdata'))
@@ -154,6 +166,7 @@ try {
       restartDir,
       build,
       '--loopback-only',
+      ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
       '--loopback-restart',
       runDir,
       ...(args.includes('--update') ? ['--update'] : []),
@@ -161,7 +174,9 @@ try {
     ])
     process.stdout.write(restartOutput)
   } finally {
-    await rm(state.alias, { force: true })
+    if (state) {
+      await rm(state.alias, { force: true })
+    }
   }
   if (active.exitCode !== null || active.signalCode !== null) {
     throw new Error('Offline launcher exited unexpectedly before suite completion')
@@ -173,4 +188,7 @@ try {
   )
 } finally {
   await stop()
+  if (!args.includes('--loopback-only') || args.includes('--subscriptions-only')) {
+    await cleanupSubscriptionsRestart(path.join(work, 'run'))
+  }
 }
