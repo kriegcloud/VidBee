@@ -7,6 +7,7 @@ import * as Layer from "effect/Layer";
 import * as MutableHashMap from "effect/MutableHashMap";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as Str from "effect/String";
 import { defaultMaxAttempts, virtualError } from "./classifier/index.js";
@@ -21,6 +22,7 @@ import * as Watchdog from "./process/Watchdog.layer.js";
 import { Watchdog as WatchdogService } from "./process/Watchdog.service.js";
 import { QueueRandom } from "./QueueRandom.service.js";
 import { QueueTimers } from "./QueueTimers.service.js";
+import { RegistryInspection } from "./RegistryInspection.service.js";
 import * as Retry from "./scheduler/RetryScheduler.layer.js";
 import { RetryScheduler } from "./scheduler/RetryScheduler.service.js";
 import * as Scheduler from "./scheduler/Scheduler.layer.js";
@@ -73,6 +75,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
   const processes = yield* ProcessRegistry;
   const hooks = yield* TaskQueueHooks;
   const active = MutableHashMap.empty<string, ActiveRun>();
+  const starting = MutableHashMap.empty<string, { suspended: boolean }>();
   const finished = MutableHashMap.empty<string, Deferred.Deferred<void>>();
   const pendingAdmissions = MutableHashMap.empty<string, Deferred.Deferred<void, QueueError>>();
   const progressLastWrite = MutableHashMap.empty<string, number>();
@@ -80,7 +83,21 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
   const pendingPause = MutableHashMap.empty<string, string>();
   const pendingCancel = MutableHashSet.empty<string>();
   const removing = MutableHashSet.empty<string>();
+  const inspection = yield* Effect.serviceOption(RegistryInspection);
+  if (Option.isSome(inspection))
+    inspection.value.register("queue", () => ({
+      active: MutableHashMap.size(active),
+      finished: MutableHashMap.size(finished),
+      starting: MutableHashMap.size(starting),
+      pendingAdmissions: MutableHashMap.size(pendingAdmissions),
+      pendingPause: MutableHashMap.size(pendingPause),
+      pendingCancel: MutableHashSet.size(pendingCancel),
+      removing: MutableHashSet.size(removing),
+      progressDirty: MutableHashMap.size(progressDirty),
+      progressLastWrite: MutableHashMap.size(progressLastWrite),
+    }));
   let started = false;
+  let stopping = 0;
   let reconcileBusy = false;
   let idleTimer: Cancel | null = null;
   const idleMs = options.idleQueueKickMs ?? 15000;
@@ -96,10 +113,11 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
   const outputComplete = Effect.fnUntraced(function* (kind: T.TaskKind, out: T.TaskOutput): Effect.fn.Return<boolean> {
     if (kind === "social-media")
       return (
+        P.isTruthy(out.collectionSummary) &&
         out.collectionSummary !== undefined &&
         out.collectionSummary.reason !== "incomplete" &&
         out.collectionSummary.failed === 0 &&
-        Boolean(out.outputDirectory) &&
+        P.isTruthy(out.outputDirectory) &&
         (yield* probe.filePresent(out.outputDirectory ?? "")) &&
         (yield* probe.filePresent(out.collectionSummary.manifestPath))
       );
@@ -119,7 +137,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
       )
     )
       return (
-        Boolean(out.outputDirectory) &&
+        P.isTruthy(out.outputDirectory) &&
         out.fileCount !== undefined &&
         out.fileCount > 0 &&
         out.size > 0 &&
@@ -128,12 +146,15 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
       );
     if (kind === "transcription")
       return (
-        Boolean(out.transcript?.transcriptId) &&
+        P.isTruthy(out.transcript?.transcriptId) &&
         (out.transcript?.resultKind === "transcript" || out.transcript?.resultKind === "no-speech")
       );
-    if (kind === "subtitles" && !(out.transcript?.resultKind === "transcript" && Boolean(out.transcript.transcriptId)))
+    if (
+      kind === "subtitles" &&
+      !(out.transcript?.resultKind === "transcript" && P.isTruthy(out.transcript.transcriptId))
+    )
       return false;
-    return Boolean(out.filePath) && out.size > 0 && (yield* probe.filePresent(out.filePath));
+    return P.isTruthy(out.filePath) && out.size > 0 && (yield* probe.filePresent(out.filePath));
   });
   const applyTransition = Effect.fnUntraced(function* (
     id: string,
@@ -181,13 +202,14 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
       }
       return yield* error;
     }
-    const next = input === undefined ? result.success : { ...result.success, input };
-    yield* store.update(next);
-    yield* persist.upsertTask({ task: next, progress: next.progress }).pipe(
-      Effect.catch(
-        Effect.fnUntraced(function* (error) {
-          if ((yield* store.get(id)) === next) yield* store.update(current);
-          return yield* error;
+    const next = !P.isTruthy(input) || input === undefined ? result.success : { ...result.success, input };
+    yield* Effect.gen(function* () {
+      yield* store.update(next);
+      yield* persist.upsertTask({ task: next, progress: next.progress });
+    }).pipe(
+      Effect.onError(() =>
+        Effect.gen(function* () {
+          if ((yield* store.get(id)) === next) yield* store.update(current).pipe(Effect.orDie);
         })
       )
     );
@@ -312,11 +334,19 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     attemptId: string,
     event: ExecutorFinishEvent
   ): Effect.fn.Return<void> {
-    yield* watchdog.disarm(id);
-    MutableHashMap.remove(active, id);
-    yield* finishAttempt(id, attemptId, event).pipe(
-      Effect.catchCause((cause) => Effect.logError("task_queue_handle_finish_threw", cause)),
-      Effect.ensuring(Effect.suspend(() => scheduler.releaseSlot(id)))
+    yield* Effect.gen(function* () {
+      yield* watchdog.disarm(id);
+      MutableHashMap.remove(active, id);
+      yield* finishAttempt(id, attemptId, event).pipe(
+        Effect.catchCause((cause) => Effect.logError("task_queue_handle_finish_threw", cause))
+      );
+    }).pipe(
+      Effect.ensuring(
+        Effect.suspend(() => {
+          if (lookup(active, id)?.attemptId === attemptId) MutableHashMap.remove(active, id);
+          return scheduler.releaseSlot(id);
+        })
+      )
     );
   });
   const dispatchOne = Effect.fnUntraced(function* (id: string): Effect.fn.Return<boolean, QueueError> {
@@ -343,6 +373,9 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     const complete = Effect.gen(function* () {
       if (lookup(finished, id) === completion) {
         MutableHashMap.remove(finished, id);
+        MutableHashMap.remove(starting, id);
+        MutableHashMap.remove(pendingPause, id);
+        MutableHashSet.remove(pendingCancel, id);
         MutableHashMap.remove(progressLastWrite, id);
         MutableHashMap.remove(progressDirty, id);
       }
@@ -404,28 +437,49 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
         at: yield* timers.now,
       });
     });
-    const result = yield* executor
-      .run({ taskId: id, attemptId, attemptNumber: admitted.success.attempt, input: task.input }, { emit })
-      .pipe(Effect.result);
-    if (Result.isFailure(result)) {
-      accepting = false;
-      const error = virtualError("unknown", String(result.failure.original));
-      yield* Effect.gen(function* () {
-        yield* applyTransition(id, "failed", { trigger: "finalize-error", reason: error.category, error });
-        yield* scheduler.releaseSlot(id);
-      }).pipe(Effect.ensuring(complete));
-      return false;
-    }
-    if (accepting)
-      MutableHashMap.set(active, id, {
-        taskId: id,
-        attemptId,
-        run: result.success,
-        markStalled: (error) => {
-          stalled = error;
-        },
-      });
-    return true;
+    return yield* Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
+        const start = { suspended: false };
+        MutableHashMap.set(starting, id, start);
+        // Immediate execution distinguishes re-entrant controls in the synchronous prefix
+        // from controls arriving after run has actually suspended, for every executor.
+        const startFiber = yield* executor
+          .run({ taskId: id, attemptId, attemptNumber: admitted.success.attempt, input: task.input }, { emit })
+          .pipe(Effect.forkChild({ startImmediately: true }));
+        start.suspended = startFiber.pollUnsafe() === undefined;
+        const result = yield* restore(Fiber.join(startFiber)).pipe(
+          Effect.result,
+          Effect.onError(() =>
+            Effect.sync(() => {
+              accepting = false;
+            }).pipe(Effect.andThen(complete))
+          )
+        );
+        MutableHashMap.remove(starting, id);
+        if (Result.isFailure(result)) {
+          accepting = false;
+          const error = virtualError("unknown", String(result.failure.original));
+          yield* applyTransition(id, "failed", { trigger: "finalize-error", reason: error.category, error }).pipe(
+            Effect.ensuring(scheduler.releaseSlot(id)),
+            Effect.ensuring(complete)
+          );
+          return false;
+        }
+        if (accepting) {
+          MutableHashMap.set(active, id, {
+            taskId: id,
+            attemptId,
+            run: result.success,
+            markStalled: (error) => {
+              stalled = error;
+            },
+          });
+          if (start.suspended && MutableHashSet.has(pendingCancel, id)) yield* detach(result.success.cancel());
+          else if (start.suspended && MutableHashMap.has(pendingPause, id)) yield* detach(result.success.pause);
+        }
+        return true;
+      })
+    );
   });
   const demote = Effect.fnUntraced(function* (id: string): Effect.fn.Return<void> {
     const run = lookup(active, id);
@@ -485,7 +539,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     request: Requests.AddTaskRequest
   ): Effect.fn.Return<{ id: string }, QueueError> {
     const now = yield* timers.now;
-    if (request.id !== undefined && request.id.length > 0) {
+    if (P.isTruthy(request.id) && request.id !== undefined) {
       const existing = yield* store.get(request.id ?? "");
       if (existing !== undefined) {
         yield* awaitAdmission(existing.id);
@@ -531,17 +585,19 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     };
     yield* store.insert(task);
     const pending = yield* Deferred.make<void, QueueError>();
-    const write = yield* persist.insertTask(task).pipe(Effect.forkIn(scope, { startImmediately: true }));
+    const write = yield* persist.insertTask(task).pipe(
+      Effect.tapError((error) => Deferred.fail(pending, error)),
+      Effect.tap(() => Deferred.succeed(pending, undefined)),
+      Effect.forkIn(scope, { startImmediately: true })
+    );
     MutableHashMap.set(pendingAdmissions, id, pending);
     yield* Fiber.join(write).pipe(
-      Effect.tapError((error) => Deferred.fail(pending, error)),
       Effect.catch(
         Effect.fnUntraced(function* (error) {
           yield* store.remove(id);
           return yield* error;
         })
       ),
-      Effect.tap(() => Deferred.succeed(pending, undefined)),
       Effect.ensuring(Effect.sync(() => MutableHashMap.remove(pendingAdmissions, id)))
     );
     yield* bus.emit({ type: "transition", taskId: id, from: null, to: "queued", reason: null, attempt: 0, at: now });
@@ -553,7 +609,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
   const importCompleted = Effect.fnUntraced(function* (
     request: Requests.ImportCompletedRequest
   ): Effect.fn.Return<{ id: string; created: boolean }, QueueError> {
-    if (request.id !== undefined && request.id.length > 0) {
+    if (P.isTruthy(request.id) && request.id !== undefined) {
       const existing = yield* store.get(request.id ?? "");
       if (existing !== undefined) return { id: existing.id, created: false };
     }
@@ -600,7 +656,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     MutableHashSet.add(pendingCancel, id);
     MutableHashMap.remove(pendingPause, id);
     if (HashSet.has(TERMINAL_STATUSES, task.status)) {
-      MutableHashSet.remove(pendingCancel, id);
+      if (task.status !== "cancelled" || !MutableHashMap.has(starting, id)) MutableHashSet.remove(pendingCancel, id);
       return;
     }
     if (task.status === "queued" || task.status === "paused") {
@@ -619,6 +675,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     yield* applyTransition(id, "cancelled", { trigger: "cancel", reason });
     const run = lookup(active, id);
     if (run === undefined) {
+      if (MutableHashMap.has(starting, id)) return;
       MutableHashSet.remove(pendingCancel, id);
       yield* scheduler.releaseSlot(id);
       return;
@@ -643,8 +700,8 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     }
     if (task.status === "running" || task.status === "processing") {
       const run = lookup(active, id);
+      if (run !== undefined || lookup(starting, id)?.suspended === true) MutableHashMap.set(pendingPause, id, reason);
       if (run !== undefined) {
-        MutableHashMap.set(pendingPause, id, reason);
         yield* run.run.pause.pipe(
           Effect.catchCause((cause) =>
             Effect.gen(function* () {
@@ -677,15 +734,15 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
           yield* resume(task.id);
         }
       }
-      const live = MutableHashSet.empty<string>();
-      const page = yield* store.list({ limit: Number.MAX_SAFE_INTEGER });
-      for (const task of page.tasks)
-        if (
-          (task.status === "running" || task.status === "processing") &&
-          (MutableHashMap.has(active, task.id) || now - task.enteredStatusAt < zombieMs)
+      yield* scheduler.sweepDeadSlots((id) =>
+        Effect.map(
+          store.get(id),
+          (task) =>
+            task !== undefined &&
+            (task.status === "running" || task.status === "processing") &&
+            (MutableHashMap.has(active, id) || now - task.enteredStatusAt < zombieMs)
         )
-          MutableHashSet.add(live, task.id);
-      yield* scheduler.sweepDeadSlots((id) => MutableHashSet.has(live, id));
+      );
       const queued = yield* store.list({ limit: 1000, status: "queued" });
       for (const task of queued.tasks) yield* scheduler.ensureEnqueued(task.id, task.priority);
     }).pipe(
@@ -700,9 +757,12 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
     if (idleMs <= 0) return;
     idleTimer = yield* timers.after(
       idleMs,
-      reconcileQueue.pipe(
+      Effect.suspend(() => {
+        idleTimer = null;
+        return reconcileQueue;
+      }).pipe(
         Effect.catchCause((cause) => Effect.logError("task_queue_reconcile_threw", cause)),
-        Effect.ensuring(Effect.suspend(() => (started ? armIdle() : Effect.void)))
+        Effect.ensuring(Effect.suspend(() => (started && stopping === 0 ? armIdle() : Effect.void)))
       ),
       { keepAlive: false }
     );
@@ -737,14 +797,23 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
   });
   const stop = Effect.gen(function* () {
     if (!started) return;
-    if (idleTimer !== null) {
-      yield* idleTimer;
-      idleTimer = null;
-    }
-    yield* retry.stop;
-    for (const [, run] of A.fromIterable(active)) yield* run.run.cancel(0).pipe(Effect.ignore);
-    yield* persist.close;
-    started = false;
+    stopping++;
+    yield* Effect.gen(function* () {
+      if (idleTimer !== null) {
+        yield* idleTimer;
+        idleTimer = null;
+      }
+      yield* retry.stop;
+      for (const [, run] of A.fromIterable(active)) yield* run.run.cancel(0).pipe(Effect.ignore);
+      yield* persist.close;
+      started = false;
+    }).pipe(
+      Effect.ensuring(
+        Effect.sync(() => {
+          stopping--;
+        })
+      )
+    );
   });
   yield* hooks.bind({ dispatch: dispatchOne, demote, retryDue, stalled });
   return TaskQueue.of({
@@ -767,12 +836,13 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
       if (normalized.length === 0 || normalized.length > 200)
         return yield* Errors.InvalidTitle.make({ legacyMessage: "Title must contain 1–200 characters" });
       const next = { ...task, input: { ...task.input, title: normalized }, updatedAt: yield* timers.now };
-      yield* store.update(next);
-      yield* persist.upsertTask({ task: next, progress: next.progress }).pipe(
-        Effect.catch(
-          Effect.fnUntraced(function* (error) {
-            if ((yield* store.get(id)) === next) yield* store.update(task);
-            return yield* error;
+      yield* Effect.gen(function* () {
+        yield* store.update(next);
+        yield* persist.upsertTask({ task: next, progress: next.progress });
+      }).pipe(
+        Effect.onError(() =>
+          Effect.gen(function* () {
+            if ((yield* store.get(id)) === next) yield* store.update(task).pipe(Effect.orDie);
           })
         )
       );
@@ -781,7 +851,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
         yield* bus.emit({ type: "snapshot-changed", taskId: id, task: current, at: yield* timers.now });
     }),
     relocateFileReferences: Effect.fnUntraced(function* (from, to) {
-      if (from.length === 0 || to.length === 0)
+      if (!P.isTruthy(from) || !P.isTruthy(to))
         return yield* Errors.InvalidPathPair.make({ legacyMessage: "Source and destination paths are required" });
       const page = yield* store.list({ limit: Number.MAX_SAFE_INTEGER });
       const affected = A.filter(
@@ -797,34 +867,39 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
         A.some(
           page.tasks,
           (task) =>
-            task.parentId !== null && HashSet.has(ids, task.parentId) && !HashSet.has(TERMINAL_STATUSES, task.status)
+            P.isTruthy(task.parentId) &&
+            task.parentId !== null &&
+            HashSet.has(ids, task.parentId) &&
+            !HashSet.has(TERMINAL_STATUSES, task.status)
         )
       )
         return yield* Errors.DependentTasksActive.make({
           legacyMessage: "Finish or cancel dependent tasks before renaming their source file",
         });
       const updated: T.Task[] = [];
-      for (const task of affected) {
-        const next = {
-          ...task,
-          input:
-            task.input.options?.sourceFilePath === from
-              ? { ...task.input, options: { ...task.input.options, sourceFilePath: to } }
-              : task.input,
-          output: task.output?.filePath === from ? { ...task.output, filePath: to } : task.output,
-          updatedAt: yield* timers.now,
-        };
-        updated.push(next);
-        yield* store.update(next);
-      }
-      yield* persist.upsertTasks(A.map(updated, (task) => ({ task, progress: task.progress }))).pipe(
-        Effect.catch(
-          Effect.fnUntraced(function* (error) {
+      yield* Effect.gen(function* () {
+        for (const task of affected) {
+          const next = {
+            ...task,
+            input:
+              task.input.options?.sourceFilePath === from
+                ? { ...task.input, options: { ...task.input.options, sourceFilePath: to } }
+                : task.input,
+            output: task.output?.filePath === from ? { ...task.output, filePath: to } : task.output,
+            updatedAt: yield* timers.now,
+          };
+          updated.push(next);
+          yield* store.update(next);
+        }
+        yield* persist.upsertTasks(A.map(updated, (task) => ({ task, progress: task.progress })));
+      }).pipe(
+        Effect.onError(() =>
+          Effect.gen(function* () {
             for (const [index, task] of updated.entries()) {
               const original = affected[index];
-              if (original !== undefined && (yield* store.get(task.id)) === task) yield* store.update(original);
+              if (original !== undefined && (yield* store.get(task.id)) === task)
+                yield* store.update(original).pipe(Effect.orDie);
             }
-            return yield* error;
           })
         )
       );
@@ -850,7 +925,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
         id,
         "queued",
         { trigger: task.status === "failed" ? "retry-manual" : "requeue", reason: "manual" },
-        opts !== undefined ? { ...task.input, options: opts } : undefined
+        P.isTruthy(opts) && opts !== undefined ? { ...task.input, options: opts } : undefined
       );
       yield* scheduler.enqueue(id, task.priority);
     }),
@@ -926,7 +1001,7 @@ export const make = Effect.fnUntraced(function* (options: TaskQueueOptions = {})
 });
 const defaultGroupKey = (input: T.TaskInput): string => {
   if (input.kind === "transcription") return TRANSCRIPTION_GROUP_KEY;
-  if (input.subscriptionId !== undefined && input.subscriptionId.length > 0) return `sub:${input.subscriptionId}`;
+  if (P.isTruthy(input.subscriptionId) && input.subscriptionId !== undefined) return `sub:${input.subscriptionId}`;
   try {
     return new URL(input.url).host || "unknown";
   } catch {

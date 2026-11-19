@@ -152,3 +152,9 @@ describe("legacy parity", () => {
     expect(fake.error).toHaveBeenLastCalledWith({ event: "failed", error: "42", stack: undefined });
   });
 });
+
+it("dual audit: caught-error data-last preserves the legacy sink payload", () => {
+  const error = new Error("dual-audit");
+  logCaughtError(error)("dual-event");
+  expect(fake.error).toHaveBeenLastCalledWith({ event: "dual-event", error: "dual-audit", stack: error.stack });
+});

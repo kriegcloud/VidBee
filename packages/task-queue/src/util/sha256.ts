@@ -1,4 +1,5 @@
 import * as A from "effect/Array";
+import * as P from "effect/Predicate";
 import * as Str from "effect/String";
 
 /** SHA-256 over UTF-8 bytes. Kept synchronous so recording an attempt adds no suspension. */
@@ -68,5 +69,7 @@ export function sha256(value: string): string {
 }
 /** Preserve the historical joined-argument hash, including the empty sentinel. */
 export function hashRawArgs(args: readonly string[] | undefined): string {
-  return args === undefined || args.length === 0 ? "sha256:none" : `sha256:${sha256(A.join(args, " "))}`;
+  return !P.isTruthy(args) || args === undefined || args.length === 0
+    ? "sha256:none"
+    : `sha256:${sha256(A.join(args, " "))}`;
 }

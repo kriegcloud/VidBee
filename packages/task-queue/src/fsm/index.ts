@@ -1,5 +1,6 @@
 import { dual } from "effect/Function";
 import * as HashSet from "effect/HashSet";
+import * as P from "effect/Predicate";
 import * as Result from "effect/Result";
 import { IllegalTransition } from "../TaskQueue.errors.js";
 import { TERMINAL_STATUSES } from "../types.js";
@@ -21,7 +22,7 @@ function illegal(from: TaskStatus, to: TaskStatus, reason?: string): Result.Resu
       from,
       to,
       reason,
-      legacyMessage: `IllegalTransition: ${from} -> ${to}${reason !== undefined && reason.length > 0 ? ` (${reason})` : ""}`,
+      legacyMessage: `IllegalTransition: ${from} -> ${to}${P.isTruthy(reason) ? ` (${reason})` : ""}`,
     })
   );
 }
@@ -52,7 +53,10 @@ export const LEGAL_TRANSITIONS: Readonly<Record<TaskStatus, HashSet.HashSet<Task
 export const isLegalTransition: {
   (from: TaskStatus, to: TaskStatus): boolean;
   (to: TaskStatus): (from: TaskStatus) => boolean;
-} = dual(2, (from: TaskStatus, to: TaskStatus): boolean => HashSet.has(LEGAL_TRANSITIONS[from], to));
+} = dual(2, (from: TaskStatus, to: TaskStatus): boolean => {
+  const legal = LEGAL_TRANSITIONS[from];
+  return legal !== undefined && HashSet.has(legal, to);
+});
 
 /**
  * Apply a transition and return the next Task value. Pure: callers (Scheduler,
@@ -116,7 +120,7 @@ export const transition: {
       }
       break;
     case "completed": {
-      if (ctx.output === undefined) {
+      if (!P.isTruthy(ctx.output) || ctx.output === undefined) {
         return illegal(from, to, "finalize-success requires output");
       }
       // Hard guard from §3.1: completed only legal when file exists with size > 0.
@@ -131,7 +135,7 @@ export const transition: {
       break;
     }
     case "failed": {
-      if (ctx.error !== undefined) next.lastError = ctx.error;
+      if (P.isTruthy(ctx.error) && ctx.error !== undefined) next.lastError = ctx.error;
       next.pid = null;
       next.pidStartedAt = null;
       break;
@@ -145,7 +149,7 @@ export const transition: {
       if (ctx.nextRetryAt == null || ctx.nextRetryAt <= 0) {
         return illegal(from, to, "retry-scheduled requires nextRetryAt");
       }
-      if (ctx.error !== undefined) next.lastError = ctx.error;
+      if (P.isTruthy(ctx.error) && ctx.error !== undefined) next.lastError = ctx.error;
       next.nextRetryAt = ctx.nextRetryAt;
       next.pid = null;
       next.pidStartedAt = null;

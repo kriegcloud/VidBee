@@ -37,7 +37,7 @@
     "zip:extension": "bun run --cwd apps/extension zip",
     "check:legacy": "bun run --cwd apps/desktop check",
     "lint:legacy": "bun run --cwd apps/desktop check",
-    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs",
+    "test": "bun run test:audit && turbo run test --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/loopback.test.mjs packages/subscriptions-core/test/review",
     "port:check": "node scripts/port-check.mjs"
   },
   "devDependencies": {

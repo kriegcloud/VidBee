@@ -1,6 +1,7 @@
 import * as A from "effect/Array";
 import * as HashSet from "effect/HashSet";
 import * as O from "effect/Option";
+import * as P from "effect/Predicate";
 import * as Str from "effect/String";
 import { defaultLanguageCode } from "./languages.js";
 import type { LanguageCode, SystemProfile, SystemProfileHints } from "./I18n.model.js";
@@ -80,7 +81,7 @@ const BASE_LANGUAGE: Readonly<Record<string, LanguageCode>> = {
  * Map one OS/BCP-47 tag onto a supported UI language, or null if unknown.
  */
 export const languageFromTag = (tag: string | null | undefined): LanguageCode | null => {
-  if (tag === null || tag === undefined || tag === "") {
+  if (!P.isTruthy(tag) || tag == null) {
     return null;
   }
   const cleaned = Str.split(Str.toLowerCase(Str.replaceAll("_", "-")(Str.trim(tag))), ".")[0];
@@ -117,7 +118,7 @@ export const detectSystemProfile = (input: SystemProfileHints): SystemProfile =>
   const timeZone = input.timeZone ?? "";
   const country = Str.toUpperCase(Str.trim(input.countryCode ?? ""));
   const hostLocales =
-    input.locales !== undefined && input.locales.length > 0
+    P.isTruthy(input.locales) && input.locales !== undefined && input.locales.length > 0
       ? input.locales
       : [env.LANG, env.LC_ALL, env.LC_MESSAGES, input.defaultLocale ?? ""];
   const locales = [env.VIDBEE_LANGUAGE, ...hostLocales];

@@ -303,6 +303,75 @@ when reconciling migration tracking, so the preceding 0.45 build can reopen a
 fresh database. A cached `better-sqlite3` statement's `.raw(true)` mutates it;
 restore object mode in `finally`, including after errors.
 
+## Defect classes found by code review
+
+Preserve observable legacy behavior, including falsy inputs and old bugs, and make native
+Effect resource lifetimes safe under failure and interruption. The independent review found
+these classes; apply each rule before relying on a green typecheck.
+
+- **Generator `try`/`finally` or `try`/`catch` around `yield*`:** Effect failure and interruption
+  do not unwind JavaScript generators in Effect 4.1.4. Use Effect error handling and finalization.
+  Wrong: `try { yield* work } finally { release() }`
+  Right: `yield* work.pipe(Effect.ensuring(Effect.sync(release)))`
+- **Cleanup after `yield*`:** install cleanup before starting work, and mask acquisition until
+  its finalizer is installed. Use `withPermits`, `onExit`, `ensuring` or scoped acquisition.
+  Wrong: `yield* semaphore.take(1); yield* work; yield* semaphore.release(1)`
+  Right: `yield* work.pipe(semaphore.withPermits(1))`
+- **Registration after fork:** a child can finish synchronously. Publish identity before
+  scheduling callbacks, or complete the Deferred in the child independently of registration.
+  Wrong: `entry.timer = yield* schedule(entry); entries.set(id, entry)`
+  Right: `entries.set(id, entry); entry.timer = yield* schedule(entry)`
+- **Truthiness rewrites:** `!== undefined`, `??` and empty-string checks do not preserve
+  JavaScript truthiness for null, zero, false or NaN. Use `Predicate.isTruthy` where the old guard did.
+  Wrong: `if (input.subscriptionId !== undefined) use(input.subscriptionId)`
+  Right: `if (Predicate.isTruthy(input.subscriptionId)) use(input.subscriptionId)`
+- **Methods on unverified values:** Effect string/array functions can accept or fail on different
+  values than old methods. Preserve returned results within the parity boundary below; an old
+  engine or Node failure only requires failure for a type-violating call. Do not add a discarded
+  pre-call solely to reproduce its error text.
+  Wrong: `oldMethod(unverified); return strictMethod(unverified) // discarded error-text pre-call`
+  Right: `return strictMethod(unverified) // verify required results and failure, without engine text`
+- **`dual` predicates:** distinguish optional configuration from the data argument using the
+  actual call shapes, and test every data-first and data-last overload within the declared types.
+  For inputs outside them, apply the parity boundary below.
+  Wrong: `dual((args) => typeof args[0] === 'string', body)`
+  Right: `dual((args) => args.length >= 2 || (args.length === 1 && args[0] !== undefined && typeof args[0] !== 'number'), body)`
+- **Snapshot before lock:** predicates controlling resource ownership read current state inside
+  the protected body. Pass a live accessor instead of constructing a set before acquisition.
+  Wrong: `const live = snapshot(); yield* sweep((id) => live.has(id))`
+  Right: `yield* sweep((id) => store.get(id).pipe(Effect.map(isLive)))`
+- **Legacy error class drift:** strict tagged errors must be translated by every legacy helper
+  that calls the strict implementation; re-exporting a helper can bypass that boundary.
+  Wrong: `export { virtualError } from '@vidbee/task-queue/classifier'`
+  Right: `const rule = getLegacyRule(category); return buildVirtualError(rule)`
+- **Third-party error wrapping:** upgrades may wrap errors even when the SQL and result shapes
+  stay the same. Re-throw the original driver object for every supplied-store caller.
+  Wrong: `return store // DrizzleQueryError now escapes`
+  Right: `return withDriverErrors(store) // rethrowQueryError unwraps the original cause`
+- **Structural equality for foreign object keys:** Effect hash maps compare unmarked objects
+  structurally. Foreign resource handles require reference identity and explicit release.
+  Wrong: `MutableHashMap.get(runtimes, databaseHandle)`
+  Right: `Array.findFirst(entries, (entry) => entry.handle === databaseHandle)`
+
+Cross-owner callbacks re-enter the receiving owner's runtime synchronously. Capture that owner's
+context at construction and provide it to detached callback work; retaining a scope alone does
+not retain its logger or `PreventSchedulerYield`. Native classifier callers currently use the
+Effect date parser, which treats zone-less timestamps as UTC and differs on named timezone
+suffixes. Compatibility callers explicitly supply `Date.parse` until the later native cutover.
+
+### Parity boundary for inputs outside the declared types
+
+Inside the declared types, preserve exact observable behavior, including return values, error
+classes/messages, calling conventions and suspension points. Outside those types, preserve the
+old returned result for `null`, a wrong-kind JSON scalar (string, number or boolean), and `NaN`
+when the old implementation returned a result. If a type-violating call instead threw an engine
+or Node error, the replacement must also fail; it need not emulate that error's text or code.
+Arrays and objects supplied in scalar positions have no parity obligation. Deliberately
+constructed application errors retain their existing contract.
+
+Wrong: `expect(() => list({ query: 42 })).toThrow("opts?.query?.trim is not a function")`
+Right: `expect(() => list({ query: 42 })).toThrow(); expect(list({ query: null })).toEqual(oldNullResult)`
+
 ## Downloader process and compatibility patterns (phase 5)
 
 The downloader separates process observations from domain results. `DownloadProcess` accepts an
@@ -354,7 +423,10 @@ unchanged. Neither capability adds process identity checks; those remain `Proces
 compatibility borrows its host inspector and queue instead of exposing or reconstructing runtimes.
 
 
-### Parity boundary for inputs outside the declared types
+### Parity boundary: the downloader's worked example and exceptions
+
+The general rule is stated under "Defect classes found by code review" above. This subsection
+restates it with the downloader's example and lists the downloader's external-data exceptions.
 
 Inside the declared types, preserve exact behavior: results, deliberately constructed error
 classes and messages, and synchronous throws versus rejected failures. Both declared forms of a

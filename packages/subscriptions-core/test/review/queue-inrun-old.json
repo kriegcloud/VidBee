@@ -1,0 +1,746 @@
+{
+  "none/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "none/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "none/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "none/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "pause/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "pause+pause/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause+pause/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause+pause/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "pause+pause/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "cancel+cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel+cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel+cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "cancel+cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "pause+cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "pause+cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "pause+cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "pause+cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel+pause/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel+pause/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "cancel+pause/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "cancel+pause/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "run0.cancel"
+    ]
+  },
+  "sync/none/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/none/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/none/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "sync/none/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "sync/pause/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/pause+pause/none": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause+pause/resume": {
+    "mid": "completed",
+    "final": "completed",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause+pause/retryManual": {
+    "mid": "retry-scheduled",
+    "final": "retry-scheduled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)"
+    ]
+  },
+  "sync/pause+pause/tick": {
+    "mid": "retry-scheduled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->retry-scheduled(network-transient)",
+      "retry-scheduled->queued(retry)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/cancel+cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel+cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel+cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/cancel+cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/pause+cancel/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/pause+cancel/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/pause+cancel/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/pause+cancel/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel+pause/none": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel+pause/resume": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  },
+  "sync/cancel+pause/retryManual": {
+    "mid": "cancelled",
+    "final": "completed",
+    "running": 0,
+    "runs": 2,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)",
+      "cancelled->queued(manual)",
+      "queued->running(null)",
+      "run1.start",
+      "running->completed(null)"
+    ]
+  },
+  "sync/cancel+pause/tick": {
+    "mid": "cancelled",
+    "final": "cancelled",
+    "running": 0,
+    "runs": 1,
+    "trace": [
+      "null->queued(null)",
+      "queued->running(null)",
+      "run0.start",
+      "running->cancelled(user)"
+    ]
+  }
+}

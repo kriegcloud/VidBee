@@ -1,5 +1,6 @@
 import * as A from "effect/Array";
 import * as O from "effect/Option";
+import * as P from "effect/Predicate";
 import * as R from "effect/Record";
 import * as Str from "effect/String";
 import type { LanguageCode, LanguageDefinition } from "./I18n.model.js";
@@ -74,7 +75,7 @@ export const languageList = A.map(R.toEntries(languages), ([code, definition]) =
 export const supportedLanguageCodes = A.map(languageList, (language) => language.value);
 
 export function normalizeLanguageCode(code: string | null | undefined): LanguageCode {
-  if (code === null || code === undefined || code === "") return defaultLanguageCode;
+  if (!P.isTruthy(code) || code == null) return defaultLanguageCode;
   const normalizedInput = Str.toLowerCase(code);
   const directMatch = O.getOrUndefined(
     A.findFirst(supportedLanguageCodes, (languageCode) => Str.toLowerCase(languageCode) === normalizedInput)
