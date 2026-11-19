@@ -1,422 +1,391 @@
-import { randomUUID } from 'node:crypto'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
-import type { ExecutorFinishEvent, TaskQueueAPI } from '@vidbee/task-queue-legacy'
-import type { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
-import { z } from 'zod'
-import { GalleryDlExecutor, type GalleryDlExecutorOptions } from './gallery-dl-executor'
-import type { MappedProfilePlatform } from './mapped-profile-source'
-import type { SocialMediaOptions, SocialSource } from './social-media'
-import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from './social-media'
-import { expandTikTokShortLink } from './tiktok-short-link'
-import type { DownloadRuntimeSettings } from './types'
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
+import * as A from "effect/Array";
+import * as Context from "effect/Context";
+import * as Deferred from "effect/Deferred";
+import * as Effect from "effect/Effect";
+import * as Fiber from "effect/Fiber";
+import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
+import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { BoundaryDecodeError, InvalidDownload } from "./Downloader.errors.js";
+import { DownloadFiles } from "./DownloadFiles.service.js";
+import { DownloadHost } from "./DownloadHost.service.js";
+import { DownloadQueue } from "./DownloadQueue.service.js";
+import { DownloadTiming } from "./DownloadTiming.service.js";
+import { resolveSocialSource, SocialMediaOptionsSchema, socialCollectionUrl } from "./social-media.js";
+import { expandTikTokShortLink } from "./tiktok-short-link.js";
+import type { ExecutorContext, ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
+import type { HostFailure } from "./Downloader.errors.js";
+import type { SocialMediaOptions } from "./social-media.js";
 
-export interface SocialMappedItem {
-  id: string
-  url: string
-  author: string
-  title?: string
-  images: number
-  videos: number
-  downloaded?: boolean
-  /** Epoch ms of the post when the mapper can read it. */
-  publishedAt?: number
-}
-
-export interface SocialProfileCategory {
-  state: 'unscanned' | 'mapping' | 'partial' | 'complete' | 'auth-required' | 'error'
-  items: SocialMappedItem[]
-  error?: string
-}
-
-export interface SocialMappedProfile {
-  profileUrl: string
-  platform: MappedProfilePlatform
-  owner: string
-  categories: Record<string, SocialProfileCategory>
-  updatedAt: number
-}
-
-export const SocialMappedItemSchema = z.object({
-  id: z.string(),
-  url: z.url(),
-  author: z.string(),
-  title: z.string().optional(),
-  images: z.number().int().nonnegative(),
-  videos: z.number().int().nonnegative(),
-  downloaded: z.boolean().optional(),
-  publishedAt: z.number().int().nonnegative().optional()
-})
-
-export const SocialProfileCategorySchema = z.object({
-  state: z.enum(['unscanned', 'mapping', 'partial', 'complete', 'auth-required', 'error']),
-  items: z.array(SocialMappedItemSchema),
-  error: z.string().optional()
-})
-
-export const SocialMappedProfileSchema = z.object({
-  profileUrl: z.url(),
-  platform: z.enum([
-    'x',
-    'tiktok',
-    'redgifs',
-    'facebook',
-    'vsco',
-    'threads',
-    'pinterest',
-    'snapchat'
-  ]),
-  owner: z.string(),
-  categories: z.record(z.string(), SocialProfileCategorySchema),
-  updatedAt: z.number()
-})
-
-/** Shared by the X/TikTok and Threads mappers when a refresh may stop early. */
+export {
+  SocialMappedItemSchema,
+  SocialMappedProfileSchema,
+  SocialProfileCategorySchema,
+} from "./ProfilePersistence.model.js";
+export type { SocialMappedItem, SocialMappedProfile, SocialProfileCategory } from "./ProfilePersistence.model.js";
 export interface ProfileMapOptions {
-  /**
-   * Post ids already in the saved map. The extractor stops after a run of
-   * consecutive known posts instead of walking the whole timeline again.
-   */
-  knownIds?: readonly string[]
+  knownIds?: readonly string[] | undefined;
+}
+export interface SocialMediaDownloadRequest {
+  categories?: string[] | undefined;
+  customDownloadPath?: string | undefined;
+  options?: Partial<SocialMediaOptions> | undefined;
+  settings?: import("./types.js").DownloadRuntimeSettings | undefined;
+  url: string;
 }
 
-/** Write known post ids where the gallery-dl module can read them. */
-export const writeKnownItemsFile = async (
+export class SocialOptionsCodec extends Context.Service<
+  SocialOptionsCodec,
+  {
+    readonly decode: (
+      value: Partial<SocialMediaOptions>
+    ) => Effect.Effect<SocialMediaOptions, BoundaryDecodeError | HostFailure>;
+  }
+>()("@vidbee/downloader-core/social-media-service/SocialOptionsCodec") {}
+export const SocialOptionsCodecLive = Layer.succeed(SocialOptionsCodec, {
+  decode: Effect.fn("SocialOptionsCodec.decode")((value) =>
+    S.decodeUnknownEffect(SocialMediaOptionsSchema)(value).pipe(
+      Effect.mapError((cause) =>
+        BoundaryDecodeError.make({ operation: "social.options", legacyMessage: cause.message, cause })
+      )
+    )
+  ),
+});
+export const writeKnownItemsFile = Effect.fn("SocialMedia.writeKnownItems")(function* (
   directory: string,
   knownIds: readonly string[] | undefined
-): Promise<string | undefined> => {
-  if (!knownIds?.length) {
-    return
-  }
-  const file = path.join(directory, 'known-items.json')
-  await writeFile(file, JSON.stringify(knownIds), { mode: 0o600 })
-  return file
-}
-
-const RATE_LIMIT_DIAGNOSTIC = /\b429\b|Too Many Requests|rate.?limit/i
-
-/** Map post references only; signed media URLs never enter the saved profile. */
-export const mapSocialMediaProfile = async (
-  url: string,
-  runtime: Omit<GalleryDlExecutorOptions, 'defaultDownloadDir'> & { admission?: SourceAdmission },
-  settings: DownloadRuntimeSettings | undefined,
-  signal: AbortSignal,
-  onItem: (item: SocialMappedItem) => void,
-  options: ProfileMapOptions = {}
-): Promise<{ complete: boolean; error?: string }> => {
-  const source = await inspectSocialMedia(url)
-  if (!(['x', 'tiktok'].includes(source.platform) && ['profile', 'feed'].includes(source.kind))) {
-    throw new Error('Map an X or TikTok profile category URL.')
-  }
-  const directory = await mkdtemp(path.join(tmpdir(), 'vidbee-social-map-'))
-  let release: (() => void) | null | undefined
-  let discoveredItems = 0
-  try {
-    release = await runtime.admission?.acquire(url, signal)
-    if (signal.aborted) {
-      return { complete: false }
-    }
-    const knownItemsFile = await writeKnownItemsFile(directory, options.knownIds)
-    const executor = new GalleryDlExecutor({ ...runtime, defaultDownloadDir: directory })
-    const result = await new Promise<ExecutorFinishEvent>((resolve) => {
-      const run = executor.run(
-        {
-          taskId: randomUUID(),
-          attemptId: randomUUID(),
-          attemptNumber: 1,
-          input: {
-            kind: 'social-media',
-            url: source.url,
-            options: {
-              settings,
-              customDownloadPath: directory,
-              socialInspect: true,
-              socialMap: true,
-              ...(knownItemsFile ? { socialKnownItemsFile: knownItemsFile } : {}),
-              socialMedia: { linkedMedia: false }
-            }
-          }
-        },
-        {
-          onSpawn() {},
-          onProgress() {},
-          onStd: (event) => {
-            if (!event.line.startsWith('__VIDBEE_SOCIAL__\t')) {
-              return
-            }
-            try {
-              const value: unknown = JSON.parse(event.line.slice('__VIDBEE_SOCIAL__\t'.length))
-              if (
-                !value ||
-                typeof value !== 'object' ||
-                !('type' in value) ||
-                value.type !== 'item'
-              ) {
-                return
-              }
-              const raw = 'item' in value ? value.item : null
-              if (!raw || typeof raw !== 'object') {
-                return
-              }
-              const entry = raw as Record<string, unknown>
-              if (
-                typeof entry.id !== 'string' ||
-                !/^\d+$/.test(entry.id) ||
-                typeof entry.url !== 'string' ||
-                typeof entry.author !== 'string' ||
-                !['image', 'video'].includes(String(entry.kind))
-              ) {
-                return
-              }
-              const post = resolveSocialSource(entry.url)
-              if (post?.kind !== 'post' || post.platform !== source.platform) {
-                return
-              }
-              discoveredItems += 1
-              const item: SocialMappedItem = {
-                id: entry.id,
-                url: post.url,
-                author: entry.author,
-                images: entry.kind === 'image' ? 1 : 0,
-                videos: entry.kind === 'video' ? 1 : 0
-              }
-              if (typeof entry.date === 'number' && Number.isFinite(entry.date) && entry.date > 0) {
-                item.publishedAt = Math.trunc(entry.date)
-              }
-              onItem(item)
-            } catch {
-              // Malformed item events cannot become persisted references.
-            }
-          },
-          onFinish: resolve
-        }
-      )
-      signal.addEventListener('abort', () => void run.cancel(0), { once: true })
-    })
-    if (signal.aborted || result.result.type === 'cancelled') {
-      return { complete: false }
-    }
-    if (result.result.type === 'success') {
-      if (source.platform === 'x' && discoveredItems === 0) {
-        return {
-          complete: false,
-          error:
-            'X returned no downloadable posts. Check the dedicated browser session and retry mapping.'
-        }
-      }
-      return { complete: true }
-    }
-    const diagnostic = `${result.result.error.rawMessage}\n${result.stderrTail}`
-    return {
-      complete: false,
-      error:
-        /AuthRequired|Could not authenticate you|login required|authenticated cookies|Extracted 0 cookies/i.test(
-          diagnostic
-        )
-          ? source.platform === 'x'
-            ? 'AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping.'
-            : 'AuthRequired: sign in with the dedicated browser and retry mapping.'
-          : RATE_LIMIT_DIAGNOSTIC.test(diagnostic)
-            ? 'RateLimited: the site is limiting requests from this network. Saved items were retained; retry later.'
-            : 'Profile mapping stopped before traversal completed. Saved items were retained.'
-    }
-  } finally {
-    release?.()
-    await rm(directory, { recursive: true, force: true })
-  }
-}
-
-export interface SocialMediaDownloadRequest {
-  url: string
-  categories?: string[]
-  options?: Partial<SocialMediaOptions>
-  customDownloadPath?: string
-  settings?: DownloadRuntimeSettings
-}
-
-export const inspectSocialMedia = async (url: string): Promise<SocialSource> => {
-  const source = resolveSocialSource(await expandTikTokShortLink(url))
-  if (!source || source.kind === 'unsupported') {
-    throw new Error(
-      'This social media URL is not supported. Use a post, profile, or supported collection URL.'
+) {
+  if (knownIds == null || knownIds.length === 0) return undefined;
+  const path = yield* Path.Path;
+  const files = yield* DownloadFiles;
+  const file = path.join(directory, "known-items.json");
+  const text = yield* S.encodeEffect(S.fromJsonString(S.Unknown))(knownIds).pipe(
+    Effect.mapError((cause) =>
+      BoundaryDecodeError.make({ operation: "social.knownItems", legacyMessage: cause.message, cause })
     )
-  }
-  return source
+  );
+  yield* files.write(file, text, 0o600);
+  return file;
+});
+export const inspectSocialMedia = Effect.fn("SocialMedia.inspect")(function* (url: string) {
+  const expanded = yield* expandTikTokShortLink(url);
+  const timing = yield* DownloadTiming;
+  yield* timing.turn("social.inspect.expand");
+  const source = resolveSocialSource(expanded);
+  if (source === null || source.kind === "unsupported")
+    return yield* InvalidDownload.make({
+      operation: "social.inspect",
+      legacyMessage: "This social media URL is not supported. Use a post, profile, or supported collection URL.",
+    });
+  return source;
+});
+interface QueuePosts {
+  index: HashMap.HashMap<string, HashSet.HashSet<string>>;
+  pending: HashSet.HashSet<string>;
 }
-
-const queuedXPosts = new WeakMap<TaskQueueAPI, Map<string, Set<string>>>()
-const pendingXPosts = new WeakMap<TaskQueueAPI, Set<string>>()
-const nonTerminal = new Set(['queued', 'running', 'processing', 'paused', 'retry-scheduled'])
-
-const xPostIndex = (queue: TaskQueueAPI): Map<string, Set<string>> => {
-  const existing = queuedXPosts.get(queue)
-  if (existing) {
-    return existing
-  }
-  const index = new Map<string, Set<string>>()
-  let cursor: string | null = null
-  do {
-    const page = queue.list({ limit: 200, cursor })
-    for (const task of page.tasks) {
-      if (task.kind === 'social-media' && nonTerminal.has(task.status)) {
-        const source = resolveSocialSource(task.input.url)
-        if (source?.platform === 'x' && source.kind === 'post') {
-          const ids = index.get(source.url) ?? new Set<string>()
-          ids.add(task.id)
-          index.set(source.url, ids)
-        }
-      }
-    }
-    cursor = page.nextCursor
-  } while (cursor)
-  queuedXPosts.set(queue, index)
-  return index
-}
-
-/** Queue each explicitly selected category through the same host-neutral executor. */
-export const downloadSocialMedia = async (
-  queue: TaskQueueAPI,
+const queuedXPosts = new WeakMap<object, QueuePosts>();
+const nonTerminal = HashSet.make("queued", "running", "processing", "paused", "retry-scheduled");
+export const downloadSocialMedia = Effect.fn("SocialMedia.download")(function* (
   request: SocialMediaDownloadRequest,
   batch?: { id: string; title: string; order: number }
-): Promise<{ groupId: string; ids: string[] }> => {
-  const source = await inspectSocialMedia(request.url)
-  const options = SocialMediaOptionsSchema.parse(request.options ?? {})
-  const categories = [...new Set(request.categories ?? [])]
-  const urls = categories.length
-    ? categories.map((key) => {
-        const category = source.categories.find((item) => item.key === key)
-        if (!category) {
-          throw new Error(`Unsupported collection category: ${key}`)
-        }
-        return category.url
-      })
-    : [socialCollectionUrl(source)]
-  const groupId = batch?.id ?? `social_${randomUUID()}`
-  const groupKey = `social:${source.platform}`
-  await queue.setMaxPerGroup(groupKey, 1)
-  const ids: string[] = []
+) {
+  const queue = yield* DownloadQueue;
+  const host = yield* DownloadHost;
+  const timing = yield* DownloadTiming;
+  const optionsCodec = yield* SocialOptionsCodec;
+  const source = yield* inspectSocialMedia(request.url);
+  yield* timing.turn("social.download.inspect");
+  const options = yield* optionsCodec.decode(request.options ?? {});
+  const categories = A.dedupe(request.categories ?? []);
+  const urls: string[] = [];
+  for (const key of categories) {
+    const category = A.findFirst(source.categories, (item) => item.key === key);
+    if (Option.isNone(category))
+      return yield* InvalidDownload.make({
+        operation: "social.download",
+        legacyMessage: `Unsupported collection category: ${key}`,
+      });
+    urls.push(category.value.url);
+  }
+  if (urls.length === 0) urls.push(socialCollectionUrl(source));
+  const groupId = batch?.id ?? `social_${host.uuid()}`;
+  const groupKey = `social:${source.platform}`;
+  yield* queue.setMaxPerGroup(groupKey, 1);
+  const ids: string[] = [];
   for (const [index, url] of urls.entries()) {
-    const xPost = source.platform === 'x' && resolveSocialSource(url)?.kind === 'post'
-    const queued = xPost ? xPostIndex(queue) : null
-    const pending = xPost ? (pendingXPosts.get(queue) ?? new Set<string>()) : null
-    if (pending && !pendingXPosts.has(queue)) {
-      pendingXPosts.set(queue, pending)
+    const xPost = source.platform === "x" && resolveSocialSource(url)?.kind === "post";
+    let state = queuedXPosts.get(queue.identity);
+    if (xPost && state === undefined) {
+      state = { index: HashMap.empty(), pending: HashSet.empty() };
+      let cursor: string | null = null;
+      do {
+        const page: {
+          readonly tasks: ReadonlyArray<Readonly<import("@vidbee/task-queue/types").Task>>;
+          readonly nextCursor: string | null;
+        } = yield* queue.list({ limit: 200, cursor });
+        for (const task of page.tasks) {
+          if (task.kind !== "social-media" || !HashSet.has(nonTerminal, task.status)) continue;
+          const post = resolveSocialSource(task.input.url);
+          if (post?.platform === "x" && post.kind === "post")
+            state.index = HashMap.set(
+              state.index,
+              post.url,
+              HashSet.add(
+                Option.getOrElse(HashMap.get(state.index, post.url), () => HashSet.empty<string>()),
+                task.id
+              )
+            );
+        }
+        cursor = page.nextCursor;
+      } while (cursor !== null && cursor !== "");
+      queuedXPosts.set(queue.identity, state);
     }
-    if (
-      pending?.has(url) ||
-      [...(queued?.get(url) ?? [])].some((id) => nonTerminal.has(queue.get(id)?.status ?? ''))
-    ) {
-      continue
+    if (xPost && state !== undefined) {
+      if (HashSet.has(state.pending, url)) continue;
+      let queued = false;
+      for (const id of Option.getOrElse(HashMap.get(state.index, url), () => HashSet.empty<string>())) {
+        const task = yield* queue.get(id);
+        if (task !== undefined && HashSet.has(nonTerminal, task.status)) queued = true;
+      }
+      if (queued) continue;
+      state.pending = HashSet.add(state.pending, url);
     }
-    pending?.add(url)
-    try {
-      const result = await queue.add({
+    const result = yield* queue
+      .add({
         groupKey,
         input: {
-          kind: 'social-media',
+          kind: "social-media",
           url,
           title: `${source.platform}: ${source.owner}`,
           options: {
             socialMedia: options,
             settings: request.settings,
             customDownloadPath: request.customDownloadPath,
-            downloadPath: request.customDownloadPath?.trim() || request.settings?.downloadPath,
+            downloadPath: Str.trim(request.customDownloadPath ?? "") || request.settings?.downloadPath,
             batchId: groupId,
-            batchKind: 'social-media',
+            batchKind: "social-media",
             batchTitle: batch?.title ?? source.owner,
             batchCategory: resolveSocialSource(url)?.category,
             batchOrder: (batch?.order ?? 0) + index,
-            sourceMediaKind:
-              options.media === 'images' ? 'image' : options.media === 'videos' ? 'video' : 'mixed'
-          }
-        }
-      })
-      ids.push(result.id)
-      if (queued) {
-        const previous = queued.get(url) ?? new Set<string>()
-        previous.add(result.id)
-        queued.set(url, previous)
-      }
-    } finally {
-      pending?.delete(url)
-    }
-  }
-  return { groupId, ids }
-}
-
-export const restoreSocialMediaGroupCaps = async (queue: TaskQueueAPI): Promise<void> => {
-  for (const platform of ['x', 'reddit', 'tiktok', 'instagram']) {
-    await queue.setMaxPerGroup(`social:${platform}`, 1)
-  }
-}
-
-/** Inspect at most three media-bearing posts without downloading their assets. */
-export const previewSocialMedia = async (
-  url: string,
-  runtime: Omit<GalleryDlExecutorOptions, 'defaultDownloadDir'> & { admission?: SourceAdmission },
-  settings?: DownloadRuntimeSettings
-) => {
-  const source = await inspectSocialMedia(url)
-  const directory = await mkdtemp(path.join(tmpdir(), 'vidbee-social-preview-'))
-  const release = await runtime.admission?.acquire(url)
-  try {
-    const executor = new GalleryDlExecutor({ ...runtime, defaultDownloadDir: directory })
-    const result = await new Promise<ExecutorFinishEvent>((resolve) => {
-      let timer: ReturnType<typeof setTimeout> | undefined
-      let finished = false
-      const run = executor.run(
-        {
-          taskId: randomUUID(),
-          attemptId: randomUUID(),
-          attemptNumber: 1,
-          input: {
-            kind: 'social-media',
-            url: source.url,
-            options: {
-              settings,
-              customDownloadPath: directory,
-              socialInspect: true,
-              socialMedia: { maxPosts: 3, linkedMedia: false }
-            }
-          }
+            sourceMediaKind: options.media === "images" ? "image" : options.media === "videos" ? "video" : "mixed",
+          },
         },
-        {
-          onSpawn() {},
-          onProgress() {},
-          onStd() {},
-          onFinish: (event) => {
-            finished = true
-            clearTimeout(timer)
-            resolve(event)
-          }
-        }
-      )
-      if (finished) {
-        return
-      }
-      timer = setTimeout(() => {
-        void run.cancel(0)
-      }, 30_000)
-      timer.unref()
-    })
-    if (result.result.type !== 'success' || !result.result.output.collectionSummary) {
-      throw new Error(
-        'Preview unavailable. Check access and cookies, or start the download to see detailed errors.'
-      )
-    }
-    const summary = result.result.output.collectionSummary
-    return {
-      source,
-      preview: {
-        posts: summary.posts,
-        images: summary.images,
-        videos: summary.videos,
-        limited: summary.reason === 'limit'
-      }
-    }
-  } finally {
-    release?.()
-    await rm(directory, { recursive: true, force: true })
+      })
+      .pipe(
+        Effect.ensuring(
+          Effect.sync(() => {
+            if (state !== undefined) state.pending = HashSet.remove(state.pending, url);
+          })
+        )
+      );
+    ids.push(result.id);
+    if (xPost && state !== undefined)
+      state.index = HashMap.set(
+        state.index,
+        url,
+        HashSet.add(
+          Option.getOrElse(HashMap.get(state.index, url), () => HashSet.empty<string>()),
+          result.id
+        )
+      );
   }
-}
+  return { groupId, ids };
+});
+export const restoreSocialMediaGroupCaps = Effect.fn("SocialMedia.restoreCaps")(function* () {
+  const queue = yield* DownloadQueue;
+  for (const platform of ["x", "reddit", "tiktok", "instagram"]) yield* queue.setMaxPerGroup(`social:${platform}`, 1);
+});
+export const previewSocialMedia = Effect.fn("SocialMedia.preview")(function* (
+  url: string,
+  settings?: import("./types.js").DownloadRuntimeSettings
+) {
+  const source = yield* inspectSocialMedia(url);
+  const files = yield* DownloadFiles;
+  const path = yield* Path.Path;
+  const host = yield* DownloadHost;
+  const executor = yield* TaskExecutor;
+  const directory = yield* files.makeTempDirectory(path.join(host.tempDirectory(), "vidbee-social-preview-"));
+  const admission = yield* SocialAdmission;
+  const release = yield* admission.acquire(url);
+  const result = yield* Effect.gen(function* () {
+    const finished = yield* Deferred.make<ExecutorFinishEvent>();
+    const context: ExecutorContext = {
+      taskId: host.uuid(),
+      attemptId: host.uuid(),
+      attemptNumber: 1,
+      input: {
+        kind: "social-media",
+        url: source.url,
+        options: {
+          settings,
+          customDownloadPath: directory,
+          socialInspect: true,
+          socialMedia: { maxPosts: 3, linkedMedia: false },
+        },
+      },
+    };
+    const run = yield* executor.run(context, {
+      emit: Effect.fn("SocialMedia.previewEvent")((event) =>
+        event.type === "finish" ? Deferred.succeed(finished, event).pipe(Effect.asVoid) : Effect.void
+      ),
+    });
+    const timer = yield* Effect.forkChild(Effect.sleep(30_000).pipe(Effect.andThen(run.cancel(0)), Effect.ignore));
+    return yield* Deferred.await(finished).pipe(Effect.ensuring(Fiber.interrupt(timer)));
+  }).pipe(Effect.ensuring((release ?? Effect.void).pipe(Effect.andThen(files.remove(directory, true)), Effect.orDie)));
+  if (result.result.type !== "success" || result.result.output.collectionSummary === undefined)
+    return yield* InvalidDownload.make({
+      operation: "social.preview",
+      legacyMessage: "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+    });
+  const summary = result.result.output.collectionSummary;
+  return {
+    source,
+    preview: {
+      posts: summary.posts,
+      images: summary.images,
+      videos: summary.videos,
+      limited: summary.reason === "limit",
+    },
+  };
+});
+
+export class SocialAdmission extends Context.Service<
+  SocialAdmission,
+  {
+    readonly acquire: (
+      url: string,
+      signal?: AbortSignal
+    ) => Effect.Effect<Effect.Effect<void> | undefined, HostFailure>;
+  }
+>()("@vidbee/downloader-core/social-media-service/SocialAdmission") {}
+export const SocialAdmissionLive = Layer.succeed(SocialAdmission, {
+  acquire: Effect.fn("SocialAdmission.acquire")(() => Effect.succeed(Effect.void)),
+});
+const socialItemEvent = S.fromJsonString(
+  S.Struct({
+    type: S.Literal("item"),
+    item: S.Struct({
+      id: S.String,
+      url: S.String,
+      author: S.String,
+      kind: LiteralKit(["image", "video"]),
+      date: S.optional(S.Unknown),
+    }),
+  })
+);
+const socialPrefix = "__VIDBEE_SOCIAL__\t";
+const rateLimitDiagnostic = /\b429\b|Too Many Requests|rate.?limit/i;
+/** Stream stable post references; malformed item events cannot enter persisted inventories. */
+export const mapSocialMediaProfile = Effect.fn("SocialMedia.map")(function* (
+  url: string,
+  settings: import("./types.js").DownloadRuntimeSettings | undefined,
+  signal: AbortSignal,
+  onItem: (item: import("./ProfilePersistence.model.js").SocialMappedItem) => Effect.Effect<void>,
+  options: ProfileMapOptions = {}
+) {
+  const source = yield* inspectSocialMedia(url);
+  if (!(A.contains(["x", "tiktok"], source.platform) && A.contains(["profile", "feed"], source.kind)))
+    return yield* InvalidDownload.make({
+      operation: "social.map",
+      legacyMessage: "Map an X or TikTok profile category URL.",
+    });
+  const files = yield* DownloadFiles;
+  const path = yield* Path.Path;
+  const host = yield* DownloadHost;
+  const admission = yield* SocialAdmission;
+  const executor = yield* TaskExecutor;
+  const directory = yield* files.makeTempDirectory(path.join(host.tempDirectory(), "vidbee-social-map-"));
+  let release: Effect.Effect<void> | undefined;
+  let discoveredItems = 0;
+  return yield* Effect.gen(function* () {
+    release = yield* admission.acquire(url, signal);
+    if (signal.aborted) return { complete: false };
+    const knownItemsFile = yield* writeKnownItemsFile(directory, options.knownIds);
+    const finished = yield* Deferred.make<ExecutorFinishEvent>();
+    const run = yield* executor.run(
+      {
+        taskId: host.uuid(),
+        attemptId: host.uuid(),
+        attemptNumber: 1,
+        input: {
+          kind: "social-media",
+          url: source.url,
+          options: {
+            settings,
+            customDownloadPath: directory,
+            socialInspect: true,
+            socialMap: true,
+            ...(knownItemsFile !== undefined ? { socialKnownItemsFile: knownItemsFile } : {}),
+            socialMedia: { linkedMedia: false },
+          },
+        },
+      },
+      {
+        emit: Effect.fn("SocialMedia.mapEvent")(function* (event) {
+          if (event.type === "finish") {
+            yield* Deferred.succeed(finished, event);
+            return;
+          }
+          if (event.type !== "std" || !Str.startsWith(socialPrefix)(event.line)) return;
+          const parsed = S.decodeOption(socialItemEvent)(Str.slice(socialPrefix.length)(event.line));
+          if (Option.isNone(parsed)) return;
+          const entry = parsed.value.item;
+          if (!/^\d+$/.test(entry.id)) return;
+          const post = resolveSocialSource(entry.url);
+          if (post?.kind !== "post" || post.platform !== source.platform) return;
+          discoveredItems += 1;
+          const item: import("./ProfilePersistence.model.js").SocialMappedItem = {
+            id: entry.id,
+            url: post.url,
+            author: entry.author,
+            images: entry.kind === "image" ? 1 : 0,
+            videos: entry.kind === "video" ? 1 : 0,
+          };
+          if (typeof entry.date === "number" && Number.isFinite(entry.date) && entry.date > 0)
+            item.publishedAt = Math.trunc(entry.date);
+          yield* onItem(item).pipe(Effect.ignoreCause);
+        }),
+      }
+    );
+    const cancellation = yield* Effect.forkChild(
+      Effect.callback<void>((resume) => {
+        const abort = () => resume(run.cancel(0).pipe(Effect.ignore));
+        signal.addEventListener("abort", abort, { once: true });
+        return Effect.sync(() => signal.removeEventListener("abort", abort));
+      }),
+      { startImmediately: true }
+    );
+    const result = yield* Deferred.await(finished).pipe(Effect.ensuring(Fiber.interrupt(cancellation)));
+    if (signal.aborted || result.result.type === "cancelled") return { complete: false };
+    if (result.result.type === "success")
+      return source.platform === "x" && discoveredItems === 0
+        ? {
+            complete: false,
+            error: "X returned no downloadable posts. Check the dedicated browser session and retry mapping.",
+          }
+        : { complete: true };
+    const diagnostic = `${result.result.error.rawMessage}\n${result.stderrTail}`;
+    return {
+      complete: false,
+      error: /AuthRequired|Could not authenticate you|login required|authenticated cookies|Extracted 0 cookies/i.test(
+        diagnostic
+      )
+        ? source.platform === "x"
+          ? "AuthRequired: X rejected the dedicated browser cookies. Reopen the browser, sign in again if prompted, close it, then retry mapping."
+          : "AuthRequired: sign in with the dedicated browser and retry mapping."
+        : rateLimitDiagnostic.test(diagnostic)
+          ? "RateLimited: the site is limiting requests from this network. Saved items were retained; retry later."
+          : "Profile mapping stopped before traversal completed. Saved items were retained.",
+    };
+  }).pipe(
+    Effect.ensuring(
+      Effect.suspend(() => (release ?? Effect.void).pipe(Effect.andThen(files.remove(directory, true)), Effect.orDie))
+    )
+  );
+});

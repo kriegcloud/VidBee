@@ -1,1100 +1,576 @@
-import { spawn } from 'node:child_process'
-import { createHash, randomUUID } from 'node:crypto'
-import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
-import path from 'node:path'
-import { PRIORITY_USER, type TaskPriority, type TaskQueueAPI } from '@vidbee/task-queue-legacy'
-import { killProcessTree } from '@vidbee/task-queue-legacy/process'
-import type { SourceAdmission } from '@vidbee/task-queue-legacy/source-admission'
-import { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl } from './instagram-url'
-import { InstagramProfileInspectionSchema } from './schemas'
+import { sha256 } from "@vidbee/task-queue/util/sha256";
+import * as A from "effect/Array";
+import * as Context from "effect/Context";
+import * as Deferred from "effect/Deferred";
+import * as Effect from "effect/Effect";
+import * as HashMap from "effect/HashMap";
+import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
+import * as S from "effect/Schema";
+import * as Scope from "effect/Scope";
+import * as Str from "effect/String";
+import { BoundaryDecodeError, HostFailure, InvalidDownload } from "./Downloader.errors.js";
+import { DownloadFiles } from "./DownloadFiles.service.js";
+import { DownloadHost } from "./DownloadHost.service.js";
+import { DownloadTiming } from "./DownloadTiming.service.js";
+import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
+import {
+  buildInstagramCategoryUrl,
+  galleryItems,
+  DataFirst as InstagramScanServiceFunctions,
+  readString,
+  resolveUserRecord,
+  runGalleryJson,
+} from "./InstagramScan.service.js";
+import { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl } from "./instagram-url.js";
+import { InstagramInventory } from "./ProfilePersistence.model.js";
+import type { InstagramInspectionKeys } from "./DownloadLiterals.model.js";
+import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type {
   DownloadRuntimeSettings,
   InstagramCategorySummary,
-  InstagramInspectionErrorCode,
   InstagramProfileCategory,
-  InstagramProfileDownloadInput,
-  InstagramProfileDownloadResult,
   InstagramProfileInspection,
-  InstagramProfileItem
-} from './types'
-import { normalizeBrowserCookiesSettingForYtDlp } from './yt-dlp-args'
+  InstagramProfileItem,
+} from "./types.js";
 
-export { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl }
-
-const DEFAULT_MAX_CACHE_ENTRIES = 20
-// Instagram blocks the whole network or account for a while after a throttle;
-// further requests only extend it, so every profile scan waits this long.
-export const INSTAGRAM_RATE_LIMIT_COOLDOWN_MS = 15 * 60 * 1000
-const INSTAGRAM_PROFILE_GROUP_PREFIX = 'instagram_profile_group_'
-const INSTAGRAM_PROFILE_GROUP_KEY = 'instagram-profile'
-const INVALID_PATH_CHARACTERS = new Set('<>:"/\\|?*')
-
-const CATEGORY_LABELS: Record<InstagramProfileCategory, string> = {
-  posts: 'Posts',
-  reels: 'Reels',
-  stories: 'Stories',
-  highlights: 'Highlights',
-  tagged: 'Tagged'
+export { INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS } from "./InstagramScan.service.js";
+export {
+  buildGalleryDlRuntimeArgs,
+  buildInstagramCategoryUrl,
+  INSTAGRAM_PROFILE_CATEGORIES,
+  normalizeInstagramProfileUrl,
+};
+export const INSTAGRAM_RATE_LIMIT_COOLDOWN_MS = 15 * 60 * 1000;
+export const instagramInspectionId = (username: string): string => `instagram_${sha256(Str.toLowerCase(username))}`;
+export interface InspectionCacheEntry {
+  categoryUrls: Record<InstagramProfileCategory, string>;
+  inspection: InstagramProfileInspection;
 }
-
-const CATEGORY_ORDERS: Record<InstagramProfileCategory, number> = {
-  posts: 0,
-  reels: 1,
-  stories: 2,
-  highlights: 3,
-  tagged: 4
-}
-const DOWNLOAD_CATEGORY_ORDERS: Record<InstagramProfileCategory, number> = {
-  stories: 0,
-  highlights: 1,
-  reels: 2,
-  posts: 3,
-  tagged: 4
-}
-
-export const INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS = [
-  '-o',
-  'extractor.instagram.api=rest',
-  '-o',
-  'extractor.instagram.videos=true',
-  '-o',
-  'extractor.instagram.static-videos=true',
-  '-o',
-  'extractor.instagram.previews=false',
-  '-o',
-  'extractor.instagram.audio=false'
-] as const
-
-interface InspectionCacheEntry {
-  inspection: InstagramProfileInspection
-  categoryUrls: Record<InstagramProfileCategory, string>
-}
-
-interface GalleryJsonResult {
-  cursor?: string
-  exitCode: number | null
-  cancelled?: boolean
-  stderr: string
-  directoryMetadata: Record<string, unknown>[]
-  sourceIds: Set<string>
-  assetCount: number
-  parseError: boolean
-  items: Map<string, InstagramProfileItem>
-}
-
+export type InstagramInspectionListEntry = Pick<InstagramProfileInspection, typeof InstagramInspectionKeys.Type>;
 export interface InstagramProfileInspectorOptions {
-  admission?: SourceAdmission
-  completedDownloads?: () => { url: string; category: string; assetCount: number }[]
-  storageDir?: string
-  resolveBinaryPath: () => string
-  resolveExtraArgs?: (settings?: DownloadRuntimeSettings) => readonly string[]
-  clock?: () => number
-  maxCacheEntries?: number
+  readonly admission?: GalleryDlProfileMapRuntime["admission"];
+  readonly clock: () => number;
+  readonly completedDownloads?: (() => { url: string; category: string; assetCount: number }[]) | undefined;
+  readonly maxCacheEntries?: number | undefined;
+  readonly resolveBinaryPath: () => string;
+  readonly resolveExtraArgs?: ((settings?: DownloadRuntimeSettings) => readonly string[]) | undefined;
+  readonly storageDir?: string | undefined;
 }
-
-export interface EnqueueInstagramProfileOptions {
-  queue: TaskQueueAPI
-  inspector: InstagramProfileInspector
-  input: InstagramProfileDownloadInput
-  defaultDownloadDir: string
-  /** Join an existing queue batch (one subscription check) instead of a new one. */
-  batch?: { id: string; title: string }
-  /** Defaults to `PRIORITY_USER`. */
-  priority?: TaskPriority
+type InspectionError = HostFailure | BoundaryDecodeError | InvalidDownload;
+export interface InspectionRequest {
+  readonly key: string;
+  readonly result: Effect.Effect<InstagramProfileInspection, InspectionError>;
+  readonly snapshot: (
+    inspection: InstagramProfileInspection
+  ) => Effect.Effect<InstagramProfileInspection, InspectionError>;
 }
-
-/** Saved inspections are keyed by username, so callers can address one without scanning. */
-export const instagramInspectionId = (username: string): string =>
-  `instagram_${createHash('sha256').update(username.toLowerCase()).digest('hex')}`
-
-const asRecord = (value: unknown): Record<string, unknown> | null => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return null
+export class InstagramProfileInspector extends Context.Service<
+  InstagramProfileInspector,
+  {
+    readonly get: (id: string) => Effect.Effect<InspectionCacheEntry | null, InspectionError>;
+    readonly list: Effect.Effect<InstagramInspectionListEntry[], InspectionError>;
+    readonly inspect: (
+      url: string,
+      settings?: DownloadRuntimeSettings,
+      categories?: readonly InstagramProfileCategory[]
+    ) => Effect.Effect<InstagramProfileInspection, InspectionError>;
+    readonly request: (
+      url: string,
+      settings?: DownloadRuntimeSettings,
+      categories?: readonly InstagramProfileCategory[]
+    ) => Effect.Effect<InspectionRequest, InspectionError>;
+    readonly cancel: (url: string) => Effect.Effect<boolean, InvalidDownload>;
+    readonly stop: Effect.Effect<void>;
   }
-  return value as Record<string, unknown>
-}
-
-const readString = (
-  record: Record<string, unknown> | null,
-  ...keys: readonly string[]
-): string | undefined => {
-  if (!record) {
-    return undefined
+>()("@vidbee/downloader-core/instagram-profile/InstagramProfileInspector") {}
+const categoryUrlsFor = (username: string): Record<InstagramProfileCategory, string> => ({
+  posts: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "posts"),
+  reels: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "reels"),
+  stories: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "stories"),
+  highlights: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "highlights"),
+  tagged: InstagramScanServiceFunctions.buildInstagramCategoryUrl(username, "tagged"),
+});
+const missing = (failure: HostFailure): boolean => {
+  const cause = failure.cause;
+  if (typeof cause !== "object" || cause === null) return false;
+  if ("code" in cause && cause.code === "ENOENT") return true;
+  if (!("reason" in cause) || typeof cause.reason !== "object" || cause.reason === null) return false;
+  return "reason" in cause.reason && cause.reason.reason === "NotFound";
+};
+const unavailable = () =>
+  HostFailure.make({
+    operation: "instagram.read",
+    legacyMessage: "Saved Instagram profile could not be read. Restore its backup before rescanning.",
+  });
+const normalize = (url: string) => {
+  const normalized = normalizeInstagramProfileUrl(url);
+  return normalized === null
+    ? Effect.fail(
+        InvalidDownload.make({ operation: "instagram.url", legacyMessage: "Enter a valid Instagram profile URL." })
+      )
+    : Effect.succeed(normalized);
+};
+const orderedMerge = (
+  previous: InstagramProfileItem[],
+  fresh: InstagramProfileItem[],
+  cancelled: boolean
+): InstagramProfileItem[] => {
+  let items = HashMap.fromIterable(A.map(previous, (item) => [item.id, item] as const));
+  const order = A.map(previous, (item) => item.id);
+  for (const item of fresh) {
+    const prior = Option.getOrUndefined(HashMap.get(items, item.id));
+    if (cancelled && prior !== undefined && prior.assetCount > item.assetCount) continue;
+    const previousIds = prior?.assetIds;
+    let sameMedia = prior?.assetCount === item.assetCount;
+    if (previousIds !== undefined && previousIds.length > 0) {
+      const compare = (a: string, b: string): -1 | 0 | 1 => (a < b ? -1 : a > b ? 1 : 0);
+      const left = A.sort(previousIds, compare);
+      const right = A.sort(item.assetIds ?? [], compare);
+      sameMedia = left.length === right.length && A.every(left, (id, index) => right[index] === id);
+    }
+    if (!HashMap.has(items, item.id)) order.push(item.id);
+    items = HashMap.set(items, item.id, { ...item, downloaded: sameMedia && prior?.downloaded });
   }
-  for (const key of keys) {
-    const value = record[key]
-    if (typeof value === 'string' && value.trim()) {
-      return value.trim()
-    }
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return String(value)
-    }
-  }
-  return undefined
-}
-
-const resolveUserRecord = (
-  metadata: Record<string, unknown> | undefined
-): Record<string, unknown> | null => {
-  if (!metadata) {
-    return null
-  }
-  return asRecord(metadata.user) ?? asRecord(metadata.owner) ?? metadata
-}
-
-const resolveSourceId = (metadata: Record<string, unknown>): string | undefined =>
-  readString(metadata, 'post_id', 'post_shortcode', 'media_id', 'id', 'pk')
-
-const parseGalleryJsonMessage = (message: unknown, result: GalleryJsonResult): void => {
-  if (!Array.isArray(message) || message.length < 2) {
-    result.parseError = true
-    return
-  }
-
-  const messageType = message[0]
-  if (messageType === -1) {
-    const error = asRecord(message[1])
-    result.stderr += `\n${readString(error, 'error') ?? ''}: ${readString(error, 'message') ?? ''}`
-    result.parseError = true
-    return
-  }
-
-  if (messageType === 2) {
-    const metadata = asRecord(message[1])
-    if (!metadata) {
-      return
-    }
-    const cursor = readString(metadata, 'vidbee_cursor')
-    if (cursor) {
-      result.cursor = cursor
-    }
-    if (result.directoryMetadata.length === 0) {
-      result.directoryMetadata.push(metadata)
-    }
-    const sourceId = resolveSourceId(metadata)
-    if (sourceId) {
-      result.sourceIds.add(sourceId)
-    }
-    return
-  }
-
-  if (messageType === 3) {
-    const metadata = asRecord(message[2])
-    if (!metadata) {
-      return
-    }
-    result.assetCount += 1
-    const sourceUrl = readString(metadata, 'post_url')
-    if (sourceUrl) {
-      try {
-        const parsed = new URL(sourceUrl)
+  return A.map(order, (id) => HashMap.getUnsafe(items, id));
+};
+/** One inspector owns ordered caches, shared requests and its scan continuation scope. */
+export const instagramProfileInspectorLayer = (options: InstagramProfileInspectorOptions) =>
+  Layer.effect(
+    InstagramProfileInspector,
+    Effect.gen(function* () {
+      const files = yield* DownloadFiles;
+      const host = yield* DownloadHost;
+      const path = yield* Path.Path;
+      const timing = yield* DownloadTiming;
+      const scope = yield* Scope.Scope;
+      const dependencies = yield* Effect.context<
+        | DownloadFiles
+        | DownloadHost
+        | Path.Path
+        | DownloadTiming
+        | import("./DownloadProcess.service.js").DownloadProcess
+      >();
+      let cache = HashMap.empty<string, InspectionCacheEntry>();
+      let cacheOrder: string[] = [];
+      const controllers: {
+        controller: AbortController;
+        url: string;
+        mapping: NonNullable<InstagramProfileInspection["mapping"]>;
+      }[] = [];
+      let pending = HashMap.empty<string, Deferred.Deferred<InstagramProfileInspection, InspectionError>>();
+      let tail: Effect.Effect<void> = Effect.void;
+      let rateLimitedUntil = 0;
+      const put = (id: string, entry: InspectionCacheEntry): void => {
+        if (!HashMap.has(cache, id)) cacheOrder.push(id);
+        cache = HashMap.set(cache, id, entry);
+      };
+      const remove = (id: string): void => {
+        cache = HashMap.remove(cache, id);
+        cacheOrder = A.filter(cacheOrder, (key) => key !== id);
+      };
+      const save = Effect.fn("InstagramInspector.save")(function* (entry: InspectionCacheEntry) {
+        put(entry.inspection.inspectionId, entry);
+        const hasStorageDir = Boolean(options.storageDir);
+        if (!hasStorageDir || options.storageDir === undefined) return;
+        yield* files.makeDirectory(options.storageDir, true, 0o700);
+        const target = path.join(options.storageDir, `${entry.inspection.inspectionId}.json`);
+        const temporary = `${target}.${host.uuid()}.tmp`;
+        const text = yield* S.encodeEffect(S.fromJsonString(S.Unknown))(entry.inspection).pipe(
+          Effect.mapError((cause) =>
+            BoundaryDecodeError.make({ operation: "instagram.save", legacyMessage: cause.message, cause })
+          )
+        );
+        yield* files.write(temporary, text, 0o600);
+        yield* files.rename(temporary, target);
+      });
+      const get = Effect.fn("InstagramInspector.get")(function* (id: string) {
+        let entry = Option.getOrUndefined(HashMap.get(cache, id));
+        const hasStorageDir = Boolean(options.storageDir);
         if (
-          (parsed.hostname === 'www.instagram.com' || parsed.hostname === 'instagram.com') &&
-          !parsed.username &&
-          !parsed.password &&
-          !parsed.port &&
-          /^\/(?:p\/|reel\/|tv\/|stories\/)/.test(parsed.pathname)
+          entry === undefined &&
+          hasStorageDir &&
+          options.storageDir !== undefined &&
+          /^instagram_[a-f0-9]{64}$/.test(id)
         ) {
-          parsed.search = ''
-          parsed.hash = ''
-          parsed.protocol = 'https:'
-          const mediaId = readString(metadata, 'media_id')
-          if (metadata.type === 'story' && mediaId && /^\d+$/.test(mediaId)) {
-            parsed.pathname = `${parsed.pathname.replace(/\/$/, '')}/${mediaId}/`
+          const inspection = yield* files.read(path.join(options.storageDir, `${id}.json`)).pipe(
+            Effect.flatMap((text) =>
+              S.decodeEffect(S.fromJsonString(InstagramInventory))(text).pipe(Effect.mapError(() => unavailable()))
+            ),
+            Effect.catch((failure) => (missing(failure) ? Effect.undefined : Effect.fail(unavailable())))
+          );
+          if (inspection !== undefined) {
+            entry = { inspection, categoryUrls: categoryUrlsFor(inspection.profile.username) };
+            put(id, entry);
           }
-          const itemUrl = parsed.toString()
-          const existing = result.items.get(itemUrl)
-          result.items.set(itemUrl, {
-            id: itemUrl,
-            url: itemUrl,
-            assetCount: (existing?.assetCount ?? 0) + 1,
-            assetIds: [...(existing?.assetIds ?? []), ...(mediaId ? [mediaId] : [])],
-            sourceVersion: readString(metadata, 'vidbee_source_version'),
-            title: readString(metadata, 'highlight_title', 'description')?.slice(0, 160)
-          })
         }
-      } catch {
-        /* Invalid source references are not persisted. */
-      }
-    }
-    const sourceId = resolveSourceId(metadata)
-    if (sourceId) {
-      result.sourceIds.add(sourceId)
-    }
-  }
-}
-
-const runGalleryJson = (
-  binaryPath: string,
-  url: string,
-  extraArgs: readonly string[],
-  sleepBeforeExtraction: boolean,
-  signal?: AbortSignal,
-  onCheckpoint?: (result: GalleryJsonResult) => void
-): Promise<GalleryJsonResult> =>
-  new Promise((resolve, reject) => {
-    const args = [
-      '-J',
-      '-o',
-      'output.jsonl=false',
-      '-o',
-      'extractor.instagram.vidbee-inspection=true',
-      '--no-input',
-      '--no-colors',
-      // gallery-dl retries 5xx and 429 five times by default; a mapping scan
-      // should report a throttle quickly instead of deepening it.
-      '--retries',
-      '1',
-      ...INSTAGRAM_GALLERY_DL_EXTRACTOR_ARGS,
-      ...(sleepBeforeExtraction ? ['--sleep-extractor', '6.0-12.0'] : []),
-      ...extraArgs,
-      url
-    ]
-    const child = spawn(binaryPath, args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      windowsHide: true,
-      detached: process.platform !== 'win32'
-    })
-    const result: GalleryJsonResult = {
-      exitCode: null,
-      stderr: '',
-      directoryMetadata: [],
-      sourceIds: new Set<string>(),
-      assetCount: 0,
-      parseError: false,
-      items: new Map()
-    }
-    // DataJob suppresses exception records in JSONL mode while still exiting 0.
-    // Read its complete JSON document, with a hard cap and deadline.
-    const chunks: Buffer[] = []
-    let stdoutBytes = 0
-    const stopInspection = (): void => {
-      if (!child.pid) {
-        return
-      }
-      try {
-        if (process.platform === 'win32') {
-          killProcessTree(child.pid, 'SIGKILL')
-        } else {
-          process.kill(-child.pid, 'SIGKILL')
+        if (entry === undefined) return null;
+        if (entry.inspection.expiresAt <= options.clock()) {
+          remove(id);
+          return null;
         }
-      } catch {
-        // The process group has already exited.
-      }
-    }
-    const timer = setTimeout(
-      () => {
-        result.parseError = true
-        result.stderr += '\nInstagram inspection timed out.'
-        stopInspection()
-      },
-      10 * 60 * 1000
-    )
-    child.stdout?.on('data', (chunk: Buffer) => {
-      stdoutBytes += chunk.length
-      if (stdoutBytes > 64 * 1024 * 1024) {
-        result.parseError = true
-        result.stderr += '\nInstagram inspection exceeded the response size limit.'
-        stopInspection()
-        return
-      }
-      chunks.push(chunk)
-    })
-    let stderrBuffer = ''
-    let checkpointAt = 0
-    child.stderr?.on('data', (chunk: Buffer) => {
-      stderrBuffer += chunk.toString()
-      let newline = stderrBuffer.indexOf('\n')
-      while (newline >= 0) {
-        const line = stderrBuffer.slice(0, newline)
-        stderrBuffer = stderrBuffer.slice(newline + 1)
-        if (line.startsWith('VIDBEE_MAP:')) {
-          try {
-            parseGalleryJsonMessage(JSON.parse(line.slice('VIDBEE_MAP:'.length)), result)
-            if (Date.now() - checkpointAt >= 1000 || line.includes('vidbee_cursor')) {
-              checkpointAt = Date.now()
-              onCheckpoint?.(result)
+        return entry;
+      });
+      const withMapping = Effect.fn("InstagramInspector.snapshot")(function* (inspection: InstagramProfileInspection) {
+        const completed = options.completedDownloads?.() ?? [];
+        let changed = false;
+        for (const category of inspection.categories)
+          for (const item of category.items ?? []) {
+            if (
+              item.downloaded !== true &&
+              A.some(
+                completed,
+                (task): boolean =>
+                  task.url === item.url && task.category === category.category && task.assetCount === item.assetCount
+              )
+            ) {
+              item.downloaded = true;
+              changed = true;
             }
-          } catch {
-            result.parseError = true
           }
-        } else {
-          if (line.includes('Unable to load modules')) {
-            // Without the VidBee module gallery-dl silently falls back to its
-            // stock extractors, which emit no mapping progress.
-            result.parseError = true
-          }
-          result.stderr = `${result.stderr}\n${line}`.slice(-16_384)
+        if (changed) {
+          const entry = HashMap.get(cache, inspection.inspectionId);
+          if (Option.isSome(entry)) yield* save(entry.value);
         }
-        newline = stderrBuffer.indexOf('\n')
-      }
-      if (stderrBuffer.length > 1024 * 1024) {
-        result.parseError = true
-        stopInspection()
-      }
-    })
-    const abort = (): void => {
-      result.cancelled = true
-      stopInspection()
-    }
-    signal?.addEventListener('abort', abort, { once: true })
-    if (signal?.aborted) {
-      abort()
-    }
-    child.once('error', (error) => {
-      clearTimeout(timer)
-      signal?.removeEventListener('abort', abort)
-      reject(error)
-    })
-    child.once('close', (exitCode) => {
-      clearTimeout(timer)
-      signal?.removeEventListener('abort', abort)
-      result.stderr = `${result.stderr}\n${stderrBuffer}`.slice(-16_384)
-      if (result.cancelled) {
-        result.exitCode = exitCode
-        resolve(result)
-        return
-      }
-      try {
-        const messages: unknown = JSON.parse(Buffer.concat(chunks).toString())
-        if (Array.isArray(messages)) {
-          result.assetCount = 0
-          result.sourceIds.clear()
-          result.items.clear()
-          result.directoryMetadata = []
-          for (const message of messages) {
-            parseGalleryJsonMessage(message, result)
-          }
-        } else {
-          result.parseError = true
+        const snapshot = structuredClone(inspection);
+        snapshot.mapping = undefined;
+        for (const state of controllers) {
+          if (state.controller.signal.aborted || state.url !== inspection.profile.profileUrl) continue;
+          snapshot.mapping = { ...state.mapping };
+          if (state.mapping.state === "running") break;
         }
-      } catch {
-        result.parseError = true
-      }
-      result.exitCode = exitCode
-      resolve(result)
-    })
-  })
-
-const inspectionFailureCode = (
-  stderr: string,
-  binaryMissing = false
-): InstagramInspectionErrorCode => {
-  if (binaryMissing) {
-    return 'binary-missing'
-  }
-  // Instagram throttles with 429s, "please wait" 401s, and soft redirects to
-  // the home page; none of these are cookie problems.
-  if (
-    /429|too many requests|rate.?limit|please wait a few minutes|redirect to home page|temporarily blocked/i.test(
-      stderr
-    )
-  ) {
-    return 'rate-limited'
-  }
-  if (
-    /login required|private profile|cookies|redirect to (?:login|challenge)|authentication/i.test(
-      stderr
-    )
-  ) {
-    return 'auth-required'
-  }
-  if (/404|notfound|not found|does not exist/i.test(stderr)) {
-    return 'not-found'
-  }
-  if (/timeout|connection|econn|network|dns/i.test(stderr)) {
-    return 'network'
-  }
-  return 'unavailable'
-}
-
-const toCategorySummary = (
-  category: InstagramProfileCategory,
-  result: GalleryJsonResult
-): InstagramCategorySummary => {
-  if (result.exitCode !== 0 || result.parseError) {
-    const errorCode = inspectionFailureCode(result.stderr)
-    return {
-      category,
-      state: errorCode === 'auth-required' ? 'auth-required' : 'unavailable',
-      sourceCount: result.sourceIds.size,
-      assetCount: result.assetCount,
-      errorCode
-    }
-  }
-  if (result.assetCount === 0) {
-    return {
-      category,
-      state: 'empty',
-      sourceCount: 0,
-      assetCount: 0
-    }
-  }
-  return {
-    category,
-    state: 'ready',
-    sourceCount: result.sourceIds.size || result.assetCount,
-    assetCount: result.assetCount
-  }
-}
-
-export const buildInstagramCategoryUrl = (
-  username: string,
-  category: InstagramProfileCategory
-): string => {
-  if (category === 'stories') {
-    return `https://www.instagram.com/stories/${username}/`
-  }
-  const extractorPath = category
-  return `https://www.instagram.com/${username}/${extractorPath}/`
-}
-
-export const buildGalleryDlRuntimeArgs = (
-  settings?: DownloadRuntimeSettings
-): readonly string[] => {
-  const args: string[] = []
-  const browser = normalizeBrowserCookiesSettingForYtDlp(settings?.browserForCookies)
-  if (browser && browser !== 'none') {
-    args.push('--cookies-from-browser', browser)
-  }
-  const cookiesPath = settings?.cookiesPath?.trim()
-  if (cookiesPath) {
-    args.push('--cookies', cookiesPath)
-  }
-  const proxy = settings?.proxy?.trim()
-  if (proxy) {
-    args.push('--proxy', proxy)
-  }
-  return args
-}
-
-const sanitizePathSegment = (value: string): string => {
-  const sanitized = value
-    .trim()
-    .split('')
-    .map((character) => {
-      const codePoint = character.charCodeAt(0)
-      return codePoint < 32 || INVALID_PATH_CHARACTERS.has(character) ? '_' : character
-    })
-    .join('')
-    .replace(/[.\s]+$/g, '')
-  return sanitized || 'instagram-profile'
-}
-
-export class InstagramProfileInspector {
-  private readonly mapping = new Map<
-    AbortController,
-    NonNullable<InstagramProfileInspection['mapping']>
-  >()
-  private readonly controllers = new Map<AbortController, string>()
-  private readonly pending = new Map<string, Promise<InstagramProfileInspection>>()
-  private inspectionTail: Promise<void> = Promise.resolve()
-  private readonly cache = new Map<string, InspectionCacheEntry>()
-  private readonly clock: () => number
-  private readonly maxCacheEntries: number
-  private readonly options: InstagramProfileInspectorOptions
-  private rateLimitedUntil = 0
-
-  constructor(options: InstagramProfileInspectorOptions) {
-    this.options = options
-    this.clock = options.clock ?? Date.now
-    this.maxCacheEntries = options.maxCacheEntries ?? DEFAULT_MAX_CACHE_ENTRIES
-  }
-
-  list(): Pick<
-    InstagramProfileInspection,
-    'inspectionId' | 'profile' | 'totalSourceCount' | 'totalAssetCount' | 'mapping'
-  >[] {
-    const ids = new Set(this.cache.keys())
-    if (this.options.storageDir) {
-      try {
-        for (const filename of readdirSync(this.options.storageDir)) {
-          if (/^instagram_[a-f0-9]{64}\.json$/.test(filename)) {
-            ids.add(filename.slice(0, -5))
-          }
-        }
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-          throw error
-        }
-      }
-    }
-    const profiles: Pick<
-      InstagramProfileInspection,
-      'inspectionId' | 'profile' | 'totalSourceCount' | 'totalAssetCount' | 'mapping'
-    >[] = []
-    for (const id of ids) {
-      const entry = this.get(id)
-      if (entry) {
-        const { inspectionId, profile, totalSourceCount, totalAssetCount } = entry.inspection
-        profiles.push({
-          inspectionId,
-          profile: { ...profile },
-          totalSourceCount,
-          totalAssetCount,
-          mapping: this.withMapping(entry.inspection).mapping
-        })
-      }
-    }
-    return profiles.sort((a, b) => a.profile.username.localeCompare(b.profile.username))
-  }
-
-  private withMapping(inspection: InstagramProfileInspection): InstagramProfileInspection {
-    const completed = this.options.completedDownloads?.() ?? []
-    let changed = false
-    for (const category of inspection.categories) {
-      for (const item of category.items ?? []) {
-        if (
-          !item.downloaded &&
-          completed.some(
-            (task) =>
-              task.url === item.url &&
-              task.category === category.category &&
-              task.assetCount === item.assetCount
-          )
-        ) {
-          item.downloaded = true
-          changed = true
-        }
-      }
-    }
-    if (changed) {
-      const entry = this.cache.get(inspection.inspectionId)
-      if (entry) {
-        this.save(entry)
-      }
-    }
-    const snapshot = structuredClone(inspection)
-    snapshot.mapping = undefined
-    for (const [controller, url] of this.controllers) {
-      if (!controller.signal.aborted && url === inspection.profile.profileUrl) {
-        const mapping = this.mapping.get(controller)
-        if (mapping) {
-          snapshot.mapping = { ...mapping }
-        }
-        if (mapping?.state === 'running') {
-          break
-        }
-      }
-    }
-    return snapshot
-  }
-
-  async stop(): Promise<void> {
-    for (const controller of this.controllers.keys()) {
-      controller.abort()
-    }
-    await Promise.allSettled(this.pending.values())
-  }
-
-  cancel(url: string): boolean {
-    const normalized = normalizeInstagramProfileUrl(url)
-    if (!normalized) {
-      throw new Error('Enter a valid Instagram profile URL.')
-    }
-    let cancelled = false
-    for (const [controller, profileUrl] of this.controllers) {
-      if (profileUrl === normalized.profileUrl) {
-        controller.abort()
-        cancelled = true
-      }
-    }
-    return cancelled
-  }
-
-  inspect(
-    url: string,
-    settings?: DownloadRuntimeSettings,
-    requestedCategories?: readonly InstagramProfileCategory[]
-  ): Promise<InstagramProfileInspection> {
-    const normalized = normalizeInstagramProfileUrl(url)
-    if (!normalized) {
-      return Promise.reject(new Error('Enter a valid Instagram profile URL.'))
-    }
-    if (requestedCategories?.length === 0) {
-      return this.scan(normalized.profileUrl, settings, [])
-    }
-    const key = JSON.stringify([normalized.profileUrl, settings, requestedCategories])
-    const existing = this.pending.get(key)
-    if (existing) {
-      return existing
-    }
-    // Multiple dialogs can request scans while earlier work is still running.
-    // Serialize scans and share identical in-flight requests to avoid request bursts.
-    const controller = new AbortController()
-    this.controllers.set(controller, normalized.profileUrl)
-    const mapping: NonNullable<InstagramProfileInspection['mapping']> = {
-      category: requestedCategories?.[0] ?? INSTAGRAM_PROFILE_CATEGORIES[0],
-      state: 'queued'
-    }
-    this.mapping.set(controller, mapping)
-    const prepared = this.scan(normalized.profileUrl, settings, [])
-    const previousTail = this.inspectionTail
-    const stopped = new Promise<void>((resolve) => {
-      controller.signal.addEventListener('abort', () => resolve(), { once: true })
-    })
-    const request = Promise.all([prepared, Promise.race([previousTail, stopped])])
-      .then(() =>
-        this.scan(normalized.profileUrl, settings, requestedCategories, controller.signal, mapping)
-      )
-      .finally(() => {
-        this.controllers.delete(controller)
-        this.mapping.delete(controller)
-        this.pending.delete(key)
-      })
-    this.pending.set(key, request)
-    // Cancelling a queued scan must not release another profile's active scan.
-    this.inspectionTail = Promise.allSettled([previousTail, request]).then(() => {})
-    return request.then((inspection) => this.withMapping(inspection))
-  }
-
-  private async scan(
-    url: string,
-    settings?: DownloadRuntimeSettings,
-    requestedCategories?: readonly InstagramProfileCategory[],
-    signal?: AbortSignal,
-    mapping?: NonNullable<InstagramProfileInspection['mapping']>
-  ): Promise<InstagramProfileInspection> {
-    const normalized = normalizeInstagramProfileUrl(url)
-    if (!normalized) {
-      throw new Error('Enter a valid Instagram profile URL.')
-    }
-
-    const inspectionId = instagramInspectionId(normalized.username)
-    const cached = this.get(inspectionId)
-    const categoryUrls = Object.fromEntries(
-      INSTAGRAM_PROFILE_CATEGORIES.map((category) => [
-        category,
-        buildInstagramCategoryUrl(normalized.username, category)
-      ])
-    ) as Record<InstagramProfileCategory, string>
-    const inspection: InstagramProfileInspection = cached?.inspection ?? {
-      inspectionId,
-      expiresAt: Number.MAX_SAFE_INTEGER,
-      complete: false,
-      profile: { username: normalized.username, profileUrl: normalized.profileUrl },
-      categories: INSTAGRAM_PROFILE_CATEGORIES.map((category) => ({
-        category,
-        state: 'unscanned',
-        sourceCount: 0,
-        assetCount: 0,
-        items: []
-      })),
-      totalSourceCount: 0,
-      totalAssetCount: 0
-    }
-    const selected = requestedCategories ?? INSTAGRAM_PROFILE_CATEGORIES
-    if (!cached) {
-      this.save({ inspection, categoryUrls })
-    }
-    // The dialog polls with no categories every second; that read must not
-    // rewrite the saved profile.
-    if (selected.length === 0 || signal?.aborted) {
-      return this.withMapping(inspection)
-    }
-    const binaryPath = this.options.resolveBinaryPath()
-    const extraArgs =
-      this.options.resolveExtraArgs?.(settings) ?? buildGalleryDlRuntimeArgs(settings)
-    for (const category of selected) {
-      if (signal?.aborted) {
-        break
-      }
-      if (!INSTAGRAM_PROFILE_CATEGORIES.includes(category)) {
-        throw new Error('Unsupported Instagram category.')
-      }
-      const previous = inspection.categories.find((entry) => entry.category === category)
-      const incremental =
-        previous?.incremental || previous?.state === 'ready' || previous?.state === 'empty'
-      let summary: InstagramCategorySummary
-      const cooldownUntil = this.rateLimitedUntil
-      if (cooldownUntil > this.clock()) {
-        // Do not spawn gallery-dl while Instagram is throttling this network.
-        summary = {
-          ...previous,
-          category,
-          incremental,
-          state: 'unavailable',
-          errorCode: 'rate-limited',
-          retryAfter: cooldownUntil,
-          sourceCount: previous?.sourceCount ?? 0,
-          assetCount: previous?.assetCount ?? 0
-        }
-      } else {
-        try {
-          const categoryArgs = [
-            ...extraArgs,
-            '-o',
-            `extractor.instagram.vidbee-inspection-category=${category}`,
-            ...(this.options.storageDir
-              ? [
-                  '-o',
-                  `extractor.instagram.vidbee-known-profile=${path.join(this.options.storageDir, `${inspectionId}.json`)}`
-                ]
-              : [])
-          ]
-          if (mapping) {
-            mapping.category = category
-            mapping.state = 'queued'
-          }
-          const release = this.options.admission
-            ? await this.options.admission.acquire(url, signal)
-            : () => {}
-          if (!release || signal?.aborted) {
-            release?.()
-            break
-          }
-          if (mapping) {
-            mapping.state = 'running'
-          }
-          let result: GalleryJsonResult
-          try {
-            result = await runGalleryJson(
-              binaryPath,
-              categoryUrls[category],
-              categoryArgs,
-              true,
-              signal,
-              (progress) => {
-                const discovered = new Map((previous?.items ?? []).map((item) => [item.id, item]))
-                for (const item of progress.items.values()) {
-                  const id = `${category}:${item.id}`
-                  const prior = discovered.get(id)
-                  if (!prior || item.assetCount >= prior.assetCount) {
-                    discovered.set(id, { ...item, id })
-                  }
-                }
-                const items = [...discovered.values()]
-                const partial: InstagramCategorySummary = {
-                  category,
-                  incremental,
-                  state: 'cancelled',
-                  items,
-                  cursor: progress.cursor ?? previous?.cursor,
-                  sourceCount: items.length,
-                  assetCount: items.reduce((total, item) => total + item.assetCount, 0),
-                  mappedAt: this.clock()
-                }
-                inspection.categories = inspection.categories.map((entry) =>
-                  entry.category === category ? partial : entry
-                )
-                inspection.complete = false
-                inspection.totalSourceCount = inspection.categories.reduce(
-                  (total, entry) => total + entry.sourceCount,
-                  0
-                )
-                inspection.totalAssetCount = inspection.categories.reduce(
-                  (total, entry) => total + entry.assetCount,
-                  0
-                )
-                this.save({ inspection, categoryUrls })
-              }
-            )
-          } finally {
-            release()
-          }
-          summary = result.cancelled
-            ? {
-                category,
-                state: 'cancelled',
-                sourceCount: 0,
-                assetCount: 0,
-                cursor: result.cursor ?? previous?.cursor
-              }
-            : toCategorySummary(category, result)
-          summary.incremental = incremental
-          const items = [...result.items.values()].map((item) => ({
-            ...item,
-            id: `${category}:${item.id}`
-          }))
-          // A failed refresh must not destroy references discovered by an earlier scan.
-          const merged = new Map((previous?.items ?? []).map((item) => [item.id, item]))
-          for (const item of items) {
-            const prior = merged.get(item.id)
-            if (result.cancelled && prior && prior.assetCount > item.assetCount) {
-              continue
+        return snapshot;
+      });
+      const list = Effect.fn("InstagramInspector.list")(function* () {
+        const ids = [...cacheOrder];
+        const hasStorageDir = Boolean(options.storageDir);
+        if (hasStorageDir && options.storageDir !== undefined) {
+          const names = yield* files
+            .readDirectory(options.storageDir)
+            .pipe(Effect.catchIf(missing, () => Effect.succeed([])));
+          for (const name of names)
+            if (/^instagram_[a-f0-9]{64}\.json$/.test(name)) {
+              const id = Str.slice(0, -5)(name);
+              if (!A.contains(ids, id)) ids.push(id);
             }
-            const sameMedia = prior?.assetIds?.length
-              ? JSON.stringify([...prior.assetIds].sort()) ===
-                JSON.stringify([...(item.assetIds ?? [])].sort())
-              : prior?.assetCount === item.assetCount
-            merged.set(item.id, { ...item, downloaded: sameMedia && prior?.downloaded })
-          }
-          summary.items = [...merged.values()]
-          if (summary.state === 'unavailable' || summary.state === 'auth-required') {
-            summary.cursor = result.cursor ?? previous?.cursor
-          }
-          if (summary.items.length) {
-            if (summary.state === 'empty') {
-              summary.state = 'ready'
-            }
-            summary.sourceCount = summary.items.length
-            summary.assetCount = summary.items.reduce((total, item) => total + item.assetCount, 0)
-          }
-          summary.mappedAt = this.clock()
-          const user = resolveUserRecord(result.directoryMetadata[0])
-          inspection.profile.displayName =
-            readString(user, 'full_name', 'fullname') ?? inspection.profile.displayName
-          inspection.profile.avatarUrl =
-            readString(user, 'profile_pic_url_hd', 'profile_pic_url') ??
-            inspection.profile.avatarUrl
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error)
-          summary = {
-            ...previous,
-            category,
-            state: 'unavailable',
-            sourceCount: previous?.sourceCount ?? 0,
-            assetCount: previous?.assetCount ?? 0,
-            errorCode: inspectionFailureCode(message, /ENOENT|not found/i.test(message))
-          }
         }
-        if (summary.errorCode === 'rate-limited') {
-          this.rateLimitedUntil = this.clock() + INSTAGRAM_RATE_LIMIT_COOLDOWN_MS
-          summary.retryAfter = this.rateLimitedUntil
+        const profiles: InstagramInspectionListEntry[] = [];
+        for (const id of ids) {
+          const entry = yield* get(id);
+          if (entry === null) continue;
+          const snapshot = yield* withMapping(entry.inspection);
+          const { inspectionId, profile, totalSourceCount, totalAssetCount } = entry.inspection;
+          profiles.push({
+            inspectionId,
+            profile: { ...profile },
+            totalSourceCount,
+            totalAssetCount,
+            mapping: snapshot.mapping,
+          });
         }
-      }
-      inspection.categories = INSTAGRAM_PROFILE_CATEGORIES.map((key) =>
-        key === category
-          ? summary
-          : (inspection.categories.find((entry) => entry.category === key) ?? {
-              category: key,
-              state: 'unscanned',
-              sourceCount: 0,
-              assetCount: 0,
-              items: []
-            })
-      )
-      inspection.complete = inspection.categories.every(
-        (entry) => entry.state === 'ready' || entry.state === 'empty'
-      )
-      inspection.totalSourceCount = inspection.categories.reduce(
-        (total, entry) => total + entry.sourceCount,
-        0
-      )
-      inspection.totalAssetCount = inspection.categories.reduce(
-        (total, entry) => total + entry.assetCount,
-        0
-      )
-      this.save({ inspection, categoryUrls })
-    }
-    this.pruneExpired()
-    while (this.cache.size >= this.maxCacheEntries) {
-      const oldestKey = this.cache.keys().next().value as string | undefined
-      if (!oldestKey) {
-        break
-      }
-      this.cache.delete(oldestKey)
-    }
-    this.cache.set(inspection.inspectionId, { inspection, categoryUrls })
-    return this.withMapping(inspection)
-  }
-
-  private save(entry: InspectionCacheEntry): void {
-    this.cache.set(entry.inspection.inspectionId, entry)
-    if (!this.options.storageDir) {
-      return
-    }
-    mkdirSync(this.options.storageDir, { recursive: true, mode: 0o700 })
-    const target = path.join(this.options.storageDir, `${entry.inspection.inspectionId}.json`)
-    const temporary = `${target}.${randomUUID()}.tmp`
-    writeFileSync(temporary, JSON.stringify(entry.inspection), { mode: 0o600 })
-    renameSync(temporary, target)
-  }
-
-  get(inspectionId: string): InspectionCacheEntry | null {
-    let entry = this.cache.get(inspectionId)
-    if (!entry && this.options.storageDir && /^instagram_[a-f0-9]{64}$/.test(inspectionId)) {
-      try {
-        const inspection = InstagramProfileInspectionSchema.parse(
-          JSON.parse(
-            readFileSync(path.join(this.options.storageDir, `${inspectionId}.json`), 'utf8')
-          )
-        )
-        entry = {
-          inspection,
-          categoryUrls: Object.fromEntries(
-            INSTAGRAM_PROFILE_CATEGORIES.map((category) => [
-              category,
-              buildInstagramCategoryUrl(inspection.profile.username, category)
-            ])
-          ) as Record<InstagramProfileCategory, string>
-        }
-        this.cache.set(inspectionId, entry)
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-          throw new Error(
-            'Saved Instagram profile could not be read. Restore its backup before rescanning.'
-          )
-        }
-      }
-    }
-    if (!entry) {
-      return null
-    }
-    if (entry.inspection.expiresAt <= this.clock()) {
-      this.cache.delete(inspectionId)
-      return null
-    }
-    return entry
-  }
-
-  private pruneExpired(): void {
-    const now = this.clock()
-    for (const [id, entry] of this.cache) {
-      if (entry.inspection.expiresAt <= now) {
-        this.cache.delete(id)
-      }
-    }
-  }
-}
-
-export const enqueueInstagramProfileDownload = async ({
-  queue,
-  inspector,
-  input,
-  defaultDownloadDir,
-  batch,
-  priority = PRIORITY_USER
-}: EnqueueInstagramProfileOptions): Promise<InstagramProfileDownloadResult> => {
-  const cached = inspector.get(input.inspectionId)
-  if (!cached) {
-    throw new Error('Instagram profile inspection expired. Scan the profile again.')
-  }
-
-  const selectedCategories = Array.from(new Set(input.categories))
-  const selectedSummaries = selectedCategories
-    .map((category) => {
-      const summary = cached.inspection.categories.find(
-        (candidate) => candidate.category === category
-      )
-      if (
-        !summary ||
-        (summary.state !== 'ready' && !summary.items?.length) ||
-        summary.assetCount === 0
+        return A.sort(profiles, (a: InstagramInspectionListEntry, b: InstagramInspectionListEntry) =>
+          Str.localeCompare(b.profile.username)(a.profile.username)
+        );
+      });
+      const scan = Effect.fn("InstagramInspector.scan")(function* (
+        url: string,
+        settings?: DownloadRuntimeSettings,
+        requestedCategories?: readonly InstagramProfileCategory[],
+        signal?: AbortSignal,
+        mapping?: NonNullable<InstagramProfileInspection["mapping"]>
       ) {
-        throw new Error(`Instagram category "${category}" is not ready to download.`)
-      }
-      return summary
+        const normalized = yield* normalize(url);
+        const id = instagramInspectionId(normalized.username);
+        const cached = yield* get(id);
+        const categoryUrls = categoryUrlsFor(normalized.username);
+        const inspection: InstagramProfileInspection = cached?.inspection ?? {
+          inspectionId: id,
+          expiresAt: Number.MAX_SAFE_INTEGER,
+          complete: false,
+          profile: { username: normalized.username, profileUrl: normalized.profileUrl },
+          categories: A.map(INSTAGRAM_PROFILE_CATEGORIES, (category) => ({
+            category,
+            state: "unscanned",
+            sourceCount: 0,
+            assetCount: 0,
+            items: [],
+          })),
+          totalSourceCount: 0,
+          totalAssetCount: 0,
+        };
+        const selected = requestedCategories ?? INSTAGRAM_PROFILE_CATEGORIES;
+        if (cached === null) yield* save({ inspection, categoryUrls });
+        if (selected.length === 0 || (signal?.aborted ?? false)) return yield* withMapping(inspection);
+        const binaryPath = options.resolveBinaryPath();
+        const extraArgs =
+          options.resolveExtraArgs?.(settings) ??
+          (yield* buildGalleryDlRuntimeArgs(settings).pipe(Effect.provide(dependencies)));
+        for (const category of selected) {
+          if (signal?.aborted ?? false) break;
+          if (!A.contains(INSTAGRAM_PROFILE_CATEGORIES, category))
+            return yield* InvalidDownload.make({
+              operation: "instagram.scan",
+              legacyMessage: "Unsupported Instagram category.",
+            });
+          const previous = Option.getOrUndefined(
+            A.findFirst(inspection.categories, (entry) => entry.category === category)
+          );
+          const incremental =
+            previous?.incremental === true || previous?.state === "ready" || previous?.state === "empty";
+          let summary: InstagramCategorySummary;
+          if (rateLimitedUntil > options.clock())
+            summary = {
+              ...previous,
+              category,
+              incremental,
+              state: "unavailable",
+              errorCode: "rate-limited",
+              retryAfter: rateLimitedUntil,
+              sourceCount: previous?.sourceCount ?? 0,
+              assetCount: previous?.assetCount ?? 0,
+            };
+          else {
+            const attempt = Effect.fn("InstagramInspector.category")(function* () {
+              const hasStorageDir = Boolean(options.storageDir);
+              const categoryArgs = [
+                ...extraArgs,
+                "-o",
+                `extractor.instagram.vidbee-inspection-category=${category}`,
+                ...(hasStorageDir && options.storageDir !== undefined
+                  ? ["-o", `extractor.instagram.vidbee-known-profile=${path.join(options.storageDir, `${id}.json`)}`]
+                  : []),
+              ];
+              if (mapping !== undefined) {
+                mapping.category = category;
+                mapping.state = "queued";
+              }
+              const release =
+                options.admission === undefined ? Effect.void : yield* options.admission.acquire(url, signal);
+              if (release === undefined || (signal?.aborted ?? false)) {
+                if (release !== undefined) yield* release;
+                return undefined;
+              }
+              if (mapping !== undefined) mapping.state = "running";
+              const result = yield* runGalleryJson(
+                binaryPath,
+                categoryUrls[category],
+                categoryArgs,
+                true,
+                signal,
+                Effect.fn("InstagramInspector.checkpoint")(function* (progress) {
+                  const priorItems = previous?.items ?? [];
+                  let discovered = HashMap.fromIterable(A.map(priorItems, (item) => [item.id, item] as const));
+                  const order = A.map(priorItems, (item) => item.id);
+                  for (const item of galleryItems(progress)) {
+                    const itemId = `${category}:${item.id}`;
+                    const prior = Option.getOrUndefined(HashMap.get(discovered, itemId));
+                    if (prior === undefined || item.assetCount >= prior.assetCount) {
+                      if (!HashMap.has(discovered, itemId)) order.push(itemId);
+                      discovered = HashMap.set(discovered, itemId, { ...item, id: itemId });
+                    }
+                  }
+                  const items = A.map(order, (key) => HashMap.getUnsafe(discovered, key));
+                  const partial: InstagramCategorySummary = {
+                    category,
+                    incremental,
+                    state: "cancelled",
+                    items,
+                    cursor: progress.cursor ?? previous?.cursor,
+                    sourceCount: items.length,
+                    assetCount: A.reduce(items, 0, (total, item) => total + item.assetCount),
+                    mappedAt: options.clock(),
+                  };
+                  inspection.categories = A.map(inspection.categories, (entry) =>
+                    entry.category === category ? partial : entry
+                  );
+                  inspection.complete = false;
+                  inspection.totalSourceCount = A.reduce(
+                    inspection.categories,
+                    0,
+                    (total, entry) => total + entry.sourceCount
+                  );
+                  inspection.totalAssetCount = A.reduce(
+                    inspection.categories,
+                    0,
+                    (total, entry) => total + entry.assetCount
+                  );
+                  yield* save({ inspection, categoryUrls }).pipe(Effect.orDie);
+                })
+              ).pipe(Effect.provide(dependencies), Effect.ensuring(release));
+              const next: InstagramCategorySummary =
+                result.cancelled === true
+                  ? {
+                      category,
+                      state: "cancelled",
+                      sourceCount: 0,
+                      assetCount: 0,
+                      cursor: result.cursor ?? previous?.cursor,
+                    }
+                  : InstagramScanServiceFunctions.toCategorySummary(category, result);
+              next.incremental = incremental;
+              const items = A.map(galleryItems(result), (item) => ({ ...item, id: `${category}:${item.id}` }));
+              next.items = orderedMerge(previous?.items ?? [], items, result.cancelled === true);
+              if (next.state === "unavailable" || next.state === "auth-required")
+                next.cursor = result.cursor ?? previous?.cursor;
+              if (next.items.length > 0) {
+                if (next.state === "empty") next.state = "ready";
+                next.sourceCount = next.items.length;
+                next.assetCount = A.reduce(next.items, 0, (total, item) => total + item.assetCount);
+              }
+              next.mappedAt = options.clock();
+              const user = resolveUserRecord(result.directoryMetadata[0]);
+              inspection.profile.displayName =
+                readString(user, "full_name", "fullname") ?? inspection.profile.displayName;
+              inspection.profile.avatarUrl =
+                readString(user, "profile_pic_url_hd", "profile_pic_url") ?? inspection.profile.avatarUrl;
+              return next;
+            });
+            const outcome = yield* attempt().pipe(
+              Effect.catch((failure) => {
+                const message = failure.legacyMessage;
+                return Effect.succeed<InstagramCategorySummary>({
+                  ...previous,
+                  category,
+                  state: "unavailable",
+                  sourceCount: previous?.sourceCount ?? 0,
+                  assetCount: previous?.assetCount ?? 0,
+                  errorCode: InstagramScanServiceFunctions.inspectionFailureCode(
+                    message,
+                    /ENOENT|not found/i.test(message)
+                  ),
+                });
+              })
+            );
+            if (outcome === undefined) break;
+            summary = outcome;
+            if (summary.errorCode === "rate-limited") {
+              rateLimitedUntil = options.clock() + INSTAGRAM_RATE_LIMIT_COOLDOWN_MS;
+              summary.retryAfter = rateLimitedUntil;
+            }
+          }
+          inspection.categories = A.map(INSTAGRAM_PROFILE_CATEGORIES, (key) =>
+            key === category
+              ? summary
+              : Option.getOrElse(
+                  A.findFirst(inspection.categories, (entry) => entry.category === key),
+                  () => ({ category: key, state: "unscanned" as const, sourceCount: 0, assetCount: 0, items: [] })
+                )
+          );
+          inspection.complete = A.every(
+            inspection.categories,
+            (entry) => entry.state === "ready" || entry.state === "empty"
+          );
+          inspection.totalSourceCount = A.reduce(inspection.categories, 0, (total, entry) => total + entry.sourceCount);
+          inspection.totalAssetCount = A.reduce(inspection.categories, 0, (total, entry) => total + entry.assetCount);
+          yield* save({ inspection, categoryUrls });
+        }
+        for (const key of [...cacheOrder]) {
+          const entry = HashMap.get(cache, key);
+          if (Option.isSome(entry) && entry.value.inspection.expiresAt <= options.clock()) remove(key);
+        }
+        while (HashMap.size(cache) >= (options.maxCacheEntries ?? 20)) {
+          const oldest = cacheOrder[0];
+          if (oldest === undefined || oldest === "") break;
+          remove(oldest);
+        }
+        put(inspection.inspectionId, { inspection, categoryUrls });
+        return yield* withMapping(inspection);
+      });
+      const request = Effect.fn("InstagramInspector.request")(function* (
+        url: string,
+        settings?: DownloadRuntimeSettings,
+        categories?: readonly InstagramProfileCategory[]
+      ) {
+        const normalized = yield* normalize(url);
+        if (categories?.length === 0) {
+          const value = yield* scan(normalized.profileUrl, settings, []);
+          return { key: "", result: Effect.succeed(value), snapshot: withMapping };
+        }
+        const key = yield* S.encodeEffect(S.fromJsonString(S.Unknown))([
+          normalized.profileUrl,
+          settings,
+          categories,
+        ]).pipe(
+          Effect.mapError((cause) =>
+            BoundaryDecodeError.make({ operation: "instagram.request", legacyMessage: cause.message, cause })
+          )
+        );
+        const existing = HashMap.get(pending, key);
+        if (Option.isSome(existing)) return { key, result: Deferred.await(existing.value), snapshot: withMapping };
+        const controller = host.makeAbortController();
+        const mapping: NonNullable<InstagramProfileInspection["mapping"]> = {
+          category: categories?.[0] ?? "posts",
+          state: "queued",
+        };
+        controllers.push({ controller, url: normalized.profileUrl, mapping });
+        const prepared = yield* Effect.exit(scan(normalized.profileUrl, settings, []));
+        const previous = tail;
+        const result = yield* Deferred.make<InstagramProfileInspection, InspectionError>();
+        const nextTail = yield* Deferred.make<void>();
+        pending = HashMap.set(pending, key, result);
+        tail = Deferred.await(nextTail);
+        const stopped = Effect.callback<void>((resume) => {
+          const abort = () => resume(Effect.void);
+          controller.signal.addEventListener("abort", abort, { once: true });
+          if (controller.signal.aborted) abort();
+          return Effect.sync(() => controller.signal.removeEventListener("abort", abort));
+        });
+        const work = Effect.gen(function* () {
+          yield* timing.turn("instagram.inspect.prepared");
+          yield* prepared;
+          yield* Effect.raceFirst(previous, stopped);
+          yield* timing.turn("instagram.inspect.ready");
+          return yield* scan(normalized.profileUrl, settings, categories, controller.signal, mapping);
+        });
+        yield* Effect.forkIn(
+          Effect.gen(function* () {
+            const exit = yield* Effect.exit(work);
+            const index = A.findFirstIndex(controllers, (entry) => entry.controller === controller);
+            if (Option.isSome(index)) controllers.splice(index.value, 1);
+            pending = HashMap.remove(pending, key);
+            yield* Deferred.done(result, exit);
+            yield* previous;
+            // The old allSettled continuation follows the request's finally and snapshot observers.
+            yield* timing.turn("instagram.inspect.finally");
+            yield* timing.turn("instagram.inspect.settled");
+            yield* timing.turn("instagram.inspect.tail");
+            yield* Deferred.succeed(nextTail, undefined);
+          }),
+          scope,
+          { startImmediately: true }
+        );
+        return { key, result: Deferred.await(result), snapshot: withMapping };
+      });
+      const inspect = Effect.fn("InstagramInspector.inspect")(function* (
+        url: string,
+        settings?: DownloadRuntimeSettings,
+        categories?: readonly InstagramProfileCategory[]
+      ) {
+        const scheduled = yield* request(url, settings, categories);
+        const inspection = yield* scheduled.result;
+        return yield* scheduled.snapshot(inspection);
+      });
+      const cancel = Effect.fn("InstagramInspector.cancel")(function* (url: string) {
+        const normalized = yield* normalize(url);
+        let cancelled = false;
+        for (const state of controllers) {
+          if (state.url === normalized.profileUrl) {
+            state.controller.abort();
+            cancelled = true;
+          }
+        }
+        return cancelled;
+      });
+      const stop = Effect.gen(function* () {
+        for (const state of controllers) state.controller.abort();
+        yield* Effect.forEach(HashMap.values(pending), (result) => Deferred.await(result).pipe(Effect.ignore), {
+          concurrency: "unbounded",
+          discard: true,
+        });
+      });
+      return InstagramProfileInspector.of({ get, list: list(), request, inspect, cancel, stop });
     })
-    .sort(
-      (left, right) =>
-        DOWNLOAD_CATEGORY_ORDERS[left.category] - DOWNLOAD_CATEGORY_ORDERS[right.category]
-    )
-
-  const groupId =
-    batch?.id ?? `${INSTAGRAM_PROFILE_GROUP_PREFIX}${Date.now()}_${randomUUID().slice(0, 8)}`
-  const groupKey = INSTAGRAM_PROFILE_GROUP_KEY
-  await queue.setMaxPerGroup(groupKey, 1)
-
-  const username = sanitizePathSegment(cached.inspection.profile.username)
-  const baseDownloadDir =
-    input.customDownloadPath?.trim() || input.settings?.downloadPath?.trim() || defaultDownloadDir
-  const profileDirectory = path.join(baseDownloadDir, 'Instagram', username)
-  const tasks: InstagramProfileDownloadResult['tasks'] = []
-
-  for (const summary of selectedSummaries) {
-    const categoryLabel = CATEGORY_LABELS[summary.category]
-    const outputDirectory = path.join(profileDirectory, categoryLabel)
-    const isHighlights = summary.category === 'highlights'
-    const references = summary.items?.length
-      ? summary.items
-      : [
-          {
-            id: summary.category,
-            downloaded: false,
-            url: cached.categoryUrls[summary.category],
-            assetCount: summary.assetCount
-          }
-        ]
-    for (const reference of references) {
-      if (reference.downloaded) {
-        continue
-      }
-      if (input.itemIds && !input.itemIds.includes(reference.id)) {
-        continue
-      }
-      const id = `instagram_item_${createHash('sha256')
-        .update(
-          JSON.stringify([
-            input.inspectionId,
-            summary.category,
-            reference.id,
-            reference.assetCount,
-            path.resolve(outputDirectory)
-          ])
-        )
-        .digest('hex')}`
-      const existing = queue.get(id)
-      if (existing && !['failed', 'cancelled'].includes(existing.status)) {
-        continue
-      }
-      if (existing && ['failed', 'cancelled'].includes(existing.status)) {
-        await queue.retryManual(id, { ...existing.input.options, settings: input.settings })
-      }
-      const result = await queue.add({
-        id,
-        input: {
-          url: reference.url,
-          kind: 'instagram-profile-category',
-          title: `@${cached.inspection.profile.username} · ${categoryLabel}`,
-          thumbnail: cached.inspection.profile.avatarUrl,
-          options: {
-            type: 'video',
-            customDownloadPath: outputDirectory,
-            settings: input.settings,
-            galleryDlBaseDirectory: isHighlights ? profileDirectory : undefined,
-            galleryDlDirectorySegments: isHighlights
-              ? [categoryLabel, '{highlight_title}']
-              : undefined,
-            galleryDlDirectoryTemplate: outputDirectory,
-            galleryDlFilenameTemplate: '{date:%Y-%m-%d}_{media_id}.{extension}',
-            expectedAssetCount: reference.assetCount,
-            batchId: groupId,
-            batchKind: 'instagram-profile',
-            batchTitle: batch?.title ?? `@${cached.inspection.profile.username}`,
-            batchCategory: summary.category,
-            batchOrder: CATEGORY_ORDERS[summary.category],
-            batchSourceCount: 1,
-            batchAssetCount: reference.assetCount,
-            downloadPath: outputDirectory
-          }
-        },
-        priority,
-        groupKey,
-        maxAttempts: 3
-      })
-      tasks.push({
-        downloadId: result.id,
-        category: summary.category,
-        sourceCount: 1,
-        assetCount: reference.assetCount
-      })
-    }
-  }
-
-  return {
-    groupId,
-    username: cached.inspection.profile.username,
-    totalSourceCount: tasks.reduce((total, task) => total + task.sourceCount, 0),
-    totalAssetCount: tasks.reduce((total, task) => total + task.assetCount, 0),
-    tasks
-  }
-}
-
-export const restoreInstagramProfileGroupCaps = async (queue: TaskQueueAPI): Promise<void> => {
-  const groupKeys = new Set<string>()
-  let cursor: string | null = null
-  do {
-    const page = queue.list({ limit: 200, cursor })
-    for (const task of page.tasks) {
-      if (task.kind === 'instagram-profile-category') {
-        groupKeys.add(task.groupKey)
-      }
-    }
-    cursor = page.nextCursor
-  } while (cursor)
-
-  for (const groupKey of groupKeys) {
-    await queue.setMaxPerGroup(groupKey, 1)
-  }
-}
+  );
+export { enqueueInstagramProfileDownload, restoreInstagramProfileGroupCaps } from "./InstagramEnqueue.service.js";
+export { InstagramProfileInspector as InstagramProfiles };

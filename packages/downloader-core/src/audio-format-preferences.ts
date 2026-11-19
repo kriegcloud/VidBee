@@ -1,12 +1,14 @@
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as Option from "effect/Option";
+import * as Str from "effect/String";
 export interface AudioFormatLike {
-  formatId?: string
-  format_id?: string
-  language?: string
+  format_id?: string;
+  formatId?: string;
+  language?: string;
 }
 
-const formatIdOf = (format: AudioFormatLike): string | undefined =>
-  format.formatId ?? format.format_id
-
+const formatIdOf = (format: AudioFormatLike | undefined): string | undefined => format?.formatId ?? format?.format_id;
 /**
  * Pick the best matching audio format id for a saved language preference.
  *
@@ -14,37 +16,56 @@ const formatIdOf = (format: AudioFormatLike): string | undefined =>
  * @param preferredLanguage Last language the user picked, if any.
  * @returns A format id, or undefined when the list is empty.
  */
-export const pickPreferredAudioFormatId = (
+const pickPreferredAudioFormatIdDataFirst = (
   formats: AudioFormatLike[],
   preferredLanguage?: string
 ): string | undefined => {
   if (formats.length === 0) {
-    return undefined
+    return undefined;
   }
 
-  const firstId = formatIdOf(formats[0])
-  const normalizedPreferredLanguage = preferredLanguage?.trim().toLowerCase()
-  if (!normalizedPreferredLanguage) {
-    return firstId
-  }
-
-  const exactMatch = formats.find(
-    (format) => format.language?.trim().toLowerCase() === normalizedPreferredLanguage
-  )
-  if (exactMatch) {
-    return formatIdOf(exactMatch)
-  }
-
-  const baseLanguageMatch = formats.find((format) => {
-    const normalizedLanguage = format.language?.trim().toLowerCase()
-    if (!normalizedLanguage) {
-      return false
-    }
-    return (
-      normalizedLanguage.startsWith(`${normalizedPreferredLanguage}-`) ||
-      normalizedPreferredLanguage.startsWith(`${normalizedLanguage}-`)
+  const first = formats[0];
+  const firstId = formatIdOf(first);
+  const normalizedPreferredLanguage = Str.toLowerCase(Str.trim(preferredLanguage ?? ""));
+  if (
+    !(
+      normalizedPreferredLanguage !== undefined &&
+      normalizedPreferredLanguage !== null &&
+      normalizedPreferredLanguage !== ""
     )
-  })
+  ) {
+    return firstId;
+  }
 
-  return formatIdOf(baseLanguageMatch ?? formats[0])
-}
+  const exactMatch = Option.getOrUndefined(
+    A.findFirst(formats, (format) => Str.toLowerCase(Str.trim(format.language ?? "")) === normalizedPreferredLanguage)
+  );
+  if (exactMatch !== undefined) {
+    return formatIdOf(exactMatch);
+  }
+
+  const baseLanguageMatch = Option.getOrUndefined(
+    A.findFirst(formats, (format) => {
+      const normalizedLanguage = Str.toLowerCase(Str.trim(format.language ?? ""));
+      if (!(normalizedLanguage !== undefined && normalizedLanguage !== null && normalizedLanguage !== "")) {
+        return false;
+      }
+      return (
+        Str.startsWith(`${normalizedPreferredLanguage}-`)(normalizedLanguage) ||
+        Str.startsWith(`${normalizedLanguage}-`)(normalizedPreferredLanguage)
+      );
+    })
+  );
+
+  return formatIdOf(baseLanguageMatch ?? formats[0]);
+};
+
+export const pickPreferredAudioFormatId: {
+  (preferredLanguage?: string): (formats: AudioFormatLike[]) => string | undefined;
+  (formats: AudioFormatLike[], preferredLanguage?: string): string | undefined;
+} = dual((args) => A.isArray(args[0]), pickPreferredAudioFormatIdDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  pickPreferredAudioFormatId: pickPreferredAudioFormatIdDataFirst,
+};

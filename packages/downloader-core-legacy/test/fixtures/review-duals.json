@@ -1,0 +1,174 @@
+[
+  {
+    "module": "audio-format-preferences",
+    "name": "pickPreferredAudioFormatId"
+  },
+  {
+    "module": "browser-cookies-setting",
+    "name": "buildBrowserCookiesSetting"
+  },
+  {
+    "module": "cookie-browser-paths",
+    "name": "getBrowserProfileBaseDirs"
+  },
+  {
+    "module": "cookie-browser-paths",
+    "name": "getBrowserProfileCandidates"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "isBrowserCookieReadSupported"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "hasConfiguredCookieSettings"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "inspectNetscapeCookies"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "matchCookieSites"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "cookieDomainMatches"
+  },
+  {
+    "module": "cookie-setup",
+    "name": "cookieMatchesUrlScope"
+  },
+  {
+    "module": "filename-style",
+    "name": "applyViaVidBeeFilename"
+  },
+  {
+    "module": "filename-style",
+    "name": "resolveFilenameTemplate"
+  },
+  {
+    "module": "format-preferences",
+    "name": "resolvePlaylistContainerFormat"
+  },
+  {
+    "module": "format-presentation",
+    "name": "filterFormatsByType"
+  },
+  {
+    "module": "format-selector",
+    "name": "buildSingleVideoFormatSelector"
+  },
+  {
+    "module": "mapped-profile-source",
+    "name": "isMappedProfilePostUrl"
+  },
+  {
+    "module": "onlyfans-profile",
+    "name": "onlyFansChatUrl"
+  },
+  {
+    "module": "onlyfans-profile",
+    "name": "onlyFansPurchasedUrl"
+  },
+  {
+    "module": "output-path",
+    "name": "sanitizeFolderName"
+  },
+  {
+    "module": "output-path",
+    "name": "resolveAutoVideoDownloadPath"
+  },
+  {
+    "module": "playlist-plan",
+    "name": "mapPlaylistInfo"
+  },
+  {
+    "module": "playlist-plan",
+    "name": "playlistEntryGroupKey"
+  },
+  {
+    "module": "snapchat",
+    "name": "snapchatCategoryUrl"
+  },
+  {
+    "module": "snapchat",
+    "name": "snapchatStorySnapUrl"
+  },
+  {
+    "module": "snapchat",
+    "name": "snapchatSpotlightUrl"
+  },
+  {
+    "module": "subtitle-languages",
+    "name": "resolveSubtitleLanguages"
+  },
+  {
+    "module": "vsco",
+    "name": "vscoPostUrl"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "resolveDownloadSubtitleLanguages"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "resolveSubtitleDownloadSkipReason"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "resolvePathWithHome"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "sanitizeFilenameTemplateWithFallback"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "appendPlatformFilenameSafetyArgs"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "appendYouTubeSafeExtractorArgs"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "resolveFfmpegLocationFromPath"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "resolveThumbnailDownloadArgs"
+  },
+  {
+    "module": "yt-dlp-args",
+    "name": "cookieSourcesFromArgs"
+  },
+  {
+    "module": "GalleryDlExecutor.helpers",
+    "name": "resolveDownloadTaskKind"
+  },
+  {
+    "module": "GalleryDlExecutor.helpers",
+    "name": "resolveGalleryDlFilenameTemplate"
+  },
+  {
+    "module": "InstagramScan.service",
+    "name": "parseGalleryJsonMessage"
+  },
+  {
+    "module": "InstagramScan.service",
+    "name": "inspectionFailureCode"
+  },
+  {
+    "module": "InstagramScan.service",
+    "name": "toCategorySummary"
+  },
+  {
+    "module": "InstagramScan.service",
+    "name": "buildInstagramCategoryUrl"
+  },
+  {
+    "module": "ProfileFinalization",
+    "name": "finalizeProfile"
+  }
+]

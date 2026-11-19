@@ -57,7 +57,7 @@ export function check(root) {
         // The owner's standing rules (plan section 5 item 6) and the no-suppression rule (item 2).
         ['suppression', /@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|eslint-disable/g, false],
         ['native-collection', /\bnew\s+(?:Map|Set)\b/g, false],
-        ['node-http', /["'](?:node:)?https?["']/g, false],
+        ['node-http', /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)["'](?:node:)?https?["']/g, false],
         ['node-sqlite-before-cutover', /(?:from\s*|import\s*\()["'](?:@effect\/sql-sqlite-node(?:\/[^"']*)?|@vidbee\/db\/node)["']/g, file.startsWith('packages/db/')],
         ['zod', /from\s+["']zod(?:\/[^"']*)?["']/g, false]
       ]

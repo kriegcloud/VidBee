@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`retry preserves original final rejection identity and exactly two one-second sleeps 1`] = `
+[
+  "attempt",
+  "returned",
+  [
+    "sleep",
+    1000,
+  ],
+  "microtask",
+  "attempt",
+  [
+    "sleep",
+    1000,
+  ],
+  "attempt",
+]
+`;

@@ -1,0 +1,913 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Instagram explicit inspection argv and options; timeout retains parse failure 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "-J",
+    "-o",
+    "output.jsonl=false",
+    "-o",
+    "extractor.instagram.vidbee-inspection=true",
+    "--no-input",
+    "--no-colors",
+    "--retries",
+    "1",
+    "-o",
+    "extractor.instagram.api=rest",
+    "-o",
+    "extractor.instagram.videos=true",
+    "-o",
+    "extractor.instagram.static-videos=true",
+    "-o",
+    "extractor.instagram.previews=false",
+    "-o",
+    "extractor.instagram.audio=false",
+    "--sleep-extractor",
+    "6.0-12.0",
+    "--proxy",
+    "http://proxy.invalid",
+    "-o",
+    "extractor.instagram.vidbee-inspection-category=posts",
+    "https://www.instagram.com/fixture/posts/",
+  ],
+  {
+    "detached": true,
+    "stdio": [
+      "ignore",
+      "pipe",
+      "pipe",
+    ],
+    "windowsHide": true,
+  },
+]
+`;
+
+exports[`Instagram explicit inspection argv and options; timeout retains parse failure 2`] = `
+{
+  "assetCount": 0,
+  "category": "posts",
+  "cursor": undefined,
+  "errorCode": "unavailable",
+  "incremental": false,
+  "items": [],
+  "mappedAt": 1000,
+  "sourceCount": 0,
+  "state": "unavailable",
+}
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: facebook-gallery 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{id}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "8",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.facebook.com/fixture/photos",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: instagram-profile-category 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{id}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "-o",
+    "extractor.instagram.api=rest",
+    "-o",
+    "extractor.instagram.videos=true",
+    "-o",
+    "extractor.instagram.static-videos=true",
+    "-o",
+    "extractor.instagram.previews=false",
+    "-o",
+    "extractor.instagram.audio=false",
+    "--sleep-extractor",
+    "4.0-8.0",
+    "--retries",
+    "2",
+    "--sleep-429",
+    "60",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.instagram.com/fixture/posts/",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: pinterest-gallery 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{id}_{num:>02}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "-o",
+    "extractor.pinterest.videos=true",
+    "-o",
+    "extractor.pinterest.stories=true",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "3",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.pinterest.com/pin/123/",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: snapchat-media 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{date:%Y-%m-%d}_{file_id}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "3",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.snapchat.com/@fixture/stories",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: social-media 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--retries",
+    "3",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--proxy",
+    "http://proxy.invalid",
+    "-o",
+    "extractor.vidbee-social.destination="/fixture/override"",
+    "-o",
+    "extractor.vidbee-social.source={"platform":"x","url":"https://x.com/fixture/tweets","kind":"feed","category":"tweets","owner":"fixture","supportsThread":false,"requiresAuth":true,"categories":[{"key":"tweets","url":"https://x.com/fixture/tweets","requiresAuth":false},{"key":"media","url":"https://x.com/fixture/media","requiresAuth":false},{"key":"with_replies","url":"https://x.com/fixture/with_replies","requiresAuth":false},{"key":"highlights","url":"https://x.com/fixture/highlights","requiresAuth":false},{"key":"timeline","url":"https://x.com/fixture/timeline","requiresAuth":false},{"key":"likes","url":"https://x.com/fixture/likes","requiresAuth":true},{"key":"following","url":"https://x.com/fixture/following","requiresAuth":true},{"key":"followers","url":"https://x.com/fixture/followers","requiresAuth":true}]}",
+    "-o",
+    "extractor.vidbee-social.options={"media":"videos","scope":"post","authorOnly":false,"expandThreads":false,"linkedMedia":true,"slideshowAudio":false,"maxPosts":2}",
+    "-o",
+    "extractor.vidbee-social.run-id="attempt"",
+    "-o",
+    "extractor.vidbee-social.inspect=true",
+    "-o",
+    "extractor.vidbee-social.map-items=true",
+    "-o",
+    "extractor.vidbee-social.known-items-file="/fixture/known.json"",
+    "vidbee-social:https://x.com/fixture/tweets",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: threads-post 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/override",
+    "-o",
+    "extractor.directory=["Threads","fixture","{shortcode}"]",
+    "--filename",
+    "{id}_{num:>02}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "3",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.threads.com/@fixture/post/ABCDEF",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: threads-profile 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/override",
+    "-o",
+    "extractor.directory=["Threads","fixture","{shortcode}"]",
+    "--filename",
+    "{id}_{num:>02}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "3",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.threads.com/@fixture/media",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: tiktok-photo 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{id}_{num:>02}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "-o",
+    "extractor.tiktok.photos=true",
+    "-o",
+    "extractor.tiktok.audio=true",
+    "-o",
+    "extractor.tiktok.videos=false",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "5",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://www.tiktok.com/@fixture/photo/123456",
+  ],
+]
+`;
+
+exports[`exact gallery builder argv, env PATH and override templates: vsco-gallery 1`] = `
+[
+  "/fixture/gallery",
+  [
+    "--destination",
+    "/fixture/base",
+    "-o",
+    "extractor.directory=["A","B"]",
+    "--filename",
+    "{id}.{extension}",
+    "--config-ignore",
+    "--no-input",
+    "--no-colors",
+    "--user-agent",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "--filter",
+    "extension == jpg",
+    "--Print",
+    "prepare:__VIDBEE_GDL__	prepare	{_path}",
+    "--Print",
+    "after:__VIDBEE_GDL__	after	{_path}",
+    "--Print",
+    "skip:__VIDBEE_GDL__	skip	{_path}",
+    "--Print",
+    "error:__VIDBEE_GDL__	error	{_path}",
+    "-o",
+    "extractor.vsco.tls12=true",
+    "-o",
+    "extractor.vsco.videos=true",
+    "--sleep-request",
+    "1",
+    "--sleep-429",
+    "60",
+    "--retries",
+    "8",
+    "--proxy",
+    "http://proxy.invalid",
+    "https://vsco.co/fixture/gallery",
+  ],
+]
+`;
+
+exports[`gallery direct-spawn callback order is std before protocol progress, final carry is flushed after close 1`] = `
+[
+  [
+    "run-return",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "stdout",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "stderr",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "expectedSilenceMs": undefined,
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "stdout",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "expectedSilenceMs": undefined,
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	unknown	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "stdout",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "expectedSilenceMs": undefined,
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	unknown	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "close-return",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "expectedSilenceMs": undefined,
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	unknown	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "final carry",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "error": {
+              "category": "unknown",
+              "exitCode": 7,
+              "rawMessage": "warning
+unterminated",
+              "retryable": true,
+              "suggestedRetryAfterMs": null,
+              "uiActionHints": [
+                "retry",
+                "report-bug",
+              ],
+              "uiMessageKey": "task.error.unknown",
+            },
+            "exitCode": 7,
+            "type": "error",
+          },
+          "stderrTail": "warning
+unterminated",
+          "stdoutTail": "__VIDBEE_GDL__	prepare	/fixture/image.jpg
+__VIDBEE_GDL__	unknown	/fixture/image.jpg
+final carry",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+  [
+    "drained",
+    [
+      [
+        "spawn",
+        {
+          "attemptId": "attempt",
+          "kind": "gallery-dl",
+          "pid": 424242,
+          "pidStartedAt": null,
+          "spawnedAt": 1000,
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	prepare	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 1,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "expectedSilenceMs": undefined,
+          "line": "warning",
+          "stream": "stderr",
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "__VIDBEE_GDL__	unknown	/fixture/image.jpg",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "progress",
+        {
+          "attemptId": "attempt",
+          "enteredProcessing": false,
+          "progress": {
+            "bytesDownloaded": null,
+            "bytesTotal": null,
+            "etaMs": null,
+            "percent": null,
+            "speedBps": null,
+            "ticks": 2,
+          },
+          "taskId": "task",
+        },
+      ],
+      [
+        "std",
+        {
+          "attemptId": "attempt",
+          "line": "final carry",
+          "stream": "stdout",
+          "taskId": "task",
+        },
+      ],
+      [
+        "finish",
+        {
+          "attemptId": "attempt",
+          "closedAt": 1000,
+          "result": {
+            "error": {
+              "category": "unknown",
+              "exitCode": 7,
+              "rawMessage": "warning
+unterminated",
+              "retryable": true,
+              "suggestedRetryAfterMs": null,
+              "uiActionHints": [
+                "retry",
+                "report-bug",
+              ],
+              "uiMessageKey": "task.error.unknown",
+            },
+            "exitCode": 7,
+            "type": "error",
+          },
+          "stderrTail": "warning
+unterminated",
+          "stdoutTail": "__VIDBEE_GDL__	prepare	/fixture/image.jpg
+__VIDBEE_GDL__	unknown	/fixture/image.jpg
+final carry",
+          "taskId": "task",
+        },
+      ],
+    ],
+  ],
+]
+`;

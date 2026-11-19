@@ -32,6 +32,7 @@
         "@types/node": "catalog:",
         "@vidbee/db": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
         "@vidbee/logger": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
         "esbuild": "catalog:",
@@ -89,6 +90,7 @@
         "@vidbee/browser-capture": "workspace:^",
         "@vidbee/db": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
         "@vidbee/i18n": "workspace:^",
         "@vidbee/logger": "workspace:^",
         "@vidbee/subscriptions-core": "workspace:^",
@@ -180,6 +182,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
         "playwright-core": "catalog:",
       },
@@ -221,7 +224,27 @@
       "name": "@vidbee/downloader-core",
       "version": "0.1.0",
       "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "@vidbee/schema": "workspace:^",
+        "@vidbee/task-queue": "workspace:^",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@effect/vitest": "catalog:",
+        "@types/node": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:",
+      },
+    },
+    "packages/downloader-core-legacy": {
+      "name": "@vidbee/downloader-core-legacy",
+      "version": "0.1.0",
+      "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/task-queue": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
+        "effect": "catalog:",
         "yt-dlp-wrap-plus": "catalog:",
         "zod": "catalog:",
       },
@@ -277,6 +300,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
         "drizzle-orm": "catalog:",
         "rss-parser": "catalog:",
         "ulid": "catalog:",
@@ -380,6 +404,7 @@
         "@streamdown/math": "catalog:",
         "@tanstack/react-virtual": "catalog:",
         "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
         "@vidbee/subscriptions-core": "workspace:^",
         "class-variance-authority": "catalog:",
         "clsx": "catalog:",
@@ -1312,6 +1337,8 @@
     "@vidbee/db": ["@vidbee/db@workspace:packages/db"],
 
     "@vidbee/downloader-core": ["@vidbee/downloader-core@workspace:packages/downloader-core"],
+
+    "@vidbee/downloader-core-legacy": ["@vidbee/downloader-core-legacy@workspace:packages/downloader-core-legacy"],
 
     "@vidbee/i18n": ["@vidbee/i18n@workspace:packages/i18n"],
 

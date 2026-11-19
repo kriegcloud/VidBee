@@ -7,7 +7,8 @@
  * cookies/proxy/runtime args stay consistent with the queue executor.
  */
 
-import { mapPlaylistInfo, retryTransientYtDlpNetworkError } from '@vidbee/downloader-core'
+import { mapPlaylistInfo } from '@vidbee/downloader-core'
+import { retryTransientYtDlpNetworkError } from '@vidbee/downloader-core-legacy'
 import type { PlaylistInfo, VideoInfo, VideoInfoCommandResult } from '../../shared/types'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

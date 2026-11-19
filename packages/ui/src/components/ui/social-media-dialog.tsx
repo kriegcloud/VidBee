@@ -1,9 +1,6 @@
 import type { SocialMediaOptions, SocialMediaPreview } from '@vidbee/downloader-core/social-media'
-import {
-  DEFAULT_SOCIAL_MEDIA_OPTIONS,
-  resolveSocialSource,
-  SocialMediaOptionsSchema
-} from '@vidbee/downloader-core/social-media'
+import { DEFAULT_SOCIAL_MEDIA_OPTIONS, resolveSocialSource } from '@vidbee/downloader-core/social-media'
+import { SocialMediaOptionsSchema } from '@vidbee/downloader-core-legacy/social-media'
 import type { SocialMediaDownloadRequest } from '@vidbee/downloader-core/social-media-service'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'

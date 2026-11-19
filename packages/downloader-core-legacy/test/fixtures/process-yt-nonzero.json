@@ -1,0 +1,57 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": "<PID>",
+      "pidStartedAt": null,
+      "kind": "yt-dlp",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "ordinary"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stderr",
+      "line": "diagnostic"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "error",
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "diagnostic\n\n\nError code: 7\n\nStderr:\ndiagnostic\n",
+          "uiMessageKey": "task.error.unknown",
+          "uiActionHints": [
+            "retry",
+            "report-bug"
+          ],
+          "retryable": true,
+          "suggestedRetryAfterMs": null
+        },
+        "exitCode": null
+      },
+      "closedAt": 1000,
+      "stdoutTail": "ordinary\n",
+      "stderrTail": "diagnostic\n"
+    }
+  ]
+]

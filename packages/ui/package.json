@@ -103,7 +103,8 @@
     "pele": "catalog:",
     "@json-render/core": "catalog:",
     "@json-render/react": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@vidbee/downloader-core-legacy": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "catalog:",

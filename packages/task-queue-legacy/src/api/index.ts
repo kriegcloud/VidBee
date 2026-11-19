@@ -20,6 +20,7 @@ import { LegacyTiming } from '@vidbee/task-queue/LegacyTiming.service'
 import { layerFromShared, makeState } from '@vidbee/task-queue/SourceAdmission.layer'
 import { HostFailure } from '@vidbee/task-queue/TaskQueue.errors'
 import { legacyError } from '../bridge/errors.js'
+import { runLegacyPromise, runLegacySync } from '../bridge/runtime.js'
 import type { Executor } from '../executor/index.js'
 import type { PersistAdapter } from '../persist/adapter.js'
 import { isPidAlive, readPidStartTime } from '../process/pid-start-time.js'
@@ -139,11 +140,11 @@ export class TaskQueueAPI {
    },catch:host})}),Logger.layer,Layer.succeed(Scheduler.PreventSchedulerYield,true))
   const config={...opts,sourceAdmission:opts.admission!==undefined}
   const runtime=ManagedRuntime.make(queueLayer(config).pipe(Layer.provideMerge(internalLayers(config).pipe(Layer.provideMerge(layers)))))
-  this.sync=effect=>{const exit=runtime.runSyncExit(effect);if(Exit.isFailure(exit))throw legacyError(exit.cause);return exit.value}
+  this.sync=effect=>runLegacySync(runtime,effect,legacyError)
   execute=this.sync
   fork=effect=>{runtime.runFork(effect).addObserver(exit=>{if(Exit.isFailure(exit))runtime.runFork(Effect.logError(exit.cause))})}
   this.service=runtime.runSync(TaskQueue)
-  this.promise=effect=>new Promise((resolve,reject)=>{const fiber=runtime.runFork(effect);fiber.addObserver(exit=>{if(Exit.isSuccess(exit))resolve(exit.value);else reject(legacyError(exit.cause))})})
+  this.promise=effect=>runLegacyPromise(runtime,effect,legacyError)
  }
  start():Promise<void> { return this.promise(this.service.start) }
  stop():Promise<void> { return this.promise(this.service.stop) }

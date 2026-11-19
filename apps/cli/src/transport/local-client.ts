@@ -63,7 +63,7 @@ export interface LocalClientHandle extends ContractClient {
  */
 export async function createLocalClient(opts: LocalClientOptions = {}): Promise<LocalClientHandle> {
   const taskQueue = await import('@vidbee/task-queue-legacy')
-  const downloaderCore = await import('@vidbee/downloader-core')
+  const downloaderCore = await import('@vidbee/downloader-core-legacy')
   const tqDb = await import('@vidbee/db/task-queue')
 
   const defaultDir = opts.defaultDownloadDir ?? join(homedir(), 'Downloads', 'VidBeep')

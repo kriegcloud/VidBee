@@ -1,0 +1,59 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": -1,
+      "pidStartedAt": null,
+      "kind": "yt-dlp",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "progress",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "progress": {
+        "percent": 0.5,
+        "bytesDownloaded": 5242880,
+        "bytesTotal": 10485760,
+        "speedBps": null,
+        "etaMs": null,
+        "ticks": 1
+      },
+      "enteredProcessing": false
+    }
+  ],
+  [
+    "processing",
+    {
+      "taskId": "task",
+      "attemptId": "attempt"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "[download] 50% of 10MiB\n[Merger] combine"
+    }
+  ],
+  "cancel-return",
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "cancelled"
+      },
+      "closedAt": 1000,
+      "stdoutTail": "[download] 50% of 10MiB\n[Merger] combine\n",
+      "stderrTail": ""
+    }
+  ]
+]

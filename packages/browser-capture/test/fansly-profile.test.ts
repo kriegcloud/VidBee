@@ -1,4 +1,5 @@
-import { FanslyCommandSchema, fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import { FanslyCommandSchema } from '@vidbee/downloader-core-legacy/fansly-profile'
 import type { OnlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
 import { describe, expect, it } from 'vitest'
 import { fanslyAdapter, fanslyItems, fanslyMediaUrl } from '../src/fansly-profile'

@@ -181,7 +181,18 @@ is stale. A future reference update is a separate change.
 
 ## Exact gate order
 
-Run from the repository root after `bun install` (prepare patches tsrs):
+Run from the repository root after `bun install` (prepare patches tsrs).
+The `node:test` suites must run under the repository's pinned Node from
+`.node-version`, including when Vitest is hosted by Bun. Verify `node --version`
+before the gate. If a worktree shim selects a different version, prepend the
+pinned installation's `bin` directory to `PATH`, for example:
+
+```sh
+export PATH="$HOME/.local/share/mise/installs/node/$(cat .node-version)/bin:$PATH"
+node --version
+```
+
+Then run:
 
 ```sh
 bun run --cwd packages/schema check
@@ -196,7 +207,7 @@ bun run test:golden
 ```
 
 `bun run test:golden` launches the packaged build offline on a synthetic fixture
-profile and compares 358 MCP, HTTP, CLI and renderer answers with the goldens in
+profile and compares 379 MCP, HTTP, CLI and renderer answers with the goldens in
 `apps/desktop/test/golden/`. [GOLDENS.md](GOLDENS.md) explains how to run a
 subset, how to add a case for a tool or endpoint that has none (do this on the
 build before your change), and how to update a golden when a change is intended.
@@ -360,3 +371,95 @@ constructed application errors retain their existing contract.
 
 Wrong: `expect(() => list({ query: 42 })).toThrow("opts?.query?.trim is not a function")`
 Right: `expect(() => list({ query: 42 })).toThrow(); expect(list({ query: null })).toEqual(oldNullResult)`
+
+## Downloader process and compatibility patterns (phase 5)
+
+The downloader separates process observations from domain results. `DownloadProcess` accepts an
+explicit command specification and a synchronous Effect sink. Compatibility listeners enter the
+sink directly through the owner's warmed runtime; a stream consumer cannot preserve delivery
+before a Node listener returns. Keep raw byte chunks intact. Ordinary yt-dlp output decodes each
+chunk independently; Redgifs uses streaming UTF-8 decoding and readline-compatible delivery.
+
+Raw completion retains nullable code/signal and the actual child `killed` flag. Native completion
+retains an exit code or the actual `PlatformError`; native acquisition failure has no acquired
+child, PID or spawn notification. Never synthesize missing raw observations. Keep a process scope
+alive through its attempt, including output drain, and own asynchronous finalization separately
+from the synchronous sink. The native differences and per-site cancellation policies are specified
+in [the downloader design](design/downloader-core.md), section 6; phase 9.1 must resolve or declare
+these before switching the application from the compatibility process layer.
+
+Reuse `DownloadFiles` for downloader persistence behavior, preserving byte decoding, BOMs,
+false-on-failure existence probes, separate read/stat recovery, and creation-only modes. Directory
+creation, direct write and rename are separate capabilities. Do not introduce a generic atomic
+writer that changes the known-items direct overwrite, temporary filenames, failed-rename residue,
+cache-before-save order or existing inode permissions.
+
+`@vidbee/task-queue-legacy/runtime` exports `runLegacyPromise(runtime, effect, mapError)` and
+`runLegacySync(runtime, effect, mapError)`. Both owners keep their own warmed runtime. The Promise
+runner settles from a fiber exit observer without another Promise handler; the synchronous runner
+maps `runSyncExit` failure before throwing. Cross-owner callbacks re-enter the receiving owner's
+runtime synchronously. Reuse these utilities rather than constructing a per-call runtime or
+changing the suspension points of an old Promise method.
+
+Wrapper tests compare raw event traces against the installed `yt-dlp-wrap-plus` oracle. Injected
+`spawnFn` emitters already represent wrapper observations and must bypass a second conversion.
+For Node-specific spawn/abort/error messages, explicitly select the repository-pinned Node and
+compare structured traces inside Node child processes. Bun hosts Vitest; its own interpreter is
+not a substitute for the pinned Node fixture. Normalize only fixture paths, PIDs and timestamps,
+never error messages, chunk boundaries, callback ordering or synchronous observation markers.
+
+
+Downloader raw progress stays unknown until its field checks; the wrapper can emit NaN for a
+false-positive progress regex match. Do not weaken finite domain schemas to model that raw value.
+The default best-quality preset also uses a null height sentinel: a truthiness rewrite must skip
+null as well as zero and undefined. Pin every saved quality preset through its complete selector.
+Optional cookie booleans need their original boolean coercion; testing only true does not establish
+false/default parity. The packaged remux path exposed this distinction after source suites passed.
+
+Downloader signals use the additive `ProcessRequests` tag beside `ProcessControl`: PID, group-only
+and tree requests acknowledge without awaiting termination. Existing queue recovery `kill` remains
+unchanged. Neither capability adds process identity checks; those remain `ProcessRegistry`'s role.
+`InstagramInspectionLookupLive` connects native enqueueing to the same inspector/cache owner;
+compatibility borrows its host inspector and queue instead of exposing or reconstructing runtimes.
+
+
+### Parity boundary: the downloader's worked example and exceptions
+
+The general rule is stated under "Defect classes found by code review" above. This subsection
+restates it with the downloader's example and lists the downloader's external-data exceptions.
+
+Inside the declared types, preserve exact behavior: results, deliberately constructed error
+classes and messages, and synchronous throws versus rejected failures. Both declared forms of a
+`dual` function must work for valid arguments. Invalid data-first dispatch is not a parity contract.
+
+Unported callers still forward unvalidated JSON from automation, IPC, settings and yt-dlp output.
+Outside the declared types, preserve an old successful result for `null`, a JSON scalar of the
+wrong kind (`false`, `true`, zero, another number, an empty string or another string), or `NaN`
+when a truthiness test, `||`, `??`, `typeof` check or comparison decided that result. Express the
+condition plainly where it matters, without widening the public type or retyping the parameter
+as `unknown`. For example, retain a Boolean binding when the strict boolean rule requires it:
+
+```ts
+// Wrong: an unset JSON false or zero would now reach string processing.
+if (fileName === undefined) return undefined;
+
+// Right: preserve the old successful falsy result and narrow the declared optional string.
+const hasName = Boolean(fileName);
+if (fileName === undefined || !hasName) return undefined;
+const trimmed = Str.trim(fileName);
+```
+
+When the old type-violating call threw an engine or Node error, the new call must still fail;
+its natural error class, message and Node `code` need not match. Do not construct an old engine
+message or route through a helper whose purpose is to reproduce one. No parity is owed for an
+array, object, iterable or function in a scalar position, or a non-array in an array position.
+Remove branches that exist only for those inputs. The differential oracle compares successful
+results exactly, allows any new throw for an old engine/Node failure outside the types, and
+compares deliberately constructed errors exactly.
+
+Keep the reviewed external-data exceptions exact, including error class and message: core
+metadata's null root, non-array formats and null format entry; playlist yt-dlp entry `url` and
+`ie_key` fields; Facebook reels JSON; the parser message inspected by the metadata retry
+predicate; and the Redgifs null JSON line. These are values the package itself reads, with
+specific failure policies already characterized by the reviewed design. They do not establish
+a general engine-error emulation policy for typed pure helpers.

@@ -1,218 +1,173 @@
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as MutableHashSet from "effect/MutableHashSet";
+import * as Str from "effect/String";
 export const COOKIE_BROWSER_IDS = [
-  'chrome',
-  'chromium',
-  'firefox',
-  'edge',
-  'safari',
-  'brave',
-  'opera',
-  'vivaldi',
-  'whale'
-] as const
+  "chrome",
+  "chromium",
+  "firefox",
+  "edge",
+  "safari",
+  "brave",
+  "opera",
+  "vivaldi",
+  "whale",
+] as const;
 
-export type CookieBrowserId = (typeof COOKIE_BROWSER_IDS)[number]
+export type {
+  CookieBrowserId,
+  CookieHealth,
+  CookieHealthReason,
+  CookieHealthSource,
+  CookieHealthStatus,
+  CookieSetupFailureKind,
+  CookieSetupMethod,
+  CookieSetupReason,
+  CookieSetupRecommendation,
+  CookieSiteMatch,
+  InstalledCookieBrowser,
+  NetscapeCookieInput,
+} from "./Cookie.model.js";
 
-export type CookieSetupMethod = 'browser' | 'file'
-
-export type CookieSetupReason =
-  | 'windows-firefox'
-  | 'windows-file'
-  | 'detected-browser'
-  | 'file-fallback'
-
-export type CookieHealthStatus = 'unconfigured' | 'ok' | 'expired' | 'empty' | 'invalid'
-
-export type CookieHealthSource = 'none' | 'browser' | 'file' | 'extension'
-
-export type CookieHealthReason =
-  | 'missing-file'
-  | 'invalid-format'
-  | 'expired'
-  | 'no-session'
-  | 'missing-profile'
-  | 'missing-cookie-db'
-  | 'macos-files-permission'
-  | 'unsupported-browser'
-
-export type CookieSetupFailureKind =
-  | 'needed'
-  | 'browser-locked'
-  | 'browser-decrypt'
-  | 'file-invalid'
-  | 'linux-keyring'
-  | 'macos-files-permission'
-  | 'stale'
-
+import type {
+  CookieBrowserId,
+  CookieHealth,
+  CookieSetupFailureKind,
+  CookieSetupRecommendation,
+  CookieSiteMatch,
+  InstalledCookieBrowser,
+  NetscapeCookieInput,
+} from "./Cookie.model.js";
 /** Canonical yt-dlp-adjacent error used when macOS TCC blocks cookie reads. */
 export const MACOS_BROWSER_COOKIE_PERMISSION_MESSAGE =
-  'macOS Files & Folders permission is required to read browser cookies'
+  "macOS Files & Folders permission is required to read browser cookies";
 
-export interface InstalledCookieBrowser {
-  id: CookieBrowserId
-  supported: boolean
-}
-
-export interface CookieSetupRecommendation {
-  method: CookieSetupMethod
-  browser?: CookieBrowserId
-  reason: CookieSetupReason
-}
-
-export interface CookieSiteMatch {
-  id: string
-  label: string
-  expired: boolean
-}
-
-export interface CookieHealth {
-  status: CookieHealthStatus
-  source: CookieHealthSource
-  browser?: string
-  cookiesPath?: string
-  sites: CookieSiteMatch[]
-  reason?: CookieHealthReason
-}
-
-/** Browser cookie row used to build a Netscape cookies.txt for yt-dlp. */
-export interface NetscapeCookieInput {
-  domain: string
-  name: string
-  value: string
-  path?: string
-  secure?: boolean
-  httpOnly?: boolean
-  hostOnly?: boolean
-  session?: boolean
-  expirationDate?: number
-}
-
-export const COOKIES_GUIDE_URL = 'https://vidbee.org/docs/cookies/'
+export const COOKIES_GUIDE_URL = "https://vidbee.org/docs/cookies/";
 export const COOKIES_CHROME_EXTENSION_URL =
-  'https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc'
-export const COOKIES_FIREFOX_EXTENSION_URL =
-  'https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/'
-export const VIDBEE_EXTENSION_ID = 'kpelcaehdkgleenlldpipjpoopnacehk'
-export const VIDBEE_EXTENSION_ORIGIN = `chrome-extension://${VIDBEE_EXTENSION_ID}`
-export const VIDBEE_EXTENSION_CHROME_URL = `https://chromewebstore.google.com/detail/${VIDBEE_EXTENSION_ID}`
+  "https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc";
+export const COOKIES_FIREFOX_EXTENSION_URL = "https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/";
+export const VIDBEE_EXTENSION_ID = "kpelcaehdkgleenlldpipjpoopnacehk";
+export const VIDBEE_EXTENSION_ORIGIN = `chrome-extension://${VIDBEE_EXTENSION_ID}`;
+export const VIDBEE_EXTENSION_CHROME_URL = `https://chromewebstore.google.com/detail/${VIDBEE_EXTENSION_ID}`;
 
-const CHROMIUM_FAMILY_BROWSERS = new Set<CookieBrowserId>([
-  'chrome',
-  'chromium',
-  'edge',
-  'brave',
-  'opera',
-  'vivaldi',
-  'whale'
-])
+const CHROMIUM_FAMILY_BROWSERS = MutableHashSet.fromIterable<CookieBrowserId>([
+  "chrome",
+  "chromium",
+  "edge",
+  "brave",
+  "opera",
+  "vivaldi",
+  "whale",
+]);
 
 const BROWSER_PREFERENCE: readonly CookieBrowserId[] = [
-  'chrome',
-  'edge',
-  'brave',
-  'firefox',
-  'chromium',
-  'vivaldi',
-  'whale',
-  'opera',
-  'safari'
-]
+  "chrome",
+  "edge",
+  "brave",
+  "firefox",
+  "chromium",
+  "vivaldi",
+  "whale",
+  "opera",
+  "safari",
+];
 
 export const COOKIE_SITE_SPECS = [
   {
-    id: 'youtube',
-    label: 'YouTube',
-    domainIncludes: ['youtube.com', 'google.com'],
-    cookieNames: ['SID', 'LOGIN_INFO', 'SAPISID', '__Secure-1PSID', '__Secure-3PSID']
+    id: "youtube",
+    label: "YouTube",
+    domainIncludes: ["youtube.com", "google.com"],
+    cookieNames: ["SID", "LOGIN_INFO", "SAPISID", "__Secure-1PSID", "__Secure-3PSID"],
   },
   {
-    id: 'bilibili',
-    label: 'Bilibili',
-    domainIncludes: ['bilibili.com'],
-    cookieNames: ['SESSDATA', 'DedeUserID']
+    id: "bilibili",
+    label: "Bilibili",
+    domainIncludes: ["bilibili.com"],
+    cookieNames: ["SESSDATA", "DedeUserID"],
   },
   {
-    id: 'instagram',
-    label: 'Instagram',
-    domainIncludes: ['instagram.com'],
-    cookieNames: ['sessionid', 'ds_user_id']
+    id: "instagram",
+    label: "Instagram",
+    domainIncludes: ["instagram.com"],
+    cookieNames: ["sessionid", "ds_user_id"],
   },
   {
-    id: 'twitter',
-    label: 'X',
-    domainIncludes: ['x.com', 'twitter.com'],
-    cookieNames: ['auth_token', 'ct0']
+    id: "twitter",
+    label: "X",
+    domainIncludes: ["x.com", "twitter.com"],
+    cookieNames: ["auth_token", "ct0"],
   },
   {
-    id: 'tiktok',
-    label: 'TikTok',
-    domainIncludes: ['tiktok.com'],
-    cookieNames: ['sessionid', 'sid_guard', 'sessionid_ss']
+    id: "tiktok",
+    label: "TikTok",
+    domainIncludes: ["tiktok.com"],
+    cookieNames: ["sessionid", "sid_guard", "sessionid_ss"],
   },
   {
-    id: 'facebook',
-    label: 'Facebook',
-    domainIncludes: ['facebook.com'],
-    cookieNames: ['c_user', 'xs']
+    id: "facebook",
+    label: "Facebook",
+    domainIncludes: ["facebook.com"],
+    cookieNames: ["c_user", "xs"],
   },
   {
-    id: 'twitch',
-    label: 'Twitch',
-    domainIncludes: ['twitch.tv'],
-    cookieNames: ['auth-token']
+    id: "twitch",
+    label: "Twitch",
+    domainIncludes: ["twitch.tv"],
+    cookieNames: ["auth-token"],
   },
   {
-    id: 'reddit',
-    label: 'Reddit',
-    domainIncludes: ['reddit.com'],
-    cookieNames: ['reddit_session']
+    id: "reddit",
+    label: "Reddit",
+    domainIncludes: ["reddit.com"],
+    cookieNames: ["reddit_session"],
   },
   {
-    id: 'douyin',
-    label: 'Douyin',
-    domainIncludes: ['douyin.com'],
-    cookieNames: ['sessionid', 'sid_guard']
-  }
-] as const
+    id: "douyin",
+    label: "Douyin",
+    domainIncludes: ["douyin.com"],
+    cookieNames: ["sessionid", "sid_guard"],
+  },
+] as const;
 
-const HTTPONLY_DOMAIN_PREFIX = '#HttpOnly_'
-const MAX_COOKIES_FILE_BYTES = 2_000_000
+const HTTPONLY_DOMAIN_PREFIX = "#HttpOnly_";
+const MAX_COOKIES_FILE_BYTES = 2_000_000;
 
 const NEEDED_PATTERNS = [
-  'sign in to confirm your age',
+  "sign in to confirm your age",
   "sign in to confirm you're not a bot",
-  'sign in to confirm you’re not a bot',
-  'login required',
-  'private video',
-  'members-only',
-  'please log in',
-  'please sign in'
-]
-const STALE_PATTERNS = ['cookies are no longer valid', 'http error 403: forbidden']
+  "sign in to confirm you’re not a bot",
+  "login required",
+  "private video",
+  "members-only",
+  "please log in",
+  "please sign in",
+];
+const STALE_PATTERNS = ["cookies are no longer valid", "http error 403: forbidden"];
 const BROWSER_LOCKED_PATTERNS = [
-  'could not copy chrome cookie database',
-  'could not copy chromium cookie database',
-  'could not copy edge cookie database'
-]
-const COOKIE_DB_MISSING_PATTERN = /could not find [a-z]+ cookies database/
+  "could not copy chrome cookie database",
+  "could not copy chromium cookie database",
+  "could not copy edge cookie database",
+];
+const COOKIE_DB_MISSING_PATTERN = /could not find [a-z]+ cookies database/;
 const COOKIE_DB_MISSING_PATTERNS = [
-  'custom safari cookies database not found',
-  'could not find chrome cookies database',
-  'could not find chromium cookies database',
-  'could not find firefox cookies database',
-  'could not find edge cookies database',
-  'could not find safari cookies database',
-  'could not find brave cookies database',
-  'could not find opera cookies database',
-  'could not find vivaldi cookies database',
-  'could not find whale cookies database'
-]
-const BROWSER_DECRYPT_PATTERNS = ['failed to decrypt with dpapi']
+  "custom safari cookies database not found",
+  "could not find chrome cookies database",
+  "could not find chromium cookies database",
+  "could not find firefox cookies database",
+  "could not find edge cookies database",
+  "could not find safari cookies database",
+  "could not find brave cookies database",
+  "could not find opera cookies database",
+  "could not find vivaldi cookies database",
+  "could not find whale cookies database",
+];
+const BROWSER_DECRYPT_PATTERNS = ["failed to decrypt with dpapi"];
 const FILE_INVALID_PATTERNS = [
   "utf-8' codec can't decode byte",
-  'cookies file must be netscape formatted',
-  'does not look like a netscape format cookies file'
-]
-const LINUX_KEYRING_PATTERNS = ['secretstorage not available']
+  "cookies file must be netscape formatted",
+  "does not look like a netscape format cookies file",
+];
+const LINUX_KEYRING_PATTERNS = ["secretstorage not available"];
 
 /**
  * True when yt-dlp can read cookies from this browser on the given OS.
@@ -220,21 +175,26 @@ const LINUX_KEYRING_PATTERNS = ['secretstorage not available']
  * @param platform Node `os.platform()` value.
  * @param browser Browser id from settings.
  */
-export const isBrowserCookieReadSupported = (platform: string, browser: string): boolean => {
-  if (!browser || browser === 'none') {
-    return false
+const isBrowserCookieReadSupportedDataFirst = (platform: string, browser: string): boolean => {
+  if (!(browser !== undefined && browser !== null && browser !== "") || browser === "none") {
+    return false;
   }
   if (!isCookieBrowserId(browser)) {
-    return false
+    return false;
   }
-  if (browser === 'safari') {
-    return platform === 'darwin'
+  if (browser === "safari") {
+    return platform === "darwin";
   }
-  if (platform === 'win32') {
-    return browser === 'firefox'
+  if (platform === "win32") {
+    return browser === "firefox";
   }
-  return true
-}
+  return true;
+};
+
+export const isBrowserCookieReadSupported: {
+  (browser: string): (platform: string) => boolean;
+  (platform: string, browser: string): boolean;
+} = dual(2, isBrowserCookieReadSupportedDataFirst);
 
 /**
  * True when the id is a known cookies-from-browser target.
@@ -242,19 +202,19 @@ export const isBrowserCookieReadSupported = (platform: string, browser: string):
  * @param value Candidate browser id.
  */
 export const isCookieBrowserId = (value: string): value is CookieBrowserId =>
-  (COOKIE_BROWSER_IDS as readonly string[]).includes(value)
+  (COOKIE_BROWSER_IDS as readonly string[]).includes(value);
 
 const COOKIE_BROWSER_LABELS: Record<CookieBrowserId, string> = {
-  chrome: 'Chrome',
-  chromium: 'Chromium',
-  firefox: 'Firefox',
-  edge: 'Edge',
-  safari: 'Safari',
-  brave: 'Brave',
-  opera: 'Opera',
-  vivaldi: 'Vivaldi',
-  whale: 'Whale'
-}
+  chrome: "Chrome",
+  chromium: "Chromium",
+  firefox: "Firefox",
+  edge: "Edge",
+  safari: "Safari",
+  brave: "Brave",
+  opera: "Opera",
+  vivaldi: "Vivaldi",
+  whale: "Whale",
+};
 
 /**
  * Display name of the browser a `browserForCookies` setting reads, such as
@@ -263,9 +223,10 @@ const COOKIE_BROWSER_LABELS: Record<CookieBrowserId, string> = {
  * @param browserForCookies Raw `browserForCookies` setting.
  */
 export const cookieBrowserLabel = (browserForCookies: string | undefined): string | undefined => {
-  const id = browserForCookies?.trim().split(/[+:]/, 1)[0]?.toLowerCase() ?? ''
-  return isCookieBrowserId(id) ? COOKIE_BROWSER_LABELS[id] : undefined
-}
+  const normalized = browserForCookies == null ? "" : browserForCookies;
+  const id = Str.toLowerCase(Str.split(Str.trim(normalized), /[+:]/)[0] ?? "");
+  return isCookieBrowserId(id) ? COOKIE_BROWSER_LABELS[id] : undefined;
+};
 
 /**
  * Browsers the settings picker should offer for `--cookies-from-browser`.
@@ -273,7 +234,7 @@ export const cookieBrowserLabel = (browserForCookies: string | undefined): strin
  * @param platform Node `os.platform()` value.
  */
 export const listSelectableCookieBrowsers = (platform: string): CookieBrowserId[] =>
-  COOKIE_BROWSER_IDS.filter((id) => isBrowserCookieReadSupported(platform, id))
+  A.filter(COOKIE_BROWSER_IDS, (id) => isBrowserCookieReadSupportedDataFirst(platform, id));
 
 /**
  * True when the value is a Chromium-family browser that Windows cannot read.
@@ -281,7 +242,7 @@ export const listSelectableCookieBrowsers = (platform: string): CookieBrowserId[
  * @param browser Browser id from settings.
  */
 export const isWindowsBlockedCookieBrowser = (browser: string): boolean =>
-  isCookieBrowserId(browser) && CHROMIUM_FAMILY_BROWSERS.has(browser)
+  isCookieBrowserId(browser) && MutableHashSet.has(CHROMIUM_FAMILY_BROWSERS, browser);
 
 /**
  * Recommend a single cookie setup path from OS and installed browsers.
@@ -289,28 +250,32 @@ export const isWindowsBlockedCookieBrowser = (browser: string): boolean =>
  * @param input Platform plus browsers detected on disk.
  */
 export const recommendCookieSetup = (input: {
-  platform: string
-  installedBrowsers: readonly InstalledCookieBrowser[]
+  platform: string;
+  installedBrowsers: readonly InstalledCookieBrowser[];
 }): CookieSetupRecommendation => {
-  const supportedInstalled = input.installedBrowsers
-    .filter((entry) => entry.supported && isBrowserCookieReadSupported(input.platform, entry.id))
-    .map((entry) => entry.id)
+  const supportedInstalled = A.map(
+    A.filter(
+      input.installedBrowsers,
+      (entry) => entry.supported && isBrowserCookieReadSupportedDataFirst(input.platform, entry.id)
+    ),
+    (entry) => entry.id
+  );
 
-  if (input.platform === 'win32') {
-    if (supportedInstalled.includes('firefox')) {
-      return { method: 'browser', browser: 'firefox', reason: 'windows-firefox' }
+  if (input.platform === "win32") {
+    if (supportedInstalled.includes("firefox")) {
+      return { method: "browser", browser: "firefox", reason: "windows-firefox" };
     }
-    return { method: 'file', reason: 'windows-file' }
+    return { method: "file", reason: "windows-file" };
   }
 
   for (const browser of BROWSER_PREFERENCE) {
     if (supportedInstalled.includes(browser)) {
-      return { method: 'browser', browser, reason: 'detected-browser' }
+      return { method: "browser", browser, reason: "detected-browser" };
     }
   }
 
-  return { method: 'file', reason: 'file-fallback' }
-}
+  return { method: "file", reason: "file-fallback" };
+};
 
 /**
  * True when settings currently point at a browser or cookies file.
@@ -318,26 +283,31 @@ export const recommendCookieSetup = (input: {
  * @param browserForCookies Raw `browserForCookies` setting.
  * @param cookiesPath Raw `cookiesPath` setting.
  */
-export const hasConfiguredCookieSettings = (
+const hasConfiguredCookieSettingsDataFirst = (
   browserForCookies: string | undefined,
   cookiesPath: string | undefined
 ): boolean => {
-  const trimmedPath = cookiesPath?.trim()
-  if (trimmedPath) {
-    return true
+  const trimmedPath = cookiesPath == null ? undefined : Str.trim(cookiesPath);
+  if (trimmedPath !== undefined && trimmedPath !== null && trimmedPath !== "") {
+    return true;
   }
-  const trimmedBrowser = browserForCookies?.trim()
-  return Boolean(trimmedBrowser && trimmedBrowser !== 'none')
-}
+  const trimmedBrowser = browserForCookies == null ? undefined : Str.trim(browserForCookies);
+  return Boolean(trimmedBrowser && trimmedBrowser !== "none");
+};
+
+export const hasConfiguredCookieSettings: {
+  (cookiesPath: string | undefined): (browserForCookies: string | undefined) => boolean;
+  (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean;
+} = dual(2, hasConfiguredCookieSettingsDataFirst);
 
 /**
  * Health record used when nothing is configured yet.
  */
 export const unconfiguredCookieHealth = (): CookieHealth => ({
-  source: 'none',
-  status: 'unconfigured',
-  sites: []
-})
+  source: "none",
+  status: "unconfigured",
+  sites: [],
+});
 
 /**
  * Parse a Netscape cookies.txt body and report login-cookie health.
@@ -345,80 +315,92 @@ export const unconfiguredCookieHealth = (): CookieHealth => ({
  * @param text File contents.
  * @param cookiesPath Optional path to echo back.
  */
-export const inspectNetscapeCookies = (text: string, cookiesPath?: string): CookieHealth => {
+const inspectNetscapeCookiesDataFirst = (text: string, now: number, cookiesPath?: string): CookieHealth => {
   if (!looksLikeNetscapeCookies(text)) {
     return {
       cookiesPath,
-      reason: 'invalid-format',
-      source: 'file',
-      status: 'invalid',
-      sites: []
-    }
+      reason: "invalid-format",
+      source: "file",
+      status: "invalid",
+      sites: [],
+    };
   }
 
-  const cookies = parseNetscapeCookieLines(text)
+  const cookies = parseNetscapeCookieLines(text);
   if (cookies.length === 0) {
     return {
       cookiesPath,
-      reason: 'no-session',
-      source: 'file',
-      status: 'empty',
-      sites: []
-    }
+      reason: "no-session",
+      source: "file",
+      status: "empty",
+      sites: [],
+    };
   }
 
-  const sites = matchCookieSites(cookies)
-  if (sites.some((site) => !site.expired)) {
+  const sites = matchCookieSitesDataFirst(cookies, now);
+  if (A.some(sites, (site) => !site.expired)) {
     return {
       cookiesPath,
-      source: 'file',
-      status: 'ok',
-      sites: sites.filter((site) => !site.expired)
-    }
+      source: "file",
+      status: "ok",
+      sites: A.filter(sites, (site) => !site.expired),
+    };
   }
-  if (sites.some((site) => site.expired)) {
+  if (A.some(sites, (site) => site.expired)) {
     return {
       cookiesPath,
-      reason: 'expired',
-      source: 'file',
-      status: 'expired',
-      sites
-    }
+      reason: "expired",
+      source: "file",
+      status: "expired",
+      sites,
+    };
   }
 
   return {
     cookiesPath,
-    reason: 'no-session',
-    source: 'file',
-    status: 'empty',
-    sites: []
-  }
-}
+    reason: "no-session",
+    source: "file",
+    status: "empty",
+    sites: [],
+  };
+};
+
+export const inspectNetscapeCookies: {
+  (now: number, cookiesPath?: string): (text: string) => CookieHealth;
+  (text: string, now: number, cookiesPath?: string): CookieHealth;
+} = dual((args) => typeof args[0] === "string", inspectNetscapeCookiesDataFirst);
 
 /**
  * Map cookie domain/name rows onto the supported signed-in sites.
  *
  * @param cookies Domain, name, and expiry rows.
  */
-export const matchCookieSites = (
-  cookies: readonly { domain: string; name: string; expires: number }[]
+const matchCookieSitesDataFirst = (
+  cookies: readonly { domain: string; name: string; expires: number }[],
+  now: number
 ): CookieSiteMatch[] => {
-  const nowSeconds = Math.floor(Date.now() / 1000)
-  const sites: CookieSiteMatch[] = []
+  const nowSeconds = Math.floor(now / 1000);
+  const sites: CookieSiteMatch[] = [];
   for (const spec of COOKIE_SITE_SPECS) {
-    const matches = cookies.filter(
+    const matches = A.filter(
+      cookies,
       (cookie) =>
-        spec.domainIncludes.some((domain) => cookieDomainMatches(cookie.domain, domain)) &&
-        spec.cookieNames.some((name) => name === cookie.name)
-    )
+        A.some(spec.domainIncludes, (domain) => cookieDomainMatchesDataFirst(cookie.domain, domain)) &&
+        A.some(spec.cookieNames, (name) => name === cookie.name)
+    );
     if (matches.length === 0) {
-      continue
+      continue;
     }
-    const hasFresh = matches.some((cookie) => cookie.expires === 0 || cookie.expires > nowSeconds)
-    sites.push({ expired: !hasFresh, id: spec.id, label: spec.label })
+    const hasFresh = A.some(matches, (cookie) => cookie.expires === 0 || cookie.expires > nowSeconds);
+    sites.push({ expired: !hasFresh, id: spec.id, label: spec.label });
   }
-  return sites
-}
+  return sites;
+};
+
+export const matchCookieSites: {
+  (now: number): (cookies: readonly { domain: string; name: string; expires: number }[]) => CookieSiteMatch[];
+  (cookies: readonly { domain: string; name: string; expires: number }[], now: number): CookieSiteMatch[];
+} = dual(2, matchCookieSitesDataFirst);
 
 /**
  * Cookie lookup domains for a download URL, including sibling auth hosts.
@@ -426,57 +408,74 @@ export const matchCookieSites = (
  * @param url Download or watch URL.
  */
 export const cookieDomainsForUrl = (url: string): string[] => {
-  let hostname = ''
+  let hostname = "";
   try {
-    const parsed = new URL(url)
-    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) {
-      return []
+    const parsed = new URL(url);
+    if (
+      !["http:", "https:"].includes(parsed.protocol) ||
+      (parsed.username !== undefined && parsed.username !== null && parsed.username !== "") ||
+      (parsed.password !== undefined && parsed.password !== null && parsed.password !== "")
+    ) {
+      return [];
     }
-    hostname = parsed.hostname.toLowerCase()
+    hostname = Str.toLowerCase(parsed.hostname);
   } catch {
-    return []
+    return [];
   }
-  if (!hostname) {
-    return []
+  if (!(hostname !== undefined && hostname !== null && hostname !== "")) {
+    return [];
   }
 
-  const domains = new Set<string>()
+  const domains: string[] = [];
+  const seen = MutableHashSet.empty<string>();
   for (const spec of COOKIE_SITE_SPECS) {
-    if (spec.domainIncludes.some((domain) => cookieDomainMatches(hostname, domain))) {
+    if (A.some(spec.domainIncludes, (domain) => cookieDomainMatchesDataFirst(hostname, domain))) {
       for (const fragment of spec.domainIncludes) {
-        domains.add(fragment)
+        if (!MutableHashSet.has(seen, fragment)) {
+          MutableHashSet.add(seen, fragment);
+          domains.push(fragment);
+        }
       }
     }
   }
-  if (domains.size > 0) {
-    return [...domains]
+  if (domains.length > 0) {
+    return domains;
   }
 
   // Keep unknown hosts exact; guessing a registrable domain can expose sibling sites.
-  return [hostname]
-}
+  return [hostname];
+};
 
 /** Match a cookie host to a domain boundary, never an arbitrary substring. */
-export function cookieDomainMatches(host: string, domain: string): boolean {
-  const normalized = host.toLowerCase().replace(/^\./, '')
-  const normalizedDomain = domain.toLowerCase().replace(/^\./, '')
+const cookieDomainMatchesDataFirst = (host: string, domain: string): boolean => {
+  const normalized = Str.replace(/^\./, "")(Str.toLowerCase(host));
+  const normalizedDomain = Str.replace(/^\./, "")(Str.toLowerCase(domain));
   return (
-    Boolean(normalizedDomain) &&
-    (normalized === normalizedDomain || normalized.endsWith(`.${normalizedDomain}`))
-  )
-}
+    Boolean(normalizedDomain) && (normalized === normalizedDomain || Str.endsWith(`.${normalizedDomain}`)(normalized))
+  );
+};
+
+export const cookieDomainMatches: {
+  (domain: string): (host: string) => boolean;
+  (host: string, domain: string): boolean;
+} = dual(2, cookieDomainMatchesDataFirst);
 
 /** Accept configured auth hosts and parent-domain cookies applicable to the requested URL. */
-export function cookieMatchesUrlScope(cookieDomain: string, url: string): boolean {
-  const domains = cookieDomainsForUrl(url)
+const cookieMatchesUrlScopeDataFirst = (cookieDomain: string, url: string): boolean => {
+  const domains = cookieDomainsForUrl(url);
   if (domains.length === 0) {
-    return false
+    return false;
   }
   return (
-    domains.some((domain) => cookieDomainMatches(cookieDomain, domain)) ||
-    cookieDomainMatches(new URL(url).hostname, cookieDomain)
-  )
-}
+    A.some(domains, (domain) => cookieDomainMatchesDataFirst(cookieDomain, domain)) ||
+    cookieDomainMatchesDataFirst(new URL(url).hostname, cookieDomain)
+  );
+};
+
+export const cookieMatchesUrlScope: {
+  (url: string): (cookieDomain: string) => boolean;
+  (cookieDomain: string, url: string): boolean;
+} = dual(2, cookieMatchesUrlScopeDataFirst);
 
 /**
  * Serialize browser cookie rows to a Netscape cookies.txt body for yt-dlp.
@@ -484,35 +483,39 @@ export function cookieMatchesUrlScope(cookieDomain: string, url: string): boolea
  * @param cookies Cookie rows from the browser extension.
  */
 export const serializeNetscapeCookies = (cookies: readonly NetscapeCookieInput[]): string => {
-  const lines = ['# Netscape HTTP Cookie File', '# This file was generated by VidBeep', '']
+  const lines = ["# Netscape HTTP Cookie File", "# This file was generated by VidBeep", ""];
   for (const cookie of cookies) {
-    const name = sanitizeNetscapeField(cookie.name)
-    const value = sanitizeNetscapeField(cookie.value)
-    if (!name) {
-      continue
+    const name = sanitizeNetscapeField(cookie.name);
+    const value = sanitizeNetscapeField(cookie.value);
+    if (!(name !== undefined && name !== null && name !== "")) {
+      continue;
     }
-    const rawDomain = cookie.domain.trim().toLowerCase()
-    if (!rawDomain) {
-      continue
+    const rawDomain = Str.toLowerCase(Str.trim(cookie.domain));
+    if (!(rawDomain !== undefined && rawDomain !== null && rawDomain !== "")) {
+      continue;
     }
-    const dotted = cookie.hostOnly || rawDomain.startsWith('.') ? rawDomain : `.${rawDomain}`
-    const includeSubdomains = dotted.startsWith('.') ? 'TRUE' : 'FALSE'
-    const domainField = cookie.httpOnly ? `${HTTPONLY_DOMAIN_PREFIX}${dotted}` : dotted
-    const expires =
-      cookie.session || !cookie.expirationDate ? '0' : String(Math.floor(cookie.expirationDate))
-    const path = cookie.path?.trim() || '/'
-    const secure = cookie.secure ? 'TRUE' : 'FALSE'
-    lines.push([domainField, includeSubdomains, path, secure, expires, name, value].join('\t'))
+    const hostOnly = Boolean(cookie.hostOnly);
+    const httpOnly = Boolean(cookie.httpOnly);
+    const session = Boolean(cookie.session);
+    const isSecure = Boolean(cookie.secure);
+    const hasExpirationDate = Boolean(cookie.expirationDate);
+    const dotted = hostOnly || Str.startsWith(".")(rawDomain) ? rawDomain : `.${rawDomain}`;
+    const includeSubdomains = Str.startsWith(".")(dotted) ? "TRUE" : "FALSE";
+    const domainField = httpOnly ? `${HTTPONLY_DOMAIN_PREFIX}${dotted}` : dotted;
+    const expires = session || !hasExpirationDate ? "0" : String(Math.floor(cookie.expirationDate ?? 0));
+    const path = (cookie.path === undefined || cookie.path === null ? undefined : Str.trim(cookie.path)) || "/";
+    const secure = isSecure ? "TRUE" : "FALSE";
+    lines.push(A.join([domainField, includeSubdomains, path, secure, expires, name, value], "\t"));
   }
-  return `${lines.join('\n')}\n`
-}
+  return `${A.join(lines, "\n")}\n`;
+};
 
 /**
  * Strip Netscape field separators from a cookie name or value.
  *
  * @param value Raw cookie field.
  */
-const sanitizeNetscapeField = (value: string): string => value.replace(/[\t\r\n]/g, '')
+const sanitizeNetscapeField = (value: string): string => Str.replace(/[\t\r\n]/g, "")(value);
 
 /**
  * True when the sample looks like a Netscape cookies export rather than a DB.
@@ -520,18 +523,18 @@ const sanitizeNetscapeField = (value: string): string => value.replace(/[\t\r\n]
  * @param text File text sample.
  */
 export const looksLikeNetscapeCookies = (text: string): boolean => {
-  const sample = text.slice(0, 4096)
+  const sample = Str.slice(0, 4096)(text);
   return (
-    sample.includes('# Netscape HTTP Cookie File') ||
-    sample.includes('# HTTP Cookie File') ||
+    Str.includes("# Netscape HTTP Cookie File")(sample) ||
+    Str.includes("# HTTP Cookie File")(sample) ||
     /^(?:#HttpOnly_)?[^\s\t]+\t(?:TRUE|FALSE)\t/im.test(sample)
-  )
-}
+  );
+};
 
 /**
  * Maximum cookies.txt size we will inspect.
  */
-export const getMaxCookiesFileBytes = (): number => MAX_COOKIES_FILE_BYTES
+export const getMaxCookiesFileBytes = (): number => MAX_COOKIES_FILE_BYTES;
 
 /**
  * True when the error text points at a macOS browser-cookie path.
@@ -539,10 +542,10 @@ export const getMaxCookiesFileBytes = (): number => MAX_COOKIES_FILE_BYTES
  * @param normalized Lowercased error text.
  */
 const looksLikeMacosCookiePath = (normalized: string): boolean =>
-  normalized.includes('/library/application support/') ||
-  normalized.includes('/library/containers/') ||
-  normalized.includes('/library/safari') ||
-  normalized.includes('/library/cookies')
+  Str.includes("/library/application support/")(normalized) ||
+  Str.includes("/library/containers/")(normalized) ||
+  Str.includes("/library/safari")(normalized) ||
+  Str.includes("/library/cookies")(normalized);
 
 /**
  * True when yt-dlp could not locate a browser cookies database.
@@ -551,54 +554,52 @@ const looksLikeMacosCookiePath = (normalized: string): boolean =>
  */
 const isCookieDatabaseMissingError = (normalized: string): boolean =>
   COOKIE_DB_MISSING_PATTERN.test(normalized) ||
-  COOKIE_DB_MISSING_PATTERNS.some((pattern) => normalized.includes(pattern))
+  A.some(COOKIE_DB_MISSING_PATTERNS, (pattern) => Str.includes(pattern)(normalized));
 
 /**
  * Map a yt-dlp error to a cookie-setup recovery kind, or null when unrelated.
  *
  * @param rawError Raw stderr or stored download error.
  */
-export const getCookieSetupFailureKind = (
-  rawError: string | null | undefined
-): CookieSetupFailureKind | null => {
-  const normalized = rawError?.trim().toLowerCase() ?? ''
-  if (!normalized) {
-    return null
+export const getCookieSetupFailureKind = (rawError: string | null | undefined): CookieSetupFailureKind | null => {
+  const normalized = rawError == null ? "" : (Str.toLowerCase(Str.trim(rawError)) ?? "");
+  if (!(normalized !== undefined && normalized !== null && normalized !== "")) {
+    return null;
   }
-  if (LINUX_KEYRING_PATTERNS.some((pattern) => normalized.includes(pattern))) {
-    return 'linux-keyring'
+  if (A.some(LINUX_KEYRING_PATTERNS, (pattern) => Str.includes(pattern)(normalized))) {
+    return "linux-keyring";
   }
-  if (BROWSER_DECRYPT_PATTERNS.some((pattern) => normalized.includes(pattern))) {
-    return 'browser-decrypt'
+  if (A.some(BROWSER_DECRYPT_PATTERNS, (pattern) => Str.includes(pattern)(normalized))) {
+    return "browser-decrypt";
   }
   if (
-    normalized.includes('files & folders permission is required') ||
+    Str.includes("files & folders permission is required")(normalized) ||
     (isCookieDatabaseMissingError(normalized) && looksLikeMacosCookiePath(normalized))
   ) {
-    return 'macos-files-permission'
+    return "macos-files-permission";
   }
   if (
-    BROWSER_LOCKED_PATTERNS.some((pattern) => normalized.includes(pattern)) ||
+    A.some(BROWSER_LOCKED_PATTERNS, (pattern) => Str.includes(pattern)(normalized)) ||
     isCookieDatabaseMissingError(normalized)
   ) {
-    return 'browser-locked'
+    return "browser-locked";
   }
-  if (FILE_INVALID_PATTERNS.some((pattern) => normalized.includes(pattern))) {
-    return 'file-invalid'
+  if (A.some(FILE_INVALID_PATTERNS, (pattern) => Str.includes(pattern)(normalized))) {
+    return "file-invalid";
   }
-  if (STALE_PATTERNS.some((pattern) => normalized.includes(pattern))) {
-    return 'stale'
+  if (A.some(STALE_PATTERNS, (pattern) => Str.includes(pattern)(normalized))) {
+    return "stale";
   }
-  if (NEEDED_PATTERNS.some((pattern) => normalized.includes(pattern))) {
-    return 'needed'
+  if (A.some(NEEDED_PATTERNS, (pattern) => Str.includes(pattern)(normalized))) {
+    return "needed";
   }
-  return null
-}
+  return null;
+};
 
 interface ParsedNetscapeCookie {
-  domain: string
-  name: string
-  expires: number
+  domain: string;
+  expires: number;
+  name: string;
 }
 
 /**
@@ -606,29 +607,42 @@ interface ParsedNetscapeCookie {
  *
  * @param text File contents.
  */
-const parseNetscapeCookieLines = (text: string): ParsedNetscapeCookie[] => {
-  const cookies: ParsedNetscapeCookie[] = []
-  for (const rawLine of text.split(/\r?\n/)) {
-    const line = rawLine.trim()
-    if (!line || (line.startsWith('#') && !line.startsWith(HTTPONLY_DOMAIN_PREFIX))) {
-      continue
+export const parseNetscapeCookieLines = (text: string): ParsedNetscapeCookie[] => {
+  const cookies: ParsedNetscapeCookie[] = [];
+  for (const rawLine of Str.split(text, /\r?\n/)) {
+    const line = Str.trim(rawLine);
+    if (
+      !(line !== undefined && line !== null && line !== "") ||
+      (Str.startsWith("#")(line) && !Str.startsWith(HTTPONLY_DOMAIN_PREFIX)(line))
+    ) {
+      continue;
     }
-    const fields = line.split('\t')
-    const domainField = fields[0]
-    const expiresField = fields[4]
-    const nameField = fields[5]
+    const fields = Str.split(line, "\t");
+    const domainField = fields[0];
+    const expiresField = fields[4];
+    const nameField = fields[5];
     if (fields.length < 7 || domainField === undefined || nameField === undefined) {
-      continue
+      continue;
     }
-    const domain = domainField.startsWith(HTTPONLY_DOMAIN_PREFIX)
-      ? domainField.slice(HTTPONLY_DOMAIN_PREFIX.length)
-      : domainField
-    const expires = Number.parseInt(expiresField ?? '', 10)
+    const domain = Str.startsWith(HTTPONLY_DOMAIN_PREFIX)(domainField)
+      ? Str.slice(HTTPONLY_DOMAIN_PREFIX.length)(domainField)
+      : domainField;
+    const expires = Number.parseInt(expiresField ?? "", 10);
     cookies.push({
-      domain: domain.toLowerCase(),
+      domain: Str.toLowerCase(domain),
       expires: Number.isFinite(expires) ? expires : 0,
-      name: nameField
-    })
+      name: nameField,
+    });
   }
-  return cookies
-}
+  return cookies;
+};
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  isBrowserCookieReadSupported: isBrowserCookieReadSupportedDataFirst,
+  hasConfiguredCookieSettings: hasConfiguredCookieSettingsDataFirst,
+  inspectNetscapeCookies: inspectNetscapeCookiesDataFirst,
+  matchCookieSites: matchCookieSitesDataFirst,
+  cookieDomainMatches: cookieDomainMatchesDataFirst,
+  cookieMatchesUrlScope: cookieMatchesUrlScopeDataFirst,
+};

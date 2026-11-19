@@ -1,0 +1,56 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": "<PID>",
+      "pidStartedAt": null,
+      "kind": "yt-dlp",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "ordinary"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stderr",
+      "line": "diagnostic"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "success",
+        "output": {
+          "filePath": "",
+          "size": 0,
+          "durationMs": null,
+          "sha256": null,
+          "formatId": null,
+          "cookieSources": [
+            {
+              "type": "config"
+            }
+          ]
+        }
+      },
+      "closedAt": 1000,
+      "stdoutTail": "ordinary\n",
+      "stderrTail": "diagnostic\n"
+    }
+  ]
+]

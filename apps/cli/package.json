@@ -71,7 +71,8 @@
     "@vidbee/logger": "workspace:^",
     "esbuild": "catalog:",
     "typescript": "catalog:",
-    "@vidbee/task-queue-legacy": "workspace:^"
+    "@vidbee/task-queue-legacy": "workspace:^",
+    "@vidbee/downloader-core-legacy": "workspace:^"
   },
   "engines": {
     "node": ">=20"

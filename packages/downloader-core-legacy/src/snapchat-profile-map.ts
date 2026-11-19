@@ -1,0 +1,12 @@
+import * as Effect from 'effect/Effect';
+import { runLegacyPromise } from '@vidbee/task-queue-legacy/runtime';
+import { mapSnapchatProfile as nativeMap } from '../../downloader-core/src/snapchat-profile-map.js';
+import { mapperRuntime } from './mapper-runtime.js';
+import { nativeProfileRuntime } from './profile-mapper-runtime.js';
+import { argumentError } from './arguments-runtime.js';
+import type { GalleryDlProfileMapRuntime } from './gallery-dl-json-run.js';
+import type { SocialMappedItem } from './social-media-service';
+import type { DownloadRuntimeSettings } from './types';
+import type { SnapchatCategory } from './snapchat';
+export { parseGalleryDlDate } from '../../downloader-core/src/snapchat-profile-map.js';
+export const mapSnapchatProfile = (owner: string, category: SnapchatCategory, runtime: GalleryDlProfileMapRuntime, settings: DownloadRuntimeSettings | undefined, signal: AbortSignal, onItem: (item: SocialMappedItem) => void) => runLegacyPromise(mapperRuntime, nativeMap(owner, category, nativeProfileRuntime(runtime), settings, signal, item => Effect.sync(() => onItem(item))), argumentError);

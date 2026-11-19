@@ -14,19 +14,8 @@ import path from 'node:path'
 import { Readable, Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { setTimeout as delay } from 'node:timers/promises'
-import {
-  isOnlyFansSite,
-  type OnlyFansChatRoute,
-  type OnlyFansCommand,
-  OnlyFansCommandSchema,
-  type OnlyFansDownload,
-  OnlyFansDownloadSchema,
-  type OnlyFansItem,
-  type OnlyFansProfile,
-  OnlyFansProfileSchema,
-  onlyFansChatTargets,
-  onlyFansProfile
-} from '@vidbee/downloader-core/onlyfans-profile'
+import { isOnlyFansSite, type OnlyFansChatRoute, type OnlyFansCommand, type OnlyFansDownload, type OnlyFansItem, type OnlyFansProfile, onlyFansChatTargets, onlyFansProfile } from '@vidbee/downloader-core/onlyfans-profile'
+import { OnlyFansCommandSchema, OnlyFansDownloadSchema, OnlyFansProfileSchema } from '@vidbee/downloader-core-legacy/onlyfans-profile'
 import {
   type Executor,
   type ExecutorContext,

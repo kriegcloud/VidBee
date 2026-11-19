@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { SocialProfileManager } from '@vidbee/downloader-core/social-profile-manager'
+import { SocialProfileManager } from '@vidbee/downloader-core-legacy/social-profile-manager'
 import { app } from 'electron'
 import { galleryDlManager } from './gallery-dl-manager'
 import { sourceAdmission } from './task-queue-host'

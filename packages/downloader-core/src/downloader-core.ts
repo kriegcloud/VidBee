@@ -1,1005 +1,595 @@
-import { execSync } from 'node:child_process'
-import { randomUUID } from 'node:crypto'
-import { EventEmitter } from 'node:events'
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { backgroundChildSpawnOptions, lowerChildPriority } from '@vidbee/task-queue-legacy/process'
-import YTDlpWrap from 'yt-dlp-wrap-plus'
+import * as A from "effect/Array";
+import * as Deferred from "effect/Deferred";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import * as M from "effect/MutableHashMap";
+import * as H from "effect/MutableHashSet";
+import * as O from "effect/Option";
+import * as Order from "effect/Order";
+import * as Path from "effect/Path";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { CoreMetadataJson, decodeVideoInfo } from "./CoreMetadata.model.js";
+import { DownloadArguments } from "./DownloadArguments.service.js";
+import { BoundaryDecodeError, InvalidDownload as InvalidDownloadError, MetadataFailure } from "./Downloader.errors.js";
+import { Downloader } from "./Downloader.service.js";
+import { DownloaderHost } from "./DownloaderHost.service.js";
+import { DownloadTiming } from "./DownloadTiming.service.js";
+import { PlaylistInfo } from "./MediaInfo.model.js";
+import { DataFirst as PlaylistPlanFunctions, planPlaylistDownloadOrder } from "./playlist-plan.js";
+import { YtDlpProcess } from "./YtDlpProcess.service.js";
+import { formatYtDlpCommand, isTransientYtDlpNetworkError } from "./yt-dlp-args.js";
+import type { HostFailure, InvalidDownload } from "./Downloader.errors.js";
+import type { ProcessRun } from "./DownloadProcess.service.js";
 import type {
   CreateDownloadInput,
   DownloadRuntimeSettings,
   DownloadTask,
   PlaylistDownloadInput,
-  PlaylistDownloadResult,
-  PlaylistInfo,
   VideoFormat,
-  VideoInfo
-} from './types'
-import { mapPlaylistInfo, planPlaylistDownloadOrder } from './playlist-plan'
-import {
-  buildDownloadArgs,
-  buildPlaylistInfoArgs,
-  buildVideoInfoArgs,
-  formatYtDlpCommand,
-  retryTransientYtDlpNetworkError
-} from './yt-dlp-args'
-import { resolveYtDlpWrapCtor } from './yt-dlp-wrap'
+} from "./types.js";
 
-interface YtDlpExecProcess {
-  ytDlpProcess?: {
-    pid?: number
-    stdout?: NodeJS.ReadableStream
-    stderr?: NodeJS.ReadableStream
-  }
-  on(event: 'progress', listener: (payload: ProgressPayload) => void): this
-  on(event: 'close', listener: (code: number | null) => void): this
-  on(event: 'error', listener: (error: Error) => void): this
-  once(event: 'close', listener: (code: number | null) => void): this
-  once(event: 'error', listener: (error: Error) => void): this
-}
-
-interface YtDlpWrapInstance {
-  exec(args: string[], options?: { signal?: AbortSignal; detached?: boolean }): YtDlpExecProcess
-}
-
-type YtDlpWrapConstructor = new (binaryPath: string) => YtDlpWrapInstance
-const YTDlpWrapCtor = resolveYtDlpWrapCtor<YtDlpWrapConstructor>(YTDlpWrap)
-
-interface ActiveTask {
-  controller: AbortController
-  process: YtDlpExecProcess
-}
-
-interface RawVideoInfo {
-  id?: string
-  title?: string
-  thumbnail?: string | null
-  duration?: number | null
-  extractor_key?: string | null
-  webpage_url?: string | null
-  description?: string | null
-  view_count?: number | null
-  uploader?: string | null
-  tags?: unknown
-  formats?: Array<{
-    format_id?: string | null
-    ext?: string | null
-    width?: number | null
-    height?: number | null
-    fps?: number | null
-    vcodec?: string | null
-    acodec?: string | null
-    filesize?: number | null
-    filesize_approx?: number | null
-    format_note?: string | null
-    tbr?: number | null
-    quality?: number | null
-    protocol?: string | null
-    language?: string | null
-    video_ext?: string | null
-    audio_ext?: string | null
-  }>
-}
-
-interface RawPlaylistInfo {
-  id?: string | null
-  title?: string | null
-  entries?: Record<string, unknown>[]
-}
-
-interface ProgressPayload {
-  percent?: number
-  currentSpeed?: string
-  eta?: string
-  downloaded?: string
-  total?: string
-}
-
-export interface DownloaderCoreOptions {
-  downloadDir?: string
-  maxConcurrent?: number
-  runtimeSettings?: DownloadRuntimeSettings
-}
-
-const DEFAULT_DOWNLOAD_DIR = path.join(os.homedir(), 'Downloads', 'VidBeep')
-const DEFAULT_MAX_CONCURRENT = 3
-const MAX_TASK_LOG_LENGTH = 80_000
-const FFMPEG_NOT_FOUND_ERROR =
-  'ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.'
-const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url))
-const REPO_ROOT_FROM_MODULE = path.resolve(MODULE_DIR, '../../..')
-
-const getDesktopResourcesDirs = (): string[] => {
-  const dirs: string[] = []
-  const cwd = process.cwd()
-
-  dirs.push(path.join(cwd, 'resources'))
-  dirs.push(path.join(cwd, 'apps', 'desktop', 'resources'))
-  dirs.push(path.resolve(cwd, '..', 'desktop', 'resources'))
-
-  dirs.push(path.join(REPO_ROOT_FROM_MODULE, 'resources'))
-  dirs.push(path.join(REPO_ROOT_FROM_MODULE, 'apps', 'desktop', 'resources'))
-
-  if (process.env.NODE_ENV === 'development') {
-    dirs.push(path.join(REPO_ROOT_FROM_MODULE, 'apps', 'desktop', 'resources'))
-  }
-
-  const resourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath
-  if (resourcesPath) {
-    dirs.push(path.join(resourcesPath, 'app.asar.unpacked', 'resources'))
-    dirs.push(path.join(resourcesPath, 'resources'))
-  }
-
-  return Array.from(new Set(dirs))
-}
-
-const ensureExecutable = (targetPath: string): void => {
-  if (process.platform === 'win32') {
-    return
-  }
-  try {
-    fs.chmodSync(targetPath, 0o755)
-  } catch {
-    // Ignore permission errors and let process execution decide.
-  }
-}
-
-const resolveBundledYtDlpPath = (): string | undefined => {
-  const binaryName =
-    process.platform === 'win32'
-      ? 'yt-dlp.exe'
-      : process.platform === 'darwin'
-        ? 'yt-dlp_macos'
-        : 'yt-dlp_linux'
-
-  for (const resourcesDir of getDesktopResourcesDirs()) {
-    const candidate = path.join(resourcesDir, binaryName)
-    if (!fs.existsSync(candidate)) {
-      continue
-    }
-    ensureExecutable(candidate)
-    return candidate
-  }
-
-  return undefined
-}
-
-const resolveBundledFfmpegLocation = (): string | undefined => {
-  const ffmpegBinaryName = process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
-  const ffprobeBinaryName = process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe'
-
-  for (const resourcesDir of getDesktopResourcesDirs()) {
-    const candidateDir = path.join(resourcesDir, 'ffmpeg')
-    const ffmpegPath = path.join(candidateDir, ffmpegBinaryName)
-    const ffprobePath = path.join(candidateDir, ffprobeBinaryName)
-    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
-      continue
-    }
-    ensureExecutable(ffmpegPath)
-    ensureExecutable(ffprobePath)
-    return candidateDir
-  }
-
-  return undefined
-}
-
-const tryCommandPath = (command: string): string | null => {
-  const commandName = process.platform === 'win32' ? `where ${command}` : `which ${command}`
-  try {
-    const output = execSync(commandName, { stdio: ['ignore', 'pipe', 'ignore'] })
-      .toString()
-      .split(/\r?\n/)
-      .map((value) => value.trim())
-      .find((value) => value.length > 0)
-    return output ?? null
-  } catch {
-    return null
-  }
-}
-
-const resolveYtDlpPath = (): string => {
-  const envPath = process.env.YTDLP_PATH?.trim()
-  if (envPath && fs.existsSync(envPath)) {
-    return envPath
-  }
-  const bundledPath = resolveBundledYtDlpPath()
-  if (bundledPath) {
-    return bundledPath
-  }
-  const commandPath = tryCommandPath('yt-dlp')
-  if (commandPath) {
-    return commandPath
-  }
-  throw new Error('yt-dlp binary not found. Set YTDLP_PATH or install yt-dlp in PATH.')
-}
-
-const resolveFfmpegLocation = (ytDlpPath?: string): string | undefined => {
-  const ffmpegBinaryName = process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
-  const ffprobeBinaryName = process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe'
-  const resolveFromDirectory = (directory: string): string | undefined => {
-    const ffmpegPath = path.join(directory, ffmpegBinaryName)
-    const ffprobePath = path.join(directory, ffprobeBinaryName)
-    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
-      return undefined
-    }
-    ensureExecutable(ffmpegPath)
-    ensureExecutable(ffprobePath)
-    return directory
-  }
-  const envPath = process.env.FFMPEG_PATH?.trim()
-  if (envPath && fs.existsSync(envPath)) {
-    const stats = fs.statSync(envPath)
-    if (stats.isDirectory()) {
-      return resolveFromDirectory(envPath)
-    }
-    const candidateDir = path.dirname(envPath)
-    return resolveFromDirectory(candidateDir)
-  }
-
-  if (ytDlpPath) {
-    const ytDlpDir = path.dirname(ytDlpPath)
-    const sameDirResolved = resolveFromDirectory(ytDlpDir)
-    if (sameDirResolved) {
-      return sameDirResolved
-    }
-
-    // Align with Desktop resource layout: resources/yt-dlp_* + resources/ffmpeg/{ffmpeg,ffprobe}
-    const siblingDirResolved = resolveFromDirectory(path.join(ytDlpDir, 'ffmpeg'))
-    if (siblingDirResolved) {
-      return siblingDirResolved
-    }
-  }
-
-  const bundledLocation = resolveBundledFfmpegLocation()
-  if (bundledLocation) {
-    return bundledLocation
-  }
-
-  const commandPath = tryCommandPath('ffmpeg')
-  if (commandPath) {
-    const resolved = resolveFromDirectory(path.dirname(commandPath))
-    if (resolved) {
-      return resolved
-    }
-  }
-
-  if (process.platform === 'darwin') {
-    const macCommonDirs = ['/opt/homebrew/bin', '/usr/local/bin']
-    for (const dirPath of macCommonDirs) {
-      const resolved = resolveFromDirectory(dirPath)
-      if (resolved) {
-        return resolved
-      }
-    }
-  }
-
-  return undefined
-}
-
-const resolveJsRuntimePath = (runtime: string): string | undefined => {
-  const envPath = process.env.YTDLP_JS_RUNTIME_PATH?.trim()
-  if (envPath && fs.existsSync(envPath)) {
-    return envPath
-  }
-
-  const runtimeCandidates: string[] = []
-  if (runtime === 'node') {
-    const nodeName = process.platform === 'win32' ? 'node.exe' : 'node'
-    runtimeCandidates.push(path.join('node', nodeName), nodeName)
-  } else if (runtime === 'deno') {
-    runtimeCandidates.push(process.platform === 'win32' ? 'deno.exe' : 'deno')
-  } else if (runtime === 'bun') {
-    runtimeCandidates.push(process.platform === 'win32' ? 'bun.exe' : 'bun')
-  } else if (runtime === 'quickjs') {
-    runtimeCandidates.push(process.platform === 'win32' ? 'qjs.exe' : 'qjs')
-  } else {
-    runtimeCandidates.push(runtime)
-    if (process.platform === 'win32' && !runtime.endsWith('.exe')) {
-      runtimeCandidates.push(`${runtime}.exe`)
-    }
-  }
-
-  for (const resourcesDir of getDesktopResourcesDirs()) {
-    for (const candidateName of runtimeCandidates) {
-      const candidatePath = path.join(resourcesDir, candidateName)
-      if (!fs.existsSync(candidatePath)) {
-        continue
-      }
-      ensureExecutable(candidatePath)
-      return candidatePath
-    }
-  }
-
-  const commandPath = tryCommandPath(runtime)
-  return commandPath ?? undefined
-}
-
-const resolveJsRuntimeArgs = (): string[] => {
-  const runtime = (process.env.YTDLP_JS_RUNTIME || 'node').trim()
-  if (!runtime || runtime === 'none') {
-    return []
-  }
-
-  const runtimePath = resolveJsRuntimePath(runtime)
-  if (runtimePath) {
-    return ['--js-runtimes', `${runtime}:${runtimePath}`]
-  }
-
-  return process.env.YTDLP_JS_RUNTIME ? ['--js-runtimes', runtime] : []
-}
-
-const clampPercent = (value: unknown): number => {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return 0
-  }
-  if (value < 0) {
-    return 0
-  }
-  if (value > 100) {
-    return 100
-  }
-  return value
-}
-
-const toOptionalNumber = (value: unknown): number | undefined => {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return undefined
-  }
-
-  return value
-}
-
-const toOptionalString = (value: unknown): string | undefined => {
-  if (typeof value !== 'string') {
-    return undefined
-  }
-
-  const trimmed = value.trim()
-  if (!trimmed) {
-    return undefined
-  }
-
-  return trimmed
-}
-
-const toOptionalStringArray = (value: unknown): string[] | undefined => {
-  if (!Array.isArray(value)) {
-    return undefined
-  }
-
-  const list = value
-    .filter((entry): entry is string => typeof entry === 'string')
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0)
-
-  return list.length > 0 ? list : undefined
-}
-
-const toTerminal = (task: DownloadTask): boolean =>
-  task.status === 'completed' || task.status === 'error' || task.status === 'cancelled'
-
-const trimTaskLog = (value: string): string => {
-  if (value.length <= MAX_TASK_LOG_LENGTH) {
-    return value
-  }
-
-  return value.slice(value.length - MAX_TASK_LOG_LENGTH)
-}
-
-const extractSavedFilePath = (rawLog: string): string | undefined => {
-  const log = rawLog.trim()
-  if (!log) {
-    return undefined
-  }
-
-  const quotedPatterns = [
+const terminal = (task: DownloadTask): boolean =>
+  task.status === "completed" || task.status === "error" || task.status === "cancelled";
+const formatCopy = (format: VideoFormat | undefined): VideoFormat | undefined => {
+  const hasFormat = Boolean(format);
+  return hasFormat && format !== undefined ? { ...format } : undefined;
+};
+const cloneTask = (task: DownloadTask): DownloadTask => {
+  const hasTags = Boolean(task.tags);
+  return {
+    ...task,
+    progress: task.progress === undefined ? undefined : { ...task.progress },
+    tags: !hasTags || task.tags === undefined ? undefined : [...task.tags],
+    selectedFormat: formatCopy(task.selectedFormat),
+  };
+};
+const clamp = (value: unknown): number =>
+  typeof value !== "number" || Number.isNaN(value) ? 0 : Math.max(0, Math.min(100, value));
+const trimLog = (value: string): string => (value.length <= 80000 ? value : Str.slice(value.length - 80000)(value));
+const savedPath = (text: string): string | undefined => {
+  const log = Str.trim(text);
+  if (log.length === 0) return undefined;
+  for (const pattern of [
     /Merging formats into "([^"]+)"/g,
     /Destination:\s+"([^"]+)"/g,
     /Destination:\s+'([^']+)'/g,
-    /\[download\]\s+([^\r\n]+?)\s+has already been downloaded/g
-  ]
-
-  for (const pattern of quotedPatterns) {
-    const matches = Array.from(log.matchAll(pattern))
-    const lastMatch = matches.at(-1)
-    const candidate = lastMatch?.[1]?.trim()
-    if (candidate) {
-      return candidate
-    }
+    /\[download\]\s+([^\r\n]+?)\s+has already been downloaded/g,
+  ]) {
+    const matches = Array.from(Str.matchAll(pattern)(log));
+    const match = A.last(matches);
+    const candidate = O.isSome(match) ? match.value[1] : undefined;
+    if (candidate !== undefined && Str.trim(candidate).length > 0) return Str.trim(candidate);
   }
+  for (const line of A.reverse(Str.split(log, /\r?\n/))) {
+    const at = O.getOrElse(Str.indexOf("Destination:")(line), () => -1);
+    const candidate = at < 0 ? "" : Str.trim(Str.slice(at + "Destination:".length)(line));
+    if (candidate.length > 0) return candidate;
+  }
+  return undefined;
+};
 
-  const lines = log.split(/\r?\n/).reverse()
-  for (const line of lines) {
-    const destinationIndex = line.indexOf('Destination:')
-    if (destinationIndex >= 0) {
-      const candidate = line.slice(destinationIndex + 'Destination:'.length).trim()
-      if (candidate) {
-        return candidate
+/** Native Core orchestration, including metadata and playlist admission. */
+export const layer = Layer.effect(
+  Downloader,
+  Effect.gen(function* () {
+    const host = yield* DownloaderHost;
+    const process = yield* YtDlpProcess;
+    const timing = yield* DownloadTiming;
+    const path = yield* Path.Path;
+    const argumentsService = yield* DownloadArguments;
+    const tasks = M.empty<string, DownloadTask>();
+    const inputs = M.empty<string, CreateDownloadInput>();
+    const active = M.empty<
+      string,
+      { readonly run: ProcessRun; readonly abort: Effect.Effect<void>; readonly signal: AbortSignal }
+    >();
+    const history = M.empty<string, DownloadTask>();
+    const cancelled = H.empty<string>();
+    const taskOrder: string[] = [];
+    const historyOrder: string[] = [];
+    const pending: string[] = [];
+    const getTask = (id: string) => O.getOrUndefined(M.get(tasks, id));
+    const listDownloads = Effect.sync(() =>
+      A.map(
+        A.sort(
+          A.filter(
+            A.flatMap(taskOrder, (id) => O.match(M.get(tasks, id), { onNone: () => [], onSome: (task) => [task] })),
+            (task) => !terminal(task)
+          ),
+          (a: DownloadTask, b: DownloadTask) => Order.Number(b.createdAt, a.createdAt)
+        ),
+        cloneTask
+      )
+    );
+    const listHistory = Effect.sync(() =>
+      A.map(
+        A.sort(
+          A.flatMap(historyOrder, (id) => O.match(M.get(history, id), { onNone: () => [], onSome: (task) => [task] })),
+          (a: DownloadTask, b: DownloadTask) => Order.Number(b.completedAt ?? b.createdAt, a.completedAt ?? a.createdAt)
+        ),
+        cloneTask
+      )
+    );
+    const publishHistory = Effect.fn("Downloader.publishHistory")(function* () {
+      const value = yield* listHistory;
+      yield* host.emit({ type: "history-updated", value });
+    });
+    const queueEvent = Effect.fn("Downloader.queueEvent")(function* () {
+      const value = yield* listDownloads;
+      yield* host.emit({ type: "queue-updated", value });
+    });
+    const update = Effect.fn("Downloader.update")(function* (id: string, patch: Partial<DownloadTask>) {
+      const old = getTask(id);
+      if (old === undefined) return null;
+      const next = { ...old, ...patch };
+      M.set(tasks, id, next);
+      if (terminal(next)) {
+        if (!M.has(history, id)) historyOrder.push(id);
+        M.set(history, id, next);
+        M.remove(inputs, id);
+        yield* publishHistory();
       }
-    }
-  }
-
-  return undefined
-}
-
-const cloneVideoFormat = (format?: VideoFormat): VideoFormat | undefined => {
-  if (!format) {
-    return undefined
-  }
-
-  return { ...format }
-}
-
-const cloneTask = (task: DownloadTask): DownloadTask => ({
-  ...task,
-  progress: task.progress ? { ...task.progress } : undefined,
-  tags: task.tags ? [...task.tags] : undefined,
-  selectedFormat: cloneVideoFormat(task.selectedFormat)
-})
-
-export class DownloaderCore extends EventEmitter {
-  private readonly maxConcurrent: number
-  private readonly downloadDir: string
-  private readonly defaultRuntimeSettings: DownloadRuntimeSettings
-  private readonly jsRuntimeArgs: string[]
-  private readonly tasks = new Map<string, DownloadTask>()
-  private readonly taskInputs = new Map<string, CreateDownloadInput>()
-  private readonly active = new Map<string, ActiveTask>()
-  private readonly pending: string[] = []
-  private readonly history = new Map<string, DownloadTask>()
-  private readonly cancelled = new Set<string>()
-  private ytdlp: YtDlpWrapInstance | null = null
-  private ffmpegLocation: string | undefined
-
-  constructor(options: DownloaderCoreOptions = {}) {
-    super()
-    this.maxConcurrent = Math.max(options.maxConcurrent ?? DEFAULT_MAX_CONCURRENT, 1)
-    this.downloadDir = options.downloadDir?.trim() || DEFAULT_DOWNLOAD_DIR
-    this.defaultRuntimeSettings = { ...(options.runtimeSettings ?? {}) }
-    this.jsRuntimeArgs = resolveJsRuntimeArgs()
-  }
-
-  async initialize(): Promise<void> {
-    if (this.ytdlp) {
-      return
-    }
-    fs.mkdirSync(this.downloadDir, { recursive: true })
-    const ytDlpPath = resolveYtDlpPath()
-    this.ffmpegLocation = resolveFfmpegLocation(ytDlpPath)
-    if (this.ffmpegLocation) {
-      process.env.FFMPEG_PATH = this.ffmpegLocation
-    }
-    this.ytdlp = new YTDlpWrapCtor(ytDlpPath)
-  }
-
-  private getYtDlp(): YtDlpWrapInstance {
-    if (!this.ytdlp) {
-      throw new Error('DownloaderCore is not initialized.')
-    }
-    return this.ytdlp
-  }
-
-  private publishHistory(): void {
-    this.emit('history-updated', this.listHistory())
-  }
-
-  private resolveRuntimeSettings(
-    taskSettings?: DownloadRuntimeSettings | undefined
-  ): DownloadRuntimeSettings {
-    const merged: DownloadRuntimeSettings = {
-      ...this.defaultRuntimeSettings,
-      ...(taskSettings ?? {})
-    }
-    const downloadPath =
-      taskSettings?.downloadPath?.trim() ||
-      this.defaultRuntimeSettings.downloadPath?.trim() ||
-      this.downloadDir
-
-    return {
-      ...merged,
-      downloadPath
-    }
-  }
-
-  private updateTask(id: string, patch: Partial<DownloadTask>): DownloadTask | null {
-    const existing = this.tasks.get(id)
-    if (!existing) {
-      return null
-    }
-    const next: DownloadTask = { ...existing, ...patch }
-    this.tasks.set(id, next)
-
-    if (toTerminal(next)) {
-      this.history.set(id, next)
-      this.taskInputs.delete(id)
-      this.publishHistory()
-    }
-
-    const snapshot = cloneTask(next)
-    this.emit('task-updated', snapshot)
-    this.emit('queue-updated', this.listDownloads())
-    return snapshot
-  }
-
-  private async runJsonCommand<T>(args: string[]): Promise<T> {
-    const process = this.getYtDlp().exec(args)
-    lowerChildPriority(process.ytDlpProcess?.pid)
-    let stdout = ''
-    let stderr = ''
-
-    process.ytDlpProcess?.stdout?.on('data', (chunk: Buffer) => {
-      stdout += chunk.toString()
-    })
-    process.ytDlpProcess?.stderr?.on('data', (chunk: Buffer) => {
-      stderr += chunk.toString()
-    })
-
-    const code = await new Promise<number | null>((resolve, reject) => {
-      process.once('close', (exitCode: number | null) => resolve(exitCode))
-      process.once('error', reject)
-    })
-
-    if (code !== 0 || !stdout.trim()) {
-      throw new Error(stderr.trim() || `yt-dlp exited with code ${code ?? -1}`)
-    }
-
-    return JSON.parse(stdout) as T
-  }
-
-  async getVideoInfo(url: string, runtimeSettings?: DownloadRuntimeSettings): Promise<VideoInfo> {
-    await this.initialize()
-    const target = url.trim()
-    if (!target) {
-      throw new Error('URL is required.')
-    }
-
-    const raw = await retryTransientYtDlpNetworkError(() =>
-      this.runJsonCommand<RawVideoInfo>(
-        buildVideoInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
-      )
-    )
-    const formats: VideoFormat[] = (raw.formats ?? []).map((format) => ({
-      formatId: format.format_id ?? 'unknown',
-      ext: format.ext ?? 'unknown',
-      width: toOptionalNumber(format.width),
-      height: toOptionalNumber(format.height),
-      fps: toOptionalNumber(format.fps),
-      vcodec: toOptionalString(format.vcodec),
-      acodec: toOptionalString(format.acodec),
-      filesize: toOptionalNumber(format.filesize),
-      filesizeApprox: toOptionalNumber(format.filesize_approx),
-      formatNote: toOptionalString(format.format_note),
-      tbr: toOptionalNumber(format.tbr),
-      quality: toOptionalNumber(format.quality),
-      protocol: toOptionalString(format.protocol),
-      language: toOptionalString(format.language),
-      videoExt: toOptionalString(format.video_ext),
-      audioExt: toOptionalString(format.audio_ext)
-    }))
-
-    return {
-      id: raw.id ?? target,
-      title: raw.title ?? target,
-      thumbnail: toOptionalString(raw.thumbnail),
-      duration: toOptionalNumber(raw.duration),
-      extractorKey: toOptionalString(raw.extractor_key),
-      webpageUrl: toOptionalString(raw.webpage_url),
-      description: toOptionalString(raw.description),
-      viewCount: toOptionalNumber(raw.view_count),
-      uploader: toOptionalString(raw.uploader),
-      tags: toOptionalStringArray(raw.tags),
-      formats
-    }
-  }
-
-  async getPlaylistInfo(
-    url: string,
-    runtimeSettings?: DownloadRuntimeSettings
-  ): Promise<PlaylistInfo> {
-    await this.initialize()
-    const target = url.trim()
-    if (!target) {
-      throw new Error('URL is required.')
-    }
-
-    const raw = await retryTransientYtDlpNetworkError(() =>
-      this.runJsonCommand<RawPlaylistInfo>(
-        buildPlaylistInfoArgs(
+      const snapshot = cloneTask(next);
+      yield* host.emit({ type: "task-updated", value: snapshot });
+      yield* queueEvent();
+      return snapshot;
+    });
+    const settingsFor = (settings?: DownloadRuntimeSettings): DownloadRuntimeSettings => {
+      const requested = settings?.downloadPath == null ? "" : Str.trim(settings.downloadPath);
+      const fallback = host.runtimeSettings.downloadPath == null ? "" : Str.trim(host.runtimeSettings.downloadPath);
+      return {
+        ...host.runtimeSettings,
+        ...settings,
+        downloadPath: requested.length > 0 ? requested : fallback.length > 0 ? fallback : host.downloadDir,
+      };
+    };
+    const pump: () => Effect.Effect<void, HostFailure | InvalidDownload> = Effect.fn("Downloader.processQueue")(
+      function* () {
+        if (M.size(active) >= host.maxConcurrent) return;
+        const id = pending.shift();
+        if (id === undefined || id.length === 0) return;
+        const task = getTask(id);
+        if (task === undefined) {
+          yield* pump();
+          return;
+        }
+        const input = O.getOrUndefined(M.get(inputs, id));
+        if (input === undefined) {
+          yield* update(id, { status: "error", completedAt: host.now(), error: "Missing download input" });
+          yield* pump();
+          return;
+        }
+        const settings = settingsFor(input.settings);
+        const customPath = input.customDownloadPath == null ? "" : Str.trim(input.customDownloadPath);
+        const resolvedPath = customPath.length > 0 ? customPath : (settings.downloadPath ?? host.downloadDir);
+        const built = argumentsService.download(
+          {
+            url: task.url,
+            type: input.type,
+            format: input.format,
+            audioFormat: input.audioFormat,
+            audioFormatIds: input.audioFormatIds,
+            startTime: input.startTime,
+            endTime: input.endTime,
+            customDownloadPath: input.customDownloadPath,
+            customFilenameTemplate: input.customFilenameTemplate,
+            containerFormat: input.containerFormat,
+          },
+          host.downloadDir,
+          settings,
+          host.jsRuntimeArgs
+        );
+        const args = yield* built;
+        const url = args.pop();
+        if (url === undefined || url.length === 0) {
+          yield* update(id, { status: "error", completedAt: host.now(), error: "Download arguments missing URL" });
+          yield* pump();
+          return;
+        }
+        const initialized = yield* host.initialize;
+        if (initialized.ffmpeg === undefined || initialized.ffmpeg.length === 0) {
+          yield* update(id, {
+            status: "error",
+            completedAt: host.now(),
+            error: "ffmpeg/ffprobe not found. Use Desktop resources/ffmpeg, install in PATH, or set FFMPEG_PATH.",
+          });
+          yield* pump();
+          return;
+        }
+        args.push("--ffmpeg-location", initialized.ffmpeg, url);
+        const controller = yield* host.cancellation;
+        let log = "";
+        let logsBound = false;
+        let callbacksBound = false;
+        let settled = false;
+        let acquiredRun: ProcessRun | undefined;
+        const nativeAbort = Effect.suspend(() =>
+          acquiredRun === undefined ? Effect.void : acquiredRun.signalChild("SIGTERM").pipe(Effect.ignore)
+        );
+        const isCancelled = () => controller.signal.aborted || H.has(cancelled, id);
+        const finish = Effect.fn("Downloader.finalize")(function* (
+          patch: Pick<DownloadTask, "status"> & Partial<DownloadTask>
+        ) {
+          if (settled) return;
+          settled = true;
+          M.remove(active, id);
+          H.remove(cancelled, id);
+          const final: Partial<DownloadTask> = {
+            ...patch,
+            completedAt: patch.completedAt ?? host.now(),
+            ytDlpLog: log,
+          };
+          const saved = savedPath(log);
+          if (saved !== undefined) {
+            final.savedFileName = path.basename(saved);
+            final.downloadPath = path.dirname(saved);
+          } else final.downloadPath = resolvedPath;
+          yield* update(id, final);
+          yield* pump().pipe(Effect.orDie);
+        });
+        const started = yield* process.start(
+          {
+            command: initialized.binary,
+            argv: args,
+            env: undefined,
+            extendEnv: true,
+            cwd: undefined,
+            detached: host.platform !== "win32",
+            windowsHide: false,
+            stdin: "pipe",
+            stdout: "pipe",
+            stderr: "pipe",
+            abortSignal: controller.signal,
+          },
+          {
+            abort: nativeAbort,
+            emit: Effect.fn("Downloader.output")(function* (event) {
+              if ((event._tag === "stdout" || event._tag === "stderr") && logsBound)
+                log = trimLog(log + new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk));
+              if (!callbacksBound) return;
+              if (event._tag === "progress") {
+                yield* update(id, {
+                  progress: {
+                    percent: clamp(event.payload.percent),
+                    currentSpeed: event.payload.currentSpeed,
+                    eta: event.payload.eta,
+                    downloaded: event.payload.downloaded,
+                    total: event.payload.total,
+                  },
+                  speed: event.payload.currentSpeed,
+                });
+              } else if (event._tag === "close") {
+                if (isCancelled()) yield* finish({ status: "cancelled", progress: { percent: 0 } });
+                else if (event.code === 0) yield* finish({ status: "completed", progress: { percent: 100 } });
+                else yield* finish({ status: "error", error: `yt-dlp exited with code ${event.code ?? -1}` });
+              } else if (event._tag === "error") {
+                if (isCancelled()) yield* finish({ status: "cancelled", progress: { percent: 0 } });
+                else
+                  yield* finish({
+                    status: "error",
+                    error: event.error instanceof Error ? event.error.message : String(event.error),
+                  });
+              }
+            }),
+          }
+        );
+        if (started._tag === "NativeSpawnFailure") {
+          yield* finish(
+            isCancelled()
+              ? { status: "cancelled", progress: { percent: 0 } }
+              : { status: "error", error: started.error.message }
+          );
+          return;
+        }
+        acquiredRun = started.run;
+        if (controller.signal.aborted) yield* nativeAbort;
+        yield* host.lowerPriority(started.run.pid);
+        M.set(active, id, { run: started.run, ...controller });
+        logsBound = true;
+        yield* update(id, {
+          status: "downloading",
+          startedAt: host.now(),
+          progress: { percent: 0 },
+          ytDlpCommand: formatYtDlpCommand(args),
+          ytDlpLog: "",
+        });
+        callbacksBound = true;
+        yield* pump();
+      }
+    );
+    const createDownload = Effect.fn("Downloader.createDownload")(function* (input: CreateDownloadInput) {
+      yield* host.initialize;
+      yield* timing.turn("core.initialize");
+      const id = host.uuid();
+      const settings = settingsFor(input.settings);
+      const custom = input.customDownloadPath == null ? "" : Str.trim(input.customDownloadPath);
+      const customTemplate = input.customFilenameTemplate == null ? "" : Str.trim(input.customFilenameTemplate);
+      const hasTags = Boolean(input.tags);
+      const task: DownloadTask = {
+        id,
+        url: input.url,
+        title: input.title,
+        thumbnail: input.thumbnail,
+        type: input.type,
+        status: "pending",
+        createdAt: host.now(),
+        duration: input.duration,
+        description: input.description,
+        channel: input.channel,
+        uploader: input.uploader,
+        viewCount: input.viewCount,
+        tags: !hasTags || input.tags === undefined ? undefined : [...input.tags],
+        selectedFormat: formatCopy(input.selectedFormat),
+        playlistId: input.playlistId,
+        playlistTitle: input.playlistTitle,
+        playlistIndex: input.playlistIndex,
+        playlistSize: input.playlistSize,
+        downloadPath: custom.length > 0 ? custom : (settings.downloadPath ?? host.downloadDir),
+      };
+      if (!M.has(tasks, id)) taskOrder.push(id);
+      M.set(tasks, id, task);
+      M.set(inputs, id, {
+        ...input,
+        selectedFormat: formatCopy(input.selectedFormat),
+        customDownloadPath: custom.length > 0 ? custom : undefined,
+        customFilenameTemplate: customTemplate.length > 0 ? customTemplate : undefined,
+        settings,
+      });
+      pending.push(id);
+      yield* queueEvent();
+      yield* pump();
+      return cloneTask(task);
+    });
+    const jsonCommand = Effect.fn("Downloader.jsonCommand")(function* (args: string[]) {
+      const initialized = yield* host.initialize;
+      const done = yield* Deferred.make<unknown, MetadataFailure>();
+      let stdout = "";
+      let stderr = "";
+      const started = yield* process.start(
+        {
+          command: initialized.binary,
+          argv: args,
+          env: undefined,
+          extendEnv: true,
+          cwd: undefined,
+          detached: false,
+          windowsHide: false,
+          stdin: "pipe",
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+        {
+          abort: Effect.void,
+          emit: Effect.fn("Downloader.metadataOutput")(function* (event) {
+            if (event._tag === "stdout") stdout += new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk);
+            else if (event._tag === "stderr")
+              stderr += new TextDecoder("utf-8", { ignoreBOM: true }).decode(event.chunk);
+            else if (event._tag === "error")
+              yield* Deferred.fail(
+                done,
+                MetadataFailure.make({
+                  operation: "metadata",
+                  legacyMessage: event.error instanceof Error ? event.error.message : String(event.error),
+                  cause: event.error,
+                })
+              );
+            else if (event._tag === "close") {
+              if (event.code !== 0 || Str.trim(stdout).length === 0)
+                yield* Deferred.fail(
+                  done,
+                  MetadataFailure.make({
+                    operation: "metadata",
+                    legacyMessage: Str.trim(stderr) || `yt-dlp exited with code ${event.code ?? -1}`,
+                  })
+                );
+              else {
+                const decoded = S.decodeEffect(CoreMetadataJson)(stdout).pipe(
+                  Effect.mapError(() =>
+                    MetadataFailure.make({
+                      operation: "json",
+                      legacyMessage: host.jsonSyntaxMessage(stdout),
+                      jsonInput: stdout,
+                    })
+                  )
+                );
+                yield* Deferred.complete(done, decoded);
+              }
+            }
+          }),
+        }
+      );
+      if (started._tag === "NativeSpawnFailure")
+        return yield* MetadataFailure.make({
+          operation: "metadata",
+          legacyMessage: started.error.message,
+          cause: started.error,
+        });
+      yield* host.lowerPriority(started.run.pid);
+      return yield* Deferred.await(done);
+    });
+    const metadata = Effect.fn("Downloader.metadata")(function* (
+      url: string,
+      settings: DownloadRuntimeSettings | undefined,
+      playlist: boolean
+    ) {
+      yield* host.initialize;
+      yield* timing.turn("core.initialize");
+      const target = Str.trim(url);
+      if (target.length === 0)
+        return yield* InvalidDownloadError.make({ operation: "metadata", legacyMessage: "URL is required." });
+      const command = Effect.fn("Downloader.metadataAttempt")(function* () {
+        const args = yield* (playlist ? argumentsService.playlistInfo : argumentsService.videoInfo)(
           target,
-          this.resolveRuntimeSettings(runtimeSettings),
-          this.jsRuntimeArgs
+          settingsFor(settings),
+          host.jsRuntimeArgs
+        );
+        return yield* jsonCommand(args);
+      });
+      const attempt = (number: number): Effect.Effect<unknown, HostFailure | InvalidDownload | MetadataFailure> =>
+        command().pipe(
+          Effect.catchIf(
+            (error) => number < 3 && isTransientYtDlpNetworkError(error.legacyMessage),
+            () => timing.sleep(1000).pipe(Effect.andThen(() => attempt(number + 1)))
+          )
+        );
+      return { raw: yield* attempt(1), target };
+    });
+    const getVideoInfo = Effect.fn("Downloader.getVideoInfo")(function* (
+      url: string,
+      settings?: DownloadRuntimeSettings
+    ) {
+      const { raw, target } = yield* metadata(url, settings, false);
+      return yield* decodeVideoInfo(raw, target);
+    });
+    const getPlaylistInfo = Effect.fn("Downloader.getPlaylistInfo")(function* (
+      url: string,
+      settings?: DownloadRuntimeSettings
+    ) {
+      const { raw, target } = yield* metadata(url, settings, true);
+      if (raw === null)
+        return yield* MetadataFailure.make({
+          operation: "playlist",
+          legacyMessage: "Cannot read properties of null (reading 'entries')",
+          cause: new TypeError("Cannot read properties of null (reading 'entries')"),
+        });
+      const document = yield* S.decodeUnknownEffect(S.Record(S.String, S.Unknown))(
+        typeof raw === "object" && !A.isArray(raw) ? raw : {}
+      ).pipe(
+        Effect.mapError(() =>
+          BoundaryDecodeError.make({ operation: "playlist", legacyMessage: "Invalid yt-dlp metadata." })
         )
-      )
-    )
-
-    return mapPlaylistInfo(raw, target)
-  }
-
-  async startPlaylistDownload(input: PlaylistDownloadInput): Promise<PlaylistDownloadResult> {
-    const playlist = await this.getPlaylistInfo(input.url, input.settings)
-    const groupId = `playlist_group_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
-
-    if (playlist.entryCount === 0) {
+      );
+      const mapped = yield* Effect.try({
+        try: () => PlaylistPlanFunctions.mapPlaylistInfo(document, target),
+        catch: (cause) =>
+          MetadataFailure.make({
+            operation: "playlist",
+            legacyMessage: cause instanceof Error ? cause.message : String(cause),
+            cause,
+          }),
+      });
+      return yield* S.decodeEffect(PlaylistInfo)(mapped).pipe(
+        Effect.mapError(() =>
+          BoundaryDecodeError.make({ operation: "playlist", legacyMessage: "Invalid yt-dlp metadata." })
+        )
+      );
+    });
+    const startPlaylistDownload = Effect.fn("Downloader.startPlaylistDownload")(function* (
+      input: PlaylistDownloadInput
+    ) {
+      const playlist = yield* getPlaylistInfo(input.url, input.settings);
+      const groupId = `playlist_group_${host.now()}_${Str.slice(2, 8)(host.random().toString(36))}`;
+      const ids = H.fromIterable(input.entryIds ?? []);
+      const requestedStart = Math.max((input.startIndex ?? 1) - 1, 0);
+      const hasEnd = Boolean(input.endIndex);
+      const requestedEnd = hasEnd
+        ? Math.min((input.endIndex ?? 0) - 1, playlist.entryCount - 1)
+        : playlist.entryCount - 1;
+      const selected =
+        playlist.entryCount === 0
+          ? []
+          : input.entryIds != null && input.entryIds.length > 0
+            ? A.filter(playlist.entries, (entry) => H.has(ids, entry.id))
+            : playlist.entries.slice(
+                Math.min(requestedStart, requestedEnd),
+                Math.max(requestedStart, requestedEnd) + 1
+              );
+      const entries = yield* Effect.forEach(
+        planPlaylistDownloadOrder(selected),
+        Effect.fn("Downloader.playlistEntry")(function* (entry) {
+          const download = yield* createDownload({
+            url: entry.url,
+            type: input.type,
+            title: entry.title,
+            thumbnail: entry.thumbnail,
+            playlistId: groupId,
+            playlistTitle: playlist.title,
+            playlistIndex: entry.index,
+            playlistSize: selected.length,
+            format: input.format,
+            audioFormat: input.audioFormat,
+            audioFormatIds: input.audioFormatIds,
+            customDownloadPath: input.customDownloadPath,
+            customFilenameTemplate: input.customFilenameTemplate,
+            containerFormat: input.containerFormat,
+            settings: input.settings,
+          });
+          yield* timing.turn("core.playlistEntry");
+          return { downloadId: download.id, entryId: entry.id, title: entry.title, url: entry.url, index: entry.index };
+        }),
+        { concurrency: 1 }
+      );
       return {
         groupId,
         playlistId: playlist.id,
         playlistTitle: playlist.title,
         type: input.type,
-        totalCount: 0,
-        startIndex: 0,
-        endIndex: 0,
-        entries: []
+        totalCount: selected.length,
+        startIndex: selected[0]?.index ?? 0,
+        endIndex: selected.at(-1)?.index ?? 0,
+        entries,
+      };
+    });
+    const removeHistoryItems = Effect.fn("Downloader.removeHistoryItems")(function* (ids: string[]) {
+      let removed = 0;
+      for (const raw of ids) {
+        const id = Str.trim(raw);
+        if (id.length === 0 || !M.has(history, id)) continue;
+        M.remove(history, id);
+        const historyIndex = O.getOrElse(
+          A.findFirstIndex(historyOrder, (key) => key === id),
+          () => -1
+        );
+        if (historyIndex >= 0) historyOrder.splice(historyIndex, 1);
+        removed++;
+        const task = getTask(id);
+        if (task !== undefined && terminal(task)) {
+          M.remove(tasks, id);
+          const taskIndex = O.getOrElse(
+            A.findFirstIndex(taskOrder, (key) => key === id),
+            () => -1
+          );
+          if (taskIndex >= 0) taskOrder.splice(taskIndex, 1);
+        }
       }
-    }
-
-    let selectedEntries: PlaylistInfo['entries'] = []
-
-    if (input.entryIds && input.entryIds.length > 0) {
-      const selectedIdSet = new Set(input.entryIds)
-      selectedEntries = playlist.entries.filter((entry) => selectedIdSet.has(entry.id))
-    } else {
-      const requestedStart = Math.max((input.startIndex ?? 1) - 1, 0)
-      const requestedEnd = input.endIndex
-        ? Math.min(input.endIndex - 1, playlist.entryCount - 1)
-        : playlist.entryCount - 1
-      const rangeStart = Math.min(requestedStart, requestedEnd)
-      const rangeEnd = Math.max(requestedStart, requestedEnd)
-      selectedEntries = playlist.entries.slice(rangeStart, rangeEnd + 1)
-    }
-
-    const createdEntries: PlaylistDownloadResult['entries'] = []
-
-    for (const entry of planPlaylistDownloadOrder(selectedEntries)) {
-      const download = await this.createDownload({
-        url: entry.url,
-        type: input.type,
-        title: entry.title,
-        thumbnail: entry.thumbnail,
-        playlistId: groupId,
-        playlistTitle: playlist.title,
-        playlistIndex: entry.index,
-        playlistSize: selectedEntries.length,
-        format: input.format,
-        audioFormat: input.audioFormat,
-        audioFormatIds: input.audioFormatIds,
-        customDownloadPath: input.customDownloadPath,
-        customFilenameTemplate: input.customFilenameTemplate,
-        containerFormat: input.containerFormat,
-        settings: input.settings
-      })
-
-      createdEntries.push({
-        downloadId: download.id,
-        entryId: entry.id,
-        title: entry.title,
-        url: entry.url,
-        index: entry.index
-      })
-    }
-
-    return {
-      groupId,
-      playlistId: playlist.id,
-      playlistTitle: playlist.title,
-      type: input.type,
-      totalCount: selectedEntries.length,
-      startIndex: selectedEntries[0]?.index ?? 0,
-      endIndex: selectedEntries.at(-1)?.index ?? 0,
-      entries: createdEntries
-    }
-  }
-
-  async createDownload(input: CreateDownloadInput): Promise<DownloadTask> {
-    await this.initialize()
-    const id = randomUUID()
-    const now = Date.now()
-    const runtimeSettings = this.resolveRuntimeSettings(input.settings)
-    const resolvedDownloadPath =
-      input.customDownloadPath?.trim() || runtimeSettings.downloadPath?.trim() || this.downloadDir
-    const task: DownloadTask = {
-      id,
-      url: input.url,
-      title: input.title,
-      thumbnail: input.thumbnail,
-      type: input.type,
-      status: 'pending',
-      createdAt: now,
-      duration: input.duration,
-      description: input.description,
-      channel: input.channel,
-      uploader: input.uploader,
-      viewCount: input.viewCount,
-      tags: input.tags ? [...input.tags] : undefined,
-      selectedFormat: cloneVideoFormat(input.selectedFormat),
-      playlistId: input.playlistId,
-      playlistTitle: input.playlistTitle,
-      playlistIndex: input.playlistIndex,
-      playlistSize: input.playlistSize,
-      downloadPath: resolvedDownloadPath
-    }
-
-    this.tasks.set(id, task)
-    this.taskInputs.set(id, {
-      ...input,
-      selectedFormat: cloneVideoFormat(input.selectedFormat),
-      customDownloadPath: input.customDownloadPath?.trim() || undefined,
-      customFilenameTemplate: input.customFilenameTemplate?.trim() || undefined,
-      settings: runtimeSettings
-    })
-    this.pending.push(id)
-    this.emit('queue-updated', this.listDownloads())
-    this.processQueue()
-
-    return cloneTask(task)
-  }
-
-  private processQueue(): void {
-    if (this.active.size >= this.maxConcurrent) {
-      return
-    }
-
-    const nextId = this.pending.shift()
-    if (!nextId) {
-      return
-    }
-
-    const task = this.tasks.get(nextId)
-    if (!task) {
-      this.processQueue()
-      return
-    }
-    const input = this.taskInputs.get(nextId)
-    if (!input) {
-      this.updateTask(nextId, {
-        status: 'error',
-        completedAt: Date.now(),
-        error: 'Missing download input'
-      })
-      this.processQueue()
-      return
-    }
-
-    const runtimeSettings = this.resolveRuntimeSettings(input.settings)
-    const resolvedDownloadPath =
-      input.customDownloadPath?.trim() || runtimeSettings.downloadPath?.trim() || this.downloadDir
-    const args = buildDownloadArgs(
-      {
-        url: task.url,
-        type: input.type,
-        format: input.format,
-        audioFormat: input.audioFormat,
-        audioFormatIds: input.audioFormatIds,
-        startTime: input.startTime,
-        endTime: input.endTime,
-        customDownloadPath: input.customDownloadPath,
-        customFilenameTemplate: input.customFilenameTemplate,
-        containerFormat: input.containerFormat
-      },
-      this.downloadDir,
-      runtimeSettings,
-      this.jsRuntimeArgs
-    )
-
-    const urlArg = args.pop()
-    if (!urlArg) {
-      this.updateTask(nextId, {
-        status: 'error',
-        completedAt: Date.now(),
-        error: 'Download arguments missing URL'
-      })
-      this.processQueue()
-      return
-    }
-
-    if (!this.ffmpegLocation) {
-      this.updateTask(nextId, {
-        status: 'error',
-        completedAt: Date.now(),
-        error: FFMPEG_NOT_FOUND_ERROR
-      })
-      this.processQueue()
-      return
-    }
-
-    args.push('--ffmpeg-location', this.ffmpegLocation)
-    args.push(urlArg)
-
-    const controller = new AbortController()
-    const ytDlpCommand = formatYtDlpCommand(args)
-    const process = this.getYtDlp().exec(args, {
-      signal: controller.signal,
-      ...backgroundChildSpawnOptions()
-    })
-    lowerChildPriority(process.ytDlpProcess?.pid)
-
-    this.active.set(nextId, { controller, process })
-
-    let taskLog = ''
-    const appendLogChunk = (chunk: Buffer | string): void => {
-      taskLog = trimTaskLog(`${taskLog}${chunk.toString()}`)
-    }
-
-    process.ytDlpProcess?.stdout?.on('data', appendLogChunk)
-    process.ytDlpProcess?.stderr?.on('data', appendLogChunk)
-
-    this.updateTask(nextId, {
-      status: 'downloading',
-      startedAt: Date.now(),
-      progress: { percent: 0 },
-      ytDlpCommand,
-      ytDlpLog: ''
-    })
-
-    process.on('progress', (payload: ProgressPayload) => {
-      this.updateTask(nextId, {
-        progress: {
-          percent: clampPercent(payload.percent),
-          currentSpeed: payload.currentSpeed,
-          eta: payload.eta,
-          downloaded: payload.downloaded,
-          total: payload.total
-        },
-        speed: payload.currentSpeed
-      })
-    })
-
-    let settled = false
-    const isCancelled = (): boolean => controller.signal.aborted || this.cancelled.has(nextId)
-    const finalizeTask = (patch: Pick<DownloadTask, 'status'> & Partial<DownloadTask>): void => {
-      if (settled) {
-        return
-      }
-      settled = true
-      this.active.delete(nextId)
-      this.cancelled.delete(nextId)
-
-      const finalPatch: Partial<DownloadTask> = {
-        ...patch,
-        completedAt: patch.completedAt ?? Date.now(),
-        ytDlpLog: taskLog
-      }
-
-      const filePath = extractSavedFilePath(taskLog)
-      if (filePath) {
-        finalPatch.savedFileName = path.basename(filePath)
-        finalPatch.downloadPath = path.dirname(filePath)
-      } else {
-        finalPatch.downloadPath = resolvedDownloadPath
-      }
-
-      this.updateTask(nextId, finalPatch)
-      this.processQueue()
-    }
-
-    process.on('close', (code: number | null) => {
-      if (settled) {
-        return
-      }
-
-      if (isCancelled()) {
-        finalizeTask({
-          status: 'cancelled',
-          progress: { percent: 0 }
-        })
-        return
-      }
-
-      if (code === 0) {
-        finalizeTask({
-          status: 'completed',
-          progress: { percent: 100 }
-        })
-        return
-      }
-
-      finalizeTask({
-        status: 'error',
-        error: `yt-dlp exited with code ${code ?? -1}`
-      })
-    })
-
-    process.on('error', (error: Error) => {
-      if (settled) {
-        return
-      }
-
-      if (isCancelled()) {
-        finalizeTask({
-          status: 'cancelled',
-          progress: { percent: 0 }
-        })
-        return
-      }
-
-      finalizeTask({
-        status: 'error',
-        error: error.message
-      })
-    })
-
-    this.processQueue()
-  }
-
-  async cancelDownload(id: string): Promise<boolean> {
-    const active = this.active.get(id)
-    if (active) {
-      this.cancelled.add(id)
-      active.controller.abort()
-      return true
-    }
-
-    const pendingIndex = this.pending.indexOf(id)
-    if (pendingIndex >= 0) {
-      this.pending.splice(pendingIndex, 1)
-      this.updateTask(id, {
-        status: 'cancelled',
-        completedAt: Date.now()
-      })
-      return true
-    }
-
-    return false
-  }
-
-  removeHistoryItems(ids: string[]): number {
-    let removed = 0
-
-    for (const rawId of ids) {
-      const id = rawId.trim()
-      if (!id) {
-        continue
-      }
-
-      if (!this.history.delete(id)) {
-        continue
-      }
-
-      removed += 1
-      const task = this.tasks.get(id)
-      if (task && toTerminal(task)) {
-        this.tasks.delete(id)
-      }
-    }
-
-    if (removed > 0) {
-      this.publishHistory()
-    }
-
-    return removed
-  }
-
-  removeHistoryByPlaylist(playlistId: string): number {
-    const target = playlistId.trim()
-    if (!target) {
-      return 0
-    }
-
-    const idsToDelete: string[] = []
-    for (const [id, task] of this.history.entries()) {
-      if (task.playlistId === target) {
-        idsToDelete.push(id)
-      }
-    }
-
-    return this.removeHistoryItems(idsToDelete)
-  }
-
-  listDownloads(): DownloadTask[] {
-    return Array.from(this.tasks.values())
-      .filter((task) => !toTerminal(task))
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .map(cloneTask)
-  }
-
-  listHistory(): DownloadTask[] {
-    return Array.from(this.history.values())
-      .sort((a, b) => (b.completedAt ?? b.createdAt) - (a.completedAt ?? a.createdAt))
-      .map(cloneTask)
-  }
-
-  getStatus(): { active: number; pending: number } {
-    return { active: this.active.size, pending: this.pending.length }
-  }
-}
+      if (removed > 0) yield* publishHistory();
+      return removed;
+    });
+    return Downloader.of({
+      getVideoInfo,
+      getPlaylistInfo,
+      startPlaylistDownload,
+      initialize: Effect.asVoid(host.initialize),
+      createDownload,
+      listDownloads,
+      listHistory,
+      getStatus: Effect.sync(() => ({ active: M.size(active), pending: pending.length })),
+      cancelDownload: Effect.fn("Downloader.cancelDownload")(function* (id) {
+        const run = O.getOrUndefined(M.get(active, id));
+        if (run !== undefined) {
+          H.add(cancelled, id);
+          yield* run.abort;
+          return true;
+        }
+        const index = O.getOrElse(
+          A.findFirstIndex(pending, (value) => value === id),
+          () => -1
+        );
+        if (index >= 0) {
+          pending.splice(index, 1);
+          yield* update(id, { status: "cancelled", completedAt: host.now() });
+          return true;
+        }
+        return false;
+      }),
+      removeHistoryItems,
+      removeHistoryByPlaylist: Effect.fn("Downloader.removeHistoryByPlaylist")(function* (raw) {
+        const id = Str.trim(raw);
+        if (id.length === 0) return 0;
+        const ids = A.filter(historyOrder, (key) => O.getOrUndefined(M.get(history, key))?.playlistId === id);
+        return yield* removeHistoryItems(ids);
+      }),
+    });
+  })
+);

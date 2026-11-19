@@ -1,0 +1,56 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "pid": "<PID>",
+      "pidStartedAt": null,
+      "kind": "gallery-dl",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "ordinary"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "stream": "stderr",
+      "line": "diagnostic"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task",
+      "attemptId": "attempt",
+      "result": {
+        "type": "error",
+        "error": {
+          "category": "output-missing",
+          "exitCode": null,
+          "rawMessage": "Gallery output missing or empty: 0 invalid files among 0 reported outputs.",
+          "uiMessageKey": "task.error.outputMissing",
+          "uiActionHints": [
+            "report-bug"
+          ],
+          "retryable": false,
+          "suggestedRetryAfterMs": null
+        },
+        "exitCode": 0
+      },
+      "closedAt": 1000,
+      "stdoutTail": "ordinary\n",
+      "stderrTail": "diagnostic\n"
+    }
+  ]
+]

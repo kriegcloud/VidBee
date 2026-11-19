@@ -1,11 +1,11 @@
 import {
-  buildDownloadArgs as buildSharedDownloadArgs,
   resolveAudioFormatSelector as resolveSharedAudioFormatSelector,
   resolveVideoFormatSelector as resolveSharedVideoFormatSelector,
   sanitizeFilenameTemplate as sanitizeSharedFilenameTemplate,
   type YtDlpDownloadOptions,
   type YtDlpDownloadSettings
 } from '@vidbee/downloader-core/yt-dlp-args'
+import { buildDownloadArgs as buildSharedDownloadArgs } from '@vidbee/downloader-core-legacy/yt-dlp-args'
 import type { AppSettings, DownloadOptions } from '../../shared/types'
 
 const toSharedOptions = (options: DownloadOptions): YtDlpDownloadOptions => ({

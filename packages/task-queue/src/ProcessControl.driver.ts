@@ -8,7 +8,7 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { ClockTickRate, LinuxProcessIdentity, ProcessOutputText, ProcessProbeNumber } from "./ProcessControl.model.js";
-import { ProcessControl } from "./ProcessControl.service.js";
+import { ProcessControl, ProcessRequests } from "./ProcessControl.service.js";
 
 /** Native process probes. Windows start identity stays unverified, matching the legacy default. */
 export const layer = Layer.effect(
@@ -103,3 +103,41 @@ export const layer = Layer.effect(
     });
   })
 );
+
+/** Request fibers belong to the providing layer; acknowledgement never awaits termination. */
+export const requestLayerForPlatform = (platform: string) =>
+  Layer.effect(
+    ProcessRequests,
+    Effect.gen(function* () {
+      const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+      const scope = yield* Effect.scope;
+      const command = (pid: number, signal: "SIGTERM" | "SIGKILL", group: boolean, tree: boolean) =>
+        platform === "win32"
+          ? ChildProcess.make("taskkill", ["/PID", String(pid), ...(tree ? ["/T"] : []), "/F"])
+          : ChildProcess.make("kill", [`-${Str.slice(3)(signal)}`, "--", String(group ? -pid : pid)]);
+      const request = Effect.fn("ProcessRequests.request")(function* (
+        pid: number,
+        signal: "SIGTERM" | "SIGKILL",
+        target: "pid" | "group" | "tree"
+      ) {
+        if (pid <= 0) return;
+        const action =
+          target === "tree" && platform !== "win32"
+            ? spawner.exitCode(command(pid, signal, true, true)).pipe(
+                Effect.orElseSucceed(() => -1),
+                Effect.flatMap((code) =>
+                  code === 0 ? Effect.void : spawner.exitCode(command(pid, signal, false, false)).pipe(Effect.ignore)
+                )
+              )
+            : spawner.exitCode(command(pid, signal, target === "group", target === "tree")).pipe(Effect.ignore);
+        yield* Effect.forkIn(Effect.scoped(action), scope, { startImmediately: true });
+      });
+      return ProcessRequests.of({
+        pid: Effect.fn("ProcessRequests.pid")((pid, signal) => request(pid, signal, "pid")),
+        group: Effect.fn("ProcessRequests.group")((pid, signal) => request(pid, signal, "group")),
+        tree: Effect.fn("ProcessRequests.tree")((pid, signal) => request(pid, signal, "tree")),
+      });
+    })
+  );
+
+export const requestLayer = requestLayerForPlatform(process.platform);

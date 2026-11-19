@@ -9,7 +9,7 @@ import {
   DownloadTypeSchema,
   OneClickContainerOptionSchema,
   OneClickQualityPresetSchema
-} from '@vidbee/downloader-core/schemas'
+} from '@vidbee/downloader-core-legacy/schemas'
 import { z } from 'zod'
 import { MAX_CHECK_INTERVAL_MS, MIN_CHECK_INTERVAL_MS } from './types'
 

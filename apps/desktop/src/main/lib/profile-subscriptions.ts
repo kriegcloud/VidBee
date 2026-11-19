@@ -7,18 +7,18 @@
 import { randomUUID } from 'node:crypto'
 import type { DownloadRuntimeSettings, InstagramProfileCategory } from '@vidbee/downloader-core'
 import { resolveDownloadTaskKind } from '@vidbee/downloader-core/gallery-dl-executor'
-import {
-  enqueueInstagramProfileDownload,
-  type InstagramProfileInspector,
-  instagramInspectionId
-} from '@vidbee/downloader-core/instagram-profile'
+import { instagramInspectionId } from '@vidbee/downloader-core/instagram-profile'
 import { normalizeInstagramProfileUrl } from '@vidbee/downloader-core/instagram-url'
 import {
   isMappedProfilePostUrl,
   type MappedProfilePlatform
 } from '@vidbee/downloader-core/mapped-profile-source'
-import { downloadSocialMedia } from '@vidbee/downloader-core/social-media-service'
-import type { SocialProfileManager } from '@vidbee/downloader-core/social-profile-manager'
+import {
+  enqueueInstagramProfileDownload,
+  type InstagramProfileInspector
+} from '@vidbee/downloader-core-legacy/instagram-profile'
+import { downloadSocialMedia } from '@vidbee/downloader-core-legacy/social-media-service'
+import type { SocialProfileManager } from '@vidbee/downloader-core-legacy/social-profile-manager'
 import type { EnqueueItemContext } from '@vidbee/subscriptions-core/api'
 import type {
   ProfileCategoryError,

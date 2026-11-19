@@ -1,65 +1,65 @@
-import { z } from 'zod'
-import { OnlyFansDownloadSchema, OnlyFansProfileSchema } from './onlyfans-profile'
-
-export const FanslyCommandSchema = z.object({
-  url: z.string().url(),
-  action: z.enum(['get', 'open', 'map', 'stop']),
-  category: z.enum(['posts', 'media']).default('media')
-})
-export const FanslyProfileSchema = OnlyFansProfileSchema
-export const FanslyDownloadSchema = OnlyFansDownloadSchema
-export type FanslyCommand = z.input<typeof FanslyCommandSchema>
-export type FanslyDownload = z.infer<typeof FanslyDownloadSchema>
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as A from "effect/Array";
+import * as Effect from "effect/Effect";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { OnlyFansAction, ProfileUrl } from "./onlyfans-profile.js";
+import type { OnlyFansDownloadSchema } from "./onlyfans-profile.js";
+export const FanslyCategory = LiteralKit(["posts", "media"]);
+export const FanslyCommandSchema = S.Struct({
+  url: ProfileUrl.pipe(S.mutableKey),
+  action: OnlyFansAction.pipe(S.mutableKey),
+  category: FanslyCategory.pipe(S.withDecodingDefault(Effect.succeed("media")), S.mutableKey),
+});
+export type FanslyCommand = typeof FanslyCommandSchema.Encoded;
+export type FanslyDownload = typeof OnlyFansDownloadSchema.Type;
 
 export function fanslyProfile(value: string): { username: string; profileUrl: string } | null {
   try {
-    const url = new URL(value)
-    const parts = url.pathname.split('/').filter(Boolean)
+    const url = new URL(value);
+    const parts = A.filter(Str.split(url.pathname, "/"), Boolean);
     if (
-      !(
-        ['https:', 'http:'].includes(url.protocol) &&
-        ['fansly.com', 'www.fansly.com'].includes(url.hostname)
-      ) ||
-      url.username ||
-      url.password ||
-      url.port ||
+      !(["https:", "http:"].includes(url.protocol) && ["fansly.com", "www.fansly.com"].includes(url.hostname)) ||
+      (url.username !== undefined && url.username !== null && url.username !== "") ||
+      (url.password !== undefined && url.password !== null && url.password !== "") ||
+      (url.port !== undefined && url.port !== null && url.port !== "") ||
       parts.length < 1 ||
       parts.length > 2 ||
-      (parts.length === 2 && !['posts', 'media'].includes(parts[1]))
+      (parts.length === 2 && !["posts", "media"].includes(parts[1] ?? ""))
     ) {
-      return null
+      return null;
     }
-    const username = parts[0].toLowerCase()
+    const username = Str.toLowerCase(parts[0] ?? "");
     if (
       !/^[a-z0-9_]{1,64}$/.test(username) ||
       /^\d+$/.test(username) ||
       [
-        'home',
-        'login',
-        'signup',
-        'register',
-        'post',
-        'messages',
-        'notifications',
-        'settings',
-        'explore',
-        'search',
-        'subscriptions',
-        'collections'
+        "home",
+        "login",
+        "signup",
+        "register",
+        "post",
+        "messages",
+        "notifications",
+        "settings",
+        "explore",
+        "search",
+        "subscriptions",
+        "collections",
       ].includes(username)
     ) {
-      return null
+      return null;
     }
-    return { username, profileUrl: `https://fansly.com/${username}` }
+    return { username, profileUrl: `https://fansly.com/${username}` };
   } catch {
-    return null
+    return null;
   }
 }
 export function isFanslySite(value: string): boolean {
   try {
-    const host = new URL(value).hostname
-    return host === 'fansly.com' || host.endsWith('.fansly.com')
+    const host = new URL(value).hostname;
+    return host === "fansly.com" || Str.endsWith(".fansly.com")(host);
   } catch {
-    return false
+    return false;
   }
 }

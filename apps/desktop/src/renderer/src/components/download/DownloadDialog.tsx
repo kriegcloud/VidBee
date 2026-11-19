@@ -12,7 +12,7 @@ import {
 } from '@shared/utils/format-preferences'
 import { buildVideoInfoDownloadMetadata } from '@shared/utils/video-info-metadata'
 import type { InstagramProfileCategory, InstagramProfileInspection } from '@vidbee/downloader-core'
-import { FanslyCommandSchema, fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
+import { fanslyProfile } from '@vidbee/downloader-core/fansly-profile'
 import {
   ONE_CLICK_CONTAINER_OPTIONS,
   type OneClickContainerOption,
@@ -27,6 +27,7 @@ import {
   resolveMappedProfileSource
 } from '@vidbee/downloader-core/mapped-profile-source'
 import { resolveSocialSource } from '@vidbee/downloader-core/social-media'
+import { FanslyCommandSchema } from '@vidbee/downloader-core-legacy/fansly-profile'
 import { DownloadContainerSelect } from '@vidbee/ui/components/ui/download-container-select'
 import { useDownloadTransfer } from '@vidbee/ui/components/ui/download-transfer'
 import { IngestDropOverlay } from '@vidbee/ui/components/ui/ingest-drop-overlay'

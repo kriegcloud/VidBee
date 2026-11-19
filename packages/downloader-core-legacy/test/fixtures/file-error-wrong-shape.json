@@ -1,0 +1,55 @@
+{
+  "name": "ZodError",
+  "message": "[\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"profileUrl\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"x\",\n      \"tiktok\",\n      \"redgifs\",\n      \"facebook\",\n      \"vsco\",\n      \"threads\",\n      \"pinterest\",\n      \"snapchat\"\n    ],\n    \"path\": [\n      \"platform\"\n    ],\n    \"message\": \"Invalid option: expected one of \\\"x\\\"|\\\"tiktok\\\"|\\\"redgifs\\\"|\\\"facebook\\\"|\\\"vsco\\\"|\\\"threads\\\"|\\\"pinterest\\\"|\\\"snapchat\\\"\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"owner\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"record\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"categories\"\n    ],\n    \"message\": \"Invalid input: expected record, received undefined\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"updatedAt\"\n    ],\n    \"message\": \"Invalid input: expected number, received undefined\"\n  }\n]",
+  "issues": [
+    {
+      "expected": "string",
+      "code": "invalid_type",
+      "path": [
+        "profileUrl"
+      ],
+      "message": "Invalid input: expected string, received undefined"
+    },
+    {
+      "code": "invalid_value",
+      "values": [
+        "x",
+        "tiktok",
+        "redgifs",
+        "facebook",
+        "vsco",
+        "threads",
+        "pinterest",
+        "snapchat"
+      ],
+      "path": [
+        "platform"
+      ],
+      "message": "Invalid option: expected one of \"x\"|\"tiktok\"|\"redgifs\"|\"facebook\"|\"vsco\"|\"threads\"|\"pinterest\"|\"snapchat\""
+    },
+    {
+      "expected": "string",
+      "code": "invalid_type",
+      "path": [
+        "owner"
+      ],
+      "message": "Invalid input: expected string, received undefined"
+    },
+    {
+      "expected": "record",
+      "code": "invalid_type",
+      "path": [
+        "categories"
+      ],
+      "message": "Invalid input: expected record, received undefined"
+    },
+    {
+      "expected": "number",
+      "code": "invalid_type",
+      "path": [
+        "updatedAt"
+      ],
+      "message": "Invalid input: expected number, received undefined"
+    }
+  ]
+}

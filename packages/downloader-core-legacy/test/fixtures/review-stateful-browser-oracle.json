@@ -1,0 +1,5197 @@
+[
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "undefined"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": null
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": false
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": true
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 0
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 7
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "NaN"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": ""
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueueInstagramProfileDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": "fixture"
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "undefined"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": null
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": false
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": true
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 0
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 7
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "NaN"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": ""
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "downloadSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "ids": [
+            "added"
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "social:x",
+            1
+          ],
+          [
+            "add",
+            {
+              "groupKey": "social:x",
+              "input": {
+                "kind": "social-media",
+                "url": "https://x.com/fixture/tweets",
+                "title": "x: fixture",
+                "options": {
+                  "socialMedia": {
+                    "media": "all",
+                    "scope": "post",
+                    "authorOnly": false,
+                    "expandThreads": false,
+                    "linkedMedia": true,
+                    "slideshowAudio": false,
+                    "maxPosts": 2,
+                    "since": "2026-01-01",
+                    "until": "2026-12-31"
+                  },
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": "fixture"
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "customDownloadPath": "/fixture/out",
+                  "downloadPath": "/fixture/out",
+                  "batchId": "batch",
+                  "batchKind": "social-media",
+                  "batchTitle": "Batch",
+                  "batchCategory": "tweets",
+                  "batchOrder": 1,
+                  "sourceMediaKind": "mixed"
+                }
+              }
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "undefined"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": null
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": false
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": true
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 0
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": 7
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": {
+                        "$review": "NaN"
+                      }
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": ""
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "enqueue.outer",
+    "path": [
+      "input",
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "value": {
+          "groupId": "batch",
+          "username": "fixture",
+          "totalSourceCount": 1,
+          "totalAssetCount": 1,
+          "tasks": [
+            {
+              "downloadId": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "category": "posts",
+              "sourceCount": 1,
+              "assetCount": 1
+            }
+          ]
+        },
+        "trace": [
+          [
+            "cap",
+            "instagram-profile",
+            1
+          ],
+          [
+            "add",
+            {
+              "id": "instagram_item_c33c3481b7a378a572acfdbd1ee9231cfc3a3dc179dbd97c032522d8fbc2ce01",
+              "input": {
+                "url": "https://www.instagram.com/p/ONE/",
+                "kind": "instagram-profile-category",
+                "title": "@fixture · Posts",
+                "thumbnail": {
+                  "$review": "undefined"
+                },
+                "options": {
+                  "type": "video",
+                  "customDownloadPath": "/fixture/out/Instagram/fixture/Posts",
+                  "settings": {
+                    "downloadPath": "/fixture/out",
+                    "cookieSource": {
+                      "type": "file",
+                      "path": "/fixture/cookies",
+                      "browser": "fixture"
+                    },
+                    "browserForCookies": "none",
+                    "cookiesPath": "",
+                    "proxy": "",
+                    "configPath": "",
+                    "downloadSubtitles": false,
+                    "subtitleLanguages": [
+                      "en"
+                    ],
+                    "interfaceLanguage": "en",
+                    "embedSubs": false,
+                    "writeAutoSubs": false,
+                    "embedThumbnail": false,
+                    "embedMetadata": false,
+                    "embedChapters": false,
+                    "filenameStyle": "pretty",
+                    "filenameViaVidBee": false,
+                    "shareWatermark": true,
+                    "downloadWithoutChannelSubfolders": false,
+                    "downloadMirror": "auto"
+                  },
+                  "galleryDlBaseDirectory": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectorySegments": {
+                    "$review": "undefined"
+                  },
+                  "galleryDlDirectoryTemplate": "/fixture/out/Instagram/fixture/Posts",
+                  "galleryDlFilenameTemplate": "{date:%Y-%m-%d}_{media_id}.{extension}",
+                  "expectedAssetCount": 1,
+                  "batchId": "batch",
+                  "batchKind": "instagram-profile",
+                  "batchTitle": "Batch",
+                  "batchCategory": "posts",
+                  "batchOrder": 0,
+                  "batchSourceCount": 1,
+                  "batchAssetCount": 1,
+                  "downloadPath": "/fixture/out/Instagram/fixture/Posts"
+                }
+              },
+              "priority": 0,
+              "groupKey": "instagram-profile",
+              "maxAttempts": 3
+            }
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "mapSocialMediaProfile",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "result": {
+          "complete": false,
+          "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+        },
+        "items": []
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "inspector.inspect",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "inspectionId": "instagram_f16d05ec6b29248d2c61adb1e9263f78e4f7bace1b955014a2d17872cfe4064d",
+        "expiresAt": "<time>",
+        "complete": false,
+        "profile": {
+          "username": "fixture",
+          "profileUrl": "https://www.instagram.com/fixture/"
+        },
+        "categories": [
+          {
+            "category": "highlights",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "posts",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "reels",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "tagged",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          },
+          {
+            "category": "stories",
+            "state": "unscanned",
+            "sourceCount": 0,
+            "assetCount": 0,
+            "items": []
+          }
+        ],
+        "totalSourceCount": 0,
+        "totalAssetCount": 0,
+        "mapping": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.map",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "mapping",
+            "items": [],
+            "error": {
+              "$review": "undefined"
+            }
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "manager.mapAndWait",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "profileUrl": "https://x.com/fixture",
+        "platform": "x",
+        "owner": "fixture",
+        "categories": {
+          "tweets": {
+            "state": "partial",
+            "items": [],
+            "error": "Profile mapping stopped before traversal completed. Saved items were retained."
+          },
+          "media": {
+            "state": "unscanned",
+            "items": []
+          },
+          "with_replies": {
+            "state": "unscanned",
+            "items": []
+          },
+          "highlights": {
+            "state": "unscanned",
+            "items": []
+          },
+          "timeline": {
+            "state": "unscanned",
+            "items": []
+          },
+          "likes": {
+            "state": "unscanned",
+            "items": []
+          },
+          "following": {
+            "state": "unscanned",
+            "items": []
+          },
+          "followers": {
+            "state": "unscanned",
+            "items": []
+          }
+        },
+        "updatedAt": "<time>"
+      }
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "previewSocialMedia",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "error": "Error",
+      "message": "Preview unavailable. Check access and cookies, or start the download to see detailed errors.",
+      "engine": false
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "createDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "id": "<id>",
+        "url": "https://fixture.invalid/video",
+        "title": "Title",
+        "thumbnail": "https://fixture.invalid/image",
+        "type": "video",
+        "status": "pending",
+        "createdAt": "<time>",
+        "duration": 1,
+        "description": "Description",
+        "channel": "Channel",
+        "uploader": "Uploader",
+        "viewCount": 2,
+        "tags": [
+          "tag"
+        ],
+        "selectedFormat": {
+          "formatId": "1",
+          "ext": "mp4",
+          "vcodec": "h264",
+          "acodec": "aac",
+          "width": 1920,
+          "height": 1080,
+          "fps": 30,
+          "filesize": 1,
+          "filesizeApprox": 1,
+          "formatNote": "note",
+          "tbr": 1,
+          "quality": 1,
+          "protocol": "https",
+          "language": "en",
+          "videoExt": "mp4",
+          "audioExt": "m4a"
+        },
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "playlistIndex": 1,
+        "playlistSize": 1,
+        "downloadPath": "<root>",
+        "progress": {
+          "$review": "undefined"
+        }
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": false,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": true,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 0,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": 7,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": null,
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "",
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "startPlaylistDownload",
+    "path": [
+      "settings",
+      "cookieSource",
+      "browser"
+    ],
+    "value": "fixture",
+    "excluded": false,
+    "result": {
+      "value": {
+        "groupId": "<id>",
+        "playlistId": "playlist",
+        "playlistTitle": "Playlist",
+        "type": "video",
+        "totalCount": 1,
+        "startIndex": 1,
+        "endIndex": 1,
+        "entries": [
+          {
+            "downloadId": "<id>",
+            "entryId": "one",
+            "title": "One",
+            "url": "https://fixture.invalid/one",
+            "index": 1
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,3 +1,5 @@
+import { dual } from "effect/Function";
+import * as Str from "effect/String";
 /**
  * Shared yt-dlp format-id selector used by Desktop and Web download dialogs.
  *
@@ -7,43 +9,52 @@
  */
 
 export interface FormatSelectorInput {
-  vcodec?: string
-  acodec?: string
-  ext?: string
+  acodec?: string;
+  ext?: string;
+  vcodec?: string;
 }
 
-export const SINGLE_FORMAT_FALLBACK = 'bestvideo+bestaudio/best'
+export const SINGLE_FORMAT_FALLBACK = "bestvideo+bestaudio/best";
 
 export const isMuxedVideoFormat = (format: FormatSelectorInput | undefined): boolean =>
-  Boolean(format?.vcodec && format.vcodec !== 'none' && format.acodec && format.acodec !== 'none')
+  Boolean(format?.vcodec && format.vcodec !== "none" && format.acodec && format.acodec !== "none");
 
 export const resolvePreferredAudioExt = (videoExt: string | undefined): string | undefined => {
-  if (!videoExt) {
-    return undefined
+  const hasExt = Boolean(videoExt);
+  if (videoExt === undefined || !hasExt) {
+    return undefined;
   }
 
-  const normalizedExt = videoExt.toLowerCase()
-  if (normalizedExt === 'mp4') {
-    return 'm4a'
+  const normalizedExt = Str.toLowerCase(videoExt);
+  if (normalizedExt === "mp4") {
+    return "m4a";
   }
-  if (normalizedExt === 'webm') {
-    return 'webm'
+  if (normalizedExt === "webm") {
+    return "webm";
   }
-  return undefined
-}
+  return undefined;
+};
 
-export const buildSingleVideoFormatSelector = (
-  formatId: string,
-  format: FormatSelectorInput | undefined
-): string => {
-  if (!format || isMuxedVideoFormat(format)) {
-    return `${formatId}/${SINGLE_FORMAT_FALLBACK}`
+const buildSingleVideoFormatSelectorDataFirst = (formatId: string, format: FormatSelectorInput | undefined): string => {
+  const hasFormat = Boolean(format);
+  if (format === undefined || format === null || !hasFormat || isMuxedVideoFormat(format)) {
+    return `${formatId}/${SINGLE_FORMAT_FALLBACK}`;
   }
 
-  const preferredAudioExt = resolvePreferredAudioExt(format.ext)
-  if (!preferredAudioExt) {
-    return `${formatId}+bestaudio/${SINGLE_FORMAT_FALLBACK}`
+  const preferredAudioExt = resolvePreferredAudioExt(format.ext);
+  if (!(preferredAudioExt !== undefined && preferredAudioExt !== null && preferredAudioExt !== "")) {
+    return `${formatId}+bestaudio/${SINGLE_FORMAT_FALLBACK}`;
   }
 
-  return `${formatId}+bestaudio[ext=${preferredAudioExt}]/${formatId}+bestaudio/${SINGLE_FORMAT_FALLBACK}`
-}
+  return `${formatId}+bestaudio[ext=${preferredAudioExt}]/${formatId}+bestaudio/${SINGLE_FORMAT_FALLBACK}`;
+};
+
+export const buildSingleVideoFormatSelector: {
+  (format: FormatSelectorInput | undefined): (formatId: string) => string;
+  (formatId: string, format: FormatSelectorInput | undefined): string;
+} = dual(2, buildSingleVideoFormatSelectorDataFirst);
+
+/** Plain implementations for internal data-first calls. */
+export const DataFirst = {
+  buildSingleVideoFormatSelector: buildSingleVideoFormatSelectorDataFirst,
+};

@@ -1,0 +1,705 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`all browser target-platform path branches and database candidates 1`] = `
+[
+  [
+    "win32",
+    [
+      [
+        "edge",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Microsoft\\Edge\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "chrome",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Google\\Chrome\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Google\\Chrome\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "chromium",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Chromium\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Chromium\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\Chromium\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "brave",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\BraveSoftware\\Brave-Browser\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\BraveSoftware\\Brave-Browser\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\BraveSoftware\\Brave-Browser\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "vivaldi",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Vivaldi\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Vivaldi\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\Vivaldi\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "whale",
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Naver\\Whale\\User Data",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Local\\Naver\\Whale\\User Data\\Default",
+          "C:\\fixture\\home\\AppData\\Local\\Naver\\Whale\\User Data\\Profile 1",
+        ],
+      ],
+      [
+        "opera",
+        [
+          "C:\\fixture\\home\\AppData\\Roaming\\Opera Software\\Opera Stable",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Roaming\\Opera Software\\Opera Stable",
+          "C:\\fixture\\home\\AppData\\Roaming\\Opera Software\\Opera Stable\\Default",
+          "C:\\fixture\\home\\AppData\\Roaming\\Opera Software\\Opera Stable\\Profile 1",
+        ],
+      ],
+      [
+        "firefox",
+        [
+          "C:\\fixture\\home\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles",
+        ],
+        [
+          "C:\\fixture\\home\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles",
+        ],
+      ],
+      [
+        "safari",
+        [],
+        [],
+      ],
+      [
+        "unknown",
+        [],
+        [],
+      ],
+    ],
+  ],
+  [
+    "darwin",
+    [
+      [
+        "edge",
+        [
+          "C:/fixture/home/Library/Application Support/Microsoft Edge",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Microsoft Edge/Default",
+          "C:/fixture/home/Library/Application Support/Microsoft Edge/Profile 1",
+        ],
+      ],
+      [
+        "chrome",
+        [
+          "C:/fixture/home/Library/Application Support/Google/Chrome",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Google/Chrome/Default",
+          "C:/fixture/home/Library/Application Support/Google/Chrome/Profile 1",
+        ],
+      ],
+      [
+        "chromium",
+        [
+          "C:/fixture/home/Library/Application Support/Chromium",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Chromium/Default",
+          "C:/fixture/home/Library/Application Support/Chromium/Profile 1",
+        ],
+      ],
+      [
+        "brave",
+        [
+          "C:/fixture/home/Library/Application Support/BraveSoftware/Brave-Browser",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/BraveSoftware/Brave-Browser/Default",
+          "C:/fixture/home/Library/Application Support/BraveSoftware/Brave-Browser/Profile 1",
+        ],
+      ],
+      [
+        "vivaldi",
+        [
+          "C:/fixture/home/Library/Application Support/Vivaldi",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Vivaldi/Default",
+          "C:/fixture/home/Library/Application Support/Vivaldi/Profile 1",
+        ],
+      ],
+      [
+        "whale",
+        [
+          "C:/fixture/home/Library/Application Support/Whale",
+          "C:/fixture/home/Library/Application Support/Naver Whale",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Whale/Default",
+          "C:/fixture/home/Library/Application Support/Whale/Profile 1",
+          "C:/fixture/home/Library/Application Support/Naver Whale/Default",
+          "C:/fixture/home/Library/Application Support/Naver Whale/Profile 1",
+        ],
+      ],
+      [
+        "opera",
+        [
+          "C:/fixture/home/Library/Application Support/com.operasoftware.Opera",
+          "C:/fixture/home/Library/Application Support/Opera Software/Opera Stable",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/com.operasoftware.Opera",
+          "C:/fixture/home/Library/Application Support/com.operasoftware.Opera/Default",
+          "C:/fixture/home/Library/Application Support/com.operasoftware.Opera/Profile 1",
+          "C:/fixture/home/Library/Application Support/Opera Software/Opera Stable",
+          "C:/fixture/home/Library/Application Support/Opera Software/Opera Stable/Default",
+          "C:/fixture/home/Library/Application Support/Opera Software/Opera Stable/Profile 1",
+        ],
+      ],
+      [
+        "firefox",
+        [
+          "C:/fixture/home/Library/Application Support/Firefox/Profiles",
+        ],
+        [
+          "C:/fixture/home/Library/Application Support/Firefox/Profiles",
+        ],
+      ],
+      [
+        "safari",
+        [
+          "C:/fixture/home/Library/Safari",
+        ],
+        [
+          "C:/fixture/home/Library/Safari",
+        ],
+      ],
+      [
+        "unknown",
+        [],
+        [],
+      ],
+    ],
+  ],
+  [
+    "linux",
+    [
+      [
+        "edge",
+        [
+          "C:/fixture/home/.config/microsoft-edge",
+        ],
+        [
+          "C:/fixture/home/.config/microsoft-edge/Default",
+          "C:/fixture/home/.config/microsoft-edge/Profile 1",
+        ],
+      ],
+      [
+        "chrome",
+        [
+          "C:/fixture/home/.config/google-chrome",
+        ],
+        [
+          "C:/fixture/home/.config/google-chrome/Default",
+          "C:/fixture/home/.config/google-chrome/Profile 1",
+        ],
+      ],
+      [
+        "chromium",
+        [
+          "C:/fixture/home/.config/chromium",
+        ],
+        [
+          "C:/fixture/home/.config/chromium/Default",
+          "C:/fixture/home/.config/chromium/Profile 1",
+        ],
+      ],
+      [
+        "brave",
+        [
+          "C:/fixture/home/.config/BraveSoftware/Brave-Browser",
+        ],
+        [
+          "C:/fixture/home/.config/BraveSoftware/Brave-Browser/Default",
+          "C:/fixture/home/.config/BraveSoftware/Brave-Browser/Profile 1",
+        ],
+      ],
+      [
+        "vivaldi",
+        [
+          "C:/fixture/home/.config/vivaldi",
+        ],
+        [
+          "C:/fixture/home/.config/vivaldi/Default",
+          "C:/fixture/home/.config/vivaldi/Profile 1",
+        ],
+      ],
+      [
+        "whale",
+        [
+          "C:/fixture/home/.config/naver-whale",
+        ],
+        [
+          "C:/fixture/home/.config/naver-whale/Default",
+          "C:/fixture/home/.config/naver-whale/Profile 1",
+        ],
+      ],
+      [
+        "opera",
+        [
+          "C:/fixture/home/.config/opera",
+        ],
+        [
+          "C:/fixture/home/.config/opera",
+          "C:/fixture/home/.config/opera/Default",
+          "C:/fixture/home/.config/opera/Profile 1",
+        ],
+      ],
+      [
+        "firefox",
+        [
+          "C:/fixture/home/.mozilla/firefox",
+        ],
+        [
+          "C:/fixture/home/.mozilla/firefox",
+        ],
+      ],
+      [
+        "safari",
+        [],
+        [],
+      ],
+      [
+        "unknown",
+        [],
+        [],
+      ],
+    ],
+  ],
+  [
+    "freebsd",
+    [
+      [
+        "edge",
+        [],
+        [],
+      ],
+      [
+        "chrome",
+        [],
+        [],
+      ],
+      [
+        "chromium",
+        [],
+        [],
+      ],
+      [
+        "brave",
+        [],
+        [],
+      ],
+      [
+        "vivaldi",
+        [],
+        [],
+      ],
+      [
+        "whale",
+        [],
+        [],
+      ],
+      [
+        "opera",
+        [],
+        [],
+      ],
+      [
+        "firefox",
+        [
+          "C:/fixture/home/.mozilla/firefox",
+        ],
+        [
+          "C:/fixture/home/.mozilla/firefox",
+        ],
+      ],
+      [
+        "safari",
+        [],
+        [],
+      ],
+      [
+        "unknown",
+        [],
+        [],
+      ],
+    ],
+  ],
+]
+`;
+
+exports[`audio output naming matrix and runtime arguments preserve caller order 1`] = `
+[
+  [
+    "--no-playlist",
+    "--no-mtime",
+    "--encoding",
+    "utf-8",
+    "--no-allow-unplayable-formats",
+    "-f",
+    "bestaudio",
+    "--download-sections",
+    "*1:02-2:03",
+    "--no-write-subs",
+    "--no-write-auto-subs",
+    "--no-embed-subs",
+    "--no-embed-thumbnail",
+    "--embed-metadata",
+    "--embed-chapters",
+    "-o",
+    "/fallback/%(extractor)s_%(id)s_audio.%(ext)s",
+    "--continue",
+    "--no-playlist-reverse",
+    "--print",
+    "after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s",
+    "--print",
+    "before_dl:VIDBEE_VISIBILITY:%(availability)s",
+    "--print",
+    "before_dl:VIDBEE_DURATION:%(duration)s",
+    "--no-quiet",
+    "--trim-filenames",
+    "120",
+    "--retries",
+    "30",
+    "--fragment-retries",
+    "30",
+    "--extractor-retries",
+    "10",
+    "--retry-sleep",
+    "2",
+    "--retry-sleep",
+    "extractor:2",
+    "--socket-timeout",
+    "30",
+    "--ignore-config",
+    "--extractor-args",
+    "youtube:player_client=default,-web",
+    "--limit-rate",
+    "1M",
+    "--retries",
+    "1",
+    "https://www.youtube.com/watch?v=fixture",
+  ],
+  [
+    "--no-playlist",
+    "--no-mtime",
+    "--encoding",
+    "utf-8",
+    "--no-allow-unplayable-formats",
+    "-f",
+    "bestaudio",
+    "--download-sections",
+    "*1:02-2:03",
+    "--no-write-subs",
+    "--no-write-auto-subs",
+    "--no-embed-subs",
+    "--no-embed-thumbnail",
+    "--embed-metadata",
+    "--embed-chapters",
+    "-o",
+    "/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s.%(ext)s",
+    "--continue",
+    "--no-playlist-reverse",
+    "--print",
+    "after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s",
+    "--print",
+    "before_dl:VIDBEE_VISIBILITY:%(availability)s",
+    "--print",
+    "before_dl:VIDBEE_DURATION:%(duration)s",
+    "--no-quiet",
+    "--trim-filenames",
+    "120",
+    "--retries",
+    "30",
+    "--fragment-retries",
+    "30",
+    "--extractor-retries",
+    "10",
+    "--retry-sleep",
+    "2",
+    "--retry-sleep",
+    "extractor:2",
+    "--socket-timeout",
+    "30",
+    "--ignore-config",
+    "--extractor-args",
+    "youtube:player_client=default,-web",
+    "--limit-rate",
+    "1M",
+    "--retries",
+    "1",
+    "https://www.youtube.com/watch?v=fixture",
+  ],
+  [
+    "--no-playlist",
+    "--no-mtime",
+    "--encoding",
+    "utf-8",
+    "--no-allow-unplayable-formats",
+    "-f",
+    "bestaudio",
+    "--download-sections",
+    "*1:02-2:03",
+    "--no-write-subs",
+    "--no-write-auto-subs",
+    "--no-embed-subs",
+    "--no-embed-thumbnail",
+    "--embed-metadata",
+    "--embed-chapters",
+    "-o",
+    "/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(extractor)s).%(ext)s",
+    "--continue",
+    "--no-playlist-reverse",
+    "--print",
+    "after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s",
+    "--print",
+    "before_dl:VIDBEE_VISIBILITY:%(availability)s",
+    "--print",
+    "before_dl:VIDBEE_DURATION:%(duration)s",
+    "--no-quiet",
+    "--trim-filenames",
+    "120",
+    "--retries",
+    "30",
+    "--fragment-retries",
+    "30",
+    "--extractor-retries",
+    "10",
+    "--retry-sleep",
+    "2",
+    "--retry-sleep",
+    "extractor:2",
+    "--socket-timeout",
+    "30",
+    "--ignore-config",
+    "--extractor-args",
+    "youtube:player_client=default,-web",
+    "--limit-rate",
+    "1M",
+    "--retries",
+    "1",
+    "https://www.youtube.com/watch?v=fixture",
+  ],
+  [
+    "--no-playlist",
+    "--no-mtime",
+    "--encoding",
+    "utf-8",
+    "--no-allow-unplayable-formats",
+    "-f",
+    "bestaudio",
+    "--download-sections",
+    "*1:02-2:03",
+    "--no-write-subs",
+    "--no-write-auto-subs",
+    "--no-embed-subs",
+    "--no-embed-thumbnail",
+    "--embed-metadata",
+    "--embed-chapters",
+    "-o",
+    "/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(extractor)s, %(id)s).%(ext)s",
+    "--continue",
+    "--no-playlist-reverse",
+    "--print",
+    "after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s",
+    "--print",
+    "before_dl:VIDBEE_VISIBILITY:%(availability)s",
+    "--print",
+    "before_dl:VIDBEE_DURATION:%(duration)s",
+    "--no-quiet",
+    "--trim-filenames",
+    "120",
+    "--retries",
+    "30",
+    "--fragment-retries",
+    "30",
+    "--extractor-retries",
+    "10",
+    "--retry-sleep",
+    "2",
+    "--retry-sleep",
+    "extractor:2",
+    "--socket-timeout",
+    "30",
+    "--ignore-config",
+    "--extractor-args",
+    "youtube:player_client=default,-web",
+    "--limit-rate",
+    "1M",
+    "--retries",
+    "1",
+    "https://www.youtube.com/watch?v=fixture",
+  ],
+]
+`;
+
+exports[`exact guidance strings and time-range validation errors 1`] = `
+[
+  [
+    "Error",
+    "This URL points to a single media segment. Paste the original video page URL instead.",
+  ],
+  [
+    "Error",
+    "OnlyFans requires the dedicated browser session. Open the OnlyFans profile in VidBeep, choose Open browser, sign in there, and map its photos or videos. Imported Chrome cookies are not used for OnlyFans.",
+  ],
+  [
+    "Error",
+    "Open the Fansly profile in VidBeep and map it using the dedicated browser session.",
+  ],
+  [
+    "Error",
+    "Invalid start time. Use seconds, MM:SS, or HH:MM:SS.",
+  ],
+  [
+    "Error",
+    "End time must be later than start time.",
+  ],
+  [
+    "Error",
+    "Invalid end time. Use seconds, MM:SS, or HH:MM:SS.",
+  ],
+]
+`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: auth-config 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","chrome:Default","--cookies","/fixture/cookies.txt","--proxy","http://proxy.invalid:8080","--config-location","<HOME>/fixture.conf","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--proxy","http://proxy.invalid:8080","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","chrome:Default","--cookies","/fixture/cookies.txt","--config-location","<HOME>/fixture.conf","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--proxy","http://proxy.invalid:8080","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","chrome:Default","--cookies","/fixture/cookies.txt","--config-location","<HOME>/fixture.conf","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--proxy","http://proxy.invalid:8080","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","chrome:Default","--cookies","/fixture/cookies.txt","--config-location","<HOME>/fixture.conf","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":["--cookies-from-browser","chrome:Default","--cookies","/fixture/cookies.txt","--proxy","http://proxy.invalid:8080"]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: basic 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: classic 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(extractor)s_%(id)s_%(width)sx%(height)s_%(vcodec)s via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: defaults 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: embed-all 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: embed-none 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--no-embed-metadata","--no-embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: empty 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: naming 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: nerdy 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s, %(id)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: pretty 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: subs-sidecar 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","zh-Hans,zh,zh-CN,zh_CN,zho,chi,en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--no-write-auto-subs","--write-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--no-write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > all four yt-dlp builders and gallery runtime: subtitles-off 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--js-runtimes","node:/fixture/node","https://www.youtube.com/watch?v=fixture"],"video":["-j","--no-playlist","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"captions":["--skip-download","--write-info-json","--sub-format","vtt/srt/ttml/best","--no-playlist","--no-warnings","--encoding","utf-8","-o","/caption/%(id)s","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,zh-CN","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","--extra","https://www.youtube.com/watch?v=fixture"],"gallery":[]}"`;
+
+exports[`pre-port exact argument arrays > download option audio 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestaudio","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option audio-format 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","140","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option audio-id 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","137+140/bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option audio-multi 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","137+140+251","--audio-multistreams","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option auto 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option custom-output 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/override/unsafe/name---/%(id)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option direct-image 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://fixture.invalid/image.jpg"]"`;
+
+exports[`pre-port exact argument arrays > download option direct-video 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://fixture.invalid/video.mp4"]"`;
+
+exports[`pre-port exact argument arrays > download option end 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--download-sections","*0-01:02","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option existing-fallback 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","137/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option mkv 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mkv","--remux-video","mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option mp4 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4","--remux-video","mp4","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option original 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option range 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--download-sections","*2-5","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option single-format 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","22+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option start 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--download-sections","*00:02-","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option video-only 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","137","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--embed-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > download option webm 1`] = `"["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","webm","--remux-video","webm","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--write-thumbnail","--embed-metadata","--embed-chapters","-o","/configured/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--extractor-args","youtube:player_client=default,-web","https://www.youtube.com/watch?v=fixture"]"`;
+
+exports[`pre-port exact argument arrays > home, FFmpeg, sanitization, quoting and cookie-profile helpers 1`] = `"{"home":["<HOME>","<HOME>/b","<HOME>/file",null,"~other/file"],"ffmpeg":"/fixture/bin","filename":"a---/b--/%(title)s","command":"yt-dlp \\"\\" \\"a b\\" \\"x\\\\\\"y\\" \\"x'y\\" \\"a\\\\\\\\b\\" $literal","cookies":["none","safari","firefox:profile","chrome:Default"]}"`;
+
+exports[`pre-port exact argument arrays > injected platform darwin 1`] = `
+[
+  "--trim-filenames",
+  "120",
+]
+`;
+
+exports[`pre-port exact argument arrays > injected platform darwin 2`] = `"{"base":["/fixture/home/Library/Application Support/Google/Chrome"],"candidates":["C:\\\\Fixture\\\\a\\\\../Library/Application Support/com.operasoftware.Opera","C:\\\\Fixture\\\\a\\\\../Library/Application Support/com.operasoftware.Opera/Default","C:\\\\Fixture\\\\a\\\\../Library/Application Support/com.operasoftware.Opera/Profile 1","C:\\\\Fixture\\\\a\\\\../Library/Application Support/Opera Software/Opera Stable","C:\\\\Fixture\\\\a\\\\../Library/Application Support/Opera Software/Opera Stable/Default","C:\\\\Fixture\\\\a\\\\../Library/Application Support/Opera Software/Opera Stable/Profile 1"]}"`;
+
+exports[`pre-port exact argument arrays > injected platform freebsd 1`] = `[]`;
+
+exports[`pre-port exact argument arrays > injected platform freebsd 2`] = `"{"base":[],"candidates":[]}"`;
+
+exports[`pre-port exact argument arrays > injected platform linux 1`] = `
+[
+  "--trim-filenames",
+  "120",
+]
+`;
+
+exports[`pre-port exact argument arrays > injected platform linux 2`] = `"{"base":["/fixture/home/.config/google-chrome"],"candidates":["C:\\\\Fixture\\\\a\\\\../.config/opera","C:\\\\Fixture\\\\a\\\\../.config/opera/Default","C:\\\\Fixture\\\\a\\\\../.config/opera/Profile 1"]}"`;
+
+exports[`pre-port exact argument arrays > injected platform win32 1`] = `
+[
+  "--windows-filenames",
+  "--trim-filenames",
+  "120",
+]
+`;
+
+exports[`pre-port exact argument arrays > injected platform win32 2`] = `"{"base":["\\\\fixture\\\\home\\\\AppData\\\\Local\\\\Google\\\\Chrome\\\\User Data"],"candidates":["C:\\\\Fixture\\\\AppData\\\\Roaming\\\\Opera Software\\\\Opera Stable","C:\\\\Fixture\\\\AppData\\\\Roaming\\\\Opera Software\\\\Opera Stable\\\\Default","C:\\\\Fixture\\\\AppData\\\\Roaming\\\\Opera Software\\\\Opera Stable\\\\Profile 1"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://dzen.ru/fixture auth=false 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--no-write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://dzen.ru/fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","--abort-on-error","https://dzen.ru/fixture"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://dzen.ru/fixture auth=true 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://dzen.ru/fixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","--abort-on-error","https://dzen.ru/fixture"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://tiktok.com/@fixture/video/123456 auth=false 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://tiktok.com/@fixture/video/123456"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://tiktok.com/@fixture/video/123456"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://tiktok.com/@fixture/video/123456 auth=true 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://tiktok.com/@fixture/video/123456"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://tiktok.com/@fixture/video/123456"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://twitch.tv/videos/123 auth=false 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://twitch.tv/videos/123"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://twitch.tv/videos/123"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://twitch.tv/videos/123 auth=true 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng","--sleep-subtitles","1","--write-auto-subs","--write-subs","--embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://twitch.tv/videos/123"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://twitch.tv/videos/123"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://www.bilibili.com/video/BVfixture auth=false 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--no-write-subs","--no-write-auto-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://www.bilibili.com/video/BVfixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--ignore-config","https://www.bilibili.com/video/BVfixture"]}"`;
+
+exports[`pre-port exact argument arrays > source-specific https://www.bilibili.com/video/BVfixture auth=true 1`] = `"{"download":["--no-playlist","--no-mtime","--encoding","utf-8","--no-allow-unplayable-formats","-f","bestvideo+bestaudio/best","--merge-output-format","mp4/mkv","--sub-langs","en,en-US,en_US,en-GB,en_GB,eng,ai-en","--sleep-subtitles","1","--write-auto-subs","--write-subs","--no-embed-subs","--no-embed-thumbnail","--embed-metadata","--embed-chapters","-o","/fallback/%(title)s - %(uploader,creator,channel,uploader_id)s (%(height)sp, %(vcodec)s, %(extractor)s) via VidBeep.%(ext)s","--continue","--no-playlist-reverse","--print","after_move:__VIDBEE_OUTPUT_PATH__:%(filepath)s","--print","before_dl:VIDBEE_VISIBILITY:%(availability)s","--print","before_dl:VIDBEE_DURATION:%(duration)s","--no-quiet","--trim-filenames","120","--retries","30","--fragment-retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://www.bilibili.com/video/BVfixture"],"playlist":["-J","--flat-playlist","--ignore-errors","--no-warnings","--encoding","utf-8","--retries","30","--extractor-retries","10","--retry-sleep","2","--retry-sleep","extractor:2","--socket-timeout","30","--cookies-from-browser","firefox:profile","--ignore-config","https://www.bilibili.com/video/BVfixture"]}"`;
