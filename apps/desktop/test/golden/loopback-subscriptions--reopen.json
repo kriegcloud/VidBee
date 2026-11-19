@@ -1,0 +1,55 @@
+{
+  "subscriptions": [
+    {
+      "status": 200,
+      "body": {
+        "id": "<id:1>",
+        "title": "Loopback automatic A",
+        "sourceUrl": "http://127.0.0.1:<port>/subscriptions-core/site",
+        "feedUrl": "http://127.0.0.1:<port>/subscriptions-core/auto.xml",
+        "platform": "custom",
+        "keywords": [],
+        "tags": ["loopback", "science"],
+        "onlyDownloadLatest": false,
+        "autoDownload": true,
+        "enabled": false,
+        "status": "up-to-date",
+        "createdAt": "<timestamp>",
+        "updatedAt": "<timestamp>",
+        "sourceKind": "feed",
+        "categories": [],
+        "coverUrl": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+        "latestVideoTitle": "River retained",
+        "latestVideoPublishedAt": 1735819200000,
+        "lastCheckedAt": "<timestamp>",
+        "lastSuccessAt": "<timestamp>",
+        "downloadDirectory": "<run>/subscription-downloads",
+        "namingTemplate": "%(id)s.%(ext)s",
+        "downloadType": "video",
+        "downloadQuality": "best",
+        "items": [
+          {
+            "id": "automatic-retained",
+            "url": "http://127.0.0.1:<port>/subscriptions-core/automatic-retained.mp4",
+            "title": "River retained",
+            "publishedAt": 1735819200000,
+            "addedToQueue": true,
+            "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png",
+            "taskId": "<id:2>"
+          },
+          {
+            "id": "automatic-dropped",
+            "url": "http://127.0.0.1:<port>/subscriptions-core/automatic-dropped.mp4",
+            "title": "Forest dropped",
+            "publishedAt": 1735732800000,
+            "addedToQueue": false,
+            "thumbnail": "http://127.0.0.1:<port>/subscriptions-core/cover.png"
+          }
+        ]
+      }
+    }
+  ],
+  "samePhysicalDatabase": true,
+  "orphanReconciled": true,
+  "validLinkRetained": true
+}

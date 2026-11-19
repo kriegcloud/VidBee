@@ -1,0 +1,37 @@
+{
+  "response": {
+    "valid": false,
+    "error": "Unexpected close tag\nLine: 0\nColumn: 548\nChar: >",
+    "downloadsTested": false
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/failed-discovery.html",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    },
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/candidate-1.xml",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    },
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/candidate-2.xml",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    },
+    {
+      "method": "GET",
+      "path": "/subscriptions-core/candidate-3.xml",
+      "revision": null,
+      "status": 200,
+      "completed": true
+    }
+  ]
+}

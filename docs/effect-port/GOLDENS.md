@@ -80,8 +80,8 @@ success proof. See the report and the `COVERAGE_GAPS` export for the exact limit
 
 `--models <directory>` copies the supplied model directory into the fixture's
 `models/` directory. Its input should therefore contain the `transcription/`
-subdirectory expected by the app. A successful local-ASR golden is not implemented
-yet; supplying models does not establish transcription success. The suite reports
+subdirectory expected by the app. Real-ASR scenarios require the CPU-only build prerequisite below and compare
+the recorded transcript, lifecycle and restart documents with supplied models. The suite reports
 a local-ASR skip when models are absent.
 
 ## Normalization rules
@@ -235,3 +235,253 @@ The download suite deliberately omits the stalled-download watchdog case: its
 running threshold is 60 seconds and no public preference lowers it. A server
 contract test still proves the stall route and connection cleanup. Remote-media
 extractors, authenticated sites, live ASR and hosted CI remain outside this proof.
+
+## Offline subscription cases (phase 6a)
+
+`subscriptions-core-fixture.mjs` generates fixed RSS 2.0, Atom and HTML discovery
+inputs; `subscriptions-core-loopback.mjs` handles their explicit routes before
+`loopback.mjs`'s media fallback. It replaces only the fixture origin with the
+namespace-local numeric address. Publication dates, GUIDs, titles, cover and item
+links are fixed. Revision B keeps the retained identity, drops the older identity
+and adds a newer one. Discovery includes relative, duplicate, invalid,
+credential-bearing and more-than-three candidates. Candidate failures and
+malformed XML remain real parser failures. No external service is involved.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --subscriptions-only --subset loopback-subscriptions
+bunx --bun vitest run apps/desktop/scripts/port/golden/subscriptions-core.test.mjs
+```
+
+`--subscriptions-only` skips the original and download scenarios, while retaining
+bootstrap and same-physical-profile restart. A normal full invocation appends the
+subscription scenario after the download scenario. Package-specific helpers and
+18 new documents live under `subscriptions-core-*` and
+`loopback-subscriptions--*`; existing documents remain unchanged.
+
+To add one of these cases, use public MCP tools or automation HTTP routes. Create
+disabled subscriptions so creation probing and periodic scheduling cannot consume
+the intended first refresh. Every explicit refresh takes a request-log cursor
+immediately before its public call, awaits a completed XML response after that
+cursor, awaits the public result, then checks successful persisted processing.
+Later refreshes must advance last-success time. The same subscription is used
+for revision and no-duplicate scenarios. A monotonic 30.5-second deadline starts
+at completion of each initial public refresh, so the real 30-second scheduler
+dedupe interval has elapsed; the waits overlap across subscriptions. Do not replace
+this with an empty subscription or restart. Task polling has bounded deadlines;
+SSE subscriptions start before admission.
+
+Goldens retain full item arrays/order, configuration, statuses, parser errors,
+queue links, automation task input/options/priority/group, task lifecycle,
+history, physical output filenames and file sizes. As with download cases,
+progress values and log strings are retained only in raw evidence; their ordered
+field names remain pinned. `normalizeSubscriptionClocks` replaces only numeric
+`lastCheckedAt` and `lastSuccessAt` fields with `<timestamp>`. It preserves null
+and missing fields, feed publication dates and latest-publication metadata. All
+other normalization uses the existing named rules. Request sequence cursors are
+asserted but omitted from the document projection; matching method/path/revision,
+HTTP status and completed-response evidence remain pinned.
+
+The renderer smoke sets an explicit 1280×900 CDP viewport and waits for a
+successful item title, selecting a visible subscription button if needed;
+it rejects renderer exceptions and console errors and keeps a screenshot in
+scratch. Output uses an exact short alias into the run's physical
+`subscription-downloads/`; it is removed in `finally`. After the app stops,
+`subscriptions-core-restart-fixture.mjs` changes exactly one synthetic item's link
+to a fixed nonexistent task ID and recreates the output alias as a symlink for
+startup. The runner removes it after the restarted app stops. Startup must clear
+that orphan while retaining
+the other valid link. Reopen also checks the database device/inode matches the
+original physical profile. No explicit refresh or server restart substitutes for
+startup reconciliation.
+
+Raw requests/responses, events, XML request log, renderer evidence and restart
+setup remain under the run's `subscriptions-core/` directory. The report
+[records baseline findings and acceptance evidence](reports/6a-goldens.md).
+
+## Browser capture pre-port cases (phase 6b)
+
+The package-specific files `browser-capture-fixture.mjs`,
+`browser-capture-loopback.mjs`, `browser-capture-cdp.mjs` and
+`browser-capture-cases.mjs` own these additions. Shared harness files contain
+registration only. The optional sixth offline-launcher argument sources the
+owned `browser-capture-display.sh` inside the offline namespace before app
+startup, providing a throwaway Xvfb display for dedicated profile Chromium.
+The original five-argument launch contract is unchanged.
+
+The fixture builder writes thirteen synthetic saved inventories: one creator,
+six chat/gallery routes, five purchased routes and one Fansly creator. It also
+writes malformed JSON that list must omit. Saved `mapping` state must recover as
+`partial`; unknown outer/item keys must disappear and omitted `downloaded`
+defaults to false. Renderer observations invoke the existing
+`window.electron.ipcRenderer.invoke('download.<method>', ...)` bridge, exactly
+as `electron-ipc-decorator`'s renderer proxy does. No main-process service is
+imported by a golden case.
+
+Bundled ffmpeg generates 24-second landscape, portrait and video-only media.
+The separate loopback server serves deterministic HTML, a DRM-marked DASH
+manifest, and clear media with fixed MIME/length/Last-Modified, HEAD, ranges and
+request logs. The candidate HTML declares the DRM manifest statically but
+selects clear loopback playback through JavaScript. Automation add bypasses
+metadata hydration so the actual primary extractor can reach DRM failure and
+select the actual capture executor. All traffic remains inside the existing
+offline namespace.
+
+```sh
+bun run test:golden --build /path/to/pre-port/linux-unpacked --loopback-only --subset browser-capture
+bunx --bun vitest run apps/desktop/scripts/port/golden/browser-capture.test.mjs
+```
+
+The new cases execute after loopback downloads, with profile-list restart cases
+after the existing same-physical-profile restart. `--subset` retains its original
+comparison-filter meaning. Recording with `--update --subset browser-capture`
+must never rewrite existing golden files. Cases require executable host
+`/usr/bin/Xvfb`, `/usr/bin/chromium`, `/usr/bin/pactl` and `/usr/bin/xdpyinfo`;
+when absent, both new observation phases print a clear SKIP. Local acceptance
+requires these prerequisites and no skips. Binary/version receipts are retained
+in `run/browser-capture/configuration.json`.
+
+Pause and cancel subscribe to SSE before admission and require a new clear-media
+GET after the request-log cursor plus positive public capture progress. Task
+snapshots use the existing narrow loopback projection: only progress values and
+log text are excluded; raw MCP/IPC/HTTP answers and all SSE events stay in
+`browser-capture/raw.json` and `events.json`. A short per-run symlink to the
+physical run downloads directory is an exact known-root normalization, removed
+in cleanup. There are no new general normalization rules.
+
+The baseline reaches fallback and playback but its bundled ffmpeg rejects the
+recorder's input `-thread_queue_size` argument. It therefore produces no recording
+file. The report distinguishes this observed failure from success; no fabricated
+recording bounds or unchecked size/duration placeholders are accepted. A future
+recording-success golden requires a separately reviewed baseline repair and
+repeated pre-port measurements establishing the design's structural contract.
+See [the phase report](reports/6b-goldens.md) for the precise proof gaps.
+
+`--browser-capture-only --subset browser-capture` is an independent scenario:
+it skips the original and download cases, pins the same relevant settings and
+retains the normal same-physical-profile restart. Full runs still execute every
+original case. Launches also give app processes a run-owned temporary directory
+through a short `/tmp/vgb.*/root` alias, avoiding Chromium's Unix socket path
+limit on deep scratch paths. The exact alias root normalizes to `<run>/tmp` and
+is removed during launcher cleanup. The worker exits after awaited case cleanup,
+evidence writes and stdout flushing, matching the existing CDP entrypoint's
+process boundary; this avoids a referenced CDP/Undici TCP socket delaying exit.
+
+The separately pinned unavailable-host configuration uses the existing
+`VIDBEE_BROWSER_CAPTURE=0` switch. After a primary run has generated its synthetic
+`seed/`, compare it with:
+
+```sh
+node apps/desktop/scripts/port/golden/browser-capture-unavailable.mjs --build /path/to/baseline/linux-unpacked --scratch /path/to/scratch --seed /path/to/owned-suite/seed
+```
+
+This companion runs inside a fresh offline namespace, writes its own request,
+SSE and raw-answer evidence, and compares `browser-capture--unavailable.json`.
+It does not import application services or mutate the baseline. It is a separate
+host-configuration gate; the ordinary full invocation still has 407 documents.
+The final clear playback fixture uses the generated video-only input; the report
+retains the audio/video run's watchdog failure and its proof limits.
+
+## Transcription baseline scenarios (phase 6c)
+
+The transcription harness is isolated in `transcription-*.mjs` files. The pinned
+external set is described by `transcription-models.json`, which records every
+model-relative file and SHA-256. Before each supplied-model invocation,
+`verifyTranscriptionModels` rejects added, missing, changed and non-regular files.
+The verified manifest is retained in that invocation's evidence directory. Supply
+the directory containing `transcription/`; weights are never downloaded by this
+harness or committed. Speech is read from the external set's Whisper tiny
+`test_wavs/0.wav`; the separately supplied sample has identical bytes. Its
+redistribution rights were not established, so speech bytes stay external.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models --loopback-only --subset transcription
+```
+
+A complete invocation with `--models` first compares all original documents on
+a profile without supplied models, then launches a separate supplied-model
+scenario. This matters because the original model-status golden explicitly pins
+models absent. Each child uses the same read-only build and disposable offline
+launch mechanism. The combined evidence directory records both children and a
+combined result. `--update` in this complete mode applies only to new transcription
+documents; the original documents still compare. A direct isolated supplied-model
+invocation uses `--loopback-only --subset transcription`.
+
+Real-ASR acceptance requires a **build-level CPU-only runtime check**, once in
+each supplied-model scenario before its first app launch or transcription case.
+`transcription-cpu.mjs` reads
+`resources/app.asar.unpacked/node_modules/sherpa-onnx-linux-x64` in the build under
+test and requires exactly these six regular files: `index.js`, `libonnxruntime.so`,
+`libsherpa-onnx-c-api.so`, `libsherpa-onnx-cxx-api.so`, `package.json`, and
+`sherpa-onnx.node`. Any additional entry (including `libonnxruntime_providers_*`
+or another library name), directory, symlink or missing entry fails with a clear
+CPU-build prerequisite error. The receipt is `transcription-cpu-build.json`.
+This pinned inventory contains no loadable accelerator execution-provider library.
+The check is deliberately specific to this Linux x64 runtime; an upstream package
+layout change needs an explicit inventory review.
+
+Every `Available providers:` line in observed task logs must list only
+`CPUExecutionProvider`; a non-CPU or malformed list fails. A task without that
+line passes. The observed fallback diagnostic is
+`Available providers: CPUExecutionProvider, . Fallback to cpu!`.
+The nominal `compute.provider` label is not an execution assertion: the baseline's
+fallback detector misses “Fallback”, and its benchmark can choose either `cpu`
+or `cuda` while both run on CPU. That bug is preserved under A2. No probe override
+or application change is made.
+
+The orchestrator's first native-evidence rule required a diagnostic per task.
+Part 3 replaces it because CPU-selected workers and paths that never initialize
+a recognizer do not print the diagnostic. CPU execution is established by the
+runtime build, with provider-list validation when a task prints one. Per-task
+`cpuEvidence` is neither required nor included in compared documents. Missing
+models still print the clear local-ASR skip; hosted omission is not local ASR proof.
+See [the phase report](reports/6c-goldens.md) for recording/repeat results.
+
+The named **transcription provider benchmark race** normalization applies only to
+`transcription/` documents, before the existing normalization rules:
+
+| Field | Exact transformation |
+| --- | --- |
+| `provider` string equal to `cpu`, `cuda`, `directml` or `coreml` | `<provider>` (the snapshot's app-reported execution-provider label) |
+| `log` line beginning `compute.provider=` | Replace only its provider token with `<provider>` |
+| `log` line beginning `compute.probe=` | Replace its provider token with `<provider>` and the named `durationMs=` token with `<probe-duration>` |
+| `log` line beginning `compute.provider=`, with `reason=accelerator-faster` or `reason=cpu-faster-or-within-margin` | Replace that reason token with `<benchmark-choice>`; preserve candidate list and all other text |
+
+No other reason, probe error, native diagnostic, transcript text, words, timing,
+speaker, media duration, status, attempt, filename or error text is altered by
+this additional rule. Existing generated-ID/path/runtime-timestamp rules still
+apply. The task snapshot already projects away raw `progress` and `log` as in
+part 1; raw wire answers retain both. Consequently current snapshots exercise
+the top-level `provider` branch; log branches cover compared log documents if
+added later. The existing two model-management documents have no matching fields
+and remain byte-for-byte unchanged. No native diagnostic is normalized.
+
+For independent model-management comparisons,
+add `--transcription-contract-only`. This explicitly restricted selector pins
+model readiness and the final already-installed minimal-tier ensure task. It
+performs no ASR and does not establish CPU, transcript, cancellation or restart
+parity. It can be combined with a complete invocation to retain the original
+suite proof, or isolated with `--loopback-only --subset transcription`.
+
+To add a real-ASR case, first characterize the pre-port packaged app through
+public MCP/automation APIs and retain raw answers, events and request logs.
+Subscribe to public events before admission, follow the exact admitted task ID,
+and poll bounded conditions. Do not use an earlier completed child to satisfy a
+new transcription wait. Require the build-level CPU check and validate any native
+provider lists before writing or comparing worker answers. Keep text, words, speaker output, media
+durations and lifecycle states meaningful. Only the named provider benchmark race
+is normalized. An unstable transcript or lifecycle value is a finding and
+disqualifies the case. Record only cases that can pass the required repeat gate;
+retain unaccepted explorations in scratch.
+
+`VIDBEE_TRANSCRIPTION_EXPLORE=1` is a diagnostic mode for public-surface
+characterization: it does not write transcription goldens and still enforces the
+CPU-build and native provider-list prerequisites. Normalized diagnostic snapshots
+are written only to scratch `actual/`; no expected documents are written or compared. Results from that mode are never
+ASR acceptance. Run the ordinary strict mode for any acceptance claim.
+
+The accepted phase-6c baseline adds 19 real-ASR documents covering all seven
+requested scenarios, for 21 transcription documents and 400 total with models.
+Twenty isolated and five complete supplied-model comparisons passed; both
+nominal labels occurred. No scenario was removed. See the report's part 3 for
+exact counts, per-run receipts and the remaining narrower coverage gaps.
