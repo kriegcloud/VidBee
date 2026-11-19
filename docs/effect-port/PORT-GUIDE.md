@@ -129,8 +129,13 @@ live iteration is active, prune at outermost completion, and prune immediately
 outside traversal. Preserve deduplication and stale unsubscribe/re-registration
 identity, including across an Effect facade. Keep output writers quiescent during
 packaging and check archive integrity when Electron rejects an app before its
-JavaScript starts; one phase-4 archive had invalid offsets, with the exact cause
-unproven.
+JavaScript starts; phase-4 and phase-6a archives had invalid offsets, with the exact causes
+unproven. A successful builder exit is insufficient: compare every packed/unpacked entry
+against its header size/full/block hashes before diagnosing application source. Phase 6a
+recovered through a serialized rebuild without source/script changes. In a managed environment,
+Chromium subprocess restrictions can independently block a valid package: preserve the default
+launch failure, keep extra launch flags in a scratch-only wrapper, verify the copied binary and
+resources byte-for-byte, and report those launch conditions separately from default proof.
 
 ## File conventions and the ratchet
 
@@ -463,3 +468,45 @@ metadata's null root, non-array formats and null format entry; playlist yt-dlp e
 predicate; and the Redgifs null JSON line. These are values the package itself reads, with
 specific failure policies already characterized by the reviewed design. They do not establish
 a general engine-error emulation policy for typed pure helpers.
+
+## Subscription owners and host observations (phase 6a)
+
+Subscriptions uses a strict kernel and a temporary sibling compatibility package. Its public
+classes keep warmed owners; its database facades enter the db package's existing handle runtime.
+Keep the supplied Drizzle object for statement execution. Reserving a second time from a
+synchronous logger re-entry changes behavior: borrow the active same-handle synchronous region,
+release it on every throw, and leave host Promise lookup outside the reservation. Do not treat a
+wrapper found only in an arbitrary value's cause chain as a top-level Drizzle query wrapper.
+
+Callback receiver and capture semantics are part of a bridge. Capture constructor references
+once. Scheduler callbacks see its live normalized options object (and can mutate interval or
+callbacks there), leader callbacks see their instance, and API callbacks retain their owner.
+The same history callback has no receiver inside a policy and has the API receiver at the
+second RSS filter. A call-time global fetch lookup must still be invoked as a bare function.
+The subscription SchedulerSettings/SchedulerHost and PolicyHistory capabilities express those
+host observations without changing native defaults or old public declarations.
+
+An old internal async method adds an adoption turn even when it rejects. A named turn written
+after a yield is skipped on failure. Apply it to the operation's Exit, then propagate that Exit;
+use the captured-Exit finalization helper when JavaScript finally failure must replace the prior
+outcome. The phase-6a await ledger and exact API/feed microtask fixtures show the boundaries.
+Include synchronous throws as well as rejected Promises and use enough markers to observe the
+whole operation; a short marker sequence can hide a late settlement difference.
+
+Register completion/lifecycle state before a fiber can finish synchronously. Preserve when the
+old synchronous host prefix exposed deduplication to reentrant callers; a prematurely visible
+in-flight record can make a callback await itself. An already completed fiber must never leave a
+new stale registration after its fork returns.
+
+Parser values remain unknown until the old projection/interpretation point. Scalar roots that
+previously produced an empty feed still do. Array-carried image properties count as object fields.
+Do not turn a supplied Response's independent ok/status observations into a new validation rule.
+Construct the old deliberate status error before validating a native finite-status model;
+scalar/non-finite statuses previously accepted by a fake host still determine its exact message.
+Keep typed data-first forwarding aliases in compatibility: re-exporting a new strict dual function
+can change the old callable declaration even when ordinary calls still work.
+
+Native subscription SQL update has an unresolved mutation-result view for successful raw/null
+patches. Its narrow post-write decoder is not a declared change and is not native-cutover proof.
+Phase 9.2 must settle that result contract together with the documented native HTTP/SQL/entropy
+and detached-failure differences. The application retains compatibility host layers meanwhile.
