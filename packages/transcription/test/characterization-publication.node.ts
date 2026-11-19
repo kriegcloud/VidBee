@@ -1,5 +1,8 @@
+import { readFixturePid, killFixtureProcess } from './fixtures/audit-pid'
+import './fixtures/audit-isolation'
+import { tarSkipReason } from './fixtures/audit-prerequisites'
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
 import fs from 'node:fs'
 import { syncBuiltinESMExports } from 'node:module'
 import { tmpdir } from 'node:os'
@@ -30,7 +33,7 @@ for(const boundary of ['seed','ensure','append'] as const)for(const failure of [
 })
 type Spec=NonNullable<ModelManagerOptions['catalog']>[number]
 const archiveFixture=(dir:string)=>{const source=join(dir,'source');for(const name of ['root-a','root-b']){fs.mkdirSync(join(source,name),{recursive:true});fs.writeFileSync(join(source,name,'model.onnx'),`${name} published`)}const tar=join(dir,'fixture.tar.bz2');execFileSync('tar',['-cjf',tar,'-C',source,'root-a','root-b']);return fs.readFileSync(tar)}
-for(const failure of ['remove-second','rename-second','after-first'] as const)test(`multi-root publication ${failure} retains earlier published root and exact partial residue`,{timeout:30000},async t=>{
+for(const failure of ['remove-second','rename-second','after-first'] as const)test(`multi-root publication ${failure} retains earlier published root and exact partial residue`,{timeout:30000,skip:tarSkipReason},async t=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'publication-roots-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));const bytes=archiveFixture(dir);const modelsDir=join(dir,'models')
   for(const name of ['root-a','root-b']){fs.mkdirSync(join(modelsDir,name),{recursive:true});fs.writeFileSync(join(modelsDir,name,'stale'),'stale before publication')}
   const catalog:Spec[]=['root-a','root-b'].map((name,index)=>({id:name,fileName:`${name}/model.onnx`,url:'https://fixture.invalid/archive.tar.bz2',required:true,group:'asr',role:'asr-model',tier:'minimal',bytes:index}))
@@ -49,7 +52,7 @@ for(const failure of ['remove-second','rename-second','after-first'] as const)te
   else {assert.deepEqual(fs.readdirSync(join(modelsDir,'root-b')),['stale']);assert.equal(fs.readFileSync(join(modelsDir,'root-b/stale'),'utf8'),'stale before publication')}
   assert.deepEqual(fs.readdirSync(join(modelsDir,'.downloads')),[])
 })
-for(const mode of ['stale-short','stale-malformed','download-truncated'] as const)test(`archive ${mode}: stale marker never bypasses validation and failed download leaves no archive residue`,{timeout:30000},async t=>{
+for(const mode of ['stale-short','stale-malformed','download-truncated'] as const)test(`archive ${mode}: stale marker never bypasses validation and failed download leaves no archive residue`,{timeout:30000,skip:tarSkipReason},async t=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'publication-malformed-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));const bytes=archiveFixture(dir);const modelsDir=join(dir,'models');const downloads=join(modelsDir,'.downloads');fs.mkdirSync(downloads,{recursive:true})
   if(mode!=='download-truncated'){fs.writeFileSync(join(downloads,'archive.tar.bz2'),'invalid cache');fs.writeFileSync(join(downloads,'archive.tar.bz2.extracted'),'ok')}
   const calls:Array<{method:string;keys:string[]}>=[]
@@ -59,21 +62,21 @@ for(const mode of ['stale-short','stale-malformed','download-truncated'] as cons
   else {assert.equal((await manager.ensureReady({tiers:['minimal']})).ready,true);assert.equal(fs.readFileSync(join(modelsDir,'root-a/model.onnx'),'utf8'),'root-a published');assert.equal(fs.readFileSync(join(modelsDir,'root-b/model.onnx'),'utf8'),'root-b published');assert.deepEqual(fs.readdirSync(downloads).sort(),['archive.tar.bz2','archive.tar.bz2.extracted'])}
   assert.deepEqual(calls,[{method:'HEAD',keys:['method','signal']},{method:'GET',keys:['signal']}])
 })
-test('tar execFile abort captures stdout/stderr before legacy cancellation mapping and cleans staged extraction',{timeout:30000},t=>{
+test('tar execFile abort captures stdout/stderr before legacy cancellation mapping and cleans staged extraction',{timeout:120000},async t=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'publication-tar-abort-'));const bin=join(dir,'bin');fs.mkdirSync(bin)
   const marker=join(dir,'started');const stopped=join(dir,'stopped');const pidFile=join(dir,'tar-pid')
-  t.after(()=>{if(fs.existsSync(pidFile)&&!fs.existsSync(stopped)){const pid=Number(fs.readFileSync(pidFile,'utf8'));if(Number.isInteger(pid)&&pid>0){try{process.kill(pid,'SIGKILL')}catch(error){if(!(error instanceof Error&&'code' in error&&error.code==='ESRCH'))throw error}}}fs.rmSync(dir,{recursive:true,force:true})})
-  fs.writeFileSync(join(bin,'tar'),`#!${NODE}\nconst fs=require('node:fs');fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid));process.on('SIGTERM',()=>{fs.writeFileSync(${JSON.stringify(stopped)},'SIGTERM');process.exit(0)});process.stdout.write('tar stdout before abort\\n',()=>process.stderr.write('tar stderr before abort\\n',()=>fs.writeFileSync(${JSON.stringify(marker)},JSON.stringify(process.argv.slice(2)))));setInterval(()=>{},1000)\n`,{mode:0o755})
+  t.after(()=>{if(fs.existsSync(pidFile)&&!fs.existsSync(stopped)){const pid=readFixturePid(pidFile);if(pid!==null)killFixtureProcess(pid,pidFile)}fs.rmSync(dir,{recursive:true,force:true})})
+  fs.writeFileSync(join(bin,'tar'),`#!${NODE}\nconst fs=require('node:fs');fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid)+'\\n');process.on('SIGTERM',()=>{fs.writeFileSync(${JSON.stringify(stopped)},'SIGTERM');process.exit(0)});process.stdout.write('tar stdout before abort\\n',()=>process.stderr.write('tar stderr before abort\\n',()=>fs.writeFileSync(${JSON.stringify(marker)},JSON.stringify(process.argv.slice(2)))));setInterval(()=>{},1000)\n`,{mode:0o755})
   const script=`
 import fs from 'node:fs';import util from 'node:util';import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';
 const root=process.env.PUBLICATION_ROOT;const observed=[];let seenStdout=false;let seenStderr=false;const original=util.promisify;
 util.promisify=function(fn){const run=original(fn);if(fn!==childProcess.execFile)return run;return async(...args)=>{const operation=run(...args);operation.child.stdout.on('data',()=>{seenStdout=true});operation.child.stderr.on('data',()=>{seenStderr=true});try{return await operation}catch(error){observed.push({name:error.name,code:error.code,message:error.message,stdout:error.stdout,stderr:error.stderr});throw error}}};syncBuiltinESMExports();
 const {ModelManager}=await import('@vidbee/transcription');util.promisify=original;syncBuiltinESMExports();
-const wait=async file=>{for(let i=0;i<2000;i++){if(fs.existsSync(file))return;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('missing tar fixture marker')};
+const wait=async file=>{for(const deadline=Date.now()+100000;Date.now()<deadline;){if(fs.existsSync(file))return;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('missing tar fixture marker')};
 const manager=new ModelManager({modelsDir:root+'/models',catalog:[{id:'model',fileName:'tiny/model.onnx',url:'https://fixture.invalid/archive.tar.bz2',required:true,tier:'minimal',role:'asr-model',group:'asr'}],resolveUrls:s=>[s.url],fetchImpl:async(_url,init)=>init?.method==='HEAD'?new Response(null):new Response('archive bytes')});
 const pending=manager.ensureReady({tiers:['minimal']});const result=pending.then(()=>({success:true}),error=>({name:error.name,message:error.message}));await wait(root+'/started');while(!seenStdout||!seenStderr)await new Promise(resolve=>setTimeout(resolve,5));manager.cancelDownload('minimal');const failure=await result;await wait(root+'/stopped');
 console.log(JSON.stringify({failure,observed,args:JSON.parse(fs.readFileSync(root+'/started','utf8')).map((arg,index)=>index===1?'<archive>':index===3?'<staging>':arg),signal:fs.readFileSync(root+'/stopped','utf8'),downloads:fs.readdirSync(root+'/models/.downloads').sort(),published:fs.existsSync(root+'/models/tiny')}));
 `
-  const output=execFileSync(NODE,['--import',TSX,'--input-type=module','-e',script],{encoding:'utf8',timeout:20000,env:{...process.env,PATH:`${bin}:${process.env.PATH??''}`,PUBLICATION_ROOT:dir}})
+  const child=spawn(NODE,['--import',TSX,'--input-type=module','-e',script],{env:{...process.env,PATH:`${bin}:${process.env.PATH??''}`,PUBLICATION_ROOT:dir},detached:process.platform!=='win32',stdio:['ignore','pipe','pipe']});t.after(()=>{if(child.exitCode===null){try{process.kill(-child.pid!,'SIGKILL')}catch{child.kill('SIGKILL')}}});let output='';let stderr='';child.stdout.on('data',bytes=>output+=bytes);child.stderr.on('data',bytes=>stderr+=bytes);const code=await new Promise((resolve,reject)=>{child.once('error',reject);child.once('close',resolve)});assert.equal(code,0,stderr)
   assert.deepEqual(JSON.parse(output),{failure:{name:'AbortError',message:'download cancelled: minimal'},observed:[{name:'AbortError',code:'ABORT_ERR',message:'The operation was aborted',stdout:'tar stdout before abort\n',stderr:'tar stderr before abort\n'}],args:['-xjf','<archive>','-C','<staging>'],signal:'SIGTERM',downloads:['archive.tar.bz2'],published:false})
 })

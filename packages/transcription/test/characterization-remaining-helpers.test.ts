@@ -1,3 +1,6 @@
+import './fixtures/audit-isolation'
+import { createRequire } from 'node:module'
+import { dirname } from 'node:path'
 import { cpus, totalmem } from 'node:os'
 import { existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -21,9 +24,9 @@ it('path/config wrappers keep missing model null and old synchronous role evalua
  expect([0,1,1000,NaN,Infinity].flatMap(wav=>[-1,0,1000,10000,NaN].map(source=>({wav,source,reusable:T.isReusableExtractedWav(wav,source)})))).toMatchSnapshot()
 })
 it('host wrappers read fresh environment and resolve selected shared library without recording machine values',()=>{
- const lib=T.resolveSherpaLibraryDir();if(lib!==null)expect(existsSync(lib)).toBe(true)
+ const expected=dirname(createRequire(import.meta.url).resolve(`sherpa-onnx-${process.platform==='win32'?'win':process.platform}-${process.arch}/package.json`));const lib=T.resolveSherpaLibraryDir();expect(lib).toBe(expected)
  const key='VIDBEE_CHARACTERIZATION_ENV';const old=process.env[key]
- try{process.env[key]='first';const first=T.sherpaWorkerEnv({ELECTRON_RUN_AS_NODE:'extra',LD_LIBRARY_PATH:'fixture-old'});process.env[key]='second';const second=T.sherpaWorkerEnv({ELECTRON_RUN_AS_NODE:'extra'},{electronAsNode:false});expect(first[key]).toBe('first');expect(second[key]).toBe('second');expect(first.ELECTRON_RUN_AS_NODE).toBe('1');expect(second.ELECTRON_RUN_AS_NODE).toBe('extra');if(process.platform==='linux')expect(first.LD_LIBRARY_PATH).toBe(lib?`${lib}:fixture-old`:'fixture-old')}
+ try{process.env[key]='first';const first=T.sherpaWorkerEnv({ELECTRON_RUN_AS_NODE:'extra',LD_LIBRARY_PATH:'fixture-old'});process.env[key]='second';const second=T.sherpaWorkerEnv({ELECTRON_RUN_AS_NODE:'extra'},{electronAsNode:false});expect(first[key]).toBe('first');expect(second[key]).toBe('second');expect(first.ELECTRON_RUN_AS_NODE).toBe('1');expect(second.ELECTRON_RUN_AS_NODE).toBe('extra');if(process.platform==='linux')expect(first.LD_LIBRARY_PATH).toBe(`${expected}:fixture-old`)}
  finally{if(old===undefined)delete process.env[key];else process.env[key]=old}
  const options={platform:'darwin',arch:'arm64',cpuModel:'Apple M4',gpu:'apple' as const,gpuName:'Apple M4'}
  const ramBytes=totalmem();const cpuCount=Math.max(1,cpus().length)

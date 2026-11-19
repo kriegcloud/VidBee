@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'

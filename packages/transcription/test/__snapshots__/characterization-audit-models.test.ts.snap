@@ -1,0 +1,306 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`audit ensureReadyAllowCancel resolves complete current status only for recognized cancellation 1`] = `
+{
+  "bytes": 0,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 0,
+      "id": "audit",
+      "path": "<ROOT>/sherpa-onnx-whisper-tiny/tokens.txt",
+      "present": false,
+    },
+  ],
+  "ready": false,
+  "tiers": [
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`audit manager reads preference per download, boolean preference and live default environment 1`] = `
+[
+  {
+    "china": false,
+    "mode": "function",
+    "urls": [
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+    ],
+  },
+  {
+    "china": true,
+    "mode": "function",
+    "urls": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+    ],
+  },
+  {
+    "china": false,
+    "mode": "boolean",
+    "urls": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+    ],
+  },
+  {
+    "china": true,
+    "mode": "boolean",
+    "urls": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+    ],
+  },
+  {
+    "china": false,
+    "mode": "default",
+    "urls": [
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+    ],
+  },
+  {
+    "china": true,
+    "mode": "default",
+    "urls": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+      "https://ghfast.top/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://gh-proxy.com/https://github.com/fixture/releases/download/v/tokens.txt",
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+    ],
+  },
+]
+`;
+
+exports[`audit redownload removes every catalog path and shared cache before default ensure and returns complete status 1`] = `
+{
+  "calls": [
+    [
+      "https://github.com/fixture/releases/download/v/tokens.txt",
+      [
+        "signal",
+      ],
+      false,
+      false,
+    ],
+  ],
+  "status": {
+    "bytes": 5,
+    "downloading": null,
+    "downloads": [],
+    "files": [
+      {
+        "bytes": 5,
+        "id": "audit",
+        "path": "<ROOT>/sherpa-onnx-whisper-tiny/tokens.txt",
+        "present": true,
+      },
+      {
+        "bytes": 0,
+        "id": "other",
+        "path": "<ROOT>/other/file",
+        "present": false,
+      },
+    ],
+    "ready": true,
+    "tiers": [
+      {
+        "bytes": 5,
+        "family": "whisper",
+        "id": "minimal",
+        "qualityRank": 10,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "whisper",
+        "id": "whisper-base",
+        "qualityRank": 20,
+        "ready": false,
+      },
+      {
+        "bytes": 5,
+        "family": "whisper",
+        "id": "balanced",
+        "qualityRank": 30,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "whisper",
+        "id": "whisper-medium",
+        "qualityRank": 38,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "whisper",
+        "id": "whisper-turbo",
+        "qualityRank": 42,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "sense-voice",
+        "id": "sense-voice",
+        "qualityRank": 36,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "sense-voice",
+        "id": "sense-voice-2025",
+        "qualityRank": 37,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "fire-red-asr",
+        "id": "fire-red-asr",
+        "qualityRank": 45,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "parakeet",
+        "id": "parakeet-v2",
+        "qualityRank": 39,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "parakeet",
+        "id": "parakeet-v3",
+        "qualityRank": 41,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "parakeet",
+        "id": "orukeet",
+        "qualityRank": 41,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "qwen3",
+        "id": "quality",
+        "qualityRank": 50,
+        "ready": true,
+      },
+      {
+        "bytes": 5,
+        "family": "qwen3",
+        "id": "qwen3-1.7b",
+        "qualityRank": 60,
+        "ready": true,
+      },
+    ],
+    "version": "vidbee-asr-2026.08.20-3",
+  },
+}
+`;

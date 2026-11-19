@@ -1,5 +1,6 @@
+import './fixtures/audit-isolation'
 import { afterEach, expect, it } from 'vitest'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import * as T from '@vidbee/transcription'
@@ -25,7 +26,9 @@ it('sidecar discovery gates media existence, skips chat/empty/directory and expo
   for (const name of ['movie.en.vtt', 'movie.ai-zh.vtt', 'movie.chat.ass', 'movie.vtt', 'other.en.vtt']) writeFileSync(join(dir, name), '00:00.0 --> 00:01.0\nhello')
   writeFileSync(join(dir, 'movie.fr.srt'), '  '); mkdirSync(join(dir, 'movie.de.vtt'))
   expect(T.findSidecarCaptionTracks(media)).toEqual([]); writeFileSync(media, '')
-  expect(T.findSidecarCaptionTracks(media).map(({ path, ...track }) => ({ ...track, path: basename(path ?? '') }))).toMatchSnapshot()
+  const tracks = T.findSidecarCaptionTracks(media).map(({ path, ...track }) => ({ ...track, path: basename(path ?? '') }))
+  expect(tracks.map(track => track.path)).toEqual(readdirSync(dir).filter(name => ['movie.en.vtt', 'movie.ai-zh.vtt', 'movie.vtt'].includes(name)))
+  expect(tracks.sort((a, b) => a.path.localeCompare(b.path, 'en'))).toMatchSnapshot()
 })
 it('import completion timing and multiple language history/activation', { timeout: 30000 }, async () => {
   let clock = 0; const store = new T.MemoryTranscriptStore({ clock: () => ++clock }); const markers: string[] = []

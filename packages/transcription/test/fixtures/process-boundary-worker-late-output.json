@@ -25,7 +25,7 @@
       "taskId": "boundary-late-output",
       "attemptId": "attempt",
       "stream": "stdout",
-      "line": "runtime.version=22.23.4"
+      "line": "runtime.version=<NODE_VERSION>"
     }
   ],
   [
@@ -134,7 +134,7 @@
         }
       },
       "closedAt": 1000,
-      "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\nafter-result\n",
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=<NODE_VERSION>\nruntime.layer=electron\nruntime.restarts=0\nafter-result\n",
       "stderrTail": ""
     }
   ],

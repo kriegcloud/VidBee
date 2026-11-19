@@ -1,3 +1,5 @@
+import './fixtures/audit-isolation'
+import { tarSkipReason } from './fixtures/audit-prerequisites'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs'
@@ -83,7 +85,7 @@ describe('pre-port model manager',()=>{
   expect(models.incompleteModelIssue('minimal')).toContain('incomplete model')
   await models.ensureReady({tiers:['minimal']});expect(readFileSync(join(dir,'tiny/tokenizer/tokenizer.json'),'utf8')).toBe(payload);expect(calls).toMatchSnapshot()
  },30000)
- it('tar archive uses HEAD then GET, stale PID lock takeover and publication marker last',async()=>{
+ it.skipIf(tarSkipReason !== false)(`tar archive uses HEAD then GET, stale PID lock takeover and publication marker last${tarSkipReason ? ` (${tarSkipReason})` : ''}`,async()=>{
   const dir=root();const archiveRoot=root();mkdirSync(join(archiveRoot,'tiny'));writeFileSync(join(archiveRoot,'tiny/model.onnx'),'archive bytes')
   const tar=join(archiveRoot,'fixture.tar.bz2');execFileSync('tar',['-cjf',tar,'-C',archiveRoot,'tiny']);const bytes=readFileSync(tar)
   const archiveSpec={...spec,url:'https://fixture.invalid/fixture.tar.bz2'}
@@ -119,9 +121,9 @@ it('archive live-lock timeout uses strict greater-than deadline and leaves forei
 
 it('minimal-fill retries with every default delay, saturates and stop suppresses later rejected continuation',async()=>{
  vi.useFakeTimers();const models=manager(root());const error=new Error('offline');vi.spyOn(models,'ensureReady').mockRejectedValue(error)
- const callbacks:Array<()=>void>=[];const delays:number[]=[];const warnings:unknown[]=[]
- const fill=startMinimalModelFill({models,schedule:(callback,ms)=>{callbacks.push(callback);delays.push(ms);return setTimeout(()=>{},10000000)},logger:{warn:(...args)=>warnings.push(args)}})
+ const handles:Array<ReturnType<typeof setTimeout>>=[];const callbacks:Array<()=>void>=[];const delays:number[]=[];const warnings:unknown[]=[]
+ const fill=startMinimalModelFill({models,schedule:(callback,ms)=>{callbacks.push(callback);delays.push(ms);const handle=setTimeout(()=>{},10000000);handles.push(handle);return handle},logger:{warn:(...args)=>warnings.push(args)}})
  for(let index=0;index<8;index++){callbacks[index]?.();await Promise.resolve();await Promise.resolve();await Promise.resolve()}
- expect(delays).toEqual([0,5000,15000,45000,120000,600000,600000,600000,600000]);expect(warnings.length).toBe(8)
- callbacks[8]?.();fill.stop();await Promise.resolve();await Promise.resolve();await Promise.resolve();expect(warnings.length).toBe(8);expect(delays.length).toBe(9)
+ expect(delays).toEqual([0,5000,15000,45000,120000,600000,600000,600000,600000]);expect(warnings).toEqual(Array.from({length:8},()=>['transcription: minimal model fill failed, will retry',error]));expect(warnings[0]).toBeDefined();expect((warnings[0] as unknown[])[1]).toBe(error)
+ const clear=vi.spyOn(globalThis,'clearTimeout');callbacks[8]?.();fill.stop();expect(clear).toHaveBeenCalledExactlyOnceWith(handles.at(-1));expect(vi.getTimerCount()).toBe(8);await Promise.resolve();await Promise.resolve();await Promise.resolve();expect(warnings.length).toBe(8);expect(delays.length).toBe(9)
 },30000)

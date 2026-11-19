@@ -1,3 +1,5 @@
+import './fixtures/audit-isolation'
+import { tarSkipReason } from './fixtures/audit-prerequisites'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -13,7 +15,7 @@ const spec:Spec={id:'model',fileName:'tiny/model.onnx',url:'https://fixture.inva
 const deferred=()=>{let release=()=>{};const promise=new Promise<void>(resolve=>{release=resolve});return {promise,release}}
 afterEach(()=>{vi.restoreAllMocks();vi.useRealTimers();for(const dir of roots.splice(0))rmSync(dir,{recursive:true,force:true})})
 const archive=()=>{const dir=root();mkdirSync(join(dir,'tiny'));writeFileSync(join(dir,'tiny/model.onnx'),'archive bytes');const path=join(dir,'fixture.tar.bz2');execFileSync('tar',['-cjf',path,'-C',dir,'tiny']);return readFileSync(path)}
-it('two managers stage concurrently, publish one winner and leave no owned lock/staging', {timeout:30000},async()=>{
+it.skipIf(tarSkipReason !== false)(`two managers stage concurrently, publish one winner and leave no owned lock/staging${tarSkipReason ? ` (${tarSkipReason})` : ''}`, {timeout:30000},async()=>{
   const dir=root();const bytes=archive();const calls:string[]=[];const staged1=deferred();const staged2=deferred();const resume1=deferred();const resume2=deferred()
   const make=(label:string,staged:ReturnType<typeof deferred>,resume:ReturnType<typeof deferred>)=>new ModelManager({modelsDir:dir,catalog:[spec],resolveUrls:s=>[s.url],fetchImpl:async(_url,init)=>{calls.push(`${label}:${init?.method??'GET'}`);return init?.method==='HEAD'?new Response(null,{headers:{'content-length':String(bytes.length)}}):new Response(bytes)},afterArchiveStaged:async()=>{staged.release();await resume.promise}})
   const first=make('first',staged1,resume1);const second=make('second',staged2,resume2)
@@ -23,7 +25,7 @@ it('two managers stage concurrently, publish one winner and leave no owned lock/
     expect(readFileSync(join(dir,spec.fileName),'utf8')).toBe('archive bytes');expect(calls).toEqual(['first:HEAD','first:GET','second:HEAD']);expect(readdirSync(join(dir,'.downloads')).sort()).toEqual(['archive.tar.bz2','archive.tar.bz2.extracted'])
   } finally {resume1.release();resume2.release();await Promise.allSettled([pending1,pending2])}
 })
-it('live current-process archive lock survives until its owner explicitly releases it', {timeout:30000},async()=>{
+it.skipIf(tarSkipReason !== false)(`live current-process archive lock survives until its owner explicitly releases it${tarSkipReason ? ` (${tarSkipReason})` : ''}`, {timeout:30000},async()=>{
   const dir=root();const bytes=archive();const lock=join(dir,'.downloads/archive.tar.bz2.lock');mkdirSync(lock,{recursive:true});writeFileSync(join(lock,'pid'),`${process.pid}\n`)
   let calls=0;const manager=new ModelManager({modelsDir:dir,catalog:[spec],resolveUrls:s=>[s.url],fetchImpl:async(_url,init)=>{calls++;return init?.method==='HEAD'?new Response(null,{headers:{'content-length':String(bytes.length)}}):new Response(bytes)}})
   vi.useFakeTimers()
@@ -49,7 +51,7 @@ it('directory assessment cache omits json flag and shares result between manager
   const strict=new ModelManager({modelsDir:dir,catalog:[{...spec,url:'https://fixture.invalid/raw',fileName:'tokenizer',directoryMembers:[{...member,json:true}]}]})
   expect(strict.status(['asr'],['minimal']).ready).toBe(true);expect(strict.incompleteModelIssue('minimal')).toBeNull()
 })
-it('cancellation after archive staging rejects before publication and retains reusable archive', {timeout:30000},async()=>{
+it.skipIf(tarSkipReason !== false)(`cancellation after archive staging rejects before publication and retains reusable archive${tarSkipReason ? ` (${tarSkipReason})` : ''}`, {timeout:30000},async()=>{
   const dir=root();const bytes=archive();const staged=deferred();const resume=deferred()
   const manager=new ModelManager({modelsDir:dir,catalog:[spec],resolveUrls:s=>[s.url],fetchImpl:async(_url,init)=>init?.method==='HEAD'?new Response(null,{headers:{'content-length':String(bytes.length)}}):new Response(bytes),afterArchiveStaged:async()=>{staged.release();await resume.promise}})
   const pending=manager.ensureReady({tiers:['minimal']});await staged.promise

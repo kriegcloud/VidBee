@@ -1,3 +1,4 @@
+import './fixtures/audit-isolation'
 import { expect, it } from 'vitest'
 import * as T from '@vidbee/transcription'
 const atoms:unknown[]=[undefined,null,false,true,0,7,NaN,Infinity,'','text']

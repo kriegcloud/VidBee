@@ -1,9 +1,10 @@
+import './audit-owned-processes'
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { delimiter, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const expected = readFileSync(new URL('../../../../.node-version', import.meta.url), 'utf8').trim().replace(/^v/, '')
+export const expected = readFileSync(new URL('../../../../.node-version', import.meta.url), 'utf8').trim().replace(/^v/, '')
 const candidates = (process.env.PATH ?? '').split(delimiter).filter(Boolean).map((dir) => resolve(dir, 'node'))
 const matching = candidates.find((candidate) => {
   if (!existsSync(candidate)) return false
