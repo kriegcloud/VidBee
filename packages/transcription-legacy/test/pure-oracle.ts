@@ -48,6 +48,14 @@ export function assertObservation(actual: ReturnType<typeof observe>, expected: 
   if ('failed' in expected && expected.engine) assert.ok('failed' in actual, label)
   else assert.deepEqual(actual, expected, label)
 }
+/** True when `value` puts a non-array where the seed declares an array, at any depth. */
+export function wrongArray(seed: unknown, value: unknown): boolean {
+  if (Array.isArray(seed)) return !Array.isArray(value) || seed.some((item, index) => wrongArray(item, value[index]))
+  if (seed !== null && typeof seed === 'object' && value !== null && typeof value === 'object' && !(seed instanceof Float32Array) && !(seed instanceof Map)) {
+    return Object.entries(seed).some(([key, item]) => wrongArray(item, Reflect.get(value, key)))
+  }
+  return false
+}
 export function substitutions(args: unknown[][]): unknown[][] {
   const result: unknown[][] = []
   for (const seed of args) {

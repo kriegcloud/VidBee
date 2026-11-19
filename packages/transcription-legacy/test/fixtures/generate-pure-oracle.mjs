@@ -3,7 +3,7 @@ import {resolve} from 'node:path'
 import {pathToFileURL} from 'node:url'
 const oldBase=pathToFileURL(resolve(process.argv[2])+'/')
 import { seeds as baseSeeds } from '../pure-cases.ts'
-import { observe, pack, substitutions } from '../pure-oracle.ts'
+import { observe, pack, substitutions, wrongArray } from '../pure-oracle.ts'
 import { pureTextCases } from '../pure-text-cases.ts'
 import { asrSeeds } from '../pure-asr-cases.ts'
 import { remainingSeeds } from '../pure-remaining-cases.ts'
@@ -17,7 +17,9 @@ for (const [name, cases] of Object.entries(names)) {
  for (const args of substitutions(cases)) {
   const saved = pack(args)
   const expected = observe(old[name], args)
-  const excluded = expected.failed && expected.engine ? 'old-engine-error' : undefined
+  // Old engine errors are compared (the new call must still fail) except where a non-array was
+  // supplied in a declared array position: no parity is owed there, so those rows are excluded.
+  const excluded = expected.failed && expected.engine && cases.some(seed=>wrongArray(seed,args)) ? 'old-engine-error' : undefined
   fixtures.push({module,name,args:saved,expected,...(excluded ? {excluded} : {})})
  }
 }}
