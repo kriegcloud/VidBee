@@ -32,6 +32,17 @@ the tree it runs on and corrects the design where the source has moved.
   `ProcessRequests`); two phase 6 units extend it in parallel (browser capture and this one):
   keep each extension additive and in its own declarations so the branches merge.
 
+Corrections from the characterization of the old package (`reports/6c.md`), which was written
+against the unchanged source after this design was reviewed:
+
+- Section 4, cloud row: a cloud `transcribe` callback that throws `null` does not keep its
+  identity. The old code reads `details.code` from the thrown value and fails with the engine's
+  `TypeError`; `Error`, string, number and object rejections keep their identity as stated. Under
+  the parity boundary the port only has to fail for a thrown `null`.
+- Section 5, timing and settlement: `runLegacyPromise` and `runLegacySync` already exist in
+  `@vidbee/task-queue-legacy/runtime` since phase 5. Nothing is extracted in this phase; the
+  compatibility package uses them.
+
 ## 1. What the package is, and what makes its port risky
 
 Local speech recognition and speaker diarization, model installation, audio extraction, caption import, transcript persistence and editing, resumable worker execution, cloud clip checkpointing and automatic transcription after download completion. The current package has seven export entries and no package-local automated test suite.
