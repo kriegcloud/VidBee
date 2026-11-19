@@ -194,7 +194,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | 3 | `db` | 638 | yes | unit | 2 | merged ([report](reports/3.md), [design](design/db.md)) |
 | 4 | `task-queue` | 6.9k | yes | | | merged ([report](reports/4.md), [design](design/task-queue.md)) |
 | review | Code-review fixes for phases 1a to 4 | | | | | merged ([report](reports/review-fixes.md)) |
-| 5 | `downloader-core` | 14.6k | yes | | | not started |
+| 5 | `downloader-core` | 14.6k | yes | | | merged ([report](reports/5.md), [design](design/downloader-core.md)) |
 | 6a | `subscriptions-core` | 4.1k | yes | unit | 6b, 6c | not started |
 | 6b | `browser-capture` | 4.8k | | | 6a, 6c | not started |
 | 6c | `transcription` | 13.2k | yes | unit | 6a, 6b | not started |

@@ -19,6 +19,7 @@ export class YtDlpExecutorHost extends Context.Service<
   YtDlpExecutorHost,
   {
     readonly now: () => number;
+    readonly parseDate: (value: string) => number;
     readonly killGraceMs: number;
     readonly platform: string;
     readonly prepareSettings:

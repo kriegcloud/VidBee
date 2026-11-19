@@ -61,7 +61,7 @@ export const writeKnownItemsFile = Effect.fn("SocialMedia.writeKnownItems")(func
   directory: string,
   knownIds: readonly string[] | undefined
 ) {
-  if (knownIds === undefined || knownIds.length === 0) return undefined;
+  if (knownIds == null || knownIds.length === 0) return undefined;
   const path = yield* Path.Path;
   const files = yield* DownloadFiles;
   const file = path.join(directory, "known-items.json");

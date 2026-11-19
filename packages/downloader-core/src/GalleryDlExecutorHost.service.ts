@@ -22,6 +22,7 @@ export class GalleryDlExecutorHost extends Context.Service<
   GalleryDlExecutorHost,
   {
     readonly now: () => number;
+    readonly parseDate: (value: string) => number;
     readonly killGraceMs: number;
     readonly platform: () => string;
     readonly command: (context: ExecutorContext) => Effect.Effect<GalleryCommand>;

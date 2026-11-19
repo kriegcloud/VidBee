@@ -1,5 +1,6 @@
-import { classify } from "@vidbee/task-queue/classifier";
+import { classifyWithDateParser } from "@vidbee/task-queue/classifier";
 import * as A from "effect/Array";
+import * as DateTime from "effect/DateTime";
 import * as HashSet from "effect/HashSet";
 import * as Option from "effect/Option";
 import * as Str from "effect/String";
@@ -196,12 +197,19 @@ export function classifyYtDlpExit({
   exitCode,
   stderr,
   now,
+  parseDate = (value) =>
+    Option.match(DateTime.make(value), { onNone: () => Number.NaN, onSome: DateTime.toEpochMillis }),
 }: {
   readonly exitCode: number | null;
   readonly stderr: string;
   readonly now: number;
+  readonly parseDate?: (value: string) => number;
 }): ClassifiedError {
-  return classify({ exitCode, stderr: stderr || `yt-dlp exited with code ${exitCode ?? -1}` }, now);
+  return classifyWithDateParser(
+    { exitCode, stderr: stderr || `yt-dlp exited with code ${exitCode ?? -1}` },
+    now,
+    parseDate
+  );
 }
 
 interface TailBuffer {

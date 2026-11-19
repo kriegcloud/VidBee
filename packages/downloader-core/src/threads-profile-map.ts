@@ -123,7 +123,7 @@ export const mapThreadsProfile = Effect.fn("threads-profile-map.mapThreadsProfil
   const host = yield* DownloadHost;
   const path = yield* Path.Path;
   const directory =
-    options.knownIds !== undefined && options.knownIds.length > 0
+    options.knownIds != null && options.knownIds.length > 0
       ? yield* files.makeTempDirectory(path.join(host.tempDirectory(), "vidbee-threads-map-"))
       : undefined;
   return yield* ProfileFinalizationFunctions.finalizeProfile(

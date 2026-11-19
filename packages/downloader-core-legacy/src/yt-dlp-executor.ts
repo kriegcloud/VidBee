@@ -179,7 +179,7 @@ export class YtDlpExecutor implements Executor {
     }
     const sync = <A>(operation: string, evaluate: () => A) => Effect.try({ try: evaluate, catch: cause => new HostFailure({ operation, cause, legacyMessage: cause instanceof Error ? cause.message : String(cause) }) })
     const host = Layer.succeed(YtDlpExecutorHost, {
-      now: this.opts.clock, killGraceMs: this.opts.killGraceMs, platform: process.platform,
+      now: this.opts.clock, parseDate: Date.parse, killGraceMs: this.opts.killGraceMs, platform: process.platform,
       prepareSettings: this.opts.prepareSettings ? input => { const pending = this.opts.prepareSettings!(input); return Effect.tryPromise({ try: () => pending, catch: cause => new HostFailure({ operation: 'prepareSettings', cause, legacyMessage: cause instanceof Error ? cause.message : String(cause) }) }) } : undefined,
       command: (input, settings) => sync('buildArgs', () => ({ args: this.buildArgsFor(input, settings), settings: this.resolveRuntimeSettings(input, settings), initialSubtitleStatus: this.resolveInitialSubtitleStatus(input) as 'skipped-auth' | undefined, canRetryWithoutSubtitles: !(input.rawArgs?.length || this.opts.buildArgs) })),
       binary: sync('binary', this.opts.resolveYtDlpPath), ffmpeg: Effect.sync(this.opts.resolveFfmpegLocation),

@@ -276,7 +276,7 @@ export class GalleryDlExecutor implements Executor {
     }
     const failure = (operation: string, cause: unknown) => new HostFailure({ operation, cause, legacyMessage: cause instanceof Error ? cause.message : String(cause) })
     const host = Layer.succeed(GalleryDlExecutorHost, {
-      now: this.options.clock, killGraceMs: this.options.killGraceMs, platform: () => process.platform,
+      now: this.options.clock, parseDate: Date.parse, killGraceMs: this.options.killGraceMs, platform: () => process.platform,
       command: ctx => Effect.sync(() => this.buildCommand(ctx)),
       binary: Effect.try({ try: this.options.resolveBinaryPath, catch: cause => failure('binary', cause) }),
       spec: (binary, args) => Effect.sync(() => {

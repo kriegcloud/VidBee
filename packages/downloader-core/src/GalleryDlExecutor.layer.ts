@@ -1,5 +1,4 @@
-import { classify, virtualError } from "@vidbee/task-queue/classifier";
-import { SocialCollectionSummary } from "@vidbee/task-queue/Task.model";
+import { classifyWithDateParser, virtualError } from "@vidbee/task-queue/classifier";
 import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
 import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
@@ -15,10 +14,11 @@ import { DownloadProcess } from "./DownloadProcess.service.js";
 import { DownloadTiming } from "./DownloadTiming.service.js";
 import { galleryWaitDurationMs } from "./GalleryDlExecutor.helpers.js";
 import { GalleryDlExecutorHost } from "./GalleryDlExecutorHost.service.js";
+import { CollectionSummary } from "./schemas.js";
 import { readSocialAsset, selectPrimarySocialFile } from "./social-media.js";
 import { createTailBuffer } from "./YtDlpExecutor.helpers.js";
 import type { ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
-import type { TaskOutput } from "@vidbee/task-queue/Task.model";
+import type { SocialCollectionSummary, TaskOutput } from "@vidbee/task-queue/Task.model";
 import type { GalleryOutputFailureKind, TerminationSignal } from "./DownloadLiterals.model.js";
 import type { ProcessRun } from "./DownloadProcess.service.js";
 import type { SocialAssetFile } from "./social-media.js";
@@ -123,7 +123,7 @@ export const layer = Layer.effect(
                 protocolError = true;
                 return;
               }
-              const summary = S.decodeUnknownOption(SocialCollectionSummary)(value.summary);
+              const summary = S.decodeUnknownOption(CollectionSummary)(value.summary);
               if (Option.isNone(summary)) {
                 protocolError = true;
                 return;
@@ -327,9 +327,10 @@ export const layer = Layer.effect(
             ...identity,
             result: {
               type: "error",
-              error: classify(
+              error: classifyWithDateParser(
                 { stderr: stderr || `gallery-dl exited with code ${exitCode ?? -1}`, exitCode },
-                host.now()
+                host.now(),
+                host.parseDate
               ),
               exitCode,
             },
@@ -343,7 +344,11 @@ export const layer = Layer.effect(
             ...identity,
             result: cancelRequested
               ? { type: "cancelled" }
-              : { type: "error", error: classify({ stderr: message, exitCode: null }, host.now()), exitCode: null },
+              : {
+                  type: "error",
+                  error: classifyWithDateParser({ stderr: message, exitCode: null }, host.now(), host.parseDate),
+                  exitCode: null,
+                },
             closedAt: host.now(),
             stdoutTail: stdoutTail.read(),
             stderrTail: stderrTail.read(),
@@ -453,7 +458,11 @@ export const layer = Layer.effect(
           const message = started.failure.legacyMessage;
           yield* finishOnce({
             ...identity,
-            result: { type: "error", error: classify({ stderr: message, exitCode: null }, host.now()), exitCode: null },
+            result: {
+              type: "error",
+              error: classifyWithDateParser({ stderr: message, exitCode: null }, host.now(), host.parseDate),
+              exitCode: null,
+            },
             closedAt: host.now(),
             stdoutTail: "",
             stderrTail: message,

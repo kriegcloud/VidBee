@@ -111,7 +111,7 @@ export const UploadSettingsFileInputSchema = S.Struct({
   fileName: S.Trim.check(S.isMinLength(1), S.isMaxLength(255)).pipe(S.mutableKey),
   content: S.String.check(S.isMinLength(1), S.isMaxLength(1_000_000)).pipe(S.mutableKey),
 });
-const CollectionSummary = S.Struct({
+export const CollectionSummary = S.Struct({
   ...SocialCollectionSummary.fields,
   posts: Counter.pipe(S.mutableKey),
   images: Counter.pipe(S.mutableKey),

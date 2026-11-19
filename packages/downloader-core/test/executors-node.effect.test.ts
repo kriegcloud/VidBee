@@ -3,10 +3,12 @@ import { expect, layer } from "@effect/vitest";
 import { requestLayer } from "@vidbee/task-queue/ProcessControl.driver";
 import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
 import * as A from "effect/Array";
+import * as DateTime from "effect/DateTime";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
 import * as PlatformError from "effect/PlatformError";
 import * as Str from "effect/String";
 import { HostFailure } from "../src/Downloader.errors.js";
@@ -46,6 +48,8 @@ const host = Layer.effect(
     let selectedController = controller;
     return YtDlpExecutorHost.of({
       now: () => 1000,
+      parseDate: (value) =>
+        Option.match(DateTime.make(value), { onNone: () => Number.NaN, onSome: DateTime.toEpochMillis }),
       killGraceMs: 0,
       platform: "linux",
       prepareSettings: undefined,
@@ -219,6 +223,8 @@ const galleryHost = Layer.effect(
     let holdInspection = false;
     return GalleryDlExecutorHost.of({
       now: () => 1000,
+      parseDate: (value) =>
+        Option.match(DateTime.make(value), { onNone: () => Number.NaN, onSome: DateTime.toEpochMillis }),
       killGraceMs: 0,
       platform: () => "linux",
       command: Effect.fn("fixture.galleryCommand")((ctx) =>

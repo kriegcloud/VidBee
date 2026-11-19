@@ -1073,3 +1073,8 @@ One blocker, three major, two minor, one question:
 The second reviewer verified real-wrapper emulation, direct synchronous delivery and two-runtime
 re-entry, BOM/access semantics, the existing signal-policy distinctions, host/schema dispositions,
 Redgifs null rejection and the separate loopback-baseline prerequisites.
+
+The implementation was additionally code-reviewed by independent sessions, with each finding
+re-verified by a second reviewer and verification passes over each set of fixes. The 30 confirmed
+findings, their resolutions and permanent oracle coverage are recorded in the
+[phase 5 report](../reports/5.md#independent-code-review).
