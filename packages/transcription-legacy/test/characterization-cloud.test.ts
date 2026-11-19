@@ -57,6 +57,240 @@ describe('pre-port cloud runner paid-result persistence',()=>{
   const results:unknown[]=[]
   for(const value of [true,7,'saved',{text:42,language:17}]){
    const original=JSON.stringify({accountId:'account',clips:[{start:0,end:1600,requestId:'fixed',result:value}]});const f=fixture(1600,original);let calls=0;f.input.transcribe=async()=>{calls++;throw new Error('must not upload a malformed saved result')}
+  /* Before the port: exact recorded combined expectation retained verbatim.
+exports[`pre-port cloud runner paid-result persistence > pins section 9 old malformed saved results and consumed shape failures > section 9 old values 1`] = `
+[
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": undefined,
+      "modelVersion": "cloud:model",
+      "resultKind": "no-speech",
+      "segments": [],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": true,
+  },
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": undefined,
+      "modelVersion": "cloud:model",
+      "resultKind": "no-speech",
+      "segments": [],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": 7,
+  },
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": undefined,
+      "modelVersion": "cloud:model",
+      "resultKind": "no-speech",
+      "segments": [],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": "saved",
+  },
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": 17,
+      "modelVersion": "cloud:model",
+      "resultKind": "transcript",
+      "segments": [
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": 42,
+          "words": [],
+        },
+      ],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "partial",
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": 42,
+          "words": [],
+        },
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": {
+      "language": 17,
+      "text": 42,
+    },
+  },
+  {
+    "calls": 0,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": null,
+      "modelVersion": "cloud:model",
+      "resultKind": "no-speech",
+      "segments": [],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": {
+      "language": null,
+      "text": "",
+    },
+  },
+  {
+    "calls": 1,
+    "result": {
+      "asrTier": "cloud:model",
+      "language": "en",
+      "modelVersion": "cloud:model",
+      "resultKind": "transcript",
+      "segments": [
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": "fresh",
+          "words": [],
+        },
+      ],
+      "sourceKind": "asr",
+      "speakers": [],
+    },
+    "trace": [
+      [
+        "progress",
+        "preparing-audio",
+        null,
+      ],
+      [
+        "progress",
+        "recognizing",
+        0,
+      ],
+      [
+        "partial",
+        {
+          "confidence": null,
+          "endMs": 100,
+          "speakerKey": null,
+          "startMs": 0,
+          "text": "fresh",
+          "words": [],
+        },
+      ],
+      [
+        "progress",
+        "committing",
+        1,
+      ],
+    ],
+    "value": null,
+  },
+]
+`;
+
+
+  */
    // Before the port: these truthy saved values produced no-speech or a segment with non-string text (design section 9, cloud.clipResult).
    await expect(runCloudTranscription(f.input)).rejects.toThrow('Invalid transcription data at cloud.clipResult.')
    expect(calls).toBe(0);expect(readFileSync(f.path,'utf8')).toBe(original)
@@ -116,4 +350,27 @@ it('cloud fixed temporary collision preserves old checkpoint and callback reject
  await expect(runCloudTranscription(f.input)).rejects.toMatchObject({code:'EISDIR'});expect(existsSync(f.path)).toBe(false);expect(existsSync(`${f.path}.tmp`)).toBe(true)
  for(const thrown of [new Error('callback'), 'callback', 7, {code:'OTHER',status:503,retryAfterMs:71}]){const f=fixture();f.input.transcribe=async()=>{throw thrown};await expect(runCloudTranscription(f.input)).rejects.toBe(thrown);expect(JSON.parse(readFileSync(f.path,'utf8')).clips[0].result).toBeUndefined()}
  const nil=fixture();nil.input.transcribe=async()=>{throw null};await expect(runCloudTranscription(nil.input)).rejects.toBeInstanceOf(TypeError)
+},30000)
+
+it('review: fresh paid callback values are saved before consumption and replay ignores unused fields',async()=>{
+ const subject=process.env.CLOUD_REVIEW_ORACLE ? (await import(process.env.CLOUD_REVIEW_ORACLE)).runCloudTranscription : runCloudTranscription
+ for(const value of [
+  {text:'paid',requestId:'r',modelId:'m',credits:1},
+  {text:'paid',language:'en',audioSeconds:null},
+  {text:'paid',language:null,audioSeconds:NaN},
+  {text:'',language:null},
+  {text:false,language:null},
+  {text:0,language:null},
+ ]){
+  const f=fixture();let calls=0
+  f.input.transcribe=async()=>{calls++;return JSON.parse(JSON.stringify(value))}
+  const output=await subject(f.input)
+  expect(output.result.segments.map((s:{text:string})=>s.text)).toEqual(value.text ? [value.text] : [])
+  expect(output.result.language).toBe('language' in value?value.language:undefined)
+  expect(JSON.parse(readFileSync(f.path,'utf8')).clips[0].result).toEqual(JSON.parse(JSON.stringify(value)))
+  if(typeof value.text==='string'){
+   const replay=await subject(f.input)
+   expect(replay.result).toEqual(output.result);expect(calls).toBe(1)
+  }
+ }
 },30000)

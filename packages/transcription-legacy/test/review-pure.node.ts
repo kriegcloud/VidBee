@@ -9,7 +9,11 @@ assert.equal(process.version, 'v22.23.4', 'pure oracle must use repository-pinne
 for (const [module, entries] of Object.entries(Object.groupBy(fixtures, entry => entry.module))) {
  test(`pinned-Node differential pure oracle: ${module}`, { timeout: 120000 }, () => {
   for (const entry of entries ?? []) {
-   if (entry.excluded) continue
+   if (entry.excluded) {
+    assert.equal(entry.excluded, 'old-engine-error', 'unclassified oracle exclusion')
+    assert.ok('failed' in entry.expected && entry.expected.engine, 'only old engine failures may be excluded')
+    continue
+   }
    const fn = Reflect.get(pureTargets[module]!, entry.name)
    assert.equal(typeof fn, 'function', entry.name)
    assertObservation(observe(fn, unpack(entry.args)), entry.expected, `${module}.${entry.name} args=${JSON.stringify(entry.args)}`)

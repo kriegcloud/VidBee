@@ -55,6 +55,7 @@ export const CaptionFilesLive = Layer.effect(
       languageFromName,
       pick: Effect.fn("CaptionFiles.pick")(<T extends CaptionCandidate>(tracks: T[], preferred: string[]) =>
         attempt(() => {
+          if (tracks.length === 0) return null;
           const normalized = Arr.map(tracks, (track) => ({
             ...track,
             path:

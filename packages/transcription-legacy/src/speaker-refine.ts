@@ -9,7 +9,7 @@ export const MAX_UNCOVERED_GAP_MS=Core.MAX_UNCOVERED_GAP_MS
 
 export const mergeAdjacentTurns: (turns: TimedTurn[]) => TimedTurn[]=Core.mergeAdjacentTurns
 
-export const refineSpeakerTurns: (raw: TimedTurn[], _speech: TimeInterval[], _totalDurationMs: number, options?: RefineSpeakerOptions) => TimedTurn[]=Core.refineSpeakerTurns
+export const refineSpeakerTurns: (raw: TimedTurn[], _speech: TimeInterval[], _totalDurationMs: number, options?: RefineSpeakerOptions) => TimedTurn[]=(raw,speech,total,options)=>Core.refineSpeakerTurns(raw,speech,total,options)
 
 export const intervalDurationMs: (intervals: TimeInterval[]) => number=Core.intervalDurationMs
 
@@ -17,4 +17,4 @@ export const shouldTrustSpeechIntervals: (speechMs: number, totalDurationMs: num
 
 export const fillUncoveredTurns: (turns: TimedTurn[], totalDurationMs: number, maxGapMs?: number) => TimedTurn[]=Core.fillUncoveredTurns
 
-export const turnsForAsr: (raw: TimedTurn[], _speech: TimeInterval[], totalDurationMs: number, options?: RefineSpeakerOptions) => TimedTurn[]=Core.turnsForAsr
+export const turnsForAsr: (raw: TimedTurn[], _speech: TimeInterval[], totalDurationMs: number, options?: RefineSpeakerOptions) => TimedTurn[]=(raw,speech,total,options)=>Core.turnsForAsr(raw,speech,total,options)

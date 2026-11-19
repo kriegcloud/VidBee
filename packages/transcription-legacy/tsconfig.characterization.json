@@ -2,8 +2,6 @@
   "extends": "./tsconfig.json",
   "include": [
     "src/**/*",
-    "test/characterization-*.ts",
-    "test/fixtures/**/*",
-    "test/compatibility.types.ts"
+    "test/**/*"
   ]
 }

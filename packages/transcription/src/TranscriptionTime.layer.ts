@@ -27,8 +27,8 @@ export const TranscriptionTimeLive = Layer.effect(
       every: Effect.fn("TranscriptionTime.every")((ms, action) =>
         Effect.sleep(ms).pipe(
           Effect.andThen(action),
+          Effect.catchCause(Effect.logError),
           Effect.forever,
-          Effect.tapCause(Effect.logError),
           Effect.forkIn(scope),
           Effect.map((fiber) => Fiber.interrupt(fiber).pipe(Effect.asVoid))
         )

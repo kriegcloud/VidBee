@@ -1,3 +1,4 @@
+import {DetachedFailures} from "../../transcription/src/DetachedFailures.service"
 import * as Effect from 'effect/Effect'
 import * as Cause from 'effect/Cause'
 import * as Layer from 'effect/Layer'
@@ -61,7 +62,7 @@ export class AutoTranscriptionCoordinator {
   const borrowed=Layer.mergeAll(queueLayerFor(opts.queue,action=>run(action)),recordsLayerFor(opts.store),TranscriptionFilesLegacySync)
   const enqueues=enqueueLayer.pipe(Layer.provideMerge(borrowed))
   const timing=Layer.succeed(LegacyTiming,{turn:()=>Effect.callback<void>(resume=>{queueMicrotask(()=>resume(Effect.void))})})
-  const services=coordinatorLayer.pipe(Layer.provide(enqueues),Layer.provide(hooks),Layer.provide(timing))
+  const services=coordinatorLayer.pipe(Layer.provide(Layer.succeed(DetachedFailures,{listener:cause=>Effect.die(transcriptionCause(cause)),rejection:cause=>Effect.sync(()=>{void Promise.reject(transcriptionCause(cause))})})),Layer.provide(enqueues),Layer.provide(hooks),Layer.provide(timing))
   runtime=ManagedRuntime.make(Layer.merge(services,Layer.succeed(Scheduler.PreventSchedulerYield,true)))
   run(Coordinator)
   this.runtime=runtime

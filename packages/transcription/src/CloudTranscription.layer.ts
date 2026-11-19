@@ -3,7 +3,6 @@ import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as S from "effect/Schema";
 import { Audio } from "./Audio.service.js";
-import { CloudTranscriptionResult } from "./Cloud.model.js";
 import { CloudClipBounds, CloudSavedClip, CloudSavedResult } from "./CloudRun.model.js";
 import { CloudFileIO, CloudTranscription } from "./CloudTranscription.service.js";
 import { manifestWorkKey } from "./chunk-manifest.js";
@@ -13,6 +12,7 @@ import { AudioFailure, BoundaryDecodeError, HostFailure } from "./Transcription.
 import { TranscriptionFiles } from "./TranscriptionFiles.service.js";
 import { TranscriptionIds } from "./TranscriptionIds.service.js";
 import { BinaryWaveReader } from "./WaveReader.service.js";
+import type { CloudTranscriptionResult } from "./Cloud.model.js";
 import type { CloudPcmFile } from "./CloudTranscription.service.js";
 import type { PipelineResult, PipelineSegment } from "./Pipeline.model.js";
 
@@ -105,7 +105,7 @@ export const layer = Layer.effect(
         return yield* withModelCleanup(
           Effect.gen(function* () {
             const segments: PipelineSegment[] = [];
-            let language: string | null = null;
+            let language: string | null | undefined = null;
             const payload = yield* pcmPayload(file);
             let start = 0;
             let index = 0;
@@ -128,6 +128,7 @@ export const layer = Layer.effect(
                 yield* saved.save;
               }
               yield* sink.progress("recognizing", start / payload.samples);
+              let fresh: CloudTranscriptionResult | undefined;
               if (Boolean(clip.result) === false) {
                 for (let restart = 0; restart < 2; restart++) {
                   const outcome = yield* Effect.gen(function* () {
@@ -136,7 +137,7 @@ export const layer = Layer.effect(
                       clip.requestId,
                       input.signal
                     );
-                    if (!S.is(CloudTranscriptionResult)(returned)) return yield* boundary("cloud.clipResult");
+                    fresh = returned;
                     clip.result = returned;
                     yield* saved.save;
                   }).pipe(Effect.result);
@@ -151,11 +152,15 @@ export const layer = Layer.effect(
                   return yield* error;
                 }
               }
-              const result = clip.result;
+              const result =
+                fresh ??
+                (yield* S.decodeUnknownEffect(CloudSavedResult)(clip.result).pipe(
+                  Effect.mapError(() => boundary("cloud.clipResult"))
+                ));
               if (Boolean(result) === false) return yield* invalid("Cloud transcription did not return a clip result");
-              if (!S.is(CloudSavedResult)(result)) return yield* boundary("cloud.clipResult");
               language ??= result.language;
-              if (result.text !== "") {
+              const hasText = Boolean(result.text);
+              if (hasText) {
                 const segment: PipelineSegment = {
                   speakerKey: null,
                   startMs: Math.round((start / SAMPLE_RATE) * 1000),
@@ -173,13 +178,16 @@ export const layer = Layer.effect(
             yield* sink.progress("committing", 1);
             const result: PipelineResult = {
               resultKind: segments.length > 0 ? "transcript" : "no-speech",
-              language,
+              language: language ?? null,
               modelVersion: `cloud:${input.modelId}`,
               asrTier: `cloud:${input.modelId}`,
               sourceKind: "asr",
               speakers: [],
               segments,
             };
+            // The old public type omits undefined, but a typed host can return
+            // an absent language. Preserve that value without rejecting a paid clip.
+            Object.assign(result, { language });
             return {
               cleanup: files.remove(directory, true, true).pipe(Effect.ignore),
               durationMs: Math.round((payload.samples / SAMPLE_RATE) * 1000),

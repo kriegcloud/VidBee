@@ -135,10 +135,10 @@ layer(fixture)("native cloud paid checkpoint ownership", (it) => {
         expect(calls).toBe(1);
         const reserved = '{"accountId":"account","clips":[{"start":0,"end":1600,"requestId":"paid-id"}]}';
         yield* f.fs.writeFileString(f.checkpoint, reserved);
-        const invalidFresh = yield* f.service
+        const acceptedFresh = yield* f.service
           .run(f.input, {
             ...sink,
-            transcribe: Effect.fn("fixture.invalidFresh")(() =>
+            transcribe: Effect.fn("fixture.acceptedFresh")(() =>
               Effect.succeed({
                 requestId: "paid-id",
                 modelId: "model",
@@ -150,10 +150,11 @@ layer(fixture)("native cloud paid checkpoint ownership", (it) => {
             ),
           })
           .pipe(Effect.result);
-        expect(invalidFresh._tag).toBe("Failure");
-        if (invalidFresh._tag === "Failure") expect(invalidFresh.failure._tag).toBe("BoundaryDecodeError");
+        // Before the port: fresh callback results were persisted without validation.
+        expect(acceptedFresh._tag).toBe("Success");
         const retainedReservation = yield* f.fs.readFileString(f.checkpoint);
-        expect(retainedReservation).toBe(reserved);
+        expect(retainedReservation).toContain('"audioSeconds":null');
+        expect(retainedReservation).toContain('"text":"unsafe"');
         yield* replay.cleanup;
         const exists = yield* f.fs.exists(f.checkpoint);
         expect(exists).toBe(false);

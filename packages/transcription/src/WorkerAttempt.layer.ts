@@ -6,6 +6,7 @@ import * as O from "effect/Option";
 import * as Scope from "effect/Scope";
 import * as Str from "effect/String";
 import { AudioAbort } from "./Audio.service.js";
+import { DetachedFailures } from "./DetachedFailures.service.js";
 import { HostFailure, WorkerFailure } from "./Transcription.errors.js";
 import { TranscriptionHost } from "./TranscriptionHost.service.js";
 import { TranscriptionProcess } from "./TranscriptionProcess.service.js";
@@ -23,6 +24,7 @@ export const make = Effect.fnUntraced(function* () {
   const protocol = yield* WorkerProtocol;
   const aborts = yield* AudioAbort;
   const owner = yield* Effect.scope;
+  const failures = yield* DetachedFailures;
   return WorkerAttempt.of({
     run: Effect.fn("WorkerAttempt.run")(function* (input, sink) {
       const scope = yield* Scope.fork(owner);
@@ -125,7 +127,8 @@ export const make = Effect.fnUntraced(function* () {
             emit: Effect.fn("WorkerAttempt.emit")((event) => {
               if (event._tag === "stdout")
                 return consume(stdout.decode(event.chunk, { stream: true })).pipe(
-                  Effect.catch((error) => settle(error))
+                  Effect.catchTag("BoundaryDecodeError", (error) => settle(error)),
+                  Effect.catchCause(failures.listener)
                 );
               if (event._tag === "stderr") return sink.stderr(stderr.decode(event.chunk, { stream: true }));
               if (event._tag === "stdoutEnd")

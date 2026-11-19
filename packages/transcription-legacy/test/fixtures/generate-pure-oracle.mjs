@@ -17,8 +17,7 @@ for (const [name, cases] of Object.entries(names)) {
  for (const args of substitutions(cases)) {
   const saved = pack(args)
   const expected = observe(old[name], args)
-  const wrongArray = (seed, value) => Array.isArray(seed) ? !Array.isArray(value) || seed.some((item,index) => wrongArray(item,value[index])) : seed !== null && typeof seed==='object' && value !== null && typeof value==='object' && !(seed instanceof Float32Array) && !(seed instanceof Map) ? Object.entries(seed).some(([key,item])=>wrongArray(item,value[key])) : false;
-const excluded = cases.some(seed=>wrongArray(seed,args)) ? 'non-array supplied in declared array position' : undefined
+  const excluded = expected.failed && expected.engine ? 'old-engine-error' : undefined
   fixtures.push({module,name,args:saved,expected,...(excluded ? {excluded} : {})})
  }
 }}

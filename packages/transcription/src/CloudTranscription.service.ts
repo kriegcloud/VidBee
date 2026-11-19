@@ -1,5 +1,6 @@
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
+import type { CloudTranscriptionResult } from "./Cloud.model.js";
 import type { CloudRunInput, CloudSavedClip } from "./CloudRun.model.js";
 import type { TranscriptionStage } from "./Literal.model.js";
 import type { PipelineResult, PipelineSegment } from "./Pipeline.model.js";
@@ -34,7 +35,7 @@ export interface CloudRunSink {
     bytes: Uint8Array,
     requestId: string,
     signal: AbortSignal
-  ) => Effect.Effect<unknown, HostFailure>;
+  ) => Effect.Effect<CloudTranscriptionResult, HostFailure>;
 }
 export interface CloudRunResult {
   readonly cleanup: Effect.Effect<void>;

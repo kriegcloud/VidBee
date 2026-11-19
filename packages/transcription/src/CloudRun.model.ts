@@ -20,9 +20,10 @@ export const CloudSavedClip = S.StructWithRest(
   [S.Record(S.String, S.Unknown)]
 );
 export type CloudSavedClip = typeof CloudSavedClip.Type;
-export const CloudSavedResult = S.StructWithRest(S.Struct({ text: S.String, language: S.NullOr(S.String) }), [
-  S.Record(S.String, S.Unknown),
-]);
+export const CloudSavedResult = S.StructWithRest(
+  S.Struct({ text: S.String, language: S.String.pipe(S.NullOr, S.optional) }),
+  [S.Record(S.String, S.Unknown)]
+);
 export const CloudProgressEnvelope = S.StructWithRest(S.Struct({ accountId: S.Unknown, clips: S.Unknown }), [
   S.Record(S.String, S.Unknown),
 ]);

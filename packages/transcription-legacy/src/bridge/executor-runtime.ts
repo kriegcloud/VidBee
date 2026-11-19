@@ -1,3 +1,4 @@
+import {DetachedFailures} from "../../../transcription/src/DetachedFailures.service"
 import {spawn} from 'node:child_process'
 import {rm} from 'node:fs/promises'
 import {sep} from 'node:path'
@@ -55,7 +56,7 @@ export function makeExecutorRuntime(options:TranscriptionExecutorOptions){
   onPartial:input=>Effect.sync(()=>options.onPartial?.(input)),onStage:input=>Effect.sync(()=>options.onStage?.(input)),removeScratch:path=>Effect.promise(()=>removeScratch(path)),
  })
  const borrowed=getStatelessRuntime(),discovery=getWorkerRuntimeRuntime()
- const services=Layer.mergeAll(host,time,hooks,aborts,TranscriptionFilesLegacySync,NodePath.layer,Layer.succeed(Scheduler.PreventSchedulerYield,true),Layer.succeed(LegacyTiming,{turn:()=>Effect.callback<void>(resume=>queueMicrotask(()=>resume(Effect.void)))}),
+ const services=Layer.mergeAll(Layer.succeed(DetachedFailures,{listener:cause=>Effect.die(executorCause(cause)),rejection:cause=>Effect.sync(()=>{void Promise.reject(executorCause(cause))})}),host,time,hooks,aborts,TranscriptionFilesLegacySync,NodePath.layer,Layer.succeed(Scheduler.PreventSchedulerYield,true),Layer.succeed(LegacyTiming,{turn:()=>Effect.callback<void>(resume=>queueMicrotask(()=>resume(Effect.void)))}),
   Layer.succeed(WorkerRuntime,discovery.runSync(WorkerRuntime)),Layer.succeed(ComputeProvider,discovery.runSync(ComputeProvider)),Layer.succeed(Checkpoints,borrowed.runSync(Checkpoints)),Layer.succeed(SeedFiles,borrowed.runSync(SeedFiles)),Layer.succeed(WorkerProtocol,borrowed.runSync(WorkerProtocol)),
   Layer.succeed(ExecutorCommit,{commit:input=>Effect.sync(()=>options.store.commit(input))}),
   Layer.succeed(SeedStore,{latest:id=>Effect.try({try:()=>options.store.getLatestForDownload?.(id)??null,catch:failure('latestTranscript')}),list:id=>Effect.try({try:()=>options.store.listForDownload(id),catch:failure('listTranscripts')})}),

@@ -10,7 +10,7 @@
     "test/fixtures/generate-provider-matrix.mts"
   ],
   "fixtures": {
-    "review-pure-oracle.json": "1463a32cf3b48361c736c4fa49a8d337aa8c6d599be92ad5ff16b37f87434348",
+    "review-pure-oracle.json": "0ab0e227ae42f09fca1720a93575aa6f08f8490c10d8936fc0d3a797cae72e63",
     "review-orchestration-traces.json": "fc1ae309149eb4a64b2c1499be1cc4e37a6226ffd71e27bd6932f36ee3868dbd",
     "review-audio-traces.json": "212f8e5fb25815a21bd1f61eeff2ad15ee058e35046219baaa7220cf2e1af1a3",
     "review-audio-await-traces.json": "504ac389d656542ea002998905e584e2fa775277908b007dd6e91e78cb95fa17",

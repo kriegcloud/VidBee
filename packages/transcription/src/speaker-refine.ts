@@ -70,7 +70,7 @@ const refineSpeakerTurnsDataFirst = (
   raw: TimedTurn[],
   _speech: TimeInterval[],
   _totalDurationMs: number,
-  options?: RefineSpeakerOptions
+  options: RefineSpeakerOptions | undefined
 ): TimedTurn[] => {
   const speechAware = A.map(raw, (turn) => ({ ...turn }));
   if (speechAware.length === 0) {
@@ -107,13 +107,18 @@ const refineSpeakerTurnsDataFirst = (
   return mergeAdjacentTurns(combined);
 };
 export const refineSpeakerTurns: {
-  (raw: TimedTurn[], _speech: TimeInterval[], _totalDurationMs: number, options?: RefineSpeakerOptions): TimedTurn[];
+  (
+    raw: TimedTurn[],
+    _speech: TimeInterval[],
+    _totalDurationMs: number,
+    options: RefineSpeakerOptions | undefined
+  ): TimedTurn[];
   (
     _speech: TimeInterval[],
     _totalDurationMs: number,
-    options?: RefineSpeakerOptions
+    options: RefineSpeakerOptions | undefined
   ): (raw: TimedTurn[]) => TimedTurn[];
-} = dual((args) => A.isArray(args[1]), refineSpeakerTurnsDataFirst);
+} = dual(4, refineSpeakerTurnsDataFirst);
 
 /**
  * Sum the duration of a list of intervals.
@@ -177,13 +182,22 @@ const turnsForAsrDataFirst = (
   raw: TimedTurn[],
   _speech: TimeInterval[],
   totalDurationMs: number,
-  options?: RefineSpeakerOptions
+  options: RefineSpeakerOptions | undefined
 ): TimedTurn[] => {
   const refined = refineSpeakerTurns(raw, [], totalDurationMs, options);
   const base = refined.length > 0 ? refined : raw;
   return fillUncoveredTurns(base, totalDurationMs);
 };
 export const turnsForAsr: {
-  (raw: TimedTurn[], _speech: TimeInterval[], totalDurationMs: number, options?: RefineSpeakerOptions): TimedTurn[];
-  (_speech: TimeInterval[], totalDurationMs: number, options?: RefineSpeakerOptions): (raw: TimedTurn[]) => TimedTurn[];
-} = dual((args) => A.isArray(args[1]), turnsForAsrDataFirst);
+  (
+    raw: TimedTurn[],
+    _speech: TimeInterval[],
+    totalDurationMs: number,
+    options: RefineSpeakerOptions | undefined
+  ): TimedTurn[];
+  (
+    _speech: TimeInterval[],
+    totalDurationMs: number,
+    options: RefineSpeakerOptions | undefined
+  ): (raw: TimedTurn[]) => TimedTurn[];
+} = dual(4, turnsForAsrDataFirst);

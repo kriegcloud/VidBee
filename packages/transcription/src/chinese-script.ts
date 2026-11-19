@@ -122,7 +122,7 @@ export const applyChineseScriptToSegment: {
     ...segment,
     text: applyChineseScript(segment.text, script),
     words:
-      segment.words === undefined
+      segment.words == null
         ? undefined
         : Arr.map(segment.words, (word) => ({
             ...word,

@@ -105,7 +105,14 @@ export const make = Effect.fnUntraced(function* () {
           } else if (message.type === "probe-ok") {
             probeOk = message;
             yield* cancelTimer;
-            cancelFlush = yield* time.after(50, finishProbe(), { keepAlive: true });
+            cancelFlush = yield* time.after(
+              50,
+              Effect.suspend(() => {
+                cancelFlush = Effect.void;
+                return finishProbe();
+              }),
+              { keepAlive: true }
+            );
           } else if (message.type === "error") {
             yield* cancelTimer;
             yield* fail(message.message);

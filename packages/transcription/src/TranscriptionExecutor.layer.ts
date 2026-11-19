@@ -17,8 +17,9 @@ import * as Str from "effect/String";
 import { DEFAULT_ASR_TIER, parseAsrTier } from "./asr-tiers.js";
 import { Checkpoints } from "./Checkpoints.service.js";
 import { manifestWorkKey } from "./chunk-manifest.js";
+import { DetachedFailures } from "./DetachedFailures.service.js";
 import { classifyTranscriptionFailure } from "./errors.js";
-import { TranscriptionStage as StageSchema, TranscriptResultKind } from "./Literal.model.js";
+import { TranscriptionStage as StageSchema } from "./Literal.model.js";
 import { modelVersion } from "./model-catalog.js";
 import { readTranscriptionOptions } from "./options.js";
 import { Partials } from "./Partials.service.js";
@@ -87,6 +88,7 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
   const seedFiles = yield* SeedFiles;
   const timing = yield* LegacyTiming;
   const owner = yield* Effect.scope;
+  const failures = yield* DetachedFailures;
   let resolution: Deferred.Deferred<RuntimeValue, Failure> | null = null;
   let selections = HashMap.empty<string, SherpaProviderSelection>();
   let probes = HashMap.empty<string, Deferred.Deferred<SherpaProviderSelection, Failure>>();
@@ -247,9 +249,22 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
     run: Effect.fn("TranscriptionExecutor.run")(function* (ctx, sink) {
       const parsed = readTranscriptionOptions(ctx.input);
       const cancellation = yield* Scope.fork(owner);
-      const signal = yield* Effect.abortSignal.pipe(Effect.provideService(Scope.Scope, cancellation));
+      const controller = yield* Effect.sync(() => new AbortController());
+      const signal = controller.signal;
       let child: WorkerProcessRun | null = null;
       let finished = false;
+      let cancellationClosed = false;
+      const closeCancellation = Effect.suspend(() => {
+        if (cancellationClosed) return Effect.void;
+        cancellationClosed = true;
+        return Scope.close(cancellation, Exit.void);
+      });
+      yield* Scope.addFinalizer(
+        cancellation,
+        Effect.sync(() => {
+          if (!finished) controller.abort();
+        })
+      );
       const finish = Effect.fnUntraced(function* (
         result: ExecutorFinishEvent["result"],
         tails = { stdout: "", stderr: "" }
@@ -521,9 +536,11 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
           sourceFilePath: parsed.sourceFilePath,
           result: output.result,
         });
-        const resultKind = yield* S.decodeUnknownEffect(TranscriptResultKind)(committed.resultKind).pipe(
-          Effect.mapError(hostFailure("commitResultKind"))
-        );
+        // The queue's original produced-result declaration is narrower than
+        // persisted rows. Copy the stored read value unchanged, as the old host
+        // did, while keeping the queue's existing public declaration intact.
+        const transcript = { resultKind: output.result.resultKind, transcriptId: committed.id };
+        Object.assign(transcript, { resultKind: committed.resultKind });
         if (output.cleanup !== undefined) {
           yield* output.cleanup;
           yield* partials.clear(ctx.taskId);
@@ -536,7 +553,7 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
               size: 1,
               durationMs: output.durationMs || null,
               sha256: null,
-              transcript: { resultKind, transcriptId: committed.id },
+              transcript,
             },
           },
           tails,
@@ -552,17 +569,16 @@ export const make = Effect.fnUntraced(function* (config: TranscriptionExecutorCo
             return finish({ type: "error", error, exitCode: null }, { stdout: "", stderr: error.rawMessage });
           });
           return timing.turn("executor.execute.rejection").pipe(Effect.andThen(complete));
-        })
+        }),
+        Effect.ensuring(closeCancellation)
       );
-      yield* time
-        .microtask(work.pipe(Effect.ignoreCause))
-        .pipe(
-          Effect.mapError((error) =>
-            QueueHostFailure.make({ original: original(error), legacyMessage: message(error) })
-          )
-        );
+      yield* time.microtask(work.pipe(Effect.catchCause(failures.rejection))).pipe(
+        Effect.onError(() => closeCancellation),
+        Effect.mapError((error) => QueueHostFailure.make({ original: original(error), legacyMessage: message(error) }))
+      );
       const cancel = Effect.gen(function* () {
-        yield* Scope.close(cancellation, Exit.void);
+        yield* Effect.sync(() => controller.abort());
+        yield* closeCancellation;
         if (child !== null) yield* child.terminate(1000);
       }).pipe(
         Effect.mapError((error) => QueueHostFailure.make({ original: original(error), legacyMessage: message(error) }))

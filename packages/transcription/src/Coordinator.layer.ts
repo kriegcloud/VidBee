@@ -6,6 +6,7 @@ import * as HashSet from "effect/HashSet";
 import * as Layer from "effect/Layer";
 import * as Scope from "effect/Scope";
 import { Coordinator, CoordinatorHooks } from "./Coordinator.service.js";
+import { DetachedFailures } from "./DetachedFailures.service.js";
 import { Enqueue } from "./Enqueue.service.js";
 import { TranscriptionFiles } from "./TranscriptionFiles.service.js";
 import { TranscriptionQueue } from "./TranscriptionQueue.service.js";
@@ -23,6 +24,7 @@ export const layer = Layer.effect(
     const hooks = yield* CoordinatorHooks;
     const timing = yield* LegacyTiming;
     const owner = yield* Effect.scope;
+    const failures = yield* DetachedFailures;
     let subscription: TranscriptionQueueSubscription | null = null;
     let pending = HashSet.empty<string>();
     let ordered: string[] = [];
@@ -97,10 +99,7 @@ export const layer = Layer.effect(
               const task = yield* queue.get(event.taskId);
               if (task === undefined || !HashSet.has(TRANSCRIBABLE_TASK_KINDS, task.kind)) return;
               yield* consider(task);
-            }).pipe(
-              Effect.catch((error) => Effect.logError("auto-transcription event failed", error)),
-              Effect.forkIn(owner, { startImmediately: true })
-            );
+            }).pipe(Effect.catchCause(failures.rejection), Effect.forkIn(owner, { startImmediately: true }));
           }),
         });
       }),

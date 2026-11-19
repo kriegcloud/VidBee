@@ -29,11 +29,11 @@ export function unpack(value: any, seen = new Map<number, any>()): any {
   if ('$fn' in value) return value.$fn === 'throw' ? () => { throw new Error('punctuation fixture') } : value.$fn === 'rewrite' ? () => 'changed' : value.$fn === 'append-period' ? (text: string) => text+'。' : () => 'fixture-id'
   const result = '$error' in value ? value.$error.kind === 'TypeError' ? new TypeError(value.$error.message) : value.$error.kind === 'RangeError' ? new RangeError(value.$error.message) : value.$error.kind === 'SyntaxError' ? new SyntaxError(value.$error.message) : new Error(value.$error.message) : '$uint8' in value ? Uint8Array.from(value.$uint8) : '$float32' in value ? Float32Array.from(value.$float32.map((item: unknown) => unpack(item, seen))) : '$map' in value ? new Map() : '$set' in value ? new Set() : '$array' in value ? [] : {}
   seen.set(value.$id, result)
-  if ('$error' in value) for (const [key,item] of Object.entries(value.$error.fields)) result[key]=unpack(item,seen)
-  else if ('$map' in value) for (const [key, item] of value.$map) result.set(unpack(key, seen), unpack(item, seen))
-  else if ('$set' in value) for (const item of value.$set) result.add(unpack(item, seen))
-  else if ('$array' in value) for (const item of value.$array) result.push(unpack(item, seen))
-  else if ('$object' in value) for (const [key, item] of Object.entries(value.$object)) result[key] = unpack(item, seen)
+  if ('$error' in value) for (const [key,item] of Object.entries(value.$error.fields)) Reflect.set(result,key,unpack(item,seen))
+  else if ('$map' in value && result instanceof Map) for (const [key, item] of value.$map) result.set(unpack(key, seen), unpack(item, seen))
+  else if ('$set' in value && result instanceof Set) for (const item of value.$set) result.add(unpack(item, seen))
+  else if ('$array' in value && Array.isArray(result)) for (const item of value.$array) result.push(unpack(item, seen))
+  else if ('$object' in value) for (const [key, item] of Object.entries(value.$object)) Reflect.set(result,key,unpack(item, seen))
   return result
 }
 export function observe(fn: Function, args: unknown[]) {

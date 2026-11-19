@@ -124,7 +124,7 @@ const deleteTranscriptSegmentsFromListDataFirst = (
   segments: TranscriptSegment[],
   segmentIds: string[]
 ): TranscriptSegment[] => {
-  const drop = HashSet.fromIterable(segmentIds);
+  const drop = HashSet.fromIterable(segmentIds ?? []);
   return reindexTranscriptSegments(Arr.filter(segments, (segment) => !HashSet.has(drop, segment.id)));
 };
 export const deleteTranscriptSegmentsFromList: {
