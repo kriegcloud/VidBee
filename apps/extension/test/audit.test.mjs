@@ -154,3 +154,44 @@ it('complete WXT manifest pins trusted key, permissions and locale identity', ()
   }).default
   expect(config).toMatchSnapshot()
 })
+
+
+it.each(['error-ready', 'ready-error'])('cached branch preserves the opposite field across released initialization: %s', async order => {
+  const results = []
+  for (const old of [true, false]) {
+    const older = 'https://older.invalid/'
+    const ready = { url, status: 'ready', fetchedAt: now, info: { title: 'Retained info', formats: [] } }
+    const error = { url, status: 'error', fetchedAt: now, error: 'Retained error' }
+    const [first, last] = order === 'error-ready' ? [error, ready] : [ready, error]
+    const h = make({ old, map: { [url]: first, [older]: { ...last, url: older } } })
+    const queries = [deferred(), deferred()]; let index = 0
+    h.query = () => queries[index++].promise
+    await h.popup()
+    await act(async () => { queries[1].resolve([{ url }]); await settle() })
+    await act(async () => { queries[0].resolve([{ url: older }]); await settle() })
+    results.push(h.html())
+  }
+  expect(results[1]).toEqual(results[0])
+  expect(results[0]).toContain('Retained error')
+})
+
+
+it.each(['ready', 'error'])('frozen cached %s branch writes only its own field and loading', status => {
+  const text = source('entrypoints/popup/App.tsx', true)
+  const start = text.indexOf('      if (cached && !shouldBypassCache)')
+  const end = text.indexOf('      try {', start)
+  expect(start).toBeGreaterThan(0); expect(end).toBeGreaterThan(start)
+  const info = { title: 'Retained info', formats: [] }
+  const state = { info, error: 'Retained error', loading: true }, writes = []
+  const h = make({ old: true })
+  const api = h.evaluate(`export const cachedHit = () => { ${text.slice(start, end)} }`, 'cached.ts', {
+    cached: { status, info, error: 'Retained error' }, shouldBypassCache: false,
+    sanitizeError: pure(true).sanitizeError,
+    setInfo: value => { state.info = value; writes.push(['info', value]) },
+    setError: value => { state.error = value; writes.push(['error', value]) },
+    setLoading: value => { state.loading = value; writes.push(['loading', value]) }
+  })
+  api.cachedHit()
+  expect(state).toEqual({ info, error: 'Retained error', loading: false })
+  expect(writes).toEqual([[status === 'ready' ? 'info' : 'error', status === 'ready' ? info : 'Retained error'], ['loading', false]])
+})

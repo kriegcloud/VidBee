@@ -58,3 +58,13 @@ export const sanitizeError = (error: string): string => {
   }
   return error;
 };
+
+// The old request catch classified Error messages after every operation in its try block.
+// A scalar rejection keeps the separate application fallback.
+export const requestFailureMessage = (cause: unknown): string => {
+  if (cause instanceof DOMException && cause.name === "AbortError") return "Request timed out.";
+  if (!(cause instanceof Error)) return "Failed to fetch video info.";
+  if (Str.includes("signal is aborted")(cause.message)) return "Request timed out.";
+  if (Str.includes("Failed to fetch")(cause.message)) return "VidBeep app not responding on this port.";
+  return cause.message;
+};

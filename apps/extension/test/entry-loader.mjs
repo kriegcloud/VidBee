@@ -49,9 +49,6 @@ export function evaluate(text, filename, context, { old = false, onRoot = () => 
     return evaluate(source("entrypoints/popup/App.tsx", true), filename, context, { old: true, onRoot });
   }
   if (process.env.VIDBEE_EXTENSION_FROZEN === "1" && filename === "controls.tsx") old = true;
-  // The closure oracle passes its source text through a fresh Harness. Keep
-  // frozen declarations executable even when that harness has the default side.
-  if (filename === "controls.tsx" && text.includes("const wait =")) old = true;
   if (!old && filename === "controls.tsx") {
     const controls = loadEntry("test/controls.entry.ts", { old, context, onRoot });
     return controls.createControls({ currentUrl: context.currentUrl, assign: uri => { context.window.location.href = uri }, retry: context.setRetryTrigger });

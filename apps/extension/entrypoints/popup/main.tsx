@@ -9,7 +9,7 @@ import * as References from "effect/References";
 import * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { logFailure } from "../../src/Extension.logging.js";
+import { logFailure } from "../../src/Extension.diagnostics.js";
 import { extensionBrowserLayer } from "../../src/ExtensionBrowser.layer.js";
 import { ExtensionCacheLive } from "../../src/ExtensionCache.layer.js";
 import { ExtensionHttpLive } from "../../src/ExtensionHttp.layer.js";

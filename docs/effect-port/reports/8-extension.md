@@ -264,3 +264,74 @@ The full repetition matrix started after all source/test edits, uses neither fro
 - Real Chromium lane must prove unpacked identity and worker/action-popup capabilities; actual popup active/current-window query chooses the fixture; real Origin/header/bodyless token exchange; metadata success/failure, cache reopen/retry/error, browser storage serialization and worker restart; screenshots and 360px layout, themes/reduced-motion/keyboard focus; actual document/worker resource cleanup. A post-capability mismatch is a scenario failure, not a capability skip.
 - Never click protocol-launch controls in browser proof. Use isolated handler-discovery directories; URI/delay behavior is synthetic proof here. Persisted real storage requires a safe snapshot/copy and anonymized counts/schema paths; none was read here.
 - Packaged desktop API goldens, Linux/CLI packaged proof, remote extraction/authentication/thumbnails, store installation, Firefox trusted-origin behavior and Windows/macOS protocol handling are outside this lane's proof.
+
+
+## Code review
+
+### Progress
+
+- [x] Confirm the eight reviewed findings (seven distinct defects).
+- [x] Add failing regressions and restore the dropped observations.
+- [x] Fix the defects with installed Effect 4.1.4 APIs and audit neighboring paths.
+- [x] Extension check, 230-test suite, compile and Chrome/Firefox builds pass.
+- [x] Final root, forced two-core and eligible-source-copy gates.
+- [x] Full 40-run repetition matrix and final integrity receipts.
+
+| Finding | Severity | What was wrong | Fix | Test that pins it |
+| --- | --- | --- | --- | --- |
+| 1 | Blocker | The root `*.log*` pattern hid `Extension.logging.ts`, so local builds used a module absent from the commit. | Rename it to `Extension.diagnostics.ts`, update all four imports, and add the `ignored-source` ratchet for every ported unit's `src` and `test` trees. No ignore rule changes. | `scripts/port-check.test.mjs`: ignored nested source and non-code fixture files fail in both applications and packages; unported units and generated output stay outside this added rule. Check/test/browser builds also run from an eligible-source-only copy. |
+| 2 | Major | The metadata-root oracle read current HTML twice after notification, dropping initialization HTML. | Capture `currentBefore` before sending the notification; correct the historical comment to describe the original snapshot observation. | The existing root matrix again compares both observations. Injecting wrong initialization HTML fails the restored assertion. |
+| 3 | Major | Non-2xx error/details joins bypassed the old request catch classification. | Classify the result failure, including coercion failure, with aborted-signal precedence over failed-fetch text; retain status. Both ordinary and body-deadline result paths share it. | `http-parity.test.mjs`: verbatim hash-checked frozen `fetchJson` versus real HTTP Layer, GET and POST, transport/AbortError/signal failures, header timeout, 2xx and non-2xx body timeout, malformed successful body, error/details/both/neither phrases and mixed-phrase precedence. Seven status cases failed in the original 18-case regression before the fix; the expanded matrix has 56 cases. |
+| 4 and 8 | Minor | Cached hits used notification/final-read publication, clearing the opposite atom. | The cached path writes only info or error, then loading; notification and final-read publication retain their original clearing behavior. | `audit.test.mjs`: both released-StrictMode orderings compare frozen and current DOM, and verbatim frozen cached branches pin exact setters and retained state. `native.test.ts`: suspended reads pin both atoms for each cached status; reintroducing shared publication fails. |
+| 5 | Minor | Releasing a session removed its listener but retained the release closure in the document scope. | Fork a child scope per listener session; register removal there and close the child on release. Installed `Scope.fork` detaches closed children. Initialization remains owned by the document scope. | `native.test.ts`: 100 sessions, repeated release, no live listeners every registered session scope closed, and each parent controller scope Empty. Public Scope finalization is spied without replacing its behavior. Restoring parent registration with actual listener removal fails on 100 retained Open scopes. Existing continuation and document-close cases stay green. |
+| 6 | Minor | The navigation oracle implemented a second fake navigation driver and chose frozen declarations through source-text detection. | Compose the actual `extensionNavigationLayer` and commands in the adapter, dispose its runtime, and select frozen execution with the explicit harness side. | Original empty-URL/URI/failure/delay assertions remain unchanged; a new case observes the real tagged failure from a distinct host error. Mutating the production driver's message now fails the oracle. |
+| 7 | Minor | Package-specific Turbo tasks replaced the generic upstream dependencies. | Restore `^check` on extension check/test and `^build` on build. | `scripts/port-check.test.mjs` compares all three task dependencies with their generic definitions; it failed before the change. |
+
+### Neighbors and test-integrity audit
+
+Audited all eleven extension suites, the harness, source selector, current entry loader, pure-helper selector, independent design expectations and subprocess failure fixtures for frozen-only observations and current-side values supplied by adapters. The dropped pre-notification HTML in the metadata root matrix and the duplicated navigation failure mapping/source-text routing are the confirmed cases; both are fixed. No other missing current-side observation or adapter-produced application result was found. The body-timeout snapshot retains historical ready-null data intentionally, and the adjacent independent assertion still checks actual current storage. Metadata/history/notification declared-change tables retain frozen snapshots and separately compare current DOM, writes and traces with their case-specific design expectations; these are expected values, not replacements for current observations. Fake time, transport response serialization, browser/storage calls and logger capture remain boundary instrumentation.
+
+The HTTP audit covers status, token and info through the shared request implementation; the new matrix checks both methods directly. The origin-lookup neighbor also discarded every host error message before the HTTP catch could classify it: the expanded frozen matrix reproduced ten failures there. A shared pure request classifier now handles origin Error/DOMException causes, transport causes and constructed HTTP errors, keeping non-Error fallbacks distinct. Transport classification, timeout-before-headers fallback and status-aware body expiry remain distinct as the frozen source dictates. The two phrases in either joined field and their precedence are now covered. Cached ready/error are both checked; notification and final-read branches already cleared the opposite field and are deliberately unchanged. Session initialization and admitted notification fibers remain document-owned, preserving stale initialization while session listener finalization releases immediately. Background listener ownership already had a document/worker scope and does not create per-popup-session finalizers. Neighboring Turbo build lost its generic dependency too and is repaired with check/test.
+
+The new ratchet enumerates Git's ignored untracked paths, including nested files and arbitrary fixture suffixes, under each detected ported unit's `src` and `test`. It does not change any existing rule. Git metadata is needed for this additional ignore inventory; source archives without `.git` retain every existing static rule. The final source inventory and the separate copied-source builds establish the shipping-file proof without staging this lane.
+
+### Review verification boundaries
+
+No frozen source, snapshot, existing expected fixture or established assertion was weakened. The metadata change restores an original observation; navigation side selection restores explicit ownership of the observed source. Temporary regression mutations were restored before final validation. This lane does not provide an independent review of its own changes; the orchestrator arranges that review. Browser installation, real Chromium, packaged desktop goldens, protocol handlers, owner profiles and hosted CI remain separate acceptance obligations.
+
+
+### Final gate receipts
+
+All runs use Node v22.23.4 and Bun 1.4.4, one heavy command at a time. Source/test edits ended before the repetition matrix started.
+
+| Command or proof | Exit | Result |
+| --- | --- | --- |
+| Extension `check`, `test`, `compile` | 0 each | Strict source/test checking; 230 tests in eleven suites; only the two retained CSS warnings. |
+| Extension Chrome and Firefox builds | 0 each | Nineteen installable files each. The sixteen manifest/assets hashes match the prior lane's frozen-build comparison; only worker, popup chunk and referencing HTML change. |
+| Root `bun run check` | 0 | Legacy lint/locales/typechecking and strict package checks pass. |
+| Root `bun run test` | 0 | Full audit, ported, checker, negative-fixture and isolated harness suites pass. |
+| `bun run deps:check` | 0 | Catalog consistency passes. |
+| `bun run port:check` | 0 | Sixteen ported configurations; zero violations. |
+| `TURBO_FORCE=true taskset -c 0-1 bun run test` | 0 | Full root suite passes on two cores. |
+| Eligible-source-copy extension check/test/compile and both browser builds | 0 each | Fresh copy with no Git metadata or ignored source; 229 tests pass and only the optional Git-history test skips. Both browser outputs contain nineteen files and match the main worktree manifests. |
+| Frozen six characterization suites | 0 | 109 pass; only the newly added current-driver inspection case skips in frozen mode. Frozen SHA-256 and available history checks remain active. |
+
+For the missing-module finding, this lane uses the architect's permitted ignored-file-inventory alternative rather than claiming an archive of unchanged HEAD includes uncommitted fixes. `source-inventory.json` enumerates all 3,626 Git-eligible repository files, including the three explicit new source/test files, and zero ignored files in ported source/test trees. The copied-source proof adds installed dependencies with workspace links resolving inside that copy; no generated application output or Git metadata is copied. Its five gates pass, and the copy is removed. Staging the new diagnostics module and the two HTTP-oracle test files remains the orchestrator's responsibility.
+
+Root check initially found the merged browser-capture-legacy workspace link absent from the installation. A frozen-lockfile Bun install with lane-owned temporary/cache paths repaired that link, without manifest or lockfile changes. An earlier root audit run lost subprocesses to SIGKILL under the documented memory guard; the unchanged rerun passed after waiting. The final normal and forced runs pass separately. No test timeout, diagnostic or harness behavior was changed for either environment issue.
+
+Machine-readable gate, source-copy, inventory, regression-sensitivity and final repetition receipts live beside the lane handoff. The final repetition totals are appended after the matrix completes.
+
+
+### Repetition closeout
+
+| Directory | TZ | Exit | Result |
+| --- | --- | --- | --- |
+| root | UTC | 0 x 10 | 230 tests each run |
+| root | Asia/Tokyo | 0 x 10 | 230 tests each run |
+| package | UTC | 0 x 10 | 230 tests each run |
+| package | Asia/Tokyo | 0 x 10 | 230 tests each run |
+
+All forty final runs pass with unchanged source/test hashes. The first package-UTC series had five passes before its sixth attempt was terminated with exit 143 before assertion output. Per COMMON's documented memory-guard rule, the failed receipt is retained, the runner waited more than one minute, and that ten-run series restarted from iteration one. It then completed ten consecutive passes, as did package Asia/Tokyo. The final matrix uses the completed original twenty root runs and the twenty restarted package runs; the interrupted series is separately retained in `repeats-first-attempt.json` and `evidence/memory-guard-repeats/`. This is memory guard, rerun passed, not a hidden test retry. The runner waited for 25 GB headroom before the restarted package runs; no test, timeout or harness behavior changed.
+
+Final integrity checks pass: no staged changes, whitespace errors, absolute home paths, frozen-source/snapshot/lockfile edits or source/test hash drift. `all-source-ignore-inventory.json` additionally verifies zero ignored files across every repository src/test/extension-entrypoint tree, including unported neighbors. Both copied builds exactly match all nineteen output hashes of their worktree builds. All assigned local review-fix steps are complete; independent review and separate real-browser/packaged/hosted acceptance remain with the orchestrator.

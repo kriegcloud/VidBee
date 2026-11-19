@@ -1,12 +1,13 @@
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as O from "effect/Option";
 import * as P from "effect/Predicate";
 import * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import * as S from "effect/Schema";
 import * as Scope from "effect/Scope";
+import { logFailure } from "./Extension.diagnostics.js";
 import { ExtensionBoundaryFailure } from "./Extension.errors.js";
-import { logFailure } from "./Extension.logging.js";
 import { CacheMap, VideoInfoCacheEntry } from "./Extension.model.js";
 import { isValidHttpUrl, sanitizeError } from "./Extension.pure.js";
 import { ExtensionBrowser } from "./ExtensionBrowser.service.js";
@@ -66,13 +67,17 @@ export const PopupControllerLive = Layer.effect(
           );
         };
         const remove = yield* browser.listenStorage(listener);
-        const release = Effect.sync(() => {
-          if (active) {
-            active = false;
-            remove();
-          }
-        });
-        yield* Scope.addFinalizer(scope, release);
+        const sessionScope = yield* Scope.fork(scope);
+        yield* Scope.addFinalizer(
+          sessionScope,
+          Effect.sync(() => {
+            if (active) {
+              active = false;
+              remove();
+            }
+          })
+        );
+        const release = Scope.close(sessionScope, Exit.void);
         yield* Effect.gen(function* () {
           registry.set(loadingAtom, true);
           registry.set(errorAtom, null);
@@ -93,7 +98,9 @@ export const PopupControllerLive = Layer.effect(
             ((cached.status === "ready" && P.isTruthy(cached.info)) ||
               (cached.status === "error" && P.isTruthy(cached.error)))
           ) {
-            publish(cached);
+            if (cached.status === "ready") registry.set(infoAtom, cached.info ?? null);
+            else registry.set(errorAtom, sanitizeError(cached.error ?? ""));
+            registry.set(loadingAtom, false);
             return;
           }
           yield* browser.sendMessage({ type: "video-info:fetch", url }).pipe(
