@@ -69,6 +69,8 @@ const fixture = (mode: string, onWrite?: (text: string) => void) => {
         _tag: "Acquired" as const,
         run: {
           pid: 1,
+          writeStdin: (_bytes: Uint8Array) => Effect.void,
+          observeClose: Effect.void,
           signalChild: Effect.fn("fixture.signalChild")(() => Effect.void),
           signalPid: Effect.fn("fixture.signalPid")(() => Effect.void),
           signalGroup: Effect.fn("fixture.signalGroup")(() => Effect.void),

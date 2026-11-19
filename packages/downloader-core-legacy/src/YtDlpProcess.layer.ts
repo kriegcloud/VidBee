@@ -6,6 +6,7 @@ import { runLegacySync } from '@vidbee/task-queue-legacy/runtime'
 import { killProcessTree } from '@vidbee/task-queue-legacy/process'
 import { YtDlpProcess } from '../../downloader-core/src/YtDlpProcess.service.js'
 import { HostFailure } from '../../downloader-core/src/Downloader.errors.js'
+import type { ProcessSignal } from '../../downloader-core/src/Process.model.js'
 import type { WrapperObservation } from '../../downloader-core/src/YtDlpWrapper.model.js'
 import type { YtDlpExecutorOptions } from './yt-dlp-executor.js'
 
@@ -28,10 +29,17 @@ export const makeInjectedYtDlpProcessLayer = <R, ER>(
       const request = (action: () => void) => Effect.try({ try: action, catch: cause => new HostFailure({ operation: 'signal', cause, legacyMessage: cause instanceof Error ? cause.message : String(cause) }) })
       return { _tag: 'Acquired' as const, run: {
         pid: child?.pid,
-        signalChild: (signal: 'SIGTERM' | 'SIGKILL') => request(() => { child?.kill(signal) }),
-        signalPid: (signal: 'SIGTERM' | 'SIGKILL') => Effect.sync(() => { if (child?.pid) { try { process.kill(child.pid, signal) } catch {} } }),
-        signalGroup: (signal: 'SIGTERM' | 'SIGKILL') => request(() => { if (child?.pid) process.kill(-child.pid, signal) }),
-        signalTree: (signal: 'SIGTERM' | 'SIGKILL') => request(() => { killProcessTree(child?.pid, signal) }),
+        writeStdin: (_bytes: Uint8Array) => Effect.void,
+        observeClose: Effect.sync(() => { emitter.once('close', code => emit({ _tag: 'close', code })) }),
+        signalChild: (signal: ProcessSignal) => request(() => { child?.kill(signal) }),
+        signalPid: (signal: ProcessSignal) => Effect.sync(() => { if (child?.pid) { try { process.kill(child.pid, signal) } catch {} } }),
+        signalGroup: (signal: ProcessSignal) => request(() => { if (child?.pid) process.kill(-child.pid, signal) }),
+        signalTree: (signal: ProcessSignal) => request(() => {
+          const pid = child?.pid
+          if (!pid) return
+          if (signal !== 'SIGINT') return killProcessTree(pid, signal)
+          try { process.kill(-pid, signal) } catch { try { process.kill(pid, signal) } catch {} }
+        }),
       } }
     },
     catch: cause => new HostFailure({ operation: 'spawn', cause, legacyMessage: cause instanceof Error ? cause.message : String(cause) }),

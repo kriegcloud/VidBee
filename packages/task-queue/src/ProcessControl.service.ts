@@ -14,8 +14,8 @@ export class ProcessControl extends Context.Service<
 export class ProcessRequests extends Context.Service<
   ProcessRequests,
   {
-    readonly pid: (pid: number, signal: "SIGTERM" | "SIGKILL") => Effect.Effect<void>;
-    readonly group: (pid: number, signal: "SIGTERM" | "SIGKILL") => Effect.Effect<void>;
-    readonly tree: (pid: number, signal: "SIGTERM" | "SIGKILL") => Effect.Effect<void>;
+    readonly pid: (pid: number, signal: "SIGTERM" | "SIGKILL" | "SIGINT") => Effect.Effect<void>;
+    readonly group: (pid: number, signal: "SIGTERM" | "SIGKILL" | "SIGINT") => Effect.Effect<void>;
+    readonly tree: (pid: number, signal: "SIGTERM" | "SIGKILL" | "SIGINT") => Effect.Effect<void>;
   }
 >()("@vidbee/task-queue/ProcessControl.service/ProcessRequests") {}

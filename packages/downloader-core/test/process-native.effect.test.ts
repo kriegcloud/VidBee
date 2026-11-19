@@ -1,5 +1,6 @@
 import { expect, layer as testLayer } from "@effect/vitest";
 import { ProcessRequests } from "@vidbee/task-queue/ProcessControl.service";
+import * as A from "effect/Array";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -159,6 +160,44 @@ testLayer(lifecycleLayer)("attempt observation and scope", (it) => {
       expect(events).toContain("stdoutEnd");
       expect(events).toContain("stderrEnd");
       expect(events[events.length - 1]).toBe("complete");
+    })
+  );
+});
+
+testLayer(
+  provided(
+    Effect.fn("fixture.unreadSpawn")(() =>
+      Effect.succeed(makeHandle(Stream.fail(error), Effect.succeed(ChildProcessSpawner.ExitCode(0))))
+    )
+  )
+)("independent consumption and observation", (it) => {
+  it.effect("unread output is never evaluated and omitted close does not complete", () =>
+    Effect.gen(function* () {
+      const service = yield* DownloadProcess;
+      const exited = yield* Deferred.make<void>();
+      const events: ProcessEvent[] = [];
+      const started = yield* service.start(
+        {
+          ...spec,
+          stdoutConsumption: "unread",
+          rawCloseObservation: "omit",
+          rawSpawnObservation: "once",
+          rawErrorObservation: "omit",
+        },
+        {
+          abort: Effect.void,
+          emit: Effect.fn("fixture.policyEvent")(function* (event) {
+            events.push(event);
+            if (event._tag === "nativeExit") yield* Deferred.succeed(exited, undefined);
+          }),
+        }
+      );
+      yield* Deferred.await(exited);
+      yield* Effect.yieldNow;
+      expect(A.map(events, (event) => event._tag)).toEqual(["stderrEnd", "nativeExit"]);
+      if (started._tag !== "Acquired") return yield* Effect.die(started.error);
+      yield* started.run.observeClose;
+      expect(A.some(events, (event) => event._tag === "complete")).toBe(false);
     })
   );
 });
