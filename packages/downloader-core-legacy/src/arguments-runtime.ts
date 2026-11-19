@@ -16,6 +16,9 @@ export const argumentError = (cause: Cause.Cause<unknown>): unknown => {
   const failure = Cause.findErrorOption(cause)
   if (Option.isNone(failure)) return Cause.squash(cause)
   const error = failure.value
+  if (error instanceof MetadataFailure && error.jsonInput !== undefined) {
+    try { JSON.parse(error.jsonInput) } catch (syntax) { return syntax }
+  }
   if (error instanceof InvalidDownload || error instanceof BinaryUnavailable || error instanceof MetadataFailure || error instanceof ProfileUnavailable || error instanceof ProfileBusy || error instanceof ProfileIdentityMismatch || error instanceof BoundaryDecodeError || error instanceof HostFailure) {
     if ('cause' in error) return error.cause
     return new Error(String(error.legacyMessage))

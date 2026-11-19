@@ -136,7 +136,7 @@ it("preserves group insertion order while replacing an HLS rendition", () => {
     replacement,
     second,
   ]);
-  expect(buildFilePathCandidates("/downloads", "title", "mp4")).toEqual([
+  expect(buildFilePathCandidates({ downloadPath: "/downloads", title: "title", format: "mp4" })).toEqual([
     "/downloads/title via VidBeep.mp4",
     "/downloads/title via VidBee.mp4",
     "/downloads/title.mp4",

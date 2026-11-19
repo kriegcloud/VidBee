@@ -205,6 +205,7 @@ export const socialProfileManagerLayer = (options: SocialProfileManagerOptions) 
           yield* save(profile);
         });
         const knownIds = canStopEarly && mapped.items.length > 0 ? A.map(mapped.items, (item) => item.id) : undefined;
+        let completed = false;
         const work = traversal
           .map(
             {
@@ -240,12 +241,13 @@ export const socialProfileManagerLayer = (options: SocialProfileManagerOptions) 
             ),
             Effect.ensuring(
               Effect.sync(() => {
+                completed = true;
                 active = HashMap.remove(active, target);
               })
             )
           );
         const done = yield* Effect.forkIn(work, scope, { startImmediately: true });
-        active = HashMap.set(active, target, { controller, done });
+        if (!completed) active = HashMap.set(active, target, { controller, done });
         return structuredClone(profile);
       });
       const mapAndWait = Effect.fn("SocialProfileManager.mapAndWait")(function* (

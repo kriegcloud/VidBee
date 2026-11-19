@@ -9,6 +9,7 @@ import * as Result from "effect/Result";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import { DownloadProcess } from "./DownloadProcess.service.js";
+import type { ProcessOutputChannel, ProcessOutputEnd, TerminationSignal } from "./DownloadLiterals.model.js";
 import type { ProcessStart } from "./DownloadProcess.service.js";
 import type { NativeOutcome, ProcessEvent } from "./Process.model.js";
 
@@ -61,13 +62,17 @@ export const layer = Layer.effect(
         const handle = acquired.success;
         const run = {
           pid: handle.pid,
-          signalChild: (signal: "SIGTERM" | "SIGKILL") => requests.pid(handle.pid, signal),
-          signalPid: (signal: "SIGTERM" | "SIGKILL") => requests.pid(handle.pid, signal),
-          signalGroup: (signal: "SIGTERM" | "SIGKILL") => requests.group(handle.pid, signal),
-          signalTree: (signal: "SIGTERM" | "SIGKILL") => requests.tree(handle.pid, signal),
+          signalChild: (signal: typeof TerminationSignal.Type) => requests.pid(handle.pid, signal),
+          signalPid: (signal: typeof TerminationSignal.Type) => requests.pid(handle.pid, signal),
+          signalGroup: (signal: typeof TerminationSignal.Type) => requests.group(handle.pid, signal),
+          signalTree: (signal: typeof TerminationSignal.Type) => requests.tree(handle.pid, signal),
         };
         const observe = Effect.fnUntraced(function* () {
-          const drain = (stream: typeof handle.stdout, tag: "stdout" | "stderr", end: "stdoutEnd" | "stderrEnd") =>
+          const drain = (
+            stream: typeof handle.stdout,
+            tag: typeof ProcessOutputChannel.Type,
+            end: typeof ProcessOutputEnd.Type
+          ) =>
             Stream.runForEach(stream, (chunk) => sink.emit({ _tag: tag, chunk })).pipe(
               Effect.andThen(sink.emit({ _tag: end }))
             );

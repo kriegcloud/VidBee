@@ -1,5 +1,6 @@
 import * as NodePath from "@effect/platform-node/NodePath";
 import { expect, layer as testLayer } from "@effect/vitest";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
@@ -15,13 +16,15 @@ import { YtDlpProcess } from "../src/YtDlpProcess.service.js";
 import type { DownloaderEvent } from "../src/Downloader.model.js";
 import type { WrapperSink } from "../src/YtDlpProcess.service.js";
 
-const fixture = (mode: "normal" | "acquisition" | "listener") => {
+const FixtureMode = LiteralKit(["normal", "acquisition", "listener"]);
+const fixture = (mode: typeof FixtureMode.Type) => {
   const events: DownloaderEvent[] = [];
   const sinks: WrapperSink[] = [];
   const listenerFailure = { callback: "core-listener" };
   let id = 0;
   const now = 100;
   const host = Layer.succeed(DownloaderHost, {
+    jsonSyntaxMessage: () => "Invalid yt-dlp metadata.",
     downloadDir: "/downloads",
     maxConcurrent: 1,
     runtimeSettings: {},
@@ -29,6 +32,7 @@ const fixture = (mode: "normal" | "acquisition" | "listener") => {
     platform: "linux",
     initialize: Effect.succeed({ binary: "fixture", ffmpeg: "/ffmpeg" }),
     now: () => now,
+    random: () => 0.5,
     uuid: () => `task-${++id}`,
     cancellation: Effect.sync(() => {
       const controller = new AbortController();

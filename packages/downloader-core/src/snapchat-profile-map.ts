@@ -2,6 +2,7 @@ import * as Effect from "effect/Effect";
 import * as Str from "effect/String";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
+import { finalizeProfile } from "./ProfileFinalization.js";
 import { snapchatCategoryUrl, snapchatSpotlightUrl, snapchatStorySnapUrl } from "./snapchat.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type { SocialMappedItem } from "./ProfilePersistence.model.js";
@@ -96,9 +97,10 @@ export const mapSnapchatProfile = Effect.fn("snapchat-profile-map.mapSnapchatPro
 ) {
   const url = snapchatCategoryUrl(owner, category);
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  try {
-    return yield* mapSnapchatProfileUnchecked(owner, category, runtime, settings, signal, onItem);
-  } finally {
-    if (release !== undefined) yield* release;
-  }
+  return yield* finalizeProfile(
+    mapSnapchatProfileUnchecked(owner, category, runtime, settings, signal, onItem),
+    Effect.gen(function* () {
+      if (release !== undefined) yield* release;
+    })
+  );
 });

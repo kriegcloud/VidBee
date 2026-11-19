@@ -20,7 +20,8 @@ export const isMuxedVideoFormat = (format: FormatSelectorInput | undefined): boo
   Boolean(format?.vcodec && format.vcodec !== "none" && format.acodec && format.acodec !== "none");
 
 export const resolvePreferredAudioExt = (videoExt: string | undefined): string | undefined => {
-  if (!(videoExt !== undefined && videoExt !== null && videoExt !== "")) {
+  const hasExt = Boolean(videoExt);
+  if (videoExt === undefined || !hasExt) {
     return undefined;
   }
 

@@ -1,5 +1,6 @@
 import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as A from "effect/Array";
+import * as Effect from "effect/Effect";
 import { dual } from "effect/Function";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
@@ -7,6 +8,7 @@ import * as Result from "effect/Result";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { InvalidDownload } from "./Downloader.errors.js";
+import type { OnlyFansFeed } from "./DownloadLiterals.model.js";
 
 export const OnlyFansCategorySchema = LiteralKit(["photos", "videos"]);
 export const OnlyFansScanSchema = LiteralKit(["media", "photos", "videos", "posts"]);
@@ -14,7 +16,7 @@ export const onlyFansChatRoutes = ["messages", "gallery", "opened", "purchased",
 export type OnlyFansChatRoute = (typeof onlyFansChatRoutes)[number];
 // Every gallery route shares the chat's /media feed; photos and videos are
 // split by item category while collecting, not by a server-side filter.
-export const onlyFansChatTargets: Record<OnlyFansChatRoute, { path: string; feed: "messages" | "media" }> = {
+export const onlyFansChatTargets: Record<OnlyFansChatRoute, { path: string; feed: typeof OnlyFansFeed.Type }> = {
   messages: { path: "", feed: "messages" },
   gallery: { path: "/gallery", feed: "media" },
   opened: { path: "/gallery/opened", feed: "media" },
@@ -54,22 +56,35 @@ export const OnlyFansPurchasedRouteSchema = LiteralKit(onlyFansPurchasedRoutes);
 export const OnlyFansItemState = LiteralKit(["available", "locked", "drm", "unsupported"]);
 export const OnlyFansProfileState = LiteralKit(["idle", "mapping", "partial", "complete", "auth-required", "error"]);
 export const OnlyFansAction = LiteralKit(["get", "open", "map", "stop"]);
+export const ProfileUrl = S.String.check(
+  S.makeFilter((value) => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  })
+);
+const NumericId = S.String.check(S.isPattern(/^\d+$/));
+const ChatId = S.String.check(S.isPattern(/^\d{1,20}$/));
+const Username = S.String.check(S.isPattern(/^[a-z0-9._-]{1,64}$/));
 export const OnlyFansItemSchema = S.Struct({
-  id: S.String.pipe(S.mutableKey),
-  postId: S.String.pipe(S.mutableKey),
+  id: NumericId.pipe(S.mutableKey),
+  postId: NumericId.pipe(S.mutableKey),
   category: OnlyFansCategorySchema.pipe(S.mutableKey),
   state: OnlyFansItemState.pipe(S.mutableKey),
-  downloaded: S.Boolean.pipe(S.mutableKey),
+  downloaded: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey),
 });
 export const OnlyFansProfileSchema = S.Struct({
-  username: S.String.pipe(S.mutableKey),
-  profileUrl: S.String.pipe(S.mutableKey),
-  chatId: S.String.pipe(S.optional, S.mutableKey),
+  username: Username.pipe(S.mutableKey),
+  profileUrl: ProfileUrl.pipe(S.mutableKey),
+  chatId: ChatId.pipe(S.optional, S.mutableKey),
   chatRoute: OnlyFansChatRouteSchema.pipe(S.optional, S.mutableKey),
-  purchasedUserId: S.String.pipe(S.optional, S.mutableKey),
+  purchasedUserId: ChatId.pipe(S.optional, S.mutableKey),
   purchasedRoute: OnlyFansPurchasedRouteSchema.pipe(S.optional, S.mutableKey),
-  creatorUsername: S.String.pipe(S.optional, S.mutableKey),
-  linkedChatId: S.String.pipe(S.optional, S.mutableKey),
+  creatorUsername: Username.pipe(S.optional, S.mutableKey),
+  linkedChatId: ChatId.pipe(S.optional, S.mutableKey),
   state: OnlyFansProfileState.pipe(S.mutableKey),
   category: OnlyFansScanSchema.pipe(S.optional, S.mutableKey),
   updatedAt: S.Finite.pipe(S.mutableKey),
@@ -78,18 +93,18 @@ export const OnlyFansProfileSchema = S.Struct({
   error: S.String.pipe(S.optional, S.mutableKey),
 });
 export const OnlyFansCommandSchema = S.Struct({
-  url: S.String.pipe(S.mutableKey),
+  url: ProfileUrl.pipe(S.mutableKey),
   action: OnlyFansAction.pipe(S.mutableKey),
-  category: OnlyFansScanSchema.pipe(S.optional, S.mutableKey),
+  category: OnlyFansScanSchema.pipe(S.withDecodingDefault(Effect.succeed("media")), S.mutableKey),
 });
 export const OnlyFansDownloadSchema = S.Struct({
-  url: S.String.pipe(S.mutableKey),
-  itemIds: S.Array(S.String).pipe(S.mutable, S.mutableKey),
+  url: ProfileUrl.pipe(S.mutableKey),
+  itemIds: S.Array(NumericId).check(S.isMinLength(1), S.isMaxLength(10_000)).pipe(S.mutable, S.mutableKey),
   customDownloadPath: S.String.pipe(S.optional, S.mutableKey),
 });
 export type OnlyFansProfile = typeof OnlyFansProfileSchema.Type;
 export type OnlyFansItem = typeof OnlyFansItemSchema.Type;
-export type OnlyFansCommand = typeof OnlyFansCommandSchema.Type;
+export type OnlyFansCommand = typeof OnlyFansCommandSchema.Encoded;
 export type OnlyFansDownload = typeof OnlyFansDownloadSchema.Type;
 
 const RESERVED = MutableHashSet.fromIterable([

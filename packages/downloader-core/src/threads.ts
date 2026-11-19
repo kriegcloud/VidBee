@@ -1,12 +1,13 @@
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Str from "effect/String";
+import type { ThreadsUrlKind } from "./DownloadLiterals.model.js";
 
 const THREADS_HOSTS = MutableHashSet.fromIterable(["threads.com", "www.threads.com", "threads.net", "www.threads.net"]);
 const THREADS_PATH = /^\/@([A-Za-z0-9_][A-Za-z0-9._]{0,29})(?:\/(media)|\/post\/([A-Za-z0-9_-]{5,20}))?\/?$/;
 
 export interface NormalizedThreadsUrl {
   directorySegments: readonly string[];
-  kind: "post" | "profile";
+  kind: typeof ThreadsUrlKind.Type;
   shortcode?: string | undefined;
   url: string;
   username: string;

@@ -5,22 +5,23 @@ import * as Option from "effect/Option";
 import * as Result from "effect/Result";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
+import type { DownloadMediaType } from "./DownloadLiterals.model.js";
 import type { VideoFormat } from "./types.js";
 
-type FormatType = "video" | "audio";
+type FormatType = typeof DownloadMediaType.Type;
 
 const isVideoFormat = (format: VideoFormat): boolean =>
-  format.videoExt !== "none" &&
-  !!(format.vcodec !== undefined && format.vcodec !== null && format.vcodec !== "") &&
-  format.vcodec !== "none";
-
-const isAudioFormat = (format: VideoFormat): boolean =>
-  !!(format.acodec !== undefined && format.acodec !== null && format.acodec !== "") &&
-  format.acodec !== "none" &&
-  (format.videoExt === "none" ||
-    !(format.videoExt !== undefined && format.videoExt !== null && format.videoExt !== "") ||
-    !(format.vcodec !== undefined && format.vcodec !== null && format.vcodec !== "") ||
-    format.vcodec === "none");
+  format.videoExt !== "none" && Boolean(format.vcodec) && format.vcodec !== "none";
+const isAudioFormat = (format: VideoFormat): boolean => {
+  const hasAudio = Boolean(format.acodec);
+  const hasVideoExt = Boolean(format.videoExt);
+  const hasVideoCodec = Boolean(format.vcodec);
+  return (
+    hasAudio &&
+    format.acodec !== "none" &&
+    (format.videoExt === "none" || !hasVideoExt || !hasVideoCodec || format.vcodec === "none")
+  );
+};
 
 export const filterFormatsByType: {
   (type: FormatType): <T extends VideoFormat>(formats: readonly T[]) => T[];

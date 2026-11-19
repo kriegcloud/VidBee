@@ -181,7 +181,18 @@ is stale. A future reference update is a separate change.
 
 ## Exact gate order
 
-Run from the repository root after `bun install` (prepare patches tsrs):
+Run from the repository root after `bun install` (prepare patches tsrs).
+The `node:test` suites must run under the repository's pinned Node from
+`.node-version`, including when Vitest is hosted by Bun. Verify `node --version`
+before the gate. If a worktree shim selects a different version, prepend the
+pinned installation's `bin` directory to `PATH`, for example:
+
+```sh
+export PATH="$HOME/.local/share/mise/installs/node/$(cat .node-version)/bin:$PATH"
+node --version
+```
+
+Then run:
 
 ```sh
 bun run --cwd packages/schema check
@@ -341,3 +352,42 @@ and tree requests acknowledge without awaiting termination. Existing queue recov
 unchanged. Neither capability adds process identity checks; those remain `ProcessRegistry`'s role.
 `InstagramInspectionLookupLive` connects native enqueueing to the same inspector/cache owner;
 compatibility borrows its host inspector and queue instead of exposing or reconstructing runtimes.
+
+
+### Parity boundary for inputs outside the declared types
+
+Inside the declared types, preserve exact behavior: results, deliberately constructed error
+classes and messages, and synchronous throws versus rejected failures. Both declared forms of a
+`dual` function must work for valid arguments. Invalid data-first dispatch is not a parity contract.
+
+Unported callers still forward unvalidated JSON from automation, IPC, settings and yt-dlp output.
+Outside the declared types, preserve an old successful result for `null`, a JSON scalar of the
+wrong kind (`false`, `true`, zero, another number, an empty string or another string), or `NaN`
+when a truthiness test, `||`, `??`, `typeof` check or comparison decided that result. Express the
+condition plainly where it matters, without widening the public type or retyping the parameter
+as `unknown`. For example, retain a Boolean binding when the strict boolean rule requires it:
+
+```ts
+// Wrong: an unset JSON false or zero would now reach string processing.
+if (fileName === undefined) return undefined;
+
+// Right: preserve the old successful falsy result and narrow the declared optional string.
+const hasName = Boolean(fileName);
+if (fileName === undefined || !hasName) return undefined;
+const trimmed = Str.trim(fileName);
+```
+
+When the old type-violating call threw an engine or Node error, the new call must still fail;
+its natural error class, message and Node `code` need not match. Do not construct an old engine
+message or route through a helper whose purpose is to reproduce one. No parity is owed for an
+array, object, iterable or function in a scalar position, or a non-array in an array position.
+Remove branches that exist only for those inputs. The differential oracle compares successful
+results exactly, allows any new throw for an old engine/Node failure outside the types, and
+compares deliberately constructed errors exactly.
+
+Keep the reviewed external-data exceptions exact, including error class and message: core
+metadata's null root, non-array formats and null format entry; playlist yt-dlp entry `url` and
+`ie_key` fields; Facebook reels JSON; the parser message inspected by the metadata retry
+predicate; and the Redgifs null JSON line. These are values the package itself reads, with
+specific failure policies already characterized by the reviewed design. They do not establish
+a general engine-error emulation policy for typed pure helpers.

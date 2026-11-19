@@ -7,12 +7,14 @@ import type { DownloadRuntimeSettings } from "./types.js";
 export class DownloaderHost extends Context.Service<
   DownloaderHost,
   {
+    readonly jsonSyntaxMessage: (input: string) => string;
     readonly downloadDir: string;
     readonly maxConcurrent: number;
     readonly runtimeSettings: DownloadRuntimeSettings;
     readonly jsRuntimeArgs: string[];
     readonly platform: string;
     readonly initialize: Effect.Effect<DownloaderInitialization, HostFailure>;
+    readonly random: () => number;
     readonly now: () => number;
     readonly uuid: () => string;
     readonly cancellation: Effect.Effect<{ readonly signal: AbortSignal; readonly abort: Effect.Effect<void> }>;

@@ -26,7 +26,8 @@ export const pickPreferredAudioFormatId: {
       return undefined;
     }
 
-    const firstId = formatIdOf(formats[0]);
+    const first = formats[0];
+    const firstId = formatIdOf(first);
     const normalizedPreferredLanguage = Str.toLowerCase(Str.trim(preferredLanguage ?? ""));
     if (
       !(

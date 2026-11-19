@@ -1,10 +1,13 @@
 import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
 import * as S from "effect/Schema";
-import { BoundaryDecodeError } from "./Downloader.errors.js";
+import { MetadataFailure } from "./Downloader.errors.js";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
+import { finalizeProfile } from "./ProfileFinalization.js";
 import { mapPlaylistInfo } from "./playlist-plan.js";
 import { buildPlaylistInfoArgs } from "./yt-dlp-args.js";
+import type { FacebookMapCategory } from "./DownloadLiterals.model.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type { SocialMappedItem } from "./ProfilePersistence.model.js";
 import type { DownloadRuntimeSettings } from "./types.js";
@@ -16,7 +19,7 @@ export type FacebookProfileMapRuntime = GalleryDlProfileMapRuntime;
 /** Map stable photo/reel links; signed media URLs and cookies never enter the saved profile. */
 const mapFacebookProfileUnchecked = Effect.fn("facebook-profile-map.mapFacebookProfileUnchecked")(function* (
   url: string,
-  category: "photos" | "albums" | "reels",
+  category: typeof FacebookMapCategory.Type,
   owner: string,
   runtime: FacebookProfileMapRuntime,
   settings: DownloadRuntimeSettings | undefined,
@@ -29,12 +32,27 @@ const mapFacebookProfileUnchecked = Effect.fn("facebook-profile-map.mapFacebookP
     if (!result.complete) {
       return { complete: false, error: result.error };
     }
-    const document = yield* S.decodeEffect(S.fromJsonString(S.Record(S.String, S.Unknown)))(result.stdout).pipe(
+    const document = yield* S.decodeEffect(S.fromJsonString(S.Unknown))(result.stdout).pipe(
       Effect.mapError((cause) =>
-        BoundaryDecodeError.make({ operation: "facebook.playlist", legacyMessage: cause.message, cause })
+        MetadataFailure.make({ operation: "facebook.playlist", legacyMessage: cause.message, jsonInput: result.stdout })
       )
     );
-    const playlist = mapPlaylistInfo(document, url);
+    const playlist = yield* Effect.try({
+      try: () => {
+        if (document === null) throw new TypeError("Cannot read properties of null (reading 'entries')");
+        const fields = S.decodeUnknownOption(S.Record(S.String, S.Unknown))(document);
+        return mapPlaylistInfo(
+          Option.getOrElse(fields, () => ({})),
+          url
+        );
+      },
+      catch: (cause) =>
+        MetadataFailure.make({
+          operation: "facebook.playlist",
+          legacyMessage: cause instanceof Error ? cause.message : String(cause),
+          cause,
+        }),
+    });
     for (const entry of playlist.entries) {
       yield* onItem({
         id: entry.id,
@@ -86,7 +104,7 @@ const mapFacebookProfileUnchecked = Effect.fn("facebook-profile-map.mapFacebookP
 
 export const mapFacebookProfile = Effect.fn("facebook-profile-map.mapFacebookProfile")(function* (
   url: string,
-  category: "photos" | "albums" | "reels",
+  category: typeof FacebookMapCategory.Type,
   owner: string,
   runtime: FacebookProfileMapRuntime,
   settings: DownloadRuntimeSettings | undefined,
@@ -94,9 +112,10 @@ export const mapFacebookProfile = Effect.fn("facebook-profile-map.mapFacebookPro
   onItem: (item: SocialMappedItem) => Effect.Effect<void>
 ) {
   const release = yield* runtime.admission?.acquire(url, signal) ?? Effect.undefined;
-  try {
-    return yield* mapFacebookProfileUnchecked(url, category, owner, runtime, settings, signal, onItem);
-  } finally {
-    if (release !== undefined) yield* release;
-  }
+  return yield* finalizeProfile(
+    mapFacebookProfileUnchecked(url, category, owner, runtime, settings, signal, onItem),
+    Effect.gen(function* () {
+      if (release !== undefined) yield* release;
+    })
+  );
 });

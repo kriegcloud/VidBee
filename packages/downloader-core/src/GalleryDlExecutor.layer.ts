@@ -19,6 +19,7 @@ import { readSocialAsset, selectPrimarySocialFile } from "./social-media.js";
 import { createTailBuffer } from "./YtDlpExecutor.helpers.js";
 import type { ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
 import type { TaskOutput } from "@vidbee/task-queue/Task.model";
+import type { GalleryOutputFailureKind, TerminationSignal } from "./DownloadLiterals.model.js";
 import type { ProcessRun } from "./DownloadProcess.service.js";
 import type { SocialAssetFile } from "./social-media.js";
 
@@ -200,7 +201,7 @@ export const layer = Layer.effect(
           const cancelled = Effect.suspend(() =>
             finishOnce({ ...identity, result: { type: "cancelled" }, closedAt, stdoutTail: stdout, stderrTail: stderr })
           );
-          const failed = (message: string, category: "unknown" | "output-missing", useStderr: boolean) =>
+          const failed = (message: string, category: typeof GalleryOutputFailureKind.Type, useStderr: boolean) =>
             finishOnce({
               ...identity,
               result: { type: "error", error: virtualError(category, message), exitCode },
@@ -348,7 +349,7 @@ export const layer = Layer.effect(
             stderrTail: stderrTail.read(),
           });
         });
-        const request = (signal: "SIGTERM" | "SIGKILL") =>
+        const request = (signal: typeof TerminationSignal.Type) =>
           processRun === undefined
             ? Effect.void
             : (host.platform() === "win32" ? processRun.signalTree(signal) : processRun.signalGroup(signal)).pipe(

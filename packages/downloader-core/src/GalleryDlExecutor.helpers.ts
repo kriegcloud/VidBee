@@ -9,6 +9,7 @@ import { normalizeThreadsUrl } from "./threads.js";
 import { normalizeTikTokPhotoUrl } from "./tiktok-photo.js";
 import { normalizeVscoUrl } from "./vsco.js";
 import type { TaskKind } from "@vidbee/task-queue/types";
+import type { DownloadMediaType } from "./DownloadLiterals.model.js";
 import type { GalleryDlTaskOptions } from "./ExecutorOptions.model.js";
 export interface NormalizedVscoGalleryUrl {
   profileUrl: string;
@@ -52,9 +53,9 @@ export const normalizeVscoGalleryUrl = (value: string): NormalizedVscoGalleryUrl
   return vsco?.kind === "gallery" ? { username: vsco.username, profileUrl: vsco.url } : null;
 };
 export const resolveDownloadTaskKind: {
-  (requestedType: "audio" | "video"): (url: string) => TaskKind;
-  (url: string, requestedType: "audio" | "video"): TaskKind;
-} = dual(2, (url: string, requestedType: "audio" | "video"): TaskKind => {
+  (requestedType: typeof DownloadMediaType.Type): (url: string) => TaskKind;
+  (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind;
+} = dual(2, (url: string, requestedType: typeof DownloadMediaType.Type): TaskKind => {
   if (normalizePinterestUrl(url) !== null) {
     return "pinterest-gallery";
   }

@@ -9,7 +9,8 @@ export interface BrowserCookiesSetting {
 const normalizeProfileInput = (value: string): string => Str.replace(/^['"]|['"]$/g, "")(Str.trim(value));
 
 export const parseBrowserCookiesSetting = (value: string | undefined): BrowserCookiesSetting => {
-  if (!(value !== undefined && value !== null && value !== "") || value === "none") {
+  const hasValue = Boolean(value);
+  if (value === undefined || !hasValue || value === "none") {
     return { browser: "none", profile: "" };
   }
 

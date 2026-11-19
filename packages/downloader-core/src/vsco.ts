@@ -1,6 +1,7 @@
 import { dual } from "effect/Function";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Str from "effect/String";
+import type { VscoUrlKind } from "./DownloadLiterals.model.js";
 
 const VSCO_HOSTS = MutableHashSet.fromIterable(["vsco.co", "www.vsco.co"]);
 const VSCO_USER = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -29,7 +30,7 @@ export interface NormalizedVscoUrl {
   /** Post id, empty for a gallery. */
   id: string;
   /** `gallery` is the whole profile; `media` and `video` are single posts. */
-  kind: "gallery" | "media" | "video";
+  kind: typeof VscoUrlKind.Type;
   /** Canonical URL to hand gallery-dl. */
   url: string;
   username: string;

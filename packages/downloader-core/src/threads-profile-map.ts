@@ -10,6 +10,7 @@ import { DownloadFiles } from "./DownloadFiles.service.js";
 import { DownloadHost } from "./DownloadHost.service.js";
 import { GALLERY_DL_MAP_ARGS, galleryDlUrlMetadata, runGalleryDlJson } from "./gallery-dl-json-run.js";
 import { buildGalleryDlRuntimeArgs } from "./gallery-runtime-args.js";
+import { finalizeProfile } from "./ProfileFinalization.js";
 import { writeKnownItemsFile } from "./social-media-service.js";
 import { normalizeThreadsUrl } from "./threads.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
@@ -125,16 +126,19 @@ export const mapThreadsProfile = Effect.fn("threads-profile-map.mapThreadsProfil
     options.knownIds !== undefined && options.knownIds.length > 0
       ? yield* files.makeTempDirectory(path.join(host.tempDirectory(), "vidbee-threads-map-"))
       : undefined;
-  try {
-    const knownItemsFile =
-      directory !== undefined && directory !== null && directory !== ""
-        ? yield* writeKnownItemsFile(directory, options.knownIds)
-        : undefined;
-    return yield* mapThreadsProfileUnchecked(url, owner, runtime, settings, signal, onItem, knownItemsFile);
-  } finally {
-    if (release !== undefined) yield* release;
-    if (directory !== undefined && directory !== null && directory !== "") {
-      yield* files.remove(directory, true);
-    }
-  }
+  return yield* finalizeProfile(
+    Effect.gen(function* () {
+      const knownItemsFile =
+        directory !== undefined && directory !== null && directory !== ""
+          ? yield* writeKnownItemsFile(directory, options.knownIds)
+          : undefined;
+      return yield* mapThreadsProfileUnchecked(url, owner, runtime, settings, signal, onItem, knownItemsFile);
+    }),
+    Effect.gen(function* () {
+      if (release !== undefined) yield* release;
+      if (directory !== undefined && directory !== null && directory !== "") {
+        yield* files.remove(directory, true);
+      }
+    })
+  );
 });

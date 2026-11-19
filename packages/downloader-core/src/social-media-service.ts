@@ -1,3 +1,4 @@
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
 import * as A from "effect/Array";
 import * as Context from "effect/Context";
@@ -273,7 +274,7 @@ const socialItemEvent = S.fromJsonString(
       id: S.String,
       url: S.String,
       author: S.String,
-      kind: S.Literals(["image", "video"]),
+      kind: LiteralKit(["image", "video"]),
       date: S.optional(S.Unknown),
     }),
   })

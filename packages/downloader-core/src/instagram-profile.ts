@@ -26,6 +26,7 @@ import {
 } from "./InstagramScan.service.js";
 import { INSTAGRAM_PROFILE_CATEGORIES, normalizeInstagramProfileUrl } from "./instagram-url.js";
 import { InstagramInventory } from "./ProfilePersistence.model.js";
+import type { InstagramInspectionKeys } from "./DownloadLiterals.model.js";
 import type { GalleryDlProfileMapRuntime } from "./gallery-dl-json-run.js";
 import type {
   DownloadRuntimeSettings,
@@ -48,10 +49,7 @@ export interface InspectionCacheEntry {
   categoryUrls: Record<InstagramProfileCategory, string>;
   inspection: InstagramProfileInspection;
 }
-export type InstagramInspectionListEntry = Pick<
-  InstagramProfileInspection,
-  "inspectionId" | "profile" | "totalSourceCount" | "totalAssetCount" | "mapping"
->;
+export type InstagramInspectionListEntry = Pick<InstagramProfileInspection, typeof InstagramInspectionKeys.Type>;
 export interface InstagramProfileInspectorOptions {
   readonly admission?: GalleryDlProfileMapRuntime["admission"];
   readonly clock: () => number;

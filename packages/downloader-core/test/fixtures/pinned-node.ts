@@ -14,7 +14,11 @@ class NodePrerequisite extends S.TaggedError<NodePrerequisite, { readonly brand:
 
 const requiredVersion = "v22.23.4";
 
-/** Resolve the PATH-selected Node first; only the local Vite shim needs the optional mise fallback. */
+/**
+ * Resolve the first `node` on PATH that reports the pinned version. `bunx --bun` puts Bun's own
+ * `node` alias first on PATH, so the first entry is not necessarily Node: entries that report
+ * another version, or none, are skipped, and the first of them is named when nothing matches.
+ */
 export const pinnedNode = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -22,49 +26,22 @@ export const pinnedNode = Effect.gen(function* () {
   const searchPath = yield* Config.String("PATH").pipe(Config.withDefault(""));
   const separator = process.platform === "win32" ? ";" : ":";
   const executable = process.platform === "win32" ? "node.exe" : "node";
-  let candidate: string | undefined;
+  let rejected: { readonly candidate: string; readonly detail: string } | undefined;
   for (const directory of Str.split(separator)(searchPath)) {
     if (directory === "") continue;
-    const location = path.resolve(directory, executable);
-    if (yield* fs.access(location).pipe(Effect.isSuccess)) {
-      candidate = location;
-      break;
-    }
+    const candidate = path.resolve(directory, executable);
+    if (!(yield* fs.access(candidate).pipe(Effect.isSuccess))) continue;
+    const observed = yield* Effect.result(spawner.string(ChildProcess.make(candidate, ["--version"])));
+    const version = Result.isSuccess(observed) ? Str.trim(observed.success) : "";
+    if (version === requiredVersion) return candidate;
+    rejected ??= {
+      candidate,
+      detail: Result.isFailure(observed)
+        ? observed.failure.message
+        : `Expected ${requiredVersion}; observed ${version === "" ? "empty version output" : version}`,
+    };
   }
-  if (candidate === undefined)
-    return yield* NodePrerequisite.make({ candidate: "PATH", detail: `Missing required Node ${requiredVersion}` });
-  const observed = yield* Effect.result(spawner.string(ChildProcess.make(candidate, ["--version"])));
-  if (Result.isFailure(observed)) return yield* NodePrerequisite.make({ candidate, detail: observed.failure.message });
-  const version = Str.trim(observed.success);
-  if (version === requiredVersion) return candidate;
-  const resolved = yield* fs.realPath(candidate).pipe(Effect.orElseSucceed(() => candidate));
-  if (version !== "" || !Str.includes("vite-plus")(resolved))
-    return yield* NodePrerequisite.make({
-      candidate,
-      detail: `Expected ${requiredVersion}; observed ${version === "" ? "empty version output" : version}`,
-    });
-  const fallback = yield* Effect.result(
-    spawner.string(ChildProcess.make("mise", ["--cd", "/tmp", "where", "node@22.23.4"]))
+  return yield* NodePrerequisite.make(
+    rejected ?? { candidate: "PATH", detail: `Missing required Node ${requiredVersion}` }
   );
-  if (Result.isFailure(fallback))
-    return yield* NodePrerequisite.make({
-      candidate,
-      detail: `Vite Node shim produced empty version output; optional local mise fallback failed: ${fallback.failure.message}`,
-    });
-  const fallbackDirectory = Str.trim(fallback.success);
-  if (fallbackDirectory === "")
-    return yield* NodePrerequisite.make({
-      candidate,
-      detail: "Vite Node shim produced empty version output; optional local mise fallback returned no installation",
-    });
-  const fallbackNode = path.resolve(fallbackDirectory, "bin", executable);
-  const verified = yield* Effect.result(spawner.string(ChildProcess.make(fallbackNode, ["--version"])));
-  if (Result.isFailure(verified))
-    return yield* NodePrerequisite.make({ candidate: fallbackNode, detail: verified.failure.message });
-  if (Str.trim(verified.success) !== requiredVersion)
-    return yield* NodePrerequisite.make({
-      candidate: fallbackNode,
-      detail: `Expected ${requiredVersion}; observed ${Str.trim(verified.success)}`,
-    });
-  return fallbackNode;
 });

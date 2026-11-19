@@ -8,7 +8,12 @@ export class BinaryUnavailable extends S.TaggedError<BinaryUnavailable, { readon
 )("BinaryUnavailable", { operation: S.String, legacyMessage: S.String, cause: S.optional(S.Defect()) }) {}
 export class MetadataFailure extends S.TaggedError<MetadataFailure, { readonly brand: unique symbol }>(
   "@vidbee/downloader-core/MetadataFailure"
-)("MetadataFailure", { operation: S.String, legacyMessage: S.String, cause: S.optional(S.Defect()) }) {}
+)("MetadataFailure", {
+  operation: S.String,
+  legacyMessage: S.String,
+  jsonInput: S.optional(S.String),
+  cause: S.optional(S.Defect()),
+}) {}
 export class ProfileUnavailable extends S.TaggedError<ProfileUnavailable, { readonly brand: unique symbol }>(
   "@vidbee/downloader-core/ProfileUnavailable"
 )("ProfileUnavailable", { operation: S.String, legacyMessage: S.String, cause: S.optional(S.Defect()) }) {}

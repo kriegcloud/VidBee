@@ -750,6 +750,32 @@ Use `Effect.fn`/`fnUntraced`, Clock, Random, `effect/crypto/SecureRandom`, Schem
 Stable SHA-256 names/task IDs retain exact bytes; synchronous paths use pure synchronous hashing.
 No async digest, suppression, diagnostic override, native collection or `any` cast is introduced.
 
+### Review corrections to the pure and host contracts
+
+The ambiguous optional-argument helpers `validateDownloadTimeRange`,
+`buildFileNameCandidates` and `buildFilePathCandidates` take a single options object in the
+strict package. Their compatibility wrappers retain the original positional signatures.
+No unported application currently calls those strict helpers directly. OnlyFansCommand and
+FanslyCommand aliases describe the schema Encoded input, preserving optional category while decoding
+supplies the default. The unambiguous
+`inspectNetscapeCookies(now, cookiesPath)(text)` form remains supported alongside data-first calls.
+
+`DownloaderHost.jsonSyntaxMessage(input)` supplies the host parser's original syntax-error
+message after Schema rejects malformed JSON. Compatibility derives it with the same runtime
+parser as before; metadata retries inspect this message, preserving the three attempts and
+one-second sleeps even for short non-JSON stdout containing transient network wording.
+The strict package continues to decode process output through Schema.
+
+Profile finalization covers exactly the old try region, including failure, defects and fiber
+interruption. Cleanup releases admission before removing the Threads directory. A cleanup
+failure replaces a body failure, and a throwing release prevents directory removal, as in the
+old async finally. Early failures before that region retain the existing section-11 behavior.
+
+Playlist field decoders retain unknown fields until normalization. Existing method-call
+TypeErrors retain their V8 messages: the synchronous pure mapper throws them; effectful
+metadata and Facebook-reels callers carry them in MetadataFailure with the original cause,
+which compatibility rethrows. This follows section 9's existing null-root policy.
+
 ## 8. The compatibility package
 
 Legacy entries export the old API over one runtime per stateful owner; pure exports may be
@@ -810,6 +836,22 @@ Only requirements-forced changes belong here and in `OWNER-REVIEW.md`:
    that cannot inhabit the public model, including non-finite numbers such as JSON `1e999`.
    Use `BoundaryDecodeError`; legacy reports `Error("Invalid yt-dlp metadata.")` for newly rejected shapes.
    Characterize the exact old/new cases before implementation; do not classify ordinary ignored fields this way.
+
+Measured phase-5 Core cases (the wrong-scalars characterization is the authorized assertion rewrite):
+
+| Input/field | Before the port | Native/compatibility result |
+| --- | --- | --- |
+| `id: 7`, `title: false`, `duration: 1e999` in the characterized object | Numeric ID, boolean title and `Infinity` escape `VideoInfo` | `BoundaryDecodeError`; compatibility `Error("Invalid yt-dlp metadata.")` |
+| Individually numeric `id`, boolean `title`, infinite `duration`/`view_count` | Wrong scalar or non-finite number survives mapping | Same declared rejection |
+| Numeric `format_id`, boolean `ext`, infinite format `height` | Invalid scalar survives format mapping | Same declared rejection |
+| Primitive roots and primitive entries in `formats` | Property boxing supplies valid fallback/default fields | Preserved; no new rejection for valid mapped defaults |
+| `null` root; non-array `formats` | Original mapping `TypeError` | Preserved original class/message; unchanged characterization assertions |
+| Malformed JSON | Parser `SyntaxError` | Native schema failure; compatibility reconstructs the original runtime parser exception |
+
+Optional fields the old mapper ignores or trims keep that normalization before public-model
+decoding. The declaration applies to mapped values that cannot inhabit `VideoInfo`, not every
+unusual raw field. Retry builds metadata arguments on each of its three attempts and sleeps
+through `DownloadTiming` for 1000 ms between transient failures.
 
 Existing JSON syntax errors can remain exact through legacy reconstruction; they need no automatic
 message change. Inventory key stripping, BOM-prefixed JSON rejection, false-on-failure existence

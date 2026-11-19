@@ -1,6 +1,8 @@
 import * as A from "effect/Array";
 import * as Effect from "effect/Effect";
 import { dual } from "effect/Function";
+import * as Option from "effect/Option";
+import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { DownloadQueue } from "./DownloadQueue.service.js";
 import type { PlaylistEntry, PlaylistInfo, PlaylistMediaKind } from "./types.js";
@@ -16,23 +18,24 @@ const MEDIA_KIND_RANK: Record<PlaylistMediaKind, number> = {
   photo: 2,
 };
 
-export interface RawPlaylistEntry {
-  id?: string | null;
-  ie_key?: string | null;
-  media_type?: string | null;
-  original_url?: string | null;
-  thumbnail?: string | null;
-  title?: string | null;
-  url?: string | null;
-  webpage_url?: string | null;
-}
+const PlaylistEntryFields = S.Struct({
+  id: S.optional(S.Unknown),
+  ie_key: S.optional(S.Unknown),
+  media_type: S.optional(S.Unknown),
+  original_url: S.optional(S.Unknown),
+  thumbnail: S.optional(S.Unknown),
+  title: S.optional(S.Unknown),
+  url: S.optional(S.Unknown),
+  webpage_url: S.optional(S.Unknown),
+});
+export type RawPlaylistEntry = typeof PlaylistEntryFields.Type;
 
-const isHttpUrl = (value?: string | null): boolean => {
+const isHttpUrl = (value: unknown): boolean => {
   if (!(value !== undefined && value !== null && value !== "")) {
     return false;
   }
   try {
-    const parsed = new URL(value);
+    const parsed = new URL(String(value));
     return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch {
     return false;
@@ -68,10 +71,13 @@ export const resolvePlaylistEntryUrl = (entry: RawPlaylistEntry): string | undef
   if (isHttpUrl(entry.original_url)) {
     return optionalString(entry.original_url);
   }
-  if (entry.url !== undefined && entry.url !== null && entry.url !== "") {
+  const hasUrl = Boolean(entry.url);
+  if (hasUrl) {
+    if (typeof entry.url !== "string") throw new TypeError("entry.url.trim is not a function");
     const extractedId = Str.trim(entry.url);
-    const extractor =
-      (entry.ie_key === undefined || entry.ie_key === null ? undefined : Str.toLowerCase(entry.ie_key)) ?? "";
+    if (entry.ie_key != null && typeof entry.ie_key !== "string")
+      throw new TypeError("entry.ie_key?.toLowerCase is not a function");
+    const extractor = entry.ie_key == null ? "" : Str.toLowerCase(entry.ie_key);
     if (Str.includes("youtube")(extractor)) {
       return `https://www.youtube.com/watch?v=${extractedId}`;
     }
@@ -83,45 +89,42 @@ export const resolvePlaylistEntryUrl = (entry: RawPlaylistEntry): string | undef
 };
 
 export const mapPlaylistInfo: {
-  (fallbackId: string): (raw: { id?: string | null; title?: string | null; entries?: unknown }) => PlaylistInfo;
-  (raw: { id?: string | null; title?: string | null; entries?: unknown }, fallbackId: string): PlaylistInfo;
-} = dual(
-  2,
-  (raw: { id?: string | null; title?: string | null; entries?: unknown }, fallbackId: string): PlaylistInfo => {
-    const rawEntries = A.isArray(raw.entries) ? raw.entries : [];
-    const entries = A.filter(
-      A.map(rawEntries, (item, index): PlaylistEntry | null => {
-        const entry = (item !== null && typeof item === "object" ? item : {}) as RawPlaylistEntry;
-        const resolvedUrl = resolvePlaylistEntryUrl(entry);
-        if (resolvedUrl === undefined || resolvedUrl === "") {
-          return null;
-        }
-        const mapped: PlaylistEntry = {
-          id: optionalString(entry.id) ?? `${index + 1}`,
-          title: optionalString(entry.title) ?? `Entry ${index + 1}`,
-          url: resolvedUrl,
-          index: index + 1,
-        };
-        const thumbnail = optionalString(entry.thumbnail);
-        if (thumbnail !== undefined && thumbnail !== "") {
-          mapped.thumbnail = thumbnail;
-        }
-        const mediaKind = parsePlaylistMediaKind(entry.media_type);
-        if (mediaKind !== undefined) {
-          mapped.mediaKind = mediaKind;
-        }
-        return mapped;
-      }),
-      (entry): entry is PlaylistEntry => entry !== null
-    );
-    return {
-      id: optionalString(raw.id) ?? fallbackId,
-      title: optionalString(raw.title) ?? "Playlist",
-      entries,
-      entryCount: entries.length,
-    };
-  }
-);
+  (fallbackId: string): (raw: { id?: unknown; title?: unknown; entries?: unknown }) => PlaylistInfo;
+  (raw: { id?: unknown; title?: unknown; entries?: unknown }, fallbackId: string): PlaylistInfo;
+} = dual(2, (raw: { id?: unknown; title?: unknown; entries?: unknown }, fallbackId: string): PlaylistInfo => {
+  const rawEntries = A.isArray(raw.entries) ? raw.entries : [];
+  const entries = A.filter(
+    A.map(rawEntries, (item, index): PlaylistEntry | null => {
+      const entry: RawPlaylistEntry = Option.getOrElse(S.decodeUnknownOption(PlaylistEntryFields)(item), () => ({}));
+      const resolvedUrl = resolvePlaylistEntryUrl(entry);
+      if (resolvedUrl === undefined || resolvedUrl === "") {
+        return null;
+      }
+      const mapped: PlaylistEntry = {
+        id: optionalString(entry.id) ?? `${index + 1}`,
+        title: optionalString(entry.title) ?? `Entry ${index + 1}`,
+        url: resolvedUrl,
+        index: index + 1,
+      };
+      const thumbnail = optionalString(entry.thumbnail);
+      if (thumbnail !== undefined && thumbnail !== "") {
+        mapped.thumbnail = thumbnail;
+      }
+      const mediaKind = parsePlaylistMediaKind(entry.media_type);
+      if (mediaKind !== undefined) {
+        mapped.mediaKind = mediaKind;
+      }
+      return mapped;
+    }),
+    (entry): entry is PlaylistEntry => entry !== null
+  );
+  return {
+    id: optionalString(raw.id) ?? fallbackId,
+    title: optionalString(raw.title) ?? "Playlist",
+    entries,
+    entryCount: entries.length,
+  };
+});
 
 const kindRank = (kind: PlaylistMediaKind | undefined): number => {
   const hasKind = Boolean(kind);

@@ -6,7 +6,10 @@ import * as Str from "effect/String";
 const targetJoin = (windows: boolean, parts: readonly string[]): string => {
   const separator = windows ? "\\" : "/";
   const joined = A.join(
-    A.filter(parts, (part) => part.length > 0),
+    A.filter(
+      A.map(parts, (part) => Str.replaceAll(windows ? "\\" : "/", "/")(part)),
+      (part) => part.length > 0
+    ),
     separator
   );
   if (!(joined !== undefined && joined !== null && joined !== "")) return ".";

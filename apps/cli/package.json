@@ -58,8 +58,7 @@
     "prepublishOnly": "bun run build && bun run verify-dist"
   },
   "dependencies": {
-    "yt-dlp-wrap-plus": "catalog:",
-    "@vidbee/downloader-core-legacy": "workspace:^"
+    "yt-dlp-wrap-plus": "catalog:"
   },
   "optionalDependencies": {
     "better-sqlite3": "catalog:"
@@ -72,7 +71,8 @@
     "@vidbee/logger": "workspace:^",
     "esbuild": "catalog:",
     "typescript": "catalog:",
-    "@vidbee/task-queue-legacy": "workspace:^"
+    "@vidbee/task-queue-legacy": "workspace:^",
+    "@vidbee/downloader-core-legacy": "workspace:^"
   },
   "engines": {
     "node": ">=20"

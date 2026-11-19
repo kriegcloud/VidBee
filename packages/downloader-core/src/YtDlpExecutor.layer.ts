@@ -22,6 +22,7 @@ import type { ExecutorFinishEvent } from "@vidbee/task-queue/Executor.model";
 import type { TaskOutput } from "@vidbee/task-queue/Task.model";
 import type { ExecutorHandle } from "@vidbee/task-queue/TaskExecutor.service";
 import type * as FiberModel from "effect/Fiber";
+import type { ProcessOutputChannel, SubtitleVisibility, YtDlpPreflightFailureKind } from "./DownloadLiterals.model.js";
 import type { ProcessRun } from "./DownloadProcess.service.js";
 import type { WrapperObservation } from "./YtDlpWrapper.model.js";
 
@@ -52,7 +53,7 @@ export const layer = Layer.effect(
         let subtitleSignalProbe = "";
         let subtitleUnavailableSeen = false;
         let mediaDurationMs: number | null = null;
-        let subtitleVisibility: "public" | "private" | "unlisted" | undefined;
+        let subtitleVisibility: typeof SubtitleVisibility.Type | undefined;
         let subtitleLanguagesSeen = HashSet.empty<string>();
         const subtitleLanguages: string[] = [];
         let progressAggregator = new DownloadProgressAggregator();
@@ -90,7 +91,7 @@ export const layer = Layer.effect(
         });
         const preflightFailure = Effect.fn("YtDlpExecutor.preflightFailure")(function* (
           message: string,
-          kind: "unknown" | "binary-missing",
+          kind: typeof YtDlpPreflightFailureKind.Type,
           includeMessage: boolean
         ) {
           yield* finishOnce({
@@ -101,7 +102,10 @@ export const layer = Layer.effect(
             result: { type: "error", error: virtualError(kind, message), exitCode: null },
           });
         });
-        const capture = Effect.fn("YtDlpExecutor.capture")(function* (text: string, stream: "stdout" | "stderr") {
+        const capture = Effect.fn("YtDlpExecutor.capture")(function* (
+          text: string,
+          stream: typeof ProcessOutputChannel.Type
+        ) {
           outputPathProbe = Str.slice(-Helpers.OUTPUT_PATH_SCAN_BYTES)(`${outputPathProbe}${text}`);
           filePathSeen = Helpers.extractSavedFilePath(outputPathProbe) ?? filePathSeen;
           subtitleSignalProbe = Str.slice(-Helpers.OUTPUT_PATH_SCAN_BYTES)(`${subtitleSignalProbe}${text}`);
@@ -372,7 +376,8 @@ export const layer = Layer.effect(
               )
             );
             if (Result.isFailure(started)) {
-              yield* preflightFailure(started.failure.legacyMessage, "unknown", false);
+              if (notify) yield* preflightFailure(started.failure.legacyMessage, "unknown", false);
+              else yield* finishError(started.failure.legacyMessage, false);
               return;
             }
             if (started.success._tag === "NativeSpawnFailure") {

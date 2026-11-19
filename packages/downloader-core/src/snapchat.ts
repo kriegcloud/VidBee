@@ -2,6 +2,7 @@ import * as A from "effect/Array";
 import { dual } from "effect/Function";
 import * as MutableHashSet from "effect/MutableHashSet";
 import * as Str from "effect/String";
+import type { SnapchatMapCategory, SnapchatUrlKind } from "./DownloadLiterals.model.js";
 
 const SNAPCHAT_HOSTS = MutableHashSet.fromIterable(["snapchat.com", "www.snapchat.com", "story.snapchat.com"]);
 const SNAPCHAT_USERNAME = /^[A-Za-z][A-Za-z0-9._-]{1,31}$/;
@@ -12,7 +13,7 @@ const SNAP_FILE_ID = /^[A-Za-z0-9_.-]{8,120}$/;
 /** Query key that scopes a story URL to one snap for the VidBee gallery-dl module. */
 export const SNAPCHAT_SNAP_PARAM = "vidbee_snap";
 
-export type SnapchatCategory = "stories" | "spotlight";
+export type SnapchatCategory = typeof SnapchatMapCategory.Type;
 
 export interface NormalizedSnapchatUrl {
   directorySegments: readonly string[];
@@ -23,7 +24,7 @@ export interface NormalizedSnapchatUrl {
    * pages (mapped through VidBee's gallery-dl module); `story-snap` is one
    * story or saved-highlight snap; `spotlight` is one Spotlight post.
    */
-  kind: "profile" | "stories" | "spotlights" | "story-snap" | "spotlight";
+  kind: typeof SnapchatUrlKind.Type;
   url: string;
   username: string;
 }

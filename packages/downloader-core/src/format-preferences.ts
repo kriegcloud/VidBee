@@ -2,6 +2,7 @@ import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as A from "effect/Array";
 import { dual } from "effect/Function";
 import * as MutableHashSet from "effect/MutableHashSet";
+import type { DownloadMediaType } from "./DownloadLiterals.model.js";
 export const OneClickQualityPreset = LiteralKit(["best", "good", "normal", "bad", "worst"]);
 export type OneClickQualityPreset = typeof OneClickQualityPreset.Type;
 
@@ -21,16 +22,16 @@ export const resolvePlaylistContainerFormat: {
   (
     selectedContainer: OneClickContainerOption | undefined,
     fallbackContainer: OneClickContainerOption | undefined
-  ): (downloadType: "video" | "audio") => OneClickContainerOption | undefined;
+  ): (downloadType: typeof DownloadMediaType.Type) => OneClickContainerOption | undefined;
   (
-    downloadType: "video" | "audio",
+    downloadType: typeof DownloadMediaType.Type,
     selectedContainer: OneClickContainerOption | undefined,
     fallbackContainer: OneClickContainerOption | undefined
   ): OneClickContainerOption | undefined;
 } = dual(
   3,
   (
-    downloadType: "video" | "audio",
+    downloadType: typeof DownloadMediaType.Type,
     selectedContainer: OneClickContainerOption | undefined,
     fallbackContainer: OneClickContainerOption | undefined
   ): OneClickContainerOption | undefined => {

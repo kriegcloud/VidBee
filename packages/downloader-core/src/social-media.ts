@@ -5,6 +5,7 @@ import * as MutableHashSet from "effect/MutableHashSet";
 import * as Option from "effect/Option";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
+import { ProfileUrl } from "./onlyfans-profile.js";
 
 export const SocialMediaKind = LiteralKit(["all", "images", "videos"]);
 export const SocialMediaScope = LiteralKit(["post", "thread"]);
@@ -33,13 +34,14 @@ export const SocialMediaOptionsSchema = S.Struct({
   since: IsoDate.pipe(S.optional, S.mutableKey),
   until: IsoDate.pipe(S.optional, S.mutableKey),
 }).check(
-  S.makeFilter(
-    (value) =>
-      value.since === undefined ||
-      value.since === "" ||
-      value.until === undefined ||
-      value.until === "" ||
-      value.since <= value.until
+  S.makeFilter((value) =>
+    value.since === undefined ||
+    value.since === "" ||
+    value.until === undefined ||
+    value.until === "" ||
+    value.since <= value.until
+      ? undefined
+      : { path: ["since"], issue: "The start date must not be after the end date." }
   )
 );
 export type SocialMediaOptions = typeof SocialMediaOptionsSchema.Type;
@@ -53,7 +55,7 @@ export const DEFAULT_SOCIAL_MEDIA_OPTIONS: SocialMediaOptions = {
 };
 export const SocialSourceSchema = S.Struct({
   platform: SocialPlatform.pipe(S.mutableKey),
-  url: S.String.pipe(S.mutableKey),
+  url: ProfileUrl.pipe(S.mutableKey),
   kind: SocialSourceKind.pipe(S.mutableKey),
   category: S.String.pipe(S.mutableKey),
   owner: S.String.pipe(S.mutableKey),
@@ -62,7 +64,7 @@ export const SocialSourceSchema = S.Struct({
   categories: S.Array(
     S.Struct({
       key: S.String.pipe(S.mutableKey),
-      url: S.String.pipe(S.mutableKey),
+      url: ProfileUrl.pipe(S.mutableKey),
       requiresAuth: S.Boolean.pipe(S.mutableKey),
     })
   ).pipe(S.mutable, S.mutableKey),

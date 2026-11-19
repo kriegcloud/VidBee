@@ -16,6 +16,7 @@ import { DEFAULT_FILENAME_TEMPLATE, resolveFilenameTemplate } from "./filename-s
 import { isOnlyFansSite } from "./onlyfans-profile.js";
 import { expandSubtitleLanguageAliases, resolveSubtitleLanguages } from "./subtitle-languages.js";
 import type { DownloadCookieSource } from "@vidbee/task-queue";
+import type { SubtitleSkipReason, SubtitleSourceKeys } from "./DownloadLiterals.model.js";
 import type { OneClickContainerOption } from "./format-preferences.js";
 import type { DownloadRuntimeSettings } from "./types.js";
 
@@ -196,44 +197,42 @@ export const parseDownloadTimecode = (value: string): number | null => {
 };
 
 /** Validate optional time-range values before passing them to yt-dlp. */
-export const validateDownloadTimeRange: {
-  (endTime?: string): (startTime?: string) => Result.Result<void, InvalidDownload>;
-  (startTime?: string, endTime?: string): Result.Result<void, InvalidDownload>;
-} = dual(
-  (args) => args.length >= 0,
-  (startTime?: string, endTime?: string): Result.Result<void, InvalidDownload> => {
-    const start = trim(startTime);
-    const end = trim(endTime);
-    const startSeconds = nonempty(start) ? parseDownloadTimecode(start) : 0;
-    const endSeconds = nonempty(end) ? parseDownloadTimecode(end) : null;
+export const validateDownloadTimeRange = (options: {
+  readonly startTime?: string | undefined;
+  readonly endTime?: string | undefined;
+}): Result.Result<void, InvalidDownload> => {
+  const { startTime, endTime } = options;
+  const start = trim(startTime);
+  const end = trim(endTime);
+  const startSeconds = nonempty(start) ? parseDownloadTimecode(start) : 0;
+  const endSeconds = nonempty(end) ? parseDownloadTimecode(end) : null;
 
-    if (nonempty(start) && startSeconds === null) {
-      return Result.fail(
-        InvalidDownload.make({
-          operation: "validateDownloadTimeRange",
-          legacyMessage: "Invalid start time. Use seconds, MM:SS, or HH:MM:SS.",
-        })
-      );
-    }
-    if (nonempty(end) && endSeconds === null) {
-      return Result.fail(
-        InvalidDownload.make({
-          operation: "validateDownloadTimeRange",
-          legacyMessage: "Invalid end time. Use seconds, MM:SS, or HH:MM:SS.",
-        })
-      );
-    }
-    if (endSeconds !== null && startSeconds !== null && endSeconds <= startSeconds) {
-      return Result.fail(
-        InvalidDownload.make({
-          operation: "validateDownloadTimeRange",
-          legacyMessage: "End time must be later than start time.",
-        })
-      );
-    }
-    return Result.succeed(undefined);
+  if (nonempty(start) && startSeconds === null) {
+    return Result.fail(
+      InvalidDownload.make({
+        operation: "validateDownloadTimeRange",
+        legacyMessage: "Invalid start time. Use seconds, MM:SS, or HH:MM:SS.",
+      })
+    );
   }
-);
+  if (nonempty(end) && endSeconds === null) {
+    return Result.fail(
+      InvalidDownload.make({
+        operation: "validateDownloadTimeRange",
+        legacyMessage: "Invalid end time. Use seconds, MM:SS, or HH:MM:SS.",
+      })
+    );
+  }
+  if (endSeconds !== null && startSeconds !== null && endSeconds <= startSeconds) {
+    return Result.fail(
+      InvalidDownload.make({
+        operation: "validateDownloadTimeRange",
+        legacyMessage: "End time must be later than start time.",
+      })
+    );
+  }
+  return Result.succeed(undefined);
+};
 
 /**
  * Return whether a URL points at a single DASH media segment instead of a
@@ -259,6 +258,13 @@ export const assertDownloadSourceUrl = (value: string): Result.Result<void, Inva
  *
  * Issue refs: #331, #337, #341.
  */
+export const windowsProfileIsAbsolute = (value: string): boolean =>
+  /^[\\/]/.test(value) || /^[a-zA-Z]:[\\/]/.test(value);
+export const windowsProfileBasename = (value: string): string => {
+  const withoutDrive = Str.replace(/^[a-zA-Z]:/, "")(value);
+  return A.filter(Str.split(withoutDrive, /[\\/]/), Boolean).at(-1) ?? "";
+};
+
 export const normalizeBrowserCookiesSettingForYtDlp = Effect.fn("DownloadArguments.normalizeBrowserCookies")(function* (
   value?: string | null
 ) {
@@ -289,13 +295,13 @@ export const normalizeBrowserCookiesSettingForYtDlp = Effect.fn("DownloadArgumen
   // cookies.sqlite we pass it verbatim; otherwise fall back to the basename,
   // which keeps resolving for standard installs.
   const isWindowsPath = Str.includes("\\")(profile);
-  const isAbsolutePath = isWindowsPath ? /^(?:[a-zA-Z]:[\\/]|[\\/]{2})/.test(profile) : Str.startsWith("/")(profile);
+  const isAbsolutePath = isWindowsPath ? windowsProfileIsAbsolute(profile) : Str.startsWith("/")(profile);
   if (browser === "firefox" && isAbsolutePath && (yield* files.exists(path.join(profile, "cookies.sqlite")))) {
     return `${browser}:${profile}`;
   }
 
   const profileName = isWindowsPath
-    ? A.filter(Str.split(profile, /[\\/]/), Boolean).at(-1)
+    ? windowsProfileBasename(profile)
     : A.filter(Str.split(profile, "/"), Boolean).at(-1);
   return nonempty(profileName) ? `${browser}:${profileName}` : browser;
 });
@@ -334,7 +340,7 @@ const isTikTokUrl = (url: string): boolean => {
   }
 };
 
-export type SubtitleDownloadSkipReason = "auth-required" | "automatic-captions-disabled";
+export type SubtitleDownloadSkipReason = typeof SubtitleSkipReason.Type;
 
 /**
  * Explain why a requested video subtitle download must be skipped before yt-dlp starts.
@@ -347,16 +353,16 @@ export const resolveSubtitleDownloadSkipReason: {
   (
     settings: YtDlpDownloadSettings,
     browserForCookies: string
-  ): (options: Pick<YtDlpDownloadOptions, "type" | "url">) => SubtitleDownloadSkipReason | null;
+  ): (options: Pick<YtDlpDownloadOptions, typeof SubtitleSourceKeys.Type>) => SubtitleDownloadSkipReason | null;
   (
-    options: Pick<YtDlpDownloadOptions, "type" | "url">,
+    options: Pick<YtDlpDownloadOptions, typeof SubtitleSourceKeys.Type>,
     settings: YtDlpDownloadSettings,
     browserForCookies: string
   ): SubtitleDownloadSkipReason | null;
 } = dual(
   3,
   (
-    options: Pick<YtDlpDownloadOptions, "type" | "url">,
+    options: Pick<YtDlpDownloadOptions, typeof SubtitleSourceKeys.Type>,
     settings: YtDlpDownloadSettings,
     browserForCookies: string
   ): SubtitleDownloadSkipReason | null => {
@@ -642,7 +648,7 @@ export const buildDownloadArgs = Effect.fn("DownloadArguments.buildDownloadArgs"
   const host = yield* DownloadHost;
   yield* Effect.fromResult(assertBrowserProfileSession(options.url));
   yield* Effect.fromResult(assertDownloadSourceUrl(options.url));
-  yield* Effect.fromResult(validateDownloadTimeRange(options.startTime, options.endTime));
+  yield* Effect.fromResult(validateDownloadTimeRange({ startTime: options.startTime, endTime: options.endTime }));
   const args: string[] = ["--no-playlist", "--no-mtime", "--encoding", "utf-8"];
   // The vendored kernel enables unplayable formats by default, which disables
   // embedding and media fixups. Downloads need playable formats and postprocessing.

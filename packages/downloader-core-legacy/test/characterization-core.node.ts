@@ -18,12 +18,17 @@ function coreFixture(t: { after: (f: () => void) => void }, body: string) {
 for (const [name, metadata, expected] of [
   ['empty-object', '{}', { id: 'https://fixture.invalid/watch', title: 'https://fixture.invalid/watch', formats: [] }],
   ['wrong-scalars', '{"id":7,"title":false,"duration":1e999,"tags":[" x ",7,""],"formats":[{}]}', { id: 7, title: false, duration: Infinity, tags: ['x'], formats: [{ formatId: 'unknown', ext: 'unknown' }] }]
-] as const) test(`core pre-port metadata field policy ${name}`, async (t) => {
+] as const) test(name === 'wrong-scalars' ? 'core metadata wrong-scalars: old scalar escape becomes decoded rejection' : `core pre-port metadata field policy ${name}`, async (t) => {
   const { core, dir, log } = coreFixture(t, `console.log(${JSON.stringify(metadata)})`)
   const initializing = core.initialize(); assert.equal(process.env.FFMPEG_PATH, dir); await initializing
-  const value = await core.getVideoInfo('https://fixture.invalid/watch')
-  if (name === 'wrong-scalars') { assert.equal(value.duration, Infinity); assert.equal(value.id, 7); assert.equal(value.title, false) }
-  assert.deepEqual(JSON.parse(JSON.stringify(value)), JSON.parse(JSON.stringify(expected)))
+  if (name === 'wrong-scalars') {
+    // Before the port: { id: 7, title: false, duration: Infinity, tags: ['x'], formats: [{ formatId: 'unknown', ext: 'unknown' }] }
+    // Before the port: assert.equal(value.duration, Infinity); assert.equal(value.id, 7); assert.equal(value.title, false)
+    await assert.rejects(core.getVideoInfo('https://fixture.invalid/watch'), { name: 'Error', message: 'Invalid yt-dlp metadata.' })
+  } else {
+    const value = await core.getVideoInfo('https://fixture.invalid/watch')
+    assert.deepEqual(JSON.parse(JSON.stringify(value)), JSON.parse(JSON.stringify(expected)))
+  }
   const argv = JSON.parse(readFileSync(log, 'utf8').trim()); assert.equal(argv[0], '-j'); assert.equal(argv.at(-1), 'https://fixture.invalid/watch')
 })
 for (const [name, metadata, error, message] of [

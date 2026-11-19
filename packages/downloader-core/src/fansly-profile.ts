@@ -1,16 +1,17 @@
 import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as A from "effect/Array";
+import * as Effect from "effect/Effect";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
-import { OnlyFansAction } from "./onlyfans-profile.js";
+import { OnlyFansAction, ProfileUrl } from "./onlyfans-profile.js";
 import type { OnlyFansDownloadSchema } from "./onlyfans-profile.js";
 export const FanslyCategory = LiteralKit(["posts", "media"]);
 export const FanslyCommandSchema = S.Struct({
-  url: S.String.pipe(S.mutableKey),
+  url: ProfileUrl.pipe(S.mutableKey),
   action: OnlyFansAction.pipe(S.mutableKey),
-  category: FanslyCategory.pipe(S.optional, S.mutableKey),
+  category: FanslyCategory.pipe(S.withDecodingDefault(Effect.succeed("media")), S.mutableKey),
 });
-export type FanslyCommand = typeof FanslyCommandSchema.Type;
+export type FanslyCommand = typeof FanslyCommandSchema.Encoded;
 export type FanslyDownload = typeof OnlyFansDownloadSchema.Type;
 
 export function fanslyProfile(value: string): { username: string; profileUrl: string } | null {

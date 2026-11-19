@@ -15,6 +15,9 @@ import { DownloadFilesLegacy } from './DownloadFiles.layer.js'
 import { DownloadHostLegacy } from './DownloadHost.layer.js'
 import { makeProcessLayer } from './Process.layer.js'
 import { argumentError } from './arguments-runtime.js'
+import YTDlpWrap from 'yt-dlp-wrap-plus'
+import { resolveYtDlpWrapCtor } from './yt-dlp-wrap'
+const YTDlpWrapCtor = resolveYtDlpWrapCtor<new (binaryPath: string) => object>(YTDlpWrap)
 import { execSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { EventEmitter } from 'node:events'
@@ -23,7 +26,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { lowerChildPriority } from '@vidbee/task-queue-legacy/process'
-import YTDlpWrap from 'yt-dlp-wrap-plus'
 import type {
   CreateDownloadInput,
   DownloadRuntimeSettings,
@@ -31,82 +33,8 @@ import type {
   PlaylistDownloadInput,
   PlaylistDownloadResult,
   PlaylistInfo,
-  VideoFormat,
   VideoInfo
 } from './types'
-import { mapPlaylistInfo, planPlaylistDownloadOrder } from './playlist-plan'
-import {
-  buildPlaylistInfoArgs,
-  buildVideoInfoArgs,
-  retryTransientYtDlpNetworkError
-} from './yt-dlp-args'
-import { resolveYtDlpWrapCtor } from './yt-dlp-wrap'
-
-interface YtDlpExecProcess {
-  ytDlpProcess?: {
-    pid?: number
-    stdout?: NodeJS.ReadableStream
-    stderr?: NodeJS.ReadableStream
-  }
-  on(event: 'progress', listener: (payload: ProgressPayload) => void): this
-  on(event: 'close', listener: (code: number | null) => void): this
-  on(event: 'error', listener: (error: Error) => void): this
-  once(event: 'close', listener: (code: number | null) => void): this
-  once(event: 'error', listener: (error: Error) => void): this
-}
-
-interface YtDlpWrapInstance {
-  exec(args: string[], options?: { signal?: AbortSignal; detached?: boolean }): YtDlpExecProcess
-}
-
-type YtDlpWrapConstructor = new (binaryPath: string) => YtDlpWrapInstance
-const YTDlpWrapCtor = resolveYtDlpWrapCtor<YtDlpWrapConstructor>(YTDlpWrap)
-
-interface RawVideoInfo {
-  id?: string
-  title?: string
-  thumbnail?: string | null
-  duration?: number | null
-  extractor_key?: string | null
-  webpage_url?: string | null
-  description?: string | null
-  view_count?: number | null
-  uploader?: string | null
-  tags?: unknown
-  formats?: Array<{
-    format_id?: string | null
-    ext?: string | null
-    width?: number | null
-    height?: number | null
-    fps?: number | null
-    vcodec?: string | null
-    acodec?: string | null
-    filesize?: number | null
-    filesize_approx?: number | null
-    format_note?: string | null
-    tbr?: number | null
-    quality?: number | null
-    protocol?: string | null
-    language?: string | null
-    video_ext?: string | null
-    audio_ext?: string | null
-  }>
-}
-
-interface RawPlaylistInfo {
-  id?: string | null
-  title?: string | null
-  entries?: Record<string, unknown>[]
-}
-
-interface ProgressPayload {
-  percent?: number
-  currentSpeed?: string
-  eta?: string
-  downloaded?: string
-  total?: string
-}
-
 export interface DownloaderCoreOptions {
   downloadDir?: string
   maxConcurrent?: number
@@ -337,46 +265,12 @@ const resolveJsRuntimeArgs = (): string[] => {
   return process.env.YTDLP_JS_RUNTIME ? ['--js-runtimes', runtime] : []
 }
 
-const toOptionalNumber = (value: unknown): number | undefined => {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return undefined
-  }
-
-  return value
-}
-
-const toOptionalString = (value: unknown): string | undefined => {
-  if (typeof value !== 'string') {
-    return undefined
-  }
-
-  const trimmed = value.trim()
-  if (!trimmed) {
-    return undefined
-  }
-
-  return trimmed
-}
-
-const toOptionalStringArray = (value: unknown): string[] | undefined => {
-  if (!Array.isArray(value)) {
-    return undefined
-  }
-
-  const list = value
-    .filter((entry): entry is string => typeof entry === 'string')
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0)
-
-  return list.length > 0 ? list : undefined
-}
-
 export class DownloaderCore extends EventEmitter {
   private readonly maxConcurrent: number
   private readonly downloadDir: string
   private readonly defaultRuntimeSettings: DownloadRuntimeSettings
   private readonly jsRuntimeArgs: string[]
-  private ytdlp: YtDlpWrapInstance | null = null
+  private initialized = false
   private ffmpegLocation: string | undefined
   private binaryPath = ''
   private readonly service: typeof Downloader.Service
@@ -389,9 +283,13 @@ export class DownloaderCore extends EventEmitter {
     this.defaultRuntimeSettings = { ...(options.runtimeSettings ?? {}) }
     this.jsRuntimeArgs = resolveJsRuntimeArgs()
     const host = Layer.succeed(DownloaderHost, {
+      jsonSyntaxMessage: (input: string) => {
+        try { JSON.parse(input) } catch (error) { return error instanceof Error ? error.message : String(error) }
+        return 'Invalid yt-dlp metadata.'
+      },
       downloadDir: this.downloadDir, maxConcurrent: this.maxConcurrent,
       runtimeSettings: this.defaultRuntimeSettings, jsRuntimeArgs: this.jsRuntimeArgs,
-      platform: process.platform, now: Date.now, uuid: randomUUID,
+      platform: process.platform, now: Date.now, random: Math.random, uuid: randomUUID,
       initialize: Effect.try({ try: () => {
         this.initializeSync()
         return { binary: this.binaryPath, ffmpeg: this.ffmpegLocation }
@@ -413,7 +311,7 @@ export class DownloaderCore extends EventEmitter {
   }
 
   private initializeSync(): void {
-    if (this.ytdlp) {
+    if (this.initialized) {
       return
     }
     fs.mkdirSync(this.downloadDir, { recursive: true })
@@ -423,201 +321,13 @@ export class DownloaderCore extends EventEmitter {
     if (this.ffmpegLocation) {
       process.env.FFMPEG_PATH = this.ffmpegLocation
     }
-    this.ytdlp = new YTDlpWrapCtor(ytDlpPath)
+    new YTDlpWrapCtor(ytDlpPath)
+    this.initialized = true
   }
 
-  private getYtDlp(): YtDlpWrapInstance {
-    if (!this.ytdlp) {
-      throw new Error('DownloaderCore is not initialized.')
-    }
-    return this.ytdlp
-  }
-
-  private resolveRuntimeSettings(
-    taskSettings?: DownloadRuntimeSettings | undefined
-  ): DownloadRuntimeSettings {
-    const merged: DownloadRuntimeSettings = {
-      ...this.defaultRuntimeSettings,
-      ...(taskSettings ?? {})
-    }
-    const downloadPath =
-      taskSettings?.downloadPath?.trim() ||
-      this.defaultRuntimeSettings.downloadPath?.trim() ||
-      this.downloadDir
-
-    return {
-      ...merged,
-      downloadPath
-    }
-  }
-
-  private async runJsonCommand<T>(args: string[]): Promise<T> {
-    const process = this.getYtDlp().exec(args)
-    lowerChildPriority(process.ytDlpProcess?.pid)
-    let stdout = ''
-    let stderr = ''
-
-    process.ytDlpProcess?.stdout?.on('data', (chunk: Buffer) => {
-      stdout += chunk.toString()
-    })
-    process.ytDlpProcess?.stderr?.on('data', (chunk: Buffer) => {
-      stderr += chunk.toString()
-    })
-
-    const code = await new Promise<number | null>((resolve, reject) => {
-      process.once('close', (exitCode: number | null) => resolve(exitCode))
-      process.once('error', reject)
-    })
-
-    if (code !== 0 || !stdout.trim()) {
-      throw new Error(stderr.trim() || `yt-dlp exited with code ${code ?? -1}`)
-    }
-
-    return JSON.parse(stdout) as T
-  }
-
-  async getVideoInfo(url: string, runtimeSettings?: DownloadRuntimeSettings): Promise<VideoInfo> {
-    await this.initialize()
-    const target = url.trim()
-    if (!target) {
-      throw new Error('URL is required.')
-    }
-
-    const raw = await retryTransientYtDlpNetworkError(() =>
-      this.runJsonCommand<RawVideoInfo>(
-        buildVideoInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
-      )
-    )
-    const formats: VideoFormat[] = (raw.formats ?? []).map((format) => ({
-      formatId: format.format_id ?? 'unknown',
-      ext: format.ext ?? 'unknown',
-      width: toOptionalNumber(format.width),
-      height: toOptionalNumber(format.height),
-      fps: toOptionalNumber(format.fps),
-      vcodec: toOptionalString(format.vcodec),
-      acodec: toOptionalString(format.acodec),
-      filesize: toOptionalNumber(format.filesize),
-      filesizeApprox: toOptionalNumber(format.filesize_approx),
-      formatNote: toOptionalString(format.format_note),
-      tbr: toOptionalNumber(format.tbr),
-      quality: toOptionalNumber(format.quality),
-      protocol: toOptionalString(format.protocol),
-      language: toOptionalString(format.language),
-      videoExt: toOptionalString(format.video_ext),
-      audioExt: toOptionalString(format.audio_ext)
-    }))
-
-    return {
-      id: raw.id ?? target,
-      title: raw.title ?? target,
-      thumbnail: toOptionalString(raw.thumbnail),
-      duration: toOptionalNumber(raw.duration),
-      extractorKey: toOptionalString(raw.extractor_key),
-      webpageUrl: toOptionalString(raw.webpage_url),
-      description: toOptionalString(raw.description),
-      viewCount: toOptionalNumber(raw.view_count),
-      uploader: toOptionalString(raw.uploader),
-      tags: toOptionalStringArray(raw.tags),
-      formats
-    }
-  }
-
-  async getPlaylistInfo(
-    url: string,
-    runtimeSettings?: DownloadRuntimeSettings
-  ): Promise<PlaylistInfo> {
-    await this.initialize()
-    const target = url.trim()
-    if (!target) {
-      throw new Error('URL is required.')
-    }
-
-    const raw = await retryTransientYtDlpNetworkError(() =>
-      this.runJsonCommand<RawPlaylistInfo>(
-        buildPlaylistInfoArgs(
-          target,
-          this.resolveRuntimeSettings(runtimeSettings),
-          this.jsRuntimeArgs
-        )
-      )
-    )
-
-    return mapPlaylistInfo(raw, target)
-  }
-
-  async startPlaylistDownload(input: PlaylistDownloadInput): Promise<PlaylistDownloadResult> {
-    const playlist = await this.getPlaylistInfo(input.url, input.settings)
-    const groupId = `playlist_group_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
-
-    if (playlist.entryCount === 0) {
-      return {
-        groupId,
-        playlistId: playlist.id,
-        playlistTitle: playlist.title,
-        type: input.type,
-        totalCount: 0,
-        startIndex: 0,
-        endIndex: 0,
-        entries: []
-      }
-    }
-
-    let selectedEntries: PlaylistInfo['entries'] = []
-
-    if (input.entryIds && input.entryIds.length > 0) {
-      const selectedIdSet = new Set(input.entryIds)
-      selectedEntries = playlist.entries.filter((entry) => selectedIdSet.has(entry.id))
-    } else {
-      const requestedStart = Math.max((input.startIndex ?? 1) - 1, 0)
-      const requestedEnd = input.endIndex
-        ? Math.min(input.endIndex - 1, playlist.entryCount - 1)
-        : playlist.entryCount - 1
-      const rangeStart = Math.min(requestedStart, requestedEnd)
-      const rangeEnd = Math.max(requestedStart, requestedEnd)
-      selectedEntries = playlist.entries.slice(rangeStart, rangeEnd + 1)
-    }
-
-    const createdEntries: PlaylistDownloadResult['entries'] = []
-
-    for (const entry of planPlaylistDownloadOrder(selectedEntries)) {
-      const download = await this.createDownload({
-        url: entry.url,
-        type: input.type,
-        title: entry.title,
-        thumbnail: entry.thumbnail,
-        playlistId: groupId,
-        playlistTitle: playlist.title,
-        playlistIndex: entry.index,
-        playlistSize: selectedEntries.length,
-        format: input.format,
-        audioFormat: input.audioFormat,
-        audioFormatIds: input.audioFormatIds,
-        customDownloadPath: input.customDownloadPath,
-        customFilenameTemplate: input.customFilenameTemplate,
-        containerFormat: input.containerFormat,
-        settings: input.settings
-      })
-
-      createdEntries.push({
-        downloadId: download.id,
-        entryId: entry.id,
-        title: entry.title,
-        url: entry.url,
-        index: entry.index
-      })
-    }
-
-    return {
-      groupId,
-      playlistId: playlist.id,
-      playlistTitle: playlist.title,
-      type: input.type,
-      totalCount: selectedEntries.length,
-      startIndex: selectedEntries[0]?.index ?? 0,
-      endIndex: selectedEntries.at(-1)?.index ?? 0,
-      entries: createdEntries
-    }
-  }
+  getVideoInfo(url: string, settings?: DownloadRuntimeSettings): Promise<VideoInfo> { return this.promise(this.service.getVideoInfo(url, settings)) }
+  getPlaylistInfo(url: string, settings?: DownloadRuntimeSettings): Promise<PlaylistInfo> { return this.promise(this.service.getPlaylistInfo(url, settings)) }
+  startPlaylistDownload(input: PlaylistDownloadInput): Promise<PlaylistDownloadResult> { return this.promise(this.service.startPlaylistDownload(input)) }
 
   initialize(): Promise<void> { return this.promise(this.service.initialize) }
   createDownload(input: CreateDownloadInput): Promise<DownloadTask> { return this.promise(this.service.createDownload(input)) }

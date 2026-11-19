@@ -2,6 +2,7 @@ import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import { dual } from "effect/Function";
 import * as Option from "effect/Option";
 import * as Str from "effect/String";
+import type { DownloadMediaType } from "./DownloadLiterals.model.js";
 export const FILENAME_STYLES = ["classic", "basic", "pretty", "nerdy"] as const;
 
 export const FilenameStyle = LiteralKit(FILENAME_STYLES);
@@ -113,13 +114,13 @@ export const applyViaVidBeeFilename: {
  */
 export const resolveFilenameTemplate: {
   (
-    type: "audio" | "video",
+    type: typeof DownloadMediaType.Type,
     shareWatermark?: boolean,
     filenameViaVidBee?: boolean
   ): (style: FilenameStyle | undefined) => string;
   (
     style: FilenameStyle | undefined,
-    type: "audio" | "video",
+    type: typeof DownloadMediaType.Type,
     shareWatermark?: boolean,
     filenameViaVidBee?: boolean
   ): string;
@@ -127,7 +128,7 @@ export const resolveFilenameTemplate: {
   (args) => args[1] === "audio" || args[1] === "video",
   (
     style: FilenameStyle | undefined,
-    type: "audio" | "video",
+    type: typeof DownloadMediaType.Type,
     shareWatermark: boolean = Boolean(),
     filenameViaVidBee: boolean = DEFAULT_FILENAME_VIA_VIDBEE
   ): string => {

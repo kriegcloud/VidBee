@@ -17,7 +17,7 @@ export {
 
 const sync = <A, E>(effect: Effect.Effect<A, E, Effect.Services<ReturnType<typeof Native.buildVideoInfoArgs>>>) => runLegacySync(argumentsRuntime, effect, argumentError)
 export const normalizeBrowserCookiesSettingForYtDlp = (value?: string | null): string => sync(Native.normalizeBrowserCookiesSettingForYtDlp(value))
-export const validateDownloadTimeRange = (start?: string, end?: string): void => sync(Effect.fromResult(Native.validateDownloadTimeRange(start, end)))
+export const validateDownloadTimeRange = (start?: string, end?: string): void => sync(Effect.fromResult(Native.validateDownloadTimeRange({ startTime: start, endTime: end })))
 export const assertDownloadSourceUrl = (value: string): void => sync(Effect.fromResult(Native.assertDownloadSourceUrl(value)))
 export const resolveSubtitleDownloadSkipReason = (options: Pick<Native.YtDlpDownloadOptions, 'type' | 'url'>, settings: Native.YtDlpDownloadSettings) => Native.resolveSubtitleDownloadSkipReason(options, settings, normalizeBrowserCookiesSettingForYtDlp(settings.browserForCookies))
 export const resolvePathWithHome = (raw?: string | null): string | undefined => sync(Effect.map(Path.Path, path => Native.resolvePathWithHome(raw, os.homedir(), path)))

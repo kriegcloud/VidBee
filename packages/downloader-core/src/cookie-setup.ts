@@ -221,7 +221,8 @@ const COOKIE_BROWSER_LABELS: Record<CookieBrowserId, string> = {
  * @param browserForCookies Raw `browserForCookies` setting.
  */
 export const cookieBrowserLabel = (browserForCookies: string | undefined): string | undefined => {
-  const id = Str.toLowerCase(Str.split(Str.trim(browserForCookies ?? ""), /[+:]/)[0] ?? "");
+  const normalized = browserForCookies == null ? "" : browserForCookies;
+  const id = Str.toLowerCase(Str.split(Str.trim(normalized), /[+:]/)[0] ?? "");
   return isCookieBrowserId(id) ? COOKIE_BROWSER_LABELS[id] : undefined;
 };
 
@@ -284,12 +285,11 @@ export const hasConfiguredCookieSettings: {
   (cookiesPath: string | undefined): (browserForCookies: string | undefined) => boolean;
   (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean;
 } = dual(2, (browserForCookies: string | undefined, cookiesPath: string | undefined): boolean => {
-  const trimmedPath = cookiesPath === undefined || cookiesPath === null ? undefined : Str.trim(cookiesPath);
+  const trimmedPath = cookiesPath == null ? undefined : Str.trim(cookiesPath);
   if (trimmedPath !== undefined && trimmedPath !== null && trimmedPath !== "") {
     return true;
   }
-  const trimmedBrowser =
-    browserForCookies === undefined || browserForCookies === null ? undefined : Str.trim(browserForCookies);
+  const trimmedBrowser = browserForCookies == null ? undefined : Str.trim(browserForCookies);
   return Boolean(trimmedBrowser && trimmedBrowser !== "none");
 });
 
@@ -312,7 +312,7 @@ export const inspectNetscapeCookies: {
   (now: number, cookiesPath?: string): (text: string) => CookieHealth;
   (text: string, now: number, cookiesPath?: string): CookieHealth;
 } = dual(
-  (args) => args.length >= 2,
+  (args) => typeof args[0] === "string",
   (text: string, now: number, cookiesPath?: string): CookieHealth => {
     if (!looksLikeNetscapeCookies(text)) {
       return {
@@ -547,7 +547,7 @@ const isCookieDatabaseMissingError = (normalized: string): boolean =>
  * @param rawError Raw stderr or stored download error.
  */
 export const getCookieSetupFailureKind = (rawError: string | null | undefined): CookieSetupFailureKind | null => {
-  const normalized = Str.toLowerCase(Str.trim(rawError ?? "")) ?? "";
+  const normalized = rawError == null ? "" : (Str.toLowerCase(Str.trim(rawError)) ?? "");
   if (!(normalized !== undefined && normalized !== null && normalized !== "")) {
     return null;
   }
