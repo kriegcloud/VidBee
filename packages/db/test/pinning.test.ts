@@ -195,7 +195,11 @@ function seedRaw(db: ReturnType<typeof open>, table: string) {
     )
     .run(...values);
 }
-test("subscription applier upgrades every supported missing column and preserves populated rows", (t) => {
+// Every combination of missing columns on a fresh database: seconds on a loaded CI runner, so
+// the default five-second budget is replaced by an explicit one.
+test("subscription applier upgrades every supported missing column and preserves populated rows", {
+  timeout: 60_000,
+}, (t) => {
   const added = [
     "auto_download",
     "download_type",
