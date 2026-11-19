@@ -80,8 +80,8 @@ success proof. See the report and the `COVERAGE_GAPS` export for the exact limit
 
 `--models <directory>` copies the supplied model directory into the fixture's
 `models/` directory. Its input should therefore contain the `transcription/`
-subdirectory expected by the app. A successful local-ASR golden is not implemented
-yet; supplying models does not establish transcription success. The suite reports
+subdirectory expected by the app. Real-ASR scenarios require the CPU-only build prerequisite below and compare
+the recorded transcript, lifecycle and restart documents with supplied models. The suite reports
 a local-ASR skip when models are absent.
 
 ## Normalization rules
@@ -380,3 +380,108 @@ It does not import application services or mutate the baseline. It is a separate
 host-configuration gate; the ordinary full invocation still has 407 documents.
 The final clear playback fixture uses the generated video-only input; the report
 retains the audio/video run's watchdog failure and its proof limits.
+
+## Transcription baseline scenarios (phase 6c)
+
+The transcription harness is isolated in `transcription-*.mjs` files. The pinned
+external set is described by `transcription-models.json`, which records every
+model-relative file and SHA-256. Before each supplied-model invocation,
+`verifyTranscriptionModels` rejects added, missing, changed and non-regular files.
+The verified manifest is retained in that invocation's evidence directory. Supply
+the directory containing `transcription/`; weights are never downloaded by this
+harness or committed. Speech is read from the external set's Whisper tiny
+`test_wavs/0.wav`; the separately supplied sample has identical bytes. Its
+redistribution rights were not established, so speech bytes stay external.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models --loopback-only --subset transcription
+```
+
+A complete invocation with `--models` first compares all original documents on
+a profile without supplied models, then launches a separate supplied-model
+scenario. This matters because the original model-status golden explicitly pins
+models absent. Each child uses the same read-only build and disposable offline
+launch mechanism. The combined evidence directory records both children and a
+combined result. `--update` in this complete mode applies only to new transcription
+documents; the original documents still compare. A direct isolated supplied-model
+invocation uses `--loopback-only --subset transcription`.
+
+Real-ASR acceptance requires a **build-level CPU-only runtime check**, once in
+each supplied-model scenario before its first app launch or transcription case.
+`transcription-cpu.mjs` reads
+`resources/app.asar.unpacked/node_modules/sherpa-onnx-linux-x64` in the build under
+test and requires exactly these six regular files: `index.js`, `libonnxruntime.so`,
+`libsherpa-onnx-c-api.so`, `libsherpa-onnx-cxx-api.so`, `package.json`, and
+`sherpa-onnx.node`. Any additional entry (including `libonnxruntime_providers_*`
+or another library name), directory, symlink or missing entry fails with a clear
+CPU-build prerequisite error. The receipt is `transcription-cpu-build.json`.
+This pinned inventory contains no loadable accelerator execution-provider library.
+The check is deliberately specific to this Linux x64 runtime; an upstream package
+layout change needs an explicit inventory review.
+
+Every `Available providers:` line in observed task logs must list only
+`CPUExecutionProvider`; a non-CPU or malformed list fails. A task without that
+line passes. The observed fallback diagnostic is
+`Available providers: CPUExecutionProvider, . Fallback to cpu!`.
+The nominal `compute.provider` label is not an execution assertion: the baseline's
+fallback detector misses “Fallback”, and its benchmark can choose either `cpu`
+or `cuda` while both run on CPU. That bug is preserved under A2. No probe override
+or application change is made.
+
+The orchestrator's first native-evidence rule required a diagnostic per task.
+Part 3 replaces it because CPU-selected workers and paths that never initialize
+a recognizer do not print the diagnostic. CPU execution is established by the
+runtime build, with provider-list validation when a task prints one. Per-task
+`cpuEvidence` is neither required nor included in compared documents. Missing
+models still print the clear local-ASR skip; hosted omission is not local ASR proof.
+See [the phase report](reports/6c-goldens.md) for recording/repeat results.
+
+The named **transcription provider benchmark race** normalization applies only to
+`transcription/` documents, before the existing normalization rules:
+
+| Field | Exact transformation |
+| --- | --- |
+| `provider` string equal to `cpu`, `cuda`, `directml` or `coreml` | `<provider>` (the snapshot's app-reported execution-provider label) |
+| `log` line beginning `compute.provider=` | Replace only its provider token with `<provider>` |
+| `log` line beginning `compute.probe=` | Replace its provider token with `<provider>` and the named `durationMs=` token with `<probe-duration>` |
+| `log` line beginning `compute.provider=`, with `reason=accelerator-faster` or `reason=cpu-faster-or-within-margin` | Replace that reason token with `<benchmark-choice>`; preserve candidate list and all other text |
+
+No other reason, probe error, native diagnostic, transcript text, words, timing,
+speaker, media duration, status, attempt, filename or error text is altered by
+this additional rule. Existing generated-ID/path/runtime-timestamp rules still
+apply. The task snapshot already projects away raw `progress` and `log` as in
+part 1; raw wire answers retain both. Consequently current snapshots exercise
+the top-level `provider` branch; log branches cover compared log documents if
+added later. The existing two model-management documents have no matching fields
+and remain byte-for-byte unchanged. No native diagnostic is normalized.
+
+For independent model-management comparisons,
+add `--transcription-contract-only`. This explicitly restricted selector pins
+model readiness and the final already-installed minimal-tier ensure task. It
+performs no ASR and does not establish CPU, transcript, cancellation or restart
+parity. It can be combined with a complete invocation to retain the original
+suite proof, or isolated with `--loopback-only --subset transcription`.
+
+To add a real-ASR case, first characterize the pre-port packaged app through
+public MCP/automation APIs and retain raw answers, events and request logs.
+Subscribe to public events before admission, follow the exact admitted task ID,
+and poll bounded conditions. Do not use an earlier completed child to satisfy a
+new transcription wait. Require the build-level CPU check and validate any native
+provider lists before writing or comparing worker answers. Keep text, words, speaker output, media
+durations and lifecycle states meaningful. Only the named provider benchmark race
+is normalized. An unstable transcript or lifecycle value is a finding and
+disqualifies the case. Record only cases that can pass the required repeat gate;
+retain unaccepted explorations in scratch.
+
+`VIDBEE_TRANSCRIPTION_EXPLORE=1` is a diagnostic mode for public-surface
+characterization: it does not write transcription goldens and still enforces the
+CPU-build and native provider-list prerequisites. Normalized diagnostic snapshots
+are written only to scratch `actual/`; no expected documents are written or compared. Results from that mode are never
+ASR acceptance. Run the ordinary strict mode for any acceptance claim.
+
+The accepted phase-6c baseline adds 19 real-ASR documents covering all seven
+requested scenarios, for 21 transcription documents and 400 total with models.
+Twenty isolated and five complete supplied-model comparisons passed; both
+nominal labels occurred. No scenario was removed. See the report's part 3 for
+exact counts, per-run receipts and the remaining narrower coverage gaps.

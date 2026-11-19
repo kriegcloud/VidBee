@@ -10,6 +10,10 @@ import {
   cleanupSubscriptionsRestart,
   prepareSubscriptionsRestart
 } from './subscriptions-core-restart-fixture.mjs'
+import { verifyTranscriptionCpuBuild } from './transcription-cpu.mjs'
+import { buildTranscriptionFixture } from './transcription-fixture.mjs'
+import { verifyTranscriptionModels } from './transcription-models.mjs'
+import { runTranscriptionSuite } from './transcription-run.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../../../..')
@@ -28,6 +32,11 @@ const scratch = path.resolve(
     process.env.VIDBEE_GOLDEN_SCRATCH ??
     path.join(process.env.RUNNER_TEMP ?? path.join(homedir(), '.cache'), 'vidbee-goldens')
 )
+if (option('--models') && !args.includes('--loopback-only')) {
+  await verifyTranscriptionModels(path.resolve(option('--models')))
+  await runTranscriptionSuite({ args, scratch, script: fileURLToPath(import.meta.url) })
+  process.exit(0)
+}
 await mkdir(scratch, { recursive: true })
 const work = await mkdtemp(path.join(scratch, 'suite-'))
 const launchScript = path.join(here, '../offline-launch.sh')
@@ -123,6 +132,13 @@ const start = Date.now()
 // subscription cases exactly as --loopback-only does.
 const loopbackOnly = args.includes('--loopback-only') || args.includes('--browser-capture-only')
 try {
+  if (option('--models')) {
+    const cpuBuild = await verifyTranscriptionCpuBuild(build)
+    await writeFile(
+      path.join(work, 'transcription-cpu-build.json'),
+      JSON.stringify(cpuBuild, null, 2)
+    )
+  }
   const bootstrap = path.join(work, 'bootstrap')
   process.stdout.write(`Bootstrapping real schema (${work})\n`)
   await launch(bootstrap)
@@ -136,7 +152,10 @@ try {
   await buildBrowserCaptureFixture(seed, build, command)
   const models = option('--models')
   if (models) {
+    const manifest = await verifyTranscriptionModels(path.resolve(models))
+    await writeFile(path.join(work, 'transcription-models.json'), JSON.stringify(manifest, null, 2))
     await cp(path.resolve(models), path.join(seed, 'models'), { recursive: true })
+    await buildTranscriptionFixture(seed, path.resolve(models), build, command)
   }
   const pid = await launch(runDir, seed)
   const workerArgs = [
@@ -147,6 +166,7 @@ try {
     ...(loopbackOnly ? ['--loopback-only'] : []),
     ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
     ...(args.includes('--browser-capture-only') ? ['--browser-capture-only'] : []),
+    ...(args.includes('--transcription-contract-only') ? ['--transcription-contract-only'] : []),
     ...(option('--subset') ? ['--subset', option('--subset')] : []),
     ...(models ? ['--models', path.resolve(models)] : [])
   ]
@@ -184,6 +204,8 @@ try {
       '--loopback-restart',
       runDir,
       ...(args.includes('--update') ? ['--update'] : []),
+      ...(models ? ['--models', path.resolve(models)] : []),
+      ...(args.includes('--transcription-contract-only') ? ['--transcription-contract-only'] : []),
       ...(option('--subset') ? ['--subset', option('--subset')] : [])
     ])
     process.stdout.write(restartOutput)

@@ -13,8 +13,18 @@ import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
 import { runSubscriptionsCases, runSubscriptionsRestart } from './subscriptions-core-cases.mjs'
+import { runTranscriptionCases, runTranscriptionRestart } from './transcription-cases.mjs'
+import { normalizeTranscription } from './transcription-normalize.mjs'
 
 const args = process.argv.slice(2)
+if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && !args.includes('--probe')) {
+  if (args.includes('--update')) {
+    throw new Error('Exploration cannot update goldens')
+  }
+  process.stdout.write(
+    'EXPLORATION ONLY: NOT ACCEPTANCE; no ASR goldens are recorded or compared\n'
+  )
+}
 const probe = args[0] === '--probe'
 const runDir = args[probe ? 1 : 0]
 const build = args[1]
@@ -50,10 +60,16 @@ const record = async (name, value) => {
   if (subset && !name.includes(subset)) {
     return
   }
-  const actual = normalize(value, roots)
+  const actual = normalize(
+    name.startsWith('transcription/') ? normalizeTranscription(value) : value,
+    roots
+  )
   const file = `${name.replaceAll('/', '--')}.json`
   const text = `${JSON.stringify(actual, null, 2)}\n`
   await writeFile(path.join(actualDir, file), text)
+  if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && name.startsWith('transcription/')) {
+    return
+  }
   count++
   if (args.includes('--update')) {
     await writeFile(path.join(output, file), text)
@@ -163,6 +179,9 @@ if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))
 }
 let browserCaptureSkipped = false
 const subscriptionsOnly = args.includes('--subscriptions-only')
+// A run narrowed to another package's documents leaves the browser alone: its cases change
+// settings and occupy the queue, and none of their documents would be compared.
+const browserCaptureSelected = !subscriptionsOnly && (!subset || subset.includes('browser-capture'))
 const exists = (file) =>
   stat(file).then(
     () => true,
@@ -182,9 +201,10 @@ if (restartIndex >= 0) {
   ) {
     await runSubscriptionsRestart({ client, runDir, originalRun, record, roots })
   }
-  if (!subscriptionsOnly) {
+  if (browserCaptureSelected) {
     await runBrowserCaptureRestart({ runDir, record })
   }
+  await runTranscriptionRestart({ client, runDir, originalRun, record, roots })
 } else {
   if (args.includes('--browser-capture-only')) {
     await prepareBrowserCaptureOnly({ client, runDir, root })
@@ -194,10 +214,21 @@ if (restartIndex >= 0) {
   if (!args.includes('--loopback-only') || subscriptionsOnly) {
     await runSubscriptionsCases({ client, runDir, build, record, roots, command })
   }
-  if (!subscriptionsOnly) {
+  if (browserCaptureSelected) {
     browserCaptureSkipped =
       (await runBrowserCaptureCases({ client, runDir, build, record, roots, command })) === false
   }
+}
+if (args.includes('--models') && restartIndex < 0) {
+  await runTranscriptionCases({
+    client,
+    runDir,
+    record,
+    roots,
+    command,
+    build,
+    contractOnly: args.includes('--transcription-contract-only')
+  })
 }
 if (!args.includes('--models')) {
   process.stdout.write('SKIP local ASR golden: --models not supplied\n')
@@ -206,7 +237,10 @@ process.stdout.write(
   `${args.includes('--update') ? 'Recorded' : 'Compared'} ${count} cases; ${failures} failures\n`
 )
 if (
-  (count === 0 && restartIndex < 0 && !(browserCaptureSkipped && subset === 'browser-capture')) ||
+  (count === 0 &&
+    restartIndex < 0 &&
+    !(browserCaptureSkipped && subset === 'browser-capture') &&
+    process.env.VIDBEE_TRANSCRIPTION_EXPLORE !== '1') ||
   failures
 ) {
   process.exitCode = 1
