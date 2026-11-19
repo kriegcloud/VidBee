@@ -7,8 +7,17 @@ import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
+import { runTranscriptionCases, runTranscriptionRestart } from './transcription-cases.mjs'
 
 const args = process.argv.slice(2)
+if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && !args.includes('--probe')) {
+  if (args.includes('--update')) {
+    throw new Error('Exploration cannot update goldens')
+  }
+  process.stdout.write(
+    'EXPLORATION ONLY: NOT ACCEPTANCE; no ASR goldens are recorded or compared\n'
+  )
+}
 const probe = args[0] === '--probe'
 const runDir = args[probe ? 1 : 0]
 const build = args[1]
@@ -40,6 +49,9 @@ const roots = [
   [root, '<repo>']
 ]
 const record = async (name, value) => {
+  if (process.env.VIDBEE_TRANSCRIPTION_EXPLORE === '1' && name.startsWith('transcription/')) {
+    return
+  }
   if (subset && !name.includes(subset)) {
     return
   }
@@ -157,8 +169,26 @@ if (!args.includes('--loopback-only')) {
 const restartIndex = args.indexOf('--loopback-restart')
 if (restartIndex >= 0) {
   await runLoopbackRestart({ client, runDir, originalRun: args[restartIndex + 1], record, roots })
+  await runTranscriptionRestart({
+    client,
+    runDir,
+    originalRun: args[restartIndex + 1],
+    record,
+    roots
+  })
 } else {
   await runLoopbackCases({ client, runDir, build, record, roots, command })
+}
+if (args.includes('--models') && restartIndex < 0) {
+  await runTranscriptionCases({
+    client,
+    runDir,
+    record,
+    roots,
+    command,
+    build,
+    contractOnly: args.includes('--transcription-contract-only')
+  })
 }
 if (!args.includes('--models')) {
   process.stdout.write('SKIP local ASR golden: --models not supplied\n')
@@ -166,6 +196,9 @@ if (!args.includes('--models')) {
 process.stdout.write(
   `${args.includes('--update') ? 'Recorded' : 'Compared'} ${count} cases; ${failures} failures\n`
 )
-if ((count === 0 && restartIndex < 0) || failures) {
+if (
+  (count === 0 && restartIndex < 0 && process.env.VIDBEE_TRANSCRIPTION_EXPLORE !== '1') ||
+  failures
+) {
   process.exitCode = 1
 }

@@ -1,0 +1,33 @@
+{
+  "created": true,
+  "task": {
+    "id": "<id:1>",
+    "kind": "model-download",
+    "parentId": null,
+    "title": "ASR: minimal",
+    "url": "asr:minimal",
+    "status": "completed",
+    "currentTransfer": {
+      "receivedBytes": null,
+      "totalBytes": null
+    },
+    "attempt": 1,
+    "maxAttempts": 5,
+    "nextRetryAt": null,
+    "error": null,
+    "asrTier": "minimal",
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "model-download",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": {
+      "filePath": "<run>/userdata/models/transcription/sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+      "size": 103609903,
+      "durationMs": null,
+      "sha256": null
+    }
+  }
+}

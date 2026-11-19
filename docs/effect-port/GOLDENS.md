@@ -235,3 +235,59 @@ The download suite deliberately omits the stalled-download watchdog case: its
 running threshold is 60 seconds and no public preference lowers it. A server
 contract test still proves the stall route and connection cleanup. Remote-media
 extractors, authenticated sites, live ASR and hosted CI remain outside this proof.
+
+## Transcription baseline scenarios (phase 6c)
+
+The transcription harness is isolated in `transcription-*.mjs` files. The pinned
+external set is described by `transcription-models.json`, which records every
+model-relative file and SHA-256. Before each supplied-model invocation,
+`verifyTranscriptionModels` rejects added, missing, changed and non-regular files.
+The verified manifest is retained in that invocation's evidence directory. Supply
+the directory containing `transcription/`; weights are never downloaded by this
+harness or committed. Speech is read from the external set's Whisper tiny
+`test_wavs/0.wav`; the separately supplied sample has identical bytes. Its
+redistribution rights were not established, so speech bytes stay external.
+
+```sh
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models
+bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models --loopback-only --subset transcription
+```
+
+A complete invocation with `--models` first compares all original documents on
+a profile without supplied models, then launches a separate supplied-model
+scenario. This matters because the original model-status golden explicitly pins
+models absent. Each child uses the same read-only build and disposable offline
+launch mechanism. The combined evidence directory records both children and a
+combined result. `--update` in this complete mode applies only to new transcription
+documents; the original documents still compare. A direct isolated supplied-model
+invocation uses `--loopback-only --subset transcription`.
+
+Real-ASR acceptance requires the public task log to report
+`compute.provider=cpu`; accelerator reports fail even when the native addon says
+it fell back to CPU. GPU-disabled Chromium alone does not guarantee the reported
+provider. Baseline exploration found a fallback-log spelling mismatch and timing
+sensitive provider selection; see [the phase report](reports/6c-goldens.md).
+The local real-ASR gate remains incomplete. Missing model input prints a clear
+skip; a hosted skip cannot establish local ASR proof.
+
+For independent model-management comparisons while that prerequisite is blocked,
+add `--transcription-contract-only`. This explicitly restricted selector pins
+model readiness and the final already-installed minimal-tier ensure task. It
+performs no ASR and does not establish CPU, transcript, cancellation or restart
+parity. It can be combined with a complete invocation to retain the original
+suite proof, or isolated with `--loopback-only --subset transcription`.
+
+To add a real-ASR case, first characterize the pre-port packaged app through
+public MCP/automation APIs and retain raw answers, events and request logs.
+Subscribe to public events before admission, follow the exact admitted task ID,
+and poll bounded conditions. Do not use an earlier completed child to satisfy a
+new transcription wait. Assert the reported CPU provider before writing or
+comparing a successful worker's answer. Keep text, words, speaker output, media
+durations and lifecycle states meaningful. An unstable provider or transcript
+is a finding, not a normalization opportunity. Record only cases that can pass
+the required repeat gate; retain unaccepted explorations in scratch.
+
+`VIDBEE_TRANSCRIPTION_EXPLORE=1` is a diagnostic mode for public-surface
+characterization: it does not write transcription goldens and bypasses the CPU
+assertion so later scenarios can be observed. Results from that mode are never
+ASR acceptance. Run the ordinary strict mode for any acceptance claim.

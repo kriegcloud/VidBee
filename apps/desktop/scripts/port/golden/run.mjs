@@ -5,6 +5,9 @@ import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
+import { buildTranscriptionFixture } from './transcription-fixture.mjs'
+import { verifyTranscriptionModels } from './transcription-models.mjs'
+import { runTranscriptionSuite } from './transcription-run.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../../../..')
@@ -23,6 +26,11 @@ const scratch = path.resolve(
     process.env.VIDBEE_GOLDEN_SCRATCH ??
     path.join(process.env.RUNNER_TEMP ?? path.join(homedir(), '.cache'), 'vidbee-goldens')
 )
+if (option('--models') && !args.includes('--loopback-only')) {
+  await verifyTranscriptionModels(path.resolve(option('--models')))
+  await runTranscriptionSuite({ args, scratch, script: fileURLToPath(import.meta.url) })
+  process.exit(0)
+}
 await mkdir(scratch, { recursive: true })
 const work = await mkdtemp(path.join(scratch, 'suite-'))
 const launchScript = path.join(here, '../offline-launch.sh')
@@ -119,7 +127,10 @@ try {
   await buildLoopbackFixture(seed, build, command)
   const models = option('--models')
   if (models) {
+    const manifest = await verifyTranscriptionModels(path.resolve(models))
+    await writeFile(path.join(work, 'transcription-models.json'), JSON.stringify(manifest, null, 2))
     await cp(path.resolve(models), path.join(seed, 'models'), { recursive: true })
+    await buildTranscriptionFixture(seed, path.resolve(models), build, command)
   }
   const pid = await launch(runDir, seed)
   const workerArgs = [
@@ -128,6 +139,7 @@ try {
     build,
     ...(args.includes('--update') ? ['--update'] : []),
     ...(args.includes('--loopback-only') ? ['--loopback-only'] : []),
+    ...(args.includes('--transcription-contract-only') ? ['--transcription-contract-only'] : []),
     ...(option('--subset') ? ['--subset', option('--subset')] : []),
     ...(models ? ['--models', path.resolve(models)] : [])
   ]
@@ -157,6 +169,8 @@ try {
       '--loopback-restart',
       runDir,
       ...(args.includes('--update') ? ['--update'] : []),
+      ...(models ? ['--models', path.resolve(models)] : []),
+      ...(args.includes('--transcription-contract-only') ? ['--transcription-contract-only'] : []),
       ...(option('--subset') ? ['--subset', option('--subset')] : [])
     ])
     process.stdout.write(restartOutput)
