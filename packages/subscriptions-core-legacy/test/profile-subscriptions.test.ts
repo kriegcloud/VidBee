@@ -17,17 +17,17 @@ const test = (name: string, run: () => unknown): void => {
 import { applySubscriptionsMigrations } from '@vidbee/db/legacy/subscriptions'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
-import { SubscriptionsApi } from '@vidbee/subscriptions-core/api'
-import { buildFeedKey, resolveFeedFromInput } from '@vidbee/subscriptions-core/feed-resolver'
+import { SubscriptionsApi } from '@vidbee/subscriptions-core-legacy/api'
+import { buildFeedKey, resolveFeedFromInput } from '@vidbee/subscriptions-core-legacy/feed-resolver'
 import {
   decideProfileDownloads,
   isSubscriptionDue,
   nextProfileCheckAt,
   summarizeProfileStatus
-} from '@vidbee/subscriptions-core/profile-policy'
-import { createSqliteSubscriptionsStore, InMemoryMetaStore } from '@vidbee/subscriptions-core/store'
-import type { ProfileCheckResult, SubscriptionFeedItem, SubscriptionRule } from '@vidbee/subscriptions-core/types'
-import { profileItemCategory } from '@vidbee/subscriptions-core/types'
+} from '@vidbee/subscriptions-core-legacy/profile-policy'
+import { createSqliteSubscriptionsStore, InMemoryMetaStore } from '@vidbee/subscriptions-core-legacy/store'
+import type { ProfileCheckResult, SubscriptionFeedItem, SubscriptionRule } from '@vidbee/subscriptions-core-legacy/types'
+import { profileItemCategory } from '@vidbee/subscriptions-core-legacy/types'
 
 const HOUR = 60 * 60 * 1000
 

@@ -1,8 +1,8 @@
 import { expect, it, vi } from '@effect/vitest'
-import { LeaderElection } from '@vidbee/subscriptions-core/leader'
-import { InMemoryMetaStore } from '@vidbee/subscriptions-core/store'
-import { FeedCheckScheduler } from '@vidbee/subscriptions-core/scheduler'
-import { buildSubscriptionDownloadOptions } from '@vidbee/subscriptions-core/download-options'
+import { LeaderElection } from '@vidbee/subscriptions-core-legacy/leader'
+import { InMemoryMetaStore } from '@vidbee/subscriptions-core-legacy/store'
+import { FeedCheckScheduler } from '@vidbee/subscriptions-core-legacy/scheduler'
+import { buildSubscriptionDownloadOptions } from '@vidbee/subscriptions-core-legacy/download-options'
 vi.setConfig({ testTimeout: 120000 })
 it('heartbeat default/custom period and CAS payload retain lease identity and original startedAt', async () => {
   for (const custom of [false, true]) {

@@ -24,7 +24,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "bunx --bun vitest run"
+    "test": "node --import tsx --test test/characterization-audit-*.node.ts && bunx --bun vitest run"
   },
   "dependencies": {
     "@vidbee/downloader-core": "workspace:^",

@@ -2,7 +2,7 @@
 type Public<T> = { [K in keyof T]: T[K] }
 type Surface<T> = T extends abstract new (...args: infer A) => infer I ? new (...args: A) => Public<I> : T
 type Module<T> = { [K in keyof T]: Surface<T[K]> }
-import type * as Live0 from '@vidbee/subscriptions-core/api'
+import type * as Live0 from '@vidbee/subscriptions-core-legacy/api'
 import type * as Old0 from './legacy-declarations/api'
 declare const live0: Module<typeof Live0>
 declare const old0: Module<typeof Old0>
@@ -28,7 +28,7 @@ declare const live0_SubscriptionsApiListener: Live0.SubscriptionsApiListener
 declare const old0_SubscriptionsApiListener: Old0.SubscriptionsApiListener
 export const old0_SubscriptionsApiListenerCheck: Old0.SubscriptionsApiListener = live0_SubscriptionsApiListener
 export const live0_SubscriptionsApiListenerCheck: Live0.SubscriptionsApiListener = old0_SubscriptionsApiListener
-import type * as Live1 from '@vidbee/subscriptions-core/auto-download'
+import type * as Live1 from '@vidbee/subscriptions-core-legacy/auto-download'
 import type * as Old1 from './legacy-declarations/auto-download'
 declare const live1: Module<typeof Live1>
 declare const old1: Module<typeof Old1>
@@ -38,13 +38,13 @@ declare const live1_AutoDownloadInputs: Live1.AutoDownloadInputs
 declare const old1_AutoDownloadInputs: Old1.AutoDownloadInputs
 export const old1_AutoDownloadInputsCheck: Old1.AutoDownloadInputs = live1_AutoDownloadInputs
 export const live1_AutoDownloadInputsCheck: Live1.AutoDownloadInputs = old1_AutoDownloadInputs
-import type * as Live2 from '@vidbee/subscriptions-core/download-options'
+import type * as Live2 from '@vidbee/subscriptions-core-legacy/download-options'
 import type * as Old2 from './legacy-declarations/download-options'
 declare const live2: Module<typeof Live2>
 declare const old2: Module<typeof Old2>
 export const valuesOld2: Module<typeof Old2> = live2
 export const valuesLive2: Module<typeof Live2> = old2
-import type * as Live3 from '@vidbee/subscriptions-core/feed-items'
+import type * as Live3 from '@vidbee/subscriptions-core-legacy/feed-items'
 import type * as Old3 from './legacy-declarations/feed-items'
 declare const live3: Module<typeof Live3>
 declare const old3: Module<typeof Old3>
@@ -58,7 +58,7 @@ declare const live3_NormalizeOptions: Live3.NormalizeOptions
 declare const old3_NormalizeOptions: Old3.NormalizeOptions
 export const old3_NormalizeOptionsCheck: Old3.NormalizeOptions = live3_NormalizeOptions
 export const live3_NormalizeOptionsCheck: Live3.NormalizeOptions = old3_NormalizeOptions
-import type * as Live4 from '@vidbee/subscriptions-core/feed-parser'
+import type * as Live4 from '@vidbee/subscriptions-core-legacy/feed-parser'
 import type * as Old4 from './legacy-declarations/feed-parser'
 declare const live4: Module<typeof Live4>
 declare const old4: Module<typeof Old4>
@@ -68,25 +68,26 @@ declare const live4_FeedFetcher: Live4.FeedFetcher
 declare const old4_FeedFetcher: Old4.FeedFetcher
 export const old4_FeedFetcherCheck: Old4.FeedFetcher = live4_FeedFetcher
 export const live4_FeedFetcherCheck: Live4.FeedFetcher = old4_FeedFetcher
-import type * as Live5 from '@vidbee/subscriptions-core/feed-resolver'
+import type * as Live5 from '@vidbee/subscriptions-core-legacy/feed-resolver'
 import type * as Old5 from './legacy-declarations/feed-resolver'
 declare const live5: Module<typeof Live5>
 declare const old5: Module<typeof Old5>
 export const valuesOld5: Module<typeof Old5> = live5
 export const valuesLive5: Module<typeof Live5> = old5
-import type * as Live6 from '@vidbee/subscriptions-core/form'
+import type * as Live6 from '@vidbee/subscriptions-core-legacy/form'
 import type * as Old6 from './legacy-declarations/form'
 declare const live6: Module<typeof Live6>
 declare const old6: Module<typeof Old6>
 export const valuesOld6: Module<typeof Old6> = live6
 export const valuesLive6: Module<typeof Live6> = old6
-import type * as Live7 from '@vidbee/subscriptions-core'
+import type * as Live7 from '@vidbee/subscriptions-core-legacy'
 import type * as Old7 from './legacy-declarations/index'
 declare const live7: Module<typeof Live7>
 declare const old7: Module<typeof Old7>
-export const valuesOld7: Module<typeof Old7> = live7
+// Before the port: export const valuesOld7: Module<typeof Old7> = live7
+export const valuesOld7: Pick<Module<typeof Old7>, keyof Module<typeof Live7>> = live7
 export const valuesLive7: Module<typeof Live7> = old7
-import type * as Live8 from '@vidbee/subscriptions-core/leader'
+import type * as Live8 from '@vidbee/subscriptions-core-legacy/leader'
 import type * as Old8 from './legacy-declarations/leader'
 declare const live8: Module<typeof Live8>
 declare const old8: Module<typeof Old8>
@@ -100,7 +101,7 @@ declare const live8_LeaderElectionOptions: Live8.LeaderElectionOptions
 declare const old8_LeaderElectionOptions: Old8.LeaderElectionOptions
 export const old8_LeaderElectionOptionsCheck: Old8.LeaderElectionOptions = live8_LeaderElectionOptions
 export const live8_LeaderElectionOptionsCheck: Live8.LeaderElectionOptions = old8_LeaderElectionOptions
-import type * as Live9 from '@vidbee/subscriptions-core/profile-policy'
+import type * as Live9 from '@vidbee/subscriptions-core-legacy/profile-policy'
 import type * as Old9 from './legacy-declarations/profile-policy'
 declare const live9: Module<typeof Live9>
 declare const old9: Module<typeof Old9>
@@ -114,7 +115,7 @@ declare const live9_ProfileDownloadDecision: Live9.ProfileDownloadDecision
 declare const old9_ProfileDownloadDecision: Old9.ProfileDownloadDecision
 export const old9_ProfileDownloadDecisionCheck: Old9.ProfileDownloadDecision = live9_ProfileDownloadDecision
 export const live9_ProfileDownloadDecisionCheck: Live9.ProfileDownloadDecision = old9_ProfileDownloadDecision
-import type * as Live10 from '@vidbee/subscriptions-core/scheduler'
+import type * as Live10 from '@vidbee/subscriptions-core-legacy/scheduler'
 import type * as Old10 from './legacy-declarations/scheduler'
 declare const live10: Module<typeof Live10>
 declare const old10: Module<typeof Old10>
@@ -124,13 +125,14 @@ declare const live10_FeedCheckSchedulerOptions: Live10.FeedCheckSchedulerOptions
 declare const old10_FeedCheckSchedulerOptions: Old10.FeedCheckSchedulerOptions
 export const old10_FeedCheckSchedulerOptionsCheck: Old10.FeedCheckSchedulerOptions = live10_FeedCheckSchedulerOptions
 export const live10_FeedCheckSchedulerOptionsCheck: Live10.FeedCheckSchedulerOptions = old10_FeedCheckSchedulerOptions
-import type * as Live11 from '@vidbee/subscriptions-core/schemas'
+import type * as Live11 from '@vidbee/subscriptions-core-legacy/schemas'
 import type * as Old11 from './legacy-declarations/schemas'
 declare const live11: Module<typeof Live11>
 declare const old11: Module<typeof Old11>
-export const valuesOld11: Module<typeof Old11> = live11
+// Before the port: export const valuesOld11: Module<typeof Old11> = live11
+export const valuesOld11: Pick<Module<typeof Old11>, keyof Module<typeof Live11>> = live11
 export const valuesLive11: Module<typeof Live11> = old11
-import type * as Live12 from '@vidbee/subscriptions-core/status'
+import type * as Live12 from '@vidbee/subscriptions-core-legacy/status'
 import type * as Old12 from './legacy-declarations/status'
 declare const live12: Module<typeof Live12>
 declare const old12: Module<typeof Old12>
@@ -144,7 +146,7 @@ declare const live12_SubscriptionItemQueueStatus: Live12.SubscriptionItemQueueSt
 declare const old12_SubscriptionItemQueueStatus: Old12.SubscriptionItemQueueStatus
 export const old12_SubscriptionItemQueueStatusCheck: Old12.SubscriptionItemQueueStatus = live12_SubscriptionItemQueueStatus
 export const live12_SubscriptionItemQueueStatusCheck: Live12.SubscriptionItemQueueStatus = old12_SubscriptionItemQueueStatus
-import type * as Live13 from '@vidbee/subscriptions-core/store'
+import type * as Live13 from '@vidbee/subscriptions-core-legacy/store'
 import type * as Old13 from './legacy-declarations/store'
 declare const live13: Module<typeof Live13>
 declare const old13: Module<typeof Old13>
@@ -162,7 +164,7 @@ declare const live13_CreateSqliteStoresOptions: Live13.CreateSqliteStoresOptions
 declare const old13_CreateSqliteStoresOptions: Old13.CreateSqliteStoresOptions
 export const old13_CreateSqliteStoresOptionsCheck: Old13.CreateSqliteStoresOptions = live13_CreateSqliteStoresOptions
 export const live13_CreateSqliteStoresOptionsCheck: Live13.CreateSqliteStoresOptions = old13_CreateSqliteStoresOptions
-import type * as Live14 from '@vidbee/subscriptions-core/types'
+import type * as Live14 from '@vidbee/subscriptions-core-legacy/types'
 import type * as Old14 from './legacy-declarations/types'
 declare const live14: Module<typeof Live14>
 declare const old14: Module<typeof Old14>

@@ -70,7 +70,7 @@ export class FeedCheckScheduler {
   const dependencies=Layer.mergeAll(
    Layer.succeed(SubscriptionSchedulerSettings,SubscriptionSchedulerSettings.of({intervalMs:sync(()=>captured.intervalMs),dedupeMs:sync(()=>captured.refreshDedupeWindowMs)})),
    hostLayers(operation=>{void runLegacyPromise(this.runtime,operation,legacyError)}, {
-    now:()=>captured.now(),log:(level,msg,meta)=>captured.log(level,msg,meta),after:(cb,ms)=>captured.setTimeoutImpl(cb,ms),clearAfter:handle=>captured.clearTimeoutImpl(handle),
+    now:()=>captured.now(),log:(...args)=>captured.log(...args),after:(cb,ms)=>captured.setTimeoutImpl(cb,ms),clearAfter:handle=>captured.clearTimeoutImpl(handle),
    }),
    Layer.succeed(SchedulerWork,SchedulerWork.of({
     runAll:promise(()=>captured.runAll()),runOne:id=>promise(()=>captured.runOne(id)),isLeader:sync(()=>captured.isLeader()),

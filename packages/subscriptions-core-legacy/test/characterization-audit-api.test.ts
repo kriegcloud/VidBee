@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from '@effect/vitest'
-import { FeedCheckScheduler } from '@vidbee/subscriptions-core/scheduler'
+import { FeedCheckScheduler } from '@vidbee/subscriptions-core-legacy/scheduler'
 import { host, rule, profile, deferred, turns } from './fixtures/api-host'
 
 vi.setConfig({ testTimeout: 120000 })

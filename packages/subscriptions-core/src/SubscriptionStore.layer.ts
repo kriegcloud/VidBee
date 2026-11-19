@@ -82,7 +82,9 @@ export const SubscriptionStoreSqlLive = Layer.effect(
       const row = yield* decodeRow("subscription_items")(R.ChangesRow)(rows[0]);
       return row.changes;
     });
-    const attach = Effect.fn("SubscriptionStore.attach")(function* (rules: F.StoredSubscriptionRule[], limit?: number) {
+    const attach = Effect.fn("SubscriptionStore.attach")(function* <
+      Rule extends { id: string; sourceKind: M.SubscriptionSourceKind },
+    >(rules: Rule[], limit?: number) {
       if (rules.length === 0) return [];
       const rows =
         yield* sql`SELECT * FROM subscription_items WHERE subscription_id IN ${sql.in(Arr.map(rules, (rule) => rule.id))} ORDER BY published_at DESC`;
@@ -213,10 +215,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
           next.title = patch.sourceUrl;
         const payload = R.subscriptionToInsert(next, at);
         yield* insert("subscriptions", payload, ["id"]);
-        // Native update parity is blocked for successful non-domain values (including
-        // null interval and non-string artwork). The declared result cannot carry
-        // those values; see the phase handoff before enabling native cutover.
-        const returned = yield* decodeRow("subscriptions")(F.StoredSubscriptionRule)(next);
+        const returned = yield* decodeRow("subscriptions")(F.SubscriptionMutationResult)({ ...next, items: [] });
         return (yield* attach([returned]))[0] ?? null;
       }),
       remove: Effect.fn(function* (id) {

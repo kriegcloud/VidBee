@@ -1,6 +1,6 @@
 import Parser from 'rss-parser'
 import { afterEach, expect, it, vi } from '@effect/vitest'
-import { RssParserFeedFetcher } from '@vidbee/subscriptions-core/feed-parser'
+import { RssParserFeedFetcher } from '@vidbee/subscriptions-core-legacy/feed-parser'
 
 vi.setConfig({ testTimeout: 120000 })
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals() })

@@ -20,7 +20,7 @@ export interface SubscriptionStoreShape {
   readonly update: (
     id: string,
     patch: F.StoredSubscriptionPatch | F.InterpretedFeedPatch
-  ) => StoreEffect<F.StoredSubscriptionWithItems | null>;
+  ) => StoreEffect<F.SubscriptionMutationResult | null>;
 }
 export class SubscriptionStore extends Context.Service<SubscriptionStore, SubscriptionStoreShape>()(
   "@vidbee/subscriptions-core/SubscriptionStore.service/SubscriptionStore"

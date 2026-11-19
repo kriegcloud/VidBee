@@ -111,12 +111,12 @@ export class SubscriptionsApi {
    setTimeoutImpl:schedulerInput.setTimeoutImpl??((cb:()=>void,ms:number)=>setTimeout(cb,ms)),
    clearTimeoutImpl:schedulerInput.clearTimeoutImpl??((handle:unknown)=>clearTimeout(handle as ReturnType<typeof setTimeout>)),
   }
-  const schedulerHost=hostServices(dispatch,{now:()=>schedulerReceiver.now(),log:(level,msg,meta)=>schedulerReceiver.log(level,msg,meta),after:(cb,ms)=>schedulerReceiver.setTimeoutImpl(cb,ms),clearAfter:handle=>schedulerReceiver.clearTimeoutImpl(handle)})
+  const schedulerHost=hostServices(dispatch,{now:()=>schedulerReceiver.now(),log:(...args)=>schedulerReceiver.log(...args),after:(cb,ms)=>schedulerReceiver.setTimeoutImpl(cb,ms),clearAfter:handle=>schedulerReceiver.clearTimeoutImpl(handle)})
   const leaderReceiver=Object.create(LeaderElection.prototype) as LeaderElection
   Object.defineProperty(leaderReceiver,'runtime',{get:()=>this.runtime})
   const leaderHost=Object.assign(leaderReceiver,{metaStore,kind:opts.kind,pid:opts.pid,heartbeatIntervalMs:opts.leader?.heartbeatIntervalMs??30000,lockTtlMs:opts.leader?.lockTtlMs??90000,now:opts.now??opts.leader?.now??(()=>Date.now()),log:owner.log,scheduleInterval:opts.leader?.scheduleInterval??((cb:()=>void,ms:number)=>setInterval(cb,ms)),clearIntervalImpl:opts.leader?.clearInterval??((handle:unknown)=>clearInterval(handle as ReturnType<typeof setInterval>))})
   const base=Layer.mergeAll(
-   hostLayers(dispatch,{now:()=>owner.now(),log:(level,msg,meta)=>owner.log(level,msg,meta)}),
+   hostLayers(dispatch,{now:()=>owner.now(),log:(...args)=>owner.log(...args)}),
    Layer.succeed(SubscriptionQueue,SubscriptionQueue.of({
     enqueue:context=>promise(()=>owner.enqueueItem(context as EnqueueItemContext)),
     historyContains:url=>sync(()=>owner.isHistoryDup(url as string)),
@@ -144,7 +144,7 @@ export class SubscriptionsApi {
    readPreferred:promise(()=>leaderHost.metaStore.readPreferred()),writePreferred:kind=>promise(()=>leaderHost.metaStore.writePreferred(kind)),
   }))
   const leader=leaderLayer({kind:opts.kind,pid:opts.pid,heartbeatIntervalMs:opts.leader?.heartbeatIntervalMs,lockTtlMs:opts.leader?.lockTtlMs}).pipe(Layer.provide(Layer.mergeAll(
-   metaLayer,hostLayers(dispatch,{now:()=>leaderHost.now(),log:(level,msg,meta)=>leaderHost.log(level,msg,meta),every:(cb,ms)=>leaderHost.scheduleInterval(cb,ms),clearEvery:handle=>leaderHost.clearIntervalImpl(handle)}),
+   metaLayer,hostLayers(dispatch,{now:()=>leaderHost.now(),log:(...args)=>leaderHost.log(...args),every:(cb,ms)=>leaderHost.scheduleInterval(cb,ms),clearEvery:handle=>leaderHost.clearIntervalImpl(handle)}),
    Layer.succeed(LeaderStateSink,LeaderStateSink.of({emit:()=>Effect.void})),
   )))
   const checkLayer=Layer.succeed(CheckCancellation,CheckCancellation.of({make:Effect.sync(()=>{

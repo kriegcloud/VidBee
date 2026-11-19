@@ -11,6 +11,7 @@ import * as Str from "effect/String";
 import * as SqlClient from "effect/sql/SqlClient";
 import { testDriver } from "../../db/test/legacy/io.js";
 import { nodeLayer } from "../../db/test/legacy/subscription-client.js";
+import * as F from "../src/Feed.model.js";
 import * as R from "../src/Rows.model.js";
 import { SubscriptionEntropy } from "../src/SubscriptionEntropy.service.js";
 import { SubscriptionMetaMemoryLive, SubscriptionMetaSqlLive } from "../src/SubscriptionMeta.layer.js";
@@ -101,6 +102,103 @@ const input = {
 const item = (id: string, publishedAt = 1) => ({ id, title: id, url: `https://example.com/${id}`, publishedAt });
 layer(services, { buildPerTest: true })((it) => {
   const run = driver === "node" || driver === "borrowed" ? it.effect : it.effect.skip;
+  run(
+    `${driver}: mutation results retain patch values while SQL retains its own representation`,
+    () =>
+      Effect.gen(function* () {
+        yield* (yield* DbSchema).applySubscriptions;
+        const store = yield* SubscriptionStore;
+        const sql = yield* SqlClient.SqlClient;
+        const cases: readonly { patch: F.InterpretedFeedPatch; column: string; stored: unknown }[] = [
+          { patch: { coverUrl: null }, column: "cover_url", stored: null },
+          { patch: { coverUrl: 42 }, column: "cover_url", stored: "42.0" },
+          { patch: { coverUrl: Number.NaN }, column: "cover_url", stored: null },
+          { patch: { coverUrl: Number.POSITIVE_INFINITY }, column: "cover_url", stored: "Inf" },
+          { patch: { coverUrl: Number.NEGATIVE_INFINITY }, column: "cover_url", stored: "-Inf" },
+          { patch: { coverUrl: 42n }, column: "cover_url", stored: "42" },
+          { patch: { coverUrl: 0 }, column: "cover_url", stored: "0.0" },
+          { patch: { coverUrl: "" }, column: "cover_url", stored: "" },
+          { patch: { coverUrl: "art" }, column: "cover_url", stored: "art" },
+          { patch: { coverUrl: undefined }, column: "cover_url", stored: null },
+          { patch: { latestVideoTitle: null }, column: "latest_video_title", stored: null },
+          { patch: { latestVideoTitle: 42 }, column: "latest_video_title", stored: "42.0" },
+          { patch: { latestVideoTitle: 0 }, column: "latest_video_title", stored: "0.0" },
+          { patch: { latestVideoTitle: "" }, column: "latest_video_title", stored: "" },
+          { patch: { latestVideoTitle: "episode" }, column: "latest_video_title", stored: "episode" },
+          { patch: { latestVideoTitle: undefined }, column: "latest_video_title", stored: null },
+          { patch: { checkIntervalMs: null }, column: "check_interval_ms", stored: null },
+          { patch: { checkIntervalMs: undefined }, column: "check_interval_ms", stored: null },
+          { patch: { checkIntervalMs: 0 }, column: "check_interval_ms", stored: 0 },
+          { patch: { checkIntervalMs: -1.5 }, column: "check_interval_ms", stored: -1.5 },
+          { patch: { title: "changed" }, column: "title", stored: "changed" },
+          { patch: { sourceUrl: "source", title: "chosen" }, column: "source_url", stored: "source" },
+          { patch: { feedUrl: "feed" }, column: "feed_url", stored: "feed" },
+          { patch: { platform: "future" }, column: "platform", stored: "future" },
+          { patch: { status: "future" }, column: "status", stored: "future" },
+          { patch: { profileOwner: "owner" }, column: "profile_owner", stored: "owner" },
+          { patch: { downloadDirectory: "" }, column: "download_directory", stored: "" },
+          { patch: { namingTemplate: "template" }, column: "naming_template", stored: "template" },
+          { patch: { downloadType: "future" }, column: "download_type", stored: "future" },
+          { patch: { downloadQuality: "future" }, column: "download_quality", stored: "future" },
+          { patch: { downloadContainer: "future" }, column: "download_container", stored: "future" },
+          { patch: { sourceKind: "profile" }, column: "source_kind", stored: "profile" },
+          { patch: { latestVideoPublishedAt: -1.5 }, column: "latest_video_published_at", stored: -1.5 },
+          { patch: { lastCheckedAt: 0 }, column: "last_checked_at", stored: 0 },
+          { patch: { lastSuccessAt: 2 }, column: "last_success_at", stored: 2 },
+          { patch: { nextCheckAt: 3 }, column: "next_check_at", stored: 3 },
+          { patch: { lastError: "" }, column: "last_error", stored: "" },
+          { patch: { createdAt: 4 }, column: "created_at", stored: 4 },
+          { patch: { updatedAt: 5 }, column: "updated_at", stored: 1000 },
+          { patch: { onlyDownloadLatest: false }, column: "only_latest", stored: 0 },
+          { patch: { autoDownload: false }, column: "auto_download", stored: 0 },
+          { patch: { enabled: false }, column: "enabled", stored: 0 },
+          { patch: { keywords: ["a"] }, column: "keywords", stored: '["a"]' },
+          { patch: { tags: ["a"] }, column: "tags", stored: '["a"]' },
+          { patch: { categories: ["a"] }, column: "categories", stored: '["a"]' },
+        ];
+        for (const entry of cases) {
+          const created = yield* store.add(input);
+          yield* store.replaceItems(created.id, [item("kept")]);
+          const before = yield* sql`SELECT * FROM subscriptions WHERE id=${created.id}`;
+          const loaded = yield* store.get(created.id);
+          const returned = yield* store.update(created.id, entry.patch);
+          expect(returned).toEqual({ ...loaded, ...entry.patch, updatedAt: 1000 });
+          expect(S.is(F.SubscriptionMutationResult)(returned)).toBe(true);
+          const after = yield* sql`SELECT * FROM subscriptions WHERE id=${created.id}`;
+          expect(after).toEqual([
+            {
+              ...before[0],
+              [entry.column]: entry.stored,
+              ...(entry.patch.title === undefined ? {} : { title: entry.patch.title }),
+            },
+          ]);
+        }
+        // ID is also patchable: the old upsert leaves the original parent and
+        // attaches children for the new ID, rather than reusing the old children.
+        const original = yield* store.add(input);
+        yield* store.replaceItems(original.id, [item("original-child")]);
+        const originalRows = yield* sql`SELECT * FROM subscriptions WHERE id=${original.id}`;
+        const movedId = `${original.id}-moved`;
+        const moved = yield* store.update(original.id, { id: movedId });
+        expect(moved).toEqual({ ...original, id: movedId });
+        const originalAfter = yield* sql`SELECT * FROM subscriptions WHERE id=${original.id}`;
+        expect(originalAfter).toEqual(originalRows);
+        const movedRows = yield* sql`SELECT * FROM subscriptions WHERE id=${movedId}`;
+        expect(movedRows).toEqual([{ ...originalRows[0], id: movedId }]);
+        expect((yield* store.get(original.id))?.items).toHaveLength(1);
+        for (const value of [false, true, [], {}]) {
+          for (const patch of [{ coverUrl: value }, { latestVideoTitle: value }]) {
+            const created = yield* store.add(input);
+            const before = yield* sql`SELECT * FROM subscriptions WHERE id=${created.id}`;
+            const failed = yield* Effect.exit(store.update(created.id, patch));
+            expect(Exit.isFailure(failed)).toBe(true);
+            const after = yield* sql`SELECT * FROM subscriptions WHERE id=${created.id}`;
+            expect(after).toEqual(before);
+          }
+        }
+      }),
+    30_000
+  );
   run(
     `${driver}: ordering, list sanitization, unknown persisted enums and update omission`,
     () =>

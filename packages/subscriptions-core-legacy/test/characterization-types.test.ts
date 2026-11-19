@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { it as test } from '@effect/vitest'
-import getExePath from '@effect/tsgo/lib/getExePath'
+import { NODE } from './fixtures/node-runtime'
 
 // Expected compiler failures live outside real check includes and are always removed.
 test('public QueueLinkSelector arrays reject mutation while element fields remain mutable', { timeout: 240000 }, () => {
@@ -23,4 +23,4 @@ test('public QueueLinkSelector arrays reject mutation while element fields remai
     assert.deepEqual(diagnostics, ['TS2339', 'TS2339', 'TS2542', 'TS2542'])
     assert.equal(result.stderr, '')
   } finally { rmSync(directory, { recursive: true, force: true }) }
-}, 120000)
+})

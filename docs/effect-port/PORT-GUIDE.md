@@ -506,7 +506,11 @@ scalar/non-finite statuses previously accepted by a fake host still determine it
 Keep typed data-first forwarding aliases in compatibility: re-exporting a new strict dual function
 can change the old callable declaration even when ordinary calls still work.
 
-Native subscription SQL update has an unresolved mutation-result view for successful raw/null
-patches. Its narrow post-write decoder is not a declared change and is not native-cutover proof.
-Phase 9.2 must settle that result contract together with the documented native HTTP/SQL/entropy
-and detached-failure differences. The application retains compatibility host layers meanwhile.
+Subscription SQL updates return the schema-backed `SubscriptionMutationResult`, preserving
+constructed patch values separately from SQLite storage coercion. Reads keep the narrow stored
+model. Never reread or decode a mutation as a stored rule: null/raw interpreted artwork, title
+and nullable intervals can succeed while their stored representation differs. Preserve omitted
+versus explicit undefined logger metadata through every host forwarding function; argument count
+is observable even when ordinary callbacks ignore the extra argument. Phase 9.2 still owns the
+documented native HTTP/SQL/entropy and detached-failure differences. The application retains
+compatibility host layers meanwhile.

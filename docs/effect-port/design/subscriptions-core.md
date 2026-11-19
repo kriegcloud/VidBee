@@ -242,6 +242,21 @@ The unchanged narrow domain types remain useful for typed construction and pure 
 
 Do not cast undecoded SQL rows. Decode them first with the db models or the safe-integer companions below. Compatibility declaration projection is separate from database decoding.
 
+### Amendment: mutation result view (2026-11-19)
+
+Store `update` and API `update` return `SubscriptionMutationResult` (nullable only for
+store absence). This named schema in `Feed.model.ts` extends the stored subscription
+with items, replacing `coverUrl` and `latestVideoTitle` with the interpreted patch's
+optional unknown fields and `checkIntervalMs` with its optional nullable finite field.
+All other fields retain the stored model's types. The result describes the constructed
+value after applying the patch, including own undefined, null, empty strings and raw
+interpreted values. Attach children without rereading the subscription. Do not decode
+this value as `StoredSubscriptionRule`, normalize it to SQLite's representation, or
+widen the stored model. `get` and `list` continue decoding the narrow stored view.
+Compatibility continues projecting the result into its unchanged old declaration.
+This ruling replaces the update result types in the contract tables below; it resolves
+the implementation hold and adds no deliberate behavior change.
+
 ### Parser values stay wide through interpretation
 
 `toParsedFeed` selectively copies outer title/link/image fields but retains the item array and its objects (`C/feed-parser.ts:52–70`). Installed `rss-parser/lib/utils.js:34–56` copies custom-field objects. An item’s `youtubeId` can therefore be `{ nested: ["abc"] }`; `C/feed-items.ts:31–37` selects it and calls `.trim()`, producing `TypeError: candidate.trim is not a function`.

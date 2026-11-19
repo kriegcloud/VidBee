@@ -1,8 +1,8 @@
 import { encode } from './pure-oracle'
 import assert from 'node:assert/strict'
 import { writeFileSync } from 'node:fs'
-import { SubscriptionsApi } from '@vidbee/subscriptions-core/api'
-import { InMemoryMetaStore } from '@vidbee/subscriptions-core/store'
+import { SubscriptionsApi } from '@vidbee/subscriptions-core-legacy/api'
+import { InMemoryMetaStore } from '@vidbee/subscriptions-core-legacy/store'
 import { setup, baseInput, serialize } from './store-scenario'
 assert.equal(process.version, 'v22.23.4', 'Record only under the pinned Node')
 const { handle, store } = setup()

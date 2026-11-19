@@ -15,7 +15,7 @@ export class Subscriptions extends Context.Service<
     readonly list: Operation<{ items: F.StoredSubscriptionWithItems[]; total: number }>;
     readonly get: (input: { id: string }) => Operation<F.StoredSubscriptionWithItems>;
     readonly add: (input: M.SubscriptionCreateInput) => Operation<F.StoredSubscriptionWithItems>;
-    readonly update: (input: { id: string } & M.SubscriptionUpdateInput) => Operation<F.StoredSubscriptionWithItems>;
+    readonly update: (input: { id: string } & M.SubscriptionUpdateInput) => Operation<F.SubscriptionMutationResult>;
     readonly remove: (input: { id: string }) => Operation<Record<string, never>>;
     readonly refresh: (input: { id: string }) => Operation<F.StoredSubscriptionWithItems>;
     readonly itemsList: (input: {

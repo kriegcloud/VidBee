@@ -49,7 +49,7 @@ export const hostServices=(dispatch:(operation:Operation<void>)=>void,options:Ho
    every:(ms,command)=>sync(()=>{const handle=every(()=>{dispatch(command.run)},ms);return sync(()=>{if(handle)clearEvery(handle)})}),
   }),
   dispatch:SubscriptionDispatch.of({detach:operation=>Effect.sync(()=>dispatch(operation))}),
-  log:SubscriptionLog.of({write:(level,msg,meta,cause)=>sync(()=>log(level,msg,meta)).pipe(Effect.andThen(Effect.logDebug({level,msg,meta,cause})))}),
+  log:SubscriptionLog.of({write:(level,msg,...details)=>sync(()=>details.length === 0 ? log(level,msg) : log(level,msg,details[0])).pipe(Effect.andThen(Effect.logDebug({level,msg,meta:details[0],cause:details[1]})))}),
   entropy:SubscriptionEntropy.of({subscriptionId:sync(randomUUID),leaseId:sync(ulid),next:sync(()=>Math.random())}),
  }
 }

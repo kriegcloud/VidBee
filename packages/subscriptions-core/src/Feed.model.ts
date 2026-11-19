@@ -80,6 +80,14 @@ export const InterpretedFeedPatch = S.Struct({
   coverUrl: S.Unknown.pipe(S.optional, S.mutableKey),
 });
 export type InterpretedFeedPatch = typeof InterpretedFeedPatch.Type;
+// Mutations retain the constructed patch values; reads decode the narrow stored view.
+export const SubscriptionMutationResult = S.Struct({
+  ...StoredSubscriptionWithItems.fields,
+  coverUrl: InterpretedFeedPatch.fields.coverUrl,
+  latestVideoTitle: InterpretedFeedPatch.fields.latestVideoTitle,
+  checkIntervalMs: StoredSubscriptionPatch.fields.checkIntervalMs,
+});
+export type SubscriptionMutationResult = typeof SubscriptionMutationResult.Type;
 export const StoredAutoDownloadInputs = S.Struct({
   subscription: StoredSubscriptionRule.pipe(S.mutableKey),
   knownItems: S.Array(T.SubscriptionFeedItem).pipe(S.mutable, S.mutableKey),

@@ -2,8 +2,8 @@ import { encode } from './fixtures/pure-oracle'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { SubscriptionsApi } from '@vidbee/subscriptions-core/api'
-import { createSqliteSubscriptionsStore, createSqliteMetaStore, InMemoryMetaStore } from '@vidbee/subscriptions-core/store'
+import { SubscriptionsApi } from '@vidbee/subscriptions-core-legacy/api'
+import { createSqliteSubscriptionsStore, createSqliteMetaStore, InMemoryMetaStore } from '@vidbee/subscriptions-core-legacy/store'
 import { setup, baseInput, serialize } from './fixtures/store-scenario'
 assert.equal(process.version, 'v22.23.4')
 test('real SQLite stale lastError survives direct undefined and failed-then-successful API writes', { timeout: 120000 }, async () => {
@@ -55,6 +55,12 @@ test('real SQLite wrong-kind add/update values retain returned results and faili
       const old = expected[index]
       if (old && typeof old === 'object' && 'engine' in old) {
         assert.ok(value && typeof value === 'object' && 'failed' in value && value.failed === true)
+      } else if (index === 8) {
+        // Before the port: assert.deepEqual(encode(value), old)
+        // Section 9.1: the preceding empty interval writes a TEXT storage class
+        // into a numeric column. The next read rejects it without repairing it.
+        assert.deepEqual(value, { input: { feedUrl: '' }, engine: true, failed: true, name: '@vidbee/db/DbRowDecodeError', message: '' })
+        assert.deepEqual(handle.prepare('SELECT check_interval_ms, typeof(check_interval_ms) AS storage FROM subscriptions WHERE id = ?').get(profile.id), { check_interval_ms: '', storage: 'text' })
       } else assert.deepEqual(encode(value), old)
     }
   } finally { handle.close() }
