@@ -118,6 +118,39 @@ class TestInstagramWeb(unittest.TestCase):
     def test_expired_ordinary_stories_can_still_be_empty(self):
         self.assertEqual(list(highlight_api([]).reels_media(['42'])), [])
 
+    def _story_extractor(self, cached, fresh):
+        cls = VidBeeInstagramStoriesExtractor
+        ie = cls(re.match(cls.pattern, 'https://www.instagram.com/stories/fixture/'))
+        ie.cookies = RequestsCookieJar()
+        ie._init()
+        ie.api.user = Mock(side_effect=lambda handle: ie._assign_user(dict(cached)))
+        ie.api._pagination_graphql = Mock(return_value=iter([]))
+        ie.api._user_by_id_impl = Mock(return_value=fresh)
+        ie.cache_update = Mock()
+        return ie
+
+    def test_hidden_private_story_is_not_reported_as_expired(self):
+        # The cached profile claims a follow that the live session lacks.
+        cached = {'id': '42', 'username': 'fixture', 'is_private': True,
+                  'friendship_status': {'following': True}}
+        fresh = {'id': '42', 'username': 'fixture', 'is_private': True,
+                 'friendship_status': {'following': False}}
+        ie = self._story_extractor(cached, fresh)
+        with self.assertRaisesRegex(Exception, 'Private profile: .* does not follow fixture'):
+            ie.posts()
+        ie.api._user_by_id_impl.assert_called_once_with('42')
+        self.assertEqual(ie.cache_update.call_args.args[1:3], ('42', fresh))
+
+    def test_followed_private_profile_without_story_stays_empty(self):
+        profile = {'id': '42', 'username': 'fixture', 'is_private': True,
+                   'friendship_status': {'following': True}}
+        self.assertEqual(self._story_extractor(profile, profile).posts(), ())
+
+    def test_public_profile_without_story_needs_no_follow_check(self):
+        ie = self._story_extractor({'id': '42', 'username': 'fixture', 'is_private': False}, None)
+        self.assertEqual(ie.posts(), ())
+        ie.api._user_by_id_impl.assert_not_called()
+
     def test_saved_highlight_download_uses_fixed_api(self):
         cls = VidBeeInstagramStoriesExtractor
         ie = cls(re.match(cls.pattern, 'https://www.instagram.com/stories/highlights/1/'))
