@@ -1,0 +1,22 @@
+{
+  "messages": [
+    {
+      "type": "log",
+      "stream": "stdout",
+      "line": "compute.provider=cpu"
+    },
+    {
+      "type": "progress",
+      "stage": "preparing-audio",
+      "percent": 0,
+      "message": "extract"
+    },
+    {
+      "type": "error",
+      "message": "cancelled"
+    }
+  ],
+  "result": null,
+  "audio": true,
+  "manifest": true
+}

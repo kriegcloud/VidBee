@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true },
+  "include": ["src/**/*", "test/**/*.ts"],
+  "exclude": ["test/fixtures/legacy-types.ts", "test/fixtures/legacy-declarations"]
+}

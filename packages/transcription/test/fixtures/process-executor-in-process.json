@@ -1,0 +1,218 @@
+[
+  "run-return",
+  [
+    "spawn",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "pid": "PID",
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "pipeline",
+    "/fixture/source",
+    false,
+    false,
+    "minimal",
+    "auto",
+    false
+  ],
+  [
+    "stage",
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "stage": "recognizing"
+    },
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "segments": [],
+      "stage": "recognizing",
+      "stageHistory": [
+        {
+          "stage": "recognizing",
+          "startedAt": 1000
+        }
+      ]
+    }
+  ],
+  [
+    "progress",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "progress": {
+        "percent": 0.1,
+        "bytesDownloaded": null,
+        "bytesTotal": null,
+        "speedBps": null,
+        "etaMs": null,
+        "ticks": 1000
+      },
+      "enteredProcessing": false
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "stage=recognizing"
+    }
+  ],
+  "after-progress",
+  [
+    "progress",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "progress": {
+        "percent": 0.2,
+        "bytesDownloaded": null,
+        "bytesTotal": null,
+        "speedBps": null,
+        "etaMs": null,
+        "ticks": 1000
+      },
+      "enteredProcessing": false
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "stage=recognizing"
+    }
+  ],
+  "after-same-stage",
+  [
+    "partial",
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "segments": [
+        {
+          "speakerKey": null,
+          "startMs": 0,
+          "endMs": 1,
+          "text": "fixture",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "segments": [
+        {
+          "speakerKey": null,
+          "startMs": 0,
+          "endMs": 1,
+          "text": "fixture",
+          "confidence": null
+        }
+      ],
+      "stage": "recognizing",
+      "stageHistory": [
+        {
+          "stage": "recognizing",
+          "startedAt": 1000
+        }
+      ]
+    }
+  ],
+  "after-partial",
+  [
+    "stage",
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "stage": "committing"
+    },
+    {
+      "taskId": "task-process",
+      "downloadTaskId": "download",
+      "segments": [
+        {
+          "speakerKey": null,
+          "startMs": 0,
+          "endMs": 1,
+          "text": "fixture",
+          "confidence": null
+        }
+      ],
+      "stage": "committing",
+      "stageHistory": [
+        {
+          "stage": "recognizing",
+          "startedAt": 1000
+        },
+        {
+          "stage": "committing",
+          "startedAt": 1000
+        }
+      ]
+    }
+  ],
+  [
+    "progress",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "progress": {
+        "percent": 1,
+        "bytesDownloaded": null,
+        "bytesTotal": null,
+        "speedBps": null,
+        "etaMs": null,
+        "ticks": 1000
+      },
+      "enteredProcessing": true
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "stage=committing"
+    }
+  ],
+  "caller-microtask",
+  "pipeline-microtask",
+  [
+    "finish",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "result": {
+        "type": "success",
+        "output": {
+          "filePath": "/fixture/source",
+          "size": 1,
+          "durationMs": null,
+          "sha256": null,
+          "transcript": {
+            "resultKind": "no-speech",
+            "transcriptId": "ID"
+          }
+        }
+      },
+      "closedAt": 1000,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  ],
+  [
+    "after-finish",
+    true
+  ]
+]

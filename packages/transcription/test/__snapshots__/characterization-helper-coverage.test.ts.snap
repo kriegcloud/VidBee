@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`direct reindex/placement, seed duration and single speaker vectors pin nonfinite and soft defaults > direct placement 1`] = `
+[
+  {
+    "endMs": 100,
+    "speakerId": "s",
+    "startMs": 0,
+  },
+  {
+    "endMs": 2300,
+    "speakerId": "s",
+    "startMs": 300,
+  },
+  {
+    "endMs": 100,
+    "speakerId": "s",
+    "startMs": 0,
+  },
+  {
+    "endMs": 2200,
+    "speakerId": "s",
+    "startMs": 200,
+  },
+  {
+    "endMs": 0,
+    "speakerId": null,
+    "startMs": 0,
+  },
+  {
+    "endMs": 0,
+    "speakerId": null,
+    "startMs": 0,
+  },
+  {
+    "endMs": 2300,
+    "speakerId": "s",
+    "startMs": 300,
+  },
+]
+`;
+
+exports[`direct reindex/placement, seed duration and single speaker vectors pin nonfinite and soft defaults > single turns 1`] = `
+[
+  [
+    {
+      "endMs": 1,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 1,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 1,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": NaN,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": Infinity,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+  ],
+]
+`;

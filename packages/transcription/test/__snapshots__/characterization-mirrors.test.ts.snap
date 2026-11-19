@@ -1,0 +1,509 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pre-port mirror URL and preference protocol > Request URL extraction loses Request-only method and headers and preference is live 1`] = `
+[
+  {
+    "headers": undefined,
+    "keys": [
+      "signal",
+    ],
+    "method": undefined,
+    "url": "https://github.com/o/r",
+  },
+  {
+    "headers": undefined,
+    "keys": [
+      "method",
+      "signal",
+    ],
+    "method": "HEAD",
+    "url": "https://ghfast.top/https://github.com/o/r",
+  },
+]
+`;
+
+exports[`pre-port mirror URL and preference protocol > preserves exact fetch init, Response identity and synchronous prefix through fallback 1`] = `
+[
+  {
+    "aborted": false,
+    "callerSignal": false,
+    "headers": {
+      "x-fixture": "yes",
+    },
+    "keys": [
+      "method",
+      "headers",
+      "body",
+      "signal",
+    ],
+    "method": "POST",
+    "url": "first",
+  },
+  "immediate",
+  {
+    "aborted": false,
+    "callerSignal": false,
+    "headers": {
+      "x-fixture": "yes",
+    },
+    "keys": [
+      "method",
+      "headers",
+      "body",
+      "signal",
+    ],
+    "method": "POST",
+    "url": "second",
+  },
+  "marker",
+  "settled",
+]
+`;
+
+exports[`pre-port mirror URL and preference protocol > records all settings and explicit host profiles independently of the machine 1`] = `
+[
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    true,
+    "auto",
+  ],
+  [
+    true,
+    "cn",
+  ],
+  [
+    true,
+    "global",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+  [
+    false,
+    "auto",
+  ],
+]
+`;
+
+exports[`pre-port mirror URL and preference protocol > records all settings and explicit host profiles independently of the machine 2`] = `
+[
+  {
+    "env": "auto",
+    "language": "en-US",
+    "result": false,
+    "setting": "auto",
+  },
+  {
+    "env": "auto",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "auto",
+  },
+  {
+    "env": "cn",
+    "language": "en-US",
+    "result": true,
+    "setting": "auto",
+  },
+  {
+    "env": "cn",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "auto",
+  },
+  {
+    "env": "global",
+    "language": "en-US",
+    "result": false,
+    "setting": "auto",
+  },
+  {
+    "env": "global",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "auto",
+  },
+  {
+    "env": "",
+    "language": "en-US",
+    "result": false,
+    "setting": "auto",
+  },
+  {
+    "env": "",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "auto",
+  },
+  {
+    "env": "auto",
+    "language": "en-US",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "auto",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "cn",
+    "language": "en-US",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "cn",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "global",
+    "language": "en-US",
+    "result": false,
+    "setting": "cn",
+  },
+  {
+    "env": "global",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "cn",
+  },
+  {
+    "env": "",
+    "language": "en-US",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "cn",
+  },
+  {
+    "env": "auto",
+    "language": "en-US",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "auto",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "cn",
+    "language": "en-US",
+    "result": true,
+    "setting": "global",
+  },
+  {
+    "env": "cn",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "global",
+  },
+  {
+    "env": "global",
+    "language": "en-US",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "global",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "",
+    "language": "en-US",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "global",
+  },
+  {
+    "env": "auto",
+    "language": "en-US",
+    "result": false,
+    "setting": "bogus",
+  },
+  {
+    "env": "auto",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "bogus",
+  },
+  {
+    "env": "cn",
+    "language": "en-US",
+    "result": true,
+    "setting": "bogus",
+  },
+  {
+    "env": "cn",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "bogus",
+  },
+  {
+    "env": "global",
+    "language": "en-US",
+    "result": false,
+    "setting": "bogus",
+  },
+  {
+    "env": "global",
+    "language": "zh-CN",
+    "result": false,
+    "setting": "bogus",
+  },
+  {
+    "env": "",
+    "language": "en-US",
+    "result": false,
+    "setting": "bogus",
+  },
+  {
+    "env": "",
+    "language": "zh-CN",
+    "result": true,
+    "setting": "bogus",
+  },
+]
+`;
+
+exports[`pre-port mirror URL and preference protocol > records exact candidate URLs, mapped directories, escaping and host acceptance 1`] = `
+[
+  {
+    "cn": [
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "github": true,
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+  },
+  {
+    "cn": [
+      "https://ghfast.top/https://api.github.com/repos/o/r",
+      "https://gh-proxy.com/https://api.github.com/repos/o/r",
+      "https://api.github.com/repos/o/r",
+    ],
+    "github": true,
+    "global": [
+      "https://api.github.com/repos/o/r",
+      "https://ghfast.top/https://api.github.com/repos/o/r",
+      "https://gh-proxy.com/https://api.github.com/repos/o/r",
+    ],
+    "url": "https://api.github.com/repos/o/r",
+  },
+  {
+    "cn": [
+      "https://ghfast.top/https://raw.githubusercontent.com/o/r/main/a",
+      "https://gh-proxy.com/https://raw.githubusercontent.com/o/r/main/a",
+      "https://raw.githubusercontent.com/o/r/main/a",
+    ],
+    "github": true,
+    "global": [
+      "https://raw.githubusercontent.com/o/r/main/a",
+      "https://ghfast.top/https://raw.githubusercontent.com/o/r/main/a",
+      "https://gh-proxy.com/https://raw.githubusercontent.com/o/r/main/a",
+    ],
+    "url": "https://raw.githubusercontent.com/o/r/main/a",
+  },
+  {
+    "cn": [
+      "https://evilgithub.com/a",
+    ],
+    "github": false,
+    "global": [
+      "https://evilgithub.com/a",
+    ],
+    "url": "https://evilgithub.com/a",
+  },
+  {
+    "cn": [
+      "https://github.com.evil/a",
+    ],
+    "github": false,
+    "global": [
+      "https://github.com.evil/a",
+    ],
+    "url": "https://github.com.evil/a",
+  },
+  {
+    "cn": [
+      "not a URL",
+    ],
+    "github": false,
+    "global": [
+      "not a URL",
+    ],
+    "url": "not a URL",
+  },
+]
+`;
+
+exports[`pre-port mirror URL and preference protocol > records exact candidate URLs, mapped directories, escaping and host acceptance 2`] = `
+[
+  {
+    "cn": [
+      "https://www.modelscope.cn/models/liaowenbin/silero_vad/resolve/master/silero_vad.onnx",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://www.modelscope.cn/models/liaowenbin/silero_vad/resolve/master/silero_vad.onnx",
+    ],
+    "mapped": "https://www.modelscope.cn/models/liaowenbin/silero_vad/resolve/master/silero_vad.onnx",
+    "spec": {
+      "fileName": "silero_vad.onnx",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+  {
+    "cn": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+    ],
+    "mapped": "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/tokens.txt",
+    "spec": {
+      "fileName": "sherpa-onnx-whisper-tiny/tokens.txt",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+  {
+    "cn": [
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/encoder%20a.onnx",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/encoder%20a.onnx",
+    ],
+    "mapped": "https://www.modelscope.cn/models/pengzhendong/sherpa-onnx-whisper-tiny/resolve/master/encoder%20a.onnx",
+    "spec": {
+      "fileName": "sherpa-onnx-whisper-tiny\\encoder a.onnx",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+  {
+    "cn": [
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "mapped": null,
+    "spec": {
+      "fileName": "unknown/a.onnx",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+  {
+    "cn": [
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "mapped": null,
+    "spec": {
+      "fileName": "sherpa-onnx-whisper-tiny/tokenizer",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+  {
+    "cn": [
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "global": [
+      "https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://ghfast.top/https://github.com/o/r/releases/download/v/a.tar.bz2",
+      "https://gh-proxy.com/https://github.com/o/r/releases/download/v/a.tar.bz2",
+    ],
+    "mapped": null,
+    "spec": {
+      "fileName": "file",
+      "url": "https://github.com/o/r/releases/download/v/a.tar.bz2",
+    },
+  },
+]
+`;

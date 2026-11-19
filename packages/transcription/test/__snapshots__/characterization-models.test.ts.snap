@@ -1,0 +1,977 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pre-port model manager > checksum failures remove parts and rejected callbacks preserve identity > failed state 1`] = `
+{
+  "bytes": 0,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 0,
+      "id": "test-model",
+      "path": "<root>/tiny/model.onnx",
+      "present": false,
+    },
+  ],
+  "ready": false,
+  "tiers": [
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`pre-port model manager > constructor is synchronous, status payloads are complete, present nonempty raw files skip hashing > missing occupancy 1`] = `
+{
+  "bytes": 0,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 0,
+      "id": "test-model",
+      "path": "<root>/tiny/model.onnx",
+      "present": false,
+    },
+  ],
+  "ready": false,
+  "tiers": [
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`pre-port model manager > constructor is synchronous, status payloads are complete, present nonempty raw files skip hashing > present raw 1`] = `
+{
+  "bytes": 12,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 12,
+      "id": "test-model",
+      "path": "<root>/tiny/model.onnx",
+      "present": true,
+    },
+  ],
+  "ready": true,
+  "tiers": [
+    {
+      "bytes": 12,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": true,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`pre-port model manager > constructor is synchronous, status payloads are complete, present nonempty raw files skip hashing > removed 1`] = `
+{
+  "bytes": 0,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 0,
+      "id": "test-model",
+      "path": "<root>/tiny/model.onnx",
+      "present": false,
+    },
+  ],
+  "ready": false,
+  "tiers": [
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`pre-port model manager > downloads fallback candidates with exact GET shape and publishes despite incorrect content-length > complete result 1`] = `
+{
+  "bytes": 3,
+  "downloading": null,
+  "downloads": [],
+  "files": [
+    {
+      "bytes": 3,
+      "id": "test-model",
+      "path": "<root>/tiny/model.onnx",
+      "present": true,
+    },
+  ],
+  "ready": true,
+  "tiers": [
+    {
+      "bytes": 3,
+      "family": "whisper",
+      "id": "minimal",
+      "qualityRank": 10,
+      "ready": true,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-base",
+      "qualityRank": 20,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "balanced",
+      "qualityRank": 30,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-medium",
+      "qualityRank": 38,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "whisper",
+      "id": "whisper-turbo",
+      "qualityRank": 42,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice",
+      "qualityRank": 36,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "sense-voice",
+      "id": "sense-voice-2025",
+      "qualityRank": 37,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "fire-red-asr",
+      "id": "fire-red-asr",
+      "qualityRank": 45,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v2",
+      "qualityRank": 39,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "parakeet-v3",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "parakeet",
+      "id": "orukeet",
+      "qualityRank": 41,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "quality",
+      "qualityRank": 50,
+      "ready": false,
+    },
+    {
+      "bytes": 0,
+      "family": "qwen3",
+      "id": "qwen3-1.7b",
+      "qualityRank": 60,
+      "ready": false,
+    },
+  ],
+  "version": "vidbee-asr-2026.08.20-3",
+}
+`;
+
+exports[`pre-port model manager > downloads fallback candidates with exact GET shape and publishes despite incorrect content-length > exact requests 1`] = `
+[
+  {
+    "aborted": false,
+    "keys": [
+      "signal",
+    ],
+    "method": undefined,
+    "url": "https://fixture.invalid/fail",
+  },
+  {
+    "aborted": false,
+    "keys": [
+      "signal",
+    ],
+    "method": undefined,
+    "url": "https://fixture.invalid/ok",
+  },
+]
+`;
+
+exports[`pre-port model manager > downloads fallback candidates with exact GET shape and publishes despite incorrect content-length > full callbacks 1`] = `
+[
+  {
+    "bytes": 0,
+    "downloading": {
+      "received": 0,
+      "tier": "minimal",
+      "total": 999,
+      "url": "https://fixture.invalid/ok",
+    },
+    "downloads": [
+      {
+        "received": 0,
+        "tier": "minimal",
+        "total": 999,
+        "url": "https://fixture.invalid/ok",
+      },
+    ],
+    "files": [
+      {
+        "bytes": 0,
+        "id": "test-model",
+        "path": "<root>/tiny/model.onnx",
+        "present": false,
+      },
+    ],
+    "ready": false,
+    "tiers": [
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "minimal",
+        "qualityRank": 10,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-base",
+        "qualityRank": 20,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "balanced",
+        "qualityRank": 30,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-medium",
+        "qualityRank": 38,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-turbo",
+        "qualityRank": 42,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice",
+        "qualityRank": 36,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice-2025",
+        "qualityRank": 37,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "fire-red-asr",
+        "id": "fire-red-asr",
+        "qualityRank": 45,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v2",
+        "qualityRank": 39,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v3",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "orukeet",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "quality",
+        "qualityRank": 50,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "qwen3-1.7b",
+        "qualityRank": 60,
+        "ready": false,
+      },
+    ],
+    "version": "vidbee-asr-2026.08.20-3",
+  },
+  {
+    "bytes": 0,
+    "downloading": null,
+    "downloads": [],
+    "files": [
+      {
+        "bytes": 0,
+        "id": "test-model",
+        "path": "<root>/tiny/model.onnx",
+        "present": false,
+      },
+    ],
+    "ready": false,
+    "tiers": [
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "minimal",
+        "qualityRank": 10,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-base",
+        "qualityRank": 20,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "balanced",
+        "qualityRank": 30,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-medium",
+        "qualityRank": 38,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-turbo",
+        "qualityRank": 42,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice",
+        "qualityRank": 36,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice-2025",
+        "qualityRank": 37,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "fire-red-asr",
+        "id": "fire-red-asr",
+        "qualityRank": 45,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v2",
+        "qualityRank": 39,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v3",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "orukeet",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "quality",
+        "qualityRank": 50,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "qwen3-1.7b",
+        "qualityRank": 60,
+        "ready": false,
+      },
+    ],
+    "version": "vidbee-asr-2026.08.20-3",
+  },
+  {
+    "bytes": 3,
+    "downloading": null,
+    "downloads": [],
+    "files": [
+      {
+        "bytes": 3,
+        "id": "test-model",
+        "path": "<root>/tiny/model.onnx",
+        "present": true,
+      },
+    ],
+    "ready": true,
+    "tiers": [
+      {
+        "bytes": 3,
+        "family": "whisper",
+        "id": "minimal",
+        "qualityRank": 10,
+        "ready": true,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-base",
+        "qualityRank": 20,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "balanced",
+        "qualityRank": 30,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-medium",
+        "qualityRank": 38,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "whisper",
+        "id": "whisper-turbo",
+        "qualityRank": 42,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice",
+        "qualityRank": 36,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "sense-voice",
+        "id": "sense-voice-2025",
+        "qualityRank": 37,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "fire-red-asr",
+        "id": "fire-red-asr",
+        "qualityRank": 45,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v2",
+        "qualityRank": 39,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "parakeet-v3",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "parakeet",
+        "id": "orukeet",
+        "qualityRank": 41,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "quality",
+        "qualityRank": 50,
+        "ready": false,
+      },
+      {
+        "bytes": 0,
+        "family": "qwen3",
+        "id": "qwen3-1.7b",
+        "qualityRank": 60,
+        "ready": false,
+      },
+    ],
+    "version": "vidbee-asr-2026.08.20-3",
+  },
+]
+`;
+
+exports[`pre-port model manager > minimal fill schedules exact backoff and stop does not suppress an in-flight success 1`] = `
+[
+  [
+    "schedule",
+    0,
+  ],
+  [
+    "ensure",
+    {
+      "groups": [
+        "vad",
+        "speaker",
+        "asr",
+      ],
+      "tiers": [
+        "minimal",
+      ],
+    },
+  ],
+  "immediate",
+  [
+    "info",
+    "transcription: minimal model set ready",
+  ],
+  "ready",
+]
+`;
+
+exports[`pre-port model manager > pinned JSON directory members reject scalar roots, repair them and keep unknown object fields 1`] = `
+[
+  {
+    "keys": [
+      "signal",
+    ],
+    "url": "https://fixture.invalid/model/tokenizer.json",
+  },
+]
+`;
+
+exports[`pre-port model manager > tar archive uses HEAD then GET, stale PID lock takeover and publication marker last 1`] = `
+[
+  {
+    "keys": [
+      "method",
+      "signal",
+    ],
+    "method": "HEAD",
+    "url": "https://fixture.invalid/fixture.tar.bz2",
+  },
+  {
+    "keys": [
+      "signal",
+    ],
+    "method": undefined,
+    "url": "https://fixture.invalid/fixture.tar.bz2",
+  },
+]
+`;

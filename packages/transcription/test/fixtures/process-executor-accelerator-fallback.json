@@ -1,0 +1,279 @@
+[
+  [
+    "run-return",
+    "first"
+  ],
+  [
+    "spawn",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "pid": "PID",
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.probe=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.path=<NODE>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.version=22.23.4"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.layer=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.restarts=0"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "compute.probe=cuda ok=true durationMs=1 error=none"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "compute.probe=cpu ok=true durationMs=10 error=none"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "compute.provider=cuda reason=accelerator-faster candidates=cuda,cpu"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "stream": "stderr",
+      "line": "compute.fallback=cpu from=cuda error=cuda runtime failed"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "first",
+      "attemptId": "attempt",
+      "result": {
+        "type": "success",
+        "output": {
+          "filePath": "<ROOT>/source",
+          "size": 1,
+          "durationMs": 123,
+          "sha256": null,
+          "transcript": {
+            "resultKind": "no-speech",
+            "transcriptId": "ID"
+          }
+        }
+      },
+      "closedAt": 1000,
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stderrTail": "compute.fallback=cpu from=cuda error=cuda runtime failed\n"
+    }
+  ],
+  [
+    "run-return",
+    "second"
+  ],
+  [
+    "spawn",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "pid": "PID",
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.path=<NODE>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.version=22.23.4"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.layer=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.restarts=0"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "compute.provider=cpu reason=process-cache"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "second",
+      "attemptId": "attempt",
+      "result": {
+        "type": "success",
+        "output": {
+          "filePath": "<ROOT>/source",
+          "size": 1,
+          "durationMs": 123,
+          "sha256": null,
+          "transcript": {
+            "resultKind": "no-speech",
+            "transcriptId": "ID"
+          }
+        }
+      },
+      "closedAt": 1000,
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stderrTail": ""
+    }
+  ],
+  [
+    "requests",
+    [
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu"
+      },
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cuda",
+        "asrTier": "minimal",
+        "benchmark": true
+      },
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu",
+        "asrTier": "minimal",
+        "benchmark": true
+      },
+      {
+        "type": "start",
+        "taskId": "first",
+        "attemptId": "attempt",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cuda",
+        "speakerCount": "auto"
+      },
+      {
+        "type": "start",
+        "taskId": "first",
+        "attemptId": "attempt",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cpu",
+        "speakerCount": "auto"
+      },
+      {
+        "type": "start",
+        "taskId": "second",
+        "attemptId": "attempt",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cpu",
+        "speakerCount": "auto"
+      }
+    ]
+  ]
+]

@@ -1,0 +1,64 @@
+{
+  "trace": [
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        "<ROOT>/source.media"
+      ]
+    ],
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-select_streams",
+        "a",
+        "-show_entries",
+        "stream=codec_type",
+        "-of",
+        "csv=p=0",
+        "<ROOT>/source.media"
+      ]
+    ],
+    [
+      "convert",
+      [
+        "-y",
+        "-i",
+        "<ROOT>/source.media",
+        "-ac",
+        "1",
+        "-ar",
+        "16000",
+        "-threads",
+        "2",
+        "-vn",
+        "<ROOT>/out/audio-16k-mono.wav"
+      ]
+    ],
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        "<ROOT>/out/audio-16k-mono.wav"
+      ]
+    ]
+  ],
+  "result": {
+    "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+    "durationMs": 3600
+  },
+  "wav": "wave",
+  "copyExists": false
+}

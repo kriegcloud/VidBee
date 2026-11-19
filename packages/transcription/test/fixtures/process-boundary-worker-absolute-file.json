@@ -1,0 +1,88 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "pid": 1000,
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.path=<NODE>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.version=22.23.4"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.layer=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.restarts=0"
+    }
+  ],
+  [
+    "commit-input",
+    {
+      "resultKind": "no-speech",
+      "language": null,
+      "modelVersion": "vidbee-asr-2026.08.20-3",
+      "asrTier": "minimal",
+      "speakers": [],
+      "segments": [],
+      "extra": "absolute"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "boundary-absolute-file",
+      "attemptId": "attempt",
+      "result": {
+        "type": "success",
+        "output": {
+          "filePath": "<ROOT>/source",
+          "size": 1,
+          "durationMs": 1,
+          "sha256": null,
+          "transcript": {
+            "resultKind": "no-speech",
+            "transcriptId": "ID"
+          }
+        }
+      },
+      "closedAt": 1000,
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stderrTail": ""
+    }
+  ],
+  [
+    "partial-state",
+    null
+  ]
+]

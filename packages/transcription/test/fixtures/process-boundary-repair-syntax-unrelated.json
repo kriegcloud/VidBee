@@ -1,0 +1,6 @@
+{
+  "error": {
+    "name": "SyntaxError",
+    "message": "Unexpected token 'u', \"{\"text\": undefined}\" is not valid JSON"
+  }
+}

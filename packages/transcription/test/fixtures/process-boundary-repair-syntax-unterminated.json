@@ -1,0 +1,6 @@
+{
+  "error": {
+    "name": "SyntaxError",
+    "message": "Unterminated string in JSON at position 19 (line 1 column 20)"
+  }
+}

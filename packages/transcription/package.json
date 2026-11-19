@@ -14,7 +14,9 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "test": "tsx --test test/*.node.ts && bunx --bun vitest run test"
   },
   "dependencies": {
     "@vidbee/db": "workspace:^",
