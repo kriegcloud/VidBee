@@ -73,6 +73,8 @@ it('listener returns are ignored, thrown listener logs once and continues; throw
   api.on('changed', () => { throw sentinel })
   api.on('changed', () => trace.push('last'))
   await api.remove({ id: 'sub' })
+  const warning = trace.find((entry) => Array.isArray(entry) && entry[2] === 'subscriptions: listener threw')
+  expect(Array.isArray(warning) && Reflect.get(warning[3], 'err')).toBe(sentinel)
   expect(trace).toMatchSnapshot()
   returned.resolve()
   const logFailure = { log: 'sentinel' }
@@ -95,12 +97,14 @@ it('refreshOne same-ID joins work, distinct IDs overlap, direct checks bypass en
 })
 it('RSS survives update/remove/stop during fetch; profile removal aborts its owned signal', async () => {
   const feed = deferred<ParsedFeed>()
-  const rss = host({ fetcher: { fetch: () => feed.promise } })
+  const fetchArguments: unknown[][] = []
+  const rss = host({ fetcher: { fetch: (...args) => { fetchArguments.push(args); return feed.promise } } })
   const pending = rss.api.refreshOne('sub'); await turns()
   await rss.api.update({ id: 'sub', autoDownload: false })
   await rss.api.remove({ id: 'sub' }); await rss.api.stop()
   feed.resolve({ items: [{ guid: 'a', title: 'A', link: 'https://fixture.invalid/a', isoDate: '2020-01-01T00:00:00Z' }] })
   await pending
+  expect(fetchArguments).toEqual([['https://fixture.invalid/feed']])
   expect(rss.trace).toMatchSnapshot()
   const mapped = deferred<ProfileCheckResult>(); let signal: AbortSignal | undefined
   const account = host({ profileFetcher: { fetch(_sub, supplied) { signal = supplied; return mapped.promise } } }, [profile()])
@@ -122,6 +126,7 @@ for (const outerThrows of [false, true]) it(`inner enqueue-warning logger failur
   })
   const refresh = api.refreshOne('sub')
   if (outerThrows) await expect(refresh).rejects.toBe(log); else await expect(refresh).resolves.toBeUndefined()
+  expect(Reflect.get(Reflect.get(logs, '0')[2], 'err')).toBe(enqueue)
   expect({ trace, logs, row: rows.get('sub') }).toMatchSnapshot()
 })
 it('manual queue has no per-item lock; passes complete metadata and does not catch admission failures', async () => {
@@ -226,7 +231,7 @@ it('startup reconciliation failure is caught before timer, while acquisition fai
   const failed = host({ metaStore: meta, scheduler: { setTimeoutImpl() { throw new Error('must not schedule') } } })
   await expect(failed.api.start()).rejects.toBe(sentinel)
   const state = new InMemoryMetaStore(); const trace: unknown[] = []
-  const other = host({ metaStore: state, taskExists: () => true, leader: { scheduleInterval: () => 1, clearInterval() {} }, scheduler: { setTimeoutImpl(_cb, ms) { trace.push(['schedule', ms]); return 1 }, clearTimeoutImpl() {} }, log: (level, message, metadata) => trace.push([level, message, metadata && typeof metadata === 'object' && 'err' in metadata ? metadata.err : '<lease>']) })
+  const other = host({ metaStore: state, taskExists: () => true, leader: { scheduleInterval: () => 1, clearInterval() {} }, scheduler: { setTimeoutImpl(_cb, ms) { trace.push(['schedule', ms]); return 1 }, clearTimeoutImpl() {} }, log: (level, message, metadata) => { if (message === 'subscriptions: failed to reconcile orphaned queue links') expect(metadata && typeof metadata === 'object' && 'err' in metadata && metadata.err).toBe(sentinel); trace.push([level, message, metadata && typeof metadata === 'object' && 'err' in metadata ? metadata.err : '<lease>']) } })
   other.store.clearOrphanedQueueLinks = () => Promise.reject(sentinel)
   await other.api.start(); await other.api.stop()
   expect(trace).toMatchSnapshot()
