@@ -55,7 +55,9 @@
     "typecheck": "tsc --noEmit",
     "build": "node scripts/build.mjs",
     "verify-dist": "node -e \"const fs=require('node:fs');for(const f of ['dist/index.mjs','dist/bin/vidbee.mjs']){if(!fs.existsSync(f)){process.stderr.write('missing build artifact: '+f+'\\n');process.exit(1)}}\"",
-    "prepublishOnly": "bun run build && bun run verify-dist"
+    "prepublishOnly": "bun run build && bun run verify-dist",
+    "test": "bunx --bun vitest run",
+    "test:node": "tsx --test test/*.node.ts"
   },
   "dependencies": {
     "yt-dlp-wrap-plus": "catalog:"
@@ -72,7 +74,10 @@
     "esbuild": "catalog:",
     "typescript": "catalog:",
     "@vidbee/task-queue-legacy": "workspace:^",
-    "@vidbee/downloader-core-legacy": "workspace:^"
+    "@vidbee/downloader-core-legacy": "workspace:^",
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:",
+    "tsx": "catalog:"
   },
   "engines": {
     "node": ">=20"

@@ -1,0 +1,9 @@
+{
+  "descriptorNonfinite": {"fields": ["port", "pid", "pidStartedAt", "tokenIssuedAt", "tokenExpiresAt", "updatedAt"], "old": "accepted as Infinity or -Infinity", "new": "port and PID fields reject; token times default null; updatedAt defaults zero"},
+  "handshakeNonfinite": {"old": "numeric expiry accepted", "new": "handshake response missing token/expiresAt"},
+  "cacheNonfinite": {"old": "positive Infinity cache hits then throws Invalid time value", "new": "cache miss"},
+  "descriptorSyntax": {"inputs": ["{", "﻿{}", "{\n\"x\":}"], "old": "pinned Node SyntaxError after existing descriptor prefix", "new": "automation descriptor is malformed: Expected a valid JSON string"},
+  "registrySyntax": {"inputs": ["{", "{\n\"x\":}", ""], "old": "pinned Node SyntaxError", "new": "Expected a valid JSON string"},
+  "outputCompletion": {"old": "process.exit can truncate a valid JSON document prefix and can exit zero with a closed output pipe", "new": "complete normal document plus newline before exit; closed pipe must fail with bounded nonzero termination"},
+  "libraryExecutionAndMetadata": {"old": "Promise APIs; published root evaluates executable; no declaration build", "new": "Effect APIs and three real library/declaration entries; bin preserved", "proof": "part 2 distribution lane"}
+}

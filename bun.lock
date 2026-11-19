@@ -28,6 +28,7 @@
         "yt-dlp-wrap-plus": "catalog:",
       },
       "devDependencies": {
+        "@effect/vitest": "catalog:",
         "@types/better-sqlite3": "catalog:",
         "@types/node": "catalog:",
         "@vidbee/db": "workspace:^",
@@ -36,7 +37,9 @@
         "@vidbee/logger": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
         "esbuild": "catalog:",
+        "tsx": "catalog:",
         "typescript": "catalog:",
+        "vitest": "catalog:",
       },
       "optionalDependencies": {
         "better-sqlite3": "catalog:",

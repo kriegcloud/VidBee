@@ -34,7 +34,8 @@
   "globalDependencies": [
     "tsconfig.base.json",
     "biome.jsonc",
-    "standards/effect-allowlist.jsonc"
+    "standards/effect-allowlist.jsonc",
+    "fixtures/cli-pre-port/**"
   ],
   "cacheDir": ".turbo/cache"
 }
