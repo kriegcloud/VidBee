@@ -372,6 +372,24 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
           );
         }
       });
+      const callRefreshOne = (id: string) =>
+        O.isSome(methods) && methods.value.refreshOne !== undefined
+          ? methods.value.refreshOne(id, refreshOne(id))
+          : refreshOne(id);
+      const callRefreshAll = Effect.suspend(() =>
+        O.isSome(methods) && methods.value.refreshAll !== undefined
+          ? methods.value.refreshAll(refreshAll())
+          : refreshAll()
+      );
+      const callReconcile = Effect.suspend(() =>
+        O.isSome(methods) && methods.value.reconcileOrphanedTasks !== undefined
+          ? methods.value.reconcileOrphanedTasks(reconcile)
+          : reconcile
+      );
+      const callRelease = (ids: readonly string[]) =>
+        O.isSome(methods) && methods.value.releaseRemovedTasks !== undefined
+          ? methods.value.releaseRemovedTasks(ids, releaseRemovedTasks(ids))
+          : releaseRemovedTasks(ids);
       const schedulerSettingsOption = yield* Effect.serviceOption(SubscriptionSchedulerSettings);
       const schedulerSettingsLayer = O.isSome(schedulerSettingsOption)
         ? Layer.succeed(SubscriptionSchedulerSettings, schedulerSettingsOption.value)
@@ -386,9 +404,9 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
               Layer.succeed(
                 SchedulerWork,
                 SchedulerWork.of({
-                  runAll: refreshAll().pipe(withLegacyFinally(timing.turn("api:scheduler:runAll"))),
+                  runAll: callRefreshAll.pipe(withLegacyFinally(timing.turn("api:scheduler:runAll"))),
                   runOne: Effect.fnUntraced(function* (id) {
-                    yield* refreshOne(id).pipe(withLegacyFinally(timing.turn("api:scheduler:runOne")));
+                    yield* callRefreshOne(id).pipe(withLegacyFinally(timing.turn("api:scheduler:runOne")));
                   }),
                   isLeader: Effect.succeed(true),
                 })
@@ -403,7 +421,7 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
       return Subscriptions.of({
         start: Effect.gen(function* () {
           yield* election.tryAcquire.pipe(withLegacyFinally(timing.turn("api:start:tryAcquire")));
-          yield* reconcile.pipe(
+          yield* callReconcile.pipe(
             withLegacyFinally(timing.turn("api:start:reconcile")),
             Effect.catch((error) => warn("subscriptions: failed to reconcile orphaned queue links", {}, error))
           );
@@ -562,7 +580,7 @@ export const layer = (schedulerOptions: SchedulerOptions = {}) =>
             pendingOrder = [];
             MutableHashSet.clear(pendingIds);
             flushScheduled = false;
-            yield* releaseRemovedTasks(ids).pipe(
+            yield* callRelease(ids).pipe(
               withLegacyFinally(timing.turn("api:removalFlush:releaseRemovedTasks")),
               Effect.catch((error) => warn("subscriptions: failed to release removed tasks", {}, error))
             );

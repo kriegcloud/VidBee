@@ -19,7 +19,7 @@ export const layer = Layer.effect(
         )
       ),
       every: Effect.fn("SubscriptionTimers.every")((ms, command) =>
-        Effect.sleep(ms).pipe(
+        Effect.sleep(ms >= 1 && ms <= 2 ** 31 - 1 ? Math.trunc(ms) : 1).pipe(
           Effect.andThen(dispatch.detach(command.run)),
           Effect.forever,
           Effect.forkIn(scope, { startImmediately: true }),

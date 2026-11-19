@@ -12,6 +12,8 @@ export interface ScheduledCommand {
 export class SubscriptionTimers extends Context.Service<
   SubscriptionTimers,
   {
+    /** Synchronous host read: must not suspend, including when called inside a SQL segment.
+     * A suspending host violates database access rule 2 and defects before any write. */
     readonly now: Effect.Effect<number, HostFailure>;
     readonly after: (ms: number, command: ScheduledCommand) => Effect.Effect<TimerCancel, HostFailure>;
     readonly every: (ms: number, command: ScheduledCommand) => Effect.Effect<TimerCancel, HostFailure>;

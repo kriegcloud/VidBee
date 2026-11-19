@@ -2,11 +2,13 @@ import { expect, layer } from "@effect/vitest";
 import { BetterSqliteClient, DbRowDecodeError, DbSchema, Migrations } from "@vidbee/db";
 import Database from "better-sqlite3";
 import * as Arr from "effect/Array";
+import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
 import * as Reactivity from "effect/reactivity/Reactivity";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
@@ -79,7 +81,7 @@ const traceEmpty = Layer.succeed(SqlTrace, {
 const client = driver === "node" ? Layer.merge(nodeLayer(":memory:"), traceEmpty) : borrowed;
 const host = Layer.merge(
   Layer.succeed(SubscriptionTimers, {
-    now: Effect.yieldNow.pipe(Effect.as(1000)),
+    now: Effect.succeed(1000),
     after: Effect.fn("SubscriptionTimers.after")(() => Effect.succeed(Effect.void)),
     every: Effect.fn("SubscriptionTimers.every")(() => Effect.succeed(Effect.void)),
   }),
@@ -107,7 +109,7 @@ const item = (id: string, publishedAt = 1) => ({ id, title: id, url: `https://ex
 layer(services, { buildPerTest: true })((it) => {
   const run = driver === "node" || driver === "borrowed" ? it.effect : it.effect.skip;
   run(
-    `${driver}: synchronous update/remove segments cannot resurrect rows across a controlled clock yield`,
+    `${driver}: synchronous update/remove segments cannot resurrect rows with synchronous clock reads`,
     Effect.fnUntraced(function* () {
       yield* (yield* DbSchema).applySubscriptions;
       const store = yield* SubscriptionStore;
@@ -508,7 +510,6 @@ const recordedClient = Layer.effectContext(
           ...args: Parameters<Connection.Connection["execute"]>
         ) {
           events.push({ connection: id, statement: args[0] });
-          yield* Effect.yieldNow;
           return yield* connection.execute(...args);
         }),
       };
@@ -557,5 +558,150 @@ layer(recordedServices, { buildPerTest: true })((it) => {
       expect(Arr.every(removing, (event) => event.connection === removing[0]?.connection)).toBe(true);
       expect(removing[1]?.statement).toBe("SELECT changes() AS changes");
     })
+  );
+});
+
+// Second-round regressions use synchronous hosts; yielding hosts are tested as
+// contract violations separately, rather than supplied to ordinary SQL tests.
+class SegmentHost extends Context.Service<
+  SegmentHost,
+  {
+    readonly events: string[];
+    readonly setSuspending: (value: boolean) => void;
+    readonly setEntropySuspending: (value: boolean) => void;
+  }
+>()("@vidbee/subscriptions-core/test/native-persistence.test/SegmentHost") {}
+const segmentHost = Layer.effectContext(
+  Effect.sync(() => {
+    const events: string[] = [];
+    let suspending = false;
+    let entropySuspending = false;
+    let n = 0;
+    return Context.make(
+      SubscriptionTimers,
+      SubscriptionTimers.of({
+        now: Effect.suspend(() => {
+          events.push("now");
+          return suspending ? Effect.yieldNow.pipe(Effect.as(1000)) : Effect.succeed(1000);
+        }),
+        after: Effect.fn("SubscriptionTimers.after")(() => Effect.succeed(Effect.void)),
+        every: Effect.fn("SubscriptionTimers.every")(() => Effect.succeed(Effect.void)),
+      })
+    ).pipe(
+      Context.add(SubscriptionEntropy, {
+        subscriptionId: Effect.suspend(() => {
+          events.push("id");
+          return entropySuspending ? Effect.yieldNow.pipe(Effect.as("forbidden")) : Effect.succeed(`segment-${++n}`);
+        }),
+        leaseId: Effect.succeed("lease"),
+        next: Effect.succeed(0.5),
+      }),
+      Context.add(SegmentHost, {
+        events,
+        setEntropySuspending: (value) => {
+          entropySuspending = value;
+        },
+        setSuspending: (value) => {
+          suspending = value;
+        },
+      })
+    );
+  })
+);
+const segmentServices = Layer.mergeAll(SubscriptionStoreSqlLive, SubscriptionMetaSqlLive, Migrations.layer).pipe(
+  Layer.provideMerge(Layer.merge(client, segmentHost))
+);
+layer(segmentServices, { buildPerTest: true })((it) => {
+  const run = driver === "node" || driver === "borrowed" ? it.effect : it.effect.skip;
+  run(
+    `${driver}: large synchronous store segment permits concurrent metadata access`,
+    Effect.fnUntraced(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const meta = yield* SubscriptionMeta;
+      const sub = yield* store.add(input);
+      yield* store.replaceItems(
+        sub.id,
+        Arr.makeBy(1500, (i) => item(String(i)))
+      );
+      const listing = yield* store.list.pipe(Effect.forkChild({ startImmediately: true }));
+      const reading = yield* meta.readLeader.pipe(Effect.forkChild({ startImmediately: true }));
+      expect((yield* Fiber.join(listing))[0]?.items).toHaveLength(1500);
+      expect((yield* Fiber.join(reading)).pid).toBeNull();
+    }),
+    30_000
+  );
+  run(
+    `${driver}: host reads stay at the old positions and suspending clocks defect before writing`,
+    Effect.fnUntraced(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const host = yield* SegmentHost;
+      const missing = yield* store.update("missing", { title: "ignored" });
+      expect(missing).toBeNull();
+      expect(host.events).toEqual([]);
+      const sub = yield* store.add(input);
+      expect(host.events).toEqual(["now", "id"]);
+      const updating = yield* store
+        .update(sub.id, { title: "before" })
+        .pipe(Effect.forkChild({ startImmediately: true }));
+      const reading = yield* (yield* SubscriptionMeta).readLeader.pipe(Effect.forkChild({ startImmediately: true }));
+      yield* Fiber.join(updating);
+      expect((yield* Fiber.join(reading)).pid).toBeNull();
+      expect(host.events).toEqual(["now", "id", "now"]);
+      host.setSuspending(true);
+      const result = yield* Effect.exit(store.update(sub.id, { title: "after" }));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(Cause.hasDies(result.cause)).toBe(true);
+        expect(Cause.pretty(result.cause)).toContain("database access rule 2");
+      }
+      host.setSuspending(false);
+      expect((yield* store.get(sub.id))?.title).toBe("before");
+      host.setEntropySuspending(true);
+      const adding = yield* Effect.exit(store.add(input));
+      expect(Exit.isFailure(adding)).toBe(true);
+      if (Exit.isFailure(adding)) {
+        expect(Cause.hasDies(adding.cause)).toBe(true);
+        expect(Cause.pretty(adding.cause)).toContain("database access rule 2");
+      }
+      const forbidden = yield* store.get("forbidden");
+      expect(forbidden).toBeNull();
+      expect((yield* (yield* SubscriptionMeta).readLeader).pid).toBeNull();
+    })
+  );
+  run(
+    `${driver}: orphan clear without callbacks cannot erase concurrent queued links`,
+    Effect.fnUntraced(function* () {
+      yield* (yield* DbSchema).applySubscriptions;
+      const store = yield* SubscriptionStore;
+      const sub = yield* store.add(input);
+      yield* store.replaceItems(
+        sub.id,
+        Arr.makeBy(1500, (i) => item(String(i)))
+      );
+      const sql = yield* SqlClient.SqlClient;
+      yield* sql`UPDATE subscription_items SET added=1`;
+      let callbacks = 0;
+      const clearing = yield* store
+        .clearOrphanedQueueLinks(() =>
+          Effect.sync(() => {
+            callbacks++;
+            return true;
+          })
+        )
+        .pipe(Effect.forkChild({ startImmediately: true }));
+      const marking = yield* store
+        .markItemQueued(sub.id, "1499", "task2")
+        .pipe(Effect.forkChild({ startImmediately: true }));
+      yield* Fiber.join(clearing);
+      yield* Fiber.join(marking);
+      expect(callbacks).toBe(0);
+      const result = yield* store.get(sub.id);
+      expect(Option.getOrUndefined(Arr.findFirst(result?.items ?? [], (value) => value.id === "1499"))?.taskId).toBe(
+        "task2"
+      );
+    }),
+    30_000
   );
 });

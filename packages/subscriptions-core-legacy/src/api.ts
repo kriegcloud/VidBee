@@ -116,7 +116,11 @@ export class SubscriptionsApi {
   Object.defineProperty(leaderReceiver,'runtime',{get:()=>this.runtime})
   const leaderHost=Object.assign(leaderReceiver,{metaStore,kind:opts.kind,pid:opts.pid,heartbeatIntervalMs:opts.leader?.heartbeatIntervalMs??30000,lockTtlMs:opts.leader?.lockTtlMs??90000,now:opts.now??opts.leader?.now??(()=>Date.now()),log:owner.log,scheduleInterval:opts.leader?.scheduleInterval??((cb:()=>void,ms:number)=>setInterval(cb,ms)),clearIntervalImpl:opts.leader?.clearInterval??((handle:unknown)=>clearInterval(handle as ReturnType<typeof setInterval>))})
   const base=Layer.mergeAll(
-   Layer.succeed(SubscriptionMethodDispatch,{refreshOne:(id,fallback)=>this.refreshOne===SubscriptionsApi.prototype.refreshOne?fallback:promise(()=>this.refreshOne(id))}),
+   Layer.succeed(SubscriptionMethodDispatch,{
+    refreshAll:fallback=>Effect.suspend(()=>this.refreshAll===SubscriptionsApi.prototype.refreshAll?fallback:promise(()=>this.refreshAll())),
+    reconcileOrphanedTasks:fallback=>Effect.suspend(()=>this.reconcileOrphanedTasks===SubscriptionsApi.prototype.reconcileOrphanedTasks?fallback:promise(()=>this.reconcileOrphanedTasks())),
+    releaseRemovedTasks:(ids,fallback)=>Effect.suspend(()=>this.releaseRemovedTasks===SubscriptionsApi.prototype.releaseRemovedTasks?fallback:promise(()=>this.releaseRemovedTasks(ids))),
+    refreshOne:(id,fallback)=>this.refreshOne===SubscriptionsApi.prototype.refreshOne?fallback:promise(()=>this.refreshOne(id))}),
    hostLayers(dispatch,{now:()=>owner.now(),log:(...args)=>owner.log(...args)}),
    Layer.succeed(SubscriptionQueue,SubscriptionQueue.of({
     enqueue:context=>promise(()=>owner.enqueueItem(context as EnqueueItemContext)),

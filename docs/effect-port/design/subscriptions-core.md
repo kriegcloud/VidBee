@@ -258,14 +258,38 @@ old-source matrix pins both observations for every store/API patchable field and
 public declarations. This completes the earlier ruling without declaring a behavior change.
 
 Native `every` uses timer-time sleeps followed by detached work: no wall-clock-derived
-cadence, no catch-up burst, and overlapping heartbeat runs remain allowed. Each native SQL
-store layer builds one one-permit semaphore. Old synchronous methods are exclusive segments;
-the subscription store also reserves one connection, without adding a transaction. Its
-reservation uses the public transaction connection service at depth -1 so explicit inner
-transactions still issue BEGIN at depth 0. Existing transactions are borrowed. Metadata CAS
-already reserves its connection through withTransaction. Orphan checks keep the old await
-points: reserve the initial read and final clearing segment separately, leaving host lookups
-outside both. Content-free subscription decode issues report table/property paths.
+cadence, no catch-up burst, and overlapping heartbeat runs remain allowed. Match Node's
+`setInterval` normalization: delays below 1, above 2^31-1 or NaN become 1 ms; other
+fractional delays are truncated. The pinned Node timer records and native TestClock
+both produce five callbacks in a deterministic 5 ms window for 0, -5, 0.5, NaN,
+2^31 and Infinity.
+
+Each old synchronous native SQL method is one non-suspending reserved-connection
+segment, including row decoding and result construction. No extra mutex is used by
+either SQL store: the SQLite client's reservation already excludes every other user
+of that connection. The shared `SqlSegment` helper provides
+`effect/Scheduler.PreventSchedulerYield = true` locally around acquisition, body and
+release. It restores the previous reference afterward; this prevents an operation-budget
+yield while the permit is held. Reservation uses the public transaction connection
+service at depth -1, so explicit inner transactions still issue BEGIN at depth 0;
+existing contextual connections are borrowed without another acquisition.
+
+`SubscriptionTimers.now` and `SubscriptionEntropy.subscriptionId` are synchronous host
+reads and must not suspend. They remain at their old statement positions and retain
+the old path-dependent call count (for example, missing update reads neither clock nor
+ID). `readSqlHost` starts a child immediately under the segment's context and checks
+its completion before continuing; a pending child is interrupted and the operation
+defects with the database access rule-2 message before writing. This enforces the
+contract without moving reads in front of the segment. A suspending host is invalid;
+it does not authorize holding the connection across a suspension.
+
+Orphan cleanup retains precisely the old liveness-callback await boundaries. The first
+segment includes SELECT, decoding and iteration up to the first uncached callback;
+after each callback, another segment continues through the next callback or the final
+clock read and clear. When no callback is needed, SELECT and clear remain one segment.
+Budget yields are also disabled in this method's orchestration, so only an actual host
+callback suspension creates a gap. Liveness callbacks run outside reservations and
+may access the same store. Content-free decode issues retain table/property paths.
 
 ### Parser values stay wide through interpretation
 
@@ -762,7 +786,7 @@ Apply the seven db rules, with the subscription-specific compatibility error bou
 
 Native host transactions are borrowed through the db adapter’s savepoint behavior. The compatibility driver retains better-sqlite3/Drizzle’s existing nested transaction behavior. Do not add a transaction around refresh, admission, parent deletion or update.
 
-No transaction or connection reservation remains held while fetching, awaiting task lookup, emitting changed callbacks or yielding a timing turn. Orphan reconciliation has separate synchronous read and clear segments.
+No transaction or connection reservation remains held while fetching, awaiting task lookup, emitting changed callbacks or yielding a timing turn. Orphan reconciliation splits synchronous segments only at actual host liveness awaits; without a callback, read and clear share one segment.
 
 Preserve conditional update columns: absent `profileOwner`, `checkIntervalMs`, `nextCheckAt` explicitly write NULL; other absent optional properties are omitted from conflict updates (`C/store.ts:152–207`).
 

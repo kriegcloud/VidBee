@@ -4,7 +4,7 @@ import { expect, it } from '@effect/vitest'
 import { NODE } from './fixtures/node-runtime.js'
 
 const runner = fileURLToPath(new URL('./fixtures/native-timer-liveness.node.ts', import.meta.url))
-for (const mode of ['after', 'every', 'every-backward', 'every-forward'] as const) {
+for (const mode of ['after', 'every', 'every-backward', 'every-forward', 'every-zero'] as const) {
   it(`native ${mode} keeps Node alive until firing and exits after release`, () => {
     const stdout = execFileSync(NODE, ['--import', 'tsx', runner, mode], {
       encoding: 'utf8', timeout: 60_000, stdio: ['ignore', 'pipe', 'pipe']

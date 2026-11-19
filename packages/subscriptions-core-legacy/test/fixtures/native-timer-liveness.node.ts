@@ -11,7 +11,7 @@ if (process.versions.node !== expected || process.versions.bun !== undefined) {
   throw new Error('Native timer liveness requires the repository-pinned Node')
 }
 const mode = process.argv[2]
-if (!['after','every','every-backward','every-forward'].includes(mode ?? '')) throw new Error('Unknown native timer mode')
+if (!['after','every','every-backward','every-forward','every-zero'].includes(mode ?? '')) throw new Error('Unknown native timer mode')
 const events: string[] = []
 const runtime = ManagedRuntime.make(Timers.pipe(Layer.provide(Dispatch)))
 let finish: () => void = () => { throw new Error('Timer completion was not initialized') }
@@ -28,7 +28,7 @@ const command = {
   })
 }
 const cancel = await runtime.runPromise(Effect.flatMap(SubscriptionTimers, timers =>
-  mode?.startsWith('every') ? timers.every(10, command) : timers.after(10, command)))
+  mode?.startsWith('every') ? timers.every(mode === 'every-zero' ? 0 : 10, command) : timers.after(10, command)))
 events.push('ready')
 await completed
 Date.now=originalNow

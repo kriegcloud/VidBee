@@ -480,3 +480,24 @@ it.layer(NativeTimers.pipe(Layer.provide(NativeDispatch), Layer.provideMerge(wal
     })
   );
 });
+
+it.layer(NativeTimers.pipe(Layer.provide(NativeDispatch)))((test) => {
+  for (const delay of [0, -5, 0.5, Number.NaN, 2 ** 31, Number.POSITIVE_INFINITY]) {
+    test.effect(
+      `interval ${String(delay)} matches Node's one-millisecond clamp`,
+      Effect.fnUntraced(function* () {
+        const timers = yield* SubscriptionTimers;
+        let ticks = 0;
+        const cancel = yield* timers.every(delay, {
+          run: Effect.sync(() => {
+            ticks++;
+          }),
+        });
+        yield* TestClock.adjust(5);
+        assert.strictEqual(ticks, 5);
+        yield* cancel;
+      }),
+      10_000
+    );
+  }
+});

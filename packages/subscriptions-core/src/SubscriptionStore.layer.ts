@@ -7,14 +7,15 @@ import * as HashSet from "effect/HashSet";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Rec from "effect/Record";
+import * as Scheduler from "effect/Scheduler";
 import * as S from "effect/Schema";
-import * as Semaphore from "effect/Semaphore";
 import * as Str from "effect/String";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as F from "./Feed.model.js";
 import { buildFeedKey } from "./feed-resolver.js";
 import * as R from "./Rows.model.js";
 import { decodeRow } from "./Rows.model.js";
+import { readSqlHost as readHost, sqlRule2, sqlSegment } from "./SqlSegment.js";
 import { SubscriptionEntropy } from "./SubscriptionEntropy.service.js";
 import { SubscriptionStore } from "./SubscriptionStore.service.js";
 import { HostFailure } from "./Subscriptions.errors.js";
@@ -54,16 +55,8 @@ export const SubscriptionStoreSqlLive = Layer.effect(
   SubscriptionStore,
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient;
-    const mutex = yield* Semaphore.make(1);
-    // Depth -1 reserves the connection without opening a transaction; the first
-    // withTransaction inside the segment still emits BEGIN (depth 0).
-    const reserved = Effect.fnUntraced(function* <A, E, R>(work: Effect.Effect<A, E, R>) {
-      const active = yield* Effect.serviceOption(sql.transactionService);
-      if (Option.isSome(active)) return yield* work;
-      const connection = yield* sql.reserve;
-      return yield* work.pipe(Effect.provideService(sql.transactionService, [connection, -1]));
-    });
-    const segment = <A, E, R>(work: Effect.Effect<A, E, R>) => work.pipe(reserved, Effect.scoped, mutex.withPermits(1));
+
+    const segment = sqlSegment(sql);
     const timers = yield* SubscriptionTimers;
     const entropy = yield* SubscriptionEntropy;
     const insert = Effect.fn("SubscriptionStore.insert")(function* (
@@ -171,8 +164,8 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         return null;
       }),
       add: Effect.fn(function* (input) {
-        const at = yield* timers.now;
-        const id = yield* entropy.subscriptionId;
+        const at = yield* readHost(timers.now);
+        const id = yield* readHost(entropy.subscriptionId);
         const rule: F.StoredSubscriptionRule = {
           id,
           title:
@@ -210,7 +203,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         if (raw.length === 0) return null;
         const decoded = yield* decodeRow("subscriptions")(R.SubscriptionRawRowFromSql)(raw[0]);
         const existing = R.rowToSubscription(decoded);
-        const at = yield* timers.now;
+        const at = yield* readHost(timers.now);
         const hasKeywords = Boolean(patch.keywords);
         const hasTags = Boolean(patch.tags);
         const hasCategories = Boolean(patch.categories);
@@ -246,7 +239,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         return true;
       }),
       replaceItems: Effect.fn(function* (subscriptionId, items) {
-        const at = yield* timers.now;
+        const at = yield* readHost(timers.now);
         yield* sql
           .withTransaction(
             Effect.gen(function* () {
@@ -282,7 +275,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
       }),
       mergeItems: Effect.fn(function* (subscriptionId, items) {
         if (items.length === 0) return;
-        const at = yield* timers.now;
+        const at = yield* readHost(timers.now);
         yield* sql
           .withTransaction(
             Effect.gen(function* () {
@@ -319,7 +312,7 @@ export const SubscriptionStoreSqlLive = Layer.effect(
           .pipe(Effect.provideService(SqlClient.BeginTransaction, "BEGIN"));
       }),
       markItemQueued: Effect.fn(function* (subscriptionId, itemId, taskId) {
-        const at = yield* timers.now;
+        const at = yield* readHost(timers.now);
         const hasTaskId = Boolean(taskId);
         const added = hasTaskId ? 1 : 0;
         yield* sql`UPDATE subscription_items SET added=${added},task_id=${taskId ?? null},updated_at=${at} WHERE subscription_id=${subscriptionId} AND item_id=${itemId}`;
@@ -328,39 +321,60 @@ export const SubscriptionStoreSqlLive = Layer.effect(
         }
       }),
       clearQueueLinks: Effect.fn(function* (selector) {
-        const at = yield* timers.now;
+        const at = yield* readHost(timers.now);
         return yield* clear(at, R.sanitizeList(selector.taskIds), selector.items ?? []);
       }),
       clearOrphanedQueueLinks: Effect.fn(function* (isLive: (taskId: string) => StoreEffect<boolean>) {
-        const raw = yield* segment(
-          sql`SELECT subscription_id,item_id,task_id,added FROM subscription_items WHERE added=1 OR task_id IS NOT NULL`
-        );
         const tasks: string[] = [];
         const items: { subscriptionId: string; itemId: string }[] = [];
         let seen = HashSet.empty<string>();
         let liveById = HashMap.empty<string, boolean>();
-        for (const value of raw) {
-          const row = yield* decodeRow("subscription_items")(R.QueueLinkRowFromSql)(value);
-          const hasTaskId = Boolean(row.taskId);
-          if (hasTaskId && row.taskId !== null) {
-            let live = Option.getOrUndefined(HashMap.get(liveById, row.taskId));
-            if (live === undefined) {
-              live = yield* isLive(row.taskId);
-              liveById = HashMap.set(liveById, row.taskId, live);
+        let raw: readonly unknown[] = [];
+        let index = 0;
+        // Stop a segment only at an actual old await. Decoding, cached lookup
+        // results, the final clock read and writes stay in that same segment.
+        const advance = Effect.fnUntraced(function* () {
+          while (index < raw.length) {
+            const row = yield* decodeRow("subscription_items")(R.QueueLinkRowFromSql)(raw[index]);
+            const hasTaskId = Boolean(row.taskId);
+            if (hasTaskId && row.taskId !== null) {
+              const live = Option.getOrUndefined(HashMap.get(liveById, row.taskId));
+              if (live === undefined) return { taskId: row.taskId };
+              if (!live && !HashSet.has(seen, row.taskId)) {
+                seen = HashSet.add(seen, row.taskId);
+                tasks.push(row.taskId);
+              }
+            } else if (row.added === 1) {
+              items.push({ subscriptionId: row.subscriptionId, itemId: row.itemId });
             }
-            if (live || HashSet.has(seen, row.taskId)) continue;
-            seen = HashSet.add(seen, row.taskId);
-            tasks.push(row.taskId);
-          } else if (row.added === 1) {
-            items.push({ subscriptionId: row.subscriptionId, itemId: row.itemId });
+            index++;
           }
+          const at = yield* readHost(timers.now);
+          return { count: yield* clear(at, tasks, items) };
+        });
+        let next = yield* segment(
+          Effect.gen(function* () {
+            raw =
+              yield* sql`SELECT subscription_id,item_id,task_id,added FROM subscription_items WHERE added=1 OR task_id IS NOT NULL`;
+            return yield* advance();
+          })
+        );
+        while (next.taskId !== undefined) {
+          const taskId = next.taskId;
+          const live = yield* isLive(taskId);
+          liveById = HashMap.set(liveById, taskId, live);
+          next = yield* segment(advance());
         }
-        const at = yield* timers.now;
-        return yield* segment(clear(at, tasks, items));
+        return next.count ?? 0;
       }),
     });
     return SubscriptionStore.of({
       ...store,
+      // Suppress budget yields in the orchestration too: the host callback's
+      // own suspension is the only gap in the old asynchronous method.
+      clearOrphanedQueueLinks: Effect.fn("SubscriptionStore.clearOrphanedQueueLinks")((isLive) =>
+        store.clearOrphanedQueueLinks(isLive).pipe(Effect.provideService(Scheduler.PreventSchedulerYield, true))
+      ),
       list: segment(store.list),
       get: Effect.fn("SubscriptionStore.get")((id) => segment(store.get(id))),
       findDuplicateFeed: Effect.fn("SubscriptionStore.findDuplicateFeed")((url, ignoreId) =>
@@ -370,12 +384,14 @@ export const SubscriptionStoreSqlLive = Layer.effect(
       update: Effect.fn("SubscriptionStore.update")((id, patch) =>
         segment(store.update(id, patch)).pipe(
           Effect.catchDefect((original) =>
-            Effect.fail(
-              HostFailure.make({
-                original,
-                legacyMessage: original instanceof Error ? original.message : String(original),
-              })
-            )
+            original === sqlRule2
+              ? Effect.die(sqlRule2)
+              : Effect.fail(
+                  HostFailure.make({
+                    original,
+                    legacyMessage: original instanceof Error ? original.message : String(original),
+                  })
+                )
           )
         )
       ),

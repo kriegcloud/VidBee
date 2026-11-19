@@ -40,6 +40,9 @@ export class Subscriptions extends Context.Service<
 export class SubscriptionMethodDispatch extends Context.Service<
   SubscriptionMethodDispatch,
   {
+    readonly refreshAll?: (fallback: Operation<void>) => Operation<void>;
+    readonly reconcileOrphanedTasks?: (fallback: Operation<number>) => Operation<number>;
+    readonly releaseRemovedTasks?: (ids: readonly string[], fallback: Operation<number>) => Operation<number>;
     readonly refreshOne?: (id: string, fallback: Operation<void>) => Operation<void>;
   }
 >()("@vidbee/subscriptions-core/Subscriptions.service/SubscriptionMethodDispatch") {}

@@ -2,10 +2,10 @@ import * as Effect from "effect/Effect";
 import * as HashMap from "effect/HashMap";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
-import * as Semaphore from "effect/Semaphore";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as R from "./Rows.model.js";
 import { decodeRow } from "./Rows.model.js";
+import { readSqlHost, sqlSegment } from "./SqlSegment.js";
 import { SubscriptionMeta } from "./SubscriptionMeta.service.js";
 import { SubscriptionTimers } from "./SubscriptionTimers.service.js";
 import type { LeaderKind, LeaderState } from "./Subscription.model.js";
@@ -43,7 +43,8 @@ export const SubscriptionMetaSqlLive = Layer.effect(
   SubscriptionMeta,
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient;
-    const mutex = yield* Semaphore.make(1);
+    const segment = sqlSegment(sql);
+
     const timers = yield* SubscriptionTimers;
     const read = Effect.fn("SubscriptionMeta.read")(function* () {
       const raw = yield* sql`SELECT * FROM subscriptions_meta`;
@@ -78,7 +79,7 @@ export const SubscriptionMetaSqlLive = Layer.effect(
       readLeader: read(),
       readPreferred: read().pipe(Effect.map((s) => s.preferred)),
       writePreferred: Effect.fn(function* (value) {
-        const at = yield* timers.now;
+        const at = yield* readSqlHost(timers.now);
         yield* write(KEYS.preferred, value, at);
       }),
       casLeader: Effect.fn(function* (request) {
@@ -100,14 +101,10 @@ export const SubscriptionMetaSqlLive = Layer.effect(
       }),
     });
     return SubscriptionMeta.of({
-      readLeader: store.readLeader.pipe(mutex.withPermits(1)),
-      readPreferred: store.readPreferred.pipe(mutex.withPermits(1)),
-      writePreferred: Effect.fn("SubscriptionMeta.writePreferred")((kind) =>
-        store.writePreferred(kind).pipe(mutex.withPermits(1))
-      ),
-      casLeader: Effect.fn("SubscriptionMeta.casLeader")((request) =>
-        store.casLeader(request).pipe(mutex.withPermits(1))
-      ),
+      readLeader: segment(store.readLeader),
+      readPreferred: segment(store.readPreferred),
+      writePreferred: Effect.fn("SubscriptionMeta.writePreferred")((kind) => segment(store.writePreferred(kind))),
+      casLeader: Effect.fn("SubscriptionMeta.casLeader")((request) => segment(store.casLeader(request))),
     });
   })
 );
