@@ -731,6 +731,10 @@ The recorded changes are:
 
    Descriptor syntax failures retain `DESKTOP_NOT_READY` and their `{ path }` details; when surfaced as that envelope they map to exit 3. Existing connection/autostart branches may mask that envelope and remain unchanged. Registry syntax failures retain `API_UNREACHABLE`, exit 3 and the fixed registry detail. Registry messages have no added textual prefix today (`C/runtime.ts:159–165`), so none is introduced. A BOM is stripped by the registry fetch text boundary and is not newly rejected. Empty registry text still fails, now with the schema issue text; empty automation text still becomes null. Cache and package syntax failures remain silent miss/fallback branches.
 
+7. **A deadline timer that has already fired is not cleared again.** The old request helper calls `clearTimeout` on its deadline handle in a `finally` block, including after that timer has fired. The native request deadline is an Effect sleep; when it completes there is no handle left to clear. Clearing a fired Node timer has no effect, so nothing outside an injected `clearTimeout` can see the difference. The frozen observation `injected HTTP deadline lasts through body consumption` records `cleared: [1]` for the old code. The port records `cleared: []`. That case is admitted through `approved-changes.json` under `VIDBEE_CLI_PORTED=1` (section 12.13). A request whose body finishes before the deadline must still cancel the pending timer.
+
+8. **Envelope encoding failures keep a synchronous throw, with a different error.** `renderEnvelope` accepts an unknown result field. For a BigInt or a cyclic value, the old call throws the engine `TypeError` from JSON serialization. The new call still throws synchronously, but with the Schema JSON encoding failure (`SchemaError`, `Expected a JSON-serializable value`), because the installed `SchemaGetter.stringifyJson` drops the engine cause. This is the port guide's engine-error boundary: the call must still fail, and its class and message need not match. No such value reaches the executable, because the result fields come from parsed JSON or from local task rows (section 12.14).
+
 The phase-8 plan note says argument parsing moves to `effect/cli` and the command surface must not change. The first requirement cannot be carried out with the installed parser while satisfying the second. The scanner stays; Effect owns execution. There is no synthetic command tree.
 
 Adopting Effect CLI’s grammar would change at least:
@@ -749,7 +753,7 @@ Adopting Effect CLI’s grammar would change at least:
 
 A future grammar change is an owner decision. It is not part of this port.
 
-Items 2–4 do not authorize stricter task-response, wire-ID, semver, timestamp-range, descriptor-host or port validation. Item 6 authorizes only the named syntax diagnostic replacement. No stock native process difference is accepted by implication.
+Items 2–4 do not authorize stricter task-response, wire-ID, semver, timestamp-range, descriptor-host or port validation. Item 6 authorizes only the named syntax diagnostic replacement. Items 7 and 8 authorize only the named timer observation and the named encoding failures. No stock native process difference is accepted by implication.
 
 ## 10. Verification the implementation owes
 
@@ -1143,6 +1147,24 @@ This follows the task-queue design’s declared Schema syntax-diagnostic replace
 **Recorded decision:** clean distribution output once at the start, emit the library and declarations, then build the executable without cleaning again. Verify all three public entries and their declarations from the final distribution with source unavailable.
 
 **Recorded decision:** packaged CLI cases use bounded capture through pipe closure and child `close`, recording both exit code and termination signal. The existing `exit`-based helper is repaired before the extended cases are accepted as proof.
+
+### 12.12 Self-contained library distribution
+
+**Recorded decision (orchestrator, after implementation evidence):** the source-unavailable proof of section 8 stands. The emitted library imports private workspace sources (`@vidbee/schema/LiteralKit` and any others the build finds), which no published layout can resolve. The private packages are therefore bundled into the library rather than referenced:
+
+- One esbuild call bundles the three library entries into `dist/library` as ESM, with code splitting, so modules shared between entries keep one identity. Every `@vidbee/*` workspace import is inlined. The npm packages in the CLI's own `dependencies` stay external, as does `effect` if it is one of them. Nothing else is external.
+- The declarations are emitted by the same `tsrs` step. Any declaration that refers to a private workspace module gets a copy of that module's emitted declarations under `dist/library/internal/<package>/`, and the build rewrites those specifiers to relative paths. No new dependency is added for declaration bundling.
+- The distribution verifier is unchanged in intent. It copies only the publish layout and the external runtime dependencies, with the CLI source and workspace packages unavailable. It imports all three entries, checks them with the separate declaration consumer, and starts both executable paths.
+
+The executable bundle `dist/index.mjs`, the shim and their bytes and paths stay as section 8 fixes them.
+
+### 12.13 Fired deadline timer
+
+**Recorded decision:** section 9, item 7. No custom clock that clears unconditionally, and no compatibility timer driver. The test reads the ported expectation from an `approved-changes.json` entry (kind `deadline-clear`, with the old and new `cleared` lists), in the same way the descriptor observations are read. The rest of the assertion stays as it is, under both switches: one scheduled delay of 123 ms, and rejection with `automation request failed: fixture body aborted`. A new case, recorded from the old code first, covers a body that finishes before the deadline and requires the timer to be cleared, for both the old code and the port.
+
+### 12.14 Envelope encoding failures
+
+**Recorded decision:** section 9, item 8. Pin both inputs (a BigInt and a cyclic value in `result`) in the pure oracle from the old source, as an old engine failure for which a new synchronous throw is required. Do not reproduce the engine message.
 
 ### Still open
 
