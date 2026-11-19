@@ -101,44 +101,49 @@ layer(drizzleLayer.pipe(Layer.provideMerge(clientLayer)), { buildPerTest: true }
       )
     );
   }
-  run(`${driver}: all 512 subscription missing-column combinations preserve rows/defaults`, () =>
-    withClient(
-      Effect.gen(function* () {
-        const sql = yield* Client.SqlClient;
-        const added = [
-          "auto_download",
-          "download_type",
-          "download_quality",
-          "download_container",
-          ...A.map(U.SUBSCRIPTIONS_V3_COLUMNS, ([name]) => name),
-        ];
-        for (let mask = 0; mask < 512; mask++) {
-          yield* apply(U.applySubscriptionsMigrations, "subscriptions");
-          const missing = A.filter(added, (_, bit) => (mask & (1 << bit)) !== 0);
-          for (const column of missing) yield* sql.unsafe(`ALTER TABLE subscriptions DROP COLUMN ${column}`);
-          yield* sql.unsafe(
-            "INSERT INTO subscriptions (id,title,source_url,feed_url,platform,keywords,tags,only_latest,enabled,status,created_at,updated_at) VALUES ('synthetic','title','source','feed','platform','[]','[]',1,1,'active',1,2)"
-          );
-          const before = (yield* sql.unsafe<Record<string, unknown>>("SELECT * FROM subscriptions"))[0];
-          yield* apply(U.applySubscriptionsMigrations, "subscriptions");
-          const after = (yield* sql.unsafe<Record<string, unknown>>("SELECT * FROM subscriptions"))[0];
-          expect(after).toMatchObject(before ?? {});
-          const defaults: Record<string, unknown> = {
-            auto_download: 1,
-            source_kind: "feed",
-            categories: "[]",
-          };
-          for (const column of missing) expect(after?.[column]).toBe(defaults[column] ?? null);
-          const columns = yield* sql.unsafe<Record<string, unknown>>("PRAGMA table_info(subscriptions)");
-          expect(
-            A.map(columns, ({ cid: _cid, ...row }) => row).sort((a, b) =>
-              Str.localeCompare(String(b.name))(String(a.name))
-            )
-          ).toEqual(snapshot("subscriptions-current-columns"));
-          yield* sql.unsafe("DROP TABLE subscriptions; ").unprepared;
-        }
-      })
-    )
+  run(
+    `${driver}: all 512 subscription missing-column combinations preserve rows/defaults`,
+    () =>
+      withClient(
+        Effect.gen(function* () {
+          const sql = yield* Client.SqlClient;
+          const added = [
+            "auto_download",
+            "download_type",
+            "download_quality",
+            "download_container",
+            ...A.map(U.SUBSCRIPTIONS_V3_COLUMNS, ([name]) => name),
+          ];
+          for (let mask = 0; mask < 512; mask++) {
+            yield* apply(U.applySubscriptionsMigrations, "subscriptions");
+            const missing = A.filter(added, (_, bit) => (mask & (1 << bit)) !== 0);
+            for (const column of missing) yield* sql.unsafe(`ALTER TABLE subscriptions DROP COLUMN ${column}`);
+            yield* sql.unsafe(
+              "INSERT INTO subscriptions (id,title,source_url,feed_url,platform,keywords,tags,only_latest,enabled,status,created_at,updated_at) VALUES ('synthetic','title','source','feed','platform','[]','[]',1,1,'active',1,2)"
+            );
+            const before = (yield* sql.unsafe<Record<string, unknown>>("SELECT * FROM subscriptions"))[0];
+            yield* apply(U.applySubscriptionsMigrations, "subscriptions");
+            const after = (yield* sql.unsafe<Record<string, unknown>>("SELECT * FROM subscriptions"))[0];
+            expect(after).toMatchObject(before ?? {});
+            const defaults: Record<string, unknown> = {
+              auto_download: 1,
+              source_kind: "feed",
+              categories: "[]",
+            };
+            for (const column of missing) expect(after?.[column]).toBe(defaults[column] ?? null);
+            const columns = yield* sql.unsafe<Record<string, unknown>>("PRAGMA table_info(subscriptions)");
+            expect(
+              A.map(columns, ({ cid: _cid, ...row }) => row).sort((a, b) =>
+                Str.localeCompare(String(b.name))(String(a.name))
+              )
+            ).toEqual(snapshot("subscriptions-current-columns"));
+            yield* sql.unsafe("DROP TABLE subscriptions; ").unprepared;
+          }
+        })
+      ),
+    // Exhaustive (512 schema states, real SQLite): about one second locally, past the five-second
+    // default on a loaded hosted runner. The budget is explicit; the assertions are unchanged.
+    { timeout: 60_000 }
   );
   for (const kind of ["transcripts", "prompt-runs"] as const)
     run(`${driver}: ${kind} all eight additive states preserve row values`, () =>
