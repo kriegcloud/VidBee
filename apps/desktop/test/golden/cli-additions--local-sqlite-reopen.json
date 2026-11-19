@@ -1,0 +1,111 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "before": {
+      "id": "<id:1>",
+      "kind": "video",
+      "parentId": null,
+      "input": {
+        "kind": "video",
+        "url": "http://127.0.0.1:<port>/local-sqlite.mp4",
+        "title": "golden-local-sqlite",
+        "options": {
+          "type": "video",
+          "customDownloadPath": "<run>/phase8/downloads",
+          "customFilenameTemplate": "sqlite.%(ext)s",
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 0,
+      "groupKey": "127.0.0.1:<port>",
+      "status": "completed",
+      "prevStatus": "processing",
+      "statusReason": null,
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "nextRetryAt": null,
+      "output": {
+        "filePath": "<run>/phase8/downloads/sqlite.mp4",
+        "size": 35607,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": [],
+        "subtitleStatus": "unavailable",
+        "subtitleAcquisition": {
+          "id": "<id:2>",
+          "acquiredAt": "<timestamp>",
+          "credentialsUsed": false
+        }
+      },
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "reopened": {
+      "id": "<id:1>",
+      "kind": "video",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/local-sqlite.mp4",
+        "kind": "video",
+        "title": "golden-local-sqlite",
+        "options": {
+          "type": "video",
+          "customDownloadPath": "<run>/phase8/downloads",
+          "customFilenameTemplate": "sqlite.%(ext)s",
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 0,
+      "groupKey": "127.0.0.1:<port>",
+      "status": "completed",
+      "prevStatus": "processing",
+      "statusReason": null,
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "nextRetryAt": null,
+      "output": {
+        "cookieSources": [],
+        "subtitleAcquisition": {
+          "id": "<id:2>",
+          "acquiredAt": "<timestamp>",
+          "credentialsUsed": false
+        },
+        "filePath": "<run>/phase8/downloads/sqlite.mp4",
+        "size": 35607,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "subtitleStatus": "unavailable"
+      },
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    }
+  },
+  "stderr": ""
+}

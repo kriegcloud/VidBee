@@ -485,3 +485,44 @@ requested scenarios, for 21 transcription documents and 400 total with models.
 Twenty isolated and five complete supplied-model comparisons passed; both
 nominal labels occurred. No scenario was removed. See the report's part 3 for
 exact counts, per-run receipts and the remaining narrower coverage gaps.
+
+## Phase 8 extension and CLI pre-port cases
+
+Before recording, the additional named normalization is
+`extension-format-user-agent`: only
+`response.body.formats[*].http_headers["User-Agent"]` in the new extension
+metadata documents becomes `<user-agent>`. Vendored `random_user_agent` chooses
+a random Chrome major version; downloader defaults and yt-dlp format processing
+copy that header into format objects forwarded by Desktop. The fixture does not
+pin a User-Agent. Sibling headers, format order and all other metadata remain
+literal under the existing approved normalizations. A direct test verifies that
+a non-User-Agent difference still fails comparison.
+
+Phase 8 uses `--phase8-only` (both families), `--extension-api-only`, and
+`--cli-additions-only`. Each is an independent scenario on an isolated packaged
+app; full runs append both families after existing observations. Raw request,
+response, process and SSE receipts remain under `run/phase8/`.
+
+The accepted phase-8 set adds **38 documents** (35 CLI, three extension), bringing
+the ordinary complete comparison to **463 documents**. Twenty independent
+phase-8 comparisons and five complete comparisons passed. Four initially
+recorded documents were disqualified for unstable values; their scenarios still
+execute with full raw receipts but never record or compare an expected answer.
+The excluded names are `extension-api/request-sequence`,
+`extension-api/metadata-failure`, `cli-additions/probe-loopback` and
+`cli-additions/descriptor-autostart`. See [the phase-8 report](reports/8-goldens.md)
+and [both differing values](reports/8-goldens-exclusions.json). The second
+admitted-origin token-binding scenario is unavailable on this packaged build;
+the unadmitted-origin rejection is recorded. Existing ASR model prerequisites
+and the separate Chromium extension-browser lane retain their own proof limits.
+
+Process capture is bounded through child `close` and stdout/stderr closure,
+records exit status and termination signal separately, and rejects spawn/stream
+failures or held-pipe timeouts. CLI invocations receive scratch HOME/XDG,
+automation and MCP configuration, explicit bundled media tools, and an owned fake
+launcher for autostart. SQLite reopen uses the public local-client seam with an
+explicit run-owned path, not an invented executable flag. Missing build, CLI,
+bundled media-tool or optional seam-module prerequisites produce one clear skip.
+Every suite's DNS audit checks readiness/self-test and the exact full-suite
+hostname union documented in phase 6b; DNS A answers and all interfaces remain
+loopback-only. Raw evidence is never committed.

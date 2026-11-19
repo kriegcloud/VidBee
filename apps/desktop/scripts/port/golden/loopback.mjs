@@ -1,11 +1,13 @@
 import { appendFile, mkdir, readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
+import { phase8Routes } from './phase8-loopback.mjs'
 import { subscriptionsRoutes } from './subscriptions-core-loopback.mjs'
 
 /** Serve only generated fixtures in the worker's offline network namespace. */
-export async function startLoopback(runDir, { subscriptions = false } = {}) {
+export async function startLoopback(runDir, { subscriptions = false, phase8 = false } = {}) {
   const subscriptionRoutes = subscriptions ? await subscriptionsRoutes(runDir) : undefined
+  const phase8Route = phase8 ? await phase8Routes(runDir) : undefined
   const fixtures = path.join(runDir, 'userdata/loopback-fixtures')
   const files = {
     video: { data: await readFile(path.join(fixtures, 'video.mp4')), type: 'video/mp4' },
@@ -41,6 +43,9 @@ export async function startLoopback(runDir, { subscriptions = false } = {}) {
     }
     if (url.pathname.startsWith('/500')) {
       response.writeHead(500, { 'Content-Length': 0 }).end()
+      return
+    }
+    if (phase8Route?.(request, response, url)) {
       return
     }
     const key = url.pathname.endsWith('.wav')
@@ -80,7 +85,10 @@ export async function startLoopback(runDir, { subscriptions = false } = {}) {
       response.flushHeaders()
       let offset = start
       const timer = setInterval(() => {
-        const next = Math.min(offset + 1024, end + 1)
+        const next = Math.min(
+          offset + (url.pathname.startsWith('/slow-cli-') ? 128 : 1024),
+          end + 1
+        )
         response.write(data.subarray(offset, next))
         offset = next
         if (offset > end) {

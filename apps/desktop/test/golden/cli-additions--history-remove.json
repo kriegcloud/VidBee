@@ -1,0 +1,13 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "subcommand",
+    "subcommand": "history",
+    "result": {
+      "removed": ["<id:1>"]
+    }
+  },
+  "stderr": ""
+}

@@ -1,0 +1,10 @@
+{
+  "code": 3,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "DESKTOP_NOT_READY",
+    "message": "Desktop is not running and --vidbee-no-autostart was set"
+  },
+  "stderr": ""
+}

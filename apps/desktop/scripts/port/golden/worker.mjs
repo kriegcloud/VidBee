@@ -1,4 +1,3 @@
-import { spawn } from 'node:child_process'
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -7,11 +6,14 @@ import {
   runBrowserCaptureCases,
   runBrowserCaptureRestart
 } from './browser-capture-cases.mjs'
+import { capture } from './capture.mjs'
 import { MCP_READ_TOOLS, runCases } from './cases.mjs'
 import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
 import { runLoopbackCases, runLoopbackRestart } from './loopback-cases.mjs'
 import { differences, normalize } from './normalize.mjs'
+import { runPhase8Cases } from './phase8-cases.mjs'
+import { normalizeExtensionMetadata } from './phase8-normalize.mjs'
 import { runSubscriptionsCases, runSubscriptionsRestart } from './subscriptions-core-cases.mjs'
 import { runTranscriptionCases, runTranscriptionRestart } from './transcription-cases.mjs'
 import { normalizeTranscription } from './transcription-normalize.mjs'
@@ -61,7 +63,11 @@ const record = async (name, value) => {
     return
   }
   const actual = normalize(
-    name.startsWith('transcription/') ? normalizeTranscription(value) : value,
+    name.startsWith('transcription/')
+      ? normalizeTranscription(value)
+      : name.startsWith('extension-api/')
+        ? normalizeExtensionMetadata(value)
+        : value,
     roots
   )
   const file = `${name.replaceAll('/', '--')}.json`
@@ -113,20 +119,7 @@ if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))
   }
 }
 const mcp = client.mcp
-const command = (cmd, argv, options = {}) =>
-  new Promise((resolve, reject) => {
-    const child = spawn(cmd, argv, { ...options, stdio: ['ignore', 'pipe', 'pipe'] })
-    let stdout = ''
-    let stderr = ''
-    child.stdout.on('data', (data) => {
-      stdout += data
-    })
-    child.stderr.on('data', (data) => {
-      stderr += data
-    })
-    child.on('error', reject)
-    child.on('exit', (code) => resolve({ code, stdout, stderr }))
-  })
+const command = capture
 if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const renderer = await command(process.execPath, [
     path.join(here, '../cdp-shots.mjs'),
@@ -177,6 +170,9 @@ if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))
   await record('boot/log', boot)
   await client.rpc('tools/list')
 }
+const phase8Only = ['--phase8-only', '--extension-api-only', '--cli-additions-only'].some((flag) =>
+  args.includes(flag)
+)
 let browserCaptureSkipped = false
 const subscriptionsOnly = args.includes('--subscriptions-only')
 // A run narrowed to another package's documents leaves the browser alone: its cases change
@@ -188,7 +184,18 @@ const exists = (file) =>
     () => false
   )
 const restartIndex = args.indexOf('--loopback-restart')
-if (restartIndex >= 0) {
+if (phase8Only) {
+  await runPhase8Cases({
+    client,
+    runDir,
+    build,
+    record,
+    roots,
+    command,
+    extensionOnly: args.includes('--extension-api-only'),
+    cliOnly: args.includes('--cli-additions-only')
+  })
+} else if (restartIndex >= 0) {
   const originalRun = args[restartIndex + 1]
   if (!subscriptionsOnly) {
     await runLoopbackRestart({ client, runDir, originalRun, record, roots })
@@ -218,6 +225,9 @@ if (restartIndex >= 0) {
     browserCaptureSkipped =
       (await runBrowserCaptureCases({ client, runDir, build, record, roots, command })) === false
   }
+}
+if (!phase8Only && restartIndex < 0 && !args.includes('--loopback-only') && !subscriptionsOnly) {
+  await runPhase8Cases({ client, runDir, build, record, roots, command })
 }
 if (args.includes('--models') && restartIndex < 0) {
   await runTranscriptionCases({

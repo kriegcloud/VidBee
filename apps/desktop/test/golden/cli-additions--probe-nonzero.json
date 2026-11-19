@@ -1,0 +1,15 @@
+{
+  "code": 1,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "probe",
+    "command": "yt-dlp --dump-json golden-probe",
+    "ytDlp": {
+      "exitCode": 7,
+      "stdout": "golden-probe-output\n",
+      "stderr": "golden-probe-stderr\n"
+    }
+  },
+  "stderr": ""
+}

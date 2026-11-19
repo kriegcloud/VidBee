@@ -1,0 +1,10 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "PARSE_ERROR",
+    "message": "unknown :download verb: unknown-golden"
+  },
+  "stderr": ""
+}

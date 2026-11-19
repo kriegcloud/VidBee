@@ -6,6 +6,10 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { buildBrowserCaptureFixture } from './browser-capture-fixture.mjs'
 import { buildFixture, buildLoopbackFixture } from './build-fixture.mjs'
+import { capture } from './capture.mjs'
+import { auditDns } from './dns-audit.mjs'
+import { buildPhase8Fixture } from './phase8-fixture.mjs'
+import { phase8Prerequisites } from './phase8-prerequisites.mjs'
 import {
   cleanupSubscriptionsRestart,
   prepareSubscriptionsRestart
@@ -37,28 +41,30 @@ if (option('--models') && !args.includes('--loopback-only')) {
   await runTranscriptionSuite({ args, scratch, script: fileURLToPath(import.meta.url) })
   process.exit(0)
 }
+if (
+  ['--phase8-only', '--extension-api-only', '--cli-additions-only'].some((flag) =>
+    args.includes(flag)
+  )
+) {
+  const skipped = await phase8Prerequisites(build)
+  if (skipped) {
+    process.stdout.write(`${skipped}\n`)
+    process.exit(0)
+  }
+}
 await mkdir(scratch, { recursive: true })
 const work = await mkdtemp(path.join(scratch, 'suite-'))
 const launchScript = path.join(here, '../offline-launch.sh')
 let active
-const command = (cmd, argv, options = {}) =>
-  new Promise((resolve, reject) => {
-    const child = spawn(cmd, argv, { ...options, stdio: ['ignore', 'pipe', 'pipe'] })
-    let stdout = ''
-    let stderr = ''
-    child.stdout.on('data', (data) => {
-      stdout += data
-    })
-    child.stderr.on('data', (data) => {
-      stderr += data
-    })
-    child.on('error', reject)
-    child.on('exit', (code) =>
-      code === 0
-        ? resolve(stdout)
-        : reject(new Error(`${cmd} exited ${code}\n${stdout}\n${stderr}`))
+const command = async (cmd, argv, options = {}) => {
+  const result = await capture(cmd, argv, options)
+  if (result.code !== 0) {
+    throw new Error(
+      `${cmd} exited ${result.code} (${result.signal})\n${result.stdout}\n${result.stderr}`
     )
-  })
+  }
+  return result.stdout
+}
 const stop = async () => {
   if (!active) {
     return
@@ -98,7 +104,8 @@ const launch = async (runDir, seed, profile) => {
   active.stderr.on('data', (data) => {
     failure += data
   })
-  for (let i = 0; i < 1800; i++) {
+  const deadline = Date.now() + 180_000
+  while (Date.now() < deadline) {
     if (active.exitCode !== null) {
       throw new Error(`Offline launch exited: ${failure}`)
     }
@@ -107,17 +114,21 @@ const launch = async (runDir, seed, profile) => {
       const descriptor = JSON.parse(await readFile(path.join(runDir, 'automation.json'), 'utf8'))
       if (config.url && descriptor.port) {
         const pid = (await readFile(path.join(runDir, 'namespace.pid'), 'utf8')).trim()
-        await command('nsenter', [
-          '-t',
-          pid,
-          '-U',
-          '-n',
-          '--preserve-credentials',
-          process.execPath,
-          path.join(here, 'worker.mjs'),
-          '--probe',
-          runDir
-        ])
+        await command(
+          'nsenter',
+          [
+            '-t',
+            pid,
+            '-U',
+            '-n',
+            '--preserve-credentials',
+            process.execPath,
+            path.join(here, 'worker.mjs'),
+            '--probe',
+            runDir
+          ],
+          { timeoutMs: 10_000 }
+        )
         return pid
       }
     } catch {
@@ -130,7 +141,11 @@ const launch = async (runDir, seed, profile) => {
 const start = Date.now()
 // The browser-capture selector runs inside the loopback family: it skips the boot, MCP and
 // subscription cases exactly as --loopback-only does.
-const loopbackOnly = args.includes('--loopback-only') || args.includes('--browser-capture-only')
+const phase8Only = ['--phase8-only', '--extension-api-only', '--cli-additions-only'].some((flag) =>
+  args.includes(flag)
+)
+const loopbackOnly =
+  phase8Only || args.includes('--loopback-only') || args.includes('--browser-capture-only')
 try {
   if (option('--models')) {
     const cpuBuild = await verifyTranscriptionCpuBuild(build)
@@ -148,6 +163,7 @@ try {
   await rm(path.join(seed, 'logs'), { recursive: true, force: true })
   const runDir = path.join(work, 'run')
   await buildFixture(seed, { pathRoot: path.join(runDir, 'userdata') })
+  await buildPhase8Fixture(seed)
   await buildLoopbackFixture(seed, build, command)
   await buildBrowserCaptureFixture(seed, build, command)
   const models = option('--models')
@@ -163,6 +179,9 @@ try {
     runDir,
     build,
     ...(args.includes('--update') ? ['--update'] : []),
+    ...args.filter((arg) =>
+      ['--phase8-only', '--extension-api-only', '--cli-additions-only'].includes(arg)
+    ),
     ...(loopbackOnly ? ['--loopback-only'] : []),
     ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
     ...(args.includes('--browser-capture-only') ? ['--browser-capture-only'] : []),
@@ -173,50 +192,56 @@ try {
   const output = await command(
     'nsenter',
     ['-t', pid, '-U', '-n', '--preserve-credentials', process.execPath, ...workerArgs],
-    { env: process.env }
+    { env: process.env, timeoutMs: 720_000 }
   )
   process.stdout.write(output)
   await stop()
-  if (!loopbackOnly || args.includes('--subscriptions-only')) {
-    await prepareSubscriptionsRestart(runDir)
-  }
-  const state = args.includes('--subscriptions-only')
-    ? undefined
-    : JSON.parse(await readFile(path.join(runDir, 'loopback/state.json'), 'utf8'))
-  if (state) {
-    await symlink(path.join(runDir, 'downloads'), state.alias)
-  }
-  try {
-    const restartDir = path.join(work, 'restart')
-    const restartPid = await launch(restartDir, undefined, path.join(runDir, 'userdata'))
-    const restartOutput = await command('nsenter', [
-      '-t',
-      restartPid,
-      '-U',
-      '-n',
-      '--preserve-credentials',
-      process.execPath,
-      path.join(here, 'worker.mjs'),
-      restartDir,
-      build,
-      '--loopback-only',
-      ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
-      '--loopback-restart',
-      runDir,
-      ...(args.includes('--update') ? ['--update'] : []),
-      ...(models ? ['--models', path.resolve(models)] : []),
-      ...(args.includes('--transcription-contract-only') ? ['--transcription-contract-only'] : []),
-      ...(option('--subset') ? ['--subset', option('--subset')] : [])
-    ])
-    process.stdout.write(restartOutput)
-  } finally {
+  if (!phase8Only) {
+    if (!loopbackOnly || args.includes('--subscriptions-only')) {
+      await prepareSubscriptionsRestart(runDir)
+    }
+    const state = args.includes('--subscriptions-only')
+      ? undefined
+      : JSON.parse(await readFile(path.join(runDir, 'loopback/state.json'), 'utf8'))
     if (state) {
-      await rm(state.alias, { force: true })
+      await symlink(path.join(runDir, 'downloads'), state.alias)
+    }
+    try {
+      const restartDir = path.join(work, 'restart')
+      const restartPid = await launch(restartDir, undefined, path.join(runDir, 'userdata'))
+      const restartOutput = await command('nsenter', [
+        '-t',
+        restartPid,
+        '-U',
+        '-n',
+        '--preserve-credentials',
+        process.execPath,
+        path.join(here, 'worker.mjs'),
+        restartDir,
+        build,
+        '--loopback-only',
+        ...(args.includes('--subscriptions-only') ? ['--subscriptions-only'] : []),
+        '--loopback-restart',
+        runDir,
+        ...(args.includes('--update') ? ['--update'] : []),
+        ...(models ? ['--models', path.resolve(models)] : []),
+        ...(args.includes('--transcription-contract-only')
+          ? ['--transcription-contract-only']
+          : []),
+        ...(option('--subset') ? ['--subset', option('--subset')] : [])
+      ])
+      process.stdout.write(restartOutput)
+    } finally {
+      if (state) {
+        await rm(state.alias, { force: true })
+      }
     }
   }
-  if (active.exitCode !== null || active.signalCode !== null) {
+  if (active && (active.exitCode !== null || active.signalCode !== null)) {
     throw new Error('Offline launcher exited unexpectedly before suite completion')
   }
+  await stop()
+  await auditDns(work, phase8Only ? ['bootstrap', 'run'] : ['bootstrap', 'run', 'restart'])
   const result = { elapsedSeconds: (Date.now() - start) / 1000, build, work, status: 'passed' }
   await writeFile(path.join(work, 'result.json'), JSON.stringify(result, null, 2))
   process.stdout.write(

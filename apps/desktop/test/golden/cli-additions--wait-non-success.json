@@ -1,0 +1,76 @@
+{
+  "code": 1,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "mode": "download",
+    "task": {
+      "id": "<id:1>",
+      "kind": "yt-dlp-forward",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/404-cli.mp4",
+        "kind": "yt-dlp-forward",
+        "rawArgs": [
+          "-o",
+          "<run>/phase8/downloads/cli-failure.%(ext)s",
+          "http://127.0.0.1:<port>/404-cli.mp4"
+        ],
+        "options": {
+          "source": "cli",
+          "sanitizedArgs": [
+            "-o",
+            "<run>/phase8/downloads/cli-failure.%(ext)s",
+            "http://127.0.0.1:<port>/404-cli.mp4"
+          ],
+          "commandPreview": "yt-dlp -o <run>/phase8/downloads/cli-failure.%(ext)s http://127.0.0.1:<port>/404-cli.mp4",
+          "outputHints": {
+            "outputTemplate": "<run>/phase8/downloads/cli-failure.%(ext)s"
+          },
+          "vidbee": {
+            "wait": true,
+            "maxAttempts": 0
+          },
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 0,
+      "groupKey": "127.0.0.1:<port>",
+      "status": "failed",
+      "prevStatus": "running",
+      "statusReason": "not-found",
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "nextRetryAt": null,
+      "output": null,
+      "lastError": {
+        "category": "not-found",
+        "exitCode": null,
+        "rawMessage": "ERROR: [generic] 404-cli: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n\nError code: 1\n\nStderr:\nERROR: [generic] 404-cli: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n",
+        "uiMessageKey": "task.error.notFound",
+        "uiActionHints": ["remove-task"],
+        "retryable": false,
+        "suggestedRetryAfterMs": null
+      },
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "ytDlp": {
+      "exitCode": 1,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  },
+  "stderr": ""
+}

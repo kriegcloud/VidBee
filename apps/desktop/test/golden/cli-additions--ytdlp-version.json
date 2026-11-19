@@ -1,0 +1,15 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "probe",
+    "command": "yt-dlp --version",
+    "ytDlp": {
+      "exitCode": 0,
+      "stdout": "2025.01.01\n",
+      "stderr": "golden-probe-stderr\n"
+    }
+  },
+  "stderr": ""
+}
