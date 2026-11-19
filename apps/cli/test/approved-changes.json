@@ -1,9 +1,193 @@
 {
-  "descriptorNonfinite": {"fields": ["port", "pid", "pidStartedAt", "tokenIssuedAt", "tokenExpiresAt", "updatedAt"], "old": "accepted as Infinity or -Infinity", "new": "port and PID fields reject; token times default null; updatedAt defaults zero"},
-  "handshakeNonfinite": {"old": "numeric expiry accepted", "new": "handshake response missing token/expiresAt"},
-  "cacheNonfinite": {"old": "positive Infinity cache hits then throws Invalid time value", "new": "cache miss"},
-  "descriptorSyntax": {"inputs": ["{", "﻿{}", "{\n\"x\":}"], "old": "pinned Node SyntaxError after existing descriptor prefix", "new": "automation descriptor is malformed: Expected a valid JSON string"},
-  "registrySyntax": {"inputs": ["{", "{\n\"x\":}", ""], "old": "pinned Node SyntaxError", "new": "Expected a valid JSON string"},
-  "outputCompletion": {"old": "process.exit can truncate a valid JSON document prefix and can exit zero with a closed output pipe", "new": "complete normal document plus newline before exit; closed pipe must fail with bounded nonzero termination"},
-  "libraryExecutionAndMetadata": {"old": "Promise APIs; published root evaluates executable; no declaration build", "new": "Effect APIs and three real library/declaration entries; bin preserved", "proof": "part 2 distribution lane"}
+  "switch": "VIDBEE_CLI_PORTED=1",
+  "observations": [
+    {
+      "id": "port 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":1e999,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":{\"$scalar\":\"Infinity\"},\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing host/port\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "port -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":-1e999,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":{\"$scalar\":\"-Infinity\"},\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing host/port\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "pid 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":1e999,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":{\"$scalar\":\"Infinity\"},\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing pid/pidStartedAt\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "pid -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":-1e999,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":{\"$scalar\":\"-Infinity\"},\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing pid/pidStartedAt\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "pidStartedAt 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1e999,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":{\"$scalar\":\"Infinity\"},\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing pid/pidStartedAt\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "pidStartedAt -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":-1e999,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":{\"$scalar\":\"-Infinity\"},\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"descriptor missing pid/pidStartedAt\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "tokenIssuedAt 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":1e999,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":{\"$scalar\":\"Infinity\"},\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":null,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "tokenIssuedAt -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":-1e999,\"tokenExpiresAt\":3,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":{\"$scalar\":\"-Infinity\"},\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":null,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "tokenExpiresAt 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":1e999,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":{\"$scalar\":\"Infinity\"},\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":null,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "tokenExpiresAt -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":-1e999,\"updatedAt\":4}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":{\"$scalar\":\"-Infinity\"},\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":null,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":4,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "updatedAt 1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":1e999}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":{\"$scalar\":\"Infinity\"},\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":0,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "updatedAt -1e999",
+      "kind": "descriptor",
+      "raw": "{\"version\":1,\"host\":\"localhost\",\"port\":27100,\"pid\":123,\"pidStartedAt\":1,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"updatedAt\":-1e999}",
+      "old": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":{\"$scalar\":\"-Infinity\"},\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}",
+      "new": "{\"ok\":true,\"descriptor\":{\"version\":1,\"schemaVersion\":\"1.0.0\",\"kind\":\"desktop\",\"host\":\"localhost\",\"port\":27100,\"tokenHash\":null,\"tokenIssuedAt\":2,\"tokenExpiresAt\":3,\"pid\":123,\"pidStartedAt\":1,\"updatedAt\":0,\"appVersion\":\"0.0.0\"},\"path\":\"/fixture/descriptor.json\"}"
+    },
+    {
+      "id": "descriptor syntax \"{\"",
+      "kind": "descriptor",
+      "raw": "{",
+      "old": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Expected a valid JSON string\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "descriptor syntax \"﻿{}\"",
+      "kind": "descriptor",
+      "raw": "﻿{}",
+      "old": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Unexpected token '﻿', \\\"﻿{}\\\" is not valid JSON\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Expected a valid JSON string\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "descriptor syntax \"{\\n\\\"x\\\":}\"",
+      "kind": "descriptor",
+      "raw": "{\n\"x\":}",
+      "old": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Unexpected token '}', \\\"{\\n\\\"x\\\":}\\\" is not valid JSON\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}",
+      "new": "{\"ok\":false,\"path\":\"/fixture/descriptor.json\",\"envelope\":{\"ok\":false,\"code\":\"DESKTOP_NOT_READY\",\"message\":\"automation descriptor is malformed: Expected a valid JSON string\",\"details\":{\"path\":\"/fixture/descriptor.json\"}}}"
+    },
+    {
+      "id": "handshake Infinity",
+      "kind": "handshake",
+      "number": "Infinity",
+      "old": "{\"value\":{\"token\":\"fixture\",\"expiresAt\":{\"$scalar\":\"Infinity\"}}}",
+      "new": "{\"error\":{\"message\":\"handshake response missing token/expiresAt\",\"code\":\"CONTRACT_ERROR\",\"status\":200,\"body\":\"Infinity\"}}"
+    },
+    {
+      "id": "handshake -Infinity",
+      "kind": "handshake",
+      "number": "-Infinity",
+      "old": "{\"value\":{\"token\":\"fixture\",\"expiresAt\":{\"$scalar\":\"-Infinity\"}}}",
+      "new": "{\"error\":{\"message\":\"handshake response missing token/expiresAt\",\"code\":\"CONTRACT_ERROR\",\"status\":200,\"body\":\"-Infinity\"}}"
+    },
+    {
+      "id": "handshake NaN",
+      "kind": "handshake",
+      "number": "NaN",
+      "old": "{\"value\":{\"token\":\"fixture\",\"expiresAt\":{\"$scalar\":\"NaN\"}}}",
+      "new": "{\"error\":{\"message\":\"handshake response missing token/expiresAt\",\"code\":\"CONTRACT_ERROR\",\"status\":200,\"body\":\"NaN\"}}"
+    },
+    {
+      "id": "cache 1e999",
+      "kind": "cache",
+      "raw": "{\"version\":\"2.0\",\"fetchedAt\":1e999}",
+      "old": "{\"error\":{\"name\":\"RangeError\",\"message\":\"Invalid time value\"},\"fetched\":0}",
+      "new": "{\"value\":{\"current\":\"1.0\",\"latest\":\"2.0\",\"upToDate\":false,\"cached\":false,\"cachedAt\":\"1970-01-01T00:00:01.000Z\",\"registryUrl\":\"https://registry.npmjs.org/@vidbee/cli/latest\",\"installCommands\":{\"npm\":\"npm install -g @vidbee/cli\",\"pnpm\":\"pnpm add -g @vidbee/cli\",\"bun\":\"bun install -g @vidbee/cli\",\"brew\":\"brew upgrade vidbee/tap/vidbee\"}},\"fetched\":1,\"bytes\":\"{\\\"version\\\":\\\"2.0\\\",\\\"fetchedAt\\\":1000}\"}"
+    },
+    {
+      "id": "cache -1e999",
+      "kind": "cache",
+      "raw": "{\"version\":\"2.0\",\"fetchedAt\":-1e999}",
+      "old": "{\"value\":{\"current\":\"1.0\",\"latest\":\"2.0\",\"upToDate\":false,\"cached\":false,\"cachedAt\":\"1970-01-01T00:00:01.000Z\",\"registryUrl\":\"https://registry.npmjs.org/@vidbee/cli/latest\",\"installCommands\":{\"npm\":\"npm install -g @vidbee/cli\",\"pnpm\":\"pnpm add -g @vidbee/cli\",\"bun\":\"bun install -g @vidbee/cli\",\"brew\":\"brew upgrade vidbee/tap/vidbee\"}},\"fetched\":1,\"bytes\":\"{\\\"version\\\":\\\"2.0\\\",\\\"fetchedAt\\\":1000}\"}",
+      "new": "{\"value\":{\"current\":\"1.0\",\"latest\":\"2.0\",\"upToDate\":false,\"cached\":false,\"cachedAt\":\"1970-01-01T00:00:01.000Z\",\"registryUrl\":\"https://registry.npmjs.org/@vidbee/cli/latest\",\"installCommands\":{\"npm\":\"npm install -g @vidbee/cli\",\"pnpm\":\"pnpm add -g @vidbee/cli\",\"bun\":\"bun install -g @vidbee/cli\",\"brew\":\"brew upgrade vidbee/tap/vidbee\"}},\"fetched\":1,\"bytes\":\"{\\\"version\\\":\\\"2.0\\\",\\\"fetchedAt\\\":1000}\"}"
+    }
+  ],
+  "outputCompletion": {
+    "old": {
+      "code": 0,
+      "signal": null,
+      "stderr": "",
+      "stdout": "nonempty prefix of complete document; kernel-dependent length"
+    },
+    "new": {
+      "slow": "exact complete rendered document plus newline",
+      "closed": {
+        "code": "nonzero",
+        "signal": null,
+        "stderrWhenOpen": "nonempty"
+      }
+    }
+  },
+  "metadata": {
+    "old": {
+      "main": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    },
+    "new": {
+      "main": "./dist/library/index.js",
+      "types": "./dist/library/index.d.ts",
+      "entries": {
+        ".": "index",
+        "./parser": "parser/index",
+        "./envelope": "envelope/index"
+      }
+    }
+  },
+  "registrySyntax": [
+    {
+      "raw": "{",
+      "old": "Expected property name or '}' in JSON at position 1 (line 1 column 2)",
+      "new": "Expected a valid JSON string"
+    },
+    {
+      "raw": "{\n\"x\":}",
+      "old": "Unexpected token '}', \"{\n\"x\":}\" is not valid JSON",
+      "new": "Expected a valid JSON string"
+    },
+    {
+      "raw": "",
+      "old": "Unexpected end of JSON input",
+      "new": "Expected a valid JSON string"
+    }
+  ]
 }

@@ -1,19 +1,10 @@
-import { expect, it } from '@effect/vitest';
-import * as candidate from './candidate';
-import * as reference from '../../../fixtures/cli-pre-port/library.mjs';
-import recorded from '../../../fixtures/cli-pre-port/pure-results.json';
-import { encode, observe, vectors } from './pure-vectors.mjs';
-
-it('keeps pure exports equal to the immutable pre-port oracle and recorded results', () => {
-  const cases = vectors();
-  expect(cases.length).toBe(recorded.length);
-  expect(cases.length).toBeLessThan(5000);
-  for (const [index, vector] of cases.entries()) {
-    const old = observe(reference, vector);
-    if (!old.engine) expect(encode(old), `reference case ${index}: ${encode(vector)}`).toBe(recorded[index]);
-    else expect(JSON.parse(recorded[index]).engine).toBe(true);
-    const actual = observe(candidate, vector);
-    if (old.engine) expect(actual.error, `engine case ${index}`).toBeDefined();
-    else expect(encode(actual), `case ${index}: ${encode(vector)}`).toBe(encode(old));
-  }
-}, 120_000);
+import { it } from '@effect/vitest';
+import assert from 'node:assert/strict';
+import { pinnedNode } from './pinned-node.mjs';
+import { isolated } from './isolation.mjs';
+it('runs the public pure oracle behind the same structural safety boundary', () => {
+  // Bun-backed Vitest aliases node; select the installed pinned Node explicitly.
+  process.env.CLI_NODE = pinnedNode();
+  const result = isolated(['--test', 'apps/cli/test/pure.worker.mjs'], 180000);
+  assert.equal(result.error, undefined); assert.equal(result.status, 0, result.stdout + result.stderr);
+}, 240000);

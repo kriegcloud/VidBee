@@ -1,3 +1,3 @@
-export * from '../src/index';
-export * from '../src/parser/probe-flags';
-export * from '../src/parser/reserved-flags';
+export * from '@vidbee/cli';
+export * from '@vidbee/cli/parser';
+export * from '@vidbee/cli/envelope';

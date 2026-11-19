@@ -11,6 +11,111 @@
 - [x] Finish repetition, alternate-checkout and loaded-core verification.
 - [x] Complete the lane handoff with omitted vectors and proof limits.
 
+## Audit of the characterization suite
+
+This section supersedes the original lane's implementation and validation descriptions
+below. The audit confirmed all twenty findings; none was rejected. The CLI remains
+unported. Only tests, test fixtures/configuration and this report changed.
+
+- [x] Isolate all reference/candidate evaluation, including pure and library imports.
+- [x] Execute the package's actual build outputs and generated shim from scratch.
+- [x] Separate public pure exports from test-only execution observation adapters.
+- [x] Encode independent old/new descriptor, handshake, cache and syntax expectations.
+- [x] Add POST retry/error, priority/target/group, error-tail, autostart mapping,
+  registry and local process/file observations.
+- [x] Final ten-repeat matrix: 40 passes; final test inputs unchanged.\n- [x] Root check/test/catalog/ratchet and alternate-path root test gate.\n- [ ] Forced two-core full root gate: three attempts failed on worker SIGTERM/SIGKILL; acceptance remains incomplete.
+
+| Finding | Severity | Confirmed gap and closing cases/files |
+| --- | --- | --- |
+| assertion-strength/C1 | major | Deleted execution APIs were called directly: execution-adapter.ts and named execution-observations.mjs functions isolate the test-only backend; immutable library.mjs supplies old observations. Probe/automation/autostart/runtime/upgrade/connect assertions remain fixed, alongside executable tests. |
+| assertion-strength/C2 | major | Candidate reused frozen shim: distribution.mjs executes the unchanged build script in scratch, asserts generated shim bytes/shebang, and both workers execute those outputs; edge import-error case runs both shims. |
+| assertion-strength/C3 | major | New expectations were unread prose: approved.worker.mjs reads approved-changes.json and asserts independently encoded old/new observations; registry/distribution tests read that manifest; output tests select exact rendered-byte/new failure expectations with the same switch. |
+| assertion-strength/C4 | major | Output assertions accepted truncation/any termination: output lifetime requires complete ported candidate bytes and exact old zero/empty-stderr closed-pipe observations today; ported closed pipes require nonzero code and stderr when open. |
+| assertion-strength/C5 | major | Actual launcher options were dropped: signalObservation now returns spawn/unref traces and fake-child argv/environment, including detached autostart. |
+| assertion-strength/C6 | major | Guard bypasses and arbitrary signals: private PID/proc mounts, empty owner configuration/installation mounts, worker-safety.mjs, all-signal PID ownership guard, refused untraced exec/fork/sync APIs, and safety.worker.mjs rejection tests. |
+| coverage/C1 | major | Hand-built executable was not shipped entry: buildDistribution runs the exact package script in scratch; permanent executable oracle and edge cases execute its bundle/shim. |
+| coverage/C3 | major | POST retry/errors absent: executable list/add vectors cover 401-success, repeated 401, 403 and 500, comparing streams/status and ordered request headers/body bytes. |
+| coverage/C4 | major | Valid targets/priorities and numeric add fields absent: public pure priority/target matrix plus executable user/subscription/background, api/desktop and Unicode group-key vectors pin request bodies. |
+| coverage/C5 | major | lastError tails absent: executable wait vectors for four non-success statuses and download logs supply Authorization-bearing lastError and competing wrong fields. |
+| coverage/C6 | major | Local process/filesystem observations dropped: local signal vectors compare spawn options, unref, complete fake-child environment/argv and instrumented mkdir/writeFile/rm/mkdtemp observations. |
+| coverage/C9 | major | Unknown nonzero/group signals and host PID visibility: structural PID isolation/remounted proc plus positive owned-PID guard and safety rejection matrix. |
+| portability/C2 | major | Signal-zero-only guard: structural boundary and every-signal ownership guard; zero/negative/self/unknown targets are rejection-tested. |
+| assertion-strength/C7 | minor | Registry writes/stderr unpinned: wire-error cases compare stderr/files/trace/full requests; BOM success asserts exact serialized cache bytes using observed fetchedAt. |
+| assertion-strength/C8 | minor | Private parser imports: candidate.ts imports only three public entries; private-helper vectors remain immutable reference evidence, while public parseArgv vectors pin routing effects. |
+| coverage/C7 | minor | Autostart mapping absent: connect-mapping case pins four messages/codes and dead descriptor; executable timeout pins status/streams/requests with declared elapsed-time projection. |
+| coverage/C8 | minor | Registry failures/cache spellings absent: executable vectors add 404/500, loopback socket rejection, inline cache spelling and bare default-cache upgrade. |
+| portability/C1 | minor | Pure/library imports escaped safety boundary: pure.test.ts invokes pinned-Node worker through the same isolated wrapper; workers import under mounts with scratch homes/PATH and worker guards. |
+| portability/C3 | minor | Inadequate compound budgets: ordinary capture 30 seconds, slow/closed/signal/autostart capture 90 seconds; compound signal/pipe groups allow 1,800 seconds and outer namespace budget exceeds worker-group sum. |
+| portability/C4 | minor | Failed tests orphaned detached fixtures: unshare PID/fork/kill-child/remounted proc makes namespace-init termination reap every descendant. |
+
+Section-9 item 1 has a remaining design precision gap: the design fixes output
+paths and describes proposed Effect services, but does not fix a final public
+export barrel/consumer call contract. Exact numeric, syntax, output and metadata
+expectations are encoded; a complete independent new public Effect API snapshot
+cannot be supplied without choosing that contract. This is the remaining
+assertion-strength/C3 item-1 open point, recorded at the top of the scratch handoff.
+
+The execution adapter is a test-only seam, not a production Promise facade.
+The rewrite replaces that adapter with implementations over Effect services and
+retained host capabilities, preserving scenario inputs, observations and assertions.
+The public pure oracle uses no private source import. Concurrent token acquisition,
+exact fake-clock boundaries, synthetic raw process events, injected teardown
+exceptions and supplied SQLite handles cannot be selected with argv; they remain
+explicit adapter scenarios. Their immutable old-source library is independent of
+the candidate.
+
+VIDBEE_CLI_PORTED=1 selects only the declared new side. Today the candidate must
+exhibit the old behavior. Tagged nonfinite scalars prevent JSON recording from
+turning Infinity into null. Metadata checks pin section-8 library/declaration
+targets; source-unavailable consumer compilation remains rewrite-lane proof.
+Reference artifacts, hashes and recorded pure results are untouched.
+
+Before imports, private mount namespaces bind empty directories over the real home
+configuration and installation directories. Scratch HOME/XDG/APPDATA and authored
+descriptor/MCP files remain explicit. Only namespace loopback is enabled. Executables
+receive controlled PATH and fake launcher/extractor paths. Worker process APIs
+permit harness tools and authored fixtures; executable guards refuse untraced
+process APIs and signals to unknown/nonpositive PIDs. Setup failure fails closed.
+
+The new error-tail vectors also expose an existing disclosure boundary: a wait
+failure's returned task retains its original lastError, while only the separate
+ytDlp.stderrTail field is redacted. The logs command returns the raw lastError tail.
+Those bytes are preserved for owner review; this lane does not fix that behavior.
+
+Tracing remains JavaScript instrumentation, not a syscall audit. It records
+canonical file operations under the fixture root, spawn options and child
+environment/argv; module-loader/runtime setup outside that root is excluded.
+Generated local IDs, elapsed autostart text, raw unhandled stacks, kernel-dependent
+old output-prefix lengths and live registry fetchedAt retain the named design
+exceptions. They are not exact deterministic byte snapshots.
+
+
+### Audit repair validation
+
+Node 22.23.4 and Bun 1.4.4 were verified. The final fixed-input CLI suite passed
+ten consecutive times in each root/package and UTC/Asia-Tokyo combination:
+40 combined runs, 91.174–130.185 seconds per run. Final test input hashes,
+apps/cli/src, tracked apps/cli/dist and all immutable reference files are unchanged.
+The ordinary root check/test/dependency/ratchet gates and the copied-checkout full
+root test gate pass.
+
+The exact forced two-core full root test gate is not green. Three attempts ended
+with worker SIGTERM/SIGKILL failures. The final attempt reported 532 passes and six
+failed entries (CLI oracle plus unchanged desktop/downloader files), with no CLI
+assertion mismatch. An isolated two-core legacy-file diagnostic and five
+instrumented oracle diagnostics passed. No signal sender was captured; its cause
+remains unknown. The final 40-run CLI matrix ran without competing root gates and
+passed, but that does not waive the failed full-root proof.
+
+The audit repair is therefore not an unconditional done/merge-ready claim.
+The public API precision point above and the full-root two-core failure remain
+open in the scratch handoff and validation/summary.json. No assertion was weakened,
+unrelated source repaired, or production behavior changed to obtain a green result.
+
+## Original characterization lane record
+
+The following records the preceding lane, before this audit repair.
+
 ## Characterization
 
 The reference executable is 2,144,754 bytes and SHA-256

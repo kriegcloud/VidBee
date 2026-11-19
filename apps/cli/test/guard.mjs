@@ -23,12 +23,17 @@ for (const operation of ['access','readFile','writeFile','mkdir','rm','mkdtemp']
   fs.promises[operation]=(path,...args)=>{record(operation,path,args);return promise(path,...args);};
 }
 if(process.env.CLI_THROW_STDOUT==='1')process.stdout.write=()=>{throw Error('fixture stdout failure');};
+const owned = new Set([Number(process.env.CLI_LIVE_PID)]);
 const spawn = cp.spawn.bind(cp);
 cp.spawn = (command,args,options) => {
   if (!(String(command).startsWith(`${root}/bin/`) || ['yt-dlp','vidbee-desktop','open','cmd'].includes(command))) throw new Error('fixture refused uncontrolled executable');
   trace({spawn:command,args,options});
-  return spawn(command,args,options);
+  const child=spawn(command,args,options); if(child.pid)owned.add(child.pid);
+  const unref=child.unref.bind(child);child.unref=()=>{trace({unref:true});return unref();};
+  return child;
 };
+// These APIs can bypass the public spawn binding; refuse them rather than silently omit tracing.
+for(const name of ['exec','execSync','execFile','execFileSync','spawnSync','fork'])cp[name]=()=>{throw Error('fixture refused unobserved process API: '+name);};
 const fetchImpl = globalThis.fetch;
 globalThis.fetch = (url,init) => {
   const value=String(url);
@@ -37,5 +42,5 @@ globalThis.fetch = (url,init) => {
   return fetchImpl(url,init);
 };
 const kill=process.kill.bind(process);
-process.kill=(pid,signal)=>{if(pid!==Number(process.env.CLI_LIVE_PID) && signal===0) throw new Error('fixture refused unknown PID');return kill(pid,signal);};
+process.kill=(pid,signal)=>{if(!Number.isInteger(pid)||pid<=0||!owned.has(pid)) throw new Error('fixture refused unknown PID');trace({signal:signal??'SIGTERM',target:pid===Number(process.env.CLI_LIVE_PID)?'live':'spawned'});return kill(pid,signal);};
 syncBuiltinESMExports();

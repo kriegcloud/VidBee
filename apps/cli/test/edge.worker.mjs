@@ -1,3 +1,5 @@
+import { ownPid } from './worker-safety.mjs';
+import { buildDistribution } from './distribution.mjs';
 import assert from 'node:assert/strict';
 import test, { before, after } from 'node:test';
 import { spawn } from 'node:child_process';
@@ -15,11 +17,11 @@ const scratch=mkdtempSync(join(tmpdir(),'cli-edge-'));
 const root=join(scratch,'run');
 const node=process.execPath;
 const referenceBytes=readFileSync(join(repo,'fixtures/cli-pre-port/index.mjs'));
-let candidateBytes,candidate,server,base,live,requests=[],reply;
+let candidateShim,candidateBytes,candidate,server,base,live,requests=[],reply;
 before(async()=>{
   const options={bundle:true,format:'esm',platform:'node',target:'node20',external:['better-sqlite3','electron','yt-dlp-wrap-plus','@opentelemetry/api'],write:false,absWorkingDir:repo};
-  candidateBytes=(await build({...options,entryPoints:['apps/cli/src/bin.ts'],outfile:join(scratch,'candidate.mjs')})).outputFiles[0].contents;
-  const bytes=(await build({...options,entryPoints:['apps/cli/test/candidate.ts'],outfile:join(scratch,'library.mjs')})).outputFiles[0].contents;
+  const distribution=buildDistribution(repo,scratch); candidateBytes=distribution.bundle; candidateShim=distribution.shim;
+  const bytes=(await build({...options,entryPoints:['apps/cli/test/execution-adapter.ts'],outfile:join(scratch,'library.mjs')})).outputFiles[0].contents;
   writeFileSync(join(scratch,'library.mjs'),bytes);symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));candidate=await import(pathToFileURL(join(scratch,'library.mjs')));
   live=spawn(node,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});
   server=createServer(async(req,res)=>{let body='';for await(const chunk of req)body+=chunk;requests.push({method:req.method,url:req.url,headers:req.headers,body});res.setHeader('Content-Type','application/json');res.end(reply(req.url,body));});
@@ -31,7 +33,7 @@ function prepare(bytes,packages){
   rmSync(root,{recursive:true,force:true});
   for(const dir of ['bundle/dist/bin','home/.config/VidBee','config','cache','data','state','runtime','tmp','cwd','bin'])mkdirSync(join(root,dir),{recursive:true});
   symlinkSync(join(repo,'node_modules'),join(root,'bundle/node_modules'));
-  writeFileSync(join(root,'bundle/dist/index.mjs'),bytes);copyFileSync(join(repo,'fixtures/cli-pre-port/bin/vidbee.mjs'),join(root,'bundle/dist/bin/vidbee.mjs'));
+  writeFileSync(join(root,'bundle/dist/index.mjs'),bytes);writeFileSync(join(root,'bundle/dist/bin/vidbee.mjs'),bytes===candidateBytes?candidateShim:readFileSync(join(repo,'fixtures/cli-pre-port/bin/vidbee.mjs')));
   const paths=[join(root,'bundle/package.json'),join(root,'package.json'),join(scratch,'package.json')];
   for(const [index,path] of paths.entries())writeFileSync(path,packages?.[index]??(index===0?'{"name":"@vidbee/cli","version":"0.1.0"}':'{}'));
   const descriptor=JSON.stringify({version:1,host:'127.0.0.1',port:server.address().port,pid:live.pid,pidStartedAt:1});
@@ -48,7 +50,7 @@ async function invoke(bytes,args,options={}){
   if(options.homeAbsent){for(const key of ['HOME','XDG_CONFIG_HOME','VIDBEE_AUTOMATION_DESCRIPTOR'])delete environment[key];return capture('/usr/bin/unshare',['-Urm','/bin/sh','-c','/usr/bin/mount --bind "$1" /etc/passwd && shift && exec "$@"','cli-account',join(root,'passwd'),node,'--import',join(repo,'apps/cli/test/guard.mjs'),join(root,'bundle/dist/index.mjs'),...args],environment);}
   return capture(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(root,options.shim?'bundle/dist/bin/vidbee.mjs':'bundle/dist/index.mjs'),...args.map(v=>v==='@BASE@'?base:v)],environment);
 }
-test('HOME absent uses isolated-account OS fallback and reads only its synthetic descriptor',{timeout:90000},async()=>{
+test('HOME absent uses isolated-account OS fallback and reads only its synthetic descriptor',{timeout:1_800_000},async()=>{
   const old=await invoke(referenceBytes,['--vidbee-no-autostart',':status'],{homeAbsent:true});
   const actual=await invoke(candidateBytes,['--vidbee-no-autostart',':status'],{homeAbsent:true});
   assert.deepEqual(actual,old);assert.equal(actual.code,0);assert.equal(JSON.parse(actual.stdout).result.queued,0);
@@ -80,7 +82,7 @@ test('external add null/malformed/scalar and loose get failures keep their separ
     const observe=async module=>{const client=new module.AutomationClient({baseUrl:'http://fixture.invalid',token:'fixture',skipHandshake:true,fetch:async url=>({ok:true,status:200,statusText:'OK',text:async()=>url.endsWith('/'+op)?body:'{"task":{"id":"fixed","status":"completed"}}'})});try{return {value:await client.add({input:{url:'https://example.invalid/v'}})};}catch(error){return {name:error.name,message:error.message,code:error.code,status:error.status};}};
     assert.deepEqual(await observe(candidate),await observe(reference));
   }
-  for(const module of [reference,candidate]){const client=new module.AutomationClient({baseUrl:'http://fixture.invalid'});client.rawFetch=async()=>({ok:true,status:200,json:{token:'fixture',expiresAt:NaN},bodyText:'injected NaN'});const result=await client.handshake();assert.ok(Number.isNaN(result.expiresAt));} // section 9 deliberate finite-expiry change
+  for(const module of [reference,candidate]){const client=new module.AutomationClient({baseUrl:'http://fixture.invalid'});client.rawFetch=async()=>({ok:true,status:200,json:{token:'fixture',expiresAt:NaN},bodyText:'injected NaN'});if(module===candidate&&process.env.VIDBEE_CLI_PORTED==='1')await assert.rejects(client.handshake(),{message:'handshake response missing token/expiresAt'});else{const result=await client.handshake();assert.ok(Number.isNaN(result.expiresAt));}} // section 9 deliberate finite-expiry change
 });
 test('invalid UTF-8 descriptor decoding and complete split UTF-8/BOM probe bytes',{timeout:30000},async()=>{
   prepare(candidateBytes);
@@ -96,10 +98,11 @@ test('VIDBEE_API and VIDBEE_TOKEN remain unused ambient variables',{timeout:3000
   for(const bytes of [referenceBytes,candidateBytes]){const result=await invoke(bytes,[':status'],{env:{VIDBEE_API:'http://unreachable.invalid',VIDBEE_TOKEN:'unused-fixture-token'}});assert.equal(result.code,0);assert.ok(result.requests[0].url.endsWith('/handshake'));assert.equal(result.requests[0].headers.authorization,undefined);assert.equal(result.requests[1].headers.authorization,'Bearer renewed');}
 });
 test('old shim import-error bytes retain the emitted newline terminator',{timeout:30000},async()=>{
-  prepare(Buffer.from("throw Error('fixture import failure');"));
-  const result=await capture(node,[join(root,'bundle/dist/bin/vidbee.mjs')],env());assert.equal(result.code,2);assert.equal(result.stdout.length,0);assert.equal(result.stderr.toString(),'{"ok":false,"code":"UNKNOWN_ERROR","message":"fixture import failure"}\n');
+  for(const shim of [readFileSync(join(repo,'fixtures/cli-pre-port/bin/vidbee.mjs')),candidateShim]){
+  prepare(Buffer.from("throw Error('fixture import failure');"));writeFileSync(join(root,'bundle/dist/bin/vidbee.mjs'),shim);
+  const result=await capture(node,[join(root,'bundle/dist/bin/vidbee.mjs')],env());assert.equal(result.code,2);assert.equal(result.stdout.length,0);assert.equal(result.stderr.toString(),'{"ok":false,"code":"UNKNOWN_ERROR","message":"fixture import failure"}\n');}
 });
-test('ordinary detached local admissions retain their declared generated-field projection',{timeout:90000},async()=>{
+test('ordinary detached local admissions retain their declared generated-field projection',{timeout:1_800_000},async()=>{
   const projections=[];
   for(const bytes of [referenceBytes,candidateBytes]){const result=await invoke(bytes,['--vidbee-local','https://example.invalid/v']);assert.equal(result.code,0);assert.equal(result.stderr.length,0);const envelope=JSON.parse(result.stdout);assert.equal(typeof envelope.task.id,'string');assert.ok(envelope.task.id.length>0);delete envelope.task.id;projections.push(envelope);}
   assert.deepEqual(projections[0],projections[1]);assert.equal(projections[0].mode,'download');
