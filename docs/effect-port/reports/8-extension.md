@@ -335,3 +335,24 @@ Machine-readable gate, source-copy, inventory, regression-sensitivity and final 
 All forty final runs pass with unchanged source/test hashes. The first package-UTC series had five passes before its sixth attempt was terminated with exit 143 before assertion output. Per COMMON's documented memory-guard rule, the failed receipt is retained, the runner waited more than one minute, and that ten-run series restarted from iteration one. It then completed ten consecutive passes, as did package Asia/Tokyo. The final matrix uses the completed original twenty root runs and the twenty restarted package runs; the interrupted series is separately retained in `repeats-first-attempt.json` and `evidence/memory-guard-repeats/`. This is memory guard, rerun passed, not a hidden test retry. The runner waited for 25 GB headroom before the restarted package runs; no test, timeout or harness behavior changed.
 
 Final integrity checks pass: no staged changes, whitespace errors, absolute home paths, frozen-source/snapshot/lockfile edits or source/test hash drift. `all-source-ignore-inventory.json` additionally verifies zero ignored files across every repository src/test/extension-entrypoint tree, including unported neighbors. Both copied builds exactly match all nineteen output hashes of their worktree builds. All assigned local review-fix steps are complete; independent review and separate real-browser/packaged/hosted acceptance remain with the orchestrator.
+
+## Fix verification
+
+An independent read-only session on the review-panel tier checked commit 4c2f177. It compared
+the commit against the port before the fixes (135c985) and the pre-port extension (57798f8).
+It confirmed all eight findings fixed and found no new defect. It also found:
+
+- no weakened assertion;
+- no changed frozen fixture or snapshot;
+- no suppression or lowered severity;
+- no Promise orchestration presented as a port.
+
+Each fix except finding 2 has a regression that distinguishes 135c985. Finding 2 restores a
+dropped observation rather than fixing a rendering difference, so its restored assertion
+passes on 135c985 too. A mutation check proves it instead: wrong initialization HTML fails it.
+
+The reviewer ran its own in-memory comparison: the 56 committed HTTP cases, plus two
+plain-`Error` and `AbortError` cases. All 58 matched the frozen pre-port helper. The
+implementation before the fix differed in 26. All 30 native tests passed. The reviewer's
+sandbox could not start esbuild, so it ran none of the oracle suites. The lane's own runs are
+the proof for those suites, and the phase 8 gate runs them again.
