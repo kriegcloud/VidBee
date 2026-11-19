@@ -15,7 +15,10 @@
       ],
       "outputs": [],
       "env": [
-        "DB_TEST_CLIENT"
+        "DB_TEST_CLIENT",
+        "VIDBEE_CLI_PORTED",
+        "TZ",
+        "TMPDIR"
       ]
     },
     "build": {
@@ -35,7 +38,8 @@
     "tsconfig.base.json",
     "biome.jsonc",
     "standards/effect-allowlist.jsonc",
-    "fixtures/cli-pre-port/**"
+    "fixtures/cli-pre-port/**",
+    "scripts/cli/**"
   ],
   "cacheDir": ".turbo/cache"
 }

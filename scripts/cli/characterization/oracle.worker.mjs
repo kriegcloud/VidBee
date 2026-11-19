@@ -29,7 +29,7 @@ before(async()=>{
   for(const [name,entry] of Object.entries(manifest.artifacts)){const bytes=readFileSync(join(fixture,name));assert.equal(bytes.length,entry.bytes);assert.equal(hash(bytes),entry.sha256);}
   const options={bundle:true,format:'esm',platform:'node',target:'node20',external:['better-sqlite3','electron','yt-dlp-wrap-plus','@opentelemetry/api'],legalComments:'inline',write:false,absWorkingDir:repo};
   const distribution=buildDistribution(repo,scratch); candidate=distribution.bundle; candidateShim=distribution.shim;
-  const lib=(await build({...options,entryPoints:['apps/cli/test/execution-adapter.ts'],outfile:join(scratch,'candidate-library.mjs')})).outputFiles[0].contents;
+  const lib=(await build({...options,entryPoints:['scripts/cli/characterization/execution-adapter.ts'],outfile:join(scratch,'candidate-library.mjs')})).outputFiles[0].contents;
   writeFileSync(join(scratch,'candidate-library.mjs'),lib);symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));
   library=await import(pathToFileURL(join(scratch,'candidate-library.mjs')));
   live=spawn(node,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});
@@ -89,7 +89,7 @@ async function invoke(vector,bytes){
     return {body:{ok:true}};
   };
   const argv=vector.args.map(v=>v==='@BASE@'?base:v==='@CACHE@'?join(runRoot,'upgrade.json'):v==='--cache=@CACHE@'?'--cache='+join(runRoot,'upgrade.json'):v);
-  const child=spawn(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,vector.shim?'bundle/dist/bin/vidbee.mjs':'bundle/dist/index.mjs'),...argv],{cwd:join(runRoot,'cwd'),env:{...environment(),...(vector.throwStdout?{CLI_THROW_STDOUT:'1'}:{})}});
+  const child=spawn(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,vector.shim?'bundle/dist/bin/vidbee.mjs':'bundle/dist/index.mjs'),...argv],{cwd:join(runRoot,'cwd'),env:{...environment(),...(vector.throwStdout?{CLI_THROW_STDOUT:'1'}:{})}});
   const result=await collect(child,vector);
   return {...result,requests:[...requests],trace:existsSync(join(runRoot,'trace.jsonl'))?readFileSync(join(runRoot,'trace.jsonl'),'utf8'):'',files:snapshot()};
 }
@@ -223,7 +223,7 @@ async function signalObservation(bytes,point,signal,shell=false){
   script=url=>{if(url.endsWith('/handshake'))return {body:{token:'fixture',expiresAt:8000000000000000}};if(url.endsWith('/stats'))return {hold:true,ready:()=>{bodyReady=true;}};return {body:{}};};
   if(point==='autostart')rmSync(join(runRoot,'descriptor.json'));
   const args=point==='http'?['--vidbee-api',base,':status']:point==='probe'?['--version']:point==='local'?['--vidbee-local','--vidbee-wait','https://example.invalid/v']:['--vidbee-timeout','60000',':status'];
-  const command=[node,'--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),...args];
+  const command=[node,'--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),...args];
   const cli=spawn(shell?'/bin/sh':command[0],shell?['-c','"$@" & child=$!; printf "%s" "$child" > "$CLI_FIXTURE_ROOT/shell-child.pid"; wait "$child"; code=$?; exit "$code"','cli-shell',...command]:command.slice(1),{cwd:join(runRoot,'cwd'),env:environment()});
   let owned;
   const readiness=until(()=>point==='http'?bodyReady:existsSync(join(runRoot,'owned-child.pid')));
@@ -333,10 +333,10 @@ test('registry BOM success strips BOM and writes the directly serialized cache',
 test('missing probe executable and asynchronous launcher failure retain their failure boundaries',{timeout:1_800_000},async()=>{
   for(const bytes of [readFileSync(join(fixture,'index.mjs')),candidate]){
     reset({},bytes);rmSync(join(runRoot,'bin/yt-dlp'));script=()=>({body:{}});
-    const child=spawn(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--version'],{cwd:join(runRoot,'cwd'),env:environment()});
+    const child=spawn(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--version'],{cwd:join(runRoot,'cwd'),env:environment()});
     const result=await collect(child);assert.equal(result.code,5);const env=JSON.parse(result.stdout);assert.equal(env.code,'NOT_IMPLEMENTED');assert.equal(env.message,`yt-dlp spawn error: spawn ${join(runRoot,'bin/yt-dlp')} ENOENT`);
     reset({},bytes);rmSync(join(runRoot,'descriptor.json'));rmSync(join(runRoot,'bin/vidbee-desktop'));
-    const launcher=spawn(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),':status'],{cwd:join(runRoot,'cwd'),env:environment()});
+    const launcher=spawn(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),':status'],{cwd:join(runRoot,'cwd'),env:environment()});
     const failed=await collect(launcher,{deadlineMs:90000});assert.notEqual(failed.code,0);assert.ok(failed.stderr.length>0);
   }
 });
@@ -345,7 +345,7 @@ test('probe overflow requests TERM without escalation; harness reaps only its ig
   for(const bytes of [readFileSync(join(fixture,'index.mjs')),candidate]){
     const code=`fs.writeFileSync(${JSON.stringify(join(runRoot,'owned-child.pid'))},String(process.pid));process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(join(runRoot,'term-observed'))},'SIGTERM'));process.stdout.write(Buffer.alloc(33*1024*1024,65));setInterval(()=>{},1000);`;
     reset({child:code},bytes);script=()=>({body:{}});
-    const child=spawn(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--version'],{cwd:join(runRoot,'cwd'),env:environment()});
+    const child=spawn(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--version'],{cwd:join(runRoot,'cwd'),env:environment()});
     const collecting=collect(child,{deadlineMs:90000});
     await until(()=>existsSync(join(runRoot,'term-observed')));
     const owned=ownPid(Number(readFileSync(join(runRoot,'owned-child.pid'),'utf8')));
@@ -427,7 +427,7 @@ test('executable autostart timeout retains its envelope, launcher and empty requ
   const values=[];
   for(const bytes of [readFileSync(join(fixture,'index.mjs')),candidate]){
     reset({},bytes);rmSync(join(runRoot,'descriptor.json'));script=()=>({body:{}});
-    const child=spawn(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--vidbee-timeout','1',':status'],{cwd:join(runRoot,'cwd'),env:environment()});
+    const child=spawn(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(runRoot,'bundle/dist/index.mjs'),'--vidbee-timeout','1',':status'],{cwd:join(runRoot,'cwd'),env:environment()});
     const result=await collect(child,{deadlineMs:90000});assert.equal(result.code,3);assert.equal(result.signal,null);assert.equal(result.stderr.length,0);assert.deepEqual(requests,[]);
     const envelope=JSON.parse(result.stdout);assert.equal(envelope.code,'DESKTOP_NOT_READY');assert.match(envelope.message,/^Desktop did not become ready within \d+ms$/);
     values.push({...envelope,message:'Desktop did not become ready within <elapsed>ms'});

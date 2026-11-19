@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { repo } from './isolation.mjs';
 const scratch = mkdtempSync(join(tmpdir(), 'cli-pure-'));
-const built = await build({entryPoints:[join(repo,'apps/cli/test/candidate.ts')],bundle:true,platform:'node',format:'esm',write:false,external:['better-sqlite3','yt-dlp-wrap-plus','@opentelemetry/api']});
+const built = await build({entryPoints:[join(repo,'scripts/cli/characterization/candidate.ts')],bundle:true,platform:'node',format:'esm',write:false,external:['better-sqlite3','yt-dlp-wrap-plus','@opentelemetry/api']});
 writeFileSync(join(scratch,'candidate.mjs'),built.outputFiles[0].contents);
 symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));
 const candidate=await import(pathToFileURL(join(scratch,'candidate.mjs')));

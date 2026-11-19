@@ -1,152 +1,102 @@
-/**
- * Resolves a `ContractClient` according to CLI flags. Reference:
- *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §3, §4.2, §5
- *
- * Three transports:
- *   - local:   `--vidbee-local` → in-process TaskQueueAPI (createLocalClient)
- *   - api:     `--vidbee-api <url>` → AutomationClient against that base
- *   - desktop: default → read descriptor → autostart if needed → handshake
- *
- * Each path can fail gracefully and returns an `ErrorEnvelope` instead of
- * throwing, so the runtime can map to the right exit code.
- */
+import * as Effect from "effect/Effect";
+import * as P from "effect/Predicate";
+import { CliAutomation } from "../CliAutomation.service.js";
+import { CliAutostart } from "../CliAutostart.service.js";
+import { CliConnection } from "../CliConnection.service.js";
+import { CliDescriptor } from "../CliDescriptor.service.js";
+import { CliLocal } from "../CliLocal.service.js";
+import { CliPidLiveness } from "../CliPidLiveness.service.js";
+import { errorEnvelope } from "../envelope/index.js";
+import type { AutostartResult, ConnectResult } from "../Connection.model.js";
+import type { Flags } from "../Parser.model.js";
 
-import { errorEnvelope, type ErrorEnvelope } from '../envelope'
-import type { Flags } from '../parser'
-import type { ContractClient } from '../subcommands'
-import { AutomationClient } from './automation-client'
-import { ensureDesktopReady, type AutostartResult } from './autostart'
-import { isPidAlive, readDescriptor } from './descriptor'
-import { createLocalClient, type LocalClientHandle } from './local-client'
+export type { ConnectResult } from "../Connection.model.js";
+export const connectNative = Effect.fn("connectNative")(function* (flags: Flags) {
+  const local = yield* CliLocal;
+  const automation = yield* CliAutomation;
+  const descriptorService = yield* CliDescriptor;
+  const liveness = yield* CliPidLiveness;
+  const autostart = yield* CliAutostart;
 
-export interface ConnectOptions {
-  flags: Flags
-  /** Test seam — overrides AutomationClient instantiation. */
-  buildAutomationClient?: (
-    baseUrl: string,
-    token: string | null
-  ) => ContractClient
-  /** Test seam — overrides descriptor read. */
-  readDescriptorImpl?: typeof readDescriptor
-  /** Test seam — overrides autostart. */
-  ensureDesktopReadyImpl?: typeof ensureDesktopReady
-  /** Test seam — overrides createLocalClient. */
-  createLocalClientImpl?: typeof createLocalClient
-}
-
-export type ConnectResult =
-  | { kind: 'connected'; client: ContractClient; teardown?: () => Promise<void> }
-  | { kind: 'error'; envelope: ErrorEnvelope }
-
-export async function connect(opts: ConnectOptions): Promise<ConnectResult> {
-  const { flags } = opts
-
-  if (flags.local || flags.target === 'local') {
-    const factory = opts.createLocalClientImpl ?? createLocalClient
-    try {
-      const handle: LocalClientHandle = await factory({})
-      return { kind: 'connected', client: handle, teardown: handle.shutdown }
-    } catch (err) {
-      return {
-        kind: 'error',
-        envelope: errorEnvelope(
-          'NOT_IMPLEMENTED',
-          `--vidbee-local failed to start: ${err instanceof Error ? err.message : err}`
-        )
-      }
-    }
+  if (flags.local || flags.target === "local") {
+    return yield* local.open({}).pipe(
+      Effect.map((handle): ConnectResult => ({ kind: "connected", client: handle, shutdown: handle.shutdown })),
+      Effect.catch((err) =>
+        Effect.succeed({
+          kind: "error",
+          envelope: errorEnvelope("NOT_IMPLEMENTED", `--vidbee-local failed to start: ${err.message}`),
+        } satisfies ConnectResult)
+      )
+    );
   }
 
-  if (flags.api !== undefined || flags.target === 'api') {
-    const url = flags.api
-    if (!url) {
+  if (flags.api !== undefined || flags.target === "api") {
+    const url = flags.api;
+    if (!P.isTruthy(url) || url === undefined) {
       return {
-        kind: 'error',
-        envelope: errorEnvelope(
-          'API_UNREACHABLE',
-          '--vidbee-target api requires --vidbee-api <url>'
-        )
-      }
+        kind: "error" as const,
+        envelope: errorEnvelope("API_UNREACHABLE", "--vidbee-target api requires --vidbee-api <url>"),
+      };
     }
-    const builder = opts.buildAutomationClient ?? defaultAutomationBuilder
-    const client = builder(url, flags.token ?? null)
-    return { kind: 'connected', client }
+    const client = yield* automation.make({
+      baseUrl: url,
+      ...(P.isTruthy(flags.token) ? { token: flags.token, skipHandshake: true } : {}),
+    });
+    return { kind: "connected", client, shutdown: Effect.void } satisfies ConnectResult;
   }
 
-  // Desktop default path
-  return await connectDesktop(opts)
-}
-
-async function connectDesktop(opts: ConnectOptions): Promise<ConnectResult> {
-  const { flags } = opts
-  const readImpl = opts.readDescriptorImpl ?? readDescriptor
-  const ensureImpl = opts.ensureDesktopReadyImpl ?? ensureDesktopReady
-
-  let descriptor = readImpl({})
-  let needsAutostart = false
+  let descriptor = yield* descriptorService.read({});
+  let needsAutostart = false;
   if (!descriptor.ok) {
-    needsAutostart = true
-  } else if (!isPidAlive(descriptor.descriptor.pid)) {
-    needsAutostart = true
+    needsAutostart = true;
+  } else if (!(yield* liveness.isAlive(descriptor.descriptor.pid))) {
+    needsAutostart = true;
   }
 
   if (needsAutostart) {
-    const result: AutostartResult = await ensureImpl(!flags.noAutostart, {
-      ...(flags.timeoutMs !== undefined ? { timeoutMs: flags.timeoutMs } : {})
-    })
-    if (result.kind === 'autostart-disabled') {
+    const result: AutostartResult = yield* autostart.ensure(!flags.noAutostart, {
+      ...(flags.timeoutMs !== undefined ? { timeoutMs: flags.timeoutMs } : {}),
+    });
+    if (result.kind === "autostart-disabled") {
       return {
-        kind: 'error',
-        envelope: errorEnvelope(
-          'DESKTOP_NOT_READY',
-          'Desktop is not running and --vidbee-no-autostart was set'
-        )
-      }
+        kind: "error" as const,
+        envelope: errorEnvelope("DESKTOP_NOT_READY", "Desktop is not running and --vidbee-no-autostart was set"),
+      };
     }
-    if (result.kind === 'unsupported-platform') {
+    if (result.kind === "unsupported-platform") {
       return {
-        kind: 'error',
+        kind: "error" as const,
         envelope: errorEnvelope(
-          'DESKTOP_NOT_READY',
+          "DESKTOP_NOT_READY",
           `autostart not supported on platform ${result.platform}; pass --vidbee-api or run Desktop manually`
-        )
-      }
+        ),
+      };
     }
-    if (result.kind === 'launch-failed') {
+    if (result.kind === "launch-failed") {
       return {
-        kind: 'error',
-        envelope: errorEnvelope(
-          'DESKTOP_NOT_READY',
-          `failed to launch Desktop: ${result.reason}`
-        )
-      }
+        kind: "error" as const,
+        envelope: errorEnvelope("DESKTOP_NOT_READY", `failed to launch Desktop: ${result.reason}`),
+      };
     }
-    if (result.kind === 'timeout') {
+    if (result.kind === "timeout") {
       return {
-        kind: 'error',
-        envelope: errorEnvelope(
-          'DESKTOP_NOT_READY',
-          `Desktop did not become ready within ${result.waitedMs}ms`
-        )
-      }
+        kind: "error" as const,
+        envelope: errorEnvelope("DESKTOP_NOT_READY", `Desktop did not become ready within ${result.waitedMs}ms`),
+      };
     }
-    descriptor = readImpl({})
-    if (!descriptor.ok) return { kind: 'error', envelope: descriptor.envelope }
+    descriptor = yield* descriptorService.read({});
+    if (!descriptor.ok) return { kind: "error" as const, envelope: descriptor.envelope };
   }
 
-  if (!descriptor.ok) return { kind: 'error', envelope: descriptor.envelope }
-  const baseUrl = `http://${descriptor.descriptor.host}:${descriptor.descriptor.port}`
-  const builder = opts.buildAutomationClient ?? defaultAutomationBuilder
-  const client = builder(baseUrl, flags.token ?? null)
-  return { kind: 'connected', client }
-}
+  if (!descriptor.ok) return { kind: "error" as const, envelope: descriptor.envelope };
+  const baseUrl = `http://${descriptor.descriptor.host}:${descriptor.descriptor.port}`;
+  const client = yield* automation.make({
+    baseUrl,
+    ...(P.isTruthy(flags.token) ? { token: flags.token, skipHandshake: true } : {}),
+  });
+  return { kind: "connected", client, shutdown: Effect.void } satisfies ConnectResult;
+});
 
-function defaultAutomationBuilder(
-  baseUrl: string,
-  token: string | null
-): ContractClient {
-  if (token) {
-    return new AutomationClient({ baseUrl, token, skipHandshake: true })
-  }
-  return new AutomationClient({ baseUrl })
-}
+export const connect = Effect.fn("connect")(function* (flags: Flags) {
+  return yield* (yield* CliConnection).connect(flags);
+});

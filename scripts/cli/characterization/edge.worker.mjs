@@ -21,7 +21,7 @@ let candidateShim,candidateBytes,candidate,server,base,live,requests=[],reply;
 before(async()=>{
   const options={bundle:true,format:'esm',platform:'node',target:'node20',external:['better-sqlite3','electron','yt-dlp-wrap-plus','@opentelemetry/api'],write:false,absWorkingDir:repo};
   const distribution=buildDistribution(repo,scratch); candidateBytes=distribution.bundle; candidateShim=distribution.shim;
-  const bytes=(await build({...options,entryPoints:['apps/cli/test/execution-adapter.ts'],outfile:join(scratch,'library.mjs')})).outputFiles[0].contents;
+  const bytes=(await build({...options,entryPoints:['scripts/cli/characterization/execution-adapter.ts'],outfile:join(scratch,'library.mjs')})).outputFiles[0].contents;
   writeFileSync(join(scratch,'library.mjs'),bytes);symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));candidate=await import(pathToFileURL(join(scratch,'library.mjs')));
   live=spawn(node,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});
   server=createServer(async(req,res)=>{let body='';for await(const chunk of req)body+=chunk;requests.push({method:req.method,url:req.url,headers:req.headers,body});res.setHeader('Content-Type','application/json');res.end(reply(req.url,body));});
@@ -47,8 +47,8 @@ function env(){return {HOME:join(root,'home'),TMPDIR:join(root,'tmp'),XDG_CONFIG
 function capture(command,args,environment){return new Promise((resolve,reject)=>{const child=spawn(command,args,{cwd:join(root,'cwd'),env:environment});const stdout=[],stderr=[];const timer=setTimeout(()=>{child.kill('SIGKILL');reject(Error('edge fixture deadline'));},30000);child.on('error',reject);child.stdout.on('data',b=>stdout.push(b));child.stderr.on('data',b=>stderr.push(b));child.on('close',(code,signal)=>{clearTimeout(timer);resolve({stdout:Buffer.concat(stdout),stderr:Buffer.concat(stderr),code,signal,requests:[...requests]});});});}
 async function invoke(bytes,args,options={}){
   prepare(bytes,options.packages);const environment={...env(),...options.env};
-  if(options.homeAbsent){for(const key of ['HOME','XDG_CONFIG_HOME','VIDBEE_AUTOMATION_DESCRIPTOR'])delete environment[key];return capture('/usr/bin/unshare',['-Urm','/bin/sh','-c','/usr/bin/mount --bind "$1" /etc/passwd && shift && exec "$@"','cli-account',join(root,'passwd'),node,'--import',join(repo,'apps/cli/test/guard.mjs'),join(root,'bundle/dist/index.mjs'),...args],environment);}
-  return capture(node,['--import',join(repo,'apps/cli/test/guard.mjs'),join(root,options.shim?'bundle/dist/bin/vidbee.mjs':'bundle/dist/index.mjs'),...args.map(v=>v==='@BASE@'?base:v)],environment);
+  if(options.homeAbsent){for(const key of ['HOME','XDG_CONFIG_HOME','VIDBEE_AUTOMATION_DESCRIPTOR'])delete environment[key];return capture('/usr/bin/unshare',['-Urm','/bin/sh','-c','/usr/bin/mount --bind "$1" /etc/passwd && shift && exec "$@"','cli-account',join(root,'passwd'),node,'--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(root,'bundle/dist/index.mjs'),...args],environment);}
+  return capture(node,['--import',join(repo,'scripts/cli/characterization/guard.mjs'),join(root,options.shim?'bundle/dist/bin/vidbee.mjs':'bundle/dist/index.mjs'),...args.map(v=>v==='@BASE@'?base:v)],environment);
 }
 test('HOME absent uses isolated-account OS fallback and reads only its synthetic descriptor',{timeout:1_800_000},async()=>{
   const old=await invoke(referenceBytes,['--vidbee-no-autostart',':status'],{homeAbsent:true});

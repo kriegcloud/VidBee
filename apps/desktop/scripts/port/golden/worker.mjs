@@ -1,4 +1,3 @@
-import { spawn } from 'node:child_process'
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -7,6 +6,7 @@ import {
   runBrowserCaptureCases,
   runBrowserCaptureRestart
 } from './browser-capture-cases.mjs'
+import { captureCommand } from './capture-command.mjs'
 import { MCP_READ_TOOLS, runCases } from './cases.mjs'
 import { runCliCases } from './cli.mjs'
 import { createClient } from './client.mjs'
@@ -113,20 +113,7 @@ if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))
   }
 }
 const mcp = client.mcp
-const command = (cmd, argv, options = {}) =>
-  new Promise((resolve, reject) => {
-    const child = spawn(cmd, argv, { ...options, stdio: ['ignore', 'pipe', 'pipe'] })
-    let stdout = ''
-    let stderr = ''
-    child.stdout.on('data', (data) => {
-      stdout += data
-    })
-    child.stderr.on('data', (data) => {
-      stderr += data
-    })
-    child.on('error', reject)
-    child.on('exit', (code) => resolve({ code, stdout, stderr }))
-  })
+const command = captureCommand
 if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))) {
   const renderer = await command(process.execPath, [
     path.join(here, '../cdp-shots.mjs'),

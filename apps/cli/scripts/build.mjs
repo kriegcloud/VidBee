@@ -10,10 +10,10 @@
  * as an `optionalDependency` only when crash-recovery is wanted.
  */
 import { build } from 'esbuild'
-import { mkdirSync, chmodSync, rmSync } from 'node:fs'
+import { mkdirSync, chmodSync, rmSync, realpathSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { log } from '@vidbee/logger/script'
+import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -26,8 +26,12 @@ rmSync(dist, { recursive: true, force: true })
 mkdirSync(dist, { recursive: true })
 mkdirSync(join(dist, 'bin'), { recursive: true })
 
+const sourceRoot = realpathSync(join(root, 'src'))
+const compiler = spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.resolve('tsrs/package.json'))), 'bin', 'tsrs'), '-p', join(dirname(sourceRoot), 'tsconfig.json'), '--outDir', join(dist, 'library'), '--tsBuildInfoFile', join(dist, 'library', 'tsconfig.tsbuildinfo')], { cwd: root, stdio: 'inherit' })
+if (compiler.status !== 0) process.exit(compiler.status ?? 1)
+
 await build({
-  entryPoints: [join(root, 'src/bin.ts')],
+  entryPoints: [join(dirname(sourceRoot), '..', 'cli-legacy', 'src', 'entry.ts')],
   bundle: true,
   format: 'esm',
   platform: 'node',
@@ -53,4 +57,4 @@ const fs = await import('node:fs/promises')
 await fs.writeFile(npmBinPath, npmBin, 'utf-8')
 chmodSync(npmBinPath, 0o755)
 
-log.log('built', dist)
+process.stdout.write(`built ${dist}\n`)

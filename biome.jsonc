@@ -8,6 +8,8 @@
   "root": true,
   "files": {
     "includes": [
+      "apps/cli/**",
+      "!apps/cli/scripts/**",
       "packages/schema/**",
       "packages/logger/**",
       "packages/db/**",

@@ -1,3 +1,6 @@
+import * as A from "effect/Array";
+import * as O from "effect/Option";
+import * as Str from "effect/String";
 /**
  * The full set of `--vidbee-*` flags the CLI knows about. Reference:
  *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §4.2
@@ -10,36 +13,32 @@
  * exit 2; we never silently forward unrecognized vidbee flags to yt-dlp.
  */
 
-export type ReservedFlagKind = 'switch' | 'value'
+export type ReservedFlagKind = "switch" | "value";
 
 export interface ReservedFlag {
-  name: string
-  kind: ReservedFlagKind
+  kind: ReservedFlagKind;
+  name: string;
 }
 
 export const RESERVED_FLAGS: readonly ReservedFlag[] = [
-  { name: '--vidbee-api', kind: 'value' },
-  { name: '--vidbee-local', kind: 'switch' },
-  { name: '--vidbee-target', kind: 'value' },
-  { name: '--vidbee-json', kind: 'switch' },
-  { name: '--vidbee-pretty', kind: 'switch' },
-  { name: '--vidbee-wait', kind: 'switch' },
-  { name: '--vidbee-detach', kind: 'switch' },
-  { name: '--vidbee-priority', kind: 'value' },
-  { name: '--vidbee-max-attempts', kind: 'value' },
-  { name: '--vidbee-no-retry', kind: 'switch' },
-  { name: '--vidbee-group-key', kind: 'value' },
-  { name: '--vidbee-timeout', kind: 'value' },
-  { name: '--vidbee-no-autostart', kind: 'switch' },
-  { name: '--vidbee-token', kind: 'value' }
-]
-
-const RESERVED_BY_NAME = new Map<string, ReservedFlag>(
-  RESERVED_FLAGS.map((f) => [f.name, f])
-)
+  { name: "--vidbee-api", kind: "value" },
+  { name: "--vidbee-local", kind: "switch" },
+  { name: "--vidbee-target", kind: "value" },
+  { name: "--vidbee-json", kind: "switch" },
+  { name: "--vidbee-pretty", kind: "switch" },
+  { name: "--vidbee-wait", kind: "switch" },
+  { name: "--vidbee-detach", kind: "switch" },
+  { name: "--vidbee-priority", kind: "value" },
+  { name: "--vidbee-max-attempts", kind: "value" },
+  { name: "--vidbee-no-retry", kind: "switch" },
+  { name: "--vidbee-group-key", kind: "value" },
+  { name: "--vidbee-timeout", kind: "value" },
+  { name: "--vidbee-no-autostart", kind: "switch" },
+  { name: "--vidbee-token", kind: "value" },
+];
 
 export function findReservedFlag(name: string): ReservedFlag | undefined {
-  return RESERVED_BY_NAME.get(name)
+  return A.findFirst(RESERVED_FLAGS, (flag) => flag.name === name).pipe(O.getOrUndefined);
 }
 
 /**
@@ -54,5 +53,5 @@ export function findReservedFlag(name: string): ReservedFlag | undefined {
  * `--vidb` prefix is rejected as an unknown VidBee flag.
  */
 export function isVidbeePrefixed(tok: string): boolean {
-  return tok.startsWith('--vidb')
+  return Str.startsWith("--vidb")(tok);
 }

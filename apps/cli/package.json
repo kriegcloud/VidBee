@@ -17,22 +17,44 @@
   "bin": {
     "vidbee": "./dist/bin/vidbee.mjs"
   },
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./dist/library/index.js",
+  "types": "./dist/library/index.d.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "default": "./dist/library/index.js"
     },
-    "./parser": "./src/parser/index.ts",
-    "./envelope": "./src/envelope/index.ts"
+    "./parser": {
+      "types": "./src/parser/index.ts",
+      "import": "./src/parser/index.ts",
+      "default": "./dist/library/parser/index.js"
+    },
+    "./envelope": {
+      "types": "./src/envelope/index.ts",
+      "import": "./src/envelope/index.ts",
+      "default": "./dist/library/envelope/index.js"
+    }
   },
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.mjs"
+      ".": {
+        "types": "./dist/library/index.d.ts",
+        "import": "./dist/library/index.js",
+        "default": "./dist/library/index.js"
+      },
+      "./parser": {
+        "types": "./dist/library/parser/index.d.ts",
+        "import": "./dist/library/parser/index.js",
+        "default": "./dist/library/parser/index.js"
+      },
+      "./envelope": {
+        "types": "./dist/library/envelope/index.d.ts",
+        "import": "./dist/library/envelope/index.js",
+        "default": "./dist/library/envelope/index.js"
+      }
     },
-    "main": "./dist/index.mjs",
+    "main": "./dist/library/index.js",
     "access": "public"
   },
   "files": [
@@ -52,14 +74,21 @@
     "automation"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsrs -p tsconfig.test.json",
     "build": "node scripts/build.mjs",
-    "verify-dist": "node -e \"const fs=require('node:fs');for(const f of ['dist/index.mjs','dist/bin/vidbee.mjs']){if(!fs.existsSync(f)){process.stderr.write('missing build artifact: '+f+'\\n');process.exit(1)}}\"",
+    "verify-dist": "node scripts/verify-dist.mjs",
     "prepublishOnly": "bun run build && bun run verify-dist",
     "test": "bunx --bun vitest run",
-    "test:node": "tsx --test test/*.node.ts"
+    "test:node": "VIDBEE_CLI_PORTED=1 node --import tsx --test ../../scripts/cli/characterization/isolate.node.ts",
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check ."
   },
   "dependencies": {
+    "effect": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "@vidbee/task-queue": "workspace:^",
+    "@vidbee/downloader-core": "workspace:^",
+    "@vidbee/db": "workspace:^",
     "yt-dlp-wrap-plus": "catalog:"
   },
   "optionalDependencies": {
@@ -68,16 +97,13 @@
   "devDependencies": {
     "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
-    "@vidbee/db": "workspace:^",
-    "@vidbee/downloader-core": "workspace:^",
-    "@vidbee/logger": "workspace:^",
     "esbuild": "catalog:",
     "typescript": "catalog:",
-    "@vidbee/task-queue-legacy": "workspace:^",
-    "@vidbee/downloader-core-legacy": "workspace:^",
     "@effect/vitest": "catalog:",
     "vitest": "catalog:",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "tsrs": "catalog:",
+    "@biomejs/biome": "catalog:"
   },
   "engines": {
     "node": ">=20"

@@ -1,130 +1,51 @@
-/**
- * Auto-launch VidBeep Desktop in background mode when the descriptor is
- * missing or stale. Reference:
- *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §5.4
- *
- * The Desktop side adds `--background` / `--from-cli` flags (NEX-131
- * commit 7de4e20) which keep the app tray-only, no main window. We spawn
- * the platform-appropriate launcher and then poll for the descriptor to
- * appear.
- */
+import * as Clock from "effect/Clock";
+import * as Effect from "effect/Effect";
+import { CliAutostart } from "../CliAutostart.service.js";
+import { CliDescriptor } from "../CliDescriptor.service.js";
+import { CliHost } from "../CliHost.service.js";
+import { CliLauncher } from "../CliLauncher.service.js";
+import { CliPidLiveness } from "../CliPidLiveness.service.js";
+import type { AutostartOptions, AutostartResult, LauncherSpec } from "../Connection.model.js";
 
-import { spawn } from 'node:child_process'
-
-import { isPidAlive, readDescriptor, type ResolveDescriptorOptions } from './descriptor'
-
-export interface AutostartOptions {
-  /** Total wall-clock budget; defaults to 10s per design. */
-  timeoutMs?: number
-  /** Polling interval. */
-  pollIntervalMs?: number
-  /** Test seam — overrides spawn. */
-  spawnLauncher?: (cmd: string, args: readonly string[]) => void
-  /** Test seam — overrides Date.now. */
-  clock?: () => number
-  /** Test seam — overrides setTimeout-based wait. */
-  delay?: (ms: number) => Promise<void>
-  /** Test seam for descriptor lookup. */
-  descriptorOptions?: ResolveDescriptorOptions
-  platform?: NodeJS.Platform
-}
-
-export type AutostartResult =
-  | { kind: 'ready' }
-  | { kind: 'autostart-disabled' }
-  | { kind: 'unsupported-platform'; platform: NodeJS.Platform }
-  | { kind: 'timeout'; waitedMs: number }
-  | { kind: 'launch-failed'; reason: string }
-
-const defaultDelay = (ms: number) =>
-  new Promise<void>((resolve) => setTimeout(resolve, ms))
-
-/**
- * Returns immediately when the descriptor already points at a live PID;
- * otherwise spawns Desktop in background mode and polls until the
- * descriptor reappears or the timeout expires.
- */
-export async function ensureDesktopReady(
+export type { AutostartOptions, AutostartResult } from "../Connection.model.js";
+export const ensureDesktopReadyNative = Effect.fn("ensureDesktopReadyNative")(function* (
   enabled: boolean,
-  opts: AutostartOptions = {}
-): Promise<AutostartResult> {
-  const timeoutMs = opts.timeoutMs ?? 10_000
-  const poll = opts.pollIntervalMs ?? 200
-  const clock = opts.clock ?? Date.now
-  const delay = opts.delay ?? defaultDelay
-  const platform = opts.platform ?? process.platform
-
-  // First check: if we already have a fresh descriptor pointing at a live
-  // pid, no autostart needed.
-  if (descriptorIsReady(opts.descriptorOptions)) return { kind: 'ready' }
-
-  if (!enabled) return { kind: 'autostart-disabled' }
-
-  const launchSpec = launcherForPlatform(platform)
-  if (!launchSpec) return { kind: 'unsupported-platform', platform }
-
-  try {
-    if (opts.spawnLauncher) {
-      opts.spawnLauncher(launchSpec.cmd, launchSpec.args)
-    } else {
-      const child = spawn(launchSpec.cmd, [...launchSpec.args], {
-        stdio: 'ignore',
-        detached: true,
-        windowsHide: true
-      })
-      child.unref()
-    }
-  } catch (err) {
-    return {
-      kind: 'launch-failed',
-      reason: err instanceof Error ? err.message : String(err)
-    }
+  options: AutostartOptions = {}
+) {
+  const descriptor = yield* CliDescriptor;
+  const liveness = yield* CliPidLiveness;
+  const launcher = yield* CliLauncher;
+  const host = yield* CliHost;
+  const ready = Effect.gen(function* () {
+    const r = yield* descriptor.read();
+    return r.ok && (yield* liveness.isAlive(r.descriptor.pid));
+  });
+  if (yield* ready) return { kind: "ready" } satisfies AutostartResult;
+  if (!enabled) return { kind: "autostart-disabled" } satisfies AutostartResult;
+  const platform = options.platform ?? host.platform;
+  const spec = launcherForPlatform(platform);
+  if (spec === null) return { kind: "unsupported-platform", platform } satisfies AutostartResult;
+  const launched = yield* launcher.launch(spec).pipe(Effect.result);
+  if (launched._tag === "Failure")
+    return { kind: "launch-failed", reason: launched.failure.message } satisfies AutostartResult;
+  const start = yield* Clock.currentTimeMillis;
+  while ((yield* Clock.currentTimeMillis) - start < (options.timeoutMs ?? 10000)) {
+    if (yield* ready) return { kind: "ready" } satisfies AutostartResult;
+    yield* Effect.sleep(options.pollIntervalMs ?? 200);
   }
-
-  const start = clock()
-  while (clock() - start < timeoutMs) {
-    if (descriptorIsReady(opts.descriptorOptions)) return { kind: 'ready' }
-    await delay(poll)
-  }
-  return { kind: 'timeout', waitedMs: clock() - start }
+  return { kind: "timeout", waitedMs: (yield* Clock.currentTimeMillis) - start } satisfies AutostartResult;
+});
+function launcherForPlatform(platform: string): LauncherSpec | null {
+  if (platform === "darwin")
+    return { command: "open", argv: ["-ga", "VidBeep", "--args", "--background", "--from-cli"] };
+  if (platform === "win32")
+    return { command: "cmd", argv: ["/c", "start", '""', "VidBeep", "--background", "--from-cli"] };
+  if (platform === "linux") return { command: "vidbee-desktop", argv: ["--background", "--from-cli"] };
+  return null;
 }
-
-function descriptorIsReady(descriptorOpts: ResolveDescriptorOptions | undefined): boolean {
-  const r = readDescriptor(descriptorOpts ?? {})
-  if (!r.ok) return false
-  return isPidAlive(r.descriptor.pid)
-}
-
-/**
- * Per-platform launcher. The Desktop end accepts `--background` /
- * `--from-cli`; both forms are forwarded for forward-compat.
- *
- * Some flow notes:
- *   - macOS: `open -ga VidBeep --args --background --from-cli`
- *   - Linux: relies on `vidbee-desktop` desktop entry on PATH; the AppImage
- *     install instructions create a symlink to the AppImage, which we then
- *     invoke directly with `--background`.
- *   - Windows: `start "" VidBeep --background` via cmd /c so it goes
- *     through the shell start verb (handles the .lnk in Start Menu).
- *
- * For Phase B we ship the macOS path as the well-tested reference; Linux
- * and Windows commands are best-effort and can be tightened by user QA on
- * those platforms.
- */
-function launcherForPlatform(
-  platform: NodeJS.Platform
-): { cmd: string; args: readonly string[] } | null {
-  if (platform === 'darwin') {
-    return { cmd: 'open', args: ['-ga', 'VidBeep', '--args', '--background', '--from-cli'] }
-  }
-  if (platform === 'win32') {
-    return {
-      cmd: 'cmd',
-      args: ['/c', 'start', '""', 'VidBeep', '--background', '--from-cli']
-    }
-  }
-  if (platform === 'linux') {
-    return { cmd: 'vidbee-desktop', args: ['--background', '--from-cli'] }
-  }
-  return null
-}
+export const ensureDesktopReady = Effect.fn("ensureDesktopReady")(function* (
+  enabled: boolean,
+  options?: AutostartOptions
+) {
+  return yield* (yield* CliAutostart).ensure(enabled, options);
+});

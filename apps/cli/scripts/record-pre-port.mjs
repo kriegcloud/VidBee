@@ -23,7 +23,7 @@ for (const [source, target] of [['apps/cli/dist/index.mjs','index.mjs'], ['apps/
 await build({ ...options, stdin: { contents: "export * from './src/index.ts'; export * from './src/parser/probe-flags.ts'; export * from './src/parser/reserved-flags.ts'", resolveDir: join(checkout, 'apps/cli'), sourcefile: 'pre-port-library.ts', loader: 'ts' }, outfile: join(output, 'library.mjs') });
 const executable = await build({ ...options, entryPoints: [join(checkout, 'apps/cli/src/bin.ts')], outfile: join(checkout, 'apps/cli/dist/index.mjs'), write: false, banner: { js: '#!/usr/bin/env node\n// @vidbee/cli — standalone build (NEX-148). Built by scripts/build.mjs.' } });
 writeFileSync(join(output, 'index.mjs'), executable.outputFiles[0].contents);
-const vectors = await import('../test/pure-vectors.mjs');
+const vectors = await import('../../../scripts/cli/characterization/pure-vectors.mjs');
 const reference = await import(new URL('../../../fixtures/cli-pre-port/library.mjs', import.meta.url));
 writeFileSync(join(output, 'pure-results.json'), JSON.stringify(vectors.vectors().map(vector => vectors.encode(vectors.observe(reference, vector))), null, 2) + '\n');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');

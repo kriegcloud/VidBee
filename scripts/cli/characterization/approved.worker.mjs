@@ -11,7 +11,7 @@ import { observeApproved } from './approved-adapter.mjs';
 import { encode } from './pure-vectors.mjs';
 import { repo } from './isolation.mjs';
 const scratch=mkdtempSync(join(tmpdir(),'cli-approved-'));
-const result=await build({entryPoints:[join(repo,'apps/cli/test/execution-adapter.ts')],bundle:true,platform:'node',format:'esm',write:false,external:['better-sqlite3','yt-dlp-wrap-plus','@opentelemetry/api']});
+const result=await build({entryPoints:[join(repo,'scripts/cli/characterization/execution-adapter.ts')],bundle:true,platform:'node',format:'esm',write:false,external:['better-sqlite3','yt-dlp-wrap-plus','@opentelemetry/api']});
 writeFileSync(join(scratch,'candidate.mjs'),result.outputFiles[0].contents);symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));
 const candidate=await import(pathToFileURL(join(scratch,'candidate.mjs')));
 const cases=JSON.parse(readFileSync(new URL('./approved-changes.json',import.meta.url),'utf8'));
