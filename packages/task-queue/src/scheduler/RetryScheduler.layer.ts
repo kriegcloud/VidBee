@@ -26,8 +26,9 @@ export const make = Effect.fnUntraced(function* <E>(onDue: (id: string, at: numb
   let ticking = false;
   const rearm = Effect.fnUntraced(function* (): Effect.fn.Return<void> {
     if (timer !== null) {
-      yield* timer;
+      const cancel = timer;
       timer = null;
+      yield* cancel;
     }
     if (stopped || ticking) return;
     const top = heap.peek();
@@ -89,8 +90,9 @@ export const make = Effect.fnUntraced(function* <E>(onDue: (id: string, at: numb
       stopped = true;
       generation++;
       if (timer !== null) {
-        yield* timer;
+        const cancel = timer;
         timer = null;
+        yield* cancel;
       }
     }),
     size: Effect.sync(() => heap.size()),

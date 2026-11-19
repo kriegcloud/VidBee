@@ -8,6 +8,7 @@
  * here; the public `SubscriptionsAPI` only sees the abstract interfaces.
  */
 import { randomUUID } from 'node:crypto'
+import { rethrowQueryError } from '@vidbee/db/legacy'
 import {
   type SubscriptionInsert,
   type SubscriptionItemInsert,
@@ -31,6 +32,32 @@ import type {
   SubscriptionUpdateInput,
   SubscriptionWithItems
 } from './types'
+
+// Unwrap the Drizzle 1.0 boundary for every supplied-store caller, including meta operations.
+const withDriverErrors = <T extends object>(store: T): T => {
+  for (const key of Reflect.ownKeys(store)) {
+    const descriptor = Object.getOwnPropertyDescriptor(store, key)
+    const value = descriptor?.value
+    if (typeof value !== 'function') continue
+    const wrapped = {
+      invoke(this: unknown, ...args: unknown[]) {
+        try {
+          const result = Reflect.apply(value, this, args)
+          return result instanceof Promise
+            ? result.catch((error: unknown) => rethrowQueryError(error))
+            : result
+        } catch (error) {
+          return rethrowQueryError(error)
+        }
+      }
+    }.invoke
+    Object.defineProperty(wrapped, 'name', { value: value.name, configurable: true })
+    Object.defineProperty(wrapped, 'length', { value: value.length, configurable: true })
+    Object.setPrototypeOf(wrapped, Object.getPrototypeOf(value))
+    Object.defineProperty(store, key, { ...descriptor, value: wrapped })
+  }
+  return store
+}
 
 const sanitizeList = (values?: string[]): string[] => {
   if (!values || values.length === 0) {
@@ -358,7 +385,7 @@ export const createSqliteSubscriptionsStore = ({
     })
   }
 
-  return {
+  return withDriverErrors<SubscriptionsStore>({
     async list() {
       const rows = db
         .select()
@@ -637,7 +664,7 @@ export const createSqliteSubscriptionsStore = ({
       }
       return clearQueueLinkRows(db, now(), taskIds, items)
     }
-  }
+  })
 }
 
 const LEADER_KEYS = {
@@ -694,7 +721,7 @@ export const createSqliteMetaStore = ({
       .run()
   }
 
-  return {
+  return withDriverErrors<MetaStore>({
     async readLeader() {
       const map = readMetaMap(db)
       return {
@@ -758,7 +785,7 @@ export const createSqliteMetaStore = ({
     async writePreferred(kind) {
       writeKey(LEADER_KEYS.preferred, kind, now())
     }
-  }
+  })
 }
 
 /**

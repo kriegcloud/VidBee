@@ -155,7 +155,9 @@ export class TaskQueueAPI {
  hasTask(id:string):Promise<boolean> { return this.promise(this.service.hasTask(id)) }
  rename(id:string,title:string):Promise<void> { return this.promise(this.service.rename(id,title)) }
  relocateFileReferences(from:string,to:string):Promise<void> { return this.promise(this.service.relocateFileReferences(from,to)) }
- list(opts:ListOptions={}):{tasks:Task[];nextCursor:string|null} { return this.sync(this.service.list(opts)) }
+ list(opts:ListOptions={}):{tasks:Task[];nextCursor:string|null} {
+  return this.sync(this.service.list(opts))
+ }
  getTaskLog(id:string):Promise<string|null> { return this.promise(this.service.getTaskLog(id)) }
  cancel(id:string,reason="user"):Promise<void> { return this.promise(this.service.cancel(id,reason)) }
  pause(id:string,reason="user"):Promise<void> { return this.promise(this.service.pause(id,reason)) }

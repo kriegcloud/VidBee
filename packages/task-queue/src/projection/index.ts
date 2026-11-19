@@ -1,6 +1,7 @@
 import * as A from "effect/Array";
 import * as HashSet from "effect/HashSet";
 import * as O from "effect/Option";
+import * as P from "effect/Predicate";
 import * as Str from "effect/String";
 import type {
   LegacyDownloadProgress,
@@ -124,7 +125,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     channel: opts.channel,
     uploader: opts.uploader,
     viewCount: opts.viewCount,
-    tags: opts.tags != null ? [...opts.tags] : undefined,
+    tags: P.isTruthy(opts.tags) && opts.tags != null ? [...opts.tags] : undefined,
     duration: opts.duration,
     playlistId: task.input.playlistId,
     playlistTitle: opts.playlistTitle,
@@ -148,7 +149,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     maxAttempts: task.maxAttempts,
   };
 
-  if (task.kind === "social-media" && proj.collectionSummary != null) {
+  if (task.kind === "social-media" && P.isTruthy(proj.collectionSummary) && proj.collectionSummary != null) {
     const { images, videos, manifestPath } = proj.collectionSummary;
     proj.sourceMediaKind =
       images > 0 && videos === 0 ? "image" : videos > 0 && images === 0 ? "video" : opts.sourceMediaKind;
@@ -169,9 +170,9 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     }
   }
 
-  if (task.output != null) {
+  if (P.isTruthy(task.output) && task.output != null) {
     const out = task.output;
-    if (out.cookieSources != null) {
+    if (P.isTruthy(out.cookieSources) && out.cookieSources != null) {
       proj.cookieSources = A.map(out.cookieSources, (source) => ({ ...source }));
     }
     proj.fileSize = out.size;
@@ -179,7 +180,7 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     // file was recorded (runs before per-asset reporting, empty inspections).
     const manifestPath = proj.collectionSummary?.manifestPath;
     const mediaFilePath =
-      out.filePath !== "" && !(task.kind === "social-media" && out.filePath === manifestPath)
+      P.isTruthy(out.filePath) && !(task.kind === "social-media" && out.filePath === manifestPath)
         ? out.filePath
         : undefined;
     proj.filePath = mediaFilePath;
@@ -199,18 +200,18 @@ export function projectTaskToLegacy(task: Readonly<Task>): LegacyTaskProjection 
     if (out.durationMs != null) {
       proj.duration = Math.round(out.durationMs / 1000);
     }
-    if (out.formatId != null && out.formatId !== "") {
+    if (P.isTruthy(out.formatId) && out.formatId != null && out.formatId !== "") {
       proj.resolvedFormatId = out.formatId;
     }
-    if (out.subtitleStatus !== undefined) {
+    if (P.isTruthy(out.subtitleStatus) && out.subtitleStatus !== undefined) {
       proj.subtitleStatus = out.subtitleStatus;
     }
-    if (out.subtitleLanguages != null) {
+    if (P.isTruthy(out.subtitleLanguages) && out.subtitleLanguages != null) {
       proj.subtitleLanguages = [...out.subtitleLanguages];
     }
   }
 
-  if (task.lastError != null) {
+  if (P.isTruthy(task.lastError) && task.lastError != null) {
     const err = task.lastError;
     proj.errorCategory = err.category;
     proj.uiMessageKey = err.uiMessageKey;

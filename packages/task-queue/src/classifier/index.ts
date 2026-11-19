@@ -2,6 +2,7 @@ import * as A from "effect/Array";
 import * as DateTime from "effect/DateTime";
 import { dual } from "effect/Function";
 import * as Option from "effect/Option";
+import * as P from "effect/Predicate";
 import * as Str from "effect/String";
 import { ClassifierRuleMissing } from "../Classifier.model.js";
 import type { ClassifyInput, ClassifierRule as Rule } from "../Classifier.model.js";
@@ -190,7 +191,7 @@ export function sanitizeOutput(s: string): string {
 }
 
 export const takeStderrTail: { (s: string, bytes?: number): string; (bytes?: number): (s: string) => string } = dual(
-  (args) => typeof args[0] === "string",
+  (args) => args.length >= 2 || (args.length === 1 && args[0] !== undefined && typeof args[0] !== "number"),
   (s: string, bytes = STDERR_TAIL_BYTES): string => {
     if (new TextEncoder().encode(s).length <= bytes) {
       return s;
@@ -209,11 +210,16 @@ export const takeStderrTail: { (s: string, bytes?: number): string; (bytes?: num
  * Accepts both delta-seconds and HTTP-date forms. Returns null on parse
  * failure or if the header is absent.
  */
-export const parseRetryAfter: {
-  (header: string | null | undefined, now: number): number | null;
-  (now: number): (header: string | null | undefined) => number | null;
-} = dual(2, (header: string | null | undefined, now: number): number | null => {
-  if (header == null || header === "") {
+/** The native parser treats zone-less timestamps as UTC. Compatibility callers supply Date.parse. */
+const nativeParseDate = (value: string): number => {
+  const parsed = DateTime.make(value);
+  return Option.isSome(parsed) ? DateTime.toEpochMillis(parsed.value) : Number.NaN;
+};
+export const parseRetryAfterWithDateParser: {
+  (header: string | null | undefined, now: number, parseDate: (value: string) => number): number | null;
+  (now: number, parseDate: (value: string) => number): (header: string | null | undefined) => number | null;
+} = dual(3, (header: string | null | undefined, now: number, parseDate: (value: string) => number): number | null => {
+  if (!P.isTruthy(header) || header == null) {
     return null;
   }
   const trimmed = Str.trim(header);
@@ -227,20 +233,26 @@ export const parseRetryAfter: {
     }
     return null;
   }
-  const parsed = DateTime.make(trimmed);
-  if (Option.isNone(parsed)) {
+  const parsed = parseDate(trimmed);
+  if (!Number.isFinite(parsed)) {
     return null;
   }
-  const delta = DateTime.toEpochMillis(parsed.value) - now;
+  const delta = parsed - now;
   return delta > 0 ? delta : 0;
 });
+export const parseRetryAfter: {
+  (header: string | null | undefined, now: number): number | null;
+  (now: number): (header: string | null | undefined) => number | null;
+} = dual(2, (header: string | null | undefined, now: number) =>
+  parseRetryAfterWithDateParser(header, now, nativeParseDate)
+);
 
 const RETRY_AFTER_REGEX = /Retry-After:\s*([^\r\n]+)/i;
 
-export const classify: {
-  (input: ClassifyInput, now: number): ClassifiedError;
-  (now: number): (input: ClassifyInput) => ClassifiedError;
-} = dual(2, (input: ClassifyInput, now: number): ClassifiedError => {
+export const classifyWithDateParser: {
+  (input: ClassifyInput, now: number, parseDate: (value: string) => number): ClassifiedError;
+  (now: number, parseDate: (value: string) => number): (input: ClassifyInput) => ClassifiedError;
+} = dual(3, (input: ClassifyInput, now: number, parseDate: (value: string) => number): ClassifiedError => {
   const tail = takeStderrTail(input.stderr ?? "");
   const sanitizedTail = sanitizeOutput(tail);
 
@@ -249,13 +261,17 @@ export const classify: {
       continue;
     }
     if (rule.regex.test(tail) || (rule.exitCodeHint != null && input.exitCode === rule.exitCodeHint)) {
-      return buildError(rule, sanitizedTail, input, now);
+      return buildError(rule, sanitizedTail, input, now, parseDate);
     }
   }
   // Fallback: unknown.
   const unknown = getRuleForCategory("unknown");
-  return buildError(unknown, sanitizedTail, input, now);
+  return buildError(unknown, sanitizedTail, input, now, parseDate);
 });
+export const classify: {
+  (input: ClassifyInput, now: number): ClassifiedError;
+  (now: number): (input: ClassifyInput) => ClassifiedError;
+} = dual(2, (input: ClassifyInput, now: number) => classifyWithDateParser(input, now, nativeParseDate));
 
 /**
  * Construct a virtual ClassifiedError (used by Watchdog `stalled` and cancel
@@ -278,14 +294,20 @@ export const virtualError: {
   };
 });
 
-function buildError(rule: Rule, sanitizedTail: string, input: ClassifyInput, now: number): ClassifiedError {
+function buildError(
+  rule: Rule,
+  sanitizedTail: string,
+  input: ClassifyInput,
+  now: number,
+  parseDate: (value: string) => number
+): ClassifiedError {
   let suggestedRetryAfterMs = rule.defaultBackoffMs;
   if (rule.category === "http-429") {
-    const fromInput = parseRetryAfter(input.retryAfterHeader ?? null, now);
+    const fromInput = parseRetryAfterWithDateParser(input.retryAfterHeader ?? null, now, parseDate);
     if (fromInput == null) {
       const m = RETRY_AFTER_REGEX.exec(sanitizedTail);
       if (m !== null && m[1] !== undefined && m[1] !== "") {
-        const fromTail = parseRetryAfter(m[1], now);
+        const fromTail = parseRetryAfterWithDateParser(m[1], now, parseDate);
         if (fromTail != null) {
           suggestedRetryAfterMs = fromTail;
         }

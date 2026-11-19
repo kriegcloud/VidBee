@@ -58,7 +58,11 @@ export const layerFromHandle = (
             }
           },
           catch: failure,
-        }).pipe(Effect.flatMap(S.decodeUnknownEffect(S.Array(S.Array(S.Unknown)))), Effect.mapError(failure));
+        }).pipe(
+          Effect.flatMap((rows) =>
+            S.Unknown.pipe(S.Array, S.Array, S.decodeUnknownEffect)(rows).pipe(Effect.mapError(failure))
+          )
+        );
       const unprepared = (sql: string, params: ReadonlyArray<unknown>) =>
         Effect.try({
           try: () => {
@@ -98,24 +102,35 @@ export const layerFromHandle = (
               "Database access suspended while holding a permit: database access rule 2 requires SQL and pure synchronous work only"
             )
       );
+      const available = Effect.uninterruptible(ensureAvailable);
       const acquirers = Client.makeSqliteAcquirers({
         connection: Effect.succeed(connection),
         semaphore,
-        isTransaction: () => handle.inTransaction,
+        isTransaction: () => {
+          if (!handle.inTransaction) borrowed = undefined;
+          return handle.inTransaction;
+        },
       });
       const client = yield* Client.make({
         ...acquirers,
-        acquirer: Effect.andThen(ensureAvailable, acquirers.acquirer),
-        transactionAcquirer: Effect.andThen(ensureAvailable, acquirers.transactionAcquirer),
-        borrower: (f) => Effect.andThen(ensureAvailable, acquirers.borrower(f)),
+        acquirer: Effect.andThen(available, acquirers.acquirer),
+        transactionAcquirer: Effect.andThen(available, acquirers.transactionAcquirer),
+        borrower: (f) => Effect.andThen(available, acquirers.borrower(f)),
         driver: "better-sqlite3-borrowed",
         spanAttributes: [],
         compiler: Statement.makeCompilerSqlite(),
         begin: (_, statement) =>
           Effect.suspend(() => {
+            borrowed = undefined;
             if (handle.inTransaction) {
               borrowed = `vidbee_borrowed_${++counter}`;
-              return Effect.asVoid(unprepared(`SAVEPOINT ${borrowed}`, []));
+              return Effect.asVoid(unprepared(`SAVEPOINT ${borrowed}`, [])).pipe(
+                Effect.onError(() =>
+                  Effect.sync(() => {
+                    borrowed = undefined;
+                  })
+                )
+              );
             }
             return Effect.asVoid(unprepared(statement ?? "BEGIN IMMEDIATE", []));
           }),
