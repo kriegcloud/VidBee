@@ -82,7 +82,10 @@
     "./ShortLinkResolver.service": "./src/ShortLinkResolver.service.ts",
     "./ShortLinkResolver.layer": "./src/ShortLinkResolver.layer.ts",
     "./InstagramEnqueue.model": "./src/InstagramEnqueue.model.ts",
-    "./InstagramEnqueue.layer": "./src/InstagramEnqueue.layer.ts"
+    "./InstagramEnqueue.layer": "./src/InstagramEnqueue.layer.ts",
+    "./ProcessCapabilities.model": "./src/ProcessCapabilities.model.ts",
+    "./ProcessCapabilities.service": "./src/ProcessCapabilities.service.ts",
+    "./ProcessCapabilities.layer": "./src/ProcessCapabilities.layer.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
