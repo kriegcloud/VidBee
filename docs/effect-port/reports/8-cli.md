@@ -28,7 +28,7 @@ The earlier characterization and implementation evidence below remains historica
 | Private production dependencies | major | Four bundled private packages remained installation requirements; the verifier silently skipped them. | Move them to devDependencies. Pack the real publication manifest, install the tarball offline into an empty synthetic project using cached external runtime closures, and check imports, declarations and both executable starts. Pack hooks apply publishConfig exports and restore source metadata exactly. | `manifest-goldens-before` fails; `verify-dist` installs and checks the packed artifact offline. |
 | Registry response ordering | major | requestText consumed an error body before fetchRegistry could check status. | A status-validation callback runs inside the owned response scope before body access. Registry supplies its original status error. | `regressions-head-confirmed` fails on broken/open 503 bodies; native tests pass with a 1ms TestClock step, before the 5000ms deadline. |
 | Native probe interruption | major | Child and observer fibers belonged to the service layer after probe interruption. | Add optional DownloadProcess.start owner; fork child attempt and observers under it. Each probe supplies its own scoped owner and awaits its closure. | Instrumented stock-driver spawner stays in a live layer: before release count 0; after interruption release count 1 and observer count 0. |
-| Raw argv precedence | major | The native executor decoded unused generated options before selecting raw argv. | Select nonempty raw argv first and decode only its runtime settings; decode full options only for generated argv. | `regressions-head-confirmed` fails on invalid unused type/format; after preserves raw argv and generated behavior for absent/empty raw argv. |
+| Raw argv precedence | major | The native executor decoded unused generated options before selecting raw argv; the first fix still decoded unused settings and rejected formerly successful inputs. | Select nonempty raw argv first, project only cookiesPath/cookieSource with the old nullish/property behavior, and retain full decoding for generated argv. | First-fix proof is historical. Follow-up `8-cli-fix2/regressions-before` reproduces 25 failures on `d59131b`; `regressions-after` passes all 76 native tests, including 160 frozen-reference raw-settings comparisons. |
 | parse-pretty golden | minor | Zero maxAttempts succeeded; JSON parsing erased whitespace evidence. | Use pretty followed by a genuine typo and retain stdout bytes, termination and stderr. | Before golden check fails; frozen executable records compact UNKNOWN_VIDBEE_FLAG JSON plus newline and exit 2. |
 | history-remove golden | minor | The expected count was constructed independently of command results. | Compare every actual removal envelope, stderr and termination, then query history and assert every removed ID is absent. | Before golden shape check fails; updated harness checks removal IDs and actual post-removal history. |
 
@@ -57,6 +57,58 @@ installs from cached external runtime closures with their locked versions and
 scripts disabled; it does not claim a fresh SQLite addon compilation. Real ASR
 is skipped without models. Independent review and phase acceptance remain with
 the orchestrator; native shipping cutover remains phase 9.1/10 work.
+
+
+
+### Finding 4 follow-up: raw runtime settings
+
+- [x] Trace every runtime setting consumed after the raw command returns.
+- [x] Reproduce against `d59131b` with independent frozen-reference expectations.
+- [x] Preserve null/scalar settings and the old consumed-field behavior.
+- [x] Complete CLI check/test, root check/test, dependency and port gates.
+
+The complete settings read set is:
+
+| Setting | Consumer and behavior |
+| --- | --- |
+| `cookiesPath` | `packages/downloader-core/src/yt-dlp-args.ts:1039`: strict equality against the cookie filename parsed from argv, with no trimming, coercion or validation. A nonmatching value falls back to `{ type: "file" }`. |
+| `cookieSource` | `packages/downloader-core/src/yt-dlp-args.ts:1036`: Boolean truthiness, followed at lines 1039-1040 by an undefined guard and object spread only when the cookie filename matches. Falsy values use file attribution; truthy scalar values retain their JavaScript spread result. Unknown properties on a source object survive. |
+
+`packages/downloader-core/src/YtDlpExecutor.layer.ts:149` is the sole post-command
+settings consumer. It passes those settings into cookie attribution; line 228
+copies the resulting metadata into successful output. No runtime settings are
+read by the process adapter. The CLI host's `ffmpeg` and `binary` operations
+(`apps/cli/src/CliLocalExecutor.layer.ts:44-45`) read local client options and
+environment variables, independently of task settings; `prepareSettings` is
+undefined (line 43). Subtitle decisions use argv and command flags, not additional
+settings. The generated branch begins at line 65 and is unchanged.
+
+The regression tests compare the actual native host command and cookie attribution
+against the original methods extracted from the hash-verified frozen library.
+The frozen revision `9dab889` and reference `579b5d1` have identical executor and
+cookie-attribution source files (verified with git diff). Only the three old raw
+command methods and the old cookie helper are evaluated; no old constructor,
+process, owner profile or application is started. The helper's only injected
+operation is ordinary string split. This follows the preceding finding-4 native
+host regression through the existing namespace-isolated native test runner.
+
+There are 32 settings inputs, each exercised with five argv variants (version,
+matching cookie file, nonmatching inline file, revoked cookies and browser cookies
+with config ignored): 160 comparisons. Inputs include absent/null settings,
+all JSON scalar kinds and NaN, an array, unused wrong-typed fields and unknown
+fields. Both consumed fields have wrong-type, falsy and valid cases; source
+objects additionally retain unknown metadata. Expectations are old successful
+results, including `{}` from truthy numeric/boolean cookie sources and indexed
+properties from a string source when the filename matches. Empty and absent raw
+argv retain the existing generated-path regression.
+
+The pre-fix run fails 25 new cases (51 pass), exit 1. After the change all 76
+native tests pass, exit 0. CLI check/test, root `bun run check`,
+`CI=true bun run test`, `deps:check` and `port:check` each exit 0; logs and matching
+exit files are in the orchestrator's `8-cli-fix2` lane. This is local source and
+native-host proof. This follow-up does not rerun packaging, the distribution
+install, desktop goldens or deployment; the earlier receipts above remain
+historical evidence. Independent review remains with the orchestrator.
 
 
 ## Audit of the characterization suite

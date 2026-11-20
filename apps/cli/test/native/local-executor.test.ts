@@ -3,9 +3,12 @@ import { expect, layer } from "@effect/vitest";
 import { DownloadFilesLive } from "@vidbee/downloader-core/DownloadFiles.layer";
 import { DownloadHost } from "@vidbee/downloader-core/DownloadHost.service";
 import { YtDlpExecutorHost } from "@vidbee/downloader-core/YtDlpExecutorHost.service";
+import { DataFirst as YtDlpArgs } from "@vidbee/downloader-core/yt-dlp-args";
+import * as A from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as MutableHashMap from "effect/MutableHashMap";
+import { oldRawObservation } from "../../../../scripts/cli/characterization/raw-settings-oracle.mjs";
 import { CliHost } from "../../src/CliHost.service.js";
 import { CliLocalLive } from "../../src/CliLocal.layer.js";
 import { CliLocal } from "../../src/CliLocal.service.js";
@@ -59,6 +62,75 @@ layer(
       MutableHashMap.remove(environment, "FFMPEG_PATH");
     })
   );
+  const rawSettingsCases: ReadonlyArray<readonly [string, unknown]> = [
+    ["absent", undefined],
+    ["null", null],
+    ["number", 42],
+    ["zero", 0],
+    ["true", true],
+    ["false", false],
+    ["string", "unused"],
+    ["empty string", ""],
+    ["NaN", Number.NaN],
+    ["array", ["unused"]],
+    ["wrong unused fields", { downloadPath: 42, downloadSubtitles: "unused", browserForCookies: false }],
+    ["unknown fields", { extra: { nested: 42 } }],
+    ...A.map(
+      [null, false, 0, "", 42, true, Number.NaN, "/fixture/cookies", "/fixture/other"],
+      (cookiesPath): readonly [string, unknown] => [
+        `cookiesPath ${String(cookiesPath)}`,
+        { cookiesPath, cookieSource: { type: "browser", browser: "firefox" } },
+      ]
+    ),
+    ...A.map(
+      [
+        undefined,
+        null,
+        false,
+        0,
+        "",
+        42,
+        true,
+        Number.NaN,
+        "raw",
+        { type: "file" },
+        { type: "browser", browser: "firefox", extra: "retained" },
+      ],
+      (cookieSource): readonly [string, unknown] => [
+        `cookieSource ${String(cookieSource)}`,
+        { cookiesPath: "/fixture/cookies", cookieSource },
+      ]
+    ),
+  ];
+  for (const [name, settings] of rawSettingsCases) {
+    it.effect(`raw settings match frozen executor: ${name}`, () =>
+      Effect.gen(function* () {
+        const host = yield* YtDlpExecutorHost;
+        for (const rawArgs of [
+          ["--version"],
+          ["--ignore-config", "--cookies", "/fixture/cookies"],
+          ["--cookies=/fixture/other"],
+          ["--cookies", "/fixture/cookies", "--no-cookies"],
+          ["--ignore-config", "--cookies-from-browser", "firefox:profile"],
+        ]) {
+          const input = {
+            kind: "yt-dlp-forward" as const,
+            url: "https://example.invalid/v",
+            rawArgs,
+            options: settings === undefined ? {} : { settings },
+          };
+          const expected = oldRawObservation(input);
+          const command = yield* host.command(input);
+          expect({
+            args: command.args,
+            cookieSources: YtDlpArgs.cookieSourcesFromArgs(command.args, command.settings),
+            initialSubtitleStatus: command.initialSubtitleStatus,
+            canRetryWithoutSubtitles: command.canRetryWithoutSubtitles,
+          }).toEqual(expected);
+        }
+      })
+    );
+  }
   it.effect("raw argv bypasses unused invalid generated options; empty and absent argv generate", () =>
     Effect.gen(function* () {
       const host = yield* YtDlpExecutorHost;

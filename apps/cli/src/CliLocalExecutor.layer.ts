@@ -49,15 +49,19 @@ export const executorHostLayer = (options: LocalClientOptions) =>
         }),
         lowerPriority: Effect.fn("CliLocal.lowerPriority")(() => Effect.void),
         command: Effect.fn("CliLocal.command")(function* (input) {
-          if (input.rawArgs !== undefined && input.rawArgs.length > 0)
+          if (input.rawArgs !== undefined && input.rawArgs.length > 0) {
+            // Raw execution only uses these fields for cookie-source attribution.
+            // Keep the old nullish/property behavior; generated options decode below.
+            const rawOptions: YtDlpTaskOptions = input.options ?? {};
+            const settings = rawOptions.settings;
             return {
               args: [...input.rawArgs],
-              settings: yield* S.decodeUnknownEffect(YtDlpTaskOptions.fields.settings)(input.options?.settings).pipe(
-                Effect.map((settings) => settings ?? {})
-              ),
+              settings:
+                settings == null ? {} : { cookiesPath: settings.cookiesPath, cookieSource: settings.cookieSource },
               initialSubtitleStatus: undefined,
               canRetryWithoutSubtitles: false,
             };
+          }
           const opts = yield* S.decodeEffect(YtDlpTaskOptions)(input.options ?? {});
           const settings = opts.settings ?? {};
           const type = opts.type ?? (input.kind === "audio" ? "audio" : "video");
