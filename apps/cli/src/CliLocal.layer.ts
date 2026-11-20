@@ -1,3 +1,5 @@
+import * as Migrations from "@vidbee/db/Migrations.layer";
+import { DbSchema } from "@vidbee/db/Migrations.service";
 import { LegacyTiming } from "@vidbee/task-queue/LegacyTiming.service";
 import * as Output from "@vidbee/task-queue/OutputProbe.layer";
 import * as Processes from "@vidbee/task-queue/ProcessControl.driver";
@@ -19,26 +21,44 @@ import * as Scope from "effect/Scope";
 import * as SqlClient from "effect/sql/SqlClient";
 import { CliFailure } from "./Cli.errors.js";
 import { CliLocal } from "./CliLocal.service.js";
+import { executorLayer } from "./CliLocalExecutor.layer.js";
 import { originalMessage } from "./transport/descriptor.js";
+import type { DownloadHost } from "@vidbee/downloader-core/DownloadHost.service";
 import type * as FileSystem from "effect/FileSystem";
+import type * as Path from "effect/Path";
 import type * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
+import type { CliHost } from "./CliHost.service.js";
 import type { LocalSession } from "./Connection.model.js";
 
 const failure = (cause: unknown) => CliFailure.make({ message: originalMessage(cause), cause });
-/** Each open owns a new kernel/store/events scope. The caller supplies its native
- * downloader TaskExecutor and, for SQLite, its already owned SqlClient. */
+/** Each open owns a new kernel/store/events scope and a default native executor.
+ * Callers may supply an executor and, for SQLite, their already owned SqlClient. */
 export const CliLocalLive = Layer.effect(
   CliLocal,
   Effect.gen(function* () {
     const dependencies = yield* Effect.context<
-      TaskExecutor | FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner
+      DownloadHost | CliHost | Path.Path | FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner
     >();
+    const suppliedExecutor = yield* Effect.serviceOption(TaskExecutor);
     const sql = yield* Effect.serviceOption(SqlClient.SqlClient);
     const parent = yield* Effect.scope;
     return CliLocal.of({
       open: Effect.fn("CliLocal.open")(function* (options = {}) {
         if (options.persist === "sqlite" && sql._tag === "None")
           return yield* CliFailure.make({ message: "native SQLite requires a supplied SqlClient" });
+        if (options.persist === "sqlite" && sql._tag === "Some") {
+          const initialized = yield* Layer.buildWithScope(
+            Migrations.layer.pipe(Layer.provide(Layer.succeed(SqlClient.SqlClient, sql.value))),
+            parent
+          );
+          yield* Context.get(initialized, DbSchema).applyTaskQueue.pipe(Effect.mapError(failure));
+          yield* Effect.gen(function* () {
+            yield* sql.value.unsafe("PRAGMA journal_mode = WAL");
+            yield* sql.value.unsafe("PRAGMA synchronous = NORMAL");
+            yield* sql.value.unsafe("PRAGMA foreign_keys = ON");
+          }).pipe(Effect.ignore);
+        }
+
         const persistence =
           options.persist === "sqlite" && sql._tag === "Some"
             ? Persistence.layerSql.pipe(Layer.provide(Layer.succeed(SqlClient.SqlClient, sql.value)))
@@ -53,7 +73,9 @@ export const CliLocalLive = Layer.effect(
           Output.layer,
           Processes.layer,
           LegacyTiming.layer,
-          Layer.succeed(TaskExecutor, Context.get(dependencies, TaskExecutor))
+          suppliedExecutor._tag === "Some"
+            ? Layer.succeed(TaskExecutor, suppliedExecutor.value)
+            : executorLayer(options)
         );
         const internal = Queue.internalLayers({ maxConcurrency: options.maxConcurrency ?? 4 });
         const graph = Queue.layer({ maxConcurrency: options.maxConcurrency ?? 4 }).pipe(

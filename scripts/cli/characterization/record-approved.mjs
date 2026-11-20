@@ -25,7 +25,11 @@ for(const number of ['1e999','-1e999']){
   const scenario={id:'cache '+number,kind:'cache',raw:'{"version":"2.0","fetchedAt":'+number+'}'};
   observations.push({...scenario,old:encode(await observeApproved(old,scenario)),new:encode(await observeApproved(old,{...scenario,raw:'{}'}))});
 }
-writeFileSync(new URL('./approved-changes.json',import.meta.url),JSON.stringify({switch:'VIDBEE_CLI_PORTED=1',observations,
+for(const finished of [false,true]) {
+  const scenario={id:finished?'deadline body finishes':'deadline fires',kind:'deadline-clear',finished};
+  observations.push({...scenario,old:encode(await observeApproved(old,scenario)),new:encode({cleared:finished?[1]:[]})});
+}
+writeFileSync(new URL('./approved-changes.json' ,import.meta.url),JSON.stringify({switch:'VIDBEE_CLI_PORTED=1',observations,
 outputCompletion:{old:{code:0,signal:null,stderr:'',stdout:'nonempty prefix of complete document; kernel-dependent length'},new:{slow:'exact complete rendered document plus newline',closed:{code:'nonzero',signal:null,stderrWhenOpen:'nonempty'}}},
 metadata:{old:{main:'./dist/index.mjs',types:'./dist/index.d.mts'},new:{main:'./dist/library/index.js',types:'./dist/library/index.d.ts',entries:{'.':'index','./parser':'parser/index','./envelope':'envelope/index'}}},
 registrySyntax:['{','{\n"x":}',''].map(raw=>{let message;try{JSON.parse(raw);}catch(error){message=error.message;}return {raw,old:message,new:'Expected a valid JSON string'};})},null,2)+'\n');

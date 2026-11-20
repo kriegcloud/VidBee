@@ -149,7 +149,7 @@ if (!(args.includes('--loopback-only') || args.includes('--subscriptions-only'))
     throw new Error(`Unexpected boot log: ${JSON.stringify(boot)}`)
   }
   await runCases({ mcp, http: client.http, profileDir: path.join(runDir, 'userdata'), record })
-  await runCliCases({ runDir, record, command })
+  await runCliCases({ runDir, record, command, client, build, roots })
   const finalLog = await readFile(path.join(runDir, 'userdata/logs/main.log'), 'utf8')
   const unexpectedErrors = finalLog
     .split('\n')

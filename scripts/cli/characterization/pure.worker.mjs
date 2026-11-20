@@ -39,3 +39,14 @@ test('public scanner pins all priority and target spellings and transport preced
     }
   }
 });
+
+test('envelope encoding failures throw synchronously for BigInt and cyclic results',()=>{
+  const cyclic={};cyclic.self=cyclic;
+  const records=JSON.parse(readFileSync(new URL('../../../fixtures/cli-pre-port/encoding-results.json',import.meta.url),'utf8'));
+  for(const [index,result] of [1n,cyclic].entries()) {
+    const vector={fn:'renderEnvelope',args:[{ok:true,mode:'subcommand',subcommand:'fixture',result}]};
+    const before=observe(reference,vector);
+    assert.equal(encode(before),records[index]);assert.equal(before.engine,true);
+    assert.throws(()=>candidate.renderEnvelope(...vector.args));
+  }
+});

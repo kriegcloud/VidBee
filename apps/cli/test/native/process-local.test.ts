@@ -1,5 +1,6 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { expect, layer } from "@effect/vitest";
+import { DownloadHost } from "@vidbee/downloader-core/DownloadHost.service";
 import { layer as nativeProcess } from "@vidbee/downloader-core/Process.driver";
 import { requestLayer } from "@vidbee/task-queue/ProcessControl.driver";
 import { TaskExecutor } from "@vidbee/task-queue/TaskExecutor.service";
@@ -23,7 +24,16 @@ const executor = Layer.succeed(TaskExecutor, {
     Effect.succeed({ cancel: Effect.fn("fixture.cancel")(() => Effect.void), pause: Effect.void })
   ),
 });
-const node = Layer.mergeAll(NodeServices.layer, host, executor);
+const downloadHost = Layer.succeed(DownloadHost, {
+  platform: () => fixtureHost.platform,
+  homeDirectory: () => fixtureHost.homeDirectory,
+  tempDirectory: () => fixtureHost.homeDirectory,
+  environment: () => ({}),
+  setEnvironment: Effect.fn("fixture.setEnvironment")(() => Effect.void),
+  makeAbortController: () => new AbortController(),
+  uuid: () => "fixture-id",
+});
+const node = Layer.mergeAll(NodeServices.layer, host, executor, downloadHost);
 const probeProcess = CliProbeProcessLive.pipe(
   Layer.provide(nativeProcess.pipe(Layer.provide(requestLayer))),
   Layer.provide(node)

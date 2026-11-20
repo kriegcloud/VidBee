@@ -15,7 +15,9 @@
     "./legacy/task-queue": "./src/legacy/task-queue.ts",
     "./legacy/subscriptions": "./src/legacy/subscriptions.ts",
     "./legacy/transcripts": "./src/legacy/transcripts.ts",
-    "./legacy/prompt-runs": "./src/legacy/prompt-runs.ts"
+    "./legacy/prompt-runs": "./src/legacy/prompt-runs.ts",
+    "./Migrations.layer": "./src/Migrations.layer.ts",
+    "./Migrations.service": "./src/Migrations.service.ts"
   },
   "types": "./src/history.ts",
   "scripts": {

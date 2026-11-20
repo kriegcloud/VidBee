@@ -15,7 +15,7 @@ writeFileSync(join(pkg,'package.json'),JSON.stringify(metadata));
 for(const name of readdirSync(join(repo,'node_modules'))){
   if(name.startsWith('.'))continue;
   if(name==='@vidbee'){
-    for(const child of readdirSync(join(repo,'node_modules',name)))if(child!=='cli')symlinkSync(join(repo,'node_modules',name,child),join(modules,name,child));
+    continue;
   }else symlinkSync(join(repo,'node_modules',name),join(modules,name));
 }
 copyFileSync(join(repo,'scripts/cli/fixtures/declaration-consumer.mts'),join(consumer,'consumer.mts'));

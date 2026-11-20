@@ -140,6 +140,20 @@
       "raw": "{\"version\":\"2.0\",\"fetchedAt\":-1e999}",
       "old": "{\"value\":{\"current\":\"1.0\",\"latest\":\"2.0\",\"upToDate\":false,\"cached\":false,\"cachedAt\":\"1970-01-01T00:00:01.000Z\",\"registryUrl\":\"https://registry.npmjs.org/@vidbee/cli/latest\",\"installCommands\":{\"npm\":\"npm install -g @vidbee/cli\",\"pnpm\":\"pnpm add -g @vidbee/cli\",\"bun\":\"bun install -g @vidbee/cli\",\"brew\":\"brew upgrade vidbee/tap/vidbee\"}},\"fetched\":1,\"bytes\":\"{\\\"version\\\":\\\"2.0\\\",\\\"fetchedAt\\\":1000}\"}",
       "new": "{\"value\":{\"current\":\"1.0\",\"latest\":\"2.0\",\"upToDate\":false,\"cached\":false,\"cachedAt\":\"1970-01-01T00:00:01.000Z\",\"registryUrl\":\"https://registry.npmjs.org/@vidbee/cli/latest\",\"installCommands\":{\"npm\":\"npm install -g @vidbee/cli\",\"pnpm\":\"pnpm add -g @vidbee/cli\",\"bun\":\"bun install -g @vidbee/cli\",\"brew\":\"brew upgrade vidbee/tap/vidbee\"}},\"fetched\":1,\"bytes\":\"{\\\"version\\\":\\\"2.0\\\",\\\"fetchedAt\\\":1000}\"}"
+    },
+    {
+      "id": "deadline fires",
+      "kind": "deadline-clear",
+      "finished": false,
+      "old": "{\"cleared\":[1]}",
+      "new": "{\"cleared\":[]}"
+    },
+    {
+      "id": "deadline body finishes",
+      "kind": "deadline-clear",
+      "finished": true,
+      "old": "{\"cleared\":[1]}",
+      "new": "{\"cleared\":[1]}"
     }
   ],
   "outputCompletion": {

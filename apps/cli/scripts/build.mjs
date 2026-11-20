@@ -10,8 +10,8 @@
  * as an `optionalDependency` only when crash-recovery is wanted.
  */
 import { build } from 'esbuild'
-import { mkdirSync, chmodSync, rmSync, realpathSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { mkdirSync, chmodSync, rmSync, realpathSync, existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs'
+import { dirname, join, resolve, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
@@ -27,8 +27,64 @@ mkdirSync(dist, { recursive: true })
 mkdirSync(join(dist, 'bin'), { recursive: true })
 
 const sourceRoot = realpathSync(join(root, 'src'))
-const compiler = spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.resolve('tsrs/package.json'))), 'bin', 'tsrs'), '-p', join(dirname(sourceRoot), 'tsconfig.json'), '--outDir', join(dist, 'library'), '--tsBuildInfoFile', join(dist, 'library', 'tsconfig.tsbuildinfo')], { cwd: root, stdio: 'inherit' })
+const compiler = spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.resolve('tsrs/package.json'))), 'bin', 'tsrs'), '-p', join(dirname(sourceRoot), 'tsconfig.json'), '--emitDeclarationOnly', '--outDir', join(dist, 'library'), '--tsBuildInfoFile', join(dist, 'library', 'tsconfig.tsbuildinfo')], { cwd: root, stdio: 'inherit' })
 if (compiler.status !== 0) process.exit(compiler.status ?? 1)
+
+// Keep shared service identities across all three public entries.
+const metadata = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
+await build({
+  entryPoints: ['index', 'parser/index', 'envelope/index'].map(name => join(sourceRoot, name + '.ts')),
+  outbase: sourceRoot,
+  outdir: join(dist, 'library'),
+  bundle: true,
+  splitting: true,
+  format: 'esm',
+  platform: 'node',
+  target: 'node20',
+  external: Object.keys(metadata.dependencies).filter(name => !name.startsWith('@vidbee/')),
+})
+
+// Copy private declaration closures, preserving each package's relative layout.
+// Resolve through package metadata rather than relying on a node_modules layout.
+const workspace = resolve(sourceRoot, '../../..')
+const pending = [join(dist, 'library')]
+const copied = []
+function rewriteDeclarations(directory) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const file = join(directory, entry.name)
+    if (entry.isDirectory()) { rewriteDeclarations(file); continue }
+    if (!entry.name.endsWith('.d.ts')) continue
+    const text = readFileSync(file, 'utf8').replace(/(from\s*|import\()(["'])@vidbee\/([^/"']+)([^"']*)\2/g, (_match, prefix, quote, name, subpath) => {
+      const packageRoot = name === 'cli' ? dirname(sourceRoot) : join(workspace, 'packages', name)
+      const info = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'))
+      const exported = info.exports['.' + subpath]
+      const target = (typeof exported === 'string' ? exported : exported?.types) ?? (existsSync(join(packageRoot, 'src', subpath.slice(1) + '.ts')) ? './src' + subpath + '.ts' : undefined)
+      if (!target?.startsWith('./src/')) throw Error('No declaration export for @vidbee/' + name + subpath)
+      const internal = name === 'cli' ? join(dist, 'library') : join(dist, 'library/internal', name)
+      if (name !== 'cli' && !copied.includes(name)) {
+        copied.push(name)
+        const emitted = join(dist, '.declarations', name)
+        const declarations = spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.resolve('tsrs/package.json'))), 'bin', 'tsrs'), '-p', join(packageRoot, 'tsconfig.json'), '--emitDeclarationOnly', '--outDir', emitted, '--tsBuildInfoFile', join(emitted, 'tsconfig.tsbuildinfo')], { cwd: root, stdio: 'inherit' })
+        if (declarations.status !== 0) process.exit(declarations.status ?? 1)
+        copyDeclarations(emitted, internal)
+        pending.push(internal)
+      }
+      let specifier = relative(dirname(file), join(internal, target.slice(6).replace(/\.ts$/, '.js'))).replaceAll('\\', '/')
+      if (!specifier.startsWith('.')) specifier = './' + specifier
+      return prefix + quote + specifier + quote
+    })
+    writeFileSync(file, text)
+  }
+}
+function copyDeclarations(source, target) {
+  mkdirSync(target, { recursive: true })
+  for (const entry of readdirSync(source, { withFileTypes: true })) {
+    if (entry.isDirectory()) copyDeclarations(join(source, entry.name), join(target, entry.name))
+    else if (entry.name.endsWith('.d.ts')) writeFileSync(join(target, entry.name), readFileSync(join(source, entry.name)))
+  }
+}
+while (pending.length) rewriteDeclarations(pending.shift())
+rmSync(join(dist, '.declarations'), { recursive: true, force: true })
 
 await build({
   entryPoints: [join(dirname(sourceRoot), '..', 'cli-legacy', 'src', 'entry.ts')],

@@ -388,7 +388,7 @@ test('injected HTTP deadline lasts through body consumption without elapsed-time
       globalThis.clearTimeout=id=>cleared.push(id);
       const client=new module.AutomationClient({baseUrl:'http://fixture.invalid',token:'fixture',skipHandshake:true,requestTimeoutMs:123,fetch:async(_url,init)=>({ok:true,status:200,statusText:'OK',text:()=>new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>reject(Error('fixture body aborted')));queueMicrotask(()=>scheduled[0].callback());})})});
       await assert.rejects(client.stats(),{message:'automation request failed: fixture body aborted'});
-      assert.deepEqual(scheduled.map(v=>v.ms),[123]);assert.deepEqual(cleared,[1]);
+      assert.deepEqual(scheduled.map(v=>v.ms),[123]);assert.deepEqual(cleared,JSON.parse(approved.observations.find(value=>value.id==='deadline fires')[module===old||!ported?'old':'new']).cleared);
     }finally{globalThis.setTimeout=originalSet;globalThis.clearTimeout=originalClear;}
   }
 });

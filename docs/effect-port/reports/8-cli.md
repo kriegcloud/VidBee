@@ -251,159 +251,128 @@ design coverage.
 
 ## Implementation (2026-11-19)
 
-This section describes the Effect implementation after the characterization
-commit. The earlier sections remain the historical characterization report.
-**Acceptance is incomplete.** The strict source and test configurations pass,
-and `port:check` reports zero violations, but that does not establish a finished
-phase. The built library entries and a frozen timer observation are blocked as
-set out below. The JSON encoding failure contract is also unresolved. Native local composition
-and the complete native failure/resource matrix need further work before cutover.
+The strict CLI and narrow compatibility host are implemented. This section
+supersedes the earlier implementation attempt; the preceding characterization
+sections remain historical. All requested local implementation and verification steps are complete after a
+host restart. Interrupted commands are excluded from completed proof; independent
+phase acceptance remains with the orchestrator.
 
 ### Progress
 
-- [x] Read the complete lane rules, reviewed design, port guide, goldens guide and characterization handoff.
-- [x] Keep the permanent reference artifacts and characterization assertions unchanged.
-- [x] Add parser, envelope, descriptor, automation, upgrade, probe and connection models and schema-backed errors.
-- [x] Keep the original pure helper call shapes and add the required optional pipeable forms.
-- [x] Pass the unchanged 2,207-observation pure oracle and priority/target cross product.
-- [x] Define Context.Service contracts and native Effect implementations for program, output, host inputs, descriptor/liveness, HTTP sessions, connection/autostart, probes and version/upgrade.
-- [x] Add the narrow private host for local legacy owners, raw probes and detached launchers.
-- [x] Qualify the exact signal-zero liveness driver with the full source/test diagnostics and ratchet.
-- [x] Add strict native service tests and isolated host tests; retain resource and coverage limits below.
-- [x] Emit the library/declarations before the executable with one initial clean; preserve bin paths and shim bytes.
-- [x] Add an export manifest for each public entry and an external emitted-declaration consumer fixture.
-- [x] Repair packaged command capture to collect through child close and pipe closure, with bounded failure.
-- [ ] Complete built-library import/distribution proof with source unavailable.
-- [ ] Pass every frozen execution observation with the specified native mechanisms.
-- [ ] Finish the complete native success/failure/interruption/finalizer matrix for every service and layer.
-- [ ] Finish the complete requested whole-repository, packaged, alternate-path, loaded-core and repetition gates.
-- [ ] Establish phase acceptance and native phase-9.1/10 cutover readiness.
+- [x] Implement strict schemas, pure helpers, services, native layers and program.
+- [x] Retain the shipping host for the reviewed raw-process and legacy-owner boundary.
+- [x] Resolve the three decisions in design sections 12.12–12.14.
+- [x] Verify source-unavailable library imports, declarations and executable paths.
+- [x] Compose the default native executor and SQL DDL startup.
+- [x] Add separate borrowed/node-client restart and synthetic file-copy codec evidence.
+- [x] Record 19 extended packaged CLI documents from the frozen pre-port executable and pre-port desktop build.
+- [x] Complete the final gate, five consecutive extended packaged suites and 40-run repetition matrix.
+- [ ] Independent orchestrator review and phase acceptance.
 
 ### Implementation and ownership
 
-The strict unit contains the calculations and Effect service implementations.
-`CliHost` receives platform, home and executing-artifact inputs and performs fresh
-configuration reads. Descriptor and cache policies retain their distinct empty
-string and BOM behavior. HTTP uses FetchHttpClient with propagation disabled;
-per-session token state preserves supplied-token and concurrent-renewal behavior.
-Requests own transport/body scopes and Effect deadlines. Final Stdio sinks use
-`endOnDone: true`. The handler-free host entry awaits `Effect.runPromiseExit`,
-then performs explicit process exit; it installs no signal handlers.
+`CliLocalLive` creates a queue/store/events scope per open. It accepts an optional
+injected TaskExecutor; otherwise `CliLocalExecutor.layer.ts` composes the native
+downloader process, wrapper, files, timing and executor layers. The native host
+resolves YTDLP_PATH/FFMPEG_PATH lazily with nullish option precedence, preserves
+raw argv precedence, applies generated download options and the configured or
+home-relative default directory, and supplies scoped cancellation. DownloadHost
+remains an explicit native composition input. This avoids inventing the phase-10
+home-directory capability.
 
-`CliLocalLive` creates a new queue/store/events scope per open and borrows an
-injected native TaskExecutor and optional SqlClient. Its memory lifecycle and
-missing-task/absent-SqlClient branches have native tests. It does **not** yet
-compose the native downloader host from all LocalClientOptions, initialize a
-supplied native SQL database, or establish native SQLite lifecycle equivalence.
-Those missing obligations are not covered by the passing retained-host SQLite
-oracle. In particular, native download-path/binary options currently belong to
-the caller-supplied executor composition rather than being applied by open.
+For SQLite, the caller supplies its owned SqlClient. The CLI invokes the existing
+db migration service's task DDL with no added transaction, then the shared
+best-effort WAL/NORMAL/foreign-keys setup before queue startup. Two leaf migration
+exports in db avoid importing its Drizzle barrel, which eagerly loads node:sqlite
+and would add a warning on shipping paths. CLI never opens a second driver on the
+same file. The host's existing lazy better-sqlite3 route remains unchanged;
+releaseHandle precedes owned close. Native tests exercise borrowed and node
+clients in separate processes, preserve nested unknown input keys, reopen a
+queued task and prove repeated shutdown and borrowed-handle ownership.
 
-The test-only execution adapter provisions strict services and retained local
-host capabilities. It is outside the production export surface. It maps native
-schema-backed failures to the frozen scenario's historical observation shape;
-that does not reintroduce public Promise constructors or a production facade.
+HTTP uses native FetchHttpClient with propagation disabled, per-session token
+state, request scopes through body consumption and Effect deadlines. Output sinks
+complete through `endOnDone: true`. The handler-free shipping entry waits for
+runPromiseExit and explicitly exits without adding signal handlers. Host imports,
+profile isolation and the existing executable byte oracle remain in force.
 
-The Node reference/executable harness moved, with its assertions preserved, from
-`apps/cli/test` to `scripts/cli/characterization`. It still has the same depth for
-repository-relative reference paths. This keeps its independent Node HTTP server
-and process/file guards outside the strict application unit. Only runner path
-literals and the explicitly replaceable execution adapter changed. Native tests
-remain under `apps/cli/test/native` and typecheck under the strict test config.
-All library evaluations, native tests and executable tests use the namespace
-boundary. The host tests use the same boundary.
+### Three decisions and their proof
 
-### Findings that prevent acceptance
+1. **Self-contained libraries (12.12).** One esbuild call bundles all three ESM
+   entries with splitting and inlines private workspace modules. Only npm runtime
+   dependencies remain external. tsrs emits declarations; private declaration
+   closures are emitted, copied under `dist/library/internal/<package>/`, and
+   workspace import specifiers are rewritten to relative paths. The verifier
+   copies the publish layout with only external dependencies: three imports,
+   the external declaration fixture with skipLibCheck disabled, and both
+   executable starts pass. No dependency was added. The executable build options,
+   shim and tracked executable artifact remain the established ones.
+2. **Fired deadline (9.7, 12.13).** record-approved.mjs records old fired and
+   before-deadline completion cases. The approved `deadline-clear` observations
+   select old `[1]` versus native `[]` only after firing. Both require `[1]` when
+   the body completes first. Only the cleared-list expectation in the frozen
+   deadline assertion changes; scheduling and rejection assertions remain exact.
+3. **Encoding failures (9.8, 12.14).** Two additive frozen observations come from
+   the old library: BigInt and cyclic result values are engine failures. The pure
+   oracle requires a synchronous throw from the new helper without comparing or
+   reconstructing engine text. Existing finite pure records remain unchanged.
 
-1. **The specified library emission does not produce importable Node entries.**
-   The exact shipping build emits JavaScript/declarations using tsrs. The emitted
-   entries retain `@vidbee/schema/LiteralKit` and other private workspace imports.
-   Their current export metadata resolves to TypeScript source whose relative
-   `.js` re-exports are absent. Under pinned Node, all three built CLI imports
-   fail with `ERR_MODULE_NOT_FOUND` for
-   `packages/schema/src/LiteralKit/LiteralKit.errors.js`. This happens even with
-   the dependency source available, before a fully standalone/source-unavailable
-   layout could be proved. A different library bundling/dependency-publication
-   mechanism would change the specified build strategy, so this part is stopped
-   for architectural resolution. `verify-dist` now performs the actual isolated
-   import/start checks and reports this failure instead of checking file existence.
+### Service/layer and defect coverage
 
-2. **The frozen injected deadline requires clearing an already-fired timer.**
-   The old implementation unconditionally calls clearTimeout in finally. Native
-   Effect Clock.sleep clears its handle on interruption, and a completed timer
-   has already expired. A focused isolated diagnostic records native registration
-   before body consumption, deadline firing, response abort and the retained
-   body-read error. It does not record clearTimeout for that completed handle.
-   The unedited `injected HTTP deadline lasts through body consumption without
-   elapsed-time assertions` case requires `cleared === [1]`. The public Clock API
-   exposes no completed timer handle to clear. A test-only clock that emulates
-   unconditional clearing was explored and removed; it is not acceptance proof.
-   No compatibility HTTP/timer driver or assertion change is retained. This
-   observation is left blocked under the brief's stop-and-report instruction.
+All executions below run inside the existing user/mount/network/PID isolation,
+with masked owner configuration/install paths and synthetic HOME. The standalone
+library verifier has CLI source and private workspace packages unavailable.
 
-3. **Schema JSON encoding discards required in-type error diagnostics.**
-   `Envelope.result` is `unknown`, so a BigInt or cyclic object in that field is
-   inside the declared pure helper type. The old helper throws TypeError with
-   `Do not know how to serialize a BigInt` or the engine's circular-structure
-   diagnostic. The prescribed Unknown JSON codec throws SchemaError with
-   `Expected a JSON-serializable value` for both. Installed
-   `SchemaGetter.stringifyJson` catches without retaining the original exception
-   (`SchemaGetter.ts:1505–1524`). Section 9 declares syntax-decoding diagnostic
-   changes, not encoding-failure changes. The isolated encoding diagnostic
-   records this gap, which the finite frozen pure corpus does not cover. This
-   part of renderEnvelope is stopped for architectural resolution; no engine
-   diagnostic emulation or global JSON call was added.
+| Services/layers | Success and failures | Interruption and ownership |
+| --- | --- | --- |
+| CliHost, descriptor, PID | Call-time environment, path precedence, absence/read/syntax/shape failures, finite-number policy, exact signal-zero driver | Descriptor acquisition interruption; descriptor files have no retained handle; liveness is synchronous |
+| HTTP, automation | Handshake/token expiry/renewal, status and body failures, unchecked IDs and properties; exact old/new request oracle | Deadline during body; open-response interruption; pending timer cancellation; per-session token isolation |
+| Version, registry, upgrade | Candidate order, malformed/absent files, registry status/syntax/shape errors, cache policy and write recovery | File/HTTP lifetimes delegated to native files/request scopes; pure cache/time policies characterized |
+| Connection, autostart, launcher | Local/API/desktop branches; missing API URL, disabled/unsupported/failed/timed-out launch; exact platform argv | Descriptor interruption; native launcher scoped/unref ownership; raw detached lifetime and signal oracle |
+| Probe/process | Native drain and acquisition failure; raw error/close race, cap crossing, byte tails, null status, signal outcomes | Native scope cleanup; raw direct-child TERM and detached-child observations; capture helper's held-pipe deadline |
+| Local queue/executor/SQL | Independent queues, missing-task/SQL failures, default executor, binary/options precedence, typed command failure, both-client DDL and reopen | Explicit idempotent stop; scope owns queue/process lifetimes; caller owns SQL handle; borrowed runtime releases before close |
+| Program/output | Parse/version/probe/upgrade/command codes, typed command and output failures, complete stdout/stderr bytes | Command interruption and output failure each finalize the acquired connection; pipe closure and sink failure tests |
 
-The first executable run that got through setup passed all 263 executable
-vectors and the normal output/signal groups, but failed several library-adapter
-cases. Those adapter issues were repaired. An intermediate run timed out while diagnosing timer registration order.
-After registering the deadline fiber immediately, the full root test completed:
-579/580 audit tests passed and 34/35 CLI groups passed. The only assertion
-mismatch was the frozen completed-timer clear observation (`[]` versus `[1]`).
-This includes a passing 263-vector executable group, but does not establish a
-fully passing oracle or a consecutive-run receipt.
+PORT-GUIDE defect checks: no JS try/finally around yield; finalizers precede work;
+queue ownership is scoped and stop is explicit; immediate child registration is
+covered by existing downloader/queue tests; truthiness and dual optional forms
+remain in the pure and per-field oracle; live queue state and foreign-handle
+identity remain owned by the tested dependency services; compatibility driver
+errors retain the existing unwrapping boundary. No suppression, diagnostic
+lowering, engine-text emulation or fabricated raw native observation was added.
+Synthetic descriptor/cache copies decode without reading any owner file. The SQL
+worker reports counts and the deliberate fetchedAt schema failure only.
 
-### Declared assertion changes
+### Extended packaged cases and projections
 
-None. `approved-changes.json`, `execution-observations.mjs`, `pure-vectors.mjs`
-and every permanent artifact remain unchanged. Existing worker assertions were
-not edited; runner references to their relocated path were updated. Section 9's
-existing old/new expectations remain the only selected behavior exceptions.
-The temporary timer-clock emulation is absent from the final adapter.
+The new cases live in `scripts/cli/golden-cases.mjs`, called from the existing
+packaged CLI stage. The before recording uses the immutable pre-port executable
+and the read-only pre-port packaged desktop. The SQLite seam uses the frozen
+pre-port library for recording and the retained host local-client build for
+comparison; no invented SQLite CLI flag is introduced.
 
-### Build output changes
+The 19 documents add parse/pretty/verb errors, deterministic probe success,
+nonzero and oversize outcomes, real loopback metadata probing, desktop wait
+success/failure/retry-scheduled/paused, pause/resume/cancel/retry, history removal, local memory wait and
+detached teardown, and local SQLite reopen. Events subscribe before admission;
+control waits require a logged GET and positive transfer progress. Raw answers,
+events and requests stay in scratch. Task snapshots omit timing-dependent log
+and progress values, retain ordered progress keys and all other task fields, and
+use the existing named generated-ID/time/path/port normalization. Existing golden
+documents are unchanged. No additional normalization is introduced.
 
-The standalone executable remains `dist/index.mjs`, with the unchanged
-`dist/bin/vidbee.mjs` shim and shebang. The entry is the private host's `entry.ts`.
-Library JavaScript and declarations are emitted under `dist/library` for `.`,
-`./parser` and `./envelope`. The build cleans once before both phases and directs
-incremental state into that output. Scratch distribution builds use the same
-script and real source configuration with a scratch output override.
+### Host exports and build outputs
 
-The tracked `apps/cli/dist/index.mjs` is restored after testing; generated output
-is not part of this source handoff. No permanent reference is regenerated.
-The new external declaration fixture compiles against emitted CLI declarations
-in an external package copy with no CLI source directory. Its other workspace
-dependencies remain available through the installed dependency tree, so that
-receipt is not a standalone dependency-publication or runtime-import proof.
+The three public entries remain `.`, `./parser`, `./envelope`, with their pinned
+export manifests and external declaration consumer. `@vidbee/cli-legacy` remains
+private and unported: `./entry` is the shipping bundle input, `./layers` composes
+the entry and host tests, `./local-client` supplies the retained local owner seam.
+Dependencies remain one-way from host to strict CLI. Existing queue/downloader
+owners retain their own warmed runtimes.
 
-The desktop no longer bundles the CLI (NEX-148; design section 8). No CLI entry
-was added to desktop bundledWorkspacePackages. There is consequently no desktop
-packaged CLI artifact to identify. Standalone bundle/shim proof is separate from
-desktop build/launch proof; the brief's older “desktop bundles the CLI” premise
-cannot be used as an acceptance claim.
-
-### Host package: exports and who uses them
-
-`@vidbee/cli-legacy` is private and unported. Its entries are `./entry` (shipping
-build input), `./layers` (entry composition and isolated host tests), and
-`./local-client` (the retained local-owner test capability). Production dependence
-is one-way from host to strict CLI; the CLI build locates the sibling host entry
-without adding a reverse package dependency. better-sqlite3 remains optional and
-lazily required. The same handle crosses the existing borrowed runtime boundary;
-the compatibility adapter releases it before its owned close. Raw probes retain
-original chunks, error/close events and direct-child TERM; launcher spawn/unref
-retains its old asynchronous-error behavior.
+The desktop does not bundle a CLI (NEX-148, design section 8). Desktop packaged
+launch proof and standalone CLI/shim proof are separate. Generated library output
+is not committed. The tracked executable is restored after golden verification.
 
 ### Old and new exports
 
@@ -437,79 +406,60 @@ pins new schemas, services and layers. It currently records 108 root names/types
 
 ### For OWNER-REVIEW
 
-- Resolve the built-library dependency strategy, fired-timer assertion/native
-  Clock mismatch and JSON encoding failure contract before accepting the phase. No exemption was added.
-- The root API includes `handshakeReply`, a shared schema-backed reply operation
-  used to qualify the frozen injected NaN/Infinity cases. It is an additional
-  explicit public operation for review alongside the export manifests.
-- Complete the native local executor/options and supplied-SqlClient/DDL lifecycle
-  work, and the remaining native failure/interruption matrix. Passing host
-  compatibility tests are not proof of that native composition.
-- The host passes the original better-sqlite3 handle using one direct structural
-  assertion because the legacy transaction generic is narrower than the SDK's
-  Transaction<F>. The copied double assertions were removed; identity is preserved.
-- Owner-data codecs were not exercised on a copy of owner files. No owner profile,
-  descriptor, installation or running process was accessed or changed.
-- No remote HTTPS, live registry, real extractor/authentication, Windows launch or
-  macOS launch proof is claimed. No stage, commit, push, merge, installation or
-  independent review was performed in this implementation session.
+Phase 9.1 retains the native-kernel callback/process-policy and owner-output-pipe
+qualification obligations in design section 8; this lane does not switch shipping
+to native processes. Native executor priority lowering remains a no-op until
+that process-policy cutover. Phase 10 still needs an OS-equivalent home source
+before deleting the host. Real registry HTTPS, authenticated extractors, Windows,
+macOS and real owner-profile operations are outside this synthetic Linux proof.
+The predecessor's additive public `handshakeReply` operation remains pinned in the
+root export manifest for independent API review; this lane does not silently
+approve that public-surface addition. Independent review is arranged by the
+orchestrator, not by this implementation session. No commits, staging, pushes, installations or owner-process signals occur.
 
-### Verification receipts and remaining acceptance work
+### Verification receipts
 
-These receipts belong to this implementation. The earlier characterization
-checklists above remain historical. All CLI evaluation, including native tests,
-source import diagnostics, built-library checks and executable/golden runs,
-used the private namespace/owner-mask harness. Heavy jobs ran sequentially.
+All requested local gates exit 0 under pinned Node 22.23.4 and Bun 1.4.4.
+Logs and exit files are retained in the lane scratch directory; HANDOFF.md lists
+commands, receipts, intended commit boundaries and the remaining phase boundaries.
 
-| Gate | Result | Practical limit |
+| Command/proof | Exit | Receipt |
 | --- | --- | --- |
-| Strict CLI check and isolated test | Pass | Three wrapper tests cover the unchanged pure corpus, 17 focused native tests and export manifests; this is not exhaustive native coverage |
-| Private host check and isolated test | Pass | Four retained host tests; no native local cutover proof |
-| Root check | Pass | 16 ported configurations, zero violations |
-| Root test | Fail | 579/580 audit tests; only completed-timer clear observation differs; later chained stages are not reached |
-| Forced two-core root test | Fail | Exact `TURBO_FORCE=true taskset -c 0-1 bun run test`; 579/580, same timer assertion, 233.3 seconds; no memory-guard failure |
-| Catalog and port ratchet | Pass | No dependency issues; 16 strict configurations, zero violations |
-| Linux desktop build | Pass | AppImage/deb; desktop does not contain a CLI |
-| Standalone CLI build | Pass | New host/program bundle; tracked artifact restored |
-| Distribution verifier | Fail | New bundle and shim start, all three emitted library imports fail |
-| External declaration consumer | Pass | CLI source absent; installed workspace dependencies still present |
-| Existing full packaged suite, twice | Pass | 425 comparisons in each completed run, no document changes; local ASR explicitly skipped without supplied models |
+| CLI check and test | 0 / 0 | cli-check-final.log, cli-test.log |
+| Host check and test | 0 / 0 | host-check.log, host-test.log |
+| Root check and full test | 0 / 0 | root-check-complete.log, root-test-complete.log |
+| deps:check and port:check | 0 / 0 | deps-check.log, port-check.log; 16 ported configs, zero violations |
+| Forced two-core full root test | 0 | two-core-final.log; TURBO_FORCE=true taskset -c 0-1 bun run test |
+| build:linux, scratch uv symlink first on PATH | 0 | build-linux.log; AppImage and deb |
+| Final CLI build and source-unavailable verify-dist | 0 / 0 | cli-build-complete.log, verify-dist-complete.log |
+| Both native SQL client processes | 0 | native-sql-final.log |
+| Relocated-checkout full root test | 0 | second-path-final.log; workspace aliases verified inside copy; copy removed |
+| Five consecutive full extended packaged suites | 0 each | golden-first.log, golden-2.log through golden-5.log; 444 comparisons each |
+| Root/package by UTC/Tokyo, ten full CLI suites each | 0 each | 40 matrix-*.log and .exit pairs; no failures |
 
-The completed packaged runs took 177.8 and 165.6 seconds. An intervening attempt
-was cancelled after detecting insufficient memory; its empty log is excluded.
-The rerun enforced the 15 GB preflight internally. These are two completed
-regression runs, not five consecutive extended-suite passes.
+The five packaged suites take 151.6, 154.1, 156.6, 156.0 and 152.7 seconds.
+Each compares 440 main and four auxiliary documents. Real ASR is explicitly
+skipped because models were not supplied; it is not claimed as proof.
+The 40-run matrix's Node oracle portions take 77.6–112.4 seconds, followed by the
+pure/native/export Vitest wrappers in each run. Both SQL driver processes are
+included. Source/test input hashes match before and after all forty runs.
 
-The design section 9 additional packaged CLI scenarios were not implemented:
-wait and public controls, probe bounds, local memory/SQLite lifecycle and the
-other listed projections still need their specified fixture evidence. The
-bounded capture repair and six focused helper tests are present. Existing
-packaged comparisons do not qualify those missing scenarios.
+The final build occurs after checks because the check script emits raw
+declarations into the same ignored output directory. The build regenerates the
+rewritten publication layout, and its verifier confirms three imports, the
+external consumer with skipLibCheck false, both executable paths, shared export
+identity and no private workspace specifiers. The tracked executable is then
+restored byte-for-byte; its generated candidate is retained only in scratch.
 
-The full root/package by UTC/Asia-Tokyo ten-repeat matrix remains blocked by
-the frozen deadline observation. It is not represented by repeated partial
-suites, nor by the historical pre-port repetition receipt. Native local default
-executor/options/SQL initialization and the full service/layer failure and
-interruption matrix are also unfinished. These are explicit remaining work,
-separate from the three stopped architecture mechanisms above.
+The host restart's interrupted attempt was rerun. Earlier failed attempts are
+retained: initial eager node:sqlite import (resolved by leaf migration exports),
+golden formatting errors, the new test fixture's output-template expectation and
+cleanup-registration race, and the initial relocated-copy EXDEV setup failure.
+None is counted as a pass. The final two-core and relocated/full-root reruns pass.
+No assertion was weakened to resolve a production mismatch beyond the exact
+approved fired-timer expectation; no existing golden/reference artifact changed.
 
-The second-path root gate used an actual source copy under lane scratch with
-relative workspace aliases verified inside the copy, and hardlinked installed
-dependency files. It completed with 579/580 audit tests and the same frozen timer
-assertion in 106.2 seconds. The owned copy was removed immediately afterward.
-Final root check passed after the final source/manifest edits. Separate execution
-of the downstream Turbo test stage passed 18/18 uncached tasks; this does not
-change the failing full-root command's status.
-
-Every later root-test stage also passed when run separately after the failed
-audit: browser-capture legacy audit 28/28, Turbo 18/18 uncached tasks,
-browser-capture legacy units 294/294, checker tests 4/4, and final Vitest 99/99
-in nine files, including the six capture tests. Final catalog check passed.
-The handoff retains exact commands, exits and logs for each stage. No full-root
-pass is claimed by combining these with the failing audit.
-
-Final integrity checks confirm unchanged HEAD and empty staging, no diff in the
-permanent CLI reference/golden documents/tracked bundle or shim, unchanged frozen
-observation/vector/approved bytes, no whitespace errors, and no absolute owner
-home paths in changed/new repository files. The relocated checkout was deleted.
-The implementation remains uncommitted for independent review.
+Final integrity checks confirm HEAD and branch unchanged, nothing staged,
+tracked bundle and permanent reference bytes unchanged, no absolute home paths
+in changed repository files, no relocated checkout left, and git diff --check
+clean. No owner profile/application or installed build was touched.

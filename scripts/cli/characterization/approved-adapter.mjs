@@ -4,6 +4,17 @@ import { join } from 'node:path';
 // Test-only observation boundary. The rewrite replaces this adapter with Effect service
 // provisioning; the scenario names and committed observations remain unchanged.
 export async function observeApproved(module, scenario) {
+  if(scenario.kind==='deadline-clear') {
+    const originalSet=globalThis.setTimeout, originalClear=globalThis.clearTimeout;
+    const scheduled=[], cleared=[];
+    try {
+      globalThis.setTimeout=(callback,ms)=>{scheduled.push({callback,ms});return scheduled.length;};
+      globalThis.clearTimeout=id=>cleared.push(id);
+      const client=new module.AutomationClient({baseUrl:'http://fixture.invalid',token:'fixture',skipHandshake:true,requestTimeoutMs:123,fetch:async(_url,init)=>({ok:true,status:200,statusText:'OK',text:()=>scenario.finished?Promise.resolve('{}'):new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>reject(Error('fixture body aborted')));queueMicrotask(()=>scheduled[0].callback());})})});
+      try { await client.stats(); } catch(error) { if(error.message!=='automation request failed: fixture body aborted') throw error; }
+      return {cleared};
+    } finally { globalThis.setTimeout=originalSet;globalThis.clearTimeout=originalClear; }
+  }
   if(scenario.kind==='descriptor')return module.readDescriptor({pathOverride:'/fixture/descriptor.json',exists:()=>true,readFile:()=>scenario.raw});
   if(scenario.kind==='handshake'){
     const client=new module.AutomationClient({baseUrl:'http://fixture.invalid'});
