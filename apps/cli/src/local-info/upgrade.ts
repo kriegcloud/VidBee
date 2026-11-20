@@ -1,181 +1,113 @@
-/**
- * `vidbee :upgrade` — fetch the npm registry "latest" tag for
- * `@vidbee/cli`, compare with the installed version, and tell the caller
- * which package-manager command to run if newer.
- *
- * Design constraints (NEX-148 §3):
- *   - Do NOT auto-spawn `npm i -g` — sudo / global path / brew vs npm
- *     ownership differs by host; we hand the decision to the user.
- *   - Cache the registry response for ~30 days so we don't hammer npm on
- *     every CLI invocation. Cache file is platform-specific.
- *   - Output is JSON-friendly (Agent envelope).
- */
+import { DownloadFiles } from "@vidbee/downloader-core/DownloadFiles.service";
+import * as Clock from "effect/Clock";
+import * as DateTime from "effect/DateTime";
+import * as Effect from "effect/Effect";
+import * as HttpClient from "effect/http/HttpClient";
+import * as Path from "effect/Path";
+import * as S from "effect/Schema";
+import { CliFailure } from "../Cli.errors.js";
+import { CliHost } from "../CliHost.service.js";
+import { jsonIssue, parseJson, requestText } from "../CliHttp.js";
+import { CliRegistry } from "../CliRegistry.service.js";
+import { CliUpgrade } from "../CliUpgrade.service.js";
+import { originalMessage } from "../transport/descriptor.js";
+import { UpgradeCache } from "../Upgrade.model.js";
+import { compareSemver } from "./semver.js";
+import type { UpgradeCheckInput, UpgradeCheckResult } from "../Upgrade.model.js";
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { homedir, platform } from 'node:os'
-import { dirname, join } from 'node:path'
-
-const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
-const REGISTRY_URL = 'https://registry.npmjs.org/@vidbee/cli/latest'
-const FETCH_TIMEOUT_MS = 5_000
-
-export interface UpgradeCheckInput {
-  current: string
-  /** Override for tests. */
-  fetchLatest?: () => Promise<{ version: string; fetchedAt: number }>
-  /** Override for tests; defaults to platform XDG cache. */
-  cachePath?: string
-  /** Force a fresh registry fetch even if cache is fresh. */
-  force?: boolean
-  /** Inject `Date.now()` for tests. */
-  now?: () => number
-}
-
-export interface UpgradeCheckResult {
-  current: string
-  latest: string
-  upToDate: boolean
-  cached: boolean
-  cachedAt: string | null
-  registryUrl: string
-  installCommands: {
-    npm: string
-    pnpm: string
-    bun: string
-    brew: string
-  }
-}
-
-export async function checkUpgrade(
-  input: UpgradeCheckInput
-): Promise<UpgradeCheckResult> {
-  const now = input.now ?? Date.now
-  const cachePath = input.cachePath ?? defaultCachePath()
-  const fetcher = input.fetchLatest ?? defaultFetchLatest
-
-  let cachedAt: number | null = null
-  let latest: string | null = null
-  if (!input.force) {
-    const cached = readCache(cachePath)
-    if (cached && now() - cached.fetchedAt < CACHE_TTL_MS) {
-      latest = cached.version
-      cachedAt = cached.fetchedAt
+export { compareSemver } from "./semver.js";
+export type { UpgradeCheckInput, UpgradeCheckResult } from "../Upgrade.model.js";
+export const REGISTRY_URL = "https://registry.npmjs.org/@vidbee/cli/latest";
+export const defaultCachePath = Effect.fn("defaultCachePath")(function* () {
+  const host = yield* CliHost;
+  const path = yield* Path.Path;
+  if (host.platform === "win32")
+    return path.join(
+      (yield* host.environment("LOCALAPPDATA")) ?? path.join(host.homeDirectory, "AppData", "Local"),
+      "VidBee",
+      "cli-upgrade-check.json"
+    );
+  if (host.platform === "darwin")
+    return path.join(host.homeDirectory, "Library", "Caches", "VidBee", "cli-upgrade-check.json");
+  const base = (yield* host.environment("XDG_CACHE_HOME")) ?? path.join(host.homeDirectory, ".cache");
+  return path.join(base, "vidbee", "cli-upgrade-check.json");
+});
+const cache = S.decodeEffect(S.fromJsonString(UpgradeCache));
+const write = S.encodeEffect(S.fromJsonString(S.Unknown));
+export const checkUpgradeFiles = Effect.fn("checkUpgradeFiles")(function* (input: UpgradeCheckInput) {
+  const files = yield* DownloadFiles;
+  const path = yield* Path.Path;
+  const cachePath = input.cachePath ?? (yield* defaultCachePath());
+  let latest: string | null = null;
+  let fetchedAt: number | null = null;
+  if (input.force !== true) {
+    const cached = yield* files.read(cachePath).pipe(Effect.flatMap(cache), Effect.option);
+    if (
+      cached._tag === "Some" &&
+      (yield* Clock.currentTimeMillis) - cached.value.fetchedAt < 30 * 24 * 60 * 60 * 1000
+    ) {
+      latest = cached.value.version;
+      fetchedAt = cached.value.fetchedAt;
     }
   }
-
-  let cachedFlag = latest !== null
+  const cached = latest !== null;
   if (latest === null) {
-    const fetched = await fetcher()
-    latest = fetched.version
-    cachedAt = fetched.fetchedAt
-    cachedFlag = false
-    writeCache(cachePath, { version: latest, fetchedAt: cachedAt })
+    const fetched = yield* (yield* CliRegistry).latest;
+    latest = fetched.version;
+    fetchedAt = fetched.fetchedAt;
+    const text = yield* write({ version: latest, fetchedAt }).pipe(Effect.orDie);
+    yield* files
+      .makeDirectory(path.dirname(cachePath), true)
+      .pipe(Effect.andThen(files.write(cachePath, text)), Effect.ignore);
   }
-
-  const upToDate = compareSemver(input.current, latest) >= 0
+  if (fetchedAt !== null && Math.abs(fetchedAt) > 8640000000000000)
+    return yield* CliFailure.make({ category: "range", message: "Invalid time value" });
+  const cachedAt =
+    fetchedAt === null
+      ? null
+      : yield* Effect.try({
+          try: () => DateTime.formatIso(DateTime.makeUnsafe(fetchedAt)),
+          catch: (cause) => CliFailure.make({ message: originalMessage(cause), cause }),
+        });
   return {
     current: input.current,
     latest,
-    upToDate,
-    cached: cachedFlag,
-    cachedAt: cachedAt === null ? null : new Date(cachedAt).toISOString(),
+    upToDate: compareSemver(input.current, latest) >= 0,
+    cached,
+    cachedAt,
     registryUrl: REGISTRY_URL,
     installCommands: {
-      npm: 'npm install -g @vidbee/cli',
-      pnpm: 'pnpm add -g @vidbee/cli',
-      bun: 'bun install -g @vidbee/cli',
-      brew: 'brew upgrade vidbee/tap/vidbee'
-    }
-  }
-}
+      npm: "npm install -g @vidbee/cli",
+      pnpm: "pnpm add -g @vidbee/cli",
+      bun: "bun install -g @vidbee/cli",
+      brew: "brew upgrade vidbee/tap/vidbee",
+    },
+  } satisfies UpgradeCheckResult;
+});
+export const checkUpgrade = Effect.fn("checkUpgrade")(function* (input: UpgradeCheckInput) {
+  return yield* (yield* CliUpgrade).check(input);
+});
 
-async function defaultFetchLatest(): Promise<{
-  version: string
-  fetchedAt: number
-}> {
-  const ctrl = new AbortController()
-  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS)
-  try {
-    const res = await fetch(REGISTRY_URL, {
-      headers: { accept: 'application/json' },
-      signal: ctrl.signal
-    })
-    if (!res.ok) {
-      throw new Error(`registry responded ${res.status}`)
-    }
-    const body = (await res.json()) as { version?: string }
-    if (typeof body.version !== 'string') {
-      throw new Error('registry response missing `version`')
-    }
-    return { version: body.version, fetchedAt: Date.now() }
-  } finally {
-    clearTimeout(timer)
-  }
-}
-
-function readCache(
-  path: string
-): { version: string; fetchedAt: number } | null {
-  try {
-    const raw = readFileSync(path, 'utf-8')
-    const parsed = JSON.parse(raw) as {
-      version?: string
-      fetchedAt?: number
-    }
-    if (
-      typeof parsed.version === 'string' &&
-      typeof parsed.fetchedAt === 'number'
-    ) {
-      return { version: parsed.version, fetchedAt: parsed.fetchedAt }
-    }
-  } catch {
-    // ignore: cache miss
-  }
-  return null
-}
-
-function writeCache(
-  path: string,
-  payload: { version: string; fetchedAt: number }
-): void {
-  try {
-    mkdirSync(dirname(path), { recursive: true })
-    writeFileSync(path, JSON.stringify(payload), 'utf-8')
-  } catch {
-    // best-effort; the user can still rerun :upgrade.
-  }
-}
-
-export function defaultCachePath(): string {
-  const home = homedir()
-  if (platform() === 'win32') {
-    const localAppData = process.env.LOCALAPPDATA ?? join(home, 'AppData', 'Local')
-    return join(localAppData, 'VidBee', 'cli-upgrade-check.json')
-  }
-  if (platform() === 'darwin') {
-    return join(home, 'Library', 'Caches', 'VidBee', 'cli-upgrade-check.json')
-  }
-  const xdg = process.env.XDG_CACHE_HOME ?? join(home, '.cache')
-  return join(xdg, 'vidbee', 'cli-upgrade-check.json')
-}
-
-/**
- * Minimal semver-ish compare so we don't pull in a runtime dep. Treats
- * pre-release tags (`-rc.1`) as lower than the corresponding release.
- * Returns negative if a<b, positive if a>b, 0 if equal.
- */
-export function compareSemver(a: string, b: string): number {
-  const [aMain = '', aPre = ''] = a.split('-', 2)
-  const [bMain = '', bPre = ''] = b.split('-', 2)
-  const aParts = aMain.split('.').map((p) => Number.parseInt(p, 10) || 0)
-  const bParts = bMain.split('.').map((p) => Number.parseInt(p, 10) || 0)
-  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-    const av = aParts[i] ?? 0
-    const bv = bParts[i] ?? 0
-    if (av !== bv) return av - bv
-  }
-  if (aPre === bPre) return 0
-  if (aPre === '') return 1 // 0.1.0 > 0.1.0-rc.1
-  if (bPre === '') return -1
-  return aPre < bPre ? -1 : 1
-}
+export const fetchRegistry = Effect.gen(function* () {
+  const client = yield* HttpClient.HttpClient;
+  const res = yield* requestText(
+    client,
+    "GET",
+    REGISTRY_URL,
+    { accept: "application/json" },
+    undefined,
+    5000,
+    (status) =>
+      status < 200 || status >= 300
+        ? Effect.fail(CliFailure.make({ message: `registry responded ${status}` }))
+        : Effect.void
+  );
+  const body = yield* parseJson(res.bodyText).pipe(
+    Effect.mapError((error) => CliFailure.make({ message: jsonIssue(error.issue) }))
+  );
+  if (body === null)
+    return yield* CliFailure.make({ category: "type", message: "Cannot read properties of null (reading 'version')" });
+  if (!S.is(S.Struct({ version: S.String }))(body))
+    return yield* CliFailure.make({ message: "registry response missing `version`" });
+  return { version: body.version, fetchedAt: yield* Clock.currentTimeMillis };
+});

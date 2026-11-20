@@ -1,0 +1,584 @@
+[
+  {
+    "scenario": {},
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": null
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": false
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": true
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      },
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "error": 0
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": 7
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      },
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "error": ""
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": "disk failure"
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot error\"></div> Error</span></header><div class=\"error-container\"><div class=\"error-header\"><h2 class=\"error-title\">Something went wrong</h2><p class=\"error-description\">Try again in a moment.</p></div><div class=\"error-banner\">disk failure</div><div class=\"action-card\"><p class=\"action-title\">Try again</p><p class=\"action-text\">Retry after a moment.</p><button class=\"secondary-button\" type=\"button\">Retry</button></div></div></div>",
+    "failures": []
+  },
+  {
+    "scenario": {
+      "error": []
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      },
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      }
+    ]
+  },
+  {
+    "scenario": {
+      "error": {}
+    },
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      },
+      {
+        "name": "TypeError",
+        "message": "error.toLowerCase is not a function",
+        "engine": true
+      }
+    ]
+  }
+]

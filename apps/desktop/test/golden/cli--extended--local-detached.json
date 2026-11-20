@@ -1,0 +1,16 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "download",
+    "task": {
+      "id": "<id:1>",
+      "status": "running",
+      "attempt": 1,
+      "maxAttempts": 5,
+      "command": "yt-dlp --ignore-config --no-playlist --retries 0 --fragment-retries 0 --no-part -o <run>/cli-extended/downloads/local-detached.%(ext)s http://127.0.0.1:<port>/cli-local-detached.mp4"
+    }
+  },
+  "stderr": ""
+}

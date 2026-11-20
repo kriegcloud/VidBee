@@ -1,0 +1,10 @@
+{
+  "code": 1,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "PROBE_OUTPUT_TOO_LARGE",
+    "message": "probe stdout exceeded 33554432 bytes"
+  },
+  "stderr": ""
+}

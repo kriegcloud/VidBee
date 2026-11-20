@@ -1,6 +1,7 @@
 import { access } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { runExtendedCliCases } from '../../../../../scripts/cli/golden-cases.mjs'
 
 const cliPath = fileURLToPath(new URL('../../../../cli/dist/index.mjs', import.meta.url))
 const connectionErrors = new Set([
@@ -28,7 +29,7 @@ function parseOutput(text) {
 }
 
 /** Run the built CLI in the caller's offline namespace against this run's descriptor. */
-export async function runCliCases({ runDir, record, command }) {
+export async function runCliCases({ runDir, record, command, client, build, roots }) {
   await access(cliPath)
   const env = {
     ...process.env,
@@ -91,4 +92,5 @@ export async function runCliCases({ runDir, record, command }) {
       throw new Error(`CLI ${name} did not return its expected error envelope`)
     }
   }
+  await runExtendedCliCases({ runDir, record, command, client, build, roots, env })
 }

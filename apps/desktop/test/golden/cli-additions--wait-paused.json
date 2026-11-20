@@ -1,0 +1,29 @@
+{
+  "task": {
+    "id": "<id:1>",
+    "kind": "yt-dlp-forward",
+    "parentId": null,
+    "url": "http://127.0.0.1:<port>/slow-cli-pause.mp4",
+    "status": "paused",
+    "attempt": 1,
+    "maxAttempts": 0,
+    "nextRetryAt": null,
+    "error": null,
+    "filename": null,
+    "automaticRetry": false,
+    "children": [],
+    "childrenNextCursor": null,
+    "groupKey": "127.0.0.1:<port>",
+    "createdAt": "<timestamp>",
+    "updatedAt": "<timestamp>",
+    "output": null,
+    "progressFields": [
+      "percent",
+      "bytesDownloaded",
+      "bytesTotal",
+      "speedBps",
+      "etaMs",
+      "ticks"
+    ]
+  }
+}

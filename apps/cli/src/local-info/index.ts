@@ -1,8 +1,11 @@
-export { readCliVersion } from './version'
-export type { CliVersionInfo } from './version'
 export {
   checkUpgrade,
+  checkUpgradeFiles,
   compareSemver,
-  defaultCachePath
-} from './upgrade'
-export type { UpgradeCheckInput, UpgradeCheckResult } from './upgrade'
+  defaultCachePath,
+  fetchRegistry,
+  REGISTRY_URL,
+} from "./upgrade.js";
+export { readCliVersion, readVersionFiles } from "./version.js";
+export type { UpgradeCheckInput, UpgradeCheckResult } from "./upgrade.js";
+export type { CliVersionInfo } from "./version.js";

@@ -37,6 +37,10 @@ jobs:
       - name: Lint, locale check and typecheck
         run: bun run check
 
+      # Match the packaged job: CLI characterization requires offline namespaces.
+      - name: Enable user namespaces for offline CLI tests
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
       - name: Tests
         run: bun run test
 

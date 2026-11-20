@@ -1,0 +1,9 @@
+{
+  "origin": "chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "response": {
+    "status": 403,
+    "body": {
+      "error": "Forbidden origin"
+    }
+  }
+}

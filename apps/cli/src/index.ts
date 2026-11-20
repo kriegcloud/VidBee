@@ -1,36 +1,52 @@
-// Public exports for in-process consumers and host adapters.
-// The CLI binary lives in ./bin.ts.
-
-export * from './parser'
-export * from './envelope'
-export * from './subcommands'
-export * from './transport'
-export { connect } from './transport/connect'
-export type { ConnectOptions, ConnectResult } from './transport/connect'
-export { AutomationClient, AutomationHttpError } from './transport/automation-client'
-export type { AutomationClientOptions, HandshakeResponse } from './transport/automation-client'
-export { readDescriptor, resolveDescriptorPath, isPidAlive } from './transport/descriptor'
-export type { DescriptorPayload, ReadDescriptorResult } from './transport/descriptor'
-export { ensureDesktopReady } from './transport/autostart'
-export type { AutostartOptions, AutostartResult } from './transport/autostart'
-export { createLocalClient } from './transport/local-client'
-export type { LocalClientOptions, LocalClientHandle } from './transport/local-client'
-export { redactArgs, redactText, REDACTED_PLACEHOLDER } from './parser/redact'
-export { buildForwardedInput } from './download/build-input'
-export { enqueueDownload } from './download/enqueue'
-export type { EnqueueOptions, EnqueueResult } from './download/enqueue'
-export { runProbe } from './download/probe'
-export type { ProbeOptions, ProbeResult, ProbeSpawner, ProbeSpawnHandle } from './download/probe'
-export { run } from './runtime'
-export type { RunIO, RunResult } from './runtime'
-export {
-  readCliVersion,
-  checkUpgrade,
-  compareSemver,
-  defaultCachePath
-} from './local-info'
-export type {
-  CliVersionInfo,
-  UpgradeCheckInput,
-  UpgradeCheckResult
-} from './local-info'
+export * from "./Automation.model.js";
+export * from "./Cli.errors.js";
+export * from "./Cli.model.js";
+export * from "./CliAutomation.layer.js";
+export * from "./CliAutomation.service.js";
+export * from "./CliAutostart.service.js";
+export * from "./CliConnection.layer.js";
+export * from "./CliConnection.service.js";
+export * from "./CliDescriptor.layer.js";
+export * from "./CliDescriptor.service.js";
+export * from "./CliHost.layer.js";
+export * from "./CliHost.service.js";
+export * from "./CliInfo.layer.js";
+export * from "./CliLauncher.layer.js";
+export * from "./CliLauncher.service.js";
+export * from "./CliLocal.layer.js";
+export * from "./CliLocal.service.js";
+export * from "./CliOutput.layer.js";
+export * from "./CliOutput.service.js";
+export * from "./CliPidLiveness.service.js";
+export * from "./CliProbe.layer.js";
+export * from "./CliProbe.service.js";
+export * from "./CliProbeProcess.service.js";
+export * from "./CliProgram.layer.js";
+export * from "./CliProgram.service.js";
+export * from "./CliRegistry.service.js";
+export * from "./CliUpgrade.service.js";
+export * from "./CliVersion.service.js";
+export * from "./Connection.model.js";
+export * from "./Descriptor.model.js";
+export { buildForwardedInput } from "./download/build-input.js";
+export { enqueueDownload } from "./download/enqueue.js";
+export { runProbe } from "./download/probe.js";
+export * from "./entry.js";
+export * from "./envelope/index.js";
+export { checkUpgrade, compareSemver, defaultCachePath, readCliVersion } from "./local-info/index.js";
+export * from "./PidLiveness.driver.js";
+export * from "./Probe.model.js";
+export * from "./parser/index.js";
+export * from "./parser/list.js";
+export { REDACTED_PLACEHOLDER, redactArgs, redactText } from "./parser/redact.js";
+export { run } from "./runtime.js";
+export { dispatchSubcommand } from "./subcommands/index.js";
+export { AutomationClient, handshakeReply } from "./transport/automation-client.js";
+export { ensureDesktopReady } from "./transport/autostart.js";
+export { connect } from "./transport/connect.js";
+export { isPidAlive, readDescriptor, resolveDescriptorPath } from "./transport/descriptor.js";
+export * from "./transport/index.js";
+export { createLocalClient } from "./transport/local-client.js";
+export * from "./Upgrade.model.js";
+export type { EnqueueOptions, EnqueueResult } from "./download/enqueue.js";
+export type { SubcommandContext, SubcommandResult } from "./subcommands/index.js";

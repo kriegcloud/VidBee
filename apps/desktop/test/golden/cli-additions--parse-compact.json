@@ -1,0 +1,10 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "INVALID_TARGET",
+    "message": "--vidbee-target must be one of desktop|api|local; got invalid"
+  },
+  "stderr": ""
+}

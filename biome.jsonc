@@ -8,7 +8,16 @@
   "root": true,
   "files": {
     "includes": [
+      "apps/cli/**",
+      "!apps/cli/scripts/**",
       "packages/schema/**",
+      "apps/extension/**",
+      "!apps/extension/assets/content.css",
+      "!apps/extension/.wxt",
+      "!apps/extension/.output",
+      "!apps/extension/test/fixtures/**",
+      "!apps/extension/test/**/*.mjs",
+      "!apps/extension/test/__snapshots__/**",
       "packages/logger/**",
       "packages/db/**",
       "packages/task-queue/**",

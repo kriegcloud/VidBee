@@ -1,0 +1,166 @@
+[
+  {
+    "scenario": "query",
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "Error",
+        "message": "tabs runtime failure"
+      },
+      {
+        "name": "Error",
+        "message": "tabs runtime failure"
+      }
+    ]
+  },
+  {
+    "scenario": "read",
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "Error",
+        "message": "storage runtime failure"
+      },
+      {
+        "name": "Error",
+        "message": "storage runtime failure"
+      }
+    ]
+  },
+  {
+    "scenario": "final-read",
+    "trace": [
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "remove"
+      ],
+      [
+        "add"
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "send",
+        {
+          "type": "video-info:fetch",
+          "url": "https://example.invalid/"
+        }
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl"
+      ],
+      [
+        "remove"
+      ]
+    ],
+    "html": "<div class=\"app\"><header><div class=\"brand\"><img alt=\"\" class=\"brand-icon\" height=\"32\" width=\"32\" src=\"/icon/128.png\"><h1>VidBeep</h1></div><span class=\"status-indicator\"><div class=\"status-dot loading\"></div> Working</span></header><div class=\"loading-container\"><div class=\"spinner\"></div><div class=\"loading-text\">Analyzing video...</div></div></div>",
+    "failures": [
+      {
+        "name": "Error",
+        "message": "storage runtime failure"
+      },
+      {
+        "name": "Error",
+        "message": "storage runtime failure"
+      }
+    ]
+  }
+]

@@ -1,0 +1,82 @@
+{
+  "code": 1,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "mode": "download",
+    "task": {
+      "id": "<id:1>",
+      "kind": "yt-dlp-forward",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/slow-cli-wait-paused.mp4",
+        "kind": "yt-dlp-forward",
+        "rawArgs": [
+          "--ignore-config",
+          "--no-playlist",
+          "--retries",
+          "0",
+          "--fragment-retries",
+          "0",
+          "--no-part",
+          "-o",
+          "<run>/cli-extended/downloads/wait-paused.%(ext)s",
+          "http://127.0.0.1:<port>/slow-cli-wait-paused.mp4"
+        ],
+        "options": {
+          "source": "cli",
+          "sanitizedArgs": [
+            "--ignore-config",
+            "--no-playlist",
+            "--retries",
+            "0",
+            "--fragment-retries",
+            "0",
+            "--no-part",
+            "-o",
+            "<run>/cli-extended/downloads/wait-paused.%(ext)s",
+            "http://127.0.0.1:<port>/slow-cli-wait-paused.mp4"
+          ],
+          "commandPreview": "yt-dlp --ignore-config --no-playlist --retries 0 --fragment-retries 0 --no-part -o <run>/cli-extended/downloads/wait-paused.%(ext)s http://127.0.0.1:<port>/slow-cli-wait-paused.mp4",
+          "outputHints": {
+            "outputTemplate": "<run>/cli-extended/downloads/wait-paused.%(ext)s"
+          },
+          "vidbee": {
+            "wait": true,
+            "maxAttempts": 0
+          },
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 0,
+      "groupKey": "127.0.0.1:<port>",
+      "status": "paused",
+      "prevStatus": "running",
+      "statusReason": "user",
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "nextRetryAt": null,
+      "output": null,
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "ytDlp": {
+      "exitCode": 1,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  },
+  "stderr": ""
+}

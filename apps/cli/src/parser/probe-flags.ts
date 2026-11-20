@@ -1,3 +1,7 @@
+import * as HashSet from "effect/HashSet";
+import * as O from "effect/Option";
+import * as Str from "effect/String";
+
 /**
  * Authoritative yt-dlp probe-flag set. Reference:
  *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §4.3
@@ -9,40 +13,40 @@
  * passthrough.
  */
 
-const EXACT_FLAGS = new Set<string>([
-  '-j',
-  '--dump-json',
-  '-J',
-  '--dump-single-json',
-  '-F',
-  '--list-formats',
-  '--list-formats-as-table',
-  '--list-formats-old',
-  '-s',
-  '--simulate',
-  '--skip-download',
-  '--list-subs',
-  '--list-extractors',
-  '--list-extractor-descriptions'
-])
+const EXACT_FLAGS = HashSet.make(
+  "-j",
+  "--dump-json",
+  "-J",
+  "--dump-single-json",
+  "-F",
+  "--list-formats",
+  "--list-formats-as-table",
+  "--list-formats-old",
+  "-s",
+  "--simulate",
+  "--skip-download",
+  "--list-subs",
+  "--list-extractors",
+  "--list-extractor-descriptions"
+);
 
-const EXACT_GETTERS = new Set<string>([
-  '--get-id',
-  '--get-title',
-  '--get-thumbnail',
-  '--get-description',
-  '--get-duration',
-  '--get-filename',
-  '--get-format',
-  '--get-url'
-])
+const EXACT_GETTERS = HashSet.make(
+  "--get-id",
+  "--get-title",
+  "--get-thumbnail",
+  "--get-description",
+  "--get-duration",
+  "--get-filename",
+  "--get-format",
+  "--get-url"
+);
 
 /**
  * yt-dlp meta commands that have no URL but should still go through the
  * managed-forward path as probe — wrapped with envelope, exit code from
  * yt-dlp.
  */
-const META_FLAGS = new Set<string>(['--update', '--version'])
+const META_FLAGS = HashSet.make("--update", "--version");
 
 /**
  * Returns true if the given argv contains a probe-class flag, including:
@@ -56,7 +60,7 @@ const META_FLAGS = new Set<string>(['--update', '--version'])
  * matched.
  */
 export function isProbeArgv(argv: readonly string[]): boolean {
-  return findProbeFlag(argv) !== null
+  return findProbeFlag(argv) !== null;
 }
 
 /**
@@ -65,23 +69,23 @@ export function isProbeArgv(argv: readonly string[]): boolean {
  */
 export function findProbeFlag(argv: readonly string[]): string | null {
   for (const tok of argv) {
-    const head = headOf(tok)
-    if (EXACT_FLAGS.has(head)) return head
-    if (EXACT_GETTERS.has(head)) return head
-    if (META_FLAGS.has(head)) return head
-    if (head === '--print') return head
+    const head = headOf(tok);
+    if (HashSet.has(EXACT_FLAGS, head)) return head;
+    if (HashSet.has(EXACT_GETTERS, head)) return head;
+    if (HashSet.has(META_FLAGS, head)) return head;
+    if (head === "--print") return head;
   }
-  return null
+  return null;
 }
 
 function headOf(tok: string): string {
-  const eq = tok.indexOf('=')
-  return eq === -1 ? tok : tok.slice(0, eq)
+  const eq = O.getOrElse(Str.indexOf("=")(tok), () => -1);
+  return eq === -1 ? tok : Str.slice(0, eq)(tok);
 }
 
 export const PROBE_FLAG_REGISTRY = {
   exact: EXACT_FLAGS,
   getters: EXACT_GETTERS,
   meta: META_FLAGS,
-  prefixed: ['--print'] as const
-}
+  prefixed: ["--print"] as const,
+};

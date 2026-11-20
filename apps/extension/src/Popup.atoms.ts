@@ -1,0 +1,10 @@
+import * as Layer from "effect/Layer";
+import * as Atom from "effect/reactivity/Atom";
+import type { VideoInfo } from "./Extension.model.js";
+export const memoMap = Layer.makeMemoMapUnsafe();
+export const popupRuntime = Atom.context({ memoMap });
+export const infoAtom = Atom.make<VideoInfo | null>(null).pipe(Atom.keepAlive);
+export const errorAtom = Atom.make<string | null>(null).pipe(Atom.keepAlive);
+export const loadingAtom = Atom.make(false).pipe(Atom.keepAlive);
+export const currentUrlAtom = Atom.make("").pipe(Atom.keepAlive);
+export const retryAtom = Atom.make(0).pipe(Atom.keepAlive);

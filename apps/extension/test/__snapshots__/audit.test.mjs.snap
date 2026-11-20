@@ -1,0 +1,4226 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`complete WXT manifest pins trusted key, permissions and locale identity 1`] = `
+{
+  "manifest": {
+    "default_locale": "en",
+    "description": "__MSG_extensionDescription__",
+    "host_permissions": [
+      "http://127.0.0.1/*",
+    ],
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkS2E/EkysiCB1gLY1I3FCm2kGWfIDYIaLBPuurUmD9lceotE98MEnsLKQiExgdouGpjWVdS4Y0lHZfUDIB4Y2m6ixfpm9U5ipd4hHDWyoP55u/FDS6veGUngd6ie4o+rlkJX/LyqOS1ci3lgwWyzbe9CYiYM0Ews16IDn1q8NR85yY4zXcNdR6lGunZ0I3znubGN73LwQjE3c4Hg+FrTlnowBn2genph/jHEE7UwBE0LA4Xb+ur+EjyQQqGgH6D5u6mA7DNyUYEPaDbU9a6+O10kFvLmXeJPmoJCBpe9PuL3Pz+OJ2XuUAg0CqSNqTFEaRSDMqlg5fuyYWxg9yVpYQIDAQAB",
+    "name": "__MSG_extensionName__",
+    "permissions": [
+      "activeTab",
+      "storage",
+    ],
+  },
+  "modules": [
+    "@wxt-dev/module-react",
+  ],
+}
+`;
+
+exports[`connection classifier renders complete cached error Request timed out. 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Something went wrong</h2><p class="error-description">Try again in a moment.</p></div><div class="error-banner">Request timed out.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Retry after a moment.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request timed out.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request timed out.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`connection classifier renders complete cached error VidBeep app not found on localhost. 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Connect the VidBeep app</h2><p class="error-description">The extension needs the VidBeep desktop app to be running.</p></div><div class="error-banner">Client connection failed</div><div class="action-grid"><div class="action-card"><p class="action-title">Client installed</p><p class="action-text">Start VidBeep and keep it running, then we will retry automatically.</p><button class="secondary-button" type="button">Open Client</button></div><div class="action-card"><p class="action-title">Need the app?</p><p class="action-text">Download VidBeep once, install it, then come back here to try again.</p><a class="secondary-button" href="https://vidbee.app" rel="noopener noreferrer" target="_blank">Download VidBeep</a></div></div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`connection classifier renders complete cached error VidBeep app not responding on this port. 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Something went wrong</h2><p class="error-description">Try again in a moment.</p></div><div class="error-banner">VidBeep app not responding on this port.</div><div class="action-card"><p class="action-title">Try again</p><p class="action-text">Retry after a moment.</p><button class="secondary-button" type="button">Retry</button></div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not responding on this port.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not responding on this port.",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`connection classifier renders complete cached error connection refused 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot error"></div> Error</span></header><div class="error-container"><div class="error-header"><h2 class="error-title">Connect the VidBeep app</h2><p class="error-description">The extension needs the VidBeep desktop app to be running.</p></div><div class="error-banner">Client connection failed</div><div class="action-grid"><div class="action-card"><p class="action-title">Client installed</p><p class="action-text">Start VidBeep and keep it running, then we will retry automatically.</p><button class="secondary-button" type="button">Open Client</button></div><div class="action-card"><p class="action-title">Need the app?</p><p class="action-text">Download VidBeep once, install it, then come back here to try again.</p><a class="secondary-button" href="https://vidbee.app" rel="noopener noreferrer" target="_blank">Download VidBeep</a></div></div></div></div>",
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "connection refused",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "connection refused",
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`discovery swallows rejected closed ports until 27110 (Error) 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000000,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-success-128.png",
+          "16": "icon/icon-success-16.png",
+          "32": "icon/icon-success-32.png",
+          "48": "icon/icon-success-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`discovery swallows rejected closed ports until 27110 (TypeError) 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000000,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-success-128.png",
+          "16": "icon/icon-success-16.png",
+          "32": "icon/icon-success-32.png",
+          "48": "icon/icon-success-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`discovery swallows rejected closed ports until null (Error) 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "VidBeep app not found on localhost.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27111/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27112/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27113/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27114/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27115/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27116/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27117/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27118/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27119/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27120/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`discovery swallows rejected closed ports until null (TypeError) 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "VidBeep app not found on localhost.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27111/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27112/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27113/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27114/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27115/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27116/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27117/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27118/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27119/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27120/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`final popup unmount removes the exact surviving listener 1`] = `
+[
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "storage:remove",
+    0,
+  ],
+  [
+    "storage:add",
+  ],
+  [
+    "query",
+    {
+      "active": true,
+      "currentWindow": true,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "send",
+    {
+      "type": "video-info:fetch",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  ],
+  [
+    "send",
+    {
+      "type": "video-info:fetch",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "storage:remove",
+    0,
+  ],
+]
+`;
+
+exports[`malformed notification entries keep complete UI or fail without invented transitions 1`] = `
+[
+  {
+    "failure": undefined,
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "status": "ready",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+  {
+    "failure": undefined,
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "info": null,
+      "status": "ready",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+  {
+    "failure": undefined,
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "status": "error",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+  {
+    "failure": undefined,
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "error": "",
+      "status": "error",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+  {
+    "failure": {
+      "engine": true,
+    },
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "error": 7,
+      "status": "error",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+  {
+    "failure": undefined,
+    "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot loading"></div> Working</span></header><div class="loading-container"><div class="spinner"></div><div class="loading-text">Analyzing video...</div></div></div>",
+    "next": {
+      "status": "unknown",
+    },
+    "trace": [
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "storage:remove",
+        0,
+      ],
+      [
+        "storage:add",
+      ],
+      [
+        "query",
+        {
+          "active": true,
+          "currentWindow": true,
+        },
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "get",
+        "videoInfoCacheByUrl",
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+      [
+        "got",
+        {
+          "videoInfoCacheByUrl": {
+            "https://example.invalid/watch?v=a b&x=日本#part": {
+              "fetchedAt": 1700000000000,
+              "info": {
+                "formats": [],
+                "title": "Audit fixture",
+              },
+              "status": "ready",
+              "url": "https://example.invalid/watch?v=a b&x=日本#part",
+            },
+          },
+        },
+      ],
+    ],
+  },
+]
+`;
+
+exports[`message URL admission settles before complete observation: "" 1`] = `
+[
+  [
+    "message:add",
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: "not a URL" 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "not a URL": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "not a URL",
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=not%20a%20URL&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "not a URL": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": "not a URL",
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "not a URL": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": "not a URL",
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: {} 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "[object Object]": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": {},
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=%5Bobject%20Object%5D&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "[object Object]": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": {},
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "[object Object]": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": {},
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: 0 1`] = `
+[
+  [
+    "message:add",
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: 7 1`] = `
+[
+  [
+    "message:add",
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-loading-128.png",
+        "16": "icon/icon-loading-16.png",
+        "32": "icon/icon-loading-32.png",
+        "48": "icon/icon-loading-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {},
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "7": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": 7,
+        },
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/status",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/token",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "POST",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "fetch",
+    "http://127.0.0.1:27100/video-info?url=7&token=t%20%2B%2F%E6%97%A5%E6%9C%AC",
+    {
+      "body": undefined,
+      "headers": {
+        "X-VidBee-Extension": "chrome-extension://fixture-id",
+      },
+      "method": "GET",
+      "signal": {
+        "abortSignal": true,
+      },
+    },
+  ],
+  [
+    "get",
+    "videoInfoCacheByUrl",
+  ],
+  [
+    "got",
+    {
+      "videoInfoCacheByUrl": {
+        "7": {
+          "fetchedAt": 1700000000000,
+          "status": "pending",
+          "url": 7,
+        },
+      },
+    },
+  ],
+  [
+    "set",
+    {
+      "videoInfoCacheByUrl": {
+        "7": {
+          "fetchedAt": 1700000000000,
+          "info": {
+            "duration": 60,
+            "formats": [],
+            "title": "Fixture",
+          },
+          "status": "ready",
+          "url": 7,
+        },
+      },
+    },
+  ],
+  [
+    "icon",
+    {
+      "path": {
+        "128": "icon/icon-success-128.png",
+        "16": "icon/icon-success-16.png",
+        "32": "icon/icon-success-32.png",
+        "48": "icon/icon-success-48.png",
+      },
+      "tabId": 7,
+    },
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: false 1`] = `
+[
+  [
+    "message:add",
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: null 1`] = `
+[
+  [
+    "message:add",
+  ],
+]
+`;
+
+exports[`message URL admission settles before complete observation: undefined 1`] = `
+[
+  [
+    "message:add",
+  ],
+]
+`;
+
+exports[`released StrictMode initialization overwrites the visible title and navigation URL 1`] = `
+{
+  "html": "<div class="app"><header><div class="brand"><img alt="" class="brand-icon" height="32" width="32" src="/icon/128.png"><h1>VidBeep</h1></div><span class="status-indicator"><div class="status-dot ok"></div> Ready</span></header><section class="video-info"><div class="video-details"><h2>Released initialization wins</h2><div class="meta-row"><span>Unknown</span><span>•</span><span>0 formats</span></div></div></section><button class="primary-button" type="button">Download with VidBeep</button><section class="formats-section"><div class="empty-state">No compatible formats.</div></section></div>",
+  "navigation": [
+    "vidbee://download?url=https%3A%2F%2Folder.invalid%2F",
+  ],
+  "trace": [
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "storage:remove",
+      0,
+    ],
+    [
+      "storage:add",
+    ],
+    [
+      "query",
+      {
+        "active": true,
+        "currentWindow": true,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+          "https://older.invalid/": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Released initialization wins",
+            },
+            "status": "ready",
+            "url": "https://older.invalid/",
+          },
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Audit fixture",
+            },
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+          "https://older.invalid/": {
+            "fetchedAt": 1700000000000,
+            "info": {
+              "formats": [],
+              "title": "Released initialization wins",
+            },
+            "status": "ready",
+            "url": "https://older.invalid/",
+          },
+        },
+      },
+    ],
+  ],
+}
+`;
+
+exports[`releases URL admission after metadata failure, retaining icon/write order and target 1`] = `
+{
+  "first": 14,
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "Request failed: 503",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request failed: 503",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request failed: 503",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 9,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request failed: 503",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "Request failed: 503",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 9,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`releases URL admission after no ports, retaining icon/write order and target 1`] = `
+{
+  "first": 32,
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "VidBeep app not found on localhost.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27111/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27112/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27113/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27114/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27115/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27116/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27117/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27118/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27119/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27120/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 9,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27101/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27102/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27103/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27104/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27105/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27106/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27107/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27108/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27109/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27110/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27111/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27112/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27113/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27114/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27115/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27116/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27117/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27118/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27119/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27120/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not found on localhost.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 9,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`releases URL admission after success, retaining icon/write order and target 1`] = `
+{
+  "first": 14,
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "fetchedAt": 1700000000000,
+      "info": {},
+      "status": "ready",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/video-info?url=https%3A%2F%2Fexample.invalid%2Fwatch%3Fv%3Da%20b%26x%3D%E6%97%A5%E6%9C%AC%23part&token=x",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-success-128.png",
+          "16": "icon/icon-success-16.png",
+          "32": "icon/icon-success-32.png",
+          "48": "icon/icon-success-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "info": {},
+            "status": "ready",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-success-128.png",
+          "16": "icon/icon-success-16.png",
+          "32": "icon/icon-success-32.png",
+          "48": "icon/icon-success-48.png",
+        },
+        "tabId": 9,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`token http failure does not resume scanning; default icon follows error save 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "token rejected",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "token rejected",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;
+
+exports[`token transport failure does not resume scanning; default icon follows error save 1`] = `
+{
+  "map": {
+    "https://example.invalid/watch?v=a b&x=日本#part": {
+      "error": "VidBeep app not responding on this port.",
+      "fetchedAt": 1700000000000,
+      "status": "error",
+      "url": "https://example.invalid/watch?v=a b&x=日本#part",
+    },
+  },
+  "trace": [
+    [
+      "message:add",
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/icon-loading-128.png",
+          "16": "icon/icon-loading-16.png",
+          "32": "icon/icon-loading-32.png",
+          "48": "icon/icon-loading-48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {},
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/status",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "GET",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "fetch",
+      "http://127.0.0.1:27100/token",
+      {
+        "body": undefined,
+        "headers": {
+          "X-VidBee-Extension": "chrome-extension://fixture-id",
+        },
+        "method": "POST",
+        "signal": {
+          "abortSignal": true,
+        },
+      },
+    ],
+    [
+      "get",
+      "videoInfoCacheByUrl",
+    ],
+    [
+      "got",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "fetchedAt": 1700000000000,
+            "status": "pending",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "set",
+      {
+        "videoInfoCacheByUrl": {
+          "https://example.invalid/watch?v=a b&x=日本#part": {
+            "error": "VidBeep app not responding on this port.",
+            "fetchedAt": 1700000000000,
+            "status": "error",
+            "url": "https://example.invalid/watch?v=a b&x=日本#part",
+          },
+        },
+      },
+    ],
+    [
+      "icon",
+      {
+        "path": {
+          "128": "icon/128.png",
+          "16": "icon/16.png",
+          "32": "icon/32.png",
+          "48": "icon/48.png",
+        },
+        "tabId": 7,
+      },
+    ],
+  ],
+}
+`;

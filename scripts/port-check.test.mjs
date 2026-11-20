@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { strict as assert } from 'node:assert'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -79,4 +80,41 @@ test('HTTP rule rejects module loading while allowing download protocol values',
     assert.equal(violations.length, 5)
     assert.ok(violations.every((item) => item.rule === 'node-http' && item.line > 1))
   } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+
+test('ignored files in ported source and test trees cannot escape the gate', () => {
+  const root = mkdtempSync(join(tmpdir(), 'vidbee-ignored-source-'))
+  try {
+    execFileSync('git', ['init', '-q', root])
+    for (const unit of ['apps/demo', 'packages/demo', 'packages/legacy']) {
+      mkdirSync(join(root, unit, 'src/nested'), { recursive: true })
+      mkdirSync(join(root, unit, 'test/fixtures'), { recursive: true })
+      writeFileSync(join(root, unit, 'tsconfig.json'), unit.endsWith('legacy') ? '{}' : '{"extends":"../../tsconfig.base.json"}')
+      writeFileSync(join(root, unit, '.gitignore'), '.output/\n')
+      mkdirSync(join(root, unit, '.output'), { recursive: true })
+      writeFileSync(join(root, unit, '.output/generated.log'), '')
+      writeFileSync(join(root, unit, 'src/nested/Module.logging.ts'), '')
+      writeFileSync(join(root, unit, 'test/fixtures/input.log'), '')
+    }
+    mkdirSync(join(root, 'standards'))
+    writeFileSync(join(root, 'tsconfig.base.json'), '{}')
+    writeFileSync(join(root, 'standards/effect-allowlist.jsonc'), '[]')
+    writeFileSync(join(root, '.gitignore'), '*.log*\n')
+    const violations = check(root).violations
+    assert.deepEqual(violations.map(({ file, rule }) => ({ file, rule })), [
+      { file: 'apps/demo/src/nested/Module.logging.ts', rule: 'ignored-source' },
+      { file: 'apps/demo/test/fixtures/input.log', rule: 'ignored-source' },
+      { file: 'packages/demo/src/nested/Module.logging.ts', rule: 'ignored-source' },
+      { file: 'packages/demo/test/fixtures/input.log', rule: 'ignored-source' }
+    ])
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+test('extension task overrides preserve generic upstream dependencies', async () => {
+  const { readFileSync } = await import('node:fs')
+  const config = JSON.parse(readFileSync(new URL('../turbo.json', import.meta.url), 'utf8'))
+  for (const task of ['check', 'test', 'build']) {
+    assert.deepEqual(config.tasks[`vidbee-extension#${task}`].dependsOn, config.tasks[task].dependsOn)
+  }
 })

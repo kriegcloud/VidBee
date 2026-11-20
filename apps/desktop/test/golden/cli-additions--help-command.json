@@ -1,0 +1,13 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "PARSE_ERROR",
+    "message": "unknown subcommand: :help",
+    "details": {
+      "subcommand": "help"
+    }
+  },
+  "stderr": ""
+}
