@@ -463,3 +463,16 @@ Final integrity checks confirm HEAD and branch unchanged, nothing staged,
 tracked bundle and permanent reference bytes unchanged, no absolute home paths
 in changed repository files, no relocated checkout left, and git diff --check
 clean. No owner profile/application or installed build was touched.
+
+## Provenance of the extended goldens (orchestrator)
+
+The 19 extended CLI goldens were recorded against a "before" desktop build at a path in the
+owner's working checkout. That build was rebuilt during the run, and its bytes no longer
+identify `main` at `9dab889`. The orchestrator re-recorded the same subset with the lane's
+command and an immutable clean build of `9dab889`: built from a detached worktree with no
+changes, read-only, `resources/app.asar` SHA-256 `0fe6fcbf85087bbec612e5c7015d52a04a93d18c9eee962440b2d70def89c9ef`.
+The run used the frozen pre-port CLI bundle, as before.
+
+The result was 19 recorded and 0 failures. All 19 documents are identical in content to the
+committed ones. Three differ only in whitespace: short arrays written on one line in the
+committed files. The committed documents are kept.
