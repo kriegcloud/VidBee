@@ -1,248 +1,90 @@
-/**
- * Isolated AI worker. Loaded only in a child process so sherpa-onnx-node
- * cannot stall the Electron / API event loop.
- */
-import { join } from 'node:path'
-import { readAsrResult } from '../asr-json'
-import { tryRecognizerConfig } from '../asr-recognizer'
-import { ASR_TIER_IDS } from '../asr-tiers'
-import { atomicWriteJson } from '../atomic-file'
-import { extractMonoWav } from '../audio'
-import { ensureChunkManifest, manifestPathFor } from '../chunk-manifest'
-import { ModelManager } from '../model-manager'
-import type { TranscriptionPipeline } from '../pipeline'
-import { FakeTranscriptionPipeline } from '../pipeline-fake'
-import { SherpaTranscriptionPipeline } from '../pipeline-sherpa'
-import { loadPipelineSeed, seedDurationMs } from '../speaker-assign'
-import { parseSpeakerCount } from '../speaker-count'
-import type { TranscriptionStage } from '../types'
-import {
-  parseMessage,
-  setStdoutBlocking,
-  WORKER_RESULT_FILE,
-  type WorkerInbound,
-  type WorkerOutbound,
-  writeMessageSync
-} from './protocol'
+/** Native worker composition. Application consumers still select the compatibility entrypoint. */
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { layer as capabilitiesLayer } from "@vidbee/downloader-core/ProcessCapabilities.layer";
+import { LegacyTiming } from "@vidbee/task-queue/LegacyTiming.service";
+import { requestLayer } from "@vidbee/task-queue/ProcessControl.driver";
+import * as SecureRandom from "effect/crypto/SecureRandom";
+import * as Effect from "effect/Effect";
+import * as FetchHttpClient from "effect/http/FetchHttpClient";
+import * as Layer from "effect/Layer";
+import * as ManagedRuntime from "effect/ManagedRuntime";
+import { AtomicFilesLive } from "../AtomicFiles.layer.js";
+import { layer as audioLayer } from "../Audio.layer.js";
+import { AudioAbortLive } from "../AudioAbort.driver.js";
+import { CheckpointsLive } from "../Checkpoints.layer.js";
+import { ModelFileIOLive } from "../ModelFileIO.layer.js";
+import { ModelFilesLive } from "../ModelFiles.layer.js";
+import { ModelHttpLive } from "../ModelHttp.layer.js";
+import { ModelsHooks } from "../Models.service.js";
+import { SeedFilesLive } from "../SeedFiles.layer.js";
+import { SherpaLive, SherpaNativeLoader } from "../Sherpa.driver.js";
+import { TranscriptionFilesLive } from "../TranscriptionFiles.layer.js";
+import { TranscriptionHostPrimitivesLive } from "../TranscriptionHost.driver.js";
+import { TranscriptionHostLive } from "../TranscriptionHost.layer.js";
+import { TranscriptionIdsLive } from "../TranscriptionIds.layer.js";
+import { layer as processLayer } from "../TranscriptionProcess.layer.js";
+import { TranscriptionTimeLive } from "../TranscriptionTime.layer.js";
+import { binaryLayer, layer as waveLayer } from "../WaveReader.layer.js";
+import { WorkerHandlerLive } from "../WorkerHandler.layer.js";
+import { WorkerLoopLive } from "../WorkerLoop.layer.js";
+import { WorkerLoop } from "../WorkerLoop.service.js";
+import { WorkerOutputLive } from "../WorkerOutput.layer.js";
+import { WorkerProtocolLive, WorkerResultJsonLive } from "../WorkerProtocol.layer.js";
+import { WorkerSessionFactoryLive } from "../WorkerSessionFactory.layer.js";
 
-setStdoutBlocking()
-
-const send = (message: WorkerOutbound): void => {
-  // Blocking write so Electron-as-Node pipe buffering cannot starve the watchdog.
-  // Retries short writes and EAGAIN: a full pipe otherwise kills long transcripts.
-  writeMessageSync(1, message)
-}
-
-interface ProbeRecognizer {
-  createStream: () => {
-    acceptWaveform: (input: { sampleRate: number; samples: Float32Array }) => void
-    inputFinished?: () => void
+const platform = NodeServices.layer;
+const files = TranscriptionFilesLive.pipe(Layer.provideMerge(platform));
+const time = TranscriptionTimeLive;
+const ids = TranscriptionIdsLive.pipe(Layer.provide(SecureRandom.layerWebCrypto));
+const host = TranscriptionHostLive.pipe(Layer.provideMerge(files), Layer.provide(TranscriptionHostPrimitivesLive));
+const foundation = Layer.mergeAll(host, time, ids, LegacyTiming.layer);
+const atomic = AtomicFilesLive.pipe(Layer.provideMerge(foundation));
+const checkpoints = CheckpointsLive.pipe(Layer.provideMerge(atomic));
+const processes = processLayer.pipe(
+  Layer.provide(capabilitiesLayer),
+  Layer.provide(requestLayer),
+  Layer.provide(platform)
+);
+const waves = waveLayer.pipe(Layer.provide(binaryLayer), Layer.provide(files));
+const audio = audioLayer.pipe(
+  Layer.provideMerge(checkpoints),
+  Layer.provideMerge(processes),
+  Layer.provide(waves),
+  Layer.provide(AudioAbortLive)
+);
+const io = ModelFileIOLive.pipe(Layer.provideMerge(processes), Layer.provide(platform));
+const http = ModelHttpLive.pipe(Layer.provide(FetchHttpClient.layer));
+const modelFiles = ModelFilesLive.pipe(Layer.provideMerge(foundation), Layer.provideMerge(io));
+const hooks = Layer.succeed(ModelsHooks, {
+  makeAbortController: () => new AbortController(),
+  preferChina: Effect.succeed(false),
+});
+const sherpa = SherpaLive.pipe(Layer.provide(SherpaNativeLoader), Layer.provide(time));
+const dependencies = Layer.mergeAll(audio, modelFiles, http, hooks, sherpa);
+const factory = WorkerSessionFactoryLive.pipe(Layer.provideMerge(dependencies));
+const seeds = SeedFilesLive.pipe(Layer.provideMerge(atomic));
+const protocol = WorkerProtocolLive.pipe(Layer.provide(files), Layer.provide(WorkerResultJsonLive));
+const output = WorkerOutputLive.pipe(Layer.provide(platform));
+const handler = WorkerHandlerLive.pipe(
+  Layer.provideMerge(factory),
+  Layer.provideMerge(seeds),
+  Layer.provideMerge(output)
+);
+const loop = WorkerLoopLive.pipe(
+  Layer.provide(handler),
+  Layer.provide(output),
+  Layer.provide(protocol),
+  Layer.provide(platform)
+);
+const abort = new AbortController();
+process.on("SIGTERM", () => abort.abort());
+process.on("SIGINT", () => abort.abort());
+const runtime = ManagedRuntime.make(loop);
+runtime.runCallback(
+  WorkerLoop.use((service) => service.run(abort.signal, () => abort.abort())),
+  {
+    onExit: (exit) => {
+      runtime.runCallback(runtime.disposeEffect, { onExit: () => process.exit(exit._tag === "Success" ? 0 : 1) });
+    },
   }
-  decode: (stream: unknown) => void
-  getResult: (stream: unknown) => { text?: string }
-}
-
-/**
- * Generate deterministic audio that exercises the selected ONNX execution provider.
- */
-const probeSamples = (durationSeconds: number): Float32Array => {
-  const samples = new Float32Array(Math.round(16_000 * durationSeconds))
-  for (let index = 0; index < samples.length; index += 1) {
-    samples[index] = Math.sin((2 * Math.PI * 440 * index) / 16_000) * 0.05
-  }
-  return samples
-}
-
-/**
- * Decode one synthetic clip and return its inference duration.
- */
-const decodeProbe = (recognizer: ProbeRecognizer, samples: Float32Array): number => {
-  const stream = recognizer.createStream()
-  stream.acceptWaveform({ sampleRate: 16_000, samples })
-  stream.inputFinished?.()
-  const startedAt = performance.now()
-  recognizer.decode(stream)
-  const durationMs = performance.now() - startedAt
-  readAsrResult(recognizer, stream)
-  return durationMs
-}
-
-/**
- * Report a fatal worker exception over the protocol, then exit.
- *
- * @param err Uncaught exception or rejection reason.
- */
-const failHard = (err: unknown): void => {
-  const message = err instanceof Error ? err.message : String(err)
-  try {
-    send({ type: 'error', message })
-  } catch {
-    /* stdout may already be gone */
-  }
-  process.exit(1)
-}
-
-process.on('uncaughtException', failHard)
-process.on('unhandledRejection', failHard)
-
-const run = async (): Promise<void> => {
-  const abort = new AbortController()
-  process.on('SIGTERM', () => abort.abort())
-  process.on('SIGINT', () => abort.abort())
-
-  let buffer = ''
-  process.stdin.setEncoding('utf8')
-  process.stdin.on('data', (chunk: string) => {
-    buffer += chunk
-    let idx = buffer.indexOf('\n')
-    while (idx >= 0) {
-      const line = buffer.slice(0, idx)
-      buffer = buffer.slice(idx + 1)
-      const message = parseMessage<WorkerInbound>(line)
-      if (message?.type === 'cancel') {
-        abort.abort()
-      } else if (message?.type === 'probe') {
-        void handleProbe(message).then(() => {
-          process.stdout.write('', () => process.exit(0))
-        }, failHard)
-      } else if (message?.type === 'start') {
-        // Workers handle one request. Exit after sending the result so native
-        // models, stdin listeners, and ONNX threads cannot outlive the task.
-        void handleStart(message, abort.signal).then(() => {
-          process.stdout.write('', () => process.exit(0))
-        }, failHard)
-      }
-      idx = buffer.indexOf('\n')
-    }
-  })
-}
-
-const handleProbe = async (message: Extract<WorkerInbound, { type: 'probe' }>): Promise<void> => {
-  try {
-    if (process.env.VIDBEE_TRANSCRIPTION_BACKEND === 'fake') {
-      send({ type: 'probe-ok' })
-      return
-    }
-    // Native addon — resolved only inside the isolated worker.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const addon = require('sherpa-onnx-node') as {
-      OfflineRecognizer: new (config: Record<string, unknown>) => ProbeRecognizer
-    }
-    const models = new ModelManager({ modelsDir: message.modelsDir })
-    const provider = message.provider ?? 'cpu'
-    const tiers = message.asrTier ? [message.asrTier] : ASR_TIER_IDS
-    let probed = false
-    let durationMs: number | undefined
-    for (const tier of tiers) {
-      const config = tryRecognizerConfig(models, tier, 1, provider, provider === 'cpu' ? 0 : 1)
-      if (!config) {
-        continue
-      }
-      const recognizer = new addon.OfflineRecognizer(config)
-      probed = true
-      if (message.benchmark) {
-        decodeProbe(recognizer, probeSamples(0.2))
-      }
-      durationMs = decodeProbe(recognizer, probeSamples(message.benchmark ? 1 : 0.3))
-      break
-    }
-    if (!(probed || message.asrTier === undefined)) {
-      send({ type: 'error', message: `provider probe model unavailable: ${message.asrTier}` })
-      return
-    }
-    send({ type: 'probe-ok', provider, durationMs })
-  } catch (err) {
-    send({ type: 'error', message: err instanceof Error ? err.message : String(err) })
-  }
-}
-
-const handleStart = async (
-  message: Extract<WorkerInbound, { type: 'start' }>,
-  signal: AbortSignal
-): Promise<void> => {
-  let stage: TranscriptionStage = 'preparing-audio'
-  const heartbeat = setInterval(() => {
-    send({ type: 'progress', stage, percent: null, message: 'heartbeat' })
-  }, 10_000)
-  try {
-    send({ type: 'log', stream: 'stdout', line: `compute.provider=${message.provider}` })
-    send({ type: 'progress', stage: 'preparing-audio', percent: 0, message: 'extract' })
-    ensureChunkManifest({
-      workDir: message.workDir,
-      taskId: message.taskId,
-      fingerprint: message.fingerprint,
-      modelVersion: message.modelVersion
-    })
-    const existingTranscript = message.existingTranscriptPath
-      ? loadPipelineSeed(message.existingTranscriptPath)
-      : null
-    const skipAudio = Boolean(existingTranscript && parseSpeakerCount(message.speakerCount) === 1)
-    const models = new ModelManager({ modelsDir: message.modelsDir })
-    const prepareAsr =
-      message.backend === 'fake' || existingTranscript
-        ? Promise.resolve()
-        : models.ensureReady({ groups: ['asr'], tiers: [message.asrTier] })
-    const extracted = skipAudio
-      ? {
-          wavPath: message.sourceFilePath,
-          durationMs: existingTranscript ? seedDurationMs(existingTranscript) : 0
-        }
-      : await extractMonoWav({
-          sourceFilePath: message.sourceFilePath,
-          ffmpegPath: message.ffmpegPath,
-          outputDir: message.workDir,
-          signal
-        })
-    await prepareAsr
-    const pipeline: TranscriptionPipeline =
-      message.backend === 'fake'
-        ? new FakeTranscriptionPipeline()
-        : new SherpaTranscriptionPipeline({ models, provider: message.provider })
-    const result = await pipeline.run({
-      sourceFilePath: message.sourceFilePath,
-      wavPath: extracted.wavPath,
-      durationMs: extracted.durationMs,
-      skipVad: message.skipVad,
-      autoSkipAllowed: message.autoSkipAllowed,
-      asrTier: message.asrTier,
-      language: message.language,
-      speakerCount: message.speakerCount,
-      existingTranscript: existingTranscript ?? undefined,
-      signal,
-      manifestPath: manifestPathFor(message.workDir),
-      onProgress: (progress) => {
-        stage = progress.stage
-        send({
-          type: 'progress',
-          stage: progress.stage,
-          percent: progress.percent,
-          message: progress.message
-        })
-      },
-      onPartial: (segment) => {
-        send({
-          type: 'partial',
-          speakerKey: segment.speakerKey,
-          startMs: segment.startMs,
-          endMs: segment.endMs,
-          text: segment.text,
-          words: segment.words
-        })
-      }
-    })
-    const resultPath = join(message.workDir, WORKER_RESULT_FILE)
-    atomicWriteJson(resultPath, result)
-    send({ type: 'result', resultPath: WORKER_RESULT_FILE, durationMs: extracted.durationMs })
-  } catch (err) {
-    const text = err instanceof Error ? err.message : String(err)
-    if (signal.aborted || /cancelled/i.test(text)) {
-      send({ type: 'error', message: 'cancelled' })
-      return
-    }
-    send({ type: 'error', message: text })
-  } finally {
-    clearInterval(heartbeat)
-  }
-}
-
-void run()
+);

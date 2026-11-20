@@ -1,0 +1,524 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HTTP status and body/fetch failure retry exact shape and original failure identity 1`] = `
+[
+  [
+    "http://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+  [
+    "https://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`HTTP status and body/fetch failure retry exact shape and original failure identity 2`] = `
+[
+  [
+    "http://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+  [
+    "https://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`HTTP status and body/fetch failure retry exact shape and original failure identity 3`] = `
+[
+  [
+    "http://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+  [
+    "https://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`HTTP status and body/fetch failure retry exact shape and original failure identity 4`] = `
+[
+  [
+    "http://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+  [
+    "https://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`HTTP status and body/fetch failure retry exact shape and original failure identity 5`] = `
+[
+  [
+    "https://fixture.invalid/feed",
+    {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      },
+      "method": "GET",
+      "redirect": "follow",
+      "signal": {
+        "aborted": false,
+        "reason": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`HTTPS retry can succeed after failed HTTP request; timeout cleared before parse 1`] = `
+{
+  "calls": [
+    [
+      "http://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+    [
+      "https://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+  ],
+  "feed": {
+    "image": {
+      "url": "https://fixture.invalid/cover.png",
+    },
+    "items": [
+      {
+        "enclosure": {
+          "length": "123",
+          "type": "audio/mpeg",
+          "url": "https://fixture.invalid/audio.mp3",
+        },
+        "guid": "entry",
+        "isoDate": "2020-01-01T00:00:00.000Z",
+        "itunes": {
+          "image": "https://fixture.invalid/episode.png",
+        },
+        "link": "https://fixture.invalid/entry",
+        "mediaThumbnail": {
+          "$": {
+            "url": "https://fixture.invalid/media.png",
+          },
+        },
+        "pubDate": "Wed, 01 Jan 2020 00:00:00 GMT",
+        "title": "Episode",
+      },
+    ],
+    "itunes": {
+      "image": undefined,
+    },
+    "link": "https://fixture.invalid/home",
+    "title": "Fixture feed",
+  },
+}
+`;
+
+exports[`complete parser and normalization payload: Atom 1`] = `
+{
+  "calls": [
+    [
+      "https://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+    [
+      "https://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+  ],
+  "feed": {
+    "items": [
+      {
+        "id": "tag:fixture:1",
+        "isoDate": "2020-01-01T00:00:00.000Z",
+        "link": "https://fixture.invalid/1",
+        "pubDate": "2020-01-01T00:00:00.000Z",
+        "summary": "Summary",
+        "title": "Entry",
+      },
+    ],
+    "link": "https://fixture.invalid/home",
+    "title": "Atom",
+  },
+  "normalized": [
+    {
+      "id": "tag:fixture:1",
+      "publishedAt": 1577836800000,
+      "thumbnail": undefined,
+      "title": "Entry",
+      "url": "https://fixture.invalid/1",
+    },
+  ],
+  "probe": {
+    "discovered": false,
+    "feed": {
+      "items": [
+        {
+          "id": "tag:fixture:1",
+          "isoDate": "2020-01-01T00:00:00.000Z",
+          "link": "https://fixture.invalid/1",
+          "pubDate": "2020-01-01T00:00:00.000Z",
+          "summary": "Summary",
+          "title": "Entry",
+        },
+      ],
+      "link": "https://fixture.invalid/home",
+      "title": "Atom",
+    },
+    "feedUrl": "https://fixture.invalid/final",
+  },
+}
+`;
+
+exports[`complete parser and normalization payload: RSS/podcast/media 1`] = `
+{
+  "calls": [
+    [
+      "https://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+    [
+      "https://fixture.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+  ],
+  "feed": {
+    "image": {
+      "url": "https://fixture.invalid/cover.png",
+    },
+    "items": [
+      {
+        "enclosure": {
+          "length": "123",
+          "type": "audio/mpeg",
+          "url": "https://fixture.invalid/audio.mp3",
+        },
+        "guid": "entry",
+        "isoDate": "2020-01-01T00:00:00.000Z",
+        "itunes": {
+          "image": "https://fixture.invalid/episode.png",
+        },
+        "link": "https://fixture.invalid/entry",
+        "mediaThumbnail": {
+          "$": {
+            "url": "https://fixture.invalid/media.png",
+          },
+        },
+        "pubDate": "Wed, 01 Jan 2020 00:00:00 GMT",
+        "title": "Episode",
+      },
+    ],
+    "itunes": {
+      "image": undefined,
+    },
+    "link": "https://fixture.invalid/home",
+    "title": "Fixture feed",
+  },
+  "normalized": [
+    {
+      "id": "entry",
+      "publishedAt": 1577836800000,
+      "thumbnail": "https://fixture.invalid/episode.png",
+      "title": "Episode",
+      "url": "https://fixture.invalid/entry",
+    },
+  ],
+  "probe": {
+    "discovered": false,
+    "feed": {
+      "image": {
+        "url": "https://fixture.invalid/cover.png",
+      },
+      "items": [
+        {
+          "enclosure": {
+            "length": "123",
+            "type": "audio/mpeg",
+            "url": "https://fixture.invalid/audio.mp3",
+          },
+          "guid": "entry",
+          "isoDate": "2020-01-01T00:00:00.000Z",
+          "itunes": {
+            "image": "https://fixture.invalid/episode.png",
+          },
+          "link": "https://fixture.invalid/entry",
+          "mediaThumbnail": {
+            "$": {
+              "url": "https://fixture.invalid/media.png",
+            },
+          },
+          "pubDate": "Wed, 01 Jan 2020 00:00:00 GMT",
+          "title": "Episode",
+        },
+      ],
+      "itunes": {
+        "image": undefined,
+      },
+      "link": "https://fixture.invalid/home",
+      "title": "Fixture feed",
+    },
+    "feedUrl": "https://fixture.invalid/final",
+  },
+}
+`;
+
+exports[`probe candidates use redirected page base and retain candidate URL even after feed redirect 1`] = `
+{
+  "calls": [
+    [
+      "https://fixture.invalid/start",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+    [
+      "https://redirect.invalid/bad",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+    [
+      "https://redirect.invalid/feed",
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        },
+        "method": "GET",
+        "redirect": "follow",
+        "signal": {
+          "aborted": false,
+          "reason": undefined,
+        },
+      },
+    ],
+  ],
+  "result": {
+    "discovered": true,
+    "feed": {
+      "items": [
+        {
+          "id": "tag:fixture:1",
+          "isoDate": "2020-01-01T00:00:00.000Z",
+          "link": "https://fixture.invalid/1",
+          "pubDate": "2020-01-01T00:00:00.000Z",
+          "summary": "Summary",
+          "title": "Entry",
+        },
+      ],
+      "link": "https://fixture.invalid/home",
+      "title": "Atom",
+    },
+    "feedUrl": "https://redirect.invalid/feed",
+  },
+}
+`;
+
+exports[`unsuccessful candidates preserve the initial parse rejection, direct XML failure never retries HTTPS 1`] = `
+[Error: Unclosed root tag
+Line: 0
+Column: 12
+Char: ]
+`;
+
+exports[`unsuccessful candidates preserve the initial parse rejection, direct XML failure never retries HTTPS 2`] = `
+[Error: Unquoted attribute value
+Line: 0
+Column: 17
+Char: a]
+`;

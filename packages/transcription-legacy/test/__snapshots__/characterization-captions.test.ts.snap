@@ -1,0 +1,465 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`caption parsers preserve ordering, speakers, malformed clocks and literal entities 1`] = `
+{
+  "ass": [
+    {
+      "endMs": 2500,
+      "speaker": "Alice",
+      "startMs": 1000,
+      "text": "Hello, comma next",
+    },
+    {
+      "endMs": 3722000,
+      "startMs": 3661000,
+      "text": "wide clock",
+    },
+  ],
+  "clean": "a b c &amp;",
+  "empty": null,
+  "result": {
+    "asrTier": null,
+    "language": "eng",
+    "modelVersion": "embedded-captions",
+    "resultKind": "transcript",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 3456,
+        "speakerKey": "speaker-1",
+        "startMs": 1200,
+        "text": "Hello world next",
+        "words": [],
+      },
+      {
+        "confidence": null,
+        "endMs": 5999,
+        "speakerKey": "speaker-2",
+        "startMs": 4000,
+        "text": "Second &amp; literal",
+        "words": [],
+      },
+      {
+        "confidence": null,
+        "endMs": 62200,
+        "speakerKey": null,
+        "startMs": 61100,
+        "text": "noncanonical clock",
+        "words": [],
+      },
+    ],
+    "sourceKind": "captions",
+    "speakers": [
+      {
+        "displayName": "Alice Smith",
+        "speakerKey": "speaker-1",
+      },
+      {
+        "displayName": "Bob",
+        "speakerKey": "speaker-2",
+      },
+    ],
+  },
+  "routed": [
+    {
+      "endMs": 2500,
+      "speaker": "Alice",
+      "startMs": 1000,
+      "text": "Hello, comma next",
+    },
+    {
+      "endMs": 3722000,
+      "startMs": 3661000,
+      "text": "wide clock",
+    },
+  ],
+  "vtt": [
+    {
+      "endMs": 3456,
+      "speaker": "Alice Smith",
+      "startMs": 1200,
+      "text": "Hello world next",
+    },
+    {
+      "endMs": 5999,
+      "speaker": "Bob",
+      "startMs": 4000,
+      "text": "Second &amp; literal",
+    },
+    {
+      "endMs": 62200,
+      "startMs": 61100,
+      "text": "noncanonical clock",
+    },
+  ],
+}
+`;
+
+exports[`import completion timing and multiple language history/activation > complete import records with generated IDs normalized 1`] = `
+{
+  "history": [
+    {
+      "asrTier": null,
+      "createdAt": 2,
+      "downloadTaskId": "d",
+      "id": "generated-id-0",
+      "language": "en",
+      "modelVersion": "embedded-captions",
+      "resultKind": "transcript",
+      "segments": [
+        {
+          "confidence": null,
+          "endMs": 1000,
+          "id": "generated-id-1",
+          "sortIndex": 0,
+          "speakerId": null,
+          "startMs": 0,
+          "text": "hello",
+          "words": [],
+        },
+      ],
+      "sourceFilePath": "/__vidbee_characterization_absent__/movie.mp4",
+      "sourceKind": "captions",
+      "speakers": [],
+      "supersededAt": null,
+      "transcriptionTaskId": "captions:d:en",
+      "updatedAt": 2,
+    },
+    {
+      "asrTier": null,
+      "createdAt": 1,
+      "downloadTaskId": "d",
+      "id": "generated-id-2",
+      "language": "fr",
+      "modelVersion": "embedded-captions",
+      "resultKind": "transcript",
+      "segments": [
+        {
+          "confidence": null,
+          "endMs": 1000,
+          "id": "generated-id-3",
+          "sortIndex": 0,
+          "speakerId": null,
+          "startMs": 0,
+          "text": "bonjour",
+          "words": [],
+        },
+      ],
+      "sourceFilePath": "/__vidbee_characterization_absent__/movie.mp4",
+      "sourceKind": "captions",
+      "speakers": [],
+      "supersededAt": 2,
+      "transcriptionTaskId": "captions:d:fr",
+      "updatedAt": 2,
+    },
+  ],
+  "result": {
+    "asrTier": null,
+    "createdAt": 2,
+    "downloadTaskId": "d",
+    "id": "generated-id-0",
+    "language": "en",
+    "modelVersion": "embedded-captions",
+    "resultKind": "transcript",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 1000,
+        "id": "generated-id-1",
+        "sortIndex": 0,
+        "speakerId": null,
+        "startMs": 0,
+        "text": "hello",
+        "words": [],
+      },
+    ],
+    "sourceFilePath": "/__vidbee_characterization_absent__/movie.mp4",
+    "sourceKind": "captions",
+    "speakers": [],
+    "supersededAt": null,
+    "transcriptionTaskId": "captions:d:en",
+    "updatedAt": 2,
+  },
+}
+`;
+
+exports[`import completion timing and multiple language history/activation 1`] = `
+[
+  "extract",
+  "immediate:0",
+  "microtask:2",
+  "settled",
+]
+`;
+
+exports[`import completion timing and multiple language history/activation 2`] = `
+[
+  {
+    "createdAt": 2,
+    "language": "en",
+    "supersededAt": null,
+    "text": [
+      "hello",
+    ],
+    "transcriptionTaskId": "captions:d:en",
+    "updatedAt": 2,
+  },
+  {
+    "createdAt": 1,
+    "language": "fr",
+    "supersededAt": 2,
+    "text": [
+      "bonjour",
+    ],
+    "transcriptionTaskId": "captions:d:fr",
+    "updatedAt": 2,
+  },
+]
+`;
+
+exports[`language, AI/chat/path classification and tie preference matrices > script refinement 1`] = `
+[
+  "zh",
+  "zh-Hant",
+  "zh",
+  "en",
+]
+`;
+
+exports[`language, AI/chat/path classification and tie preference matrices 1`] = `
+[
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "und",
+    "machine": false,
+    "match": "",
+    "preferred": [
+      "en",
+    ],
+    "score": 1,
+    "tag": null,
+  },
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "und",
+    "machine": false,
+    "match": "",
+    "preferred": [
+      "en",
+    ],
+    "score": 1,
+    "tag": "",
+  },
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "en",
+    "machine": false,
+    "match": "en",
+    "preferred": [
+      "eng",
+      "en",
+    ],
+    "score": 990,
+    "tag": "eng",
+  },
+  {
+    "ai": true,
+    "chat": false,
+    "importable": true,
+    "key": "ai-zh",
+    "machine": true,
+    "match": "zh",
+    "preferred": [
+      "AI_zh",
+      "en",
+    ],
+    "score": -38,
+    "tag": "AI_zh",
+  },
+  {
+    "ai": true,
+    "chat": false,
+    "importable": true,
+    "key": "automatic-en",
+    "machine": true,
+    "match": "en",
+    "preferred": [
+      "automatic-en",
+      "en",
+    ],
+    "score": 950,
+    "tag": "automatic-en",
+  },
+  {
+    "ai": true,
+    "chat": false,
+    "importable": true,
+    "key": "en-auto",
+    "machine": true,
+    "match": "en",
+    "preferred": [
+      "en-auto",
+    ],
+    "score": 950,
+    "tag": "en-auto",
+  },
+  {
+    "ai": false,
+    "chat": true,
+    "importable": false,
+    "key": "chat",
+    "machine": true,
+    "match": "chat",
+    "preferred": [
+      "chat",
+      "en",
+    ],
+    "score": 2,
+    "tag": "chat",
+  },
+  {
+    "ai": false,
+    "chat": true,
+    "importable": false,
+    "key": "live-chat",
+    "machine": true,
+    "match": "live-chat",
+    "preferred": [
+      "live_chat",
+      "en",
+    ],
+    "score": 2,
+    "tag": "live_chat",
+  },
+  {
+    "ai": false,
+    "chat": true,
+    "importable": false,
+    "key": "danmaku",
+    "machine": true,
+    "match": "danmaku",
+    "preferred": [
+      "danmaku",
+      "en",
+    ],
+    "score": 2,
+    "tag": "danmaku",
+  },
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "zh-tw",
+    "machine": false,
+    "match": "zh-tw",
+    "preferred": [
+      "zh-TW",
+      "zh-Hant",
+      "zh-HK",
+      "zh-MO",
+      "en",
+    ],
+    "score": 998,
+    "tag": "zh-TW",
+  },
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "zh",
+    "machine": false,
+    "match": "zh",
+    "preferred": [
+      "zho",
+      "zh",
+      "zh-Hans",
+      "zh-CN",
+      "zh-SG",
+      "en",
+    ],
+    "score": 2,
+    "tag": "zho",
+  },
+  {
+    "ai": false,
+    "chat": false,
+    "importable": true,
+    "key": "fr-ca",
+    "machine": false,
+    "match": "fr-ca",
+    "preferred": [
+      "fr-CA",
+      "en",
+    ],
+    "score": 2,
+    "tag": "fr-CA",
+  },
+]
+`;
+
+exports[`language, AI/chat/path classification and tie preference matrices 2`] = `
+[
+  {
+    "language": "en",
+    "machine": false,
+    "name": "movie.en.vtt",
+  },
+  {
+    "language": null,
+    "machine": false,
+    "name": "movie.vtt",
+  },
+  {
+    "language": "EN",
+    "machine": false,
+    "name": "movie.EN.SRT",
+  },
+  {
+    "language": null,
+    "machine": false,
+    "name": "other.en.vtt",
+  },
+  {
+    "language": "chat",
+    "machine": false,
+    "name": "movie.chat.ass",
+  },
+  {
+    "language": "ai-zh",
+    "machine": false,
+    "name": "movie.ai-zh.vtt",
+  },
+]
+`;
+
+exports[`sidecar discovery gates media existence, skips chat/empty/directory and exposes enumeration 1`] = `
+[
+  {
+    "format": "vtt",
+    "language": "ai-zh",
+    "path": "movie.ai-zh.vtt",
+    "text": "00:00.0 --> 00:01.0
+hello",
+  },
+  {
+    "format": "vtt",
+    "language": "en",
+    "path": "movie.en.vtt",
+    "text": "00:00.0 --> 00:01.0
+hello",
+  },
+  {
+    "format": "vtt",
+    "language": null,
+    "path": "movie.vtt",
+    "text": "00:00.0 --> 00:01.0
+hello",
+  },
+]
+`;

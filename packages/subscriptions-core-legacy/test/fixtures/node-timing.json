@@ -1,0 +1,112 @@
+[
+  "returned-update",
+  "returned-update:microtask1",
+  [
+    "listener",
+    "Edited"
+  ],
+  "returned-update:microtask2",
+  "ignored-listener-promise",
+  [
+    "update-settle",
+    {
+      "id": "sub",
+      "title": "Edited",
+      "sourceUrl": "https://fixture.invalid/page",
+      "feedUrl": "https://fixture.invalid/feed",
+      "platform": "custom",
+      "keywords": [],
+      "tags": [],
+      "onlyDownloadLatest": false,
+      "autoDownload": true,
+      "enabled": true,
+      "status": "idle",
+      "createdAt": 10,
+      "updatedAt": 10,
+      "sourceKind": "feed",
+      "categories": [],
+      "items": []
+    }
+  ],
+  [
+    "unsubscribe",
+    true,
+    false,
+    false
+  ],
+  [
+    "stale-unsubscribe",
+    true
+  ],
+  "returned-refresh",
+  "returned-refresh:microtask1",
+  "returned-refresh:microtask2",
+  "refresh-settle",
+  [
+    "immediate-remove",
+    false
+  ],
+  "returned-remove",
+  "returned-remove:microtask1",
+  [
+    "remove-settle",
+    {}
+  ],
+  "returned-remove:microtask2",
+  [
+    [
+      "get",
+      "sub"
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "title": "Edited"
+      }
+    ],
+    [
+      "get",
+      "sub"
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "status": "checking",
+        "lastCheckedAt": 1000,
+        "lastError": {
+          "$undefined": true
+        }
+      }
+    ],
+    [
+      "fetch",
+      "https://fixture.invalid/feed"
+    ],
+    [
+      "replace",
+      "sub",
+      []
+    ],
+    [
+      "get",
+      "sub"
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "status": "up-to-date",
+        "lastSuccessAt": 1000,
+        "lastError": {
+          "$undefined": true
+        }
+      }
+    ],
+    [
+      "remove",
+      "sub"
+    ]
+  ]
+]

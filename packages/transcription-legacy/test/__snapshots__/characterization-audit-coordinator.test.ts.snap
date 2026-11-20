@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`audit coordinator filters events, forwards all resolvers and catches original import/enqueue failures 1`] = `
+[
+  "source",
+  "import",
+  [
+    "add",
+    {
+      "groupKey": "transcription",
+      "input": {
+        "kind": "transcription",
+        "options": {
+          "asrTier": "whisper-base",
+          "cloudModelId": "fixture-cloud",
+          "downloadTaskId": "download",
+          "language": "zh-Hant",
+          "origin": "manual",
+          "provider": "cloud",
+          "rediarize": false,
+          "skipVad": false,
+          "sourceFilePath": "<SOURCE>",
+          "speakerCount": "auto",
+          "trigger": "auto",
+        },
+        "title": "fixture",
+        "url": "vidbee://download/download",
+      },
+      "maxAttempts": 3,
+      "parentId": "download",
+      "priority": 20,
+    },
+  ],
+]
+`;
+
+exports[`audit enqueue forwards force-rediarize and creation metadata; source failures reject before queue inspection 1`] = `
+[
+  [
+    "add",
+    {
+      "groupKey": "transcription",
+      "input": {
+        "kind": "transcription",
+        "options": {
+          "agentConversation": {
+            "downloadId": "download",
+            "promptId": "prompt",
+            "threadId": "thread",
+          },
+          "asrTier": "minimal",
+          "cloudModelId": "qwen/qwen3-asr-1.7b",
+          "downloadTaskId": "download",
+          "origin": "agent",
+          "provider": "local",
+          "rediarize": true,
+          "skipVad": false,
+          "sourceFilePath": "<SOURCE>",
+          "speakerCount": 2,
+          "trigger": "force",
+        },
+        "url": "vidbee://download/download",
+      },
+      "maxAttempts": 3,
+      "parentId": "download",
+      "priority": 0,
+    },
+  ],
+]
+`;

@@ -1,4 +1,5 @@
 import { ProcessRequests } from "@vidbee/task-queue/ProcessControl.service";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
@@ -11,9 +12,10 @@ import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import { HostFailure } from "./Downloader.errors.js";
 import { DownloadProcess } from "./DownloadProcess.service.js";
+import type * as Cause from "effect/Cause";
 import type { ProcessOutputChannel, ProcessOutputEnd } from "./DownloadLiterals.model.js";
-import type { ProcessStart } from "./DownloadProcess.service.js";
-import type { NativeOutcome, ProcessEvent, ProcessSignal } from "./Process.model.js";
+import type { ProcessLifecycle, ProcessStart } from "./DownloadProcess.service.js";
+import type { NativeOutcome, ProcessEvent, ProcessOutcome, ProcessSignal } from "./Process.model.js";
 
 /**
  * Stock-spawner backend. Acquisition/error listeners and PassThrough buffering belong to
@@ -27,7 +29,8 @@ export const layer = Layer.effect(
     const requests = yield* ProcessRequests;
     const scope = yield* Effect.scope;
     return DownloadProcess.of({
-      start: Effect.fn("DownloadProcess.start")(function* (spec, sink, owner = scope) {
+      start: Effect.fn("DownloadProcess.start")(function* (spec, sink, suppliedOwner) {
+        const owner = suppliedOwner ?? scope;
         const attemptScope = yield* Scope.fork(owner);
         const abort = spec.abortSignal;
         const abortFiber =
@@ -52,7 +55,7 @@ export const layer = Layer.effect(
                 cwd: spec.cwd,
                 detached: spec.detached,
                 windowsHide: spec.windowsHide,
-                stdin: { stream: spec.stdin, endOnDone: false },
+                stdin: { stream: spec.stdin, endOnDone: spec.extendedLifecycle === true },
                 stdout: spec.stdout,
                 stderr: spec.stderr,
               })
@@ -68,16 +71,37 @@ export const layer = Layer.effect(
         const handle = acquired.success;
         // A single open feeder owns the Sink. Unbounded queue admission acknowledges
         // without waiting for writable drain; cancellation belongs to the attempt.
-        const input = yield* Queue.make<Uint8Array>();
+        const input = yield* Queue.make<Uint8Array, Cause.Done>();
         yield* Scope.addFinalizer(attemptScope, Queue.shutdown(input));
         if (spec.stdin === "pipe") {
           yield* Effect.forkIn(Stream.fromQueue(input).pipe(Stream.run(handle.stdin), Effect.ignore), attemptScope, {
             startImmediately: true,
           });
         }
+        const reaped = yield* Deferred.make<ProcessOutcome>();
         let closeObserved = spec.rawCloseObservation !== "omit" && spec.rawCloseObservation !== "on-demand";
         let closed = false;
+        const lifecycle: ProcessLifecycle | undefined =
+          spec.extendedLifecycle === true
+            ? {
+                endInput: Queue.end(input).pipe(Effect.asVoid),
+                awaitReaped: Deferred.await(reaped),
+                signallingState: Effect.succeed({ _tag: "Native" }),
+                terminate: Effect.fn("DownloadProcess.terminate")(function* (graceMs: number) {
+                  if (yield* Deferred.isDone(reaped)) return;
+                  yield* Queue.end(input);
+                  yield* requests.pid(handle.pid, "SIGTERM");
+                  yield* Deferred.await(reaped).pipe(
+                    Effect.timeoutOrElse({
+                      duration: graceMs,
+                      orElse: () => requests.pid(handle.pid, "SIGKILL").pipe(Effect.andThen(Deferred.await(reaped))),
+                    })
+                  );
+                }),
+              }
+            : undefined;
         const run = {
+          ...(lifecycle === undefined ? {} : { lifecycle }),
           backend: "Native" as const,
           pid: handle.pid,
           activateObservations: Effect.void,
@@ -124,8 +148,12 @@ export const layer = Layer.effect(
           const observed = yield* Effect.result(
             Effect.all(
               [
-                spec.stdoutConsumption === "unread" ? Effect.void : drain(handle.stdout, "stdout", "stdoutEnd"),
-                spec.stderrConsumption === "unread" ? Effect.void : drain(handle.stderr, "stderr", "stderrEnd"),
+                spec.stdoutConsumption === "unread" || (spec.extendedLifecycle === true && spec.stdout !== "pipe")
+                  ? Effect.void
+                  : drain(handle.stdout, "stdout", "stdoutEnd"),
+                spec.stderrConsumption === "unread" || (spec.extendedLifecycle === true && spec.stderr !== "pipe")
+                  ? Effect.void
+                  : drain(handle.stderr, "stderr", "stderrEnd"),
                 exit,
               ],
               { concurrency: "unbounded" }
@@ -141,7 +169,24 @@ export const layer = Layer.effect(
         });
         const observed =
           abortFiber === undefined ? observe() : observe().pipe(Effect.ensuring(Fiber.interrupt(abortFiber)));
-        yield* Effect.forkIn(observed.pipe(Effect.ensuring(Scope.close(attemptScope, Exit.void))), owner, {
+        const finalize = Scope.close(attemptScope, Exit.void).pipe(
+          Effect.andThen(
+            spec.extendedLifecycle === true
+              ? Effect.result(handle.exitCode).pipe(
+                  Effect.flatMap((exit) =>
+                    Deferred.succeed(reaped, {
+                      _tag: "Native",
+                      result: Result.isSuccess(exit)
+                        ? { _tag: "ExitCode", code: exit.success }
+                        : { _tag: "Failure", error: exit.failure },
+                    })
+                  ),
+                  Effect.asVoid
+                )
+              : Effect.void
+          )
+        );
+        yield* Effect.forkIn(observed.pipe(Effect.ensuring(finalize)), owner, {
           startImmediately: true,
         });
         const started: ProcessStart = { _tag: "Acquired", run };

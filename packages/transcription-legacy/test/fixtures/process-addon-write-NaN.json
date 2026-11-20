@@ -1,0 +1,17 @@
+[
+  [
+    "write-invalid",
+    "NaN",
+    "{\"type\":\"probe-ok\"}\n"
+  ],
+  [
+    "write-invalid",
+    "NaN",
+    "{\"type\":\"error\",\"message\":\"stdout write failed at 0/20\"}\n"
+  ],
+  [
+    "write-invalid",
+    "NaN",
+    "{\"type\":\"error\",\"message\":\"stdout write failed at 0/57\"}\n"
+  ]
+]

@@ -1,0 +1,46 @@
+[
+  [
+    "recognizer",
+    {
+      "featConfig": {
+        "sampleRate": 16000,
+        "featureDim": 80
+      },
+      "modelConfig": {
+        "whisper": {
+          "encoder": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+          "decoder": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+          "language": "",
+          "task": "transcribe",
+          "tailPaddings": -1
+        },
+        "tokens": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+        "numThreads": 1,
+        "provider": "cuda",
+        "debug": 1
+      }
+    }
+  ],
+  "createStream",
+  [
+    "acceptWaveform",
+    16000,
+    4800,
+    0,
+    0.008596454747021198
+  ],
+  "inputFinished",
+  [
+    "clock",
+    0
+  ],
+  "decode",
+  [
+    "clock",
+    10
+  ],
+  [
+    "getResult",
+    false
+  ]
+]

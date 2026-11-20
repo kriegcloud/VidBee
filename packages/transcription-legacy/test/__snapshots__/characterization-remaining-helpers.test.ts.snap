@@ -1,0 +1,5230 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`catalog filtering and prep percentages preserve full defaults, null totals and nonfinite calculations 1`] = `
+[
+  {
+    "group": undefined,
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": undefined,
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": undefined,
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+        "group": "asr",
+        "id": "whisper-tiny-tokens",
+        "required": true,
+        "role": "asr-tokens",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": undefined,
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-frontend",
+        "required": true,
+        "role": "asr-frontend",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "directoryMembers": [
+          {
+            "json": true,
+            "minBytes": 2776833,
+            "name": "vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          },
+          {
+            "minBytes": 1671853,
+            "name": "merges.txt",
+            "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          },
+          {
+            "json": true,
+            "minBytes": 12487,
+            "name": "tokenizer_config.json",
+            "sha256": "4942d005604266809309cabc9f4e9cb89ce855d59b14681fdc0e1cc62ea26c4c",
+          },
+        ],
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+        "group": "asr",
+        "id": "qwen3-asr-tokenizer",
+        "required": true,
+        "role": "asr-tokenizer",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": [],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": [],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+        "group": "asr",
+        "id": "whisper-tiny-tokens",
+        "required": true,
+        "role": "asr-tokens",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-frontend",
+        "required": true,
+        "role": "asr-frontend",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "directoryMembers": [
+          {
+            "json": true,
+            "minBytes": 2776833,
+            "name": "vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          },
+          {
+            "minBytes": 1671853,
+            "name": "merges.txt",
+            "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          },
+          {
+            "json": true,
+            "minBytes": 12487,
+            "name": "tokenizer_config.json",
+            "sha256": "4942d005604266809309cabc9f4e9cb89ce855d59b14681fdc0e1cc62ea26c4c",
+          },
+        ],
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+        "group": "asr",
+        "id": "qwen3-asr-tokenizer",
+        "required": true,
+        "role": "asr-tokenizer",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [
+      "vad",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": [
+      "vad",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": [
+      "vad",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [
+      "vad",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [
+      "speaker",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": [
+      "speaker",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": [
+      "speaker",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [
+      "speaker",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [
+      "asr",
+    ],
+    "result": [],
+    "tiers": undefined,
+  },
+  {
+    "group": [
+      "asr",
+    ],
+    "result": [],
+    "tiers": [],
+  },
+  {
+    "group": [
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+        "group": "asr",
+        "id": "whisper-tiny-tokens",
+        "required": true,
+        "role": "asr-tokens",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-frontend",
+        "required": true,
+        "role": "asr-frontend",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "directoryMembers": [
+          {
+            "json": true,
+            "minBytes": 2776833,
+            "name": "vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          },
+          {
+            "minBytes": 1671853,
+            "name": "merges.txt",
+            "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          },
+          {
+            "json": true,
+            "minBytes": 12487,
+            "name": "tokenizer_config.json",
+            "sha256": "4942d005604266809309cabc9f4e9cb89ce855d59b14681fdc0e1cc62ea26c4c",
+          },
+        ],
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+        "group": "asr",
+        "id": "qwen3-asr-tokenizer",
+        "required": true,
+        "role": "asr-tokenizer",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [
+      "punct",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+        "group": "punct",
+        "id": "punct-ct-transformer-zh-en",
+        "required": true,
+        "role": "punctuation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8.tar.bz2",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": [
+      "punct",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+        "group": "punct",
+        "id": "punct-ct-transformer-zh-en",
+        "required": true,
+        "role": "punctuation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8.tar.bz2",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": [
+      "punct",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+        "group": "punct",
+        "id": "punct-ct-transformer-zh-en",
+        "required": true,
+        "role": "punctuation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [
+      "punct",
+    ],
+    "result": [
+      {
+        "fileName": "sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx",
+        "group": "punct",
+        "id": "punct-ct-transformer-zh-en",
+        "required": true,
+        "role": "punctuation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+  {
+    "group": [
+      "vad",
+      "speaker",
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": undefined,
+  },
+  {
+    "group": [
+      "vad",
+      "speaker",
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+    ],
+    "tiers": [],
+  },
+  {
+    "group": [
+      "vad",
+      "speaker",
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+        "group": "asr",
+        "id": "whisper-tiny-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+        "group": "asr",
+        "id": "whisper-tiny-tokens",
+        "required": true,
+        "role": "asr-tokens",
+        "tier": "minimal",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "minimal",
+    ],
+  },
+  {
+    "group": [
+      "vad",
+      "speaker",
+      "asr",
+    ],
+    "result": [
+      {
+        "fileName": "silero_vad.onnx",
+        "group": "vad",
+        "id": "silero-vad",
+        "required": true,
+        "role": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "group": "speaker",
+        "id": "pyannote-segmentation",
+        "required": true,
+        "role": "segmentation",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2",
+      },
+      {
+        "fileName": "3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+        "group": "speaker",
+        "id": "speaker-embedding-campplus",
+        "required": true,
+        "role": "embedding",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh_en_16k-common_advanced.onnx",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/encoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-encoder",
+        "required": true,
+        "role": "asr-encoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/decoder.int8.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-decoder",
+        "required": true,
+        "role": "asr-decoder",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/conv_frontend.onnx",
+        "group": "asr",
+        "id": "qwen3-asr-frontend",
+        "required": true,
+        "role": "asr-frontend",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+      {
+        "directoryMembers": [
+          {
+            "json": true,
+            "minBytes": 2776833,
+            "name": "vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          },
+          {
+            "minBytes": 1671853,
+            "name": "merges.txt",
+            "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          },
+          {
+            "json": true,
+            "minBytes": 12487,
+            "name": "tokenizer_config.json",
+            "sha256": "4942d005604266809309cabc9f4e9cb89ce855d59b14681fdc0e1cc62ea26c4c",
+          },
+        ],
+        "fileName": "sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25/tokenizer",
+        "group": "asr",
+        "id": "qwen3-asr-tokenizer",
+        "required": true,
+        "role": "asr-tokenizer",
+        "tier": "quality",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      },
+    ],
+    "tiers": [
+      "quality",
+    ],
+  },
+]
+`;
+
+exports[`catalog filtering and prep percentages preserve full defaults, null totals and nonfinite calculations 2`] = `
+[
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 99,
+    "prep": {
+      "downloading": true,
+      "percent": 99,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": NaN,
+    "prep": {
+      "downloading": true,
+      "percent": NaN,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 0,
+    "prep": {
+      "downloading": true,
+      "percent": 0,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": NaN,
+    "prep": {
+      "downloading": true,
+      "percent": NaN,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 75,
+    "prep": {
+      "downloading": true,
+      "percent": 75,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 99,
+    "prep": {
+      "downloading": true,
+      "percent": 99,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": NaN,
+    "prep": {
+      "downloading": true,
+      "percent": NaN,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 50,
+    "prep": {
+      "downloading": true,
+      "percent": 50,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": NaN,
+    "prep": {
+      "downloading": true,
+      "percent": NaN,
+      "ready": false,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": false,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": null,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 0,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": 10,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": NaN,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": -1,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 0,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 5,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": 20,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+  {
+    "percent": 100,
+    "prep": {
+      "downloading": true,
+      "percent": 100,
+      "ready": true,
+    },
+    "status": {
+      "downloads": [
+        {
+          "received": NaN,
+          "total": Infinity,
+          "url": "https://fixture.invalid/model",
+        },
+      ],
+      "files": [
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": true,
+        },
+        {
+          "bytes": 0,
+          "id": "f",
+          "path": "/fixture/model",
+          "present": false,
+        },
+      ],
+      "ready": true,
+    },
+  },
+]
+`;
+
+exports[`fake pipeline public construction preserves supplied identity, synchronous progress, delay and seed branches > seed 1`] = `
+{
+  "asrTier": null,
+  "language": "en",
+  "modelVersion": "seed",
+  "resultKind": "transcript",
+  "segments": [
+    {
+      "confidence": null,
+      "endMs": 1000,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+      "text": "hello",
+      "words": [],
+    },
+  ],
+  "sourceKind": "captions",
+  "speakers": [
+    {
+      "displayName": "Speaker 1",
+      "speakerKey": "speaker-1",
+    },
+  ],
+}
+`;
+
+exports[`fake pipeline public construction preserves supplied identity, synchronous progress, delay and seed branches > silence 1`] = `
+{
+  "asrTier": "minimal",
+  "language": null,
+  "modelVersion": "vidbee-asr-2026.08.20-3",
+  "resultKind": "no-speech",
+  "segments": [],
+  "speakers": [],
+}
+`;
+
+exports[`fake pipeline public construction preserves supplied identity, synchronous progress, delay and seed branches > speech 1`] = `
+{
+  "asrTier": "minimal",
+  "language": "en",
+  "modelVersion": "vidbee-asr-2026.08.20-3",
+  "resultKind": "transcript",
+  "segments": [
+    {
+      "confidence": 0.9,
+      "endMs": 1800,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+      "text": "Hello, this is a fixture transcript.",
+      "words": [
+        {
+          "endMs": 400,
+          "startMs": 0,
+          "text": "Hello,",
+        },
+        {
+          "endMs": 700,
+          "startMs": 400,
+          "text": " this",
+        },
+        {
+          "endMs": 900,
+          "startMs": 700,
+          "text": " is",
+        },
+        {
+          "endMs": 1050,
+          "startMs": 900,
+          "text": " a",
+        },
+        {
+          "endMs": 1400,
+          "startMs": 1050,
+          "text": " fixture",
+        },
+        {
+          "endMs": 1800,
+          "startMs": 1400,
+          "text": " transcript.",
+        },
+      ],
+    },
+    {
+      "confidence": 0.88,
+      "endMs": 3600,
+      "speakerKey": "speaker-2",
+      "startMs": 1900,
+      "text": "And this is the second speaker.",
+      "words": [
+        {
+          "endMs": 2100,
+          "startMs": 1900,
+          "text": "And",
+        },
+        {
+          "endMs": 2300,
+          "startMs": 2100,
+          "text": " this",
+        },
+        {
+          "endMs": 2450,
+          "startMs": 2300,
+          "text": " is",
+        },
+        {
+          "endMs": 2600,
+          "startMs": 2450,
+          "text": " the",
+        },
+        {
+          "endMs": 3000,
+          "startMs": 2600,
+          "text": " second",
+        },
+        {
+          "endMs": 3600,
+          "startMs": 3000,
+          "text": " speaker.",
+        },
+      ],
+    },
+  ],
+  "speakers": [
+    {
+      "displayName": "Speaker 1",
+      "speakerKey": "speaker-1",
+    },
+    {
+      "displayName": "Speaker 2",
+      "speakerKey": "speaker-2",
+    },
+  ],
+}
+`;
+
+exports[`fake pipeline public construction preserves supplied identity, synchronous progress, delay and seed branches 1`] = `
+[
+  [
+    "progress",
+    {
+      "message": undefined,
+      "percent": 0.2,
+      "stage": "detecting-speech",
+    },
+  ],
+  [
+    "progress",
+    {
+      "message": undefined,
+      "percent": 1,
+      "stage": "committing",
+    },
+  ],
+  "immediate",
+  "marker",
+]
+`;
+
+exports[`host wrappers read fresh environment and resolve selected shared library without recording machine values 1`] = `
+[
+  {
+    "fallback": false,
+    "provider": "cpu",
+  },
+  {
+    "fallback": true,
+    "provider": "cuda",
+  },
+  {
+    "fallback": true,
+    "provider": "directml",
+  },
+  {
+    "fallback": true,
+    "provider": "coreml",
+  },
+]
+`;
+
+exports[`path/config wrappers keep missing model null and old synchronous role evaluation 1`] = `
+[
+  "ffprobe",
+  "/fixture/bin/ffprobe",
+  "/fixture/bin/ffprobe.exe",
+  "/fixture/bin/ffprobe",
+  "/fixture/bin/ffprobe",
+]
+`;
+
+exports[`path/config wrappers keep missing model null and old synchronous role evaluation 2`] = `
+[
+  [
+    {
+      "endMs": 0,
+      "extra": "retained",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 1,
+      "extra": "retained",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 14999,
+      "extra": "retained",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 15000,
+      "extra": "retained",
+      "startMs": 0,
+    },
+  ],
+  [
+    {
+      "endMs": 15000,
+      "extra": "retained",
+      "startMs": 0,
+    },
+    {
+      "endMs": 15001,
+      "extra": "retained",
+      "startMs": 15000,
+    },
+  ],
+  [
+    {
+      "endMs": 15000,
+      "extra": "retained",
+      "startMs": 0,
+    },
+    {
+      "endMs": 30000,
+      "extra": "retained",
+      "startMs": 15000,
+    },
+    {
+      "endMs": 30001,
+      "extra": "retained",
+      "startMs": 30000,
+    },
+  ],
+  [],
+]
+`;
+
+exports[`path/config wrappers keep missing model null and old synchronous role evaluation 3`] = `
+[
+  {
+    "reusable": false,
+    "source": -1,
+    "wav": 0,
+  },
+  {
+    "reusable": false,
+    "source": 0,
+    "wav": 0,
+  },
+  {
+    "reusable": false,
+    "source": 1000,
+    "wav": 0,
+  },
+  {
+    "reusable": false,
+    "source": 10000,
+    "wav": 0,
+  },
+  {
+    "reusable": false,
+    "source": NaN,
+    "wav": 0,
+  },
+  {
+    "reusable": true,
+    "source": -1,
+    "wav": 1,
+  },
+  {
+    "reusable": true,
+    "source": 0,
+    "wav": 1,
+  },
+  {
+    "reusable": true,
+    "source": 1000,
+    "wav": 1,
+  },
+  {
+    "reusable": false,
+    "source": 10000,
+    "wav": 1,
+  },
+  {
+    "reusable": false,
+    "source": NaN,
+    "wav": 1,
+  },
+  {
+    "reusable": true,
+    "source": -1,
+    "wav": 1000,
+  },
+  {
+    "reusable": true,
+    "source": 0,
+    "wav": 1000,
+  },
+  {
+    "reusable": true,
+    "source": 1000,
+    "wav": 1000,
+  },
+  {
+    "reusable": false,
+    "source": 10000,
+    "wav": 1000,
+  },
+  {
+    "reusable": false,
+    "source": NaN,
+    "wav": 1000,
+  },
+  {
+    "reusable": true,
+    "source": -1,
+    "wav": NaN,
+  },
+  {
+    "reusable": true,
+    "source": 0,
+    "wav": NaN,
+  },
+  {
+    "reusable": false,
+    "source": 1000,
+    "wav": NaN,
+  },
+  {
+    "reusable": false,
+    "source": 10000,
+    "wav": NaN,
+  },
+  {
+    "reusable": false,
+    "source": NaN,
+    "wav": NaN,
+  },
+  {
+    "reusable": true,
+    "source": -1,
+    "wav": Infinity,
+  },
+  {
+    "reusable": true,
+    "source": 0,
+    "wav": Infinity,
+  },
+  {
+    "reusable": true,
+    "source": 1000,
+    "wav": Infinity,
+  },
+  {
+    "reusable": true,
+    "source": 10000,
+    "wav": Infinity,
+  },
+  {
+    "reusable": false,
+    "source": NaN,
+    "wav": Infinity,
+  },
+]
+`;

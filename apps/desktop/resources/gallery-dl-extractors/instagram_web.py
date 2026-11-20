@@ -236,6 +236,40 @@ class VidBeeInstagramReelsExtractor(InstagramWebMixin, InstagramReelsExtractor):
 class VidBeeInstagramStoriesExtractor(InstagramWebMixin, InstagramStoriesExtractor):
     pattern = InstagramStoriesExtractor.pattern
 
+    def posts(self):
+        reels = super().posts()
+        if not reels and not self.highlight_id:
+            self._check_story_access()
+        return reels
+
+    def _check_story_access(self):
+        """Tell a hidden private story apart from an expired one.
+
+        Instagram answers the story query of a private account that the
+        signed-in viewer does not follow with an empty reel, the same shape as
+        an expired story. gallery-dl caches profiles, follow status included,
+        without expiry and across cookie accounts, so the follow status is read
+        fresh here. This costs one request and only runs when nothing was found.
+        """
+        user = getattr(self, "_user", None) or {}
+        user_id = str(user.get("id") or user.get("pk") or "")
+        if not user_id or not user.get("is_private"):
+            return
+        api = self.api
+        fresh = api._user_by_id_impl(user_id)
+        self.cache_update(api._user_by_id_impl, user_id, fresh,
+                          _exp=api._user_cache_exp, _mem=api._user_cache_mem)
+        if not fresh.get("is_private"):
+            return
+        status = fresh.get("friendship_status") or {}
+        if status.get("following", fresh.get("followed_by_viewer", False)):
+            return
+        name = fresh.get("username") or self.user
+        raise self.exc.AbortExtraction(
+            f"Private profile: the Instagram account in your cookies does not follow {name}, "
+            "so Instagram hides its stories. Use cookies from a browser signed in to an "
+            "account that follows it.")
+
 
 class VidBeeInstagramHighlightsExtractor(InstagramWebMixin, InstagramHighlightsExtractor):
     pattern = InstagramHighlightsExtractor.pattern

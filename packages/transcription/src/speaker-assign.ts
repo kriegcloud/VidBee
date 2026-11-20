@@ -1,68 +1,53 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { atomicWriteJson } from './atomic-file'
-import type { TimedTurn } from './speaker-refine'
-import type {
-  PipelineSegment,
-  PipelineSpeaker,
-  TranscriptRecord,
-  TranscriptSourceKind,
-  TranscriptWord
-} from './types'
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
+import * as O from "effect/Option";
+import * as Str from "effect/String";
+import type { PipelineSegment, PipelineSpeaker, TimedTurn } from "./Pipeline.model.js";
+import type { LabeledToken, PipelineSeed } from "./Seed.model.js";
+import type { StoredTranscriptRecord } from "./Transcript.model.js";
 
-export const SEED_TRANSCRIPT_FILE = 'seed-transcript.json'
+export type { PipelineSeed } from "./Seed.model.js";
 
-export interface PipelineSeed {
-  language: string | null
-  modelVersion: string
-  asrTier: string | null
-  sourceKind?: TranscriptSourceKind
-  speakers: PipelineSpeaker[]
-  segments: PipelineSegment[]
-}
+export const SEED_TRANSCRIPT_FILE = "seed-transcript.json";
 
-interface LabeledToken extends TranscriptWord {
-  confidence: number | null
-  speakerKey: string | null
-  /** False when this token is a whole caption line without ASR word timings. */
-  timed: boolean
-}
-
-const SENTENCE_END = /[。！？!?….]["'"」』]*$/u
-const CJK_CHAR = /[\u4e00-\u9fff]/
-const TRAILING_QUOTES = /["'"」』]/
-const SECONDARY_PUNCT_PARTS = /[^，、,;：]+[，、,;：]+|[^，、,;：]+/gu
+const SENTENCE_END = /[。！？!?….]["'"」』]*$/u;
+const CJK_CHAR = /[\u4e00-\u9fff]/;
+const TRAILING_QUOTES = /["'"」』]/;
+const SECONDARY_PUNCT_PARTS = /[^，、,;：]+[，、,;：]+|[^，、,;：]+/gu;
 
 /** Split when the next token starts after this much silence. */
-export const PARAGRAPH_GAP_MS = 1500
+export const PARAGRAPH_GAP_MS = 1500;
 /** Split when the open segment already has this many characters. */
-export const MAX_SEGMENT_CHARS = 150
+export const MAX_SEGMENT_CHARS = 150;
 /** Split when the open segment already spans this duration. */
-export const MAX_SEGMENT_MS = 30_000
+export const MAX_SEGMENT_MS = 30_000;
 /** Wordless pieces longer than this are split again so majority-vote stays local. */
-export const GIANT_TOKEN_MS = 30_000
+export const GIANT_TOKEN_MS = 30_000;
 /** Wordless pieces with more than this many characters are split again. */
-export const GIANT_TOKEN_CHARS = 300
+export const GIANT_TOKEN_CHARS = 300;
 /** Last-resort window size when a giant piece still has no usable punctuation. */
-export const FALLBACK_TOKEN_CHARS = 50
+export const FALLBACK_TOKEN_CHARS = 50;
 
-const charCount = (text: string): number => [...text].length
+const charCount = (text: string): number => [...text].length;
 
 const isAsciiSentencePeriod = (text: string, index: number): boolean => {
-  if (text[index] !== '.') {
-    return false
+  if (text[index] !== ".") {
+    return false;
   }
-  const prev = text[index - 1]
-  const next = text[index + 1]
+  const prev = text[index - 1];
+  const next = text[index + 1];
   if (prev !== undefined && /\d/.test(prev) && next !== undefined && /\d/.test(next)) {
-    return false
+    return false;
   }
-  return next === undefined || /\s/.test(next) || TRAILING_QUOTES.test(next)
-}
+  return next === undefined || /\s/.test(next) || TRAILING_QUOTES.test(next);
+};
 
 /**
  * True when this caption line already closed a sentence.
  */
-const endsCaptionSentence = (text: string): boolean => SENTENCE_END.test(text.trimEnd())
+const endsCaptionSentence = (text: string): boolean => SENTENCE_END.test(Str.trimEnd(text));
 
 /**
  * Split a caption line on CJK/terminal punctuation so one speaker turn is not one wall of text.
@@ -70,64 +55,68 @@ const endsCaptionSentence = (text: string): boolean => SENTENCE_END.test(text.tr
  * but not inside decimals such as 3.5.
  */
 const splitCaptionSentences = (text: string): string[] => {
-  const source = text.trim()
-  if (!source) {
-    return []
+  const source = Str.trim(text);
+  const hasSource = Boolean(source);
+  if (!hasSource) {
+    return [];
   }
-  const parts: string[] = []
-  let start = 0
+  const parts: string[] = [];
+  let start = 0;
   const push = (end: number): void => {
-    const part = source.slice(start, end).trim()
-    if (part) {
-      parts.push(part)
+    const part = Str.trim(Str.slice(start, end)(source));
+    const hasPart = Boolean(part);
+    if (hasPart) {
+      parts.push(part);
     }
-    start = end
-  }
+    start = end;
+  };
   for (let i = 0; i < source.length; i += 1) {
-    const ch = source[i] ?? ''
-    if (ch === '\n') {
-      push(i)
-      start = i + 1
-      continue
+    const ch = source[i] ?? "";
+    if (ch === "\n") {
+      push(i);
+      start = i + 1;
+      continue;
     }
     if (/[。！？!?]/.test(ch) || isAsciiSentencePeriod(source, i)) {
-      let end = i + 1
-      while (end < source.length && TRAILING_QUOTES.test(source[end] ?? '')) {
-        end += 1
+      let end = i + 1;
+      while (end < source.length && TRAILING_QUOTES.test(source[end] ?? "")) {
+        end += 1;
       }
-      push(end)
-      i = end - 1
+      push(end);
+      i = end - 1;
     }
   }
   if (start < source.length) {
-    push(source.length)
+    push(source.length);
   }
-  return parts.length > 0 ? parts : [source]
-}
+  return parts.length > 0 ? parts : [source];
+};
 
 /**
  * Join two caption fragments, adding a space only when Latin words would otherwise jam.
  */
 const joinCaptionText = (left: string, right: string): string => {
-  if (!left) {
-    return right
+  const hasLeft = Boolean(left);
+  if (!hasLeft) {
+    return right;
   }
-  if (!right) {
-    return left
+  const hasRight = Boolean(right);
+  if (!hasRight) {
+    return left;
   }
   if (/\s$/.test(left) || /^\s/.test(right)) {
-    return `${left}${right}`
+    return `${left}${right}`;
   }
   if (/[。！？!?…,，、；;：:]$/.test(left)) {
-    return `${left}${right}`
+    return `${left}${right}`;
   }
-  const leftChar = left.trimEnd().at(-1) ?? ''
-  const rightChar = right.trimStart().at(0) ?? ''
+  const leftChar = O.getOrUndefined(Str.at(-1)(Str.trimEnd(left))) ?? "";
+  const rightChar = O.getOrUndefined(Str.at(0)(Str.trimStart(right))) ?? "";
   if (CJK_CHAR.test(leftChar) && CJK_CHAR.test(rightChar)) {
-    return `${left}${right}`
+    return `${left}${right}`;
   }
-  return `${left} ${right}`
-}
+  return `${left} ${right}`;
+};
 
 /**
  * Build a one-speaker turn covering the whole timeline.
@@ -135,8 +124,8 @@ const joinCaptionText = (left: string, right: string): string => {
  * @param endMs Exclusive end of the last known word or segment.
  */
 export const singleSpeakerTurns = (endMs: number): TimedTurn[] => [
-  { startMs: 0, endMs: Math.max(1, endMs), speakerKey: 'speaker-1' }
-]
+  { startMs: 0, endMs: Math.max(1, endMs), speakerKey: "speaker-1" },
+];
 
 /**
  * True when imported captions still need a speaker overlay pass.
@@ -146,15 +135,15 @@ export const singleSpeakerTurns = (endMs: number): TimedTurn[] => [
  *
  * @param record Current transcript, if any.
  */
-export const captionRecordNeedsSpeakers = (record: TranscriptRecord | null): boolean =>
+export const captionRecordNeedsSpeakers = (record: StoredTranscriptRecord | null): boolean =>
   Boolean(
     record &&
-      record.sourceKind === 'captions' &&
-      record.resultKind === 'transcript' &&
+      record.sourceKind === "captions" &&
+      record.resultKind === "transcript" &&
       record.segments.length > 0 &&
       record.speakers.length === 0 &&
-      record.transcriptionTaskId.startsWith('captions:')
-  )
+      Str.startsWith("captions:")(record.transcriptionTaskId)
+  );
 
 /**
  * Latest finished ASR transcript for a download, if one has words or segments.
@@ -162,37 +151,11 @@ export const captionRecordNeedsSpeakers = (record: TranscriptRecord | null): boo
  * @param store Store that can list every transcript for a download.
  * @param downloadTaskId Parent download id.
  */
-export const latestAsrSeed = (
-  store: { listForDownload: (downloadTaskId: string) => TranscriptRecord[] },
-  downloadTaskId: string
-): PipelineSeed | null => {
-  const record = store
-    .listForDownload(downloadTaskId)
-    .find(
-      (row) =>
-        row.sourceKind === 'asr' && row.resultKind === 'transcript' && row.segments.length > 0
-    )
-  return pipelineSeedFromRecord(record ?? null)
-}
-
-const isOriginalCaptionImport = (row: TranscriptRecord): boolean =>
-  row.transcriptionTaskId.startsWith('captions:') &&
-  row.resultKind === 'transcript' &&
-  row.segments.length > 0
 
 /**
  * Original subtitle-import row for a download: newest `captions:` task, matching
  * `language` when that exists. History is newest-first from `listForDownload`.
  */
-const originalCaptionImportSeed = (
-  store: { listForDownload: (downloadTaskId: string) => TranscriptRecord[] },
-  downloadTaskId: string,
-  language: string | null
-): PipelineSeed | null => {
-  const rows = store.listForDownload(downloadTaskId).filter(isOriginalCaptionImport)
-  const matched = language ? rows.find((row) => row.language === language) : undefined
-  return pipelineSeedFromRecord(matched ?? rows[0] ?? null)
-}
 
 /**
  * Seed speaker overlay from the current transcript, captions or ASR.
@@ -204,52 +167,44 @@ const originalCaptionImportSeed = (
  * @param store Store that can read the current row and list history.
  * @param downloadTaskId Parent download id.
  */
-export const latestTranscriptSeed = (
-  store: {
-    getLatestForDownload?: (downloadTaskId: string) => TranscriptRecord | null
-    listForDownload: (downloadTaskId: string) => TranscriptRecord[]
-  },
-  downloadTaskId: string
-): PipelineSeed | null => {
-  const latest = store.getLatestForDownload?.(downloadTaskId) ?? null
-  if (latest?.sourceKind === 'captions') {
-    const original = originalCaptionImportSeed(store, downloadTaskId, latest.language)
-    if (original) {
-      return original
-    }
-  }
-  return pipelineSeedFromRecord(latest) ?? latestAsrSeed(store, downloadTaskId)
-}
 
 /**
  * Flatten a stored ASR record into the seed the pipeline overlays speakers on.
  *
  * @param record Latest ASR transcript, or null when nothing is reusable.
  */
-export const pipelineSeedFromRecord = (record: TranscriptRecord | null): PipelineSeed | null => {
-  if (record?.resultKind !== 'transcript' || record.segments.length === 0) {
-    return null
+export const pipelineSeedFromRecord = (record: StoredTranscriptRecord | null): PipelineSeed | null => {
+  if (record?.resultKind !== "transcript" || record.segments.length === 0) {
+    return null;
   }
-  const speakerKeyById = new Map(record.speakers.map((speaker) => [speaker.id, speaker.speakerKey]))
+  const speakerKeyById = HashMap.fromIterable(
+    A.map(record.speakers, (speaker) => [speaker.id, speaker.speakerKey] as const)
+  );
   return {
     language: record.language,
     modelVersion: record.modelVersion,
     asrTier: record.asrTier,
     sourceKind: record.sourceKind,
-    speakers: record.speakers.map((speaker) => ({
+    speakers: A.map(record.speakers, (speaker) => ({
       speakerKey: speaker.speakerKey,
-      displayName: speaker.displayName
+      displayName: speaker.displayName,
     })),
-    segments: record.segments.map((segment) => ({
-      speakerKey: segment.speakerId ? (speakerKeyById.get(segment.speakerId) ?? null) : null,
-      startMs: segment.startMs,
-      endMs: segment.endMs,
-      text: segment.text,
-      words: segment.words,
-      confidence: segment.confidence
-    }))
-  }
-}
+    segments: A.map(record.segments, (segment) => {
+      const hasSpeakerId = Boolean(segment.speakerId);
+      return {
+        speakerKey:
+          hasSpeakerId && segment.speakerId !== null
+            ? (O.getOrUndefined(HashMap.get(speakerKeyById, segment.speakerId)) ?? null)
+            : null,
+        startMs: segment.startMs,
+        endMs: segment.endMs,
+        text: segment.text,
+        words: segment.words,
+        confidence: segment.confidence,
+      };
+    }),
+  };
+};
 
 /**
  * Persist a seed next to the worker work dir.
@@ -257,39 +212,12 @@ export const pipelineSeedFromRecord = (record: TranscriptRecord | null): Pipelin
  * @param filePath Destination JSON path.
  * @param seed Existing ASR transcript.
  */
-export const writePipelineSeed = (filePath: string, seed: PipelineSeed): void => {
-  atomicWriteJson(filePath, seed)
-}
 
 /**
  * Load a seed written for a rediarize worker job.
  *
  * @param filePath Seed JSON path.
  */
-export const loadPipelineSeed = (filePath: string): PipelineSeed | null => {
-  if (!existsSync(filePath)) {
-    return null
-  }
-  try {
-    const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as PipelineSeed
-    if (!Array.isArray(parsed?.segments) || parsed.segments.length === 0) {
-      return null
-    }
-    return {
-      language: parsed.language ?? null,
-      modelVersion: typeof parsed.modelVersion === 'string' ? parsed.modelVersion : '',
-      asrTier: parsed.asrTier ?? null,
-      sourceKind:
-        parsed.sourceKind === 'captions' || parsed.sourceKind === 'asr'
-          ? parsed.sourceKind
-          : undefined,
-      speakers: Array.isArray(parsed.speakers) ? parsed.speakers : [],
-      segments: parsed.segments
-    }
-  } catch {
-    return null
-  }
-}
 
 /**
  * Exclusive end of the last seed segment, used when audio is not extracted.
@@ -297,7 +225,7 @@ export const loadPipelineSeed = (filePath: string): PipelineSeed | null => {
  * @param seed Existing ASR transcript.
  */
 export const seedDurationMs = (seed: PipelineSeed): number =>
-  seed.segments.reduce((max, segment) => Math.max(max, segment.endMs), 0)
+  A.reduce(seed.segments, 0, (max, segment) => Math.max(max, segment.endMs));
 
 /**
  * Re-label an existing transcript with new diarization turns. Words are kept.
@@ -305,94 +233,95 @@ export const seedDurationMs = (seed: PipelineSeed): number =>
  * @param segments Finished ASR segments.
  * @param turns Fresh speaker turns from diarization.
  */
-export const assignSpeakersToSegments = (
+const assignSpeakersToSegmentsDataFirst = (
   segments: PipelineSegment[],
   turns: TimedTurn[]
 ): { speakers: PipelineSpeaker[]; segments: PipelineSegment[] } => {
-  const endMs = segments.reduce((max, segment) => Math.max(max, segment.endMs), 0)
-  const effectiveTurns = turns.length > 0 ? turns : singleSpeakerTurns(endMs)
-  const tokens = flattenTokens(segments)
-  const labeled = tokens.map((token) => ({
+  const endMs = A.reduce(segments, 0, (max, segment) => Math.max(max, segment.endMs));
+  const effectiveTurns = turns.length > 0 ? turns : singleSpeakerTurns(endMs);
+  const tokens = flattenTokens(segments);
+  const labeled = A.map(tokens, (token) => ({
     ...token,
-    speakerKey: speakerForInterval(effectiveTurns, token.startMs, token.endMs)
-  }))
-  const next = groupTokens(labeled)
-  return { speakers: speakersFromSegments(next), segments: next }
-}
+    speakerKey: speakerForInterval(effectiveTurns, token.startMs, token.endMs),
+  }));
+  const next = groupTokens(labeled);
+  return { speakers: speakersFromSegments(next), segments: next };
+};
+export const assignSpeakersToSegments: {
+  (segments: PipelineSegment[], turns: TimedTurn[]): { speakers: PipelineSpeaker[]; segments: PipelineSegment[] };
+  (turns: TimedTurn[]): (segments: PipelineSegment[]) => { speakers: PipelineSpeaker[]; segments: PipelineSegment[] };
+} = dual(2, assignSpeakersToSegmentsDataFirst);
 
 const isGiantPiece = (text: string, durationMs: number): boolean =>
-  durationMs > GIANT_TOKEN_MS || charCount(text) > GIANT_TOKEN_CHARS
+  durationMs > GIANT_TOKEN_MS || charCount(text) > GIANT_TOKEN_CHARS;
 
 const splitSecondaryPunctuation = (text: string): string[] => {
-  const parts = text.match(SECONDARY_PUNCT_PARTS)
-  if (!parts) {
-    return [text]
+  const parts = O.getOrNull(Str.match(SECONDARY_PUNCT_PARTS)(text));
+  if (parts === null) {
+    return [text];
   }
-  return parts.map((part) => part.trim()).filter((part) => part.length > 0)
-}
+  return A.filter(
+    A.map(parts, (part) => Str.trim(part)),
+    (part) => part.length > 0
+  );
+};
 
 const splitEvenWindows = (text: string, parts: number): string[] => {
-  const chars = [...text]
+  const chars = [...text];
   if (parts <= 1 || chars.length === 0) {
-    return text ? [text] : []
+    const hasText = Boolean(text);
+    return hasText ? [text] : [];
   }
-  const size = Math.max(1, Math.ceil(chars.length / parts))
-  const out: string[] = []
+  const size = Math.max(1, Math.ceil(chars.length / parts));
+  const out: string[] = [];
   for (let i = 0; i < chars.length; i += size) {
-    out.push(chars.slice(i, i + size).join(''))
+    out.push(A.join(chars.slice(i, i + size), ""));
   }
-  return out
-}
+  return out;
+};
 
 /**
  * Last-resort split for a wordless giant piece: secondary punctuation, then
  * ~50-character windows (and extra slices if duration would still exceed 30s).
  */
 const splitOversizedPiece = (text: string, durationMs: number): string[] => {
-  const punctuated = splitSecondaryPunctuation(text)
-  const pieces = punctuated.length > 0 ? punctuated : [text]
-  const totalWeight = pieces.reduce((sum, part) => sum + charCount(part), 0) || 1
-  const out: string[] = []
+  const punctuated = splitSecondaryPunctuation(text);
+  const pieces = punctuated.length > 0 ? punctuated : [text];
+  const totalWeight = A.reduce(pieces, 0, (sum, part) => sum + charCount(part)) || 1;
+  const out: string[] = [];
   for (const piece of pieces) {
-    const share = (Math.max(1, charCount(piece)) / totalWeight) * durationMs
+    const share = (Math.max(1, charCount(piece)) / totalWeight) * durationMs;
     if (!isGiantPiece(piece, share)) {
-      out.push(piece)
-      continue
+      out.push(piece);
+      continue;
     }
-    const windows = Math.max(
-      Math.ceil(charCount(piece) / FALLBACK_TOKEN_CHARS),
-      Math.ceil(share / GIANT_TOKEN_MS),
-      1
-    )
-    out.push(...splitEvenWindows(piece, windows))
+    const windows = Math.max(Math.ceil(charCount(piece) / FALLBACK_TOKEN_CHARS), Math.ceil(share / GIANT_TOKEN_MS), 1);
+    out.push(...splitEvenWindows(piece, windows));
   }
-  return out.length > 0 ? out : [text]
-}
+  return out.length > 0 ? out : [text];
+};
 
-const apportionWordless = (
-  segment: PipelineSegment,
-  pieces: readonly string[]
-): LabeledToken[] => {
-  const duration = Math.max(1, segment.endMs - segment.startMs)
-  const totalWeight = pieces.reduce((sum, part) => sum + charCount(part), 0) || 1
-  const tokens: LabeledToken[] = []
-  let seen = 0
+const apportionWordless = (segment: PipelineSegment, pieces: readonly string[]): LabeledToken[] => {
+  const duration = Math.max(1, segment.endMs - segment.startMs);
+  const totalWeight = A.reduce(pieces, 0, (sum, part) => sum + charCount(part)) || 1;
+  const tokens: LabeledToken[] = [];
+  let seen = 0;
   for (const part of pieces) {
-    const weight = Math.max(1, charCount(part))
-    const startMs = segment.startMs + (seen / totalWeight) * duration
-    seen += weight
-    const endMs = segment.startMs + (seen / totalWeight) * duration
+    const weight = Math.max(1, charCount(part));
+    const startMs = segment.startMs + (seen / totalWeight) * duration;
+    seen += weight;
+    const endMs = segment.startMs + (seen / totalWeight) * duration;
     tokens.push({
       startMs: Math.round(startMs),
       endMs: Math.round(Math.max(startMs + 1, endMs)),
       text: part,
       confidence: segment.confidence,
       speakerKey: segment.speakerKey,
-      timed: false
-    })
+      timed: false,
+    });
   }
-  return tokens
-}
+  return tokens;
+};
 
 /**
  * Turn stored segments into a time-ordered token stream (words, or the whole line).
@@ -400,9 +329,10 @@ const apportionWordless = (
  * @param segments Existing ASR segments.
  */
 const flattenTokens = (segments: PipelineSegment[]): LabeledToken[] => {
-  const tokens: LabeledToken[] = []
+  const tokens: LabeledToken[] = [];
   for (const segment of segments) {
-    if (segment.words && segment.words.length > 0) {
+    const hasWords = Boolean(segment.words);
+    if (segment.words !== undefined && hasWords && segment.words.length > 0) {
       for (const word of segment.words) {
         tokens.push({
           startMs: word.startMs,
@@ -410,28 +340,29 @@ const flattenTokens = (segments: PipelineSegment[]): LabeledToken[] => {
           text: word.text,
           confidence: segment.confidence,
           speakerKey: segment.speakerKey,
-          timed: true
-        })
+          timed: true,
+        });
       }
-      continue
+      continue;
     }
-    const duration = Math.max(1, segment.endMs - segment.startMs)
-    const sentences = splitCaptionSentences(segment.text)
-    const pieces = sentences.length > 0 ? sentences : segment.text.trim() ? [segment.text] : []
-    const sentenceWeight = pieces.reduce((sum, part) => sum + charCount(part), 0) || 1
-    const expanded: string[] = []
+    const duration = Math.max(1, segment.endMs - segment.startMs);
+    const sentences = splitCaptionSentences(segment.text);
+    const hasText = Boolean(Str.trim(segment.text));
+    const pieces = sentences.length > 0 ? sentences : hasText ? [segment.text] : [];
+    const sentenceWeight = A.reduce(pieces, 0, (sum, part) => sum + charCount(part)) || 1;
+    const expanded: string[] = [];
     for (const piece of pieces) {
-      const share = (Math.max(1, charCount(piece)) / sentenceWeight) * duration
+      const share = (Math.max(1, charCount(piece)) / sentenceWeight) * duration;
       if (isGiantPiece(piece, share)) {
-        expanded.push(...splitOversizedPiece(piece, share))
+        expanded.push(...splitOversizedPiece(piece, share));
       } else {
-        expanded.push(piece)
+        expanded.push(piece);
       }
     }
-    tokens.push(...apportionWordless(segment, expanded.length > 0 ? expanded : pieces))
+    tokens.push(...apportionWordless(segment, expanded.length > 0 ? expanded : pieces));
   }
-  return tokens.sort((a, b) => a.startMs - b.startMs || a.endMs - b.endMs)
-}
+  return tokens.sort((a, b) => a.startMs - b.startMs || a.endMs - b.endMs);
+};
 
 /**
  * Pick the speaker whose turn overlaps this interval the most.
@@ -441,49 +372,49 @@ const flattenTokens = (segments: PipelineSegment[]): LabeledToken[] => {
  * @param endMs Token end.
  */
 const speakerForInterval = (turns: TimedTurn[], startMs: number, endMs: number): string | null => {
-  let bestKey: string | null = null
-  let bestOverlap = 0
+  let bestKey: string | null = null;
+  let bestOverlap = 0;
   for (const turn of turns) {
-    const overlap = Math.min(endMs, turn.endMs) - Math.max(startMs, turn.startMs)
+    const overlap = Math.min(endMs, turn.endMs) - Math.max(startMs, turn.startMs);
     if (overlap > bestOverlap) {
-      bestOverlap = overlap
-      bestKey = turn.speakerKey
+      bestOverlap = overlap;
+      bestKey = turn.speakerKey;
     }
   }
   if (bestOverlap > 0) {
-    return bestKey === 'unknown' ? null : bestKey
+    return bestKey === "unknown" ? null : bestKey;
   }
-  const mid = (startMs + endMs) / 2
-  let nearestKey: string | null = null
-  let nearestGap = Number.POSITIVE_INFINITY
+  const mid = (startMs + endMs) / 2;
+  let nearestKey: string | null = null;
+  let nearestGap = Number.POSITIVE_INFINITY;
   for (const turn of turns) {
-    const gap = mid < turn.startMs ? turn.startMs - mid : mid > turn.endMs ? mid - turn.endMs : 0
+    const gap = mid < turn.startMs ? turn.startMs - mid : mid > turn.endMs ? mid - turn.endMs : 0;
     if (gap < nearestGap) {
-      nearestGap = gap
-      nearestKey = turn.speakerKey
+      nearestGap = gap;
+      nearestKey = turn.speakerKey;
     }
   }
-  return nearestKey === 'unknown' ? null : nearestKey
-}
+  return nearestKey === "unknown" ? null : nearestKey;
+};
 
 /**
  * True when this token should open a new display row instead of merging.
  */
 const shouldStartNewSegment = (last: PipelineSegment, token: LabeledToken): boolean => {
   if (last.speakerKey !== token.speakerKey) {
-    return true
+    return true;
   }
   if (endsCaptionSentence(last.text)) {
-    return true
+    return true;
   }
   if (token.startMs - last.endMs > PARAGRAPH_GAP_MS) {
-    return true
+    return true;
   }
   if ([...last.text].length >= MAX_SEGMENT_CHARS) {
-    return true
+    return true;
   }
-  return last.endMs - last.startMs >= MAX_SEGMENT_MS
-}
+  return last.endMs - last.startMs >= MAX_SEGMENT_MS;
+};
 
 /**
  * Merge consecutive same-speaker tokens back into display segments.
@@ -491,22 +422,25 @@ const shouldStartNewSegment = (last: PipelineSegment, token: LabeledToken): bool
  * @param tokens Words (or whole lines) with a speaker label.
  */
 const groupTokens = (tokens: LabeledToken[]): PipelineSegment[] => {
-  const segments: PipelineSegment[] = []
+  const segments: PipelineSegment[] = [];
   for (const token of tokens) {
-    const last = segments.at(-1)
-    const lastTimed = Boolean(last?.words && last.words.length > 0)
-    if (last && !shouldStartNewSegment(last, token)) {
-      last.endMs = token.endMs
+    const last = O.getOrUndefined(A.last(segments));
+    const lastTimed = Boolean(last?.words && last.words.length > 0);
+    if (last !== undefined && !shouldStartNewSegment(last, token)) {
+      last.endMs = token.endMs;
       if (lastTimed && token.timed) {
-        const words = last.words ?? []
-        words.push({ startMs: token.startMs, endMs: token.endMs, text: token.text })
-        last.words = words
-        last.text = words.map((word) => word.text).join('')
+        const words = last.words ?? [];
+        words.push({ startMs: token.startMs, endMs: token.endMs, text: token.text });
+        last.words = words;
+        last.text = A.join(
+          A.map(words, (word) => word.text),
+          ""
+        );
       } else {
-        last.words = []
-        last.text = joinCaptionText(last.text, token.text)
+        last.words = [];
+        last.text = joinCaptionText(last.text, token.text);
       }
-      continue
+      continue;
     }
     segments.push({
       speakerKey: token.speakerKey,
@@ -514,11 +448,11 @@ const groupTokens = (tokens: LabeledToken[]): PipelineSegment[] => {
       endMs: token.endMs,
       text: token.text,
       words: token.timed ? [{ startMs: token.startMs, endMs: token.endMs, text: token.text }] : [],
-      confidence: token.confidence
-    })
+      confidence: token.confidence,
+    });
   }
-  return segments
-}
+  return segments;
+};
 
 /**
  * Number speakers in first-appearance order for the transcript UI.
@@ -526,16 +460,17 @@ const groupTokens = (tokens: LabeledToken[]): PipelineSegment[] => {
  * @param segments Relabeled segments.
  */
 const speakersFromSegments = (segments: PipelineSegment[]): PipelineSpeaker[] => {
-  const keys: string[] = []
-  const seen = new Set<string>()
+  const keys: string[] = [];
+  let seen = HashSet.empty<string>();
   for (const segment of segments) {
-    if (segment.speakerKey && !seen.has(segment.speakerKey)) {
-      seen.add(segment.speakerKey)
-      keys.push(segment.speakerKey)
+    const hasSpeaker = Boolean(segment.speakerKey);
+    if (segment.speakerKey !== null && hasSpeaker && !HashSet.has(seen, segment.speakerKey)) {
+      seen = HashSet.add(seen, segment.speakerKey);
+      keys.push(segment.speakerKey);
     }
   }
-  return keys.map((speakerKey, index) => ({
+  return A.map(keys, (speakerKey, index) => ({
     speakerKey,
-    displayName: speakerKey === 'unknown' ? 'Unknown speaker' : `Speaker ${index + 1}`
-  }))
-}
+    displayName: speakerKey === "unknown" ? "Unknown speaker" : `Speaker ${index + 1}`,
+  }));
+};

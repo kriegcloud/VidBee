@@ -1,0 +1,6 @@
+{
+  "error": {
+    "name": "TypeError",
+    "message": "Cannot read properties of null (reading 'text')"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "outcome": {
+    "error": {
+      "name": "TypeError",
+      "message": "tag?.trim is not a function"
+    }
+  },
+  "calls": [
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-select_streams",
+        "s",
+        "-show_entries",
+        "stream=index,codec_name,codec_type:stream_tags=language,title",
+        "-of",
+        "json",
+        "<ROOT>/source"
+      ]
+    ]
+  ]
+}

@@ -1,0 +1,359 @@
+[
+  {
+    "name": "languageGroupFor",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'trim')"
+    }
+  },
+  {
+    "name": "languageGroupFor",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "language.trim is not a function"
+    }
+  },
+  {
+    "name": "languageGroupFor",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "language.trim is not a function"
+    }
+  },
+  {
+    "name": "languageGroupFor",
+    "args": [
+      0
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "language.trim is not a function"
+    }
+  },
+  {
+    "name": "languageGroupFor",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "language.trim is not a function"
+    }
+  },
+  {
+    "name": "prettyGpuName",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "raw?.trim is not a function"
+    }
+  },
+  {
+    "name": "prettyGpuName",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "raw?.trim is not a function"
+    }
+  },
+  {
+    "name": "prettyGpuName",
+    "args": [
+      0
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "raw?.trim is not a function"
+    }
+  },
+  {
+    "name": "prettyGpuName",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "raw?.trim is not a function"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'options')"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'startsWith')"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'startsWith')"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      0
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'startsWith')"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'startsWith')"
+    }
+  },
+  {
+    "name": "readTranscriptionOptions",
+    "args": [
+      ""
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'startsWith')"
+    }
+  },
+  {
+    "name": "buildTranscriptionInput",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'downloadTaskId')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'maxConcurrentDownloads')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'setMaxConcurrency')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'setMaxConcurrency')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      0
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'setMaxConcurrency')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'setMaxConcurrency')"
+    }
+  },
+  {
+    "name": "applyTranscriptionConcurrency",
+    "args": [
+      ""
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'setMaxConcurrency')"
+    }
+  },
+  {
+    "name": "readPcmWav",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "The \"path\" argument must be of type string or an instance of Buffer or URL. Received null",
+      "code": "ERR_INVALID_ARG_TYPE"
+    }
+  },
+  {
+    "name": "readPcmWav",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "The \"path\" argument must be of type string or an instance of Buffer or URL. Received type boolean (false)",
+      "code": "ERR_INVALID_ARG_TYPE"
+    }
+  },
+  {
+    "name": "readPcmWav",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "The \"path\" argument must be of type string or an instance of Buffer or URL. Received type boolean (true)",
+      "code": "ERR_INVALID_ARG_TYPE"
+    }
+  },
+  {
+    "name": "readPcmWav",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "Error",
+      "message": "EBADF: bad file descriptor, read",
+      "code": "EBADF"
+    }
+  },
+  {
+    "name": "readPcmWav",
+    "args": [
+      ""
+    ],
+    "engine": true,
+    "error": {
+      "name": "Error",
+      "message": "ENOENT: no such file or directory, open ''",
+      "code": "ENOENT"
+    }
+  },
+  {
+    "name": "isNoAudioStreamError",
+    "args": [
+      null
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "Cannot read properties of null (reading 'includes')"
+    }
+  },
+  {
+    "name": "isNoAudioStreamError",
+    "args": [
+      false
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "message.includes is not a function"
+    }
+  },
+  {
+    "name": "isNoAudioStreamError",
+    "args": [
+      true
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "message.includes is not a function"
+    }
+  },
+  {
+    "name": "isNoAudioStreamError",
+    "args": [
+      0
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "message.includes is not a function"
+    }
+  },
+  {
+    "name": "isNoAudioStreamError",
+    "args": [
+      7
+    ],
+    "engine": true,
+    "error": {
+      "name": "TypeError",
+      "message": "message.includes is not a function"
+    }
+  }
+]

@@ -1,0 +1,216 @@
+[
+  {
+    "name": "8-bit-mono",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        -1,
+        0,
+        0.9921875
+      ]
+    }
+  },
+  {
+    "name": "8-bit-stereo",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        -0.00390625,
+        0
+      ]
+    }
+  },
+  {
+    "name": "16-bit-stereo",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        -0.0000152587890625,
+        0.5
+      ]
+    }
+  },
+  {
+    "name": "32-bit-nonfinite",
+    "result": {
+      "sampleRate": 8000,
+      "samples": [
+        {
+          "number": "NaN"
+        },
+        0.75
+      ]
+    }
+  },
+  {
+    "name": "24-bit",
+    "error": {
+      "name": "Error",
+      "message": "unsupported wav bit depth: 24"
+    }
+  },
+  {
+    "name": "zero-bits",
+    "error": {
+      "name": "Error",
+      "message": "unsupported wav bit depth: 0"
+    }
+  },
+  {
+    "name": "zero-channels",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        {
+          "number": "NaN"
+        },
+        {
+          "number": "NaN"
+        }
+      ]
+    }
+  },
+  {
+    "name": "zero-rate",
+    "result": {
+      "sampleRate": 0,
+      "samples": [
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "name": "fmt-code-ignored",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        0.5
+      ]
+    }
+  },
+  {
+    "name": "odd-unknown-chunk",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        0.9921875
+      ]
+    }
+  },
+  {
+    "name": "data-before-fmt",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "name": "empty-data",
+    "result": {
+      "sampleRate": 16000,
+      "samples": []
+    }
+  },
+  {
+    "name": "declared-data-overrun",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        0.5,
+        0.007781982421875
+      ]
+    }
+  },
+  {
+    "name": "declared-data-zero",
+    "result": {
+      "sampleRate": 16000,
+      "samples": []
+    }
+  },
+  {
+    "name": "first-data-wins",
+    "result": {
+      "sampleRate": 16000,
+      "samples": [
+        -1
+      ]
+    }
+  },
+  {
+    "name": "duplicate-format-last-wins",
+    "result": {
+      "sampleRate": 22050,
+      "samples": [
+        0.9921875
+      ]
+    }
+  },
+  {
+    "name": "no-data",
+    "error": {
+      "name": "Error",
+      "message": "wav has no data chunk: <ROOT>/wave"
+    }
+  },
+  {
+    "name": "format-overrun",
+    "error": {
+      "name": "Error",
+      "message": "wav has no data chunk: <ROOT>/wave"
+    }
+  },
+  {
+    "name": "truncated-format-fields",
+    "error": {
+      "name": "RangeError",
+      "message": "The value of \"offset\" is out of range. It must be >= 0 and <= 46. Received 48"
+    }
+  },
+  {
+    "name": "truncated-tail-header",
+    "error": {
+      "name": "Error",
+      "message": "not a wav file: <ROOT>/wave"
+    }
+  },
+  {
+    "name": "short-header",
+    "error": {
+      "name": "Error",
+      "message": "not a wav file: <ROOT>/wave"
+    }
+  },
+  {
+    "name": "wrong-riff",
+    "error": {
+      "name": "Error",
+      "message": "not a wav file: <ROOT>/wave"
+    }
+  },
+  {
+    "name": "wrong-wave",
+    "error": {
+      "name": "Error",
+      "message": "not a wav file: <ROOT>/wave"
+    }
+  }
+]

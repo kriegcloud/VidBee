@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`caller group order creates overlapping tier controllers: later cancellation purges the surviving first transfer > file retained 1`] = `false`;
+
+exports[`caller group order creates overlapping tier controllers: later cancellation purges the surviving first transfer 1`] = `
+[
+  {
+    "message": "model not ready after download",
+    "name": "Error",
+  },
+  {
+    "message": "download cancelled: minimal",
+    "name": "AbortError",
+  },
+]
+`;

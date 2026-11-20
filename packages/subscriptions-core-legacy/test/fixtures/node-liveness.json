@@ -1,0 +1,15 @@
+[
+  [
+    "fetch-timeout-ref",
+    true
+  ],
+  [
+    "scheduler-ref",
+    true
+  ],
+  [
+    "heartbeat-ref",
+    true
+  ],
+  "beforeExit-after-release"
+]

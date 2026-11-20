@@ -1,0 +1,1831 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ASR token grouping, punctuation attachment, CJK starts, invalid timings and last-started selection 1`] = `
+[
+  {
+    "end": 0,
+    "input": {},
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {},
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {},
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {},
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {},
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {},
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [],
+      "tokens": [
+        "a",
+      ],
+    },
+    "result": [],
+    "start": 100,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1,
+        "startMs": 0,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 201,
+        "startMs": 200,
+        "text": " next",
+      },
+      {
+        "endMs": 301,
+        "startMs": 300,
+        "text": "
+line",
+      },
+      {
+        "endMs": 401,
+        "startMs": 400,
+        "text": "中",
+      },
+      {
+        "endMs": 501,
+        "startMs": 500,
+        "text": "文!",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 150,
+        "startMs": 0,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 201,
+        "startMs": 200,
+        "text": " next",
+      },
+      {
+        "endMs": 301,
+        "startMs": 300,
+        "text": "
+line",
+      },
+      {
+        "endMs": 401,
+        "startMs": 400,
+        "text": "中",
+      },
+      {
+        "endMs": 501,
+        "startMs": 500,
+        "text": "文!",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 200,
+        "startMs": 0,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 300,
+        "startMs": 200,
+        "text": " next",
+      },
+      {
+        "endMs": 400,
+        "startMs": 300,
+        "text": "
+line",
+      },
+      {
+        "endMs": 500,
+        "startMs": 400,
+        "text": "中",
+      },
+      {
+        "endMs": 1000,
+        "startMs": 500,
+        "text": "文!",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 101,
+        "startMs": 100,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 301,
+        "startMs": 300,
+        "text": " next",
+      },
+      {
+        "endMs": 401,
+        "startMs": 400,
+        "text": "
+line",
+      },
+      {
+        "endMs": 501,
+        "startMs": 500,
+        "text": "中",
+      },
+      {
+        "endMs": 601,
+        "startMs": 600,
+        "text": "文!",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 150,
+        "startMs": 100,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 301,
+        "startMs": 300,
+        "text": " next",
+      },
+      {
+        "endMs": 401,
+        "startMs": 400,
+        "text": "
+line",
+      },
+      {
+        "endMs": 501,
+        "startMs": 500,
+        "text": "中",
+      },
+      {
+        "endMs": 601,
+        "startMs": 600,
+        "text": "文!",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        -1,
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+      ],
+      "tokens": [
+        "▁Hello",
+        "world",
+        ",",
+        "▁next",
+        "
+line",
+        "中",
+        "文",
+        "!",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 300,
+        "startMs": 100,
+        "text": " Helloworld,",
+      },
+      {
+        "endMs": 400,
+        "startMs": 300,
+        "text": " next",
+      },
+      {
+        "endMs": 500,
+        "startMs": 400,
+        "text": "
+line",
+      },
+      {
+        "endMs": 600,
+        "startMs": 500,
+        "text": "中",
+      },
+      {
+        "endMs": 1000,
+        "startMs": 600,
+        "text": "文!",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1,
+        "startMs": 0,
+        "text": " a",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 150,
+        "startMs": 0,
+        "text": " a",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": " a",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 101,
+        "startMs": 100,
+        "text": " a",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 150,
+        "startMs": 100,
+        "text": " a",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        0,
+        0,
+        0,
+      ],
+      "tokens": [
+        "",
+        "▁",
+        "a",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1000,
+        "startMs": 100,
+        "text": " a",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1001,
+        "startMs": 1000,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 0,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1001,
+        "startMs": 1000,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 0,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1001,
+        "startMs": 1000,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 0,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1101,
+        "startMs": 1100,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 100,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1101,
+        "startMs": 1100,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 100,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "timestamps": [
+        1,
+        0,
+        NaN,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+        "▁c",
+      ],
+    },
+    "result": [
+      {
+        "endMs": 1101,
+        "startMs": 1100,
+        "text": "a",
+      },
+      {
+        "endMs": NaN,
+        "startMs": 100,
+        "text": " b",
+      },
+      {
+        "endMs": NaN,
+        "startMs": NaN,
+        "text": " c",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 0,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 1,
+        "startMs": 0,
+        "text": " b",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 150,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 150,
+        "startMs": 0,
+        "text": " b",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": " b",
+      },
+    ],
+    "start": 0,
+  },
+  {
+    "end": 0,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 101,
+        "startMs": 100,
+        "text": " b",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 150,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 150,
+        "startMs": 100,
+        "text": " b",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "end": 1000,
+    "input": {
+      "durations": [
+        99,
+      ],
+      "timestamps": [
+        Infinity,
+        -Infinity,
+      ],
+      "tokens": [
+        "a",
+        "▁b",
+      ],
+    },
+    "result": [
+      {
+        "endMs": Infinity,
+        "startMs": Infinity,
+        "text": "a",
+      },
+      {
+        "endMs": 1000,
+        "startMs": 100,
+        "text": " b",
+      },
+    ],
+    "start": 100,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": undefined,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": null,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": false,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": true,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": 0,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": 7,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": NaN,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": Infinity,
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": "",
+  },
+  {
+    "key": "tokens",
+    "returned": [],
+    "value": "text",
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": undefined,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": null,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": false,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": true,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": 0,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": 7,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": NaN,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": Infinity,
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": "",
+  },
+  {
+    "key": "timestamps",
+    "returned": [],
+    "value": "text",
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": undefined,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": null,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": false,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": true,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": 0,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": 7,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": NaN,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": Infinity,
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "key": "durations",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": "text",
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": undefined,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": null,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": false,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": true,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": 0,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": 7,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": NaN,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": Infinity,
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "key": "text",
+    "returned": [
+      {
+        "endMs": 1000,
+        "startMs": 0,
+        "text": "a",
+      },
+    ],
+    "value": "text",
+  },
+]
+`;
+
+exports[`ASR token grouping, punctuation attachment, CJK starts, invalid timings and last-started selection 2`] = `
+[
+  {
+    "index": null,
+    "time": -Infinity,
+  },
+  {
+    "index": null,
+    "time": 49,
+  },
+  {
+    "index": null,
+    "time": 49.49,
+  },
+  {
+    "index": 2,
+    "time": 49.5,
+  },
+  {
+    "index": 2,
+    "time": 99.5,
+  },
+  {
+    "index": 2,
+    "time": 100,
+  },
+  {
+    "index": 2,
+    "time": 1000,
+  },
+  {
+    "index": 2,
+    "time": Infinity,
+  },
+  {
+    "index": null,
+    "time": NaN,
+  },
+]
+`;
+
+exports[`Chinese result conversion preserves unchanged references and clones words only at selected boundary 1`] = `
+{
+  "asrTier": null,
+  "language": "zh-TW",
+  "modelVersion": "v",
+  "resultKind": "transcript",
+  "segments": [
+    {
+      "confidence": null,
+      "endMs": 100,
+      "speakerKey": null,
+      "startMs": 0,
+      "text": "漢語",
+      "words": [
+        {
+          "endMs": 20,
+          "startMs": 10,
+          "text": "漢語",
+        },
+      ],
+    },
+  ],
+  "speakers": [],
+}
+`;
+
+exports[`Chinese result conversion preserves unchanged references and clones words only at selected boundary 2`] = `
+[
+  {
+    "language": "zh",
+    "script": null,
+  },
+  {
+    "language": "zh",
+    "script": undefined,
+  },
+  {
+    "language": "zh",
+    "script": "hans",
+  },
+  {
+    "language": "zh-TW",
+    "script": "hant",
+  },
+]
+`;
+
+exports[`Chinese tag/detection/conversion matrices pin non-Chinese exclusions and scalar successful results 1`] = `
+[
+  {
+    "hint": "zh",
+    "language": "zh",
+    "script": "hans",
+  },
+  {
+    "hint": "zh-TW",
+    "language": "zh_TW",
+    "script": "hant",
+  },
+  {
+    "hint": "zh-TW",
+    "language": "zh-Hant-CN",
+    "script": "hant",
+  },
+  {
+    "hint": "zh-TW",
+    "language": "zh-HK",
+    "script": "hant",
+  },
+  {
+    "hint": "zh-TW",
+    "language": "zh-MO-x",
+    "script": "hant",
+  },
+  {
+    "hint": "zh",
+    "language": "cmn",
+    "script": "hans",
+  },
+  {
+    "hint": "zh",
+    "language": "zho",
+    "script": "hans",
+  },
+  {
+    "hint": "zh",
+    "language": "chi",
+    "script": "hans",
+  },
+  {
+    "hint": undefined,
+    "language": "en",
+    "script": null,
+  },
+  {
+    "hint": undefined,
+    "language": "ja",
+    "script": null,
+  },
+  {
+    "hint": undefined,
+    "language": "yue",
+    "script": null,
+  },
+  {
+    "hint": "zh",
+    "language": " ZH-hans ",
+    "script": "hans",
+  },
+]
+`;
+
+exports[`Chinese tag/detection/conversion matrices pin non-Chinese exclusions and scalar successful results 2`] = `
+[
+  {
+    "chinese": false,
+    "detected": null,
+    "hans": "",
+    "hant": "",
+    "text": "",
+  },
+  {
+    "chinese": false,
+    "detected": null,
+    "hans": "English",
+    "hant": "English",
+    "text": "English",
+  },
+  {
+    "chinese": true,
+    "detected": "hans",
+    "hans": "汉语中文后发",
+    "hant": "漢語中文後發",
+    "text": "汉语中文后发",
+  },
+  {
+    "chinese": true,
+    "detected": "hant",
+    "hans": "汉语中文后发",
+    "hant": "漢語中文後發",
+    "text": "漢語中文後發",
+  },
+  {
+    "chinese": false,
+    "detected": null,
+    "hans": "中文かな",
+    "hant": "中文かな",
+    "text": "中文かな",
+  },
+  {
+    "chinese": false,
+    "detected": null,
+    "hans": "中文한국",
+    "hant": "中文한국",
+    "text": "中文한국",
+  },
+  {
+    "chinese": true,
+    "detected": "hans",
+    "hans": "一二三",
+    "hant": "一二三",
+    "text": "一二三",
+  },
+  {
+    "chinese": true,
+    "detected": "hans",
+    "hans": "😀中文",
+    "hant": "😀中文",
+    "text": "😀中文",
+  },
+]
+`;
+
+exports[`Chinese tag/detection/conversion matrices pin non-Chinese exclusions and scalar successful results 3`] = `
+[
+  {
+    "convert": {
+      "returned": undefined,
+    },
+    "hint": {
+      "returned": undefined,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": undefined,
+  },
+  {
+    "convert": {
+      "returned": null,
+    },
+    "hint": {
+      "returned": undefined,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": null,
+  },
+  {
+    "convert": {
+      "returned": false,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": false,
+  },
+  {
+    "convert": {
+      "returned": true,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": true,
+  },
+  {
+    "convert": {
+      "returned": 0,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": 0,
+  },
+  {
+    "convert": {
+      "returned": 7,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": 7,
+  },
+  {
+    "convert": {
+      "returned": NaN,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": NaN,
+  },
+  {
+    "convert": {
+      "returned": Infinity,
+    },
+    "hint": {
+      "engine": true,
+      "failed": true,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": Infinity,
+  },
+  {
+    "convert": {
+      "returned": "",
+    },
+    "hint": {
+      "returned": undefined,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": "",
+  },
+  {
+    "convert": {
+      "returned": "text",
+    },
+    "hint": {
+      "returned": undefined,
+    },
+    "looks": {
+      "returned": false,
+    },
+    "value": "text",
+  },
+]
+`;
+
+exports[`punctuation density, unicode alignment, hook failures and rewritten outputs preserve exact fallbacks 1`] = `
+[
+  {
+    "needs": false,
+    "text": "",
+  },
+  {
+    "needs": false,
+    "text": "123",
+  },
+  {
+    "needs": false,
+    "text": "🙂",
+  },
+  {
+    "needs": true,
+    "text": "hello",
+  },
+  {
+    "needs": true,
+    "text": "hello.",
+  },
+  {
+    "needs": false,
+    "text": "hello!",
+  },
+  {
+    "needs": false,
+    "text": "中。",
+  },
+  {
+    "needs": false,
+    "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!",
+  },
+  {
+    "needs": true,
+    "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!",
+  },
+]
+`;
+
+exports[`punctuation density, unicode alignment, hook failures and rewritten outputs preserve exact fallbacks 2`] = `
+[
+  [
+    "!",
+  ],
+  [
+    "(",
+    "",
+    "",
+    "",
+    "",
+    ")!",
+  ],
+  [
+    "",
+    ",",
+    ",",
+    "!",
+  ],
+  null,
+  [
+    "(",
+    ")，",
+    "。",
+  ],
+  null,
+]
+`;
+
+exports[`punctuation density, unicode alignment, hook failures and rewritten outputs preserve exact fallbacks 3`] = `
+{
+  "results": [
+    {
+      "result": "hello",
+      "value": undefined,
+    },
+    {
+      "result": "hello",
+      "value": null,
+    },
+    {
+      "result": "hello",
+      "value": false,
+    },
+    {
+      "result": "hello",
+      "value": true,
+    },
+    {
+      "result": "hello",
+      "value": 0,
+    },
+    {
+      "result": "hello",
+      "value": 7,
+    },
+    {
+      "result": "hello",
+      "value": NaN,
+    },
+    {
+      "result": "hello",
+      "value": Infinity,
+    },
+    {
+      "result": "hello",
+      "value": "",
+    },
+    {
+      "result": "hello",
+      "value": "text",
+    },
+    {
+      "result": "hello",
+      "value": "Hello!",
+    },
+    {
+      "result": "(hello)!",
+      "value": "(hello)!",
+    },
+    {
+      "throws": "hello",
+    },
+  ],
+  "trace": [
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+    "hello",
+  ],
+}
+`;
+
+exports[`punctuation keeps word timing/identity on fallbacks and attaches inserted boundaries to prior cue 1`] = `
+{
+  "text": "(hello world)!",
+  "words": [
+    {
+      "endMs": 2,
+      "startMs": 1,
+      "text": "(hello",
+    },
+    {
+      "endMs": 4,
+      "startMs": 3,
+      "text": " world)!",
+    },
+  ],
+}
+`;
+
+exports[`punctuation keeps word timing/identity on fallbacks and attaches inserted boundaries to prior cue 2`] = `
+[
+  {
+    "text": "(hello)!",
+    "words": undefined,
+  },
+  {
+    "text": "(hello)!",
+    "words": [],
+  },
+]
+`;
+
+exports[`punctuation keeps word timing/identity on fallbacks and attaches inserted boundaries to prior cue 3`] = `
+{
+  "calls": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "c",
+  ],
+  "converted": [
+    {
+      "id": 1,
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+    {
+      "id": 2,
+      "text": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb!",
+    },
+    {
+      "id": 3,
+      "text": "c!",
+    },
+    {
+      "id": 4,
+      "text": "",
+    },
+  ],
+  "original": [
+    {
+      "id": 1,
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+    {
+      "id": 2,
+      "text": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    },
+    {
+      "id": 3,
+      "text": "c",
+    },
+    {
+      "id": 4,
+      "text": "",
+    },
+  ],
+}
+`;

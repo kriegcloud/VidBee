@@ -129,8 +129,13 @@ live iteration is active, prune at outermost completion, and prune immediately
 outside traversal. Preserve deduplication and stale unsubscribe/re-registration
 identity, including across an Effect facade. Keep output writers quiescent during
 packaging and check archive integrity when Electron rejects an app before its
-JavaScript starts; one phase-4 archive had invalid offsets, with the exact cause
-unproven.
+JavaScript starts; phase-4 and phase-6a archives had invalid offsets, with the exact causes
+unproven. A successful builder exit is insufficient: compare every packed/unpacked entry
+against its header size/full/block hashes before diagnosing application source. Phase 6a
+recovered through a serialized rebuild without source/script changes. In a managed environment,
+Chromium subprocess restrictions can independently block a valid package: preserve the default
+launch failure, keep extra launch flags in a scratch-only wrapper, verify the copied binary and
+resources byte-for-byte, and report those launch conditions separately from default proof.
 
 ## File conventions and the ratchet
 
@@ -464,6 +469,52 @@ predicate; and the Redgifs null JSON line. These are values the package itself r
 specific failure policies already characterized by the reviewed design. They do not establish
 a general engine-error emulation policy for typed pure helpers.
 
+## Subscription owners and host observations (phase 6a)
+
+Subscriptions uses a strict kernel and a temporary sibling compatibility package. Its public
+classes keep warmed owners; its database facades enter the db package's existing handle runtime.
+Keep the supplied Drizzle object for statement execution. Reserving a second time from a
+synchronous logger re-entry changes behavior: borrow the active same-handle synchronous region,
+release it on every throw, and leave host Promise lookup outside the reservation. Do not treat a
+wrapper found only in an arbitrary value's cause chain as a top-level Drizzle query wrapper.
+
+Callback receiver and capture semantics are part of a bridge. Capture constructor references
+once. Scheduler callbacks see its live normalized options object (and can mutate interval or
+callbacks there), leader callbacks see their instance, and API callbacks retain their owner.
+The same history callback has no receiver inside a policy and has the API receiver at the
+second RSS filter. A call-time global fetch lookup must still be invoked as a bare function.
+The subscription SchedulerSettings/SchedulerHost and PolicyHistory capabilities express those
+host observations without changing native defaults or old public declarations.
+
+An old internal async method adds an adoption turn even when it rejects. A named turn written
+after a yield is skipped on failure. Apply it to the operation's Exit, then propagate that Exit;
+use the captured-Exit finalization helper when JavaScript finally failure must replace the prior
+outcome. The phase-6a await ledger and exact API/feed microtask fixtures show the boundaries.
+Include synchronous throws as well as rejected Promises and use enough markers to observe the
+whole operation; a short marker sequence can hide a late settlement difference.
+
+Register completion/lifecycle state before a fiber can finish synchronously. Preserve when the
+old synchronous host prefix exposed deduplication to reentrant callers; a prematurely visible
+in-flight record can make a callback await itself. An already completed fiber must never leave a
+new stale registration after its fork returns.
+
+Parser values remain unknown until the old projection/interpretation point. Scalar roots that
+previously produced an empty feed still do. Array-carried image properties count as object fields.
+Do not turn a supplied Response's independent ok/status observations into a new validation rule.
+Construct the old deliberate status error before validating a native finite-status model;
+scalar/non-finite statuses previously accepted by a fake host still determine its exact message.
+Keep typed data-first forwarding aliases in compatibility: re-exporting a new strict dual function
+can change the old callable declaration even when ordinary calls still work.
+
+Subscription SQL updates return the schema-backed `SubscriptionMutationResult`, preserving
+constructed patch values separately from SQLite storage coercion. Reads keep the narrow stored
+model. Never reread or decode a mutation as a stored rule: null/raw interpreted artwork, title
+and nullable intervals can succeed while their stored representation differs. Preserve omitted
+versus explicit undefined logger metadata through every host forwarding function; argument count
+is observable even when ordinary callbacks ignore the extra argument. Phase 9.2 still owns the
+documented native HTTP/SQL/entropy and detached-failure differences. The application retains
+compatibility host layers meanwhile.
+
 ### Browser capture: callbacks, opening attempts and transport ownership
 
 Keep compatibility exports as plain positional wrappers when their original signatures were
@@ -499,3 +550,77 @@ The installed Effect timer declarations expose no public unref/keepAlive option.
 requires an unreferenced native timer while strict rules prohibit global timers, record the API
 and diagnostic evidence and leave that branch explicitly unavailable. Do not hide a host timer
 behind an alias or mark liveness parity proven from compatibility-only tests.
+
+### Transcription port observations (phase 6c)
+
+Keep compatibility call signatures separate from native dual functions. A direct reexport also
+exports the native curried overloads; bidirectional declaration fixtures detect this even when
+all old calls still run. Bind the compatibility value to the original function signature, and
+retain native `HashMap`/`HashSet` results only behind the legacy Map/Set adapters. A native
+`Context.Service` called `TranscriptStore` is not the legacy class type: consumer type imports
+for existing store instances must remain on the compatibility package.
+
+Native dual functions take every argument explicitly and use fixed arity when an optional
+fallback would overlap the data argument. The compatibility wrapper keeps the original optional
+arguments and applies exported defaults. Never dispatch by truthiness or literal membership,
+or weaken `missingPipeableSignature`.
+
+```ts
+// Wrong: the unary call could mean either data or fallback.
+const parse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => body(value, fallback);
+// Right: native forms have fixed arity; compatibility applies the default.
+const parse: {
+  (value: unknown, fallback: Tier): Tier;
+  (fallback: Tier): (value: unknown) => Tier;
+} = dual(2, body);
+const legacyParse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => parse(value, fallback);
+```
+
+Wire envelopes and consumed data are different schemas. A worker result keeps its inline value
+and path unknown until truthy-inline/file-fallback selection; a probe success can carry metadata
+the parent never consumes. Decode only the selected payload and the consumed fields. Keep
+unknown protocol kinds ignored and existing invalid-JSON recovery. Where an original syntax
+exception must escape, the compatibility JSON driver preserves the actual `JSON.parse` failure;
+semantic rejection uses a stable content-free boundary name. Retained file/result metadata needs
+open nested schemas, not only an open root. A valid inline result may also carry an identity
+contract, so validation must not replace it with a decoded clone.
+
+The worker's model preparation Promise starts before audio extraction and originally has no
+rejection handler until its later await. A compatibility preparation handle must retain that
+window; eagerly adopting it into an observed fiber changes `unhandledRejection` behavior.
+Native fibers use scoped ownership and require a separate cutover decision. Blocking worker
+stdout and native awaited `Stdio` are likewise distinct policies; source-level fake-addon tests
+cannot establish packaged speech throughput or watchdog acceptance.
+
+Exercise native callbacks as foreign receiver-bound methods. Native probe time consists of two
+synchronous monotonic reads immediately around decode, excluding setup and result parsing.
+Read raw sherpa JSON through the installed addon subpath in the native driver; preserve the old
+synchronous JSON patch only in compatibility. An installed-addon API prototype establishes an
+ABI observation, not speech, model-quality, provider-selection, or public golden acceptance.
+
+Apply the full strict test configuration after formatting. Biome can simplify a conditional
+`Boolean(value)` back into a non-boolean condition that tsrs rejects. Keep an explicit Boolean
+binding, or an appropriate Effect predicate, and rerun both tools. Native filesystem Date
+metadata can lose fractional-millisecond precision compared with `statSync`; fingerprints,
+cache keys and publication proofs must name that difference before native application cutover.
+
+
+An old async callee can add an observable completion turn even when its body has no pending
+work. Preserve both successful and failed Promise adoption before a caller's catch/finally
+boundary. A redownload-in-flight test must record the caller continuation marker together with
+listener callbacks: matching final results and listener order alone misses early delivery.
+
+The shared process vocabulary is `ProcessSpec`'s `deliver`/`unread` and `ProcessRun`'s
+`writeStdin`, `isRunning`, `observeClose`, activation and signal requests. Transcription's
+`ProcessCapabilities` is an owner/validation adapter over `DownloadProcess`, never another
+spawn implementation. Optional `extendedLifecycle` enables `ProcessRun.lifecycle` (input EOF,
+reaped outcome, live signalling state and graceful worker termination); existing calls retain
+their original defaults and layer ownership. The optional start owner applies only to that
+extended path. Raw string chunks from an encoded transcription stream are converted there;
+ordinary raw chunks retain identity. Extended unread output requires a pipe before spawn.
+
+An optional spawn seam must look up the live host function at acquisition unless the caller
+explicitly supplies a replacement. Capturing it as a default argument when constructing a
+layer breaks later module replacement and changes existing callback oracles. Native EOF also
+requires the stock writable's endOnDone option: enable it only for extended invocations and
+prove two writes followed by EOF against a real child. A mocked Sink can conceal a missing EOF.

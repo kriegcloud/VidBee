@@ -3,16 +3,30 @@ import type * as Effect from "effect/Effect";
 import type * as PlatformError from "effect/PlatformError";
 import type * as Scope from "effect/Scope";
 import type { HostFailure } from "./Downloader.errors.js";
-import type { ProcessBackend, ProcessEvent, ProcessSignal, ProcessSpec } from "./Process.model.js";
+import type {
+  LiveSignallingState,
+  ProcessBackend,
+  ProcessEvent,
+  ProcessOutcome,
+  ProcessSignal,
+  ProcessSpec,
+} from "./Process.model.js";
 
 export interface ProcessSink {
   readonly abort: Effect.Effect<void>;
   readonly emit: (event: ProcessEvent) => Effect.Effect<void>;
 }
+export interface ProcessLifecycle {
+  readonly awaitReaped: Effect.Effect<ProcessOutcome, HostFailure>;
+  readonly endInput: Effect.Effect<void, HostFailure>;
+  readonly signallingState: Effect.Effect<LiveSignallingState, HostFailure>;
+  readonly terminate: (graceMs: number) => Effect.Effect<void, HostFailure>;
+}
 export interface ProcessRun {
   readonly activateObservations?: Effect.Effect<void> | undefined;
   readonly backend?: ProcessBackend | undefined;
   readonly isRunning?: Effect.Effect<boolean, HostFailure> | undefined;
+  readonly lifecycle?: ProcessLifecycle | undefined;
   readonly observeClose: Effect.Effect<void, HostFailure>;
   readonly pid: number | undefined;
   readonly signalChild: (signal: ProcessSignal) => Effect.Effect<void, HostFailure>;

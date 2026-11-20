@@ -1,0 +1,1176 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`coordinator has no backfill, starts once, enters caption import synchronously, and rechecks stop/remove/current/enabled 1`] = `
+[
+  {
+    "intervention": "stop",
+    "trace": [
+      "subscribe",
+      "started",
+      [
+        "caption",
+        {
+          "downloadTaskId": "download",
+          "sourceFilePath": "/fixture/source.mp4",
+          "title": "fixture",
+        },
+      ],
+      "immediate",
+      "unsubscribe",
+    ],
+  },
+  {
+    "intervention": "remove",
+    "trace": [
+      "subscribe",
+      "started",
+      [
+        "caption",
+        {
+          "downloadTaskId": "download",
+          "sourceFilePath": "/fixture/source.mp4",
+          "title": "fixture",
+        },
+      ],
+      "immediate",
+      "unsubscribe",
+    ],
+  },
+  {
+    "intervention": "current",
+    "trace": [
+      "subscribe",
+      "started",
+      [
+        "caption",
+        {
+          "downloadTaskId": "download",
+          "sourceFilePath": "/fixture/source.mp4",
+          "title": "fixture",
+        },
+      ],
+      "immediate",
+      "unsubscribe",
+    ],
+  },
+  {
+    "intervention": "disable",
+    "trace": [
+      "subscribe",
+      "started",
+      [
+        "caption",
+        {
+          "downloadTaskId": "download",
+          "sourceFilePath": "/fixture/source.mp4",
+          "title": "fixture",
+        },
+      ],
+      "immediate",
+      "unsubscribe",
+    ],
+  },
+  {
+    "intervention": "none",
+    "trace": [
+      "subscribe",
+      "started",
+      [
+        "caption",
+        {
+          "downloadTaskId": "download",
+          "sourceFilePath": "/fixture/source.mp4",
+          "title": "fixture",
+        },
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": false,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": "auto",
+              "trigger": "auto",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 20,
+        },
+      ],
+      "unsubscribe",
+    ],
+  },
+]
+`;
+
+exports[`enqueue pins active/completed/retry/force/no-speech/model changes and complete admission payloads > different cloud model 1`] = `
+[
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "add",
+    {
+      "groupKey": "transcription",
+      "input": {
+        "kind": "transcription",
+        "options": {
+          "asrTier": "minimal",
+          "cloudModelId": "new",
+          "downloadTaskId": "download",
+          "origin": "manual",
+          "provider": "cloud",
+          "rediarize": false,
+          "skipVad": false,
+          "sourceFilePath": "/fixture/source.mp4",
+          "speakerCount": "auto",
+          "trigger": "manual",
+        },
+        "url": "vidbee://download/download",
+      },
+      "maxAttempts": 3,
+      "parentId": "download",
+      "priority": 0,
+    },
+  ],
+]
+`;
+
+exports[`enqueue pins active/completed/retry/force/no-speech/model changes and complete admission payloads > no speech creates retry work 1`] = `
+[
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "add",
+    {
+      "groupKey": "transcription",
+      "input": {
+        "kind": "transcription",
+        "options": {
+          "asrTier": "minimal",
+          "cloudModelId": "qwen/qwen3-asr-1.7b",
+          "downloadTaskId": "download",
+          "origin": "manual",
+          "provider": "local",
+          "rediarize": false,
+          "skipVad": false,
+          "sourceFilePath": "/fixture/source.mp4",
+          "speakerCount": "auto",
+          "trigger": "auto",
+        },
+        "url": "vidbee://download/download",
+      },
+      "maxAttempts": 3,
+      "parentId": "download",
+      "priority": 20,
+    },
+  ],
+]
+`;
+
+exports[`enqueue pins active/completed/retry/force/no-speech/model changes and complete admission payloads 1`] = `
+[
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "queued",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "queued",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "queued",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "cancel",
+        "child",
+        "user",
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "running",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "running",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "running",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "cancel",
+        "child",
+        "user",
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "processing",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "processing",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "processing",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "cancel",
+        "child",
+        "user",
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "paused",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "paused",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "paused",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "cancel",
+        "child",
+        "user",
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "retry-scheduled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "retry-scheduled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "retry-scheduled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "cancel",
+        "child",
+        "user",
+      ],
+      "immediate",
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "completed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "completed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "completed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "failed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "retry",
+        "child",
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "failed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "retry",
+        "child",
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "failed",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "cancelled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "retry",
+        "child",
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "manual",
+  },
+  {
+    "result": {
+      "created": false,
+      "id": "child",
+      "reused": true,
+    },
+    "status": "cancelled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "retry",
+        "child",
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "auto",
+  },
+  {
+    "result": {
+      "created": true,
+      "id": "added",
+      "reused": false,
+    },
+    "status": "cancelled",
+    "trace": [
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "list",
+        {
+          "cursor": null,
+          "limit": 200,
+          "parentId": "download",
+        },
+      ],
+      [
+        "add",
+        {
+          "groupKey": "transcription",
+          "input": {
+            "kind": "transcription",
+            "options": {
+              "asrTier": "minimal",
+              "cloudModelId": "qwen/qwen3-asr-1.7b",
+              "downloadTaskId": "download",
+              "language": "zh-Hant",
+              "origin": "manual",
+              "provider": "local",
+              "rediarize": false,
+              "skipVad": true,
+              "sourceFilePath": "/fixture/source.mp4",
+              "speakerCount": 2,
+              "trigger": "force",
+            },
+            "title": "fixture",
+            "url": "vidbee://download/download",
+          },
+          "maxAttempts": 3,
+          "parentId": "download",
+          "priority": 0,
+        },
+      ],
+      "immediate",
+      "marker",
+      "settled",
+    ],
+    "trigger": "force",
+  },
+]
+`;
+
+exports[`pending flush is explicit, caption successes bypass disabled ASR and overlapping imports recheck current record 1`] = `
+[
+  "subscribe",
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "list",
+    {
+      "cursor": null,
+      "limit": 200,
+      "parentId": "download",
+    },
+  ],
+  [
+    "add",
+    {
+      "groupKey": "transcription",
+      "input": {
+        "kind": "transcription",
+        "options": {
+          "asrTier": "minimal",
+          "cloudModelId": "qwen/qwen3-asr-1.7b",
+          "downloadTaskId": "download",
+          "origin": "manual",
+          "provider": "local",
+          "rediarize": false,
+          "skipVad": false,
+          "sourceFilePath": "/fixture/source.mp4",
+          "speakerCount": "auto",
+          "trigger": "auto",
+        },
+        "title": "fixture",
+        "url": "vidbee://download/download",
+      },
+      "maxAttempts": 3,
+      "parentId": "download",
+      "priority": 20,
+    },
+  ],
+  "unsubscribe",
+]
+`;

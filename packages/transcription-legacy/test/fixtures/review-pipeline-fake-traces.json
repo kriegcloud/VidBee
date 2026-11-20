@@ -1,0 +1,655 @@
+{
+  "speech": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 1800,
+          "text": "Hello, this is a fixture transcript.",
+          "words": [
+            {
+              "text": "Hello,",
+              "startMs": 0,
+              "endMs": 400
+            },
+            {
+              "text": " this",
+              "startMs": 400,
+              "endMs": 700
+            },
+            {
+              "text": " is",
+              "startMs": 700,
+              "endMs": 900
+            },
+            {
+              "text": " a",
+              "startMs": 900,
+              "endMs": 1050
+            },
+            {
+              "text": " fixture",
+              "startMs": 1050,
+              "endMs": 1400
+            },
+            {
+              "text": " transcript.",
+              "startMs": 1400,
+              "endMs": 1800
+            }
+          ],
+          "confidence": 0.9
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-2",
+          "startMs": 1900,
+          "endMs": 3600,
+          "text": "And this is the second speaker.",
+          "words": [
+            {
+              "text": "And",
+              "startMs": 1900,
+              "endMs": 2100
+            },
+            {
+              "text": " this",
+              "startMs": 2100,
+              "endMs": 2300
+            },
+            {
+              "text": " is",
+              "startMs": 2300,
+              "endMs": 2450
+            },
+            {
+              "text": " the",
+              "startMs": 2450,
+              "endMs": 2600
+            },
+            {
+              "text": " second",
+              "startMs": 2600,
+              "endMs": 3000
+            },
+            {
+              "text": " speaker.",
+              "startMs": 3000,
+              "endMs": 3600
+            }
+          ],
+          "confidence": 0.88
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.9
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "en",
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          },
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 2"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 1800,
+            "text": "Hello, this is a fixture transcript.",
+            "words": [
+              {
+                "text": "Hello,",
+                "startMs": 0,
+                "endMs": 400
+              },
+              {
+                "text": " this",
+                "startMs": 400,
+                "endMs": 700
+              },
+              {
+                "text": " is",
+                "startMs": 700,
+                "endMs": 900
+              },
+              {
+                "text": " a",
+                "startMs": 900,
+                "endMs": 1050
+              },
+              {
+                "text": " fixture",
+                "startMs": 1050,
+                "endMs": 1400
+              },
+              {
+                "text": " transcript.",
+                "startMs": 1400,
+                "endMs": 1800
+              }
+            ],
+            "confidence": 0.9
+          },
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 1900,
+            "endMs": 3600,
+            "text": "And this is the second speaker.",
+            "words": [
+              {
+                "text": "And",
+                "startMs": 1900,
+                "endMs": 2100
+              },
+              {
+                "text": " this",
+                "startMs": 2100,
+                "endMs": 2300
+              },
+              {
+                "text": " is",
+                "startMs": 2300,
+                "endMs": 2450
+              },
+              {
+                "text": " the",
+                "startMs": 2450,
+                "endMs": 2600
+              },
+              {
+                "text": " second",
+                "startMs": 2600,
+                "endMs": 3000
+              },
+              {
+                "text": " speaker.",
+                "startMs": 3000,
+                "endMs": 3600
+              }
+            ],
+            "confidence": 0.88
+          }
+        ]
+      },
+      "overrideIdentity": false
+    }
+  },
+  "silence": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1,
+          "message": "no-speech"
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "no-speech",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [],
+        "segments": []
+      },
+      "overrideIdentity": false
+    }
+  },
+  "seed-one": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.5
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 4000,
+          "text": "这个软件可以帮助用户我们学习语言",
+          "words": [],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "zh",
+        "modelVersion": "seed-version",
+        "asrTier": "minimal",
+        "sourceKind": "asr",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 4000,
+            "text": "这个软件可以帮助用户我们学习语言",
+            "words": [],
+            "confidence": null
+          }
+        ]
+      },
+      "overrideIdentity": false
+    }
+  },
+  "seed-two": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.5
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 2000,
+          "text": "这个软件可以帮助用户",
+          "words": [],
+          "confidence": null
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-2",
+          "startMs": 2100,
+          "endMs": 4000,
+          "text": "我们学习语言",
+          "words": [],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "zh",
+        "modelVersion": "seed-version",
+        "asrTier": "minimal",
+        "sourceKind": "asr",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          },
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 2"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 2000,
+            "text": "这个软件可以帮助用户",
+            "words": [],
+            "confidence": null
+          },
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 2100,
+            "endMs": 4000,
+            "text": "我们学习语言",
+            "words": [],
+            "confidence": null
+          }
+        ]
+      },
+      "overrideIdentity": false
+    }
+  },
+  "caption-script": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.5
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 4000,
+          "text": "這個軟件可以幫助用戶我們學習語言",
+          "words": [],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "zh",
+        "modelVersion": "seed-version",
+        "asrTier": null,
+        "sourceKind": "captions",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 4000,
+            "text": "這個軟件可以幫助用戶我們學習語言",
+            "words": [],
+            "confidence": null
+          }
+        ]
+      },
+      "overrideIdentity": false
+    }
+  },
+  "override": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "no-speech",
+        "language": null,
+        "modelVersion": "override",
+        "asrTier": null,
+        "speakers": [],
+        "segments": []
+      },
+      "overrideIdentity": true
+    }
+  },
+  "early-abort": {
+    "trace": [
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "cancelled"
+      }
+    }
+  },
+  "progress-error": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "fixture progress failed"
+      }
+    }
+  },
+  "partial-error": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 1800,
+          "text": "Hello, this is a fixture transcript.",
+          "words": [
+            {
+              "text": "Hello,",
+              "startMs": 0,
+              "endMs": 400
+            },
+            {
+              "text": " this",
+              "startMs": 400,
+              "endMs": 700
+            },
+            {
+              "text": " is",
+              "startMs": 700,
+              "endMs": 900
+            },
+            {
+              "text": " a",
+              "startMs": 900,
+              "endMs": 1050
+            },
+            {
+              "text": " fixture",
+              "startMs": 1050,
+              "endMs": 1400
+            },
+            {
+              "text": " transcript.",
+              "startMs": 1400,
+              "endMs": 1800
+            }
+          ],
+          "confidence": 0.9
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "fixture partial failed"
+      }
+    }
+  },
+  "progress-abort": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.2
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "cancelled"
+      }
+    }
+  }
+}

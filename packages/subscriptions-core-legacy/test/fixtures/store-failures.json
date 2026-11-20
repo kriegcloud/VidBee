@@ -1,0 +1,207 @@
+{
+  "constraint-false": {
+    "error": {
+      "name": "SqliteError",
+      "message": "UNIQUE constraint failed: subscriptions.id",
+      "code": "SQLITE_CONSTRAINT_PRIMARYKEY"
+    },
+    "logged": [
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+        "params": [
+          "same",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          1,
+          1,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+        "params": [
+          "same",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          1,
+          1,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "preparation-false": {
+    "error": {
+      "name": "SqliteError",
+      "message": "no such table: subscriptions",
+      "code": "SQLITE_ERROR"
+    },
+    "calls": 0
+  },
+  "constraint-true": {
+    "error": {
+      "name": "SqliteError",
+      "message": "UNIQUE constraint failed: subscriptions.id",
+      "code": "SQLITE_CONSTRAINT_PRIMARYKEY"
+    },
+    "logged": [
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+        "params": [
+          "same",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          1,
+          1,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      },
+      {
+        "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+        "params": [
+          "same",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/source",
+          "https://fixture.invalid/feed",
+          "custom",
+          "[]",
+          "[]",
+          1,
+          1,
+          1,
+          "idle",
+          1,
+          1,
+          "feed",
+          null,
+          "[]",
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "preparation-true": {
+    "error": {
+      "name": "SqliteError",
+      "message": "no such table: subscriptions",
+      "code": "SQLITE_ERROR"
+    },
+    "calls": 0
+  },
+  "throwingLogger": {
+    "calls": 1,
+    "rows": [],
+    "rejectionIdentity": true
+  },
+  "reentrantLogger": [
+    {
+      "sql": "insert into \"subscriptions\" (\"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null, null, null, null, null, ?, null, ?, ?, null, null, null, null, null, ?, ?, ?, ?, ?)",
+      "params": [
+        "reentrant",
+        "https://fixture.invalid/source",
+        "https://fixture.invalid/source",
+        "https://fixture.invalid/feed",
+        "custom",
+        "[]",
+        "[]",
+        1,
+        1,
+        1,
+        "idle",
+        1,
+        1,
+        "feed",
+        null,
+        "[]",
+        null,
+        null
+      ],
+      "inTransaction": false
+    },
+    {
+      "beforeInsert": 0
+    },
+    {
+      "sql": "select \"id\", \"title\", \"source_url\", \"feed_url\", \"platform\", \"keywords\", \"tags\", \"only_latest\", \"auto_download\", \"enabled\", \"cover_url\", \"latest_video_title\", \"latest_video_published_at\", \"last_checked_at\", \"last_success_at\", \"status\", \"last_error\", \"created_at\", \"updated_at\", \"download_directory\", \"naming_template\", \"download_type\", \"download_quality\", \"download_container\", \"source_kind\", \"profile_owner\", \"categories\", \"check_interval_ms\", \"next_check_at\" from \"subscriptions\" order by \"subscriptions\".\"updated_at\" desc",
+      "params": [],
+      "inTransaction": false
+    },
+    "reentry-returned",
+    "add-returned",
+    "marker",
+    {
+      "reentryRows": []
+    },
+    "awaited"
+  ],
+  "hostPrefix": [
+    "host"
+  ],
+  "hostTransaction": [
+    "BEGIN DEFERRED",
+    "SAVEPOINT `\t_bs3.\t`",
+    "select \"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\" from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "delete from \"subscription_items\" where \"subscription_items\".\"subscription_id\" = 'sub-1'",
+    "insert into \"subscription_items\" (\"subscription_id\", \"item_id\", \"title\", \"url\", \"published_at\", \"thumbnail\", \"added\", \"task_id\", \"created_at\", \"updated_at\") values ('sub-1', 'host', 'Title host', 'https://fixture.invalid/host', 10.0, null, 0.0, null, 10.0, 103.0)",
+    "RELEASE `\t_bs3.\t`",
+    "SELECT item_id FROM subscription_items",
+    "COMMIT"
+  ],
+  "rawTransactionRetained": true,
+  "rawRows": [
+    {
+      "subscription_id": "sub-1",
+      "item_id": "host",
+      "title": "Title host",
+      "url": "https://fixture.invalid/host",
+      "published_at": 10,
+      "thumbnail": null,
+      "added": 0,
+      "task_id": null,
+      "created_at": 10,
+      "updated_at": 103
+    }
+  ],
+  "closedConstruction": true,
+  "closedError": {
+    "name": "TypeError",
+    "message": "The database connection is not open"
+  }
+}

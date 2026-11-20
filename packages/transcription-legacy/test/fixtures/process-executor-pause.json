@@ -1,0 +1,33 @@
+[
+  "handle-return",
+  [
+    "spawn",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "pid": "PID",
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "pipeline",
+    true
+  ],
+  "handle-resolved",
+  "caller-microtask",
+  [
+    "finish",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "result": {
+        "type": "cancelled"
+      },
+      "closedAt": 1000,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  ]
+]

@@ -1,0 +1,118 @@
+{
+  "trace": [
+    [
+      "progress",
+      {
+        "stage": "preparing-models",
+        "percent": null,
+        "message": "asr"
+      }
+    ],
+    [
+      "progress",
+      {
+        "stage": "recognizing",
+        "percent": 0.05
+      }
+    ],
+    "createAddon",
+    [
+      "progress",
+      {
+        "stage": "preparing-models",
+        "percent": 0.3,
+        "message": "asr"
+      }
+    ],
+    "run-return",
+    [
+      "progress",
+      {
+        "stage": "recognizing",
+        "percent": 0.35
+      }
+    ],
+    [
+      "recognizer",
+      {
+        "featConfig": {
+          "sampleRate": 16000,
+          "featureDim": 80
+        },
+        "modelConfig": {
+          "whisper": {
+            "encoder": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-encoder.int8.onnx",
+            "decoder": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-decoder.int8.onnx",
+            "language": "",
+            "task": "transcribe",
+            "tailPaddings": -1
+          },
+          "tokens": "<ROOT>/sherpa-onnx-whisper-tiny/tiny-tokens.txt",
+          "numThreads": 2,
+          "provider": "cpu",
+          "debug": 0
+        }
+      }
+    ],
+    [
+      "progress",
+      {
+        "stage": "recognizing",
+        "percent": 0.6,
+        "message": "asr 1/1"
+      }
+    ],
+    "createStream",
+    [
+      "acceptWaveform",
+      16000,
+      16000
+    ],
+    "decode",
+    [
+      "getResult",
+      false
+    ],
+    "caller-microtask",
+    [
+      "partial",
+      {
+        "speakerKey": "speaker-1",
+        "startMs": 0,
+        "endMs": 1000,
+        "text": "Hello\nworld.",
+        "words": [],
+        "confidence": null
+      }
+    ],
+    [
+      "progress",
+      {
+        "stage": "committing",
+        "percent": 1
+      }
+    ]
+  ],
+  "result": {
+    "resultKind": "transcript",
+    "language": null,
+    "modelVersion": "vidbee-asr-2026.08.20-3",
+    "asrTier": "minimal",
+    "speakers": [
+      {
+        "speakerKey": "speaker-1",
+        "displayName": "Speaker 1"
+      }
+    ],
+    "segments": [
+      {
+        "speakerKey": "speaker-1",
+        "startMs": 0,
+        "endMs": 1000,
+        "text": "Hello world.",
+        "words": [],
+        "confidence": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,1438 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`editing clamps times but preserves words until any explicit text patch; insertion tie order 1`] = `
+[
+  {
+    "confidence": 0.8,
+    "endMs": 200,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 100,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 200,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 100,
+    "text": "hello",
+    "words": [],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 0,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 0,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 0,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 0,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 300,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 300,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 200,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": null,
+    "startMs": 100,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+]
+`;
+
+exports[`editing clamps times but preserves words until any explicit text patch; insertion tie order 2`] = `
+[
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": null,
+        "endMs": 500,
+        "id": "new",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 200,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 100,
+        "id": "new",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 0,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": null,
+        "endMs": 500,
+        "id": "new",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 200,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": null,
+        "endMs": 500,
+        "id": "new",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 300,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": null,
+        "endMs": 100,
+        "id": "new",
+        "sortIndex": 1,
+        "speakerId": null,
+        "startMs": 100,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": null,
+        "endMs": 0,
+        "id": "new",
+        "sortIndex": 0,
+        "speakerId": null,
+        "startMs": 0,
+        "text": "",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "segmentId": "new",
+    "segments": [
+      {
+        "confidence": 0.8,
+        "endMs": 200,
+        "id": "a",
+        "sortIndex": 0,
+        "speakerId": "speaker",
+        "startMs": 100,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 200,
+            "startMs": 100,
+            "text": "hello",
+          },
+        ],
+      },
+      {
+        "confidence": null,
+        "endMs": 500,
+        "id": "new",
+        "sortIndex": 1,
+        "speakerId": "speaker",
+        "startMs": 200,
+        "text": "insert",
+        "words": [],
+      },
+      {
+        "confidence": 0.8,
+        "endMs": 800,
+        "id": "b",
+        "sortIndex": 2,
+        "speakerId": "speaker",
+        "startMs": 500,
+        "text": "hello",
+        "words": [
+          {
+            "endMs": 800,
+            "startMs": 500,
+            "text": "hello",
+          },
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`editing clamps times but preserves words until any explicit text patch; insertion tie order 3`] = `
+[
+  {
+    "confidence": 0.8,
+    "endMs": 200,
+    "id": "a",
+    "sortIndex": 0,
+    "speakerId": "speaker",
+    "startMs": 100,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 200,
+        "startMs": 100,
+        "text": "hello",
+      },
+    ],
+  },
+  {
+    "confidence": 0.8,
+    "endMs": 800,
+    "id": "b",
+    "sortIndex": 1,
+    "speakerId": "speaker",
+    "startMs": 500,
+    "text": "hello",
+    "words": [
+      {
+        "endMs": 800,
+        "startMs": 500,
+        "text": "hello",
+      },
+    ],
+  },
+]
+`;
+
+exports[`memory identity, word aliasing, idempotence clock placement and supersession 1`] = `
+[
+  {
+    "createdAt": 4,
+    "id": "three",
+    "supersededAt": null,
+    "updatedAt": 4,
+  },
+  {
+    "createdAt": 2,
+    "id": "two",
+    "supersededAt": 4,
+    "updatedAt": 4,
+  },
+  {
+    "createdAt": 1,
+    "id": "one",
+    "supersededAt": 3,
+    "updatedAt": 3,
+  },
+]
+`;
+
+exports[`short cluster folding distance and five-second duration boundaries are inclusive and retain order 1`] = `
+[
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "duration": 4999,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "threshold": 0.6499990059604644,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 4999,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "threshold": 0.6500000059604645,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 4999,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "threshold": 0.6500010059604645,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "duration": 5000,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6499990059604644,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 5000,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6500000059604645,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 5000,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6500010059604645,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        "unknown",
+      ],
+    ],
+    "duration": 5001,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6499990059604644,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 5001,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6500000059604645,
+  },
+  {
+    "capped": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "duration": 5001,
+    "folded": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        0,
+      ],
+    ],
+    "missing": [
+      [
+        "0:main",
+        0,
+      ],
+      [
+        "0:short",
+        1,
+      ],
+    ],
+    "threshold": 0.6500010059604645,
+  },
+]
+`;
+
+exports[`source selection, grouping identity and seed literal predicates 1`] = `
+[
+  [
+    {
+      "auto": true,
+      "key": "captions:ai-en",
+      "kind": "captions",
+      "language": "ai-en",
+      "languageCode": "en",
+      "selected": false,
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": true,
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false,
+    },
+  ],
+  [
+    {
+      "auto": true,
+      "key": "captions:ai-en",
+      "kind": "captions",
+      "language": "ai-en",
+      "languageCode": "en",
+      "selected": false,
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false,
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": "en",
+      "languageCode": "en",
+      "selected": true,
+    },
+  ],
+  [
+    {
+      "auto": true,
+      "key": "captions:ai-en",
+      "kind": "captions",
+      "language": "ai-en",
+      "languageCode": "en",
+      "selected": false,
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": true,
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false,
+    },
+  ],
+  [
+    {
+      "auto": true,
+      "key": "captions:ai-en",
+      "kind": "captions",
+      "language": "ai-en",
+      "languageCode": "en",
+      "selected": false,
+    },
+    {
+      "auto": false,
+      "key": "captions:en",
+      "kind": "captions",
+      "language": "en",
+      "languageCode": "en",
+      "selected": true,
+    },
+    {
+      "auto": false,
+      "key": "asr",
+      "kind": "asr",
+      "language": "en",
+      "languageCode": "en",
+      "selected": false,
+    },
+  ],
+]
+`;
+
+exports[`speaker assignment pins wordless synthetic timing, soft caps, overlap end rewind and nearest tie > giant 1`] = `
+{
+  "segments": [
+    {
+      "confidence": 0.7,
+      "endMs": 34286,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+      "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "words": [],
+    },
+    {
+      "confidence": 0.7,
+      "endMs": 60001,
+      "speakerKey": "speaker-1",
+      "startMs": 34286,
+      "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "words": [],
+    },
+  ],
+  "speakers": [
+    {
+      "displayName": "Speaker 1",
+      "speakerKey": "speaker-1",
+    },
+  ],
+}
+`;
+
+exports[`speaker assignment pins wordless synthetic timing, soft caps, overlap end rewind and nearest tie > rewind 1`] = `
+{
+  "segments": [
+    {
+      "confidence": 0.7,
+      "endMs": 200,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+      "text": "longshort",
+      "words": [
+        {
+          "endMs": 500,
+          "startMs": 0,
+          "text": "long",
+        },
+        {
+          "endMs": 200,
+          "startMs": 100,
+          "text": "short",
+        },
+      ],
+    },
+  ],
+  "speakers": [
+    {
+      "displayName": "Speaker 1",
+      "speakerKey": "speaker-1",
+    },
+  ],
+}
+`;
+
+exports[`speaker assignment pins wordless synthetic timing, soft caps, overlap end rewind and nearest tie > sentences 1`] = `
+{
+  "segments": [
+    {
+      "confidence": 0.7,
+      "endMs": 3333,
+      "speakerKey": "a",
+      "startMs": 0,
+      "text": "Value 3.5.",
+      "words": [],
+    },
+    {
+      "confidence": 0.7,
+      "endMs": 5000,
+      "speakerKey": "b",
+      "startMs": 3333,
+      "text": "Next!",
+      "words": [],
+    },
+    {
+      "confidence": 0.7,
+      "endMs": 6000,
+      "speakerKey": "b",
+      "startMs": 5000,
+      "text": "最後。",
+      "words": [],
+    },
+  ],
+  "speakers": [
+    {
+      "displayName": "Speaker 1",
+      "speakerKey": "a",
+    },
+    {
+      "displayName": "Speaker 2",
+      "speakerKey": "b",
+    },
+  ],
+}
+`;
+
+exports[`speaker assignment pins wordless synthetic timing, soft caps, overlap end rewind and nearest tie > vector and chunk boundaries 1`] = `
+{
+  "distances": [
+    0,
+    1,
+    1.600000023841858,
+    0.3999999761581421,
+  ],
+  "folds": [
+    5000,
+    5000,
+    60000,
+    60000,
+  ],
+  "labels": [
+    [
+      0,
+      0,
+      0,
+      0,
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+    ],
+    [
+      0,
+      1,
+      2,
+      0,
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+    ],
+  ],
+  "normalized": [
+    0.6000000238418579,
+    0.800000011920929,
+  ],
+  "threshold": [
+    [
+      0,
+      1,
+      2,
+      3,
+    ],
+    [
+      0,
+      1,
+      2,
+      0,
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+    ],
+  ],
+  "windows": [
+    [],
+    [
+      {
+        "endMs": 1,
+        "startMs": 0,
+      },
+    ],
+    [
+      {
+        "endMs": 600000,
+        "startMs": 0,
+      },
+    ],
+    [
+      {
+        "endMs": 600001,
+        "startMs": 0,
+      },
+    ],
+    [
+      {
+        "endMs": 600000,
+        "startMs": 0,
+      },
+      {
+        "endMs": 1180000,
+        "startMs": 580000,
+      },
+      {
+        "endMs": 1220000,
+        "startMs": 1160000,
+      },
+    ],
+  ],
+  "zero": [
+    0,
+    0,
+  ],
+}
+`;
+
+exports[`speaker refinement and bridging preserve ignored masks, threshold ties, fold/cap identity and missing embeds 1`] = `
+{
+  "asr": [
+    {
+      "endMs": 5300,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 8000,
+      "speakerKey": "unknown",
+      "startMs": 5300,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+    {
+      "endMs": 22001,
+      "speakerKey": "unknown",
+      "startMs": 18000,
+    },
+  ],
+  "filled": [
+    {
+      "endMs": 5000,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 5300,
+      "speakerKey": "b",
+      "startMs": 5000,
+    },
+    {
+      "endMs": 8000,
+      "speakerKey": "unknown",
+      "startMs": 5300,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+    {
+      "endMs": 22001,
+      "speakerKey": "unknown",
+      "startMs": 18000,
+    },
+  ],
+  "interval": 10,
+  "masked": [
+    {
+      "endMs": 5300,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+  ],
+  "merged": [
+    {
+      "endMs": 5000,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 5300,
+      "speakerKey": "b",
+      "startMs": 5000,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+  ],
+  "overlap": [
+    {
+      "endMs": 5000,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 5300,
+      "speakerKey": "b",
+      "startMs": 5000,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "speaker-1",
+      "startMs": 14000,
+    },
+  ],
+  "picked": [
+    {
+      "endMs": 5000,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 9000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+  ],
+  "refined": [
+    {
+      "endMs": 5300,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+  ],
+  "shifted": [
+    {
+      "endMs": 5100,
+      "speakerKey": "a",
+      "startMs": 100,
+    },
+    {
+      "endMs": 5400,
+      "speakerKey": "b",
+      "startMs": 5100,
+    },
+    {
+      "endMs": 13100,
+      "speakerKey": "a",
+      "startMs": 8100,
+    },
+    {
+      "endMs": 18100,
+      "speakerKey": "c",
+      "startMs": 14100,
+    },
+  ],
+  "stitched": [
+    {
+      "endMs": 5000,
+      "speakerKey": "a",
+      "startMs": 0,
+    },
+    {
+      "endMs": 5300,
+      "speakerKey": "b",
+      "startMs": 5000,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "a",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "c",
+      "startMs": 14000,
+    },
+  ],
+  "trust": [
+    false,
+    false,
+    true,
+    true,
+  ],
+}
+`;
+
+exports[`speaker refinement and bridging preserve ignored masks, threshold ties, fold/cap identity and missing embeds 2`] = `
+{
+  "bridged": [
+    {
+      "endMs": 5300,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "speaker-1",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "unknown",
+      "startMs": 14000,
+    },
+  ],
+  "capped": [
+    [
+      "0:a",
+      0,
+    ],
+    [
+      "0:b",
+      0,
+    ],
+    [
+      "0:c",
+      "unknown",
+    ],
+  ],
+  "clusters": [
+    [
+      "0:a",
+      0,
+    ],
+    [
+      "0:b",
+      0,
+    ],
+    [
+      "0:c",
+      1,
+    ],
+  ],
+  "fixed": [
+    {
+      "endMs": 5300,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "speaker-1",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "speaker-1",
+      "startMs": 14000,
+    },
+  ],
+  "folded": [
+    [
+      "0:a",
+      0,
+    ],
+    [
+      "0:b",
+      0,
+    ],
+    [
+      "0:c",
+      "unknown",
+    ],
+  ],
+  "missing": [
+    {
+      "endMs": 5000,
+      "speakerKey": "speaker-1",
+      "startMs": 0,
+    },
+    {
+      "endMs": 5300,
+      "speakerKey": "speaker-2",
+      "startMs": 5000,
+    },
+    {
+      "endMs": 13000,
+      "speakerKey": "speaker-1",
+      "startMs": 8000,
+    },
+    {
+      "endMs": 18000,
+      "speakerKey": "speaker-3",
+      "startMs": 14000,
+    },
+  ],
+}
+`;

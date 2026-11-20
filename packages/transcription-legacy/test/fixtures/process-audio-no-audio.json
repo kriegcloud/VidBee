@@ -1,0 +1,36 @@
+{
+  "trace": [
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        "<ROOT>/source.media"
+      ]
+    ],
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-select_streams",
+        "a",
+        "-show_entries",
+        "stream=codec_type",
+        "-of",
+        "csv=p=0",
+        "<ROOT>/source.media"
+      ]
+    ]
+  ],
+  "result": {
+    "name": "Error",
+    "message": "source has no audio stream"
+  },
+  "wav": null,
+  "copyExists": false
+}

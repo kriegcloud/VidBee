@@ -1,0 +1,104 @@
+[
+  "run-return",
+  [
+    "spawn",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "pid": "PID",
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.path=<NODE>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.version=<NODE_VERSION>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.layer=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.restarts=0"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "task-process",
+      "attemptId": "attempt",
+      "result": {
+        "type": "error",
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "worker result missing: <ROOT>/vidbee-transcript/4150d3364d04febc167e92f9/missing.json",
+          "uiMessageKey": "task.error.unknown",
+          "uiActionHints": [
+            "retry",
+            "report-bug"
+          ],
+          "retryable": true,
+          "suggestedRetryAfterMs": null
+        },
+        "exitCode": null
+      },
+      "closedAt": 1000,
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=<NODE_VERSION>\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stderrTail": "worker result missing: <ROOT>/vidbee-transcript/4150d3364d04febc167e92f9/missing.json"
+    }
+  ],
+  [
+    "requests",
+    [
+      {
+        "type": "start",
+        "taskId": "task-process",
+        "attemptId": "attempt",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/4150d3364d04febc167e92f9",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "fake",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cpu",
+        "speakerCount": "auto"
+      }
+    ]
+  ],
+  [
+    "retained-work-dirs",
+    [
+      "4150d3364d04febc167e92f9"
+    ]
+  ]
+]
