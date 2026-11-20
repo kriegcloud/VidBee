@@ -1,9 +1,5 @@
-import {
-  captionLanguageKey,
-  findSidecarCaptionTracks,
-  parseCaptionTrack,
-  type TranscriptRecord
-} from '@vidbee/transcription'
+import { captionLanguageKey, parseCaptionTrack, type TranscriptRecord } from '@vidbee/transcription'
+import { findSidecarCaptionTracks } from '@vidbee/transcription-legacy'
 import type { AgentTranscriptLine } from './agent-tools'
 
 /** Preserve source evidence, including speaker identity and word-level source timestamps. */

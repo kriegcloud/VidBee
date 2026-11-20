@@ -4,42 +4,27 @@ import type { TaskCreationMetadata } from '@vidbee/task-queue-legacy'
 import { type Task, TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
 import {
   type AsrTierId,
-  AutoTranscriptionCoordinator,
   captionLanguageKey,
   preferredCaptionLanguages as captionLanguagePreference,
   captionRecordNeedsSpeakers,
   collectGpuDevices,
   DEFAULT_ASR_TIER,
   DEFAULT_SPEAKER_COUNT,
-  type ExtractedCaptionTrack,
-  enqueueTranscription,
-  extractEmbeddedCaptionTracks,
-  findActiveTranscription,
-  findSidecarCaptionTracks,
   type GpuKind,
   gpuKindFromHint,
-  groupTranscriptHeads,
   type InsertTranscriptSegmentInput,
-  importCaptionsForDownload,
-  importSidecarCaptionsIfPresent,
   isAsrTierId,
   latestTranscriptHead,
-  listTranscriptionChildren,
   MINIMAL_MODEL_GROUPS,
-  ModelManager,
   type ModelPrepStatus,
   type ModelStatus,
   type PipelineSegment,
-  parseAsrTier,
   parseCaptionTrack,
   parseSpeakerCount,
-  readMachineProfile,
   recommendAsrModels,
   recordForTranscriptSource,
   resolveTranscriptHeads,
   type SpeakerCount,
-  startMinimalModelFill,
-  switchToCaptionLanguage,
   type TranscriptHead,
   type TranscriptionStage,
   type TranscriptPlaybackCue,
@@ -48,11 +33,28 @@ import {
   type TranscriptSourceKind,
   type TranscriptSourceOption,
   type TranscriptStageTiming,
-  TranscriptStore,
-  toModelPrepStatus,
-  transcriptionPartials
+  toModelPrepStatus
 } from '@vidbee/transcription'
-import { preferChinaMirrors } from '@vidbee/transcription/download-mirrors'
+import {
+  AutoTranscriptionCoordinator,
+  type ExtractedCaptionTrack,
+  enqueueTranscription,
+  extractEmbeddedCaptionTracks,
+  findActiveTranscription,
+  findSidecarCaptionTracks,
+  groupTranscriptHeads,
+  importCaptionsForDownload,
+  importSidecarCaptionsIfPresent,
+  listTranscriptionChildren,
+  ModelManager,
+  parseAsrTier,
+  readMachineProfile,
+  startMinimalModelFill,
+  switchToCaptionLanguage,
+  TranscriptStore,
+  transcriptionPartials
+} from '@vidbee/transcription-legacy'
+import { preferChinaMirrors } from '@vidbee/transcription-legacy/download-mirrors'
 import { app, BrowserWindow } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

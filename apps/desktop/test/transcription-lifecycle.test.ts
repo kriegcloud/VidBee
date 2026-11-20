@@ -9,10 +9,10 @@ import { TaskQueueAPI } from '@vidbee/task-queue-legacy'
 import type { ExecutorContext, ExecutorEvents } from '@vidbee/task-queue-legacy/executor'
 import { MemoryPersistAdapter } from '@vidbee/task-queue-legacy/persist'
 import { deferred, fakeTimers, turn } from '../../../packages/task-queue-legacy/test/fixtures'
-import { AutoTranscriptionCoordinator } from '../../../packages/transcription/src/coordinator'
-import { MemoryTranscriptStore } from '../../../packages/transcription/src/memory-store'
-import { probeWorker } from '../../../packages/transcription/src/runtime'
-import { terminateWorker } from '../../../packages/transcription/src/worker/terminate'
+import { AutoTranscriptionCoordinator } from '../../../packages/transcription-legacy/src/coordinator'
+import { MemoryTranscriptStore } from '../../../packages/transcription-legacy/src/memory-store'
+import { probeWorker } from '../../../packages/transcription-legacy/src/runtime'
+import { terminateWorker } from '../../../packages/transcription-legacy/src/worker/terminate'
 
 test('worker termination waits for exit and escalates even after a signal was sent', async (t) => {
   const child = spawn(
@@ -128,8 +128,12 @@ for (const interruption of ['remove', 'stop'] as const) {
 
 for (const outcome of ['result', 'error'] as const) {
   test(`transcription ${outcome} reaps its process before finishing the task`, async (t) => {
-    const { TranscriptionExecutor } = await import('../../../packages/transcription/src/executor')
-    const { buildTranscriptionInput } = await import('../../../packages/transcription/src/options')
+    const { TranscriptionExecutor } = await import(
+      '../../../packages/transcription-legacy/src/executor'
+    )
+    const { buildTranscriptionInput } = await import(
+      '../../../packages/transcription-legacy/src/options'
+    )
     const root = mkdtempSync(join(tmpdir(), 'vidbee-executor-test-'))
     t.after(() => rmSync(root, { recursive: true, force: true }))
     const script = join(root, 'worker.cjs')

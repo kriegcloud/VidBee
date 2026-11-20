@@ -1,0 +1,2905 @@
+{
+  "seed-one": {
+    "trace": [
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "startMs": 0,
+              "endMs": 1500,
+              "text": "hello"
+            },
+            {
+              "startMs": 1500,
+              "endMs": 3000,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "en",
+        "modelVersion": "seed-version",
+        "asrTier": "minimal",
+        "sourceKind": "asr",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": "hello world",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 1500,
+                "text": "hello"
+              },
+              {
+                "startMs": 1500,
+                "endMs": 3000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "caption-punct": {
+    "trace": [
+      "addon",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "punct"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "punct"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "addPunct",
+        "hello world"
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "startMs": 0,
+              "endMs": 1500,
+              "text": "hello"
+            },
+            {
+              "startMs": 1500,
+              "endMs": 3000,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "en",
+        "modelVersion": "seed-version",
+        "asrTier": "minimal",
+        "sourceKind": "captions",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": "hello world",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 1500,
+                "text": "hello"
+              },
+              {
+                "startMs": 1500,
+                "endMs": 3000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "asr-punct": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "addPunct",
+        "hello world"
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello, world.",
+          "words": [
+            {
+              "endMs": 500,
+              "startMs": 0,
+              "text": "hello,"
+            },
+            {
+              "endMs": 3000,
+              "startMs": 500,
+              "text": " world."
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": "hello, world.",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 500,
+                "text": "hello,"
+              },
+              {
+                "startMs": 500,
+                "endMs": 3000,
+                "text": " world."
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "asr-empty": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "microtask",
+        2
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [],
+        "segments": []
+      }
+    },
+    "manifest": null
+  },
+  "vad-speech": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "vad"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "vad"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "pathByRole",
+        "vad",
+        null
+      ],
+      [
+        "vad",
+        {
+          "sileroVad": {
+            "model": "<ROOT>/vad",
+            "threshold": 0.35,
+            "minSilenceDuration": 0.3,
+            "minSpeechDuration": 0.15,
+            "windowSize": 512,
+            "maxSpeechDuration": 20
+          },
+          "sampleRate": 1000,
+          "numThreads": 1,
+          "provider": "cpu"
+        },
+        120
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      "vad.flush",
+      [
+        "vad.front",
+        false
+      ],
+      "vad.pop",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      "ensureReady-resumed",
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        2200
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 500,
+          "endMs": 2500,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 1000,
+              "startMs": 500,
+              "text": " hello"
+            },
+            {
+              "endMs": 2500,
+              "startMs": 1000,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        5
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        6
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 500,
+            "endMs": 2500,
+            "text": " hello world",
+            "words": [
+              {
+                "startMs": 500,
+                "endMs": 1000,
+                "text": " hello"
+              },
+              {
+                "startMs": 1000,
+                "endMs": 2500,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "vad-silence": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "vad"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "vad"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "detecting-speech",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "pathByRole",
+        "vad",
+        null
+      ],
+      [
+        "vad",
+        {
+          "sileroVad": {
+            "model": "<ROOT>/vad",
+            "threshold": 0.35,
+            "minSilenceDuration": 0.3,
+            "minSpeechDuration": 0.15,
+            "windowSize": 512,
+            "maxSpeechDuration": 20
+          },
+          "sampleRate": 1000,
+          "numThreads": 1,
+          "provider": "cpu"
+        },
+        120
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      [
+        "vad.accept",
+        1000
+      ],
+      "vad.flush",
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1,
+          "message": "no-speech"
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "no-speech",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [],
+        "segments": []
+      }
+    },
+    "manifest": null
+  },
+  "chunk-reuse": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 15000,
+          "text": "saved chunk.",
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/2"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.7749999999999999,
+          "message": "asr 2/2"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        5000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 15000,
+          "endMs": 20000,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 15500,
+              "startMs": 15000,
+              "text": " hello"
+            },
+            {
+              "endMs": 20000,
+              "startMs": 15500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 15000,
+            "text": "saved chunk.",
+            "words": [],
+            "confidence": null
+          },
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 15000,
+            "endMs": 20000,
+            "text": " hello world",
+            "words": [
+              {
+                "startMs": 15000,
+                "endMs": 15500,
+                "text": " hello"
+              },
+              {
+                "startMs": 15500,
+                "endMs": 20000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": {
+      "key": {
+        "taskId": "task",
+        "fingerprint": "fixture",
+        "modelVersion": "fixture"
+      },
+      "durationMs": 20000,
+      "speakers": [
+        {
+          "speakerKey": "speaker-1",
+          "displayName": "Speaker 1"
+        }
+      ],
+      "turns": [],
+      "chunks": [
+        {
+          "index": 0,
+          "startMs": 0,
+          "endMs": 15000,
+          "speakerKey": "speaker-1",
+          "text": "saved chunk.",
+          "confidence": null
+        },
+        {
+          "index": 1,
+          "startMs": 15000,
+          "endMs": 20000,
+          "speakerKey": "speaker-1",
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 15500,
+              "startMs": 15000,
+              "text": " hello"
+            },
+            {
+              "endMs": 20000,
+              "startMs": 15500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      "stages": []
+    }
+  },
+  "diarize-basic": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 500,
+              "startMs": 0,
+              "text": " hello"
+            },
+            {
+              "endMs": 3000,
+              "startMs": 500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.85,
+          "message": "speaker"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "speaker"
+          ]
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "ensureReady-resumed",
+      [
+        "microtask",
+        5
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88
+        }
+      ],
+      [
+        "pathByRole",
+        "segmentation",
+        null
+      ],
+      [
+        "pathById",
+        "speaker-embedding-campplus"
+      ],
+      [
+        "diarizer",
+        {
+          "segmentation": {
+            "pyannote": {
+              "model": "<ROOT>/segmentation",
+              "windowShiftRatio": 0.1
+            },
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "embedding": {
+            "model": "<ROOT>/speaker-embedding-campplus",
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "clustering": {
+            "numClusters": -1,
+            "threshold": 0.5
+          },
+          "minDurationOn": 0.3,
+          "minDurationOff": 0.5
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88,
+          "message": "path=sherpa embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 windows=1"
+        }
+      ],
+      [
+        "diarizer.process",
+        3000,
+        0
+      ],
+      [
+        "diarizer.get",
+        0
+      ],
+      [
+        "diarizer.get",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "window 1/1"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "path=sherpa embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 speakers=2"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        6
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": " hello world",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 500,
+                "text": " hello"
+              },
+              {
+                "startMs": 500,
+                "endMs": 3000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "diarize-global": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 500,
+              "startMs": 0,
+              "text": " hello"
+            },
+            {
+              "endMs": 3000,
+              "startMs": 500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.85,
+          "message": "speaker"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "speaker"
+          ]
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "ensureReady-resumed",
+      [
+        "microtask",
+        5
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88
+        }
+      ],
+      [
+        "pathByRole",
+        "segmentation",
+        null
+      ],
+      [
+        "pathById",
+        "speaker-embedding-campplus"
+      ],
+      [
+        "diarizer",
+        {
+          "segmentation": {
+            "pyannote": {
+              "model": "<ROOT>/segmentation",
+              "windowShiftRatio": 0.1
+            },
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "embedding": {
+            "model": "<ROOT>/speaker-embedding-campplus",
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "clustering": {
+            "numClusters": -1,
+            "threshold": 0.5
+          },
+          "minDurationOn": 0.3,
+          "minDurationOff": 0.5
+        }
+      ],
+      [
+        "embedding",
+        {
+          "model": "<ROOT>/speaker-embedding-campplus",
+          "numThreads": 2,
+          "provider": "cpu"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 windows=1"
+        }
+      ],
+      [
+        "diarizer.process",
+        3000,
+        0
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        1500
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        0
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        1500
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "window 1/1"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 speakers=2"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        6
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": " hello world",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 500,
+                "text": " hello"
+              },
+              {
+                "startMs": 500,
+                "endMs": 3000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "seed-multiwindow": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "speaker"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "speaker"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "speaker"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88
+        }
+      ],
+      [
+        "pathByRole",
+        "segmentation",
+        null
+      ],
+      [
+        "pathById",
+        "speaker-embedding-campplus"
+      ],
+      [
+        "diarizer",
+        {
+          "segmentation": {
+            "pyannote": {
+              "model": "<ROOT>/segmentation",
+              "windowShiftRatio": 0.1
+            },
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "embedding": {
+            "model": "<ROOT>/speaker-embedding-campplus",
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "clustering": {
+            "numClusters": -1,
+            "threshold": 0.5
+          },
+          "minDurationOn": 0.3,
+          "minDurationOff": 0.5
+        }
+      ],
+      [
+        "embedding",
+        {
+          "model": "<ROOT>/speaker-embedding-campplus",
+          "numThreads": 2,
+          "provider": "cpu"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 windows=1"
+        }
+      ],
+      [
+        "diarizer.process",
+        620000,
+        0
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        8000
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        0
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        8000
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "window 1/1"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 speakers=2"
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 310000,
+          "text": "hello",
+          "words": [
+            {
+              "startMs": 0,
+              "endMs": 310000,
+              "text": "hello"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-2",
+          "startMs": 310000,
+          "endMs": 620000,
+          "text": " world",
+          "words": [
+            {
+              "startMs": 310000,
+              "endMs": 620000,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "microtask",
+        3
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": "en",
+        "modelVersion": "seed-version",
+        "asrTier": "minimal",
+        "sourceKind": "asr",
+        "speakers": [
+          {
+            "speakerKey": "speaker-1",
+            "displayName": "Speaker 1"
+          },
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 2"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-1",
+            "startMs": 0,
+            "endMs": 310000,
+            "text": "hello",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 310000,
+                "text": "hello"
+              }
+            ],
+            "confidence": null
+          },
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 310000,
+            "endMs": 620000,
+            "text": " world",
+            "words": [
+              {
+                "startMs": 310000,
+                "endMs": 620000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "embed-error": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 500,
+              "startMs": 0,
+              "text": " hello"
+            },
+            {
+              "endMs": 3000,
+              "startMs": 500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.85,
+          "message": "speaker"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "speaker"
+          ]
+        }
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "ensureReady-resumed",
+      [
+        "microtask",
+        5
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88
+        }
+      ],
+      [
+        "pathByRole",
+        "segmentation",
+        null
+      ],
+      [
+        "pathById",
+        "speaker-embedding-campplus"
+      ],
+      [
+        "diarizer",
+        {
+          "segmentation": {
+            "pyannote": {
+              "model": "<ROOT>/segmentation",
+              "windowShiftRatio": 0.1
+            },
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "embedding": {
+            "model": "<ROOT>/speaker-embedding-campplus",
+            "numThreads": 2,
+            "provider": "cpu"
+          },
+          "clustering": {
+            "numClusters": -1,
+            "threshold": 0.5
+          },
+          "minDurationOn": 0.3,
+          "minDurationOff": 0.5
+        }
+      ],
+      [
+        "embedding",
+        {
+          "model": "<ROOT>/speaker-embedding-campplus",
+          "numThreads": 2,
+          "provider": "cpu"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.88,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 windows=1"
+        }
+      ],
+      [
+        "diarizer.process",
+        3000,
+        0
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        1500
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        0
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "embed-skip speaker-1: fixture embedding failed"
+        }
+      ],
+      "embedding.stream",
+      [
+        "waveform",
+        1000,
+        1500
+      ],
+      "embedding.finished",
+      "embedding.ready",
+      [
+        "embedding.compute",
+        false,
+        0
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "embed-skip speaker-2: fixture embedding failed"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "window 1/1"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "diarizing",
+          "percent": 0.98,
+          "message": "path=global-recluster embedding=speaker-embedding-campplus numClusters=-1 threshold=0.5 speakers=2"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "committing",
+          "percent": 1
+        }
+      ],
+      [
+        "microtask",
+        6
+      ],
+      "fulfilled"
+    ],
+    "value": {
+      "result": {
+        "resultKind": "transcript",
+        "language": null,
+        "modelVersion": "vidbee-asr-2026.08.20-3",
+        "asrTier": "minimal",
+        "speakers": [
+          {
+            "speakerKey": "speaker-2",
+            "displayName": "Speaker 1"
+          }
+        ],
+        "segments": [
+          {
+            "speakerKey": "speaker-2",
+            "startMs": 0,
+            "endMs": 3000,
+            "text": " hello world",
+            "words": [
+              {
+                "startMs": 0,
+                "endMs": 500,
+                "text": " hello"
+              },
+              {
+                "startMs": 500,
+                "endMs": 3000,
+                "text": " world"
+              }
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "manifest": null
+  },
+  "early-abort": {
+    "trace": [
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "cancelled"
+      }
+    },
+    "manifest": null
+  },
+  "progress-error": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      "run-return",
+      [
+        "microtask",
+        1
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "fixture progress failed"
+      }
+    },
+    "manifest": null
+  },
+  "partial-error": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.6,
+          "message": "asr 1/1"
+        }
+      ],
+      "recognizer.stream",
+      [
+        "waveform",
+        1000,
+        3000
+      ],
+      "recognizer.decode",
+      "recognizer.result",
+      [
+        "pathByRole",
+        "punctuation",
+        null
+      ],
+      [
+        "punctuation",
+        {
+          "model": {
+            "ctTransformer": "<ROOT>/punctuation",
+            "numThreads": 1,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "partial",
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 3000,
+          "text": "hello world",
+          "words": [
+            {
+              "endMs": 500,
+              "startMs": 0,
+              "text": " hello"
+            },
+            {
+              "endMs": 3000,
+              "startMs": 500,
+              "text": " world"
+            }
+          ],
+          "confidence": null
+        }
+      ],
+      [
+        "microtask",
+        3
+      ],
+      [
+        "microtask",
+        4
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "fixture partial failed"
+      }
+    },
+    "manifest": null
+  },
+  "abort-after-ready": {
+    "trace": [
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": null,
+          "message": "asr"
+        }
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.05
+        }
+      ],
+      "addon",
+      [
+        "progress",
+        {
+          "stage": "preparing-models",
+          "percent": 0.3,
+          "message": "asr"
+        }
+      ],
+      [
+        "ensureReady",
+        {
+          "groups": [
+            "asr"
+          ],
+          "tiers": [
+            "minimal"
+          ]
+        }
+      ],
+      "run-return",
+      "ensureReady-resumed",
+      [
+        "microtask",
+        1
+      ],
+      [
+        "progress",
+        {
+          "stage": "recognizing",
+          "percent": 0.35
+        }
+      ],
+      [
+        "incompleteModelIssue",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-decoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-encoder",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-frontend",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-joiner",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-model",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokenizer",
+        "minimal"
+      ],
+      [
+        "pathByRole",
+        "asr-tokens",
+        "minimal"
+      ],
+      [
+        "recognizer",
+        {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "<ROOT>/asr-encoder",
+              "decoder": "<ROOT>/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "<ROOT>/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      ],
+      [
+        "microtask",
+        2
+      ],
+      [
+        "microtask",
+        3
+      ],
+      "rejected"
+    ],
+    "value": {
+      "error": {
+        "name": "Error",
+        "message": "cancelled"
+      }
+    },
+    "manifest": null
+  }
+}

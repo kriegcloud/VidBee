@@ -550,3 +550,77 @@ The installed Effect timer declarations expose no public unref/keepAlive option.
 requires an unreferenced native timer while strict rules prohibit global timers, record the API
 and diagnostic evidence and leave that branch explicitly unavailable. Do not hide a host timer
 behind an alias or mark liveness parity proven from compatibility-only tests.
+
+### Transcription port observations (phase 6c)
+
+Keep compatibility call signatures separate from native dual functions. A direct reexport also
+exports the native curried overloads; bidirectional declaration fixtures detect this even when
+all old calls still run. Bind the compatibility value to the original function signature, and
+retain native `HashMap`/`HashSet` results only behind the legacy Map/Set adapters. A native
+`Context.Service` called `TranscriptStore` is not the legacy class type: consumer type imports
+for existing store instances must remain on the compatibility package.
+
+Native dual functions take every argument explicitly and use fixed arity when an optional
+fallback would overlap the data argument. The compatibility wrapper keeps the original optional
+arguments and applies exported defaults. Never dispatch by truthiness or literal membership,
+or weaken `missingPipeableSignature`.
+
+```ts
+// Wrong: the unary call could mean either data or fallback.
+const parse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => body(value, fallback);
+// Right: native forms have fixed arity; compatibility applies the default.
+const parse: {
+  (value: unknown, fallback: Tier): Tier;
+  (fallback: Tier): (value: unknown) => Tier;
+} = dual(2, body);
+const legacyParse = (value: unknown, fallback: Tier = DEFAULT_TIER): Tier => parse(value, fallback);
+```
+
+Wire envelopes and consumed data are different schemas. A worker result keeps its inline value
+and path unknown until truthy-inline/file-fallback selection; a probe success can carry metadata
+the parent never consumes. Decode only the selected payload and the consumed fields. Keep
+unknown protocol kinds ignored and existing invalid-JSON recovery. Where an original syntax
+exception must escape, the compatibility JSON driver preserves the actual `JSON.parse` failure;
+semantic rejection uses a stable content-free boundary name. Retained file/result metadata needs
+open nested schemas, not only an open root. A valid inline result may also carry an identity
+contract, so validation must not replace it with a decoded clone.
+
+The worker's model preparation Promise starts before audio extraction and originally has no
+rejection handler until its later await. A compatibility preparation handle must retain that
+window; eagerly adopting it into an observed fiber changes `unhandledRejection` behavior.
+Native fibers use scoped ownership and require a separate cutover decision. Blocking worker
+stdout and native awaited `Stdio` are likewise distinct policies; source-level fake-addon tests
+cannot establish packaged speech throughput or watchdog acceptance.
+
+Exercise native callbacks as foreign receiver-bound methods. Native probe time consists of two
+synchronous monotonic reads immediately around decode, excluding setup and result parsing.
+Read raw sherpa JSON through the installed addon subpath in the native driver; preserve the old
+synchronous JSON patch only in compatibility. An installed-addon API prototype establishes an
+ABI observation, not speech, model-quality, provider-selection, or public golden acceptance.
+
+Apply the full strict test configuration after formatting. Biome can simplify a conditional
+`Boolean(value)` back into a non-boolean condition that tsrs rejects. Keep an explicit Boolean
+binding, or an appropriate Effect predicate, and rerun both tools. Native filesystem Date
+metadata can lose fractional-millisecond precision compared with `statSync`; fingerprints,
+cache keys and publication proofs must name that difference before native application cutover.
+
+
+An old async callee can add an observable completion turn even when its body has no pending
+work. Preserve both successful and failed Promise adoption before a caller's catch/finally
+boundary. A redownload-in-flight test must record the caller continuation marker together with
+listener callbacks: matching final results and listener order alone misses early delivery.
+
+The shared process vocabulary is `ProcessSpec`'s `deliver`/`unread` and `ProcessRun`'s
+`writeStdin`, `isRunning`, `observeClose`, activation and signal requests. Transcription's
+`ProcessCapabilities` is an owner/validation adapter over `DownloadProcess`, never another
+spawn implementation. Optional `extendedLifecycle` enables `ProcessRun.lifecycle` (input EOF,
+reaped outcome, live signalling state and graceful worker termination); existing calls retain
+their original defaults and layer ownership. The optional start owner applies only to that
+extended path. Raw string chunks from an encoded transcription stream are converted there;
+ordinary raw chunks retain identity. Extended unread output requires a pipe before spawn.
+
+An optional spawn seam must look up the live host function at acquisition unless the caller
+explicitly supplies a replacement. Capturing it as a default argument when constructing a
+layer breaks later module replacement and changes existing callback oracles. Native EOF also
+requires the stock writable's endOnDone option: enable it only for extended invocations and
+prove two writes followed by EOF against a real child. A mocked Sink can conceal a missing EOF.

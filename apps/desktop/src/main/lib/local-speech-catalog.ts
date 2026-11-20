@@ -1,7 +1,8 @@
 import { lstatSync, readFileSync } from 'node:fs'
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { fetchFirstOk, githubDownloadUrls } from '@vidbee/transcription/download-mirrors'
+import { githubDownloadUrls } from '@vidbee/transcription/download-mirrors'
+import { fetchFirstOk } from '@vidbee/transcription-legacy/download-mirrors'
 import { app } from 'electron'
 import { z } from 'zod'
 import {

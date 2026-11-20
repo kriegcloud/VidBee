@@ -15,6 +15,7 @@
       "packages/downloader-core/**",
       "packages/browser-capture/**",
       "packages/subscriptions-core/**",
+      "packages/transcription/**",
       "!packages/db/test/fixtures/**",
       "!packages/db/test/snapshots/**",
       "packages/i18n/**",

@@ -1,0 +1,40 @@
+{
+  "outcome": {
+    "result": [
+      {
+        "language": "eng",
+        "text": "WEBVTT\n"
+      }
+    ]
+  },
+  "calls": [
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-select_streams",
+        "s",
+        "-show_entries",
+        "stream=index,codec_name,codec_type:stream_tags=language,title",
+        "-of",
+        "json",
+        "<ROOT>/source"
+      ]
+    ],
+    [
+      "extract",
+      [
+        "-v",
+        "error",
+        "-i",
+        "<ROOT>/source",
+        "-map",
+        "0:Infinity",
+        "-f",
+        "webvtt",
+        "pipe:1"
+      ]
+    ]
+  ]
+}

@@ -1,102 +1,90 @@
-import { captionLanguageForMatch, captionLanguageKey, isPlatformAiCaptionTag } from './captions'
-import type { TranscriptResultKind, TranscriptSourceKind, TranscriptSourceOption } from './types'
+import * as Arr from "effect/Array";
+import * as Fn from "effect/Function";
+import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
+import * as Option from "effect/Option";
+import { captionLanguageForMatch, captionLanguageKey, isPlatformAiCaptionTag } from "./captions.js";
+import type { TranscriptHead, TranscriptSourceMeta, TranscriptSourceOption } from "./Transcript.model.js";
 
-/** Fields source selection reads. Full records and SQL heads both satisfy this. */
-export interface TranscriptSourceMeta {
-  language: string | null
-  resultKind: TranscriptResultKind
-  sourceKind: TranscriptSourceKind
-}
-
-/** One transcript row without speakers, caption text, or word timestamps. */
-export interface TranscriptHead extends TranscriptSourceMeta {
-  asrTier: string | null
-  createdAt: number
-  downloadTaskId: string
-  id: string
-  modelVersion: string
-  sourceFilePath: string | null
-  supersededAt: number | null
-  transcriptionTaskId: string
-  updatedAt: number
-}
-
+export type { TranscriptHead, TranscriptSourceMeta } from "./Transcript.model.js";
 /**
  * Build the captions-language and ASR choices for one download.
  *
  * @param input Current row, stored history, sidecar languages, and optional viewing key.
  */
 export const buildTranscriptSources = (input: {
-  asrActive?: boolean
-  current: TranscriptSourceMeta | null
-  preferredKey?: string | null
-  stored: readonly TranscriptSourceMeta[]
-  tracks: ReadonlyArray<{ language: string | null }>
+  asrActive?: boolean | undefined;
+  current: TranscriptSourceMeta | null;
+  preferredKey?: string | null | undefined;
+  stored: readonly TranscriptSourceMeta[];
+  tracks: ReadonlyArray<{
+    language: string | null;
+  }>;
 }): TranscriptSourceOption[] => {
-  const seen = new Set<string>()
-  const captionLangs: Array<{ auto: boolean; language: string | null }> = []
+  let seen = HashSet.empty<string>();
+  const captionLangs: Array<{
+    auto: boolean;
+    language: string | null;
+  }> = [];
   const pushCaption = (language: string | null): void => {
-    const key = captionLanguageKey(language)
-    if (seen.has(key)) {
-      return
+    const key = captionLanguageKey(language);
+    if (HashSet.has(seen, key)) {
+      return;
     }
-    seen.add(key)
-    captionLangs.push({ auto: isPlatformAiCaptionTag(language), language })
-  }
+    seen = HashSet.add(seen, key);
+    captionLangs.push({ auto: isPlatformAiCaptionTag(language), language });
+  };
   for (const track of input.tracks) {
-    pushCaption(track.language)
+    pushCaption(track.language);
   }
   for (const row of input.stored) {
-    if (row.sourceKind === 'captions') {
-      pushCaption(row.language)
+    if (row.sourceKind === "captions") {
+      pushCaption(row.language);
     }
   }
-  const asrActive = Boolean(input.asrActive)
-  const asrRecord = input.stored.find(
-    (row) => row.sourceKind === 'asr' && row.resultKind === 'transcript'
-  )
+  const asrActive = Boolean(input.asrActive);
+  const asrRecord = Option.getOrUndefined(
+    Arr.findFirst(input.stored, (row) => row.sourceKind === "asr" && row.resultKind === "transcript")
+  );
   const includeAsr =
-    captionLangs.length > 0 || asrRecord || input.current?.sourceKind === 'asr' || asrActive
+    captionLangs.length > 0 || asrRecord !== undefined || input.current?.sourceKind === "asr" || asrActive;
   const preferred =
-    input.preferredKey &&
-    (input.preferredKey === 'asr'
+    input.preferredKey != null &&
+    input.preferredKey !== "" &&
+    (input.preferredKey === "asr"
       ? includeAsr
-      : captionLangs.some(
-          (item) => `captions:${captionLanguageKey(item.language)}` === input.preferredKey
-        ))
+      : Arr.some(captionLangs, (item) => `captions:${captionLanguageKey(item.language)}` === input.preferredKey))
       ? input.preferredKey
-      : null
+      : null;
   const currentCaptionKey =
-    !(preferred || asrActive) && input.current?.sourceKind === 'captions'
+    !(preferred !== null || asrActive) && input.current?.sourceKind === "captions"
       ? captionLanguageKey(input.current.language)
-      : null
-  const sources: TranscriptSourceOption[] = captionLangs.map((item) => {
-    const key = `captions:${captionLanguageKey(item.language)}`
-    const code = item.language ? captionLanguageForMatch(item.language) : null
+      : null;
+  const sources: TranscriptSourceOption[] = Arr.map(captionLangs, (item) => {
+    const key = `captions:${captionLanguageKey(item.language)}`;
+    const code =
+      Boolean(item.language) === true && item.language !== null ? captionLanguageForMatch(item.language) : null;
     return {
       auto: item.auto,
       key,
-      kind: 'captions',
+      kind: "captions",
       language: item.language,
-      languageCode: code || item.language,
-      selected: preferred
-        ? preferred === key
-        : currentCaptionKey === captionLanguageKey(item.language)
-    }
-  })
+      languageCode: code !== null && code !== "" ? code : item.language,
+      selected: preferred !== null ? preferred === key : currentCaptionKey === captionLanguageKey(item.language),
+    };
+  });
   if (includeAsr) {
     sources.push({
       auto: false,
-      key: 'asr',
-      kind: 'asr',
+      key: "asr",
+      kind: "asr",
       language: asrRecord?.language ?? null,
       languageCode: asrRecord?.language ?? null,
-      selected: preferred ? preferred === 'asr' : asrActive || input.current?.sourceKind === 'asr'
-    })
+      selected: preferred !== null ? preferred === "asr" : asrActive || input.current?.sourceKind === "asr",
+    });
   }
-  return sources
-}
-
+  return sources;
+};
 /**
  * Pick the stored row that matches the source the user is viewing.
  *
@@ -108,92 +96,113 @@ export const buildTranscriptSources = (input: {
  * @param stored History for this download, newest first.
  * @param fallback Latest row when a captions source has no finished record.
  */
-export const recordForTranscriptSource = <T extends TranscriptSourceMeta>(
-  selected: TranscriptSourceOption | undefined,
-  stored: readonly T[],
-  fallback: T | null
-): T | null => {
-  if (!selected) {
-    return fallback
-  }
-  if (selected.kind === 'captions') {
-    const want = captionLanguageKey(selected.language)
+export const recordForTranscriptSource: {
+  <T extends TranscriptSourceMeta>(
+    selected: TranscriptSourceOption | undefined,
+    stored: readonly T[],
+    fallback: T | null
+  ): T | null;
+  <T extends TranscriptSourceMeta>(
+    stored: readonly T[],
+    fallback: T | null
+  ): (selected: TranscriptSourceOption | undefined) => T | null;
+} = Fn.dual(
+  3,
+  <T extends TranscriptSourceMeta>(
+    selected: TranscriptSourceOption | undefined,
+    stored: readonly T[],
+    fallback: T | null
+  ): T | null => {
+    if (selected === undefined || Boolean(selected) === false) {
+      return fallback;
+    }
+    if (selected.kind === "captions") {
+      const want = captionLanguageKey(selected.language);
+      return (
+        Option.getOrUndefined(
+          Arr.findFirst(
+            stored,
+            (row) =>
+              row.sourceKind === "captions" &&
+              row.resultKind === "transcript" &&
+              captionLanguageKey(row.language) === want
+          )
+        ) ?? fallback
+      );
+    }
     return (
-      stored.find(
-        (row) =>
-          row.sourceKind === 'captions' &&
-          row.resultKind === 'transcript' &&
-          captionLanguageKey(row.language) === want
-      ) ?? fallback
-    )
+      Option.getOrUndefined(
+        Arr.findFirst(stored, (row) => row.sourceKind === "asr" && row.resultKind === "transcript")
+      ) ?? null
+    );
   }
-  return stored.find((row) => row.sourceKind === 'asr' && row.resultKind === 'transcript') ?? null
-}
-
+);
 /**
  * Latest current row, or the newest row for the latest task when nothing is current.
  *
  * @param heads Rows for one download, newest first.
  * @param latestTaskId Newest transcription child, if any.
  */
-export const latestTranscriptHead = <T extends TranscriptHead>(
-  heads: readonly T[],
-  latestTaskId: string | null
-): T | null => {
-  const current = heads.find((head) => head.supersededAt == null)
-  if (current) {
-    return current
+export const latestTranscriptHead: {
+  <T extends TranscriptHead>(heads: readonly T[], latestTaskId: string | null): T | null;
+  <T extends TranscriptHead>(latestTaskId: string | null): (heads: readonly T[]) => T | null;
+} = Fn.dual(2, <T extends TranscriptHead>(heads: readonly T[], latestTaskId: string | null): T | null => {
+  const current = Option.getOrUndefined(Arr.findFirst(heads, (head) => head.supersededAt == null));
+  if (current !== undefined && Boolean(current) === true) {
+    return current;
   }
-  if (!latestTaskId) {
-    return null
+  if (latestTaskId === null || Boolean(latestTaskId) === false) {
+    return null;
   }
-  return heads.find((head) => head.transcriptionTaskId === latestTaskId) ?? null
-}
-
+  return Option.getOrUndefined(Arr.findFirst(heads, (head) => head.transcriptionTaskId === latestTaskId)) ?? null;
+});
 /**
  * Resolve the transcript row `getTranscriptSnapshot` would select, using heads only.
  *
  * @param input Newest-first heads, sidecar languages, and the viewing key.
  */
 export const resolveTranscriptHeads = <T extends TranscriptHead>(input: {
-  asrActive: boolean
-  heads: readonly T[]
-  latestTaskId: string | null
-  preferredKey?: string | null
-  tracks: ReadonlyArray<{ language: string | null }>
-}): { latest: T | null; selected: T | null; sources: TranscriptSourceOption[] } => {
-  const latest = latestTranscriptHead(input.heads, input.latestTaskId)
+  asrActive: boolean;
+  heads: readonly T[];
+  latestTaskId: string | null;
+  preferredKey?: string | null | undefined;
+  tracks: ReadonlyArray<{
+    language: string | null;
+  }>;
+}): {
+  latest: T | null;
+  selected: T | null;
+  sources: TranscriptSourceOption[];
+} => {
+  const latest = latestTranscriptHead(input.heads, input.latestTaskId);
   const sources = buildTranscriptSources({
     asrActive: input.asrActive,
     current: latest,
     preferredKey: input.preferredKey,
     stored: input.heads,
-    tracks: input.tracks
-  })
+    tracks: input.tracks,
+  });
   const selected = recordForTranscriptSource(
-    sources.find((item) => item.selected),
+    Option.getOrUndefined(Arr.findFirst(sources, (item) => item.selected)),
     input.heads,
     latest
-  )
-  return { latest, selected, sources }
-}
-
+  );
+  return { latest, selected, sources };
+};
 /**
  * Group newest-first heads by download without copying row objects.
  *
  * @param heads Library heads, newest first.
  */
-export const groupTranscriptHeads = (
-  heads: readonly TranscriptHead[]
-): Map<string, TranscriptHead[]> => {
-  const grouped = new Map<string, TranscriptHead[]>()
+export const groupTranscriptHeads = (heads: readonly TranscriptHead[]): HashMap.HashMap<string, TranscriptHead[]> => {
+  let grouped = HashMap.empty<string, TranscriptHead[]>();
   for (const head of heads) {
-    const rows = grouped.get(head.downloadTaskId)
-    if (rows) {
-      rows.push(head)
+    const rows = HashMap.get(grouped, head.downloadTaskId).pipe(Option.getOrUndefined);
+    if (rows !== undefined) {
+      rows.push(head);
     } else {
-      grouped.set(head.downloadTaskId, [head])
+      grouped = HashMap.set(grouped, head.downloadTaskId, [head]);
     }
   }
-  return grouped
-}
+  return grouped;
+};

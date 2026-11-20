@@ -47,7 +47,7 @@ import {
   nodeBinaryName,
   resolveBundledNodePath,
   TranscriptionExecutor
-} from '@vidbee/transcription'
+} from '@vidbee/transcription-legacy'
 import { app, powerSaveBlocker } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

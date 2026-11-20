@@ -22,7 +22,7 @@ import {
   parseSpeakerCount,
   SPEAKER_COUNT_CHOICES,
   type SpeakerCount
-} from '@vidbee/transcription/asr'
+} from '@vidbee/transcription-legacy/asr'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'

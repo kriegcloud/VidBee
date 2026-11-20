@@ -1,4 +1,4 @@
-import { parseAssCues, parseCaptionCues } from '@vidbee/transcription'
+import { parseAssCues, parseCaptionCues } from '@vidbee/transcription/captions'
 
 export type ExtensionTranscriptStatus = 'running' | 'completed' | 'error'
 export type ExtensionTranscriptErrorCode = 'noCaptions' | 'unavailable' | 'blocked' | 'network'

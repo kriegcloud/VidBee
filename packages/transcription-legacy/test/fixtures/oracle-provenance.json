@@ -1,0 +1,28 @@
+{
+  "sourceRevision": "9dab889b0b1d5328721802d65699a5f8593bf2e2",
+  "nodeVersion": "v22.23.4",
+  "prepare": "test/fixtures/prepare-old-oracle.mjs",
+  "generators": [
+    "test/fixtures/generate-pure-oracle.mjs",
+    "test/fixtures/generate-review-orchestration.mjs",
+    "test/fixtures/generate-stateful-oracles.mjs",
+    "test/fixtures/generate-worker-admission.mjs",
+    "test/fixtures/generate-provider-matrix.mts"
+  ],
+  "fixtures": {
+    "review-pure-oracle.json": "0ab0e227ae42f09fca1720a93575aa6f08f8490c10d8936fc0d3a797cae72e63",
+    "review-orchestration-traces.json": "fc1ae309149eb4a64b2c1499be1cc4e37a6226ffd71e27bd6932f36ee3868dbd",
+    "review-audio-traces.json": "212f8e5fb25815a21bd1f61eeff2ad15ee058e35046219baaa7220cf2e1af1a3",
+    "review-audio-await-traces.json": "504ac389d656542ea002998905e584e2fa775277908b007dd6e91e78cb95fa17",
+    "review-executor-traces.json": "10da911ffa9a0217b51cc7f2eb57d5a7813ff7c9f23bcfc251f4b52fc481fc7f",
+    "review-executor-reentry.json": "9026f116d61248eaf5a89d8cf382d0488074509fdd7b70f022d3ad0269eebdb5",
+    "review-executor-concurrent.json": "283ac8d2643f9f00833f97491e39e2bc7969ec450f8c0ba0b5cfe19642c76dc8",
+    "review-pipeline-traces.json": "3520bf90cc8a9cb330ddf2797c01690bdad07229e8d9d0c3426991dd9a5951c8",
+    "review-pipeline-fake-traces.json": "91cee50226b98c5f4c92d776f1bee067279e38d47fa02c88b66c9c259a226f2d",
+    "review-seeds-owner.json": "afc9453d2079a92a0660bcbe9f187bda598e8798a448d72e6109045f2001d448",
+    "review-configuration.json": "411eb2b131514190ffd1d4699029189e5daa480eb8611d4c3d7f83ad90d9cfec",
+    "review-worker-admission.json": "a61c8f9c63a7d7cb61265450ffcdc7b73884979f2d145b3a4cb0599a64f936e2",
+    "provider-matrix.json": "5f7b173f1fc3407134341779be667434b58ff53e34ef30ee4941ce598f04ee2d",
+    "runtime-cache-matrix.json": "9fbef1798a6542b34c120add5930aa38e632d993f695022eaf4acb7a121676ed"
+  }
+}

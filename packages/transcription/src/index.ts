@@ -1,22 +1,14 @@
-export type { AsrLanguageStream, AsrModelPaths } from './asr-recognizer'
+export { AtomicFiles } from "./AtomicFiles.service.js";
+export { Audio, AudioAbort } from "./Audio.service.js";
 export {
   applyAsrStreamLanguage,
   asrLanguageForFamily,
   buildOfflineRecognizerConfig,
   familySupportsAsrLanguage,
   QWEN3_LANGUAGE_NAMES,
-  resolveAsrModelPaths,
   SENSE_VOICE_LANGUAGE_CODES,
-  tryRecognizerConfig,
-  WHISPER_LANGUAGE_CODES
-} from './asr-recognizer'
-export type {
-  GpuDeviceHint,
-  GpuKind,
-  MachineProfile,
-  OsKind,
-  RecommendAsrInput
-} from './asr-recommend'
+  WHISPER_LANGUAGE_CODES,
+} from "./asr-recognizer.js";
 export {
   classifyGpuDevices,
   classifyMachine,
@@ -28,17 +20,9 @@ export {
   languageGroupFor,
   osKindFor,
   prettyGpuName,
-  readMachineProfile,
   recommendAsrModels,
-  resolveGpuProfile
-} from './asr-recommend'
-export type {
-  AsrFamily,
-  AsrLanguageGroup,
-  AsrTierId,
-  AsrTierInfo,
-  MachineClass
-} from './asr-tiers'
+  resolveGpuProfile,
+} from "./asr-recommend.js";
 export {
   ASR_FAMILY_ORDER,
   ASR_TIER_IDS,
@@ -48,16 +32,18 @@ export {
   higherAsrTiers,
   isAsrTierId,
   parseAsrTier,
-  upgradeAsrTiers
-} from './asr-tiers'
-export type { AsrRecognizerResult, AsrWord } from './asr-words'
-export { activeWordIndex, wordsFromAsrResult } from './asr-words'
-export type { ExtractedAudio } from './audio'
-export { extractMonoWav, isReusableExtractedWav, readPcmWav, TARGET_SAMPLE_RATE } from './audio'
-export type {
-  CaptionCue,
-  CaptionTrack
-} from './captions'
+  upgradeAsrTiers,
+} from "./asr-tiers.js";
+export { activeWordIndex, wordsFromAsrResult } from "./asr-words.js";
+export { isReusableExtractedWav, TARGET_SAMPLE_RATE } from "./audio.js";
+export { CaptionExtraction, CaptionProbeReader } from "./CaptionExtraction.service.js";
+export { CaptionFiles } from "./CaptionFiles.service.js";
+export { CaptionImport } from "./CaptionImport.service.js";
+export { CaptionProcessOwner } from "./CaptionProcessOwner.service.js";
+export { Checkpoints } from "./Checkpoints.service.js";
+export { CloudFileIO, CloudTranscription } from "./CloudTranscription.service.js";
+export { ConcurrencyQueue, TranscriptionConcurrency } from "./Concurrency.service.js";
+export { Coordinator, CoordinatorHooks } from "./Coordinator.service.js";
 export {
   CAPTIONS_MODEL_VERSION,
   captionLanguageForMatch,
@@ -65,24 +51,20 @@ export {
   captionLanguageScore,
   captionsTaskId,
   cleanCaptionText,
-  findSidecarCaptionTracks,
   isChatCaptionTag,
   isHumanCaptionTrack,
   isImportableCaptionTrack,
-  isMachineCaptionPath,
   isMachineCaptionTag,
   isPlatformAiCaptionTag,
   isTextSubtitleCodec,
-  languageFromSidecarName,
   parseAssCues,
   parseCaptionCues,
   parseCaptionTrack,
   pickCaptionTrack,
   pipelineResultFromCues,
   preferredCaptionLanguages,
-  refineCaptionLanguage
-} from './captions'
-export type { ChineseScript } from './chinese-script'
+  refineCaptionLanguage,
+} from "./captions.js";
 export {
   applyChineseScript,
   applyChineseScriptToResult,
@@ -91,100 +73,53 @@ export {
   chineseScriptHint,
   chineseScriptOf,
   languageAfterChineseScript,
-  looksLikeChinese
-} from './chinese-script'
-export type { ChunkManifest, ManifestChunk } from './chunk-manifest'
-export {
-  appendManifestChunk,
-  ensureChunkManifest,
-  loadChunkManifest,
-  manifestWorkKey,
-  sourceFingerprint
-} from './chunk-manifest'
-export type {
-  SelectSherpaProviderInput,
-  SherpaExecutionProvider,
-  SherpaProviderProbeResult,
-  SherpaProviderSelection
-} from './compute-provider'
+  looksLikeChinese,
+} from "./chinese-script.js";
+export { manifestWorkKey } from "./chunk-manifest.js";
 export {
   isSherpaProviderFallbackLog,
   SHERPA_EXECUTION_PROVIDERS,
-  selectSherpaProvider,
-  sherpaProviderCandidates
-} from './compute-provider'
-export type { TranscriptionConcurrencyQueue } from './concurrency'
+  sherpaProviderCandidates,
+} from "./compute-provider.js";
 export {
-  applyTranscriptionConcurrency,
   CONCURRENT_TRANSCRIPTION_CHOICES,
   clampMaxConcurrentTranscriptions,
   DEFAULT_MAX_CONCURRENT_TRANSCRIPTIONS,
-  MAX_CONCURRENT_TRANSCRIPTIONS
-} from './concurrency'
-export type { AutoTranscriptionCoordinatorOptions, ImportCaptionsRequest } from './coordinator'
-export { AutoTranscriptionCoordinator } from './coordinator'
-export type { EnqueueTranscriptionInput, EnqueueTranscriptionResult } from './enqueue'
-export {
-  enqueueTranscription,
-  findActiveTranscription,
-  listTranscriptionChildren
-} from './enqueue'
+  MAX_CONCURRENT_TRANSCRIPTIONS,
+} from "./concurrency.js";
+export { Enqueue } from "./Enqueue.service.js";
 export {
   classifyTranscriptionFailure,
   isNoAudioStreamError,
   NO_AUDIO_STREAM_ERROR,
-  transcriptionError
-} from './errors'
-export type { TranscriptionBackend, TranscriptionExecutorOptions } from './executor'
-export { TranscriptionExecutor } from './executor'
-export type { ExtractedCaptionTrack } from './extract-captions'
-export { extractEmbeddedCaptionTracks, ffprobePathFromFfmpeg } from './extract-captions'
-export type { ImportCaptionsInput } from './import-captions'
-export {
-  commitCaptionTrack,
-  importCaptionsForDownload,
-  importSidecarCaptionsIfPresent,
-  switchToCaptionLanguage
-} from './import-captions'
-export type { MinimalModelFillOptions } from './init-models'
-export { startMinimalModelFill } from './init-models'
-export { MemoryTranscriptStore } from './memory-store'
-export type { MergeTaskQueueDbResult } from './migrate-task-queue-db'
-export { mergeLegacyTaskQueueDb } from './migrate-task-queue-db'
+  transcriptionError,
+} from "./errors.js";
+export { MachinePrimitives, MachineProfiles } from "./MachineProfiles.service.js";
+export { MinimalFillHooks, MinimalFillSchedule, MinimalModelFill } from "./MinimalModelFill.service.js";
+export { MirrorPreference } from "./MirrorPreference.service.js";
+export { ModelFileIO, ModelFiles } from "./ModelFiles.service.js";
+export { ModelHttp } from "./ModelHttp.service.js";
+export { Models, ModelsHooks } from "./Models.service.js";
 export {
   catalogFor,
   MINIMAL_MODEL_GROUPS,
   MINIMAL_MODEL_TIERS,
   MODEL_CATALOG,
   modelVersion,
-  QWEN3_ASR_MODEL_DIR
-} from './model-catalog'
-export type { EnsureReadyOptions, ModelManagerOptions } from './model-manager'
+  QWEN3_ASR_MODEL_DIR,
+} from "./model-catalog.js";
+export { isModelDownloadCancelled, MODEL_DOWNLOAD_CANCELLED } from "./model-manager.js";
+export { modelFillPercent, toModelPrepStatus } from "./model-progress.js";
+export { buildTranscriptionInput, readTranscriptionOptions } from "./options.js";
+export { Partials, PartialsManifest } from "./Partials.service.js";
+export { Pipeline } from "./Pipeline.service.js";
 export {
-  finalizeModelFile,
-  isModelDownloadCancelled,
-  MODEL_DOWNLOAD_CANCELLED,
-  ModelManager,
-  modelPartPath,
-  removeModelPartFiles
-} from './model-manager'
-export type { ModelPrepStatus } from './model-progress'
-export { modelFillPercent, toModelPrepStatus } from './model-progress'
-export { resolveSherpaLibraryDir, resolveWorkerExecPath, sherpaWorkerEnv } from './native-env'
-export { buildTranscriptionInput, readTranscriptionOptions } from './options'
-export type { PartialTranscript } from './partial-buffer'
-export { transcriptionPartials } from './partial-buffer'
-export { FakeTranscriptionPipeline } from './pipeline-fake'
-export {
-  CLUSTERING_THRESHOLD,
   DIARIZE_NUM_THREADS,
   MAX_ASR_CHUNK_MS,
   MIN_DURATION_OFF_SEC,
   MIN_DURATION_ON_SEC,
-  SherpaTranscriptionPipeline,
-  splitTurnForAsr
-} from './pipeline-sherpa'
-export type { Punctuator } from './punctuate'
+  splitTurnForAsr,
+} from "./pipeline-sherpa.js";
 export {
   alignInsertions,
   needsPunctuation,
@@ -192,34 +127,19 @@ export {
   PUNCT_WINDOW_CHARS,
   punctuateCues,
   punctuateText,
-  punctuateWords
-} from './punctuate'
-export type {
-  ProbeWorkerProviderInput,
-  WorkerRuntime,
-  WorkerRuntimeLayer
-} from './runtime'
-export {
-  createFileProbeCache,
-  DEFAULT_MAX_WORKER_RESTARTS,
-  formatRuntimeLog,
-  isElectronBinary,
-  nodeBinaryName,
-  probeCacheKey,
-  probeWorkerProvider,
-  resolveBundledNodePath,
-  resolveWorkerRuntime
-} from './runtime'
-export type { PipelineSeed } from './speaker-assign'
+  punctuateWords,
+} from "./punctuate.js";
+export { RecognizerConfig, RecognizerModels } from "./RecognizerConfig.service.js";
+export { DEFAULT_MAX_WORKER_RESTARTS, formatRuntimeLog, isElectronBinary, nodeBinaryName } from "./runtime.js";
+export { SeedFiles } from "./SeedFiles.service.js";
+export { SeedStore, Seeds } from "./Seeds.service.js";
+export { Sherpa, SherpaLoader } from "./Sherpa.service.js";
 export {
   assignSpeakersToSegments,
   captionRecordNeedsSpeakers,
   FALLBACK_TOKEN_CHARS,
   GIANT_TOKEN_CHARS,
   GIANT_TOKEN_MS,
-  latestAsrSeed,
-  latestTranscriptSeed,
-  loadPipelineSeed,
   MAX_SEGMENT_CHARS,
   MAX_SEGMENT_MS,
   PARAGRAPH_GAP_MS,
@@ -227,9 +147,7 @@ export {
   SEED_TRANSCRIPT_FILE,
   seedDurationMs,
   singleSpeakerTurns,
-  writePipelineSeed
-} from './speaker-assign'
-export type { DiarizeWindow, SpeakerEmbed } from './speaker-chunks'
+} from "./speaker-assign.js";
 export {
   capExcessClusters,
   DIARIZE_CHUNK_MS,
@@ -248,26 +166,25 @@ export {
   SPEAKER_EMBED_MIN_MS,
   shiftTurns,
   shortClusterFoldMs,
-  stitchTurnsAtMidpoint
-} from './speaker-chunks'
-export type { SpeakerEmbedItem } from './speaker-cluster'
+  stitchTurnsAtMidpoint,
+} from "./speaker-chunks.js";
 export {
   agglomerativeLabels,
   agglomerativeLabelsByThreshold,
+  CLUSTERING_THRESHOLD,
   clusterSpeakerEmbeddings,
   cosineDistance,
   l2Normalize,
-  MAX_BRIDGED_SPEAKERS
-} from './speaker-cluster'
-export type { SpeakerCount } from './speaker-count'
+  MAX_BRIDGED_SPEAKERS,
+} from "./speaker-cluster.js";
 export {
   DEFAULT_SPEAKER_COUNT,
   isSpeakerCount,
   MAX_SPEAKER_COUNT,
   parseSpeakerCount,
   SPEAKER_COUNT_CHOICES,
-  sherpaNumClusters
-} from './speaker-count'
+  sherpaNumClusters,
+} from "./speaker-count.js";
 export {
   CAMPPLUS_FILE,
   CAMPPLUS_URL,
@@ -278,9 +195,8 @@ export {
   SPEAKER_EMBEDDING_ERES2NET_ID,
   SPEAKER_EMBEDDING_TITANET_ID,
   TITANET_FILE,
-  TITANET_URL
-} from './speaker-embed'
-export type { TimedTurn, TimeInterval } from './speaker-refine'
+  TITANET_URL,
+} from "./speaker-embed.js";
 export {
   fillUncoveredTurns,
   intervalDurationMs,
@@ -291,9 +207,18 @@ export {
   mergeAdjacentTurns,
   refineSpeakerTurns,
   shouldTrustSpeechIntervals,
-  turnsForAsr
-} from './speaker-refine'
-export type { InsertTranscriptSegmentInput, TranscriptSegmentPatch } from './transcript-edit'
+  turnsForAsr,
+} from "./speaker-refine.js";
+export { ExecutorCommit, ExecutorHooks } from "./TranscriptionExecutor.service.js";
+export { TranscriptionFiles } from "./TranscriptionFiles.service.js";
+export { TranscriptionHost, TranscriptionHostPrimitives } from "./TranscriptionHost.service.js";
+export { TranscriptionIds } from "./TranscriptionIds.service.js";
+export { TranscriptionProcess } from "./TranscriptionProcess.service.js";
+export { TranscriptionQueue } from "./TranscriptionQueue.service.js";
+export { TranscriptionRecords } from "./TranscriptionRecords.service.js";
+export { TranscriptionTime } from "./TranscriptionTime.service.js";
+export { TranscriptMigration, TranscriptMigrationSource } from "./TranscriptMigration.service.js";
+export { TranscriptStore } from "./TranscriptStore.service.js";
 export {
   applyTranscriptSegmentPatch,
   DEFAULT_CAPTION_DURATION_MS,
@@ -301,22 +226,47 @@ export {
   insertTranscriptSegmentInList,
   reindexTranscriptSegments,
   resolveInsertSegmentPlacement,
-  updateTranscriptSegmentList
-} from './transcript-edit'
-export type { TranscriptHead, TranscriptSourceMeta } from './transcript-sources'
+  updateTranscriptSegmentList,
+} from "./transcript-edit.js";
 export {
   buildTranscriptSources,
   groupTranscriptHeads,
   latestTranscriptHead,
   recordForTranscriptSource,
-  resolveTranscriptHeads
-} from './transcript-sources'
-export type { TranscriptPlaybackCue, TranscriptStoreOptions } from './transcript-store'
-export {
-  TRANSCRIPT_HEAD_SQL,
-  TRANSCRIPT_PLAYBACK_CUE_SQL,
-  TranscriptStore
-} from './transcript-store'
+  resolveTranscriptHeads,
+} from "./transcript-sources.js";
+export { TRANSCRIPT_HEAD_SQL, TRANSCRIPT_PLAYBACK_CUE_SQL } from "./transcript-store.js";
+export { DEFAULT_MODEL_VERSION } from "./types.js";
+export { BinaryWaveReader, WaveReader } from "./WaveReader.service.js";
+export { WorkerAttempt } from "./WorkerAttempt.service.js";
+export { WorkerHandler, WorkerOutput, WorkerSessionFactory } from "./WorkerHandler.service.js";
+export { WorkerLoop } from "./WorkerLoop.service.js";
+export { WorkerProtocol, WorkerResultJson } from "./WorkerProtocol.service.js";
+export { ComputeProvider, RuntimeCommands, RuntimeProbe, WorkerRuntime } from "./WorkerRuntime.service.js";
+export type { AsrLanguageStream, AsrModelPaths } from "./asr-recognizer.js";
+export type { GpuDeviceHint, GpuKind, MachineProfile, OsKind, RecommendAsrInput } from "./asr-recommend.js";
+export type { AsrFamily, AsrLanguageGroup, AsrTierId, AsrTierInfo, MachineClass } from "./asr-tiers.js";
+export type { AsrRecognizerResult, AsrWord } from "./asr-words.js";
+export type { ExtractedAudio } from "./audio.js";
+export type { CaptionCue, CaptionTrack } from "./captions.js";
+export type { ChineseScript } from "./chinese-script.js";
+export type { ChunkManifest, ManifestChunk } from "./chunk-manifest.js";
+export type {
+  SherpaExecutionProvider,
+  SherpaProviderProbeResult,
+  SherpaProviderSelection,
+} from "./compute-provider.js";
+export type { ModelPrepStatus } from "./model-progress.js";
+export type { PartialTranscript } from "./partial-buffer.js";
+export type { Punctuator } from "./punctuate.js";
+export type { PipelineSeed } from "./speaker-assign.js";
+export type { DiarizeWindow, SpeakerEmbed } from "./speaker-chunks.js";
+export type { SpeakerEmbedItem } from "./speaker-cluster.js";
+export type { SpeakerCount } from "./speaker-count.js";
+export type { TimedTurn, TimeInterval } from "./speaker-refine.js";
+export type { InsertTranscriptSegmentInput, TranscriptSegmentPatch } from "./transcript-edit.js";
+export type { TranscriptHead, TranscriptSourceMeta } from "./transcript-sources.js";
+export type { TranscriptPlaybackCue } from "./transcript-store.js";
 export type {
   AsrTierStatus,
   MachineProfileStatus,
@@ -334,6 +284,5 @@ export type {
   TranscriptSpeaker,
   TranscriptStageTiming,
   TranscriptSummary,
-  TranscriptWord
-} from './types'
-export { DEFAULT_MODEL_VERSION } from './types'
+  TranscriptWord,
+} from "./types.js";

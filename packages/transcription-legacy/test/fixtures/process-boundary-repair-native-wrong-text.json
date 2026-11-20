@@ -1,0 +1,6 @@
+{
+  "error": {
+    "name": "TypeError",
+    "message": "(recognized.text ?? \"\").trim is not a function"
+  }
+}
