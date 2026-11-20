@@ -9,8 +9,9 @@ Progress:
 - [x] Admitted two stable new documents; retained both values for 18 exclusions.
 - [x] Ran the repository gates and attempted the complete existing golden suite.
 - [ ] Complete existing golden suite green: two out-of-scope CLI mismatches remain.
-- [ ] Strict browser parity green: the extension-header spelling difference remains reported.
+- [x] Browser parity resolved under section 9: final-extension rerun has only declared changes and recorded instability; raw selector exits remain 1 (see rerun below).
 - [x] Recorded the handoff, reproducibility issue and proof limits.
+- [x] Reran all browser scenarios five times on the final extension; both admitted documents remain equal, with the same 18 unstable exclusions.
 
 The measurement work is complete. **This is not a green merge recommendation.**
 The brief reserves extension fixes for the orchestrator and excludes `apps/cli`;
@@ -205,3 +206,127 @@ Final-state gate receipts:
 
 The packaged baseline `app.asar` remains
 `c7e7945ebcea629965cfd67c5fef5894618fda008a11a63680eb0c83c69d8490`.
+
+## Rerun on the final extension
+
+This section supersedes the earlier header-spelling blocker for the browser
+proof. Historical sections above describe the earlier integration and are
+retained. The final-extension integration is
+`46a6e4c968cee6cda492e5cdab0a8f7b97cbb117`, including the review fixes and the
+section 9 **Request header name case** declaration. No extension or CLI source,
+harness, admission rule, normalization or golden document was changed in this rerun.
+
+Both extensions were rebuilt under Node `v22.23.4`, one heavy job at a time.
+The old source was freshly archived at
+`9dab889b0b1d5328721802d65699a5f8593bf2e2`, the original pre-port `main`
+revision, installed independently with a frozen lockfile, offline resolution and
+copy backend. Developer lifecycle hooks were skipped in the Git-less archive;
+the ordinary build script ran. All 25 tracked archived extension files remained
+unchanged, and all 19 output files match the previous baseline byte-for-byte.
+The current build also emits 19 files and succeeds with the tracked
+`Extension.diagnostics.ts`; the former ignored logging-source blocker is
+resolved in this integration.
+
+The build digests below are SHA-256 over the JSON-serialized, path-sorted
+`{path, sha256}` file inventory. Complete inventories and both source revisions
+are retained in lane `8-ext-browser2/build-manifests.json`.
+
+| Build | Inventory SHA-256 |
+| --- | --- |
+| old | `8ae8858da8c732273d249e718abad84bb1e7793c6e79f1338eb6b2597661d7b6` |
+| new | `3103a784339a51112dbf1f477bb042cf0dab30d126a59f271e68adb796fa541b` |
+
+The authoritative receipts are `8-ext-browser2/final-five/results.json`.
+Chromium `157.0.8103.79` completed every required scenario for both builds in
+each of five consecutive runs: **200 observations and 180 screenshots**, with
+no capability skips or signals. Every suite retains full raw recordings and
+`run/extension-browser/parity-review.json`, bound to the SHA-256 of its complete
+ordered difference list. `evidence-audit.json` verifies capabilities, actual
+popup tab queries, rendered 180p rows, wire token headers, light/dark reduced-motion
+layouts at 360 pixels, and equal post-attachment cleanup counters.
+
+| Run | Suite under `final-five/` | Old/new observations | Selector exit | Signal |
+| --- | --- | --- | ---: | --- |
+| 1 | `run-1/suite-HuslUr` | 20 / 20 | 1 | null |
+| 2 | `run-2/suite-Jq96TM` | 20 / 20 | 1 | null |
+| 3 | `run-3/suite-ako5Dn` | 20 / 20 | 1 | null |
+| 4 | `run-4/suite-BkOVsu` | 20 / 20 | 1 | null |
+| 5 | `run-5/suite-UROoVp` | 20 / 20 | 1 | null |
+
+Every paired difference has one of the existing classifications. The header
+spelling now uses **declared-change**, section 9 **Request header name case**.
+No new difference or reported defect was found. Repeated leaf counts are:
+
+| Run | Unknown fields | Null fields | Non-record roots/history | Header name case | Producer/render instability | Reported defects |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 60 | 18 | 237 | 918 | 29 | 0 |
+| 2 | 60 | 18 | 236 | 918 | 48 | 0 |
+| 3 | 60 | 18 | 235 | 918 | 37 | 0 |
+| 4 | 60 | 18 | 248 | 918 | 56 | 0 |
+| 5 | 60 | 18 | 238 | 918 | 48 | 0 |
+
+The reviewed browser-parity obligation is resolved: all remaining differences
+are declared changes or recorded instability. The unmodified strict selector
+still exits 1 and writes `review-required` whenever any raw difference exists;
+it does not consume the later review classifications. These exits are retained
+honestly and are not scenario failures or a claim of byte-identical recordings.
+
+Both admitted documents, `extension-browser--keyboard.json` and
+`extension-browser--document-worker-cleanup.json`, compare equal to their
+checked-in goldens for **old and new in every run** (20 direct comparisons).
+The admission helper, run without `--update`, finds exactly these two stable
+documents and the same 18 unstable observations. No new admission candidate
+exists and no golden was written. Full differing documents remain in run 5's
+`browser-stability.json`; `verification.json` indexes each exclusion's first
+difference. The existing exclusion document remains historical evidence.
+
+The instability reasons remain the recorded literal storage URL keys and encoded
+fixture ports, randomized producer User-Agent headers, complete process/pipe
+error stacks, and loading/error render timing and screenshots. In this matrix
+metadata-failure widths are old `360, 360, 360, 375, 360` and new
+`360, 360, 360, 360, 360`; the retained hashes are the same two historical
+360/375-pixel PNG hashes. Explicit success layouts remain 360 pixels.
+No broader normalization or instability exemption was introduced.
+
+All five suite DNS audits pass (bootstrap and run logs: ten logs, no unexpected
+hostnames). Browsers and the packaged fixture use disposable scratch HOME/XDG
+and profiles inside the loopback-only namespace; isolated handler discovery
+returns no `vidbee` handler. No unsafe control or protocol URL was activated.
+The owner application and profile were not touched.
+
+Rerun gates and receipts (all paths relative to lane `8-ext-browser2/`):
+
+| Command/proof | Exit | Receipt/result |
+| --- | ---: | --- |
+| Archived independent install/build | 0 / 0 | `install-old.log`, `build-old.log`; 19 exact baseline outputs |
+| Current extension build | 0 | `build-new.log`; 19 files |
+| Five browser selectors | 1 each | `browser-1.log` through `browser-5.log`; raw differences require review; all scenarios complete |
+| Classification / evidence audit / admission / verification | 0 each | `classify.log`, `audit.log`, `admission.log`, `verify.log`; zero new findings; no `--update` |
+| `bun run --cwd apps/extension test` | 0 | `extension-test.log`; 11 files, 230 tests |
+| Browser harness Vitest | 0 | `harness-test.log`; one file, nine tests |
+| `bun run check` | 0 | `gate-check.log`; 11 check tasks; 16 configs, zero violations |
+| `bun run test` | 0 | `gate-test.log`; 15 Turbo tasks, 230 extension tests, 294 compatibility tests, 110 final harness/review tests |
+| `bun run deps:check` | 0 | `gate-deps.log`; no issues |
+| `bun run port:check` | 0 | `gate-port.log`; 16 configs, zero violations |
+
+`commands.json` records exact argv, cwd, available memory, exit code and signal
+for every launched command. The disk-backed archive checkout was removed after
+verification; its exact output remains at `baseline-extension/`. A host restart
+interrupted documentation closeout after all commands above had returned and
+persisted their completion records. No build, browser run or test was still
+running; a post-resume evidence audit passed again.
+
+This rerun does not re-establish the complete golden suite, its CLI/restart
+coverage, owner real-storage compatibility, hosted CI, remote-site or other-platform
+behavior. The earlier full-suite failures remain historical open proof,
+requiring the orchestrator's current full gate. No source or golden fix was
+attempted. The lane handoff indexes all receipts and remaining proof limits.
+
+The shared supplied desktop package changed externally after the five browser
+runs: its current `app.asar` hash is
+`7392be95a29a633586de6f22f82e96aadd16ad68d029187c7f7419c7c180b7b4`,
+with modification time after run 5. This lane did not record an at-run desktop
+package hash. The earlier report's packaged hash is historical, not a verified
+identity for this rerun. The extension artifact hashes and complete browser
+receipts remain verified; exact reproduction of the former desktop input is
+not established. See lane `packaged-provenance-limit.json`.
