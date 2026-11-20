@@ -4,26 +4,39 @@ import fs from 'node:fs'
 import { observe } from './observe.mjs'
 import { sourceLoader } from './source-harness.mjs'
 
-it.effect('pins the old settings manager and installed electron-store observations', () =>
-  Effect.sync(() => {
-    const expected = JSON.parse(fs.readFileSync(new URL('./settings.expected.json', import.meta.url)))
-    const actual = observe()
-    // PORT-GUIDE permits any failure for old engine failures outside declared types.
-    // Only the explicit BigInt/cyclic JSON vectors get that policy; successful values
-    // and all other error contracts remain exact in the frozen observation.
-    const contract = (observation) => {
-      const value = structuredClone(observation)
-      for (const index of [3, 4]) {
-        expect(value.writes.serialization[index]).toHaveProperty('error')
-        value.writes.serialization[index] = { failed: true }
-      }
-      return value
+// Only explicit out-of-type JSON engine failures use PORT-GUIDE's failure-only contract.
+const contract = (observation) => {
+  const value = structuredClone(observation)
+  if (value.writes) for (const index of [3, 4]) {
+    expect(value.writes.serialization[index]).toHaveProperty('error')
+    value.writes.serialization[index] = { failed: true }
+  }
+  if (value.audit?.failures) for (const name of ['serialization-3', 'serialization-4']) {
+    const item = value.audit.failures.find(item => item.name === name)
+    expect(item.result).toHaveProperty('thrown')
+    item.result = { failed: true }
+  }
+  return value
+}
+const frozen = JSON.parse(fs.readFileSync(new URL('./settings.expected.json', import.meta.url)))
+expect(frozen.missing).toHaveProperty('before')
+const fieldKeys = frozen.audit.fields.map(item => item.key).filter((key, index, keys) => keys.indexOf(key) === index)
+const selections = ['base', 'malformed', ...fieldKeys.map(key => `fields:${key}`), 'normalization', 'failures', 'portable', 'effects']
+for (const selection of selections) {
+  it.effect(`pins the old settings manager ${selection} matrix and installed store`, () => Effect.sync(() => {
+    let expected
+    if (selection === 'base') expected = Object.fromEntries(Object.entries(frozen).filter(([key]) => key !== 'audit'))
+    else if (selection.startsWith('fields:')) expected = { audit: { fields: frozen.audit.fields.filter(item => `fields:${item.key}` === selection) } }
+    else {
+      const keys = selection === 'malformed' ? ['malformed-false', 'malformed-true'] : selection === 'failures' ? ['failures', 'repairs'] : [selection]
+      expected = { audit: Object.fromEntries(keys.map(key => [key, frozen.audit[key]])) }
     }
-    const observedContract = contract(actual)
-    const expectedContract = contract(expected)
-    expect(observedContract).toEqual(expectedContract)
-    expect(JSON.stringify(observedContract)).toBe(JSON.stringify(expectedContract))
+    const actual = contract(observe(selection))
+    const oracle = contract(expected)
+    expect(actual).toEqual(oracle)
+    expect(JSON.stringify(actual)).toBe(JSON.stringify(oracle))
   }))
+}
 
 it.effect('pins path fallback, portable relocation and external path preservation', () =>
   Effect.sync(() => {

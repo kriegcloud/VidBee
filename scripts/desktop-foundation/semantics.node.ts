@@ -17,7 +17,7 @@ function renderer() {
   const source = sourceLoader({ '../lib/ipc': { ipcServices: { settings: {
     getAll: () => load(), set: (...args) => { const d = deferred(); requests.push({ ...d, args }); return d.promise },
     setAll: (...args) => { const d = deferred(); requests.push({ ...d, args }); return d.promise }
-  } } }, '../i18n': { default: { language: 'en', changeLanguage: (value) => changeLanguage(value) } },
+  } } }, '../i18n': { __esModule: true, default: { language: 'en', changeLanguage: (value) => changeLanguage(value) } },
   '../lib/logger': { logger: { error: (message) => errors.push(message) } } })
   return { atoms: source('apps/desktop/src/renderer/src/store/settings.ts'), store: createStore(), requests, errors,
     failLoad: () => { load = async () => { throw new Error('load') } },
@@ -198,6 +198,8 @@ test('boot imports and logger setup precede second-instance rejection and readin
       return {}
     } })
   assert.throws(() => load('apps/desktop/src/main/index.ts'), (error) => error === stop)
+  assert(calls.includes('import:./settings'))
+  assert(calls.includes('import:./ipc'))
   assert(calls.indexOf('import:./settings') < calls.indexOf('lock'))
   assert(calls.indexOf('import:./ipc') < calls.indexOf('lock'))
   assert(calls.indexOf('logger') < calls.indexOf('configure'))
@@ -368,6 +370,7 @@ test('installed electron-log dispatches six scoped levels with original argument
       assert.deepEqual(output.map((message) => message.level), development ? levels : name === 'ipc' ? [] : levels.slice(0, 3))
       for (const message of output) {
         assert.equal(message.scope, 'foundation')
+        assert.equal(message.data.length, 3)
         assert.equal(message.data[0], 'ordered'); assert.equal(message.data[1], argument); assert.equal(message.data[2], error)
       }
     }
