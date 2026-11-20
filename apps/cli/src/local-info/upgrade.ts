@@ -90,9 +90,18 @@ export const checkUpgrade = Effect.fn("checkUpgrade")(function* (input: UpgradeC
 
 export const fetchRegistry = Effect.gen(function* () {
   const client = yield* HttpClient.HttpClient;
-  const res = yield* requestText(client, "GET", REGISTRY_URL, { accept: "application/json" }, undefined, 5000);
-  if (res.status < 200 || res.status >= 300)
-    return yield* CliFailure.make({ message: `registry responded ${res.status}` });
+  const res = yield* requestText(
+    client,
+    "GET",
+    REGISTRY_URL,
+    { accept: "application/json" },
+    undefined,
+    5000,
+    (status) =>
+      status < 200 || status >= 300
+        ? Effect.fail(CliFailure.make({ message: `registry responded ${status}` }))
+        : Effect.void
+  );
   const body = yield* parseJson(res.bodyText).pipe(
     Effect.mapError((error) => CliFailure.make({ message: jsonIssue(error.issue) }))
   );

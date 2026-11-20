@@ -80,15 +80,13 @@
     "prepublishOnly": "bun run build && bun run verify-dist",
     "test": "bunx --bun vitest run",
     "test:node": "VIDBEE_CLI_PORTED=1 node --import tsx --test ../../scripts/cli/characterization/isolate.node.ts",
-    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check ."
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "prepack": "node scripts/pack-manifest.mjs",
+    "postpack": "node scripts/pack-manifest.mjs restore"
   },
   "dependencies": {
     "effect": "catalog:",
     "@effect/platform-node": "catalog:",
-    "@vidbee/schema": "workspace:^",
-    "@vidbee/task-queue": "workspace:^",
-    "@vidbee/downloader-core": "workspace:^",
-    "@vidbee/db": "workspace:^",
     "yt-dlp-wrap-plus": "catalog:"
   },
   "optionalDependencies": {
@@ -103,7 +101,11 @@
     "vitest": "catalog:",
     "tsx": "catalog:",
     "tsrs": "catalog:",
-    "@biomejs/biome": "catalog:"
+    "@biomejs/biome": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "@vidbee/task-queue": "workspace:^",
+    "@vidbee/downloader-core": "workspace:^",
+    "@vidbee/db": "workspace:^"
   },
   "engines": {
     "node": ">=20"

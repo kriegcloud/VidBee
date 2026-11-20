@@ -21,7 +21,8 @@ export const requestText = Effect.fn("requestText")(function* (
   url: string,
   headers: Record<string, string>,
   body: unknown,
-  timeoutMs: number
+  timeoutMs: number,
+  validateStatus: (status: number) => Effect.Effect<void, CliFailure> = () => Effect.void
 ) {
   let request = method === "POST" ? Request.post(url, { headers }) : Request.get(url, { headers });
   if (method === "POST") {
@@ -30,6 +31,7 @@ export const requestText = Effect.fn("requestText")(function* (
   }
   const consume = Effect.fn("requestText.consume")(function* () {
     const response = yield* HttpClient.withScope(client).execute(request);
+    yield* validateStatus(response.status);
     const bodyText = yield* response.text;
     const web = Response.toWeb(response);
     return { status: response.status, statusText: O.isSome(web) ? web.value.statusText : "", bodyText };

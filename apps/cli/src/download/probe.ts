@@ -23,6 +23,7 @@ function concat(chunks: ReadonlyArray<Uint8Array>): Uint8Array {
   return result;
 }
 export const runProbeNative = Effect.fn("runProbeNative")(function* (options: ProbeOptions) {
+  const owner = yield* Effect.scope;
   const process = yield* CliProbeProcess;
   const host = yield* CliHost;
   const env = Str.trim((yield* host.environment("YTDLP_PATH")) ?? "");
@@ -108,7 +109,8 @@ export const runProbeNative = Effect.fn("runProbeNative")(function* (options: Pr
             }
           }
         }),
-      }
+      },
+      owner
     )
     .pipe(Effect.result);
   if (start._tag === "Failure")
@@ -118,7 +120,7 @@ export const runProbeNative = Effect.fn("runProbeNative")(function* (options: Pr
   run = start.success.run;
   if (overflow) yield* run.signalChild("SIGTERM").pipe(Effect.ignore);
   return yield* Deferred.await(done);
-});
+}, Effect.scoped);
 export const runProbe = Effect.fn("runProbe")(function* (options: ProbeOptions) {
   return yield* (yield* CliProbe).run(options);
 });

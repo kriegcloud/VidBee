@@ -1,6 +1,7 @@
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 import type * as PlatformError from "effect/PlatformError";
+import type * as Scope from "effect/Scope";
 import type { HostFailure } from "./Downloader.errors.js";
 import type { ProcessBackend, ProcessEvent, ProcessSignal, ProcessSpec } from "./Process.model.js";
 
@@ -32,6 +33,10 @@ export type ProcessStart = AcquiredProcess | NativeSpawnFailure;
 export class DownloadProcess extends Context.Service<
   DownloadProcess,
   {
-    readonly start: (spec: ProcessSpec, sink: ProcessSink) => Effect.Effect<ProcessStart, HostFailure>;
+    readonly start: (
+      spec: ProcessSpec,
+      sink: ProcessSink,
+      owner?: Scope.Scope
+    ) => Effect.Effect<ProcessStart, HostFailure>;
   }
 >()("@vidbee/downloader-core/DownloadProcess.service/DownloadProcess") {}

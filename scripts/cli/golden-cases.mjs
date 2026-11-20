@@ -14,9 +14,9 @@ export async function runExtendedCliCases({runDir,build,client,record,command,ro
   const alias=path.join(root,'.golden-cli-'+path.basename(path.dirname(runDir)));await symlink(output,alias);
   roots.unshift([alias,'<run>/cli-extended/downloads']);
   const stream=await client.events();const raw=[];const ids=[];
-  const invoke=async(label,args,overrides={})=>{
+  const invoke=async(label,args,overrides={},rawStdout=false)=>{
     const result=await command(process.execPath,[cli,'--vidbee-no-autostart',...args],{env:{...env,...overrides}});
-    let stdout;try{stdout=JSON.parse(result.stdout);}catch{stdout=result.stdout;}
+    let stdout=result.stdout;if(!rawStdout){try{stdout=JSON.parse(result.stdout);}catch{}}
     const value={code:result.code,signal:result.signal,stdout,stderr:result.stderr};raw.push({label,args,value});return value;
   };
   const project=value=>{
@@ -35,7 +35,7 @@ export async function runExtendedCliCases({runDir,build,client,record,command,ro
   const args=(route,label)=>['--ignore-config','--no-playlist','--retries','0','--fragment-retries','0','--no-part','-o',path.join(alias,label+'.%(ext)s'),server.url+'/'+route];
   const control=async(action,id)=>{const value=await invoke('control-'+action,[':download',action,id]);assert.equal(value.code,0);await record('cli/extended/control-'+action,value);};
   try {
-    for(const [name,args]of [['parse',['--vidbee-typo']],['parse-pretty',['--vidbee-pretty','--vidbee-max-attempts','0']],['unknown-verb',[':download','unknown']]])await record('cli/extended/'+name,await invoke(name,args));
+    for(const [name,args]of [['parse',['--vidbee-typo']],['parse-pretty',['--vidbee-pretty','--vidbee-typo']],['unknown-verb',[':download','unknown']]])await record('cli/extended/'+name,await invoke(name,args,{},name==='parse-pretty'));
     const fake=path.join(evidence,'probe');await writeFile(fake,`#!${process.execPath}\nif(process.argv.includes('--get-url')){process.stdout.write('x'.repeat(33*1024*1024));}else{process.stdout.write('fixture probe\\n');process.stderr.write('fixture tail\\n');process.exitCode=process.argv.includes('--dump-json')?7:0;}\n`,{mode:0o755});
     for(const flag of ['--version','--dump-json','--get-url']){
       const value=await invoke('probe-'+flag,[flag],{YTDLP_PATH:fake});
@@ -73,8 +73,12 @@ export async function runExtendedCliCases({runDir,build,client,record,command,ro
     await control('cancel',id);await wait(id,task=>task.status==='cancelled');
     await control('retry',id);await wait(id,task=>task.status==='running'||task.status==='completed');
     await invoke('cleanup-cancel',[':download','cancel',id]);await wait(id,task=>['cancelled','completed','failed'].includes(task.status));
-    for(const id of ids){const removed=await invoke('history-remove',[':history','remove',id]);assert.equal(removed.code,0);}
-    await record('cli/extended/history-remove',{removed:ids.length});
+    const removals=[];
+    for(const id of ids){const removed=await invoke('history-remove',[':history','remove',id]);assert.equal(removed.code,0);assert.deepEqual(removed.stdout.result.removed,[id]);removals.push(removed);}
+    const history=await invoke('history-after-removal',[':history','list','--limit','1000']);
+    assert.equal(history.code,0);
+    for(const id of ids)assert.equal(history.stdout.result.items.some(task=>task.id===id),false);
+    await record('cli/extended/history-remove',{removals,history});
     for(const waitForCompletion of [true,false]){
       const label=waitForCompletion?'local-wait':'local-detached';
       const value=await invoke(label,['--vidbee-local',...(waitForCompletion?['--vidbee-wait']:[]),...args('cli-'+label+'.mp4',label)],binaries);

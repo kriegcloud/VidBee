@@ -59,6 +59,29 @@ layer(
       MutableHashMap.remove(environment, "FFMPEG_PATH");
     })
   );
+  it.effect("raw argv bypasses unused invalid generated options; empty and absent argv generate", () =>
+    Effect.gen(function* () {
+      const host = yield* YtDlpExecutorHost;
+      const raw = yield* host.command({
+        kind: "yt-dlp-forward",
+        url: "https://example.invalid/v",
+        rawArgs: ["--version"],
+        options: { type: "ignored-by-raw-argv", format: false },
+      });
+      expect(raw.args).toEqual(["--version"]);
+      expect(raw.settings).toEqual({});
+      for (const rawArgs of [undefined, []]) {
+        const generated = yield* host.command({
+          kind: "yt-dlp-forward",
+          url: "https://example.invalid/v",
+          rawArgs,
+          options: { settings: { downloadSubtitles: false } },
+        });
+        expect(generated.args).toContain("https://example.invalid/v");
+        expect(generated.canRetryWithoutSubtitles).toBe(true);
+      }
+    })
+  );
   it.effect("raw argv wins; generated options use the configured directory and typed failures", () =>
     Effect.gen(function* () {
       const host = yield* YtDlpExecutorHost;

@@ -10,6 +10,7 @@ import * as TestClock from "effect/testing/TestClock";
 import { CliAutomationLive } from "../../src/CliAutomation.layer.js";
 import { CliAutomation } from "../../src/CliAutomation.service.js";
 import { requestText } from "../../src/CliHttp.js";
+import { fetchRegistry } from "../../src/local-info/upgrade.js";
 
 const responses: { readonly status: number; readonly body: string }[] = [];
 const requests: {
@@ -20,6 +21,7 @@ const requests: {
 }[] = [];
 let aborted = 0;
 let suspended = false;
+let broken = false;
 let reached: Deferred.Deferred<void> | undefined;
 const client = HttpClient.make((request, url, signal) =>
   Effect.sync(() => {
@@ -31,16 +33,22 @@ const client = HttpClient.make((request, url, signal) =>
     });
     if (reached !== undefined) Deferred.doneUnsafe(reached, Effect.void);
     const response = responses.shift() ?? { status: 200, body: "null" };
-    const body = suspended
+    const body = broken
       ? new ReadableStream<Uint8Array>({
           start(controller) {
-            signal.addEventListener("abort", () => {
-              aborted++;
-              controller.error(new Error("fixture body aborted"));
-            });
+            controller.error(new Error("fixture body broken"));
           },
         })
-      : response.body;
+      : suspended
+        ? new ReadableStream<Uint8Array>({
+            start(controller) {
+              signal.addEventListener("abort", () => {
+                aborted++;
+                controller.error(new Error("fixture body aborted"));
+              });
+            },
+          })
+        : response.body;
     return HttpResponse.fromWeb(request, new Response(body, { status: response.status, statusText: "Fixture" }));
   })
 );
@@ -95,6 +103,45 @@ layer(Layer.mergeAll(http, CliAutomationLive.pipe(Layer.provide(http))))((it) =>
       responses.push({ status: 200, body: '{"token":"token","expiresAt":123000,"additional":false}' });
       const valid = yield* session.handshake;
       expect(valid.additional).toBe(false);
+    })
+  );
+  for (const mode of ["broken", "open"] as const) {
+    it.effect(`registry rejects non-OK ${mode} body before reading or waiting for the deadline`, () =>
+      Effect.gen(function* () {
+        broken = mode === "broken";
+        suspended = mode === "open";
+        responses.push({ status: 503, body: "" });
+        reached = yield* Deferred.make<void>();
+        const running = yield* fetchRegistry.pipe(Effect.result, Effect.forkScoped);
+        yield* Deferred.await(reached);
+        yield* TestClock.adjust(1);
+        const polled = yield* Effect.sync(() => running.pollUnsafe());
+        yield* Fiber.interrupt(running);
+        reached = undefined;
+        expect(polled).toBeDefined();
+        const result = yield* Fiber.join(running);
+        broken = false;
+        suspended = false;
+        expect(result._tag).toBe("Failure");
+        if (result._tag === "Failure") expect(result.failure.message).toBe("registry responded 503");
+      })
+    );
+  }
+  it.effect("automation still consumes a non-OK body before interpreting status, as the old rawFetch did", () =>
+    Effect.gen(function* () {
+      const automation = yield* CliAutomation;
+      const session = yield* automation.make({
+        baseUrl: "http://fixture.invalid",
+        token: "supplied",
+        skipHandshake: true,
+      });
+      broken = true;
+      responses.push({ status: 503, body: "" });
+      const result = yield* session.stats.pipe(Effect.result);
+      broken = false;
+      expect(result._tag).toBe("Failure");
+      if (result._tag === "Failure")
+        expect(result.failure.message).toBe("automation request failed: fixture body broken");
     })
   );
   it.effect("deadline aborts during body consumption and preserves the body cause", () =>

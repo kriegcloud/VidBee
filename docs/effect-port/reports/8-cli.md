@@ -11,6 +11,54 @@
 - [x] Finish repetition, alternate-checkout and loaded-core verification.
 - [x] Complete the lane handoff with omitted vectors and proof limits.
 
+## Code review
+
+This section records remediation of the independent review of `7c4b9a2`.
+The earlier characterization and implementation evidence below remains historical.
+
+- [x] Reproduce all six findings before fixing them; retain failing lane receipts.
+- [x] Restore runtime/build dependency separation and verify a real offline tarball install.
+- [x] Restore registry status-before-body ordering and scope interrupted native probes.
+- [x] Honor raw argv before decoding generated-download options.
+- [x] Re-record only the two corrected documents from the immutable pre-port artifacts.
+- [x] Finish the required local gate and three full packaged golden comparisons.
+
+| Finding | Severity | What was wrong | Fix | Regression proof |
+| --- | --- | --- | --- | --- |
+| Private production dependencies | major | Four bundled private packages remained installation requirements; the verifier silently skipped them. | Move them to devDependencies. Pack the real publication manifest, install the tarball offline into an empty synthetic project using cached external runtime closures, and check imports, declarations and both executable starts. Pack hooks apply publishConfig exports and restore source metadata exactly. | `manifest-goldens-before` fails; `verify-dist` installs and checks the packed artifact offline. |
+| Registry response ordering | major | requestText consumed an error body before fetchRegistry could check status. | A status-validation callback runs inside the owned response scope before body access. Registry supplies its original status error. | `regressions-head-confirmed` fails on broken/open 503 bodies; native tests pass with a 1ms TestClock step, before the 5000ms deadline. |
+| Native probe interruption | major | Child and observer fibers belonged to the service layer after probe interruption. | Add optional DownloadProcess.start owner; fork child attempt and observers under it. Each probe supplies its own scoped owner and awaits its closure. | Instrumented stock-driver spawner stays in a live layer: before release count 0; after interruption release count 1 and observer count 0. |
+| Raw argv precedence | major | The native executor decoded unused generated options before selecting raw argv. | Select nonempty raw argv first and decode only its runtime settings; decode full options only for generated argv. | `regressions-head-confirmed` fails on invalid unused type/format; after preserves raw argv and generated behavior for absent/empty raw argv. |
+| parse-pretty golden | minor | Zero maxAttempts succeeded; JSON parsing erased whitespace evidence. | Use pretty followed by a genuine typo and retain stdout bytes, termination and stderr. | Before golden check fails; frozen executable records compact UNKNOWN_VIDBEE_FLAG JSON plus newline and exit 2. |
+| history-remove golden | minor | The expected count was constructed independently of command results. | Compare every actual removal envelope, stderr and termination, then query history and assert every removed ID is absent. | Before golden shape check fails; updated harness checks removal IDs and actual post-removal history. |
+
+The HTTP caller audit found only registry and automation uses. Old automation
+rawFetch intentionally reads text before interpreting status; that order remains
+and a broken 503 body test pins its original request-failure path. The native
+process audit found probe as the only direct CLI DownloadProcess caller. The
+local executor delegates to the queue/downloader's explicitly owned asynchronous
+handle lifecycle; returning from admission intentionally leaves its download alive.
+The detached launcher has its separate documented lifetime policy. Shipping host
+signal behavior is unchanged; phase 9.1 still owns the native process cutover.
+
+All required local gate commands completed with exit 0: CLI and host check/test,
+root check, CI=true root test, deps:check, port:check, CLI build/verify-dist and
+build:linux with the uv symlink first on PATH. The full CLI byte oracle also
+passes all 35 groups. The final native suite passes 44 tests. Three consecutive
+full packaged golden runs compare 440 main plus four auxiliary documents each,
+with zero failures (162.3s, 163.5s and 156.0s). Each command's log and exit receipt
+is retained in the orchestrator's `8-cli-fix` scratch lane. The changed golden
+records have separate frozen-pre-port recording receipts; every other document
+and frozen oracle artifact is unchanged.
+
+The generated candidate bundle is retained only as scratch evidence; tracked
+`apps/cli/dist/index.mjs` is restored exactly to HEAD. The distribution proof
+installs from cached external runtime closures with their locked versions and
+scripts disabled; it does not claim a fresh SQLite addon compilation. Real ASR
+is skipped without models. Independent review and phase acceptance remain with
+the orchestrator; native shipping cutover remains phase 9.1/10 work.
+
+
 ## Audit of the characterization suite
 
 This section supersedes the original lane's implementation and validation descriptions

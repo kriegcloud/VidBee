@@ -14,3 +14,8 @@ export function runExportOracle() {
   process.env.CLI_NODE=pinnedNode();
   return isolated(['scripts/cli/characterization/exports.worker.mjs'],30000);
 }
+
+export function runReviewRegressions() {
+  process.env.CLI_NODE=pinnedNode();
+  return isolated(['--test','scripts/cli/characterization/review-regressions.test.mjs'],30000);
+}

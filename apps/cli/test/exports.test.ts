@@ -1,6 +1,6 @@
 import { expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
-import { runExportOracle } from "../../../scripts/cli/characterization/run-oracles.mjs";
+import { runExportOracle, runReviewRegressions } from "../../../scripts/cli/characterization/run-oracles.mjs";
 
 it.effect(
   "pins the three public export manifests and their kinds in isolation",
@@ -11,4 +11,11 @@ it.effect(
       expect(result.status, result.stdout + result.stderr).toBe(0);
     }),
   60000
+);
+
+it.effect("pins review regressions in distribution metadata and frozen packaged goldens", () =>
+  Effect.sync(() => {
+    const result = runReviewRegressions();
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+  })
 );

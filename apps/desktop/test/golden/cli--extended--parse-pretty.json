@@ -1,16 +1,6 @@
 {
-  "code": 0,
+  "code": 2,
   "signal": null,
-  "stdout": {
-    "ok": true,
-    "mode": "download",
-    "task": {
-      "id": "<id:1>",
-      "status": "running",
-      "attempt": 1,
-      "maxAttempts": 0,
-      "command": "yt-dlp"
-    }
-  },
+  "stdout": "{\"ok\":false,\"code\":\"UNKNOWN_VIDBEE_FLAG\",\"message\":\"unknown VidBeep flag: --vidbee-typo\"}\n",
   "stderr": ""
 }

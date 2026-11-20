@@ -27,8 +27,8 @@ export const layer = Layer.effect(
     const requests = yield* ProcessRequests;
     const scope = yield* Effect.scope;
     return DownloadProcess.of({
-      start: Effect.fn("DownloadProcess.start")(function* (spec, sink) {
-        const attemptScope = yield* Scope.fork(scope);
+      start: Effect.fn("DownloadProcess.start")(function* (spec, sink, owner = scope) {
+        const attemptScope = yield* Scope.fork(owner);
         const abort = spec.abortSignal;
         const abortFiber =
           abort === undefined
@@ -40,7 +40,7 @@ export const layer = Layer.effect(
                   if (abort.aborted) onAbort();
                   return Effect.sync(() => abort.removeEventListener("abort", onAbort));
                 }),
-                scope,
+                owner,
                 { startImmediately: true }
               );
         const acquired = yield* Effect.result(
@@ -141,7 +141,7 @@ export const layer = Layer.effect(
         });
         const observed =
           abortFiber === undefined ? observe() : observe().pipe(Effect.ensuring(Fiber.interrupt(abortFiber)));
-        yield* Effect.forkIn(observed.pipe(Effect.ensuring(Scope.close(attemptScope, Exit.void))), scope, {
+        yield* Effect.forkIn(observed.pipe(Effect.ensuring(Scope.close(attemptScope, Exit.void))), owner, {
           startImmediately: true,
         });
         const started: ProcessStart = { _tag: "Acquired", run };

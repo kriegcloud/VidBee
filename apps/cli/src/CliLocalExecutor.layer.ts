@@ -49,15 +49,17 @@ export const executorHostLayer = (options: LocalClientOptions) =>
         }),
         lowerPriority: Effect.fn("CliLocal.lowerPriority")(() => Effect.void),
         command: Effect.fn("CliLocal.command")(function* (input) {
-          const opts = yield* S.decodeEffect(YtDlpTaskOptions)(input.options ?? {});
-          const settings = opts.settings ?? {};
           if (input.rawArgs !== undefined && input.rawArgs.length > 0)
             return {
               args: [...input.rawArgs],
-              settings,
+              settings: yield* S.decodeUnknownEffect(YtDlpTaskOptions.fields.settings)(input.options?.settings).pipe(
+                Effect.map((settings) => settings ?? {})
+              ),
               initialSubtitleStatus: undefined,
               canRetryWithoutSubtitles: false,
             };
+          const opts = yield* S.decodeEffect(YtDlpTaskOptions)(input.options ?? {});
+          const settings = opts.settings ?? {};
           const type = opts.type ?? (input.kind === "audio" ? "audio" : "video");
           const defaultDir = options.defaultDownloadDir ?? path.join(cli.homeDirectory, "Downloads", "VidBeep");
           const downloadPath =
