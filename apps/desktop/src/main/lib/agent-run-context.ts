@@ -1,9 +1,6 @@
 import { createHash } from 'node:crypto'
-import {
-  captionLanguageKey,
-  findSidecarCaptionTracks,
-  parseCaptionTrack
-} from '@vidbee/transcription'
+import { captionLanguageKey, parseCaptionTrack } from '@vidbee/transcription'
+import { findSidecarCaptionTracks } from '@vidbee/transcription-legacy'
 import { AGENT_WORKSPACE_ID, type AgentChatInput } from '../../shared/agent-chat'
 import type { AgentSubtitleInput } from '../../shared/agent-subtitles'
 import { AI_OVERVIEW_PROMPT_ID } from '../../shared/ai-prompts'

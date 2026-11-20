@@ -1,0 +1,17 @@
+[
+  [
+    "write-invalid",
+    "Infinity",
+    "{\"type\":\"probe-ok\"}\n"
+  ],
+  [
+    "write-invalid",
+    "Infinity",
+    "{\"type\":\"error\",\"message\":\"stdout write failed at 0/20\"}\n"
+  ],
+  [
+    "write-invalid",
+    "Infinity",
+    "{\"type\":\"error\",\"message\":\"stdout write failed at 0/57\"}\n"
+  ]
+]

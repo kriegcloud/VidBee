@@ -1,0 +1,216 @@
+[
+  {
+    "label": "append no-speech",
+    "time": 2,
+    "value": {
+      "id": "one",
+      "downloadTaskId": "d",
+      "transcriptionTaskId": "task",
+      "resultKind": "no-speech",
+      "modelVersion": "v",
+      "asrTier": null,
+      "language": "en",
+      "sourceFilePath": "/fixture/media",
+      "sourceKind": "captions",
+      "supersededAt": null,
+      "createdAt": 1,
+      "updatedAt": 2,
+      "speakers": [],
+      "segments": [
+        {
+          "id": "segment-0",
+          "speakerId": null,
+          "startMs": 100,
+          "endMs": 200,
+          "text": "first",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 1
+        },
+        {
+          "id": "segment-1",
+          "speakerId": null,
+          "startMs": 900,
+          "endMs": 1000,
+          "text": "later",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 0
+        }
+      ]
+    }
+  },
+  {
+    "label": "patch clamp and words",
+    "time": 3,
+    "value": {
+      "id": "one",
+      "downloadTaskId": "d",
+      "transcriptionTaskId": "task",
+      "resultKind": "transcript",
+      "modelVersion": "v",
+      "asrTier": null,
+      "language": "en",
+      "sourceFilePath": "/fixture/media",
+      "sourceKind": "captions",
+      "supersededAt": null,
+      "createdAt": 1,
+      "updatedAt": 3,
+      "speakers": [],
+      "segments": [
+        {
+          "id": "segment-0",
+          "speakerId": null,
+          "startMs": 50,
+          "endMs": 50,
+          "text": "patched",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 0
+        },
+        {
+          "id": "segment-1",
+          "speakerId": null,
+          "startMs": 900,
+          "endMs": 1000,
+          "text": "later",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 1
+        }
+      ]
+    }
+  },
+  {
+    "label": "insert",
+    "time": 4,
+    "value": {
+      "id": "one",
+      "downloadTaskId": "d",
+      "transcriptionTaskId": "task",
+      "resultKind": "transcript",
+      "modelVersion": "v",
+      "asrTier": null,
+      "language": "en",
+      "sourceFilePath": "/fixture/media",
+      "sourceKind": "captions",
+      "supersededAt": null,
+      "createdAt": 1,
+      "updatedAt": 4,
+      "speakers": [],
+      "segments": [
+        {
+          "id": "segment-0",
+          "speakerId": null,
+          "startMs": 50,
+          "endMs": 50,
+          "text": "patched",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 0
+        },
+        {
+          "id": "segment-2",
+          "speakerId": null,
+          "startMs": 300,
+          "endMs": 900,
+          "text": "inserted",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 1
+        },
+        {
+          "id": "segment-1",
+          "speakerId": null,
+          "startMs": 900,
+          "endMs": 1000,
+          "text": "later",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 2
+        }
+      ]
+    }
+  },
+  {
+    "label": "append continuation",
+    "time": 5,
+    "value": {
+      "id": "one",
+      "downloadTaskId": "d",
+      "transcriptionTaskId": "task",
+      "resultKind": "transcript",
+      "modelVersion": "v",
+      "asrTier": null,
+      "language": "en",
+      "sourceFilePath": "/fixture/media",
+      "sourceKind": "captions",
+      "supersededAt": null,
+      "createdAt": 1,
+      "updatedAt": 5,
+      "speakers": [],
+      "segments": [
+        {
+          "id": "segment-3",
+          "speakerId": null,
+          "startMs": 0,
+          "endMs": 1,
+          "text": "last appended",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 3
+        },
+        {
+          "id": "segment-0",
+          "speakerId": null,
+          "startMs": 50,
+          "endMs": 50,
+          "text": "patched",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 0
+        },
+        {
+          "id": "segment-2",
+          "speakerId": null,
+          "startMs": 300,
+          "endMs": 900,
+          "text": "inserted",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 1
+        },
+        {
+          "id": "segment-1",
+          "speakerId": null,
+          "startMs": 900,
+          "endMs": 1000,
+          "text": "later",
+          "words": [],
+          "confidence": null,
+          "sortIndex": 2
+        }
+      ]
+    }
+  },
+  {
+    "label": "delete all",
+    "time": 6,
+    "value": {
+      "id": "one",
+      "downloadTaskId": "d",
+      "transcriptionTaskId": "task",
+      "resultKind": "transcript",
+      "modelVersion": "v",
+      "asrTier": null,
+      "language": "en",
+      "sourceFilePath": "/fixture/media",
+      "sourceKind": "captions",
+      "supersededAt": null,
+      "createdAt": 1,
+      "updatedAt": 6,
+      "speakers": [],
+      "segments": []
+    }
+  }
+]

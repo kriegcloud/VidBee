@@ -74,6 +74,12 @@ describe("pure kernel", () => {
     );
     expect(sanitizeOutput("Cookie: secret\ntoken=hidden")).toBe("Cookie: <redacted>\ntoken: <redacted>");
   });
+  it("classifies a hidden private Instagram story as a sign-in problem", () => {
+    const stderr =
+      "[instagram][error] Private profile: the Instagram account in your cookies does not follow fixture, " +
+      "so Instagram hides its stories.";
+    expect(classify({ stderr, exitCode: 4 }, 0).category).toBe("auth-required");
+  });
   it("keeps normalized media identity and option distinctions", () => {
     const base = { kind: "video" as const, url: "https://youtu.be/example?utm_source=share" };
     expect(downloadIdentity(base)).toBe(downloadIdentity({ ...base, url: "https://www.youtube.com/watch?v=example" }));

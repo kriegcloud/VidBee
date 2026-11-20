@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { FeedCheckScheduler } from '../../subscriptions-core/src/scheduler'
+import { FeedCheckScheduler } from '@vidbee/subscriptions-core-legacy/scheduler'
 import { deferred, fakeTimers, turn } from './fixtures'
 test('feed stop during refresh does not rearm the scheduler', async () => {
   const timers = fakeTimers()

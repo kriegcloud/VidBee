@@ -1,0 +1,15 @@
+const word = {text:'hello',startMs:100,endMs:500}
+const segment = {id:'segment-a',speakerId:'speaker-a',startMs:100,endMs:500,text:'hello',words:[word],confidence:null,sortIndex:0}
+const turn = {speakerKey:'speaker-1',startMs:100,endMs:500}
+const vector = new Float32Array([.2,.4,.8])
+const status = {ready:false,files:[{id:'model',present:true,path:'/fixture/model',bytes:7}],downloads:[{url:'https://fixture.invalid/model',received:3,total:10}]}
+export const seeds: Record<string, Record<string, unknown[][]>> = {
+ 'asr-tiers': {isAsrTierId:[['minimal']],asrTierInfo:[['minimal'],['future']],parseAsrTier:[['quality','minimal']],higherAsrTiers:[['minimal']],upgradeAsrTiers:[['minimal',['quality']]]},
+ 'speaker-count':{isSpeakerCount:[[2]],parseSpeakerCount:[['2','auto']],sherpaNumClusters:[[2]]},
+ 'asr-words':{wordsFromAsrResult:[[{tokens:['▁hello',',','▁world','中'],timestamps:[0,.1,.2,.3],text:'hello',durations:[.1]},100,1000]],activeWordIndex:[[[word,{...word,text:'second',startMs:300}],350]]},
+ 'model-progress':{modelFillPercent:[[status]],toModelPrepStatus:[[status]]},
+ 'transcript-edit':{clampSegmentTimes:[[100,500]],reindexTranscriptSegments:[[[segment,{...segment,id:'segment-b',startMs:0,sortIndex:1}]]],applyTranscriptSegmentPatch:[[segment,{text:'edited',startMs:150,endMs:600,speakerId:null}]],updateTranscriptSegmentList:[[[segment],'segment-a',{text:'edited',startMs:150,endMs:600,speakerId:null}]],deleteTranscriptSegmentsFromList:[[[segment],['segment-a']]],insertTranscriptSegmentInList:[[[segment],{atMs:700,afterId:'segment-a',beforeId:'segment-b',startMs:600,endMs:900,speakerId:null,text:'new'},()=>'fixture-id']],resolveInsertSegmentPlacement:[[[segment],{atMs:700,afterId:'segment-a',beforeId:'segment-b',startMs:600,endMs:900,speakerId:null,text:'new'}]]},
+ 'speaker-cluster':{l2Normalize:[[vector]],cosineDistance:[[vector,new Float32Array([1,0,0])]],agglomerativeLabels:[[[vector,new Float32Array([1,0,0])],1]],agglomerativeLabelsByThreshold:[[[vector,new Float32Array([1,0,0])],.5]],clusterSpeakerEmbeddings:[[[{id:'one',vector},{id:'two',vector:new Float32Array([1,0,0])}],{threshold:.5,k:2}]]},
+ 'speaker-refine':{mergeAdjacentTurns:[[[turn,{...turn,startMs:600,endMs:1000}]]],refineSpeakerTurns:[[[turn],[{startMs:0,endMs:500}],1000,{knownCount:true}]],intervalDurationMs:[[[{startMs:0,endMs:500}]]],shouldTrustSpeechIntervals:[[500,1000]],fillUncoveredTurns:[[[turn],3000,100]],turnsForAsr:[[[turn],[{startMs:0,endMs:500}],1000,{knownCount:true}]]},
+ 'speaker-chunks':{shortClusterFoldMs:[[1000]],diarizeChunkWindows:[[1300000]],shiftTurns:[[[turn],100]],pickSpeakerEmbedTurns:[[[turn],'speaker-1',1000]],stitchTurnsAtMidpoint:[[[turn],[{...turn,startMs:400,endMs:1000}],450]],mergeChunkTurns:[[[turn],[{...turn,startMs:400,endMs:1000}],400,500]],foldShortClusters:[[new Map([['0:speaker-1',0]]),[[turn]],[[{speakerKey:'speaker-1',vector}]],.65]],capExcessClusters:[[new Map([['0:speaker-1',0]]),[[turn]],[[{speakerKey:'speaker-1',vector}]],1,.65]],mergeChunkTurnsByEmbeddings:[[[{startMs:0,endMs:1000}],[[turn]],[[{speakerKey:'speaker-1',vector}]],{threshold:.5,k:1}]]}
+}

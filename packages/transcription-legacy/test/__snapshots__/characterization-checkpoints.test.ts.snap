@@ -1,0 +1,312 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`partial singleton stage clock never rewinds history, while visible stage can rewind 1`] = `
+[
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "queued",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "preparing-audio",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "recognizing",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "preparing-models",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-models",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "diarizing",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-models",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "diarizing",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "preparing-audio",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-models",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "diarizing",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "committing",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-models",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "diarizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "committing",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+  {
+    "downloadTaskId": "checkpoint-download",
+    "segments": [],
+    "stage": "committing",
+    "stageHistory": [
+      {
+        "stage": "queued",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-audio",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "recognizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "preparing-models",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "diarizing",
+        "startedAt": 1234,
+      },
+      {
+        "stage": "committing",
+        "startedAt": 1234,
+      },
+    ],
+    "taskId": "checkpoint-stage",
+  },
+]
+`;
+
+exports[`pre-port checkpoint public boundary > keys, atomic publication, matching reuse, mismatch reset and first-time dedup > bytes 1`] = `"{"key":{"taskId":"task","fingerprint":"12:34","modelVersion":"v1"},"durationMs":500,"speakers":[{"speakerKey":"s","displayName":"Speaker"}],"turns":[{"startMs":0,"endMs":500,"speakerKey":"s"}],"chunks":[{"index":9,"startMs":100,"endMs":200,"speakerKey":null,"text":"first","words":[],"confidence":null}],"stages":[]}"`;
+
+exports[`pre-port checkpoint public boundary > keys, atomic publication, matching reuse, mismatch reset and first-time dedup > duplicate retains first payload but applies extras 1`] = `
+{
+  "chunks": [
+    {
+      "confidence": null,
+      "endMs": 200,
+      "index": 9,
+      "speakerKey": null,
+      "startMs": 100,
+      "text": "first",
+      "words": [],
+    },
+  ],
+  "durationMs": 500,
+  "key": {
+    "fingerprint": "12:34",
+    "modelVersion": "v1",
+    "taskId": "task",
+  },
+  "speakers": [
+    {
+      "displayName": "Speaker",
+      "speakerKey": "s",
+    },
+  ],
+  "stages": [],
+  "turns": [
+    {
+      "endMs": 500,
+      "speakerKey": "s",
+      "startMs": 0,
+    },
+  ],
+}
+`;
+
+exports[`pre-port checkpoint public boundary > keys, atomic publication, matching reuse, mismatch reset and first-time dedup > empty 1`] = `
+{
+  "chunks": [],
+  "durationMs": null,
+  "key": {
+    "fingerprint": "12:34",
+    "modelVersion": "v1",
+    "taskId": "task",
+  },
+  "speakers": [],
+  "stages": [],
+  "turns": [],
+}
+`;
+
+exports[`pre-port checkpoint public boundary > keys, atomic publication, matching reuse, mismatch reset and first-time dedup > keys 1`] = `
+[
+  "96a296d224f285c67bee93c3",
+  "b598f3bced6e7b817368e6ac",
+  "3cc821bfb9d8a4bc5fb8965b",
+]
+`;
+
+exports[`pre-port checkpoint public boundary > keys, atomic publication, matching reuse, mismatch reset and first-time dedup > reset 1`] = `
+{
+  "chunks": [],
+  "durationMs": null,
+  "key": {
+    "fingerprint": "12:34",
+    "modelVersion": "v2",
+    "taskId": "task",
+  },
+  "speakers": [],
+  "stages": [],
+  "turns": [],
+}
+`;
+
+exports[`pre-port checkpoint public boundary > retains permissive shapes/defaults and exponent overflow (section 9 candidates) 1`] = `
+[
+  null,
+  null,
+  null,
+  null,
+  null,
+  {
+    "chunks": [],
+    "key": {
+      "fingerprint": "f",
+      "modelVersion": "v",
+      "taskId": "t",
+    },
+    "speakers": [],
+    "stages": [],
+    "turns": [],
+  },
+  {
+    "chunks": "bad",
+    "durationMs": Infinity,
+    "extra": {
+      "keep": true,
+    },
+    "key": {
+      "fingerprint": true,
+      "modelVersion": [],
+      "taskId": 7,
+    },
+    "speakers": {},
+    "stages": 7,
+    "turns": false,
+  },
+]
+`;
+
+exports[`pre-port checkpoint public boundary > seed loader defaults, unknown nested data, nonfinite data and write serialization > seed bytes nonfinite serializes null 1`] = `"{"language":null,"modelVersion":"v","asrTier":null,"speakers":[],"segments":[{"startMs":0,"endMs":null,"text":"hello","speakerKey":null,"confidence":null}]}"`;

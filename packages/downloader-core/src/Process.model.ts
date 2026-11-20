@@ -38,6 +38,7 @@ export const ProcessSpec = S.Struct({
   rawSpawnObservation: S.optional(RawSpawnObservationPolicy),
   rawExitObservation: S.optional(RawExitObservation),
   rawCloseObservation: S.optional(RawCloseObservation),
+  extendedLifecycle: S.optional(S.Boolean),
   abortSignal: S.optional(S.instanceOf(AbortSignal)),
 });
 export type ProcessSpec = typeof ProcessSpec.Type;
@@ -63,3 +64,10 @@ export const ProcessEvent = S.Union([
   S.TaggedStruct("complete", { outcome: ProcessOutcome }),
 ]);
 export type ProcessEvent = typeof ProcessEvent.Type;
+
+/** Live host signalling observation, independent of exit and signal acknowledgement. */
+export const LiveSignallingState = S.Union([
+  S.TaggedStruct("Raw", { killed: S.Boolean }),
+  S.TaggedStruct("Native", {}),
+]);
+export type LiveSignallingState = typeof LiveSignallingState.Type;

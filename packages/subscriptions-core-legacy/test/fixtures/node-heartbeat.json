@@ -1,0 +1,13 @@
+[
+  [
+    "callback-return",
+    {
+      "$undefined": true
+    }
+  ],
+  [
+    "unhandled",
+    1,
+    "identity"
+  ]
+]

@@ -77,6 +77,22 @@ it("preserves source-ID conversion, item insertion order and duplicate asset acc
   expect(result.parseError).toBe(true);
 });
 
+it("reports a hidden private story as a sign-in problem, not an expired story", () => {
+  const result = emptyResult();
+  result.exitCode = 4;
+  result.stderr =
+    "[instagram][warning] fixture's posts are private\n" +
+    "[instagram][error] Private profile: the Instagram account in your cookies does not follow fixture, " +
+    "so Instagram hides its stories. Use cookies from a browser signed in to an account that follows it.\n";
+  expect(toCategorySummary("stories", result)).toEqual({
+    category: "stories",
+    state: "auth-required",
+    sourceCount: 0,
+    assetCount: 0,
+    errorCode: "auth-required",
+  });
+});
+
 let started: Deferred.Deferred<ProcessSink> | undefined;
 const specs: ProcessSpec[] = [];
 const requests: string[] = [];

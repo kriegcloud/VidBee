@@ -1,35 +1,46 @@
+import * as A from "effect/Array";
+import { dual } from "effect/Function";
+import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
+import * as O from "effect/Option";
+import * as P from "effect/Predicate";
+import type { DiarizeWindow, SpeakerEmbed } from "./Pipeline.model.js";
+
+export type { DiarizeWindow, SpeakerEmbed } from "./Pipeline.model.js";
+
 import {
   CLUSTERING_THRESHOLD,
   clusterSpeakerEmbeddings,
   cosineDistance,
   l2Normalize,
-  MAX_BRIDGED_SPEAKERS
-} from './speaker-cluster'
-import { mergeAdjacentTurns, type TimedTurn } from './speaker-refine'
+  MAX_BRIDGED_SPEAKERS,
+} from "./speaker-cluster.js";
+import { mergeAdjacentTurns } from "./speaker-refine.js";
+import type { TimedTurn } from "./speaker-refine.js";
 
 /** Process this much audio per sherpa call so long podcasts stay in RAM. */
-export const DIARIZE_CHUNK_MS = 10 * 60 * 1000
+export const DIARIZE_CHUNK_MS = 10 * 60 * 1000;
 /** Overlap used so a speaker turn is not cut exactly at a chunk boundary. */
-export const DIARIZE_OVERLAP_MS = 20_000
+export const DIARIZE_OVERLAP_MS = 20_000;
 /** Require this much overlap before two local labels are treated as the same person. */
-export const MERGE_MIN_OVERLAP_MS = 800
+export const MERGE_MIN_OVERLAP_MS = 800;
 /** Concatenate at most this much audio when building a speaker-level embedding. */
-export const SPEAKER_EMBED_MAX_MS = 8_000
+export const SPEAKER_EMBED_MAX_MS = 8_000;
 /** Skip embedding extraction when a speaker has less than this much audio. */
-export const SPEAKER_EMBED_MIN_MS = 300
+export const SPEAKER_EMBED_MIN_MS = 300;
 /** Floor for duration-aware short-cluster folding. Far crumbs below this become unknown. */
-export const SHORT_CLUSTER_MS = 5_000
+export const SHORT_CLUSTER_MS = 5_000;
 /** Ceiling for duration-aware short-cluster folding (5% of long files would otherwise grow without bound). */
-export const SHORT_CLUSTER_MAX_MS = 60_000
+export const SHORT_CLUSTER_MAX_MS = 60_000;
 /** Fold candidates shorter than this fraction of total speech, after applying the floor/ceiling. */
-export const SHORT_CLUSTER_SPEECH_FRACTION = 0.05
+export const SHORT_CLUSTER_SPEECH_FRACTION = 0.05;
 /**
  * Cosine-distance cutoff when folding a short cluster into the nearest main
  * speaker. Calibrated 2026-08-20 on 高能量 Vol.230 (two Chinese male voices:
  * same-person fragments ≈0.30, cross-person 0.741). Larger than the 0.5
  * recluster threshold so crumbs can still join a main speaker.
  */
-export const SHORT_CLUSTER_FOLD_DISTANCE = 0.65
+export const SHORT_CLUSTER_FOLD_DISTANCE = 0.65;
 
 /**
  * Duration-aware fold threshold: max(5s, min(60s, 5% × total speech)).
@@ -41,17 +52,7 @@ export const shortClusterFoldMs = (totalSpeechMs: number): number =>
   Math.max(
     SHORT_CLUSTER_MS,
     Math.min(SHORT_CLUSTER_MAX_MS, SHORT_CLUSTER_SPEECH_FRACTION * Math.max(0, totalSpeechMs))
-  )
-
-export interface DiarizeWindow {
-  startMs: number
-  endMs: number
-}
-
-export interface SpeakerEmbed {
-  speakerKey: string
-  vector: Float32Array
-}
+  );
 
 /**
  * Split a timeline into overlapping windows. Short files stay as one window.
@@ -59,22 +60,22 @@ export interface SpeakerEmbed {
  * @param durationMs Audio length in milliseconds.
  */
 export const diarizeChunkWindows = (durationMs: number): DiarizeWindow[] => {
-  const total = Math.max(0, durationMs)
+  const total = Math.max(0, durationMs);
   if (total <= DIARIZE_CHUNK_MS + DIARIZE_OVERLAP_MS) {
-    return total > 0 ? [{ startMs: 0, endMs: total }] : []
+    return total > 0 ? [{ startMs: 0, endMs: total }] : [];
   }
-  const windows: DiarizeWindow[] = []
-  let startMs = 0
+  const windows: DiarizeWindow[] = [];
+  let startMs = 0;
   while (startMs < total) {
-    const endMs = Math.min(total, startMs + DIARIZE_CHUNK_MS)
-    windows.push({ startMs, endMs })
+    const endMs = Math.min(total, startMs + DIARIZE_CHUNK_MS);
+    windows.push({ startMs, endMs });
     if (endMs >= total) {
-      break
+      break;
     }
-    startMs = endMs - DIARIZE_OVERLAP_MS
+    startMs = endMs - DIARIZE_OVERLAP_MS;
   }
-  return windows
-}
+  return windows;
+};
 
 /**
  * Shift turn timestamps by a chunk offset (sherpa times are relative to the slice).
@@ -82,32 +83,36 @@ export const diarizeChunkWindows = (durationMs: number): DiarizeWindow[] => {
  * @param turns Turns whose times start at 0 for the slice.
  * @param offsetMs Chunk start on the full timeline.
  */
-export const shiftTurns = (turns: TimedTurn[], offsetMs: number): TimedTurn[] =>
-  turns.map((turn) => ({
+const shiftTurnsDataFirst = (turns: TimedTurn[], offsetMs: number): TimedTurn[] =>
+  A.map(turns, (turn) => ({
     ...turn,
     startMs: turn.startMs + offsetMs,
-    endMs: turn.endMs + offsetMs
-  }))
+    endMs: turn.endMs + offsetMs,
+  }));
+export const shiftTurns: {
+  (turns: TimedTurn[], offsetMs: number): TimedTurn[];
+  (offsetMs: number): (turns: TimedTurn[]) => TimedTurn[];
+} = dual(2, shiftTurnsDataFirst);
 
 const overlapMs = (left: TimedTurn, right: TimedTurn): number =>
-  Math.max(0, Math.min(left.endMs, right.endMs) - Math.max(left.startMs, right.startMs))
+  Math.max(0, Math.min(left.endMs, right.endMs) - Math.max(left.startMs, right.startMs));
 
-const durationOf = (turn: TimedTurn): number => Math.max(0, turn.endMs - turn.startMs)
+const durationOf = (turn: TimedTurn): number => Math.max(0, turn.endMs - turn.startMs);
 
 const turnsOverlap = (left: TimedTurn, right: TimedTurn): boolean =>
-  Math.min(left.endMs, right.endMs) > Math.max(left.startMs, right.startMs)
+  Math.min(left.endMs, right.endMs) > Math.max(left.startMs, right.startMs);
 
 const nextSpeakerIndex = (turns: TimedTurn[]): number => {
-  let max = 0
+  let max = 0;
   for (const turn of turns) {
-    const match = /^speaker-(\d+)$/.exec(turn.speakerKey)
-    const n = match ? Number.parseInt(match[1] ?? '0', 10) : 0
+    const match = /^speaker-(\d+)$/.exec(turn.speakerKey);
+    const n = match !== null ? Number.parseInt(match[1] ?? "0", 10) : 0;
     if (n > max) {
-      max = n
+      max = n;
     }
   }
-  return max + 1
-}
+  return max + 1;
+};
 
 /**
  * Pick the longest clean (non-overlapped) turns for one local speaker, falling
@@ -117,30 +122,34 @@ const nextSpeakerIndex = (turns: TimedTurn[]): number => {
  * @param speakerKey Local speaker id.
  * @param maxMs Maximum concatenated audio.
  */
-export const pickSpeakerEmbedTurns = (
+const pickSpeakerEmbedTurnsDataFirst = (
   turns: readonly TimedTurn[],
   speakerKey: string,
   maxMs = SPEAKER_EMBED_MAX_MS
 ): TimedTurn[] => {
-  const mine = turns.filter((turn) => turn.speakerKey === speakerKey && durationOf(turn) > 0)
+  const mine = A.filter(turns, (turn) => turn.speakerKey === speakerKey && durationOf(turn) > 0);
   if (mine.length === 0) {
-    return []
+    return [];
   }
-  const others = turns.filter((turn) => turn.speakerKey !== speakerKey && turn.speakerKey !== 'unknown')
-  const clean = mine.filter((turn) => !others.some((other) => turnsOverlap(turn, other)))
-  const pool = [...(clean.length > 0 ? clean : mine)].sort((a, b) => durationOf(b) - durationOf(a))
-  const picked: TimedTurn[] = []
-  let used = 0
+  const others = A.filter(turns, (turn) => turn.speakerKey !== speakerKey && turn.speakerKey !== "unknown");
+  const clean = A.filter(mine, (turn) => !A.some(others, (other) => turnsOverlap(turn, other)));
+  const pool = [...(clean.length > 0 ? clean : mine)].sort((a, b) => durationOf(b) - durationOf(a));
+  const picked: TimedTurn[] = [];
+  let used = 0;
   for (const turn of pool) {
     if (used >= maxMs) {
-      break
+      break;
     }
-    const take = Math.min(durationOf(turn), maxMs - used)
-    picked.push({ ...turn, endMs: turn.startMs + take })
-    used += take
+    const take = Math.min(durationOf(turn), maxMs - used);
+    picked.push({ ...turn, endMs: turn.startMs + take });
+    used += take;
   }
-  return used >= SPEAKER_EMBED_MIN_MS ? picked : []
-}
+  return used >= SPEAKER_EMBED_MIN_MS ? picked : [];
+};
+export const pickSpeakerEmbedTurns: {
+  (turns: readonly TimedTurn[], speakerKey: string, maxMs?: number): TimedTurn[];
+  (speakerKey: string, maxMs?: number): (turns: readonly TimedTurn[]) => TimedTurn[];
+} = dual((args) => typeof args[0] !== "string", pickSpeakerEmbedTurnsDataFirst);
 
 /**
  * Clip previous/next turns at a midpoint so overlapping chunks do not double-count.
@@ -149,19 +158,21 @@ export const pickSpeakerEmbedTurns = (
  * @param next Turns from the new chunk, already shifted to global time.
  * @param midMs Split point.
  */
-export const stitchTurnsAtMidpoint = (
-  previous: TimedTurn[],
-  next: TimedTurn[],
-  midMs: number
-): TimedTurn[] => {
-  const keptPrev = previous
-    .map((turn) => ({ ...turn, endMs: Math.min(turn.endMs, midMs) }))
-    .filter((turn) => turn.endMs > turn.startMs)
-  const keptNext = next
-    .map((turn) => ({ ...turn, startMs: Math.max(turn.startMs, midMs) }))
-    .filter((turn) => turn.endMs > turn.startMs)
-  return mergeAdjacentTurns([...keptPrev, ...keptNext])
-}
+const stitchTurnsAtMidpointDataFirst = (previous: TimedTurn[], next: TimedTurn[], midMs: number): TimedTurn[] => {
+  const keptPrev = A.filter(
+    A.map(previous, (turn) => ({ ...turn, endMs: Math.min(turn.endMs, midMs) })),
+    (turn) => turn.endMs > turn.startMs
+  );
+  const keptNext = A.filter(
+    A.map(next, (turn) => ({ ...turn, startMs: Math.max(turn.startMs, midMs) })),
+    (turn) => turn.endMs > turn.startMs
+  );
+  return mergeAdjacentTurns([...keptPrev, ...keptNext]);
+};
+export const stitchTurnsAtMidpoint: {
+  (previous: TimedTurn[], next: TimedTurn[], midMs: number): TimedTurn[];
+  (next: TimedTurn[], midMs: number): (previous: TimedTurn[]) => TimedTurn[];
+} = dual(3, stitchTurnsAtMidpointDataFirst);
 
 /**
  * Map next-chunk speaker keys onto previous-chunk keys using the overlap region.
@@ -172,87 +183,91 @@ export const stitchTurnsAtMidpoint = (
  * @param overlapStartMs Inclusive start of the shared region.
  * @param overlapEndMs Exclusive end of the shared region.
  */
-export const mergeChunkTurns = (
+const mergeChunkTurnsDataFirst = (
   previous: TimedTurn[],
   next: TimedTurn[],
   overlapStartMs: number,
   overlapEndMs: number
 ): TimedTurn[] => {
-  const mid = Math.round((overlapStartMs + overlapEndMs) / 2)
-  const keptPrev = previous
-    .map((turn) => ({ ...turn, endMs: Math.min(turn.endMs, mid) }))
-    .filter((turn) => turn.endMs > turn.startMs)
-  const keptNext = next
-    .map((turn) => ({ ...turn, startMs: Math.max(turn.startMs, mid) }))
-    .filter((turn) => turn.endMs > turn.startMs)
+  const mid = Math.round((overlapStartMs + overlapEndMs) / 2);
+  const keptPrev = A.filter(
+    A.map(previous, (turn) => ({ ...turn, endMs: Math.min(turn.endMs, mid) })),
+    (turn) => turn.endMs > turn.startMs
+  );
+  const keptNext = A.filter(
+    A.map(next, (turn) => ({ ...turn, startMs: Math.max(turn.startMs, mid) })),
+    (turn) => turn.endMs > turn.startMs
+  );
   if (keptNext.length === 0) {
-    return mergeAdjacentTurns(keptPrev)
+    return mergeAdjacentTurns(keptPrev);
   }
-  const prevOverlap = previous.filter((turn) => turn.endMs > overlapStartMs && turn.startMs < overlapEndMs)
-  const nextOverlap = next.filter((turn) => turn.endMs > overlapStartMs && turn.startMs < overlapEndMs)
-  const mapping = new Map<string, string>()
-  let nextIndex = nextSpeakerIndex(keptPrev)
-  const localKeys = [...new Set(keptNext.map((turn) => turn.speakerKey))]
+  const prevOverlap = A.filter(previous, (turn) => turn.endMs > overlapStartMs && turn.startMs < overlapEndMs);
+  const nextOverlap = A.filter(next, (turn) => turn.endMs > overlapStartMs && turn.startMs < overlapEndMs);
+  let mapping = HashMap.empty<string, string>();
+  let nextIndex = nextSpeakerIndex(keptPrev);
+  const localKeys = A.dedupe(A.map(keptNext, (turn) => turn.speakerKey));
   for (const local of localKeys) {
-    if (local === 'unknown') {
-      mapping.set(local, 'unknown')
-      continue
+    if (local === "unknown") {
+      mapping = HashMap.set(mapping, local, "unknown");
+      continue;
     }
-    const mine = nextOverlap.filter((turn) => turn.speakerKey === local)
-    let bestKey = ''
-    let bestMs = 0
-    const globalKeys = [...new Set(prevOverlap.map((turn) => turn.speakerKey))].filter(
-      (key) => key !== 'unknown'
-    )
+    const mine = A.filter(nextOverlap, (turn) => turn.speakerKey === local);
+    let bestKey = "";
+    let bestMs = 0;
+    const globalKeys = A.filter(A.dedupe(A.map(prevOverlap, (turn) => turn.speakerKey)), (key) => key !== "unknown");
     for (const global of globalKeys) {
-      const theirs = prevOverlap.filter((turn) => turn.speakerKey === global)
-      let sum = 0
+      const theirs = A.filter(prevOverlap, (turn) => turn.speakerKey === global);
+      let sum = 0;
       for (const a of mine) {
         for (const b of theirs) {
-          sum += overlapMs(a, b)
+          sum += overlapMs(a, b);
         }
       }
       if (sum > bestMs) {
-        bestMs = sum
-        bestKey = global
+        bestMs = sum;
+        bestKey = global;
       }
     }
-    if (bestKey && bestMs >= MERGE_MIN_OVERLAP_MS) {
-      mapping.set(local, bestKey)
-      continue
+    if (P.isTruthy(bestKey) && bestMs >= MERGE_MIN_OVERLAP_MS) {
+      mapping = HashMap.set(mapping, local, bestKey);
+      continue;
     }
-    mapping.set(local, `speaker-${nextIndex}`)
-    nextIndex += 1
+    mapping = HashMap.set(mapping, local, `speaker-${nextIndex}`);
+    nextIndex += 1;
   }
-  const remapped = keptNext.map((turn) => ({
+  const remapped = A.map(keptNext, (turn) => ({
     ...turn,
-    speakerKey: mapping.get(turn.speakerKey) ?? turn.speakerKey
-  }))
-  return mergeAdjacentTurns([...keptPrev, ...remapped])
-}
+    speakerKey: O.getOrUndefined(HashMap.get(mapping, turn.speakerKey)) ?? turn.speakerKey,
+  }));
+  return mergeAdjacentTurns([...keptPrev, ...remapped]);
+};
+export const mergeChunkTurns: {
+  (previous: TimedTurn[], next: TimedTurn[], overlapStartMs: number, overlapEndMs: number): TimedTurn[];
+  (next: TimedTurn[], overlapStartMs: number, overlapEndMs: number): (previous: TimedTurn[]) => TimedTurn[];
+} = dual(4, mergeChunkTurnsDataFirst);
 
-const embedId = (chunkIndex: number, speakerKey: string): string => `${chunkIndex}:${speakerKey}`
+const embedId = (chunkIndex: number, speakerKey: string): string => `${chunkIndex}:${speakerKey}`;
 
 const meanEmbedding = (vectors: readonly Float32Array[]): Float32Array | null => {
   if (vectors.length === 0) {
-    return null
+    return null;
   }
-  const dim = vectors[0]?.length ?? 0
+  const dim = vectors[0]?.length ?? 0;
   if (dim === 0) {
-    return null
+    return null;
   }
-  const acc = new Float32Array(dim)
+  const acc = new Float32Array(dim);
   for (const vector of vectors) {
-    const unit = l2Normalize(Float32Array.from(vector))
+    const unit = l2Normalize(Float32Array.from(vector));
     for (let i = 0; i < dim; i += 1) {
-      acc[i] = (acc[i] ?? 0) + (unit[i] ?? 0)
+      acc[i] = (acc[i] ?? 0) + (unit[i] ?? 0);
     }
   }
   for (let i = 0; i < dim; i += 1) {
-    acc[i] = (acc[i] ?? 0) / vectors.length
+    acc[i] = (acc[i] ?? 0) / vectors.length;
   }
-  return l2Normalize(acc)
-}
+  return l2Normalize(acc);
+};
 
 /**
  * Fold leftover short clusters into the nearest main speaker when the
@@ -267,91 +282,110 @@ const meanEmbedding = (vectors: readonly Float32Array[]): Float32Array | null =>
  * @param chunkEmbeds Speaker-level embeddings per window.
  * @param foldDistance Cosine-distance cutoff, default 0.65.
  */
-export const foldShortClusters = (
-  clusters: Map<string, number>,
+const foldShortClustersDataFirst = (
+  clusters: HashMap.HashMap<string, number>,
   chunkTurns: readonly TimedTurn[][],
   chunkEmbeds: readonly SpeakerEmbed[][],
   foldDistance = SHORT_CLUSTER_FOLD_DISTANCE
-): Map<string, number | 'unknown'> => {
-  const aliased = new Map<string, number | 'unknown'>()
-  const durationByCluster = new Map<number, number>()
-  const vectorsByCluster = new Map<number, Float32Array[]>()
+): HashMap.HashMap<string, number | "unknown"> => {
+  let aliased = HashMap.empty<string, number | "unknown">();
+  let durationByCluster = HashMap.empty<number, number>();
+  const durationOrder: number[] = [];
+  let vectorsByCluster = HashMap.empty<number, Float32Array[]>();
   for (let i = 0; i < chunkTurns.length; i += 1) {
     for (const turn of chunkTurns[i] ?? []) {
-      const id = embedId(i, turn.speakerKey)
-      const cluster = clusters.get(id)
+      const id = embedId(i, turn.speakerKey);
+      const cluster = O.getOrUndefined(HashMap.get(clusters, id));
       if (cluster === undefined) {
-        continue
+        continue;
       }
-      durationByCluster.set(cluster, (durationByCluster.get(cluster) ?? 0) + durationOf(turn))
+      if (!HashMap.has(durationByCluster, cluster)) durationOrder.push(cluster);
+      durationByCluster = HashMap.set(
+        durationByCluster,
+        cluster,
+        (O.getOrUndefined(HashMap.get(durationByCluster, cluster)) ?? 0) + durationOf(turn)
+      );
     }
   }
   for (let i = 0; i < chunkEmbeds.length; i += 1) {
     for (const embed of chunkEmbeds[i] ?? []) {
-      const cluster = clusters.get(embedId(i, embed.speakerKey))
+      const cluster = O.getOrUndefined(HashMap.get(clusters, embedId(i, embed.speakerKey)));
       if (cluster === undefined) {
-        continue
+        continue;
       }
-      const list = vectorsByCluster.get(cluster) ?? []
-      list.push(embed.vector)
-      vectorsByCluster.set(cluster, list)
+      const list = O.getOrUndefined(HashMap.get(vectorsByCluster, cluster)) ?? [];
+      list.push(embed.vector);
+      vectorsByCluster = HashMap.set(vectorsByCluster, cluster, list);
     }
   }
-  const totalSpeechMs = [...durationByCluster.values()].reduce((sum, ms) => sum + ms, 0)
-  const foldMs = shortClusterFoldMs(totalSpeechMs)
-  const labels = [...durationByCluster.keys()]
-  const mains = labels.filter((label) => (durationByCluster.get(label) ?? 0) >= foldMs)
+  const totalSpeechMs = A.reduce(HashMap.values(durationByCluster), 0, (sum, ms) => sum + ms);
+  const foldMs = shortClusterFoldMs(totalSpeechMs);
+  const labels = durationOrder;
+  const mains = A.filter(labels, (label) => (O.getOrUndefined(HashMap.get(durationByCluster, label)) ?? 0) >= foldMs);
   if (mains.length === 0) {
     for (const [id, cluster] of clusters) {
-      aliased.set(id, cluster)
+      aliased = HashMap.set(aliased, id, cluster);
     }
-    return aliased
+    return aliased;
   }
-  const meanByCluster = new Map<number, Float32Array>()
+  let meanByCluster = HashMap.empty<number, Float32Array>();
   for (const label of labels) {
-    const mean = meanEmbedding(vectorsByCluster.get(label) ?? [])
-    if (mean) {
-      meanByCluster.set(label, mean)
+    const mean = meanEmbedding(O.getOrUndefined(HashMap.get(vectorsByCluster, label)) ?? []);
+    if (mean !== null) {
+      meanByCluster = HashMap.set(meanByCluster, label, mean);
     }
   }
-  const alias = new Map<number, number | 'unknown'>()
+  let alias = HashMap.empty<number, number | "unknown">();
   for (const label of labels) {
-    const duration = durationByCluster.get(label) ?? 0
+    const duration = O.getOrUndefined(HashMap.get(durationByCluster, label)) ?? 0;
     if (duration >= foldMs) {
-      alias.set(label, label)
-      continue
+      alias = HashMap.set(alias, label, label);
+      continue;
     }
-    const own = meanByCluster.get(label)
-    if (!own) {
-      alias.set(label, duration < SHORT_CLUSTER_MS ? 'unknown' : label)
-      continue
+    const own = O.getOrUndefined(HashMap.get(meanByCluster, label));
+    if (own === undefined) {
+      alias = HashMap.set(alias, label, duration < SHORT_CLUSTER_MS ? "unknown" : label);
+      continue;
     }
-    let best: number | null = null
-    let bestDistance = Number.POSITIVE_INFINITY
+    let best: number | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
     for (const main of mains) {
-      const other = meanByCluster.get(main)
-      if (!other) {
-        continue
+      const other = O.getOrUndefined(HashMap.get(meanByCluster, main));
+      if (other === undefined) {
+        continue;
       }
-      const distance = cosineDistance(own, other)
+      const distance = cosineDistance(own, other);
       if (distance < bestDistance) {
-        bestDistance = distance
-        best = main
+        bestDistance = distance;
+        best = main;
       }
     }
     if (best !== null && bestDistance <= foldDistance) {
-      alias.set(label, best)
+      alias = HashMap.set(alias, label, best);
     } else if (duration < SHORT_CLUSTER_MS) {
-      alias.set(label, 'unknown')
+      alias = HashMap.set(alias, label, "unknown");
     } else {
-      alias.set(label, label)
+      alias = HashMap.set(alias, label, label);
     }
   }
   for (const [id, cluster] of clusters) {
-    aliased.set(id, alias.get(cluster) ?? cluster)
+    aliased = HashMap.set(aliased, id, O.getOrUndefined(HashMap.get(alias, cluster)) ?? cluster);
   }
-  return aliased
-}
+  return aliased;
+};
+export const foldShortClusters: {
+  (
+    clusters: HashMap.HashMap<string, number>,
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    foldDistance?: number
+  ): HashMap.HashMap<string, number | "unknown">;
+  (
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    foldDistance?: number
+  ): (clusters: HashMap.HashMap<string, number>) => HashMap.HashMap<string, number | "unknown">;
+} = dual((args) => HashMap.isHashMap(args[0]), foldShortClustersDataFirst);
 
 /**
  * After threshold clustering and short-cluster fold, keep the longest
@@ -361,86 +395,113 @@ export const foldShortClusters = (
  * This replaces the old force-merge-to-k which ignored the distance threshold
  * and could merge the two real speakers before leftover fragments.
  */
-export const capExcessClusters = (
-  clusters: Map<string, number | 'unknown'>,
+const capExcessClustersDataFirst = (
+  clusters: HashMap.HashMap<string, number | "unknown">,
   chunkTurns: readonly TimedTurn[][],
   chunkEmbeds: readonly SpeakerEmbed[][],
   maxSpeakers = MAX_BRIDGED_SPEAKERS,
   foldDistance = SHORT_CLUSTER_FOLD_DISTANCE
-): Map<string, number | 'unknown'> => {
-  const durationByCluster = new Map<number, number>()
-  const vectorsByCluster = new Map<number, Float32Array[]>()
+): HashMap.HashMap<string, number | "unknown"> => {
+  let durationByCluster = HashMap.empty<number, number>();
+  const durationOrder: number[] = [];
+  let vectorsByCluster = HashMap.empty<number, Float32Array[]>();
   for (let i = 0; i < chunkTurns.length; i += 1) {
     for (const turn of chunkTurns[i] ?? []) {
-      const mapped = clusters.get(embedId(i, turn.speakerKey))
-      if (typeof mapped !== 'number') {
-        continue
+      const mapped = O.getOrUndefined(HashMap.get(clusters, embedId(i, turn.speakerKey)));
+      if (typeof mapped !== "number") {
+        continue;
       }
-      durationByCluster.set(mapped, (durationByCluster.get(mapped) ?? 0) + durationOf(turn))
+      if (!HashMap.has(durationByCluster, mapped)) durationOrder.push(mapped);
+      durationByCluster = HashMap.set(
+        durationByCluster,
+        mapped,
+        (O.getOrUndefined(HashMap.get(durationByCluster, mapped)) ?? 0) + durationOf(turn)
+      );
     }
   }
   for (let i = 0; i < chunkEmbeds.length; i += 1) {
     for (const embed of chunkEmbeds[i] ?? []) {
-      const mapped = clusters.get(embedId(i, embed.speakerKey))
-      if (typeof mapped !== 'number') {
-        continue
+      const mapped = O.getOrUndefined(HashMap.get(clusters, embedId(i, embed.speakerKey)));
+      if (typeof mapped !== "number") {
+        continue;
       }
-      const list = vectorsByCluster.get(mapped) ?? []
-      list.push(embed.vector)
-      vectorsByCluster.set(mapped, list)
+      const list = O.getOrUndefined(HashMap.get(vectorsByCluster, mapped)) ?? [];
+      list.push(embed.vector);
+      vectorsByCluster = HashMap.set(vectorsByCluster, mapped, list);
     }
   }
-  const ranked = [...durationByCluster.entries()].sort((left, right) => right[1] - left[1])
+  const ranked = A.map(
+    durationOrder,
+    (label) => [label, O.getOrUndefined(HashMap.get(durationByCluster, label)) ?? 0] as const
+  ).sort((left, right) => right[1] - left[1]);
   if (ranked.length <= maxSpeakers) {
-    return clusters
+    return clusters;
   }
-  const keepers = ranked.slice(0, maxSpeakers).map(([label]) => label)
-  const keeperSet = new Set(keepers)
-  const meanByCluster = new Map<number, Float32Array>()
+  const keepers = A.map(
+    A.take(ranked, maxSpeakers < 0 ? Math.max(0, ranked.length + Math.trunc(maxSpeakers)) : maxSpeakers),
+    ([label]) => label
+  );
+  const keeperSet = HashSet.fromIterable(keepers);
+  let meanByCluster = HashMap.empty<number, Float32Array>();
   for (const [label] of ranked) {
-    const mean = meanEmbedding(vectorsByCluster.get(label) ?? [])
-    if (mean) {
-      meanByCluster.set(label, mean)
+    const mean = meanEmbedding(O.getOrUndefined(HashMap.get(vectorsByCluster, label)) ?? []);
+    if (mean !== null) {
+      meanByCluster = HashMap.set(meanByCluster, label, mean);
     }
   }
-  const alias = new Map<number, number | 'unknown'>()
+  let alias = HashMap.empty<number, number | "unknown">();
   for (const label of keepers) {
-    alias.set(label, label)
+    alias = HashMap.set(alias, label, label);
   }
   for (const [label] of ranked) {
-    if (keeperSet.has(label)) {
-      continue
+    if (HashSet.has(keeperSet, label)) {
+      continue;
     }
-    const own = meanByCluster.get(label)
-    if (!own) {
-      alias.set(label, 'unknown')
-      continue
+    const own = O.getOrUndefined(HashMap.get(meanByCluster, label));
+    if (own === undefined) {
+      alias = HashMap.set(alias, label, "unknown");
+      continue;
     }
-    let best: number | null = null
-    let bestDistance = Number.POSITIVE_INFINITY
+    let best: number | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
     for (const main of keepers) {
-      const other = meanByCluster.get(main)
-      if (!other) {
-        continue
+      const other = O.getOrUndefined(HashMap.get(meanByCluster, main));
+      if (other === undefined) {
+        continue;
       }
-      const distance = cosineDistance(own, other)
+      const distance = cosineDistance(own, other);
       if (distance < bestDistance) {
-        bestDistance = distance
-        best = main
+        bestDistance = distance;
+        best = main;
       }
     }
-    alias.set(label, best !== null && bestDistance <= foldDistance ? best : 'unknown')
+    alias = HashMap.set(alias, label, best !== null && bestDistance <= foldDistance ? best : "unknown");
   }
-  const out = new Map<string, number | 'unknown'>()
+  let out = HashMap.empty<string, number | "unknown">();
   for (const [id, cluster] of clusters) {
-    if (cluster === 'unknown') {
-      out.set(id, 'unknown')
-      continue
+    if (cluster === "unknown") {
+      out = HashMap.set(out, id, "unknown");
+      continue;
     }
-    out.set(id, alias.get(cluster) ?? cluster)
+    out = HashMap.set(out, id, O.getOrUndefined(HashMap.get(alias, cluster)) ?? cluster);
   }
-  return out
-}
+  return out;
+};
+export const capExcessClusters: {
+  (
+    clusters: HashMap.HashMap<string, number | "unknown">,
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    maxSpeakers?: number,
+    foldDistance?: number
+  ): HashMap.HashMap<string, number | "unknown">;
+  (
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    maxSpeakers?: number,
+    foldDistance?: number
+  ): (clusters: HashMap.HashMap<string, number | "unknown">) => HashMap.HashMap<string, number | "unknown">;
+} = dual((args) => HashMap.isHashMap(args[0]), capExcessClustersDataFirst);
 
 /**
  * Map each chunk's local speaker ids onto global ids by clustering
@@ -456,80 +517,89 @@ export const capExcessClusters = (
  * @param chunkEmbeds Speaker-level embeddings per window.
  * @param opts Auto uses `threshold`; manual `k` cuts at that speaker count.
  */
-export const mergeChunkTurnsByEmbeddings = (
+const mergeChunkTurnsByEmbeddingsDataFirst = (
   windows: readonly DiarizeWindow[],
   chunkTurns: readonly TimedTurn[][],
   chunkEmbeds: readonly SpeakerEmbed[][],
-  opts?: { threshold?: number; k?: number }
+  opts?: { threshold?: number | undefined; k?: number | undefined }
 ): TimedTurn[] => {
-  const items = chunkEmbeds.flatMap((embeds, chunkIndex) =>
-    embeds.map((embed) => ({ id: embedId(chunkIndex, embed.speakerKey), vector: embed.vector }))
-  )
+  const items = A.flatMap(chunkEmbeds, (embeds, chunkIndex) =>
+    A.map(embeds, (embed) => ({ id: embedId(chunkIndex, embed.speakerKey), vector: embed.vector }))
+  );
   const clustered = clusterSpeakerEmbeddings(items, {
     threshold: opts?.threshold ?? CLUSTERING_THRESHOLD,
-    k: opts?.k
-  })
+    k: opts?.k,
+  });
   const resolved =
-    typeof opts?.k === 'number' && opts.k >= 1
+    typeof opts?.k === "number" && opts.k >= 1
       ? clustered
-      : capExcessClusters(
-          foldShortClusters(clustered, chunkTurns, chunkEmbeds),
-          chunkTurns,
-          chunkEmbeds
-        )
-  const localToGlobal = new Map<string, string>()
-  const clusterToGlobal = new Map<number, string>()
-  let nextIndex = 1
+      : capExcessClusters(foldShortClusters(clustered, chunkTurns, chunkEmbeds), chunkTurns, chunkEmbeds);
+  let localToGlobal = HashMap.empty<string, string>();
+  let clusterToGlobal = HashMap.empty<number, string>();
+  let nextIndex = 1;
   const assign = (id: string, speakerKey: string): string => {
-    if (speakerKey === 'unknown') {
-      return 'unknown'
+    if (speakerKey === "unknown") {
+      return "unknown";
     }
-    const existing = localToGlobal.get(id)
-    if (existing) {
-      return existing
+    const existing = O.getOrUndefined(HashMap.get(localToGlobal, id));
+    if (existing !== undefined && P.isTruthy(existing)) {
+      return existing;
     }
-    const cluster = resolved.get(id)
-    if (cluster === 'unknown') {
-      localToGlobal.set(id, 'unknown')
-      return 'unknown'
+    const cluster = O.getOrUndefined(HashMap.get(resolved, id));
+    if (cluster === "unknown") {
+      localToGlobal = HashMap.set(localToGlobal, id, "unknown");
+      return "unknown";
     }
-    if (typeof cluster === 'number') {
-      const mapped = clusterToGlobal.get(cluster)
-      if (mapped) {
-        localToGlobal.set(id, mapped)
-        return mapped
+    if (typeof cluster === "number") {
+      const mapped = O.getOrUndefined(HashMap.get(clusterToGlobal, cluster));
+      if (mapped !== undefined && P.isTruthy(mapped)) {
+        localToGlobal = HashMap.set(localToGlobal, id, mapped);
+        return mapped;
       }
-      const key = `speaker-${nextIndex}`
-      nextIndex += 1
-      clusterToGlobal.set(cluster, key)
-      localToGlobal.set(id, key)
-      return key
+      const key = `speaker-${nextIndex}`;
+      nextIndex += 1;
+      clusterToGlobal = HashMap.set(clusterToGlobal, cluster, key);
+      localToGlobal = HashMap.set(localToGlobal, id, key);
+      return key;
     }
-    const key = `speaker-${nextIndex}`
-    nextIndex += 1
-    localToGlobal.set(id, key)
-    return key
-  }
+    const key = `speaker-${nextIndex}`;
+    nextIndex += 1;
+    localToGlobal = HashMap.set(localToGlobal, id, key);
+    return key;
+  };
   for (let i = 0; i < chunkTurns.length; i += 1) {
-    const ordered = [...(chunkTurns[i] ?? [])].sort((a, b) => a.startMs - b.startMs)
+    const ordered = [...(chunkTurns[i] ?? [])].sort((a, b) => a.startMs - b.startMs);
     for (const turn of ordered) {
-      assign(embedId(i, turn.speakerKey), turn.speakerKey)
+      assign(embedId(i, turn.speakerKey), turn.speakerKey);
     }
   }
 
-  let merged: TimedTurn[] = []
+  let merged: TimedTurn[] = [];
   for (let i = 0; i < chunkTurns.length; i += 1) {
-    const remapped = (chunkTurns[i] ?? []).map((turn) => ({
+    const remapped = A.map(chunkTurns[i] ?? [], (turn) => ({
       ...turn,
-      speakerKey: localToGlobal.get(embedId(i, turn.speakerKey)) ?? turn.speakerKey
-    }))
+      speakerKey: O.getOrUndefined(HashMap.get(localToGlobal, embedId(i, turn.speakerKey))) ?? turn.speakerKey,
+    }));
     if (i === 0) {
-      merged = remapped
-      continue
+      merged = remapped;
+      continue;
     }
-    const window = windows[i]
-    const mid = window ? window.startMs + Math.round(DIARIZE_OVERLAP_MS / 2) : 0
-    merged = stitchTurnsAtMidpoint(merged, remapped, mid)
+    const window = windows[i];
+    const mid = window !== undefined ? window.startMs + Math.round(DIARIZE_OVERLAP_MS / 2) : 0;
+    merged = stitchTurnsAtMidpoint(merged, remapped, mid);
   }
-  return mergeAdjacentTurns(merged)
-}
+  return mergeAdjacentTurns(merged);
+};
+export const mergeChunkTurnsByEmbeddings: {
+  (
+    windows: readonly DiarizeWindow[],
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    opts?: { threshold?: number | undefined; k?: number | undefined }
+  ): TimedTurn[];
+  (
+    chunkTurns: readonly TimedTurn[][],
+    chunkEmbeds: readonly SpeakerEmbed[][],
+    opts?: { threshold?: number | undefined; k?: number | undefined }
+  ): (windows: readonly DiarizeWindow[]) => TimedTurn[];
+} = dual((args) => args.length >= 3 && A.isArray(args[2]), mergeChunkTurnsByEmbeddingsDataFirst);

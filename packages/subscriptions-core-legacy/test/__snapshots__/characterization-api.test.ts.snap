@@ -1,0 +1,1677 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`API startup lease loser is not reacquired by scheduled or forced refreshes 1`] = `
+[
+  [
+    "list",
+  ],
+  [
+    "list",
+  ],
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastCheckedAt": 5000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "fetch",
+    "https://fixture.invalid/feed",
+  ],
+  [
+    "replace",
+    "sub",
+    [],
+  ],
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastError": undefined,
+      "lastSuccessAt": 5000,
+      "status": "up-to-date",
+    },
+  ],
+]
+`;
+
+exports[`RSS survives update/remove/stop during fetch; profile removal aborts its owned signal 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastCheckedAt": 1000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "autoDownload": false,
+    },
+  ],
+  [
+    "remove",
+    "sub",
+  ],
+  [
+    "replace",
+    "sub",
+    [
+      {
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+    ],
+  ],
+  [
+    "enqueue",
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "auto",
+    },
+  ],
+  [
+    "mark",
+    "sub",
+    "a",
+    "task",
+  ],
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastError": undefined,
+      "lastSuccessAt": 1000,
+      "latestVideoPublishedAt": 1577836800000,
+      "latestVideoTitle": "A",
+      "status": "up-to-date",
+    },
+  ],
+]
+`;
+
+exports[`RSS survives update/remove/stop during fetch; profile removal aborts its owned signal 2`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastCheckedAt": 1000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "remove",
+    "sub",
+  ],
+  [
+    "get",
+    "sub",
+  ],
+]
+`;
+
+exports[`add normalizes profile/feed inputs before guards; duplicate carries mutable own duplicateOf 1`] = `
+{
+  "autoDownload": true,
+  "categories": [
+    "stories",
+    "posts",
+  ],
+  "createdAt": 10,
+  "enabled": true,
+  "feedUrl": "https://fixture.invalid/feed",
+  "id": "created",
+  "items": [],
+  "keywords": [],
+  "onlyDownloadLatest": false,
+  "platform": "instagram",
+  "sourceKind": "profile",
+  "sourceUrl": "https://fixture.invalid/page",
+  "status": "idle",
+  "tags": [],
+  "title": "https://fixture.invalid/page",
+  "updatedAt": 10,
+}
+`;
+
+exports[`add normalizes profile/feed inputs before guards; duplicate carries mutable own duplicateOf 2`] = `
+[
+  [
+    "duplicate",
+    "https://fixture.invalid/feed",
+    undefined,
+  ],
+  [
+    "add",
+    {
+      "categories": [
+        "stories",
+        "posts",
+      ],
+      "feedUrl": "https://fixture.invalid/feed",
+      "keywords": [],
+      "onlyDownloadLatest": false,
+      "platform": "instagram",
+      "sourceKind": "profile",
+      "sourceUrl": "https://fixture.invalid/page",
+    },
+  ],
+]
+`;
+
+exports[`initial checking SQL failure escapes; failed-state write failure rejects with original value 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+]
+`;
+
+exports[`initial checking SQL failure escapes; failed-state write failure rejects with original value 2`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastCheckedAt": 1000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "log",
+    "warn",
+    "subscriptions: feed-check failed",
+    {
+      "err": [Error: fetch-sentinel],
+      "id": "sub",
+    },
+  ],
+]
+`;
+
+exports[`inner enqueue-warning logger failure; outer logger throws=false 1`] = `
+{
+  "logs": [
+    [
+      "warn",
+      "subscriptions: enqueueItem failed",
+      {
+        "err": [Error: enqueue-sentinel],
+        "itemId": "a",
+        "subscriptionId": "sub",
+      },
+    ],
+    [
+      "warn",
+      "subscriptions: feed-check failed",
+      {
+        "err": [Error: log-sentinel],
+        "id": "sub",
+      },
+    ],
+  ],
+  "row": {
+    "autoDownload": true,
+    "categories": [],
+    "createdAt": 10,
+    "enabled": true,
+    "feedUrl": "https://fixture.invalid/feed",
+    "id": "sub",
+    "items": [
+      {
+        "addedToQueue": false,
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+    ],
+    "keywords": [],
+    "lastCheckedAt": 1000,
+    "lastError": "log-sentinel",
+    "onlyDownloadLatest": false,
+    "platform": "custom",
+    "sourceKind": "feed",
+    "sourceUrl": "https://fixture.invalid/page",
+    "status": "failed",
+    "tags": [],
+    "title": "Fixture",
+    "updatedAt": 10,
+  },
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "status": "checking",
+      },
+    ],
+    [
+      "replace",
+      "sub",
+      [
+        {
+          "id": "a",
+          "publishedAt": 1577836800000,
+          "thumbnail": undefined,
+          "title": "A",
+          "url": "https://fixture.invalid/a",
+        },
+      ],
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": "log-sentinel",
+        "status": "failed",
+      },
+    ],
+  ],
+}
+`;
+
+exports[`inner enqueue-warning logger failure; outer logger throws=true 1`] = `
+{
+  "logs": [
+    [
+      "warn",
+      "subscriptions: enqueueItem failed",
+      {
+        "err": [Error: enqueue-sentinel],
+        "itemId": "a",
+        "subscriptionId": "sub",
+      },
+    ],
+    [
+      "warn",
+      "subscriptions: feed-check failed",
+      {
+        "err": [Error: log-sentinel],
+        "id": "sub",
+      },
+    ],
+  ],
+  "row": {
+    "autoDownload": true,
+    "categories": [],
+    "createdAt": 10,
+    "enabled": true,
+    "feedUrl": "https://fixture.invalid/feed",
+    "id": "sub",
+    "items": [
+      {
+        "addedToQueue": false,
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+    ],
+    "keywords": [],
+    "lastCheckedAt": 1000,
+    "lastError": undefined,
+    "onlyDownloadLatest": false,
+    "platform": "custom",
+    "sourceKind": "feed",
+    "sourceUrl": "https://fixture.invalid/page",
+    "status": "checking",
+    "tags": [],
+    "title": "Fixture",
+    "updatedAt": 10,
+  },
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "status": "checking",
+      },
+    ],
+    [
+      "replace",
+      "sub",
+      [
+        {
+          "id": "a",
+          "publishedAt": 1577836800000,
+          "thumbnail": undefined,
+          "title": "A",
+          "url": "https://fixture.invalid/a",
+        },
+      ],
+    ],
+  ],
+}
+`;
+
+exports[`list/itemsList complete values and slice coercion including negative, zero and NaN 1`] = `
+[
+  {
+    "items": [
+      {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 0,
+            "title": "a",
+            "url": "https://fixture.invalid/a",
+          },
+          {
+            "addedToQueue": false,
+            "id": "b",
+            "publishedAt": 1,
+            "title": "b",
+            "url": "https://fixture.invalid/b",
+          },
+          {
+            "addedToQueue": false,
+            "id": "c",
+            "publishedAt": 2,
+            "title": "c",
+            "url": "https://fixture.invalid/c",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+    ],
+    "total": 1,
+  },
+  {
+    "limit": undefined,
+    "offset": undefined,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+        {
+          "addedToQueue": false,
+          "id": "c",
+          "publishedAt": 2,
+          "title": "c",
+          "url": "https://fixture.invalid/c",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": -1,
+    "offset": undefined,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 0,
+    "offset": undefined,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 1,
+    "offset": undefined,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": NaN,
+    "offset": undefined,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": undefined,
+    "offset": -1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": -1,
+    "offset": -1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 0,
+    "offset": -1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 1,
+    "offset": -1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": NaN,
+    "offset": -1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": undefined,
+    "offset": 0,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+        {
+          "addedToQueue": false,
+          "id": "c",
+          "publishedAt": 2,
+          "title": "c",
+          "url": "https://fixture.invalid/c",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": -1,
+    "offset": 0,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 0,
+    "offset": 0,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 1,
+    "offset": 0,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "a",
+          "publishedAt": 0,
+          "title": "a",
+          "url": "https://fixture.invalid/a",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": NaN,
+    "offset": 0,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": undefined,
+    "offset": 1,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+        {
+          "addedToQueue": false,
+          "id": "c",
+          "publishedAt": 2,
+          "title": "c",
+          "url": "https://fixture.invalid/c",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": -1,
+    "offset": 1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 0,
+    "offset": 1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 1,
+    "offset": 1,
+    "result": {
+      "items": [
+        {
+          "addedToQueue": false,
+          "id": "b",
+          "publishedAt": 1,
+          "title": "b",
+          "url": "https://fixture.invalid/b",
+        },
+      ],
+      "total": 3,
+    },
+  },
+  {
+    "limit": NaN,
+    "offset": 1,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": undefined,
+    "offset": NaN,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": -1,
+    "offset": NaN,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 0,
+    "offset": NaN,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": 1,
+    "offset": NaN,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+  {
+    "limit": NaN,
+    "offset": NaN,
+    "result": {
+      "items": [],
+      "total": 3,
+    },
+  },
+]
+`;
+
+exports[`listener returns are ignored, thrown listener logs once and continues; throwing logger escapes after mutation 1`] = `
+[
+  [
+    "remove",
+    "sub",
+  ],
+  [
+    "log",
+    "warn",
+    "subscriptions: listener threw",
+    {
+      "err": [Error: listener-sentinel],
+    },
+  ],
+  "last",
+]
+`;
+
+exports[`listeners use live insertion order, dedupe, removal/re-entry and stale unsubscribe booleans 1`] = `
+[
+  [
+    "returned",
+    false,
+  ],
+  [
+    "first",
+    false,
+  ],
+  [
+    "late",
+    false,
+  ],
+  "marker",
+  [
+    "off",
+    true,
+    false,
+    false,
+  ],
+  [
+    "stale",
+    true,
+  ],
+  [
+    "late",
+    false,
+  ],
+]
+`;
+
+exports[`manual creator metadata is passed by identity, null/empty admission outcomes retain actual semantics 1`] = `
+{
+  "contexts": [
+    {
+      "creation": {
+        "agentConversation": {
+          "downloadId": "download",
+          "promptId": "prompt",
+          "threadId": "thread",
+        },
+        "origin": "agent",
+      },
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "title": "A",
+        "url": "url",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 4,
+            "title": "A",
+            "url": "url",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+  ],
+  "row": {
+    "autoDownload": true,
+    "categories": [],
+    "createdAt": 10,
+    "enabled": true,
+    "feedUrl": "https://fixture.invalid/feed",
+    "id": "sub",
+    "items": [
+      {
+        "addedToQueue": true,
+        "id": "a",
+        "publishedAt": 4,
+        "taskId": "task",
+        "title": "A",
+        "url": "url",
+      },
+    ],
+    "keywords": [],
+    "onlyDownloadLatest": false,
+    "platform": "custom",
+    "sourceKind": "feed",
+    "sourceUrl": "https://fixture.invalid/page",
+    "status": "idle",
+    "tags": [],
+    "title": "Fixture",
+    "updatedAt": 10,
+  },
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "mark",
+      "sub",
+      "a",
+      "task",
+    ],
+  ],
+}
+`;
+
+exports[`manual creator metadata is passed by identity, null/empty admission outcomes retain actual semantics 2`] = `
+{
+  "received": [
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "title": "A",
+        "url": "url",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 4,
+            "title": "A",
+            "url": "url",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+  ],
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+  ],
+}
+`;
+
+exports[`manual creator metadata is passed by identity, null/empty admission outcomes retain actual semantics 3`] = `
+{
+  "received": [
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "title": "A",
+        "url": "url",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 4,
+            "title": "A",
+            "url": "url",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+  ],
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+  ],
+}
+`;
+
+exports[`manual queue has no per-item lock; passes complete metadata and does not catch admission failures 1`] = `
+{
+  "calls": [
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "thumbnail": "thumb",
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 4,
+            "thumbnail": "thumb",
+            "title": "A",
+            "url": "https://fixture.invalid/a",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "thumbnail": "thumb",
+        "title": "A",
+        "url": "https://fixture.invalid/a",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": false,
+            "id": "a",
+            "publishedAt": 4,
+            "thumbnail": "thumb",
+            "title": "A",
+            "url": "https://fixture.invalid/a",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+  ],
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "mark",
+      "sub",
+      "a",
+      "task",
+    ],
+    [
+      "mark",
+      "sub",
+      "a",
+      "task",
+    ],
+  ],
+}
+`;
+
+exports[`manual queue link policy: absent 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+]
+`;
+
+exports[`manual queue link policy: live 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+]
+`;
+
+exports[`manual queue link policy: missing 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "clear",
+    {
+      "items": [
+        {
+          "itemId": "a",
+          "subscriptionId": "sub",
+        },
+      ],
+    },
+  ],
+  [
+    "enqueue",
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 4,
+        "title": "A",
+        "url": "u",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [
+          {
+            "addedToQueue": true,
+            "id": "a",
+            "publishedAt": 4,
+            "taskId": "old",
+            "title": "A",
+            "url": "u",
+          },
+        ],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "custom",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "idle",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "manual",
+    },
+  ],
+  [
+    "mark",
+    "sub",
+    "a",
+    "task",
+  ],
+]
+`;
+
+exports[`manual queue link policy: throws 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+]
+`;
+
+exports[`profile check uses edits made during fetch, retains full batch context and samples one discovery time 1`] = `
+{
+  "received": [
+    {
+      "batch": {
+        "id": "subscription_sub_1000",
+        "title": "Named profile",
+      },
+      "item": {
+        "id": "posts:b",
+        "publishedAt": 1000,
+        "title": "@https://fixture.invalid/page · posts · b",
+        "url": "post",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [
+          "posts",
+        ],
+        "checkIntervalMs": 100,
+        "createdAt": 10,
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [],
+        "keywords": [],
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "nextCheckAt": undefined,
+        "onlyDownloadLatest": false,
+        "platform": "instagram",
+        "sourceKind": "profile",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "checking",
+        "tags": [],
+        "title": "https://fixture.invalid/page",
+        "updatedAt": 10,
+      },
+      "trigger": "auto",
+    },
+  ],
+  "row": {
+    "autoDownload": true,
+    "categories": [
+      "posts",
+    ],
+    "checkIntervalMs": 100,
+    "coverUrl": "avatar",
+    "createdAt": 10,
+    "enabled": true,
+    "feedUrl": "https://fixture.invalid/feed",
+    "id": "sub",
+    "items": [
+      {
+        "addedToQueue": true,
+        "id": "posts:b",
+        "publishedAt": 1000,
+        "taskId": "profile-task",
+        "title": "@https://fixture.invalid/page · posts · b",
+        "url": "post",
+      },
+    ],
+    "keywords": [],
+    "lastCheckedAt": 1000,
+    "lastError": undefined,
+    "lastSuccessAt": 1000,
+    "latestVideoPublishedAt": 1000,
+    "latestVideoTitle": "@https://fixture.invalid/page · posts · b",
+    "nextCheckAt": 1100,
+    "onlyDownloadLatest": false,
+    "platform": "instagram",
+    "sourceKind": "profile",
+    "sourceUrl": "https://fixture.invalid/page",
+    "status": "up-to-date",
+    "tags": [],
+    "title": "Named profile",
+    "updatedAt": 10,
+  },
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "status": "checking",
+      },
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "categories": [
+          "posts",
+        ],
+        "checkIntervalMs": 100,
+        "nextCheckAt": undefined,
+      },
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "merge",
+      "sub",
+      [
+        {
+          "id": "posts:b",
+          "publishedAt": 1000,
+          "title": "@https://fixture.invalid/page · posts · b",
+          "url": "post",
+        },
+      ],
+    ],
+    [
+      "mark",
+      "sub",
+      "posts:b",
+      "profile-task",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "coverUrl": "avatar",
+        "lastError": undefined,
+        "lastSuccessAt": 1000,
+        "latestVideoPublishedAt": 1000,
+        "latestVideoTitle": "@https://fixture.invalid/page · posts · b",
+        "nextCheckAt": 1100,
+        "status": "up-to-date",
+        "title": "Named profile",
+      },
+    ],
+  ],
+}
+`;
+
+exports[`refreshOne same-ID joins work, distinct IDs overlap, direct checks bypass enabled/due/leader 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "get",
+    "second",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastCheckedAt": 1000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "update",
+    "second",
+    {
+      "lastCheckedAt": 1000,
+      "lastError": undefined,
+      "status": "checking",
+    },
+  ],
+  [
+    "replace",
+    "sub",
+    [],
+  ],
+  [
+    "replace",
+    "second",
+    [],
+  ],
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "get",
+    "second",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "lastError": undefined,
+      "lastSuccessAt": 1000,
+      "status": "up-to-date",
+    },
+  ],
+  [
+    "update",
+    "second",
+    {
+      "lastError": undefined,
+      "lastSuccessAt": 1000,
+      "status": "up-to-date",
+    },
+  ],
+]
+`;
+
+exports[`startup reconciliation failure is caught before timer, while acquisition failure stops startup 1`] = `
+[
+  [
+    "info",
+    "leader: acquired lease",
+    "<lease>",
+  ],
+  [
+    "warn",
+    "subscriptions: failed to reconcile orphaned queue links",
+    {
+      "acquisition": "failure",
+    },
+  ],
+  [
+    "schedule",
+    0,
+  ],
+]
+`;
+
+exports[`task removal is synchronous bookkeeping, batches one microtask, permits overlapping releases 1`] = `
+[
+  [
+    "clear-pending",
+    {
+      "taskIds": [
+        "a",
+        "b",
+      ],
+    },
+  ],
+  "marker",
+  [
+    "clear-pending",
+    {
+      "taskIds": [
+        "c",
+      ],
+    },
+  ],
+  [
+    "log",
+    "info",
+    "subscriptions: cleared queue links for removed tasks",
+    {
+      "released": 2,
+    },
+  ],
+  [
+    "log",
+    "info",
+    "subscriptions: cleared queue links for removed tasks",
+    {
+      "released": 2,
+    },
+  ],
+]
+`;
+
+exports[`unknown persisted enum text and preference values reach policy and enqueue unchanged 1`] = `
+{
+  "received": [
+    {
+      "item": {
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "url",
+      },
+      "subscription": {
+        "autoDownload": true,
+        "categories": [],
+        "createdAt": 10,
+        "downloadContainer": "future-container",
+        "downloadQuality": "future-quality",
+        "downloadType": "future-type",
+        "enabled": true,
+        "feedUrl": "https://fixture.invalid/feed",
+        "id": "sub",
+        "items": [],
+        "keywords": [],
+        "onlyDownloadLatest": false,
+        "platform": "future-platform",
+        "sourceKind": "feed",
+        "sourceUrl": "https://fixture.invalid/page",
+        "status": "future-status",
+        "tags": [],
+        "title": "Fixture",
+        "updatedAt": 10,
+      },
+      "trigger": "auto",
+    },
+  ],
+  "row": {
+    "autoDownload": true,
+    "categories": [],
+    "createdAt": 10,
+    "downloadContainer": "future-container",
+    "downloadQuality": "future-quality",
+    "downloadType": "future-type",
+    "enabled": true,
+    "feedUrl": "https://fixture.invalid/feed",
+    "id": "sub",
+    "items": [
+      {
+        "addedToQueue": false,
+        "id": "a",
+        "publishedAt": 1577836800000,
+        "thumbnail": undefined,
+        "title": "A",
+        "url": "url",
+      },
+    ],
+    "keywords": [],
+    "lastCheckedAt": 1000,
+    "lastError": undefined,
+    "lastSuccessAt": 1000,
+    "latestVideoPublishedAt": 1577836800000,
+    "latestVideoTitle": "A",
+    "onlyDownloadLatest": false,
+    "platform": "future-platform",
+    "sourceKind": "feed",
+    "sourceUrl": "https://fixture.invalid/page",
+    "status": "up-to-date",
+    "tags": [],
+    "title": "Fixture",
+    "updatedAt": 10,
+  },
+  "trace": [
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "status": "checking",
+      },
+    ],
+    [
+      "replace",
+      "sub",
+      [
+        {
+          "id": "a",
+          "publishedAt": 1577836800000,
+          "thumbnail": undefined,
+          "title": "A",
+          "url": "url",
+        },
+      ],
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastError": undefined,
+        "lastSuccessAt": 1000,
+        "latestVideoPublishedAt": 1577836800000,
+        "latestVideoTitle": "A",
+        "status": "up-to-date",
+      },
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastCheckedAt": 1000,
+        "lastError": undefined,
+        "status": "checking",
+      },
+    ],
+    [
+      "replace",
+      "sub",
+      [
+        {
+          "id": "a",
+          "publishedAt": 1577836800000,
+          "thumbnail": undefined,
+          "title": "A",
+          "url": "url",
+        },
+      ],
+    ],
+    [
+      "get",
+      "sub",
+    ],
+    [
+      "update",
+      "sub",
+      {
+        "lastError": undefined,
+        "lastSuccessAt": 1000,
+        "latestVideoPublishedAt": 1577836800000,
+        "latestVideoTitle": "A",
+        "status": "up-to-date",
+      },
+    ],
+  ],
+}
+`;
+
+exports[`update validates categories against OLD platform and leaves source kind/owner untouched 1`] = `
+[
+  [
+    "get",
+    "sub",
+  ],
+  [
+    "update",
+    "sub",
+    {
+      "categories": [
+        "posts",
+      ],
+      "checkIntervalMs": undefined,
+      "nextCheckAt": undefined,
+      "platform": "x",
+      "sourceUrl": "changed",
+    },
+  ],
+]
+`;

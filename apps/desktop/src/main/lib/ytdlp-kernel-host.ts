@@ -1,5 +1,8 @@
 import { join } from 'node:path'
-import { createGithubMirrorFetch, preferChinaMirrors } from '@vidbee/transcription/download-mirrors'
+import {
+  createGithubMirrorFetch,
+  preferChinaMirrors
+} from '@vidbee/transcription-legacy/download-mirrors'
 import { app } from 'electron'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'

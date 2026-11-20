@@ -1,0 +1,25 @@
+{
+  "copy": {
+    "kind": null,
+    "pid": null,
+    "startedAt": null,
+    "heartbeatAt": null,
+    "lockExpiresAt": null,
+    "leaseId": null,
+    "preferred": "api"
+  },
+  "cas": [
+    true,
+    false,
+    true
+  ],
+  "final": {
+    "kind": "desktop",
+    "pid": 1,
+    "startedAt": 2,
+    "heartbeatAt": 3,
+    "lockExpiresAt": null,
+    "leaseId": "next",
+    "preferred": "api"
+  }
+}

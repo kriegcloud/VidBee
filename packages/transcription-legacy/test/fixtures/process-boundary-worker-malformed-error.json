@@ -1,0 +1,79 @@
+[
+  [
+    "spawn",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "pid": 1000,
+      "pidStartedAt": 1000,
+      "kind": "ai-worker",
+      "spawnedAt": 1000
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.path=<NODE>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.version=<NODE_VERSION>"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.layer=electron"
+    }
+  ],
+  [
+    "std",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "stream": "stdout",
+      "line": "runtime.restarts=0"
+    }
+  ],
+  [
+    "finish",
+    {
+      "taskId": "boundary-malformed-error",
+      "attemptId": "attempt",
+      "result": {
+        "type": "error",
+        "error": {
+          "category": "unknown",
+          "exitCode": null,
+          "rawMessage": "[object Object]",
+          "uiMessageKey": "task.error.unknown",
+          "uiActionHints": [
+            "retry",
+            "report-bug"
+          ],
+          "retryable": true,
+          "suggestedRetryAfterMs": null
+        },
+        "exitCode": null
+      },
+      "closedAt": 1000,
+      "stdoutTail": "runtime.path=<NODE>\nruntime.version=<NODE_VERSION>\nruntime.layer=electron\nruntime.restarts=0\n",
+      "stderrTail": "[object Object]"
+    }
+  ],
+  [
+    "partial-state",
+    null
+  ]
+]

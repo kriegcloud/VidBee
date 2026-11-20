@@ -1,14 +1,18 @@
 import { spawn } from 'node:child_process'
-import type { SpawnOptions } from 'node:child_process'
+import type { ChildProcess, SpawnOptions } from 'node:child_process'
 import type * as Cause from 'effect/Cause'
+import * as Deferred from 'effect/Deferred'
 import * as Effect from 'effect/Effect'
 import * as Layer from 'effect/Layer'
 import type * as ManagedRuntime from 'effect/ManagedRuntime'
 import { runLegacySync } from '@vidbee/task-queue-legacy/runtime'
 import { killProcessTree } from '@vidbee/task-queue-legacy/process'
+import { adapterLayer } from '../../downloader-core/src/ProcessCapabilities.layer.js'
 import { DownloadProcess } from '../../downloader-core/src/DownloadProcess.service.js'
 import { HostFailure } from '../../downloader-core/src/Downloader.errors.js'
-import type { ProcessEvent, ProcessSignal, ProcessSpec } from '../../downloader-core/src/Process.model.js'
+import type { ProcessEvent, ProcessOutcome, ProcessSignal, ProcessSpec } from '../../downloader-core/src/Process.model.js'
+
+export type RawProcessSpawn = (command: string, argv: readonly string[], options: SpawnOptions) => ChildProcess
 
 export interface RawProcessInvocation {
   readonly options?: (spec: ProcessSpec, options: SpawnOptions) => SpawnOptions
@@ -20,6 +24,7 @@ export const makeProcessLayer = <R, ER>(
   runtime: () => ManagedRuntime.ManagedRuntime<R, ER>,
   mapError: (cause: Cause.Cause<ER>) => unknown,
   invocation?: RawProcessInvocation,
+  spawnFn?: RawProcessSpawn,
 ) => Layer.succeed(DownloadProcess, DownloadProcess.of({
   start: (spec, sink) => Effect.try({
     try: () => {
@@ -31,19 +36,24 @@ export const makeProcessLayer = <R, ER>(
         stdio: [spec.stdin, spec.stdout, spec.stderr],
         ...(spec.abortSignal === undefined ? {} : { signal: spec.abortSignal }),
       }
-      const child = spawn(spec.command, [...spec.argv], invocation?.options?.(spec, options) ?? options)
+      const child = (spawnFn ?? spawn)(spec.command, [...spec.argv], invocation?.options?.(spec, options) ?? options)
       const emit = (event: ProcessEvent) => runLegacySync(runtime(), sink.emit(event), mapError)
-      const close = (code: number | null, signal: NodeJS.Signals | null) => emit({ _tag: 'complete', outcome: { _tag: 'Raw', code, signal, killed: child.killed } })
+      const reaped = Deferred.makeUnsafe<ProcessOutcome>()
+      const close = (code: number | null, signal: NodeJS.Signals | null) => {
+        const outcome: ProcessOutcome = { _tag: 'Raw', code, signal, killed: child.killed }
+        try { emit({ _tag: 'complete', outcome }) }
+        finally { if (spec.extendedLifecycle) runLegacySync(runtime(), Deferred.succeed(reaped, outcome), mapError) }
+      }
       let active = false
       const activate = () => {
         if (active) return
         active = true
       if (spec.stdoutConsumption !== 'unread') {
-        child.stdout?.on('data', (chunk: Buffer) => emit({ _tag: 'stdout', chunk }))
+        child.stdout?.on('data', (chunk: Buffer) => emit({ _tag: 'stdout', chunk: spec.extendedLifecycle && typeof chunk === 'string' ? Buffer.from(chunk, 'utf8') : chunk }))
         child.stdout?.on('end', () => emit({ _tag: 'stdoutEnd' }))
       }
       if (spec.stderrConsumption !== 'unread') {
-        child.stderr?.on('data', (chunk: Buffer) => emit({ _tag: 'stderr', chunk }))
+        child.stderr?.on('data', (chunk: Buffer) => emit({ _tag: 'stderr', chunk: spec.extendedLifecycle && typeof chunk === 'string' ? Buffer.from(chunk, 'utf8') : chunk }))
         child.stderr?.on('end', () => emit({ _tag: 'stderrEnd' }))
       }
       if (spec.rawErrorObservation !== 'omit') {
@@ -63,6 +73,27 @@ export const makeProcessLayer = <R, ER>(
       return {
         _tag: 'Acquired' as const,
         run: {
+          ...(spec.extendedLifecycle ? { lifecycle: {
+            signallingState: Effect.sync(() => ({ _tag: 'Raw' as const, killed: child.killed })),
+            endInput: Effect.try({
+              try: () => { child.stdin?.end() },
+              catch: original => new HostFailure({ operation: 'endInput', legacyMessage: original instanceof Error ? original.message : String(original), cause: original }),
+            }),
+            awaitReaped: Deferred.await(reaped),
+            terminate: (graceMs: number) => Effect.tryPromise({
+              try: () => new Promise<void>((resolve) => {
+                if (child.exitCode !== null || child.signalCode !== null || child.pid === undefined) { resolve(); return }
+                const timer = setTimeout(() => {
+                  if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+                }, graceMs)
+                timer.unref()
+                child.once('close', () => { clearTimeout(timer); resolve() })
+                child.stdin?.end()
+                child.kill('SIGTERM')
+              }),
+              catch: original => new HostFailure({ operation: 'terminate', legacyMessage: original instanceof Error ? original.message : String(original), cause: original }),
+            }),
+          } } : {}),
           pid: child.pid,
           backend:"Raw" as const,
           activateObservations: Effect.sync(activate),
@@ -90,3 +121,10 @@ export const makeProcessLayer = <R, ER>(
     catch: original => new HostFailure({ operation: 'spawn', legacyMessage: original instanceof Error ? original.message : String(original), cause: original }),
   }),
 }))
+
+/** Compatibility composition over the same raw DownloadProcess implementation. */
+export const makeProcessCapabilitiesLayer = <R, ER>(
+  runtime: () => ManagedRuntime.ManagedRuntime<R, ER>,
+  mapError: (cause: Cause.Cause<ER>) => unknown,
+  spawnFn?: RawProcessSpawn,
+) => adapterLayer.pipe(Layer.provide(makeProcessLayer(runtime, mapError, undefined, spawnFn)))

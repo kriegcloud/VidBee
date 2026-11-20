@@ -15,7 +15,9 @@
     "./legacy/task-queue": "./src/legacy/task-queue.ts",
     "./legacy/subscriptions": "./src/legacy/subscriptions.ts",
     "./legacy/transcripts": "./src/legacy/transcripts.ts",
-    "./legacy/prompt-runs": "./src/legacy/prompt-runs.ts"
+    "./legacy/prompt-runs": "./src/legacy/prompt-runs.ts",
+    "./Row": "./src/Row.ts",
+    "./Db.errors": "./src/Db.errors.ts"
   },
   "types": "./src/history.ts",
   "scripts": {

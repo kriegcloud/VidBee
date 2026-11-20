@@ -1,0 +1,854 @@
+{
+  "same": [
+    [
+      "run-return",
+      "first"
+    ],
+    [
+      "run-return",
+      "second"
+    ],
+    [
+      "spawn-event",
+      "first"
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.probe=electron"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu"
+      }
+    ],
+    "stdin-end",
+    [
+      "spawn-event",
+      "second"
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.path=<NODE>"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.version=22.23.4"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.layer=electron"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.restarts=0"
+      }
+    ],
+    [
+      "gpu-start",
+      0
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.path=<NODE>"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.version=22.23.4"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.layer=electron"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.restarts=0"
+      }
+    ],
+    [
+      "gpu-start",
+      1
+    ],
+    [
+      "gpu-resumed",
+      0
+    ],
+    [
+      "gpu-resumed",
+      1
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cuda",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.probe=cuda ok=true durationMs=1 error=none"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.probe=cpu ok=true durationMs=10 error=none"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.provider=cuda reason=accelerator-faster candidates=cuda,cpu"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "compute.provider=cuda reason=in-flight-probe"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    "ffmpegPath",
+    [
+      "request",
+      {
+        "type": "start",
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cuda",
+        "speakerCount": "auto"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    "ffmpegPath",
+    [
+      "request",
+      {
+        "type": "start",
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cuda",
+        "speakerCount": "auto"
+      }
+    ],
+    "stdin-end",
+    "stdin-end",
+    [
+      "remove-start",
+      "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982"
+    ],
+    [
+      "remove-start",
+      "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8"
+    ],
+    [
+      "remove-resolved",
+      "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982"
+    ],
+    [
+      "remove-resolved",
+      "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8"
+    ],
+    [
+      "finish",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "<ROOT>/source",
+            "size": 1,
+            "durationMs": 10,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "UUID-1"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+        "stderrTail": ""
+      },
+      [
+        "first",
+        "second"
+      ],
+      null
+    ],
+    [
+      "finish",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "<ROOT>/source",
+            "size": 1,
+            "durationMs": 10,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "UUID-2"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+        "stderrTail": ""
+      },
+      [
+        "first",
+        "second"
+      ],
+      null
+    ]
+  ],
+  "different": [
+    [
+      "run-return",
+      "first"
+    ],
+    [
+      "run-return",
+      "second"
+    ],
+    [
+      "spawn-event",
+      "first"
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.probe=electron"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu"
+      }
+    ],
+    "stdin-end",
+    [
+      "spawn-event",
+      "second"
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.path=<NODE>"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.version=22.23.4"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.layer=electron"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "runtime.restarts=0"
+      }
+    ],
+    [
+      "gpu-start",
+      0
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.path=<NODE>"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.version=22.23.4"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.layer=electron"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "runtime.restarts=0"
+      }
+    ],
+    [
+      "gpu-start",
+      1
+    ],
+    [
+      "gpu-resumed",
+      0
+    ],
+    [
+      "gpu-resumed",
+      1
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cuda",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cuda",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.probe=cuda ok=true durationMs=1 error=none"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "compute.probe=cuda ok=true durationMs=1 error=none"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    [
+      "request",
+      {
+        "type": "probe",
+        "modelsDir": "/fixture/models",
+        "provider": "cpu",
+        "asrTier": "minimal",
+        "benchmark": true
+      }
+    ],
+    "stdin-end",
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.probe=cpu ok=true durationMs=10 error=none"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "compute.probe=cpu ok=true durationMs=10 error=none"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "stream": "stdout",
+        "line": "compute.provider=cuda reason=accelerator-faster candidates=cuda,cpu"
+      }
+    ],
+    [
+      "std",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "stream": "stdout",
+        "line": "compute.provider=cuda reason=accelerator-faster candidates=cuda,cpu"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    "ffmpegPath",
+    [
+      "request",
+      {
+        "type": "start",
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cuda",
+        "speakerCount": "auto"
+      }
+    ],
+    [
+      "spawn",
+      "<NODE>",
+      [
+        "/fixture/worker"
+      ],
+      {
+        "env": {
+          "ELECTRON_RUN_AS_NODE": "1"
+        },
+        "stdio": [
+          "pipe",
+          "pipe",
+          "pipe"
+        ],
+        "detached": true
+      }
+    ],
+    "ffmpegPath",
+    [
+      "request",
+      {
+        "type": "start",
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "sourceFilePath": "<ROOT>/source",
+        "ffmpegPath": "/fixture/ffmpeg",
+        "workDir": "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8",
+        "modelsDir": "/fixture/models",
+        "skipVad": false,
+        "autoSkipAllowed": false,
+        "backend": "sherpa",
+        "fingerprint": "5:1000",
+        "modelVersion": "vidbee-asr-2026.08.20-3:minimal:spk-auto",
+        "asrTier": "minimal",
+        "provider": "cuda",
+        "speakerCount": "auto"
+      }
+    ],
+    "stdin-end",
+    "stdin-end",
+    [
+      "remove-start",
+      "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982"
+    ],
+    [
+      "remove-start",
+      "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8"
+    ],
+    [
+      "remove-resolved",
+      "<ROOT>/vidbee-transcript/066e3ad7aefc86fa83224982"
+    ],
+    [
+      "remove-resolved",
+      "<ROOT>/vidbee-transcript/2880395ed7b3a6acc3fc62e8"
+    ],
+    [
+      "finish",
+      {
+        "taskId": "first",
+        "attemptId": "attempt-first",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "<ROOT>/source",
+            "size": 1,
+            "durationMs": 10,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "UUID-1"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+        "stderrTail": ""
+      },
+      [
+        "first",
+        "second"
+      ],
+      null
+    ],
+    [
+      "finish",
+      {
+        "taskId": "second",
+        "attemptId": "attempt-second",
+        "result": {
+          "type": "success",
+          "output": {
+            "filePath": "<ROOT>/source",
+            "size": 1,
+            "durationMs": 10,
+            "sha256": null,
+            "transcript": {
+              "resultKind": "no-speech",
+              "transcriptId": "UUID-2"
+            }
+          }
+        },
+        "closedAt": 1000,
+        "stdoutTail": "runtime.path=<NODE>\nruntime.version=22.23.4\nruntime.layer=electron\nruntime.restarts=0\n",
+        "stderrTail": ""
+      },
+      [
+        "first",
+        "second"
+      ],
+      null
+    ]
+  ]
+}

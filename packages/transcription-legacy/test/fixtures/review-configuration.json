@@ -1,0 +1,1297 @@
+{
+  "machine": [
+    "totalmem",
+    [
+      "cpus",
+      1
+    ],
+    [
+      "cpus",
+      2
+    ],
+    [
+      "read",
+      {
+        "arch": "arm64",
+        "class": "mid",
+        "cpuCount": 3,
+        "gpu": "apple",
+        "gpuName": "Apple M4 fixture",
+        "os": "macos",
+        "ramBytes": 8589934592
+      }
+    ],
+    [
+      "cpus",
+      3
+    ],
+    [
+      "gpu",
+      {
+        "gpu": "apple",
+        "gpuName": "Apple M4 fixture"
+      }
+    ],
+    [
+      "apple",
+      true
+    ],
+    "totalmem",
+    [
+      "cpus",
+      4
+    ],
+    [
+      "read",
+      {
+        "arch": "x64",
+        "class": "mid",
+        "cpuCount": 3,
+        "gpu": "apple",
+        "gpuName": "Apple M3 override",
+        "os": "macos",
+        "ramBytes": 8589934592
+      }
+    ],
+    [
+      "gpu",
+      {
+        "gpu": "apple",
+        "gpuName": "Apple M3 override"
+      }
+    ],
+    [
+      "apple",
+      true
+    ],
+    "totalmem",
+    [
+      "cpus",
+      5
+    ],
+    [
+      "cpus",
+      6
+    ],
+    [
+      "read",
+      {
+        "arch": "x64",
+        "class": "mid",
+        "cpuCount": 3,
+        "gpu": "nvidia",
+        "gpuName": "NVIDIA fixture",
+        "os": "linux",
+        "ramBytes": 8589934592
+      }
+    ],
+    [
+      "cpus",
+      7
+    ],
+    [
+      "gpu",
+      {
+        "gpu": "nvidia",
+        "gpuName": "NVIDIA fixture"
+      }
+    ],
+    [
+      "apple",
+      false
+    ],
+    "totalmem",
+    [
+      "cpus",
+      8
+    ],
+    [
+      "cpus",
+      9
+    ],
+    [
+      "read",
+      {
+        "arch": "x64",
+        "class": "mid",
+        "cpuCount": 3,
+        "gpu": "unknown",
+        "gpuName": null,
+        "os": "linux",
+        "ramBytes": 8589934592
+      }
+    ],
+    [
+      "cpus",
+      10
+    ],
+    [
+      "gpu",
+      {
+        "gpu": "unknown",
+        "gpuName": null
+      }
+    ],
+    [
+      "apple",
+      false
+    ]
+  ],
+  "recognizer": [
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-model",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "minimal"
+    ],
+    [
+      "paths",
+      {
+        "result": {
+          "decoder": "/model/asr-decoder",
+          "encoder": "/model/asr-encoder",
+          "frontend": "/model/asr-frontend",
+          "joiner": "/model/asr-joiner",
+          "model": "/model/asr-model",
+          "tokenizer": "/model/asr-tokenizer",
+          "tokens": "/model/asr-tokens"
+        }
+      }
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-model",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "minimal"
+    ],
+    [
+      "config",
+      "minimal",
+      [],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-model",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "minimal"
+    ],
+    [
+      "config",
+      "minimal",
+      [
+        3,
+        "cuda",
+        1
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 3,
+            "provider": "cuda",
+            "debug": 1
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-model",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "minimal"
+    ],
+    [
+      "config",
+      "minimal",
+      [
+        null,
+        null,
+        null
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "whisper": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "language": "",
+              "task": "transcribe",
+              "tailPaddings": -1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": null,
+            "provider": null,
+            "debug": null
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-model",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "sense-voice"
+    ],
+    [
+      "config",
+      "sense-voice",
+      [],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "senseVoice": {
+              "model": "/model/asr-model",
+              "language": "",
+              "useInverseTextNormalization": 1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-model",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "sense-voice"
+    ],
+    [
+      "config",
+      "sense-voice",
+      [
+        3,
+        "cuda",
+        1
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "senseVoice": {
+              "model": "/model/asr-model",
+              "language": "",
+              "useInverseTextNormalization": 1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 3,
+            "provider": "cuda",
+            "debug": 1
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-model",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "sense-voice"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "sense-voice"
+    ],
+    [
+      "config",
+      "sense-voice",
+      [
+        null,
+        null,
+        null
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "senseVoice": {
+              "model": "/model/asr-model",
+              "language": "",
+              "useInverseTextNormalization": 1
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": null,
+            "provider": null,
+            "debug": null
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-model",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "fire-red-asr"
+    ],
+    [
+      "config",
+      "fire-red-asr",
+      [],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "fireRedAsr": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder"
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-model",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "fire-red-asr"
+    ],
+    [
+      "config",
+      "fire-red-asr",
+      [
+        3,
+        "cuda",
+        1
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "fireRedAsr": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder"
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": 3,
+            "provider": "cuda",
+            "debug": 1
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-model",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "fire-red-asr"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "fire-red-asr"
+    ],
+    [
+      "config",
+      "fire-red-asr",
+      [
+        null,
+        null,
+        null
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "fireRedAsr": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder"
+            },
+            "tokens": "/model/asr-tokens",
+            "numThreads": null,
+            "provider": null,
+            "debug": null
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-model",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "parakeet-v3"
+    ],
+    [
+      "config",
+      "parakeet-v3",
+      [],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "transducer": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "joiner": "/model/asr-joiner"
+            },
+            "tokens": "/model/asr-tokens",
+            "modelType": "nemo_transducer",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-model",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "parakeet-v3"
+    ],
+    [
+      "config",
+      "parakeet-v3",
+      [
+        3,
+        "cuda",
+        1
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "transducer": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "joiner": "/model/asr-joiner"
+            },
+            "tokens": "/model/asr-tokens",
+            "modelType": "nemo_transducer",
+            "numThreads": 3,
+            "provider": "cuda",
+            "debug": 1
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-model",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "parakeet-v3"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "parakeet-v3"
+    ],
+    [
+      "config",
+      "parakeet-v3",
+      [
+        null,
+        null,
+        null
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "transducer": {
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "joiner": "/model/asr-joiner"
+            },
+            "tokens": "/model/asr-tokens",
+            "modelType": "nemo_transducer",
+            "numThreads": null,
+            "provider": null,
+            "debug": null
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-model",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "qwen3-1.7b"
+    ],
+    [
+      "config",
+      "qwen3-1.7b",
+      [],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "qwen3Asr": {
+              "convFrontend": "/model/asr-frontend",
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "tokenizer": "/model/asr-tokenizer",
+              "hotwords": ""
+            },
+            "tokens": "",
+            "numThreads": 2,
+            "provider": "cpu",
+            "debug": 0
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-model",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "qwen3-1.7b"
+    ],
+    [
+      "config",
+      "qwen3-1.7b",
+      [
+        3,
+        "cuda",
+        1
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "qwen3Asr": {
+              "convFrontend": "/model/asr-frontend",
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "tokenizer": "/model/asr-tokenizer",
+              "hotwords": ""
+            },
+            "tokens": "",
+            "numThreads": 3,
+            "provider": "cuda",
+            "debug": 1
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-joiner",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-model",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokenizer",
+      "qwen3-1.7b"
+    ],
+    [
+      "role",
+      "asr-tokens",
+      "qwen3-1.7b"
+    ],
+    [
+      "config",
+      "qwen3-1.7b",
+      [
+        null,
+        null,
+        null
+      ],
+      {
+        "result": {
+          "featConfig": {
+            "sampleRate": 16000,
+            "featureDim": 80
+          },
+          "modelConfig": {
+            "qwen3Asr": {
+              "convFrontend": "/model/asr-frontend",
+              "encoder": "/model/asr-encoder",
+              "decoder": "/model/asr-decoder",
+              "tokenizer": "/model/asr-tokenizer",
+              "hotwords": ""
+            },
+            "tokens": "",
+            "numThreads": null,
+            "provider": null,
+            "debug": null
+          }
+        }
+      }
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "incomplete",
+      {
+        "error": {
+          "name": "Error",
+          "message": "model incomplete fixture",
+          "identity": false
+        }
+      },
+      null
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "issue",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-decoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-encoder",
+      "minimal"
+    ],
+    [
+      "role",
+      "asr-frontend",
+      "minimal"
+    ],
+    [
+      "role-error",
+      {
+        "error": {
+          "name": "Error",
+          "message": "fixture role failed",
+          "identity": true
+        }
+      },
+      null
+    ],
+    [
+      "unknown-tier",
+      null
+    ]
+  ],
+  "concurrency": [
+    [
+      "global",
+      4
+    ],
+    [
+      "group",
+      "transcription",
+      4
+    ],
+    [
+      "downloads",
+      3
+    ],
+    [
+      "returned",
+      true
+    ],
+    "global-resolved",
+    "group-resolved",
+    "downloads-resolved",
+    "microtask",
+    [
+      "global",
+      1
+    ],
+    "group-throw",
+    [
+      "throw-identity",
+      true
+    ],
+    "global-resolved"
+  ]
+}

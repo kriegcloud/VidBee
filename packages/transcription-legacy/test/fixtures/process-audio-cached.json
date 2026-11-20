@@ -1,0 +1,34 @@
+{
+  "trace": [
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        "<ROOT>/source.media"
+      ]
+    ],
+    [
+      "probe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        "<ROOT>/out/audio-16k-mono.wav"
+      ]
+    ]
+  ],
+  "result": {
+    "wavPath": "<ROOT>/out/audio-16k-mono.wav",
+    "durationMs": 3600
+  },
+  "wav": "cached",
+  "copyExists": false
+}

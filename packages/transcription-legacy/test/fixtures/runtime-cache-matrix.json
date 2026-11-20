@@ -1,0 +1,362 @@
+[
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "success",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [
+        "env"
+      ],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "success",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [
+        "env"
+      ],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "failure",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "failure",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "throw",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "absent",
+      "probe": "throw",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "success",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "success",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "failure",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "failure",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "throw",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "true",
+      "probe": "throw",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "success",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "success",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "failure",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "failure",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "throw",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "false",
+      "probe": "throw",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "success",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [
+        "env"
+      ],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "success",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "env",
+      "version": "22.23.4",
+      "guarded": false,
+      "trace": [
+        "env"
+      ],
+      "cache": true
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "failure",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "failure",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "throw",
+      "disableGpu": false
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  },
+  {
+    "input": {
+      "cache": "stale",
+      "probe": "throw",
+      "disableGpu": true
+    },
+    "expected": {
+      "layer": "electron",
+      "version": "22.23.4",
+      "guarded": true,
+      "trace": [
+        "env"
+      ],
+      "cache": false
+    }
+  }
+]

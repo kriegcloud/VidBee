@@ -1,0 +1,141 @@
+[
+  [
+    "latest",
+    "download"
+  ],
+  [
+    "list",
+    "download",
+    1
+  ],
+  [
+    "matching-caption",
+    {
+      "language": "en",
+      "modelVersion": "fixture",
+      "asrTier": null,
+      "sourceKind": "captions",
+      "speakers": [
+        {
+          "speakerKey": "speaker-1",
+          "displayName": "Speaker 1"
+        }
+      ],
+      "segments": [
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 100,
+          "text": "captions:en",
+          "words": [
+            {
+              "text": "captions:en",
+              "startMs": 0,
+              "endMs": 100
+            }
+          ],
+          "confidence": null
+        }
+      ]
+    }
+  ],
+  [
+    "latest",
+    "download"
+  ],
+  [
+    "list",
+    "download",
+    1
+  ],
+  [
+    "list",
+    "download",
+    2
+  ],
+  [
+    "history-changed-fallback",
+    {
+      "language": "en",
+      "modelVersion": "fixture",
+      "asrTier": "minimal",
+      "sourceKind": "asr",
+      "speakers": [
+        {
+          "speakerKey": "speaker-1",
+          "displayName": "Speaker 1"
+        }
+      ],
+      "segments": [
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 100,
+          "text": "asr",
+          "words": [
+            {
+              "text": "mutated seed word",
+              "startMs": 0,
+              "endMs": 100
+            }
+          ],
+          "confidence": null
+        }
+      ]
+    }
+  ],
+  [
+    "latest",
+    "download"
+  ],
+  [
+    "word-alias",
+    true
+  ],
+  [
+    "read-after-word-mutation",
+    [
+      {
+        "text": "mutated seed word",
+        "startMs": 0,
+        "endMs": 100
+      }
+    ]
+  ],
+  [
+    "list",
+    "download",
+    1
+  ],
+  [
+    "asr-direct",
+    {
+      "language": "en",
+      "modelVersion": "fixture",
+      "asrTier": "minimal",
+      "sourceKind": "asr",
+      "speakers": [
+        {
+          "speakerKey": "speaker-1",
+          "displayName": "Speaker 1"
+        }
+      ],
+      "segments": [
+        {
+          "speakerKey": "speaker-1",
+          "startMs": 0,
+          "endMs": 100,
+          "text": "asr",
+          "words": [
+            {
+              "text": "mutated seed word",
+              "startMs": 0,
+              "endMs": 100
+            }
+          ],
+          "confidence": null
+        }
+      ]
+    }
+  ]
+]

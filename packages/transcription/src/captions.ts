@@ -1,137 +1,113 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { basename, dirname, extname, join } from 'node:path'
-import { chineseScriptFromText, chineseScriptOf } from './chinese-script'
-import { iso6391FromTag } from './iso-639'
-import type { PipelineResult, PipelineSegment, PipelineSpeaker } from './types'
+import * as Arr from "effect/Array";
+import * as Fn from "effect/Function";
+import * as HashMap from "effect/HashMap";
+import * as Option from "effect/Option";
+import * as Str from "effect/String";
+import { chineseScriptFromText, chineseScriptOf } from "./chinese-script.js";
+import { iso6391FromTag } from "./iso-639.js";
+import type { PipelineResult, PipelineSegment, PipelineSpeaker } from "./Pipeline.model.js";
 
-const SIMPLIFIED_CHINESE_TAGS = ['zh', 'zh-Hans', 'zh-CN', 'zh-SG'] as const
-const TRADITIONAL_CHINESE_TAGS = ['zh-TW', 'zh-Hant', 'zh-HK', 'zh-MO'] as const
-
+const SIMPLIFIED_CHINESE_TAGS = ["zh", "zh-Hans", "zh-CN", "zh-SG"] as const;
+const TRADITIONAL_CHINESE_TAGS = ["zh-TW", "zh-Hant", "zh-HK", "zh-MO"] as const;
 /**
  * Normalize a BCP-47 tag for caption matching.
  */
-const normalizeCaptionTag = (tag: string): string => tag.trim().toLowerCase().replaceAll('_', '-')
+const normalizeCaptionTag = (tag: string): string => Str.replaceAll("_", "-")(Str.toLowerCase(Str.trim(tag)));
+export const CAPTIONS_MODEL_VERSION = "embedded-captions";
+export const CAPTION_FILE_EXTENSIONS = [".vtt", ".srt", ".ass"] as const;
+const AUTO_CAPTION_PREFIX = /^(?:ai|auto|automatic)(?:-|$)/i;
+const NON_DIALOGUE_CAPTION_TAG = /^(?:danmaku|live[_-]?chat|rechat|chat)$/i;
 
-export const CAPTIONS_MODEL_VERSION = 'embedded-captions'
-export const CAPTION_FILE_EXTENSIONS = ['.vtt', '.srt', '.ass'] as const
-const AUTO_CAPTION_PREFIX = /^(?:ai|auto|automatic)(?:-|$)/i
-const NON_DIALOGUE_CAPTION_TAG = /^(?:danmaku|live[_-]?chat|rechat|chat)$/i
+export type { CaptionCue, CaptionTrack } from "./Caption.model.js";
 
-export interface CaptionCue {
-  endMs: number
-  startMs: number
-  text: string
-  /** Speaker name from a VTT voice tag or ASS Dialogue Name field. */
-  speaker?: string | null
-}
-
-export interface CaptionTrack {
-  format: 'ass' | 'srt' | 'vtt'
-  language: string | null
-  path?: string
-  text: string
-  title?: string
-}
-
+import type { CaptionCue, CaptionTrack } from "./Caption.model.js";
 /**
  * True when this tag is platform auto-captions such as Bilibili `ai-zh`.
  *
  * @param tag Language, stream title, or sidecar suffix.
  */
 export const isPlatformAiCaptionTag = (tag: string | null | undefined): boolean => {
-  if (!tag?.trim()) {
-    return false
+  if (tag == null || Str.trim(tag) === "") {
+    return false;
   }
-  const compact = normalizeCaptionTag(tag)
+  const compact = normalizeCaptionTag(tag);
   if (AUTO_CAPTION_PREFIX.test(compact)) {
-    return true
+    return true;
   }
-  return compact.split('-').some((part) => AUTO_CAPTION_PREFIX.test(part))
-}
-
+  return Arr.some(Str.split("-")(compact), (part) => AUTO_CAPTION_PREFIX.test(part));
+};
 /**
  * True when this tag is danmaku or a live-chat dump, not dialogue captions.
  *
  * @param tag Language, stream title, or sidecar suffix.
  */
 export const isChatCaptionTag = (tag: string | null | undefined): boolean => {
-  if (!tag?.trim()) {
-    return false
+  if (tag == null || Str.trim(tag) === "") {
+    return false;
   }
-  const compact = normalizeCaptionTag(tag)
+  const compact = normalizeCaptionTag(tag);
   if (NON_DIALOGUE_CAPTION_TAG.test(compact)) {
-    return true
+    return true;
   }
-  return compact.split('-').some((part) => NON_DIALOGUE_CAPTION_TAG.test(part))
-}
-
+  return Arr.some(Str.split("-")(compact), (part) => NON_DIALOGUE_CAPTION_TAG.test(part));
+};
 /**
  * True when this tag is platform auto-captions, danmaku, or chat.
  *
  * @param tag Language, stream title, or sidecar suffix.
  */
 export const isMachineCaptionTag = (tag: string | null | undefined): boolean =>
-  isPlatformAiCaptionTag(tag) || isChatCaptionTag(tag)
-
+  isPlatformAiCaptionTag(tag) || isChatCaptionTag(tag);
 /**
  * True when a sidecar name is a danmaku or chat dump.
  *
- * @param path Absolute or file name.
+ * @param path File name after the host has applied its basename rules.
  */
-export const isMachineCaptionPath = (path: string | null | undefined): boolean => {
-  if (!path) {
-    return false
+export const isMachineCaptionName = (path: string | null | undefined): boolean => {
+  if (path == null || Boolean(path) === false) {
+    return false;
   }
-  const name = basename(path).toLowerCase()
-  return /\.(?:danmaku|live[_-]chat|rechat)\.(?:ass|srt|vtt)$/i.test(name)
-}
-
+  const name = Str.toLowerCase(path);
+  return /\.(?:danmaku|live[_-]chat|rechat)\.(?:ass|srt|vtt)$/i.test(name);
+};
 /**
  * True when this track is dialogue captions, including platform AI subs.
  *
  * Danmaku and chat dumps stay out. Bilibili `ai-zh` / `ai-en` sidecars are
  * valid caption sources and can be switched on the transcript page.
  *
- * @param track Language tag, optional stream title, and optional sidecar path.
+ * @param track Language tag, optional stream title, and optional host-normalized sidecar basename.
  */
 export const isImportableCaptionTrack = (track: {
-  language?: string | null
-  path?: string
-  title?: string
-}): boolean =>
-  !(
-    isChatCaptionTag(track.language) ||
-    isChatCaptionTag(track.title) ||
-    isMachineCaptionPath(track.path)
-  )
-
+  language?: string | null | undefined;
+  path?: string | undefined;
+  title?: string | undefined;
+}): boolean => !(isChatCaptionTag(track.language) || isChatCaptionTag(track.title) || isMachineCaptionName(track.path));
 /**
  * Alias kept for existing call sites: importable dialogue captions.
  *
- * @param track Language tag, optional stream title, and optional sidecar path.
+ * @param track Language tag, optional stream title, and optional host-normalized sidecar basename.
  */
-export const isHumanCaptionTrack = isImportableCaptionTrack
-
+export const isHumanCaptionTrack = isImportableCaptionTrack;
 /**
  * Drop platform auto-caption prefixes so `ai-zh` matches Chinese, then map ffmpeg 639-2 tags.
  *
  * @param language Track language tag.
  */
 export const captionLanguageForMatch = (language: string): string => {
-  const compact = normalizeCaptionTag(language)
-  let stripped = compact
-  for (const prefix of ['ai-', 'auto-', 'automatic-']) {
-    if (stripped.startsWith(prefix)) {
-      stripped = stripped.slice(prefix.length)
-      break
+  const compact = normalizeCaptionTag(language);
+  let stripped = compact;
+  for (const prefix of ["ai-", "auto-", "automatic-"]) {
+    if (Str.startsWith(prefix)(stripped)) {
+      stripped = Str.slice(prefix.length)(stripped);
+      break;
     }
   }
-  if (stripped.endsWith('-auto')) {
-    stripped = stripped.slice(0, -5)
+  if (Str.endsWith("-auto")(stripped)) {
+    stripped = Str.slice(0, -5)(stripped);
   }
-  return iso6391FromTag(stripped)
-}
-
+  return iso6391FromTag(stripped);
+};
 /**
  * Stable key used to match caption languages across files and stored rows.
  *
@@ -140,68 +116,68 @@ export const captionLanguageForMatch = (language: string): string => {
  * @param language Track language tag.
  */
 export const captionLanguageKey = (language: string | null | undefined): string => {
-  if (!language?.trim()) {
-    return 'und'
+  if (language == null || Str.trim(language) === "") {
+    return "und";
   }
-  const compact = normalizeCaptionTag(language)
+  const compact = normalizeCaptionTag(language);
   if (isPlatformAiCaptionTag(compact)) {
-    return compact
+    return compact;
   }
-  return captionLanguageForMatch(compact)
-}
-
+  return captionLanguageForMatch(compact);
+};
 /**
  * Canonical language tag for a track: map ffmpeg 639-2 codes and split Chinese scripts.
  *
  * @param language Declared stream or sidecar tag.
  * @param text Caption document or cue text, used to tell Simplified from Traditional.
  */
-export const refineCaptionLanguage = (language: string | null, text: string): string | null => {
-  const script = chineseScriptFromText(text)
-  if (script === 'hant') {
-    return 'zh-Hant'
+export const refineCaptionLanguage: {
+  (language: string | null, text: string): string | null;
+  (text: string): (language: string | null) => string | null;
+} = Fn.dual(2, (language: string | null, text: string): string | null => {
+  const script = chineseScriptFromText(text);
+  if (script === "hant") {
+    return "zh-Hant";
   }
-  if (script === 'hans') {
-    return 'zh'
+  if (script === "hans") {
+    return "zh";
   }
-  if (!language?.trim()) {
-    return language
+  if (language == null || Str.trim(language) === "") {
+    return language;
   }
-  return captionLanguageForMatch(language)
-}
-
-const TIMESTAMP =
-  /(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})/g
-const VTT_ARROW = /-->/
-const CUE_SETTINGS = /\s+(?:align|line|position|size|vertical):[^\s]+/gi
-const MARKUP = /<[^>]+>|\{[^}]+\}/g
-const VTT_VOICE_TAG = /<v(?:\.[^\s>]*)?\s+([^>]+)>/i
-
+  return captionLanguageForMatch(language);
+});
+const TIMESTAMP = /(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})/g;
+const VTT_ARROW = /-->/;
+const CUE_SETTINGS = /\s+(?:align|line|position|size|vertical):[^\s]+/gi;
+const MARKUP = /<[^>]+>|\{[^}]+\}/g;
+const VTT_VOICE_TAG = /<v(?:\.[^\s>]*)?\s+([^>]+)>/i;
 /**
  * Stable task id used when captions are imported without an ASR child task.
  *
  * @param downloadTaskId Parent download id.
  */
-export const captionsTaskId = (downloadTaskId: string, language?: string | null): string => {
-  const tag = language?.trim()
-  return tag
+export const captionsTaskId: {
+  (downloadTaskId: string, language: string | null | undefined): string;
+  (language: string | null | undefined): (downloadTaskId: string) => string;
+} = Fn.dual(2, (downloadTaskId: string, language: string | null | undefined): string => {
+  const tag = language == null ? undefined : Str.trim(language);
+  return tag !== undefined && tag !== ""
     ? `captions:${downloadTaskId}:${captionLanguageKey(tag)}`
-    : `captions:${downloadTaskId}`
-}
-
+    : `captions:${downloadTaskId}`;
+});
 /**
  * True when this subtitle codec can be converted to text (not bitmap).
  *
  * @param codecName ffprobe codec_name, if present.
  */
 export const isTextSubtitleCodec = (codecName: string | null | undefined): boolean => {
-  if (!codecName) {
-    return true
+  if (codecName == null || Boolean(codecName) === false) {
+    return true;
   }
-  const codec = codecName.toLowerCase()
-  return !codec.includes('pgs') && !codec.includes('dvd_subtitle') && !codec.includes('dvb_subtitle')
-}
-
+  const codec = Str.toLowerCase(codecName);
+  return !Str.includes("pgs")(codec) && !Str.includes("dvd_subtitle")(codec) && !Str.includes("dvb_subtitle")(codec);
+};
 /**
  * Convert a clock timestamp to milliseconds.
  *
@@ -210,65 +186,52 @@ export const isTextSubtitleCodec = (codecName: string | null | undefined): boole
  * @param seconds Second field.
  * @param fraction Fractional seconds (1-3 digits).
  */
-const toMs = (
-  hours: string | undefined,
-  minutes: string,
-  seconds: string,
-  fraction: string
-): number => {
-  const millis = `${fraction}000`.slice(0, 3)
-  return (
-    Number(hours ?? '0') * 3_600_000 +
-    Number(minutes) * 60_000 +
-    Number(seconds) * 1000 +
-    Number(millis)
-  )
-}
-
+const toMs = (hours: string | undefined, minutes: string, seconds: string, fraction: string): number => {
+  const millis = Str.slice(0, 3)(`${fraction}000`);
+  return Number(hours ?? "0") * 3600000 + Number(minutes) * 60000 + Number(seconds) * 1000 + Number(millis);
+};
 /**
  * Parse one `HH:MM:SS.mmm --> HH:MM:SS.mmm` (or SRT comma) line.
  *
  * @param line Timestamp line, optionally with VTT cue settings.
  */
-const parseTimestampLine = (line: string): { endMs: number; startMs: number } | null => {
-  const cleaned = line.replace(CUE_SETTINGS, '').trim()
+const parseTimestampLine = (
+  line: string
+): {
+  endMs: number;
+  startMs: number;
+} | null => {
+  const cleaned = Str.trim(Str.replace(CUE_SETTINGS, "")(line));
   if (!VTT_ARROW.test(cleaned)) {
-    return null
+    return null;
   }
-  TIMESTAMP.lastIndex = 0
-  const start = TIMESTAMP.exec(cleaned)
-  const end = TIMESTAMP.exec(cleaned)
-  if (!(start && end)) {
-    return null
+  TIMESTAMP.lastIndex = 0;
+  const start = TIMESTAMP.exec(cleaned);
+  const end = TIMESTAMP.exec(cleaned);
+  if (start === null || end === null) {
+    return null;
   }
   return {
-    endMs: toMs(end[1], end[2] ?? '0', end[3] ?? '0', end[4] ?? '0'),
-    startMs: toMs(start[1], start[2] ?? '0', start[3] ?? '0', start[4] ?? '0')
-  }
-}
-
+    endMs: toMs(end[1], end[2] ?? "0", end[3] ?? "0", end[4] ?? "0"),
+    startMs: toMs(start[1], start[2] ?? "0", start[3] ?? "0", start[4] ?? "0"),
+  };
+};
 /**
  * Strip WebVTT / SRT / ASS markup and collapse whitespace.
  *
  * @param raw Cue text, possibly with tags.
  */
 export const cleanCaptionText = (raw: string): string =>
-  raw
-    .replace(MARKUP, ' ')
-    .replace(/\\[nNh]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-
+  Str.trim(Str.replace(/\s+/g, " ")(Str.replace(/\\[nNh]/g, " ")(Str.replace(MARKUP, " ")(raw))));
 /**
  * Read a WebVTT voice annotation as a speaker name, if present.
  *
  * @param raw Cue body before markup is stripped.
  */
 const speakerFromCaptionMarkup = (raw: string): string | null => {
-  const name = VTT_VOICE_TAG.exec(raw)?.[1]?.replace(/\s+/g, ' ').trim()
-  return name || null
-}
-
+  const name = Str.trim(Str.replace(/\s+/g, " ")(VTT_VOICE_TAG.exec(raw)?.[1] ?? ""));
+  return name === "" || name === undefined ? null : name;
+};
 /**
  * Number speakers in first-appearance order using names from the caption file.
  *
@@ -276,280 +239,203 @@ const speakerFromCaptionMarkup = (raw: string): string | null => {
  */
 const speakersFromCaptionCues = (
   cues: CaptionCue[]
-): { speakers: PipelineSpeaker[]; keyByName: Map<string, string> } => {
-  const speakers: PipelineSpeaker[] = []
-  const keyByName = new Map<string, string>()
+): {
+  speakers: PipelineSpeaker[];
+  keyByName: HashMap.HashMap<string, string>;
+} => {
+  const speakers: PipelineSpeaker[] = [];
+  let keyByName = HashMap.empty<string, string>();
   for (const cue of cues) {
-    const name = cue.speaker?.trim()
-    if (!name || keyByName.has(name)) {
-      continue
+    const name = Str.trim(cue.speaker ?? "");
+    if (name == null || name === "" || HashMap.has(keyByName, name)) {
+      continue;
     }
-    const speakerKey = `speaker-${speakers.length + 1}`
-    keyByName.set(name, speakerKey)
-    speakers.push({ speakerKey, displayName: name })
+    const speakerKey = `speaker-${speakers.length + 1}`;
+    keyByName = HashMap.set(keyByName, name, speakerKey);
+    speakers.push({ speakerKey, displayName: name });
   }
-  return { speakers, keyByName }
-}
-
+  return { speakers, keyByName };
+};
 /**
  * Parse WebVTT or SRT cues from a subtitle document.
  *
  * @param text File or extracted track contents.
  */
 export const parseCaptionCues = (text: string): CaptionCue[] => {
-  const cues: CaptionCue[] = []
-  const blocks = text.replace(/^\uFEFF/, '').split(/\r?\n\r?\n/)
+  const cues: CaptionCue[] = [];
+  const blocks = Str.split(/\r?\n\r?\n/)(Str.replace(/^\uFEFF/, "")(text));
   for (const block of blocks) {
-    const lines = block
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0 && !/^WEBVTT\b/i.test(line) && !/^NOTE\b/i.test(line))
+    const lines = Arr.filter(
+      Arr.map(Str.split(/\r?\n/)(block), (line) => Str.trim(line)),
+      (line) => line.length > 0 && !/^WEBVTT\b/i.test(line) && !/^NOTE\b/i.test(line)
+    );
     if (lines.length === 0) {
-      continue
+      continue;
     }
-    let stampIndex = lines.findIndex((line) => VTT_ARROW.test(line))
+    const stampIndex = Option.getOrElse(
+      Arr.findFirstIndex(lines, (line) => VTT_ARROW.test(line)),
+      () => -1
+    );
     if (stampIndex < 0) {
-      continue
+      continue;
     }
-    const times = parseTimestampLine(lines[stampIndex] ?? '')
-    if (!times || times.endMs <= times.startMs) {
-      continue
+    const times = parseTimestampLine(lines[stampIndex] ?? "");
+    if (times === null || times.endMs <= times.startMs) {
+      continue;
     }
-    const rawBody = lines.slice(stampIndex + 1).join(' ')
-    const body = cleanCaptionText(rawBody)
-    if (!body) {
-      continue
+    const rawBody = Arr.join(lines.slice(stampIndex + 1), " ");
+    const body = cleanCaptionText(rawBody);
+    if (body === "") {
+      continue;
     }
-    const speaker = speakerFromCaptionMarkup(rawBody)
+    const speaker = speakerFromCaptionMarkup(rawBody);
     cues.push(
-      speaker
+      speaker !== null && speaker !== ""
         ? { endMs: times.endMs, speaker, startMs: times.startMs, text: body }
         : { endMs: times.endMs, startMs: times.startMs, text: body }
-    )
+    );
   }
-  return cues
-}
-
+  return cues;
+};
 /**
  * Parse simple ASS `Dialogue:` rows when a sidecar is not VTT/SRT.
  *
  * @param text Advanced SubStation Alpha document.
  */
 export const parseAssCues = (text: string): CaptionCue[] => {
-  const cues: CaptionCue[] = []
-  for (const rawLine of text.replace(/^\uFEFF/, '').split(/\r?\n/)) {
-    if (!rawLine.startsWith('Dialogue:')) {
-      continue
+  const cues: CaptionCue[] = [];
+  for (const rawLine of Str.split(/\r?\n/)(Str.replace(/^\uFEFF/, "")(text))) {
+    if (!Str.startsWith("Dialogue:")(rawLine)) {
+      continue;
     }
-    const payload = rawLine.slice('Dialogue:'.length).trim()
-    const parts = payload.split(',')
+    const payload = Str.trim(Str.slice("Dialogue:".length)(rawLine));
+    const parts = Str.split(",")(payload);
     if (parts.length < 10) {
-      continue
+      continue;
     }
-    const start = parseAssTime(parts[1] ?? '')
-    const end = parseAssTime(parts[2] ?? '')
+    const start = parseAssTime(parts[1] ?? "");
+    const end = parseAssTime(parts[2] ?? "");
     if (start == null || end == null || end <= start) {
-      continue
+      continue;
     }
-    const body = cleanCaptionText(parts.slice(9).join(','))
-    if (!body) {
-      continue
+    const body = cleanCaptionText(Arr.join(parts.slice(9), ","));
+    if (body === "") {
+      continue;
     }
-    const speaker = (parts[4] ?? '').trim()
+    const speaker = Str.trim(parts[4] ?? "");
     cues.push(
-      speaker
+      speaker !== null && speaker !== ""
         ? { endMs: end, speaker, startMs: start, text: body }
         : { endMs: end, startMs: start, text: body }
-    )
+    );
   }
-  return cues
-}
-
+  return cues;
+};
 /**
  * Parse an ASS clock like `0:00:01.00`.
  *
  * @param value ASS time field.
  */
 const parseAssTime = (value: string): number | null => {
-  const match = value.trim().match(/^(\d+):(\d{2}):(\d{2})\.(\d{1,2})$/)
-  if (!match) {
-    return null
+  const match = Option.getOrNull(Str.match(/^(\d+):(\d{2}):(\d{2})\.(\d{1,2})$/)(Str.trim(value)));
+  if (match === null) {
+    return null;
   }
-  const centis = `${match[4]}0`.slice(0, 2)
-  return (
-    Number(match[1]) * 3_600_000 +
-    Number(match[2]) * 60_000 +
-    Number(match[3]) * 1000 +
-    Number(centis) * 10
-  )
-}
-
+  const centis = Str.slice(0, 2)(`${match[4]}0`);
+  return Number(match[1]) * 3600000 + Number(match[2]) * 60000 + Number(match[3]) * 1000 + Number(centis) * 10;
+};
 /**
  * Parse cues using the file format.
  *
  * @param text Subtitle document.
  * @param format Declared format.
  */
-export const parseCaptionTrack = (text: string, format: CaptionTrack['format']): CaptionCue[] =>
-  format === 'ass' ? parseAssCues(text) : parseCaptionCues(text)
-
-/**
- * Read the language tag from a yt-dlp sidecar name such as `Title.en.vtt`.
- *
- * @param fileName File name only.
- * @param mediaStem Video file stem without extension.
- */
-export const languageFromSidecarName = (fileName: string, mediaStem: string): string | null => {
-  const ext = extname(fileName).toLowerCase()
-  if (!CAPTION_FILE_EXTENSIONS.includes(ext as (typeof CAPTION_FILE_EXTENSIONS)[number])) {
-    return null
-  }
-  const withoutExt = fileName.slice(0, -ext.length)
-  if (withoutExt === mediaStem) {
-    return null
-  }
-  if (!withoutExt.startsWith(`${mediaStem}.`)) {
-    return null
-  }
-  const tag = withoutExt.slice(mediaStem.length + 1).trim()
-  return tag || null
-}
-
-/**
- * Find yt-dlp sidecar subtitle files next to a downloaded video.
- *
- * @param sourceFilePath Absolute media path.
- */
-export const findSidecarCaptionTracks = (sourceFilePath: string): CaptionTrack[] => {
-  if (!existsSync(sourceFilePath)) {
-    return []
-  }
-  const directory = dirname(sourceFilePath)
-  const mediaStem = basename(sourceFilePath, extname(sourceFilePath))
-  let names: string[]
-  try {
-    names = readdirSync(directory)
-  } catch {
-    return []
-  }
-  const tracks: CaptionTrack[] = []
-  for (const name of names) {
-    const ext = extname(name).toLowerCase()
-    if (!CAPTION_FILE_EXTENSIONS.includes(ext as (typeof CAPTION_FILE_EXTENSIONS)[number])) {
-      continue
-    }
-    const language = languageFromSidecarName(name, mediaStem)
-    if (language === null && basename(name, ext) !== mediaStem) {
-      continue
-    }
-    const path = join(directory, name)
-    if (!isHumanCaptionTrack({ language, path })) {
-      continue
-    }
-    try {
-      if (!statSync(path).isFile()) {
-        continue
-      }
-      const text = readFileSync(path, 'utf8')
-      if (!text.trim()) {
-        continue
-      }
-      tracks.push({
-        format: ext.slice(1) as CaptionTrack['format'],
-        language,
-        path,
-        text
-      })
-    } catch {
-      continue
-    }
-  }
-  return tracks
-}
-
+export const parseCaptionTrack: {
+  (text: string, format: CaptionTrack["format"]): CaptionCue[];
+  (format: CaptionTrack["format"]): (text: string) => CaptionCue[];
+} = Fn.dual(2, (text: string, format: CaptionTrack["format"]): CaptionCue[] =>
+  format === "ass" ? parseAssCues(text) : parseCaptionCues(text)
+);
 /**
  * Language tags used to pick a caption track. Simplified and Traditional stay in separate buckets.
  *
  * @param language UI language tag.
  */
 export const preferredCaptionLanguages = (language: string): string[] => {
-  const tags: string[] = []
+  const tags: string[] = [];
   const push = (tag: string): void => {
-    const trimmed = tag.trim()
-    if (!trimmed) {
-      return
+    const trimmed = Str.trim(tag);
+    if (trimmed === "") {
+      return;
     }
-    if (tags.some((item) => normalizeCaptionTag(item) === normalizeCaptionTag(trimmed))) {
-      return
+    if (Arr.some(tags, (item) => normalizeCaptionTag(item) === normalizeCaptionTag(trimmed))) {
+      return;
     }
-    tags.push(trimmed)
-  }
-  push(language)
-  const script = chineseScriptOf(language)
-  if (script === 'hant') {
+    tags.push(trimmed);
+  };
+  push(language);
+  const script = chineseScriptOf(language);
+  if (script === "hant") {
     for (const tag of TRADITIONAL_CHINESE_TAGS) {
-      push(tag)
+      push(tag);
     }
-  } else if (script === 'hans') {
+  } else if (script === "hans") {
     for (const tag of SIMPLIFIED_CHINESE_TAGS) {
-      push(tag)
+      push(tag);
     }
   }
-  const lower = normalizeCaptionTag(language)
-  if (lower !== 'en' && !lower.startsWith('en-')) {
-    push('en')
+  const lower = normalizeCaptionTag(language);
+  if (lower !== "en" && !Str.startsWith("en-")(lower)) {
+    push("en");
   }
-  return tags
-}
-
+  return tags;
+};
 /**
  * Score a caption track against the user's language preference.
  *
  * @param language Track language tag.
  * @param preferred Preferred tags, highest first.
  */
-export const captionLanguageScore = (
-  language: string | null,
-  preferred: string[]
-): number => {
-  const withAiPenalty = (score: number): number =>
-    isPlatformAiCaptionTag(language) ? score - 40 : score
-  if (!language) {
-    return 1
+export const captionLanguageScore: {
+  (language: string | null, preferred: string[]): number;
+  (preferred: string[]): (language: string | null) => number;
+} = Fn.dual(2, (language: string | null, preferred: string[]): number => {
+  const withAiPenalty = (score: number): number => (isPlatformAiCaptionTag(language) ? score - 40 : score);
+  if (language == null || Boolean(language) === false) {
+    return 1;
   }
-  const compact = captionLanguageForMatch(language)
+  const compact = captionLanguageForMatch(language);
   for (const [index, item] of preferred.entries()) {
-    const want = normalizeCaptionTag(item)
-    if (!want) {
-      continue
+    const want = normalizeCaptionTag(item);
+    if (want === "") {
+      continue;
     }
-    const rank = 1000 - index * 10
+    const rank = 1000 - index * 10;
     if (compact === want) {
-      return withAiPenalty(rank)
+      return withAiPenalty(rank);
     }
-    const wantScript = chineseScriptOf(want)
-    const haveScript = chineseScriptOf(compact)
-    if (wantScript && haveScript) {
+    const wantScript = chineseScriptOf(want);
+    const haveScript = chineseScriptOf(compact);
+    if (wantScript !== null && haveScript !== null) {
       if (wantScript === haveScript) {
-        return withAiPenalty(rank - 2)
+        return withAiPenalty(rank - 2);
       }
-      continue
+      continue;
     }
-    if (compact.startsWith(`${want}-`) || want.startsWith(`${compact}-`)) {
-      return withAiPenalty(rank)
+    if (Str.startsWith(`${want}-`)(compact) || Str.startsWith(`${compact}-`)(want)) {
+      return withAiPenalty(rank);
     }
-    const wantBase = want.split('-')[0]
-    const haveBase = compact.split('-')[0]
-    if (wantBase && haveBase === wantBase) {
-      return withAiPenalty(rank - 5)
+    const wantBase = Str.split("-")(want)[0];
+    const haveBase = Str.split("-")(compact)[0];
+    if (wantBase !== undefined && wantBase !== "" && haveBase === wantBase) {
+      return withAiPenalty(rank - 5);
     }
   }
-  if (compact === 'en' || compact.startsWith('en-')) {
-    return withAiPenalty(20)
+  if (compact === "en" || Str.startsWith("en-")(compact)) {
+    return withAiPenalty(20);
   }
-  return withAiPenalty(2)
-}
-
+  return withAiPenalty(2);
+});
 /**
  * Pick the caption track that best matches the UI language.
  *
@@ -560,57 +446,89 @@ export const captionLanguageScore = (
  * @param tracks Candidate tracks.
  * @param preferred Preferred language tags.
  */
-export const pickCaptionTrack = <
-  T extends { language: string | null; path?: string; text: string; title?: string }
->(
-  tracks: T[],
-  preferred: string[]
-): T | null => {
-  let best: T | null = null
-  let bestScore = Number.NEGATIVE_INFINITY
-  for (const track of tracks) {
-    if (!(track.text.trim() && isImportableCaptionTrack(track))) {
-      continue
+export const pickCaptionTrack: {
+  <
+    T extends {
+      language: string | null;
+      path?: string | undefined;
+      text: string;
+      title?: string | undefined;
+    },
+  >(
+    tracks: T[],
+    preferred: string[]
+  ): T | null;
+  <
+    T extends {
+      language: string | null;
+      path?: string | undefined;
+      text: string;
+      title?: string | undefined;
+    },
+  >(
+    preferred: string[]
+  ): (tracks: T[]) => T | null;
+} = Fn.dual(
+  2,
+  <
+    T extends {
+      language: string | null;
+      path?: string | undefined;
+      text: string;
+      title?: string | undefined;
+    },
+  >(
+    tracks: T[],
+    preferred: string[]
+  ): T | null => {
+    let best: T | null = null;
+    let bestScore = Number.NEGATIVE_INFINITY;
+    for (const track of tracks) {
+      if (!(Str.trim(track.text) !== "" && isImportableCaptionTrack(track))) {
+        continue;
+      }
+      const score = captionLanguageScore(track.language, preferred);
+      if (score > bestScore) {
+        best = track;
+        bestScore = score;
+      }
     }
-    const score = captionLanguageScore(track.language, preferred)
-    if (score > bestScore) {
-      best = track
-      bestScore = score
-    }
+    return best;
   }
-  return best
-}
-
+);
 /**
  * Turn parsed cues into a captions-sourced pipeline result.
  *
  * @param cues Timed caption lines.
  * @param language Chosen track language.
  */
-export const pipelineResultFromCues = (
-  cues: CaptionCue[],
-  language: string | null
-): PipelineResult | null => {
-  const usable = cues.filter((cue) => cue.text && cue.endMs > cue.startMs)
+export const pipelineResultFromCues: {
+  (cues: CaptionCue[], language: string | null): PipelineResult | null;
+  (language: string | null): (cues: CaptionCue[]) => PipelineResult | null;
+} = Fn.dual(2, (cues: CaptionCue[], language: string | null): PipelineResult | null => {
+  const usable = Arr.filter(cues, (cue) => Boolean(cue.text) === true && cue.endMs > cue.startMs);
   if (usable.length === 0) {
-    return null
+    return null;
   }
-  const { speakers, keyByName } = speakersFromCaptionCues(usable)
-  const segments: PipelineSegment[] = usable.map((cue) => ({
+  const { speakers, keyByName } = speakersFromCaptionCues(usable);
+  const segments: PipelineSegment[] = Arr.map(usable, (cue) => ({
     confidence: null,
     endMs: cue.endMs,
-    speakerKey: cue.speaker ? (keyByName.get(cue.speaker.trim()) ?? null) : null,
+    speakerKey:
+      cue.speaker != null && cue.speaker !== ""
+        ? (HashMap.get(keyByName, Str.trim(cue.speaker ?? "")).pipe(Option.getOrUndefined) ?? null)
+        : null,
     startMs: cue.startMs,
     text: cue.text,
-    words: []
-  }))
+    words: [],
+  }));
   return {
     asrTier: null,
     language,
     modelVersion: CAPTIONS_MODEL_VERSION,
-    resultKind: 'transcript',
+    resultKind: "transcript",
     segments,
-    sourceKind: 'captions',
-    speakers
-  }
-}
+    sourceKind: "captions",
+    speakers,
+  };
+});
