@@ -37,10 +37,12 @@
     "zip:extension": "bun run --cwd apps/extension zip",
     "check:legacy": "bun run --cwd apps/desktop check",
     "lint:legacy": "bun run --cwd apps/desktop check",
-    "test": "bun run test:audit:other && bun run --cwd packages/browser-capture-legacy test:audit && turbo run test --filter=vidbee-extension --filter=@vidbee/cli --filter=@vidbee/cli-legacy --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/transcription --filter=@vidbee/transcription-legacy --filter=@vidbee/subscriptions-core --filter=@vidbee/browser-capture && bun run --cwd packages/browser-capture-legacy test:unit && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/extension-browser.test.mjs apps/desktop/scripts/port/golden/phase8.test.mjs apps/desktop/scripts/port/golden/capture-command.test.mjs apps/desktop/scripts/port/golden/loopback.test.mjs apps/desktop/scripts/port/golden/subscriptions-core.test.mjs apps/desktop/scripts/port/golden/browser-capture.test.mjs apps/desktop/scripts/port/golden/transcription.test.mjs",
+    "test": "bun run test:foundation && bun run test:audit:other && bun run --cwd packages/browser-capture-legacy test:audit && turbo run test --filter=vidbee-extension --filter=@vidbee/cli --filter=@vidbee/cli-legacy --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/transcription --filter=@vidbee/transcription-legacy --filter=@vidbee/subscriptions-core --filter=@vidbee/browser-capture && bun run --cwd packages/browser-capture-legacy test:unit && node --test scripts/port-check.test.mjs scripts/schema-types.test.mjs && bunx --bun vitest run apps/desktop/scripts/port/golden/extension-browser.test.mjs apps/desktop/scripts/port/golden/phase8.test.mjs apps/desktop/scripts/port/golden/capture-command.test.mjs apps/desktop/scripts/port/golden/loopback.test.mjs apps/desktop/scripts/port/golden/subscriptions-core.test.mjs apps/desktop/scripts/port/golden/browser-capture.test.mjs apps/desktop/scripts/port/golden/transcription.test.mjs",
     "port:check": "node scripts/port-check.mjs",
     "test:audit:other": "VIDBEE_CLI_PORTED=1 node --import tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/ui/test/*.test.ts scripts/cli/characterization/*.node.ts && bun run --cwd packages/subscriptions-core-legacy test",
-    "test:audit:shared": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts"
+    "test:audit:shared": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts",
+    "test:foundation": "node --import tsx --test scripts/desktop-foundation/*.node.ts && bunx --bun vitest run scripts/desktop-foundation/foundation.test.mjs",
+    "test:foundation:packaged": "node scripts/desktop-foundation/packaged.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
@@ -53,7 +55,11 @@
     "tsrs": "catalog:",
     "lefthook": "catalog:",
     "turbo": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "@effect/vitest": "catalog:",
+    "effect": "catalog:",
+    "esbuild": "catalog:",
+    "jotai": "catalog:"
   },
   "catalog": {
     "@base-ui/react": "^1.9.0",

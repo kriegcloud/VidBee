@@ -7,9 +7,13 @@
       "devDependencies": {
         "@biomejs/biome": "catalog:",
         "@effect/tsgo": "catalog:",
+        "@effect/vitest": "catalog:",
         "@svgr/core": "catalog:",
         "@svgr/plugin-jsx": "catalog:",
+        "effect": "catalog:",
         "electron": "catalog:",
+        "esbuild": "catalog:",
+        "jotai": "catalog:",
         "lefthook": "catalog:",
         "syncpack": "catalog:",
         "tsrs": "catalog:",

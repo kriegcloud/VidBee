@@ -1,0 +1,1924 @@
+{
+  "fresh": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto",
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": false,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "Fresh install locale",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  },
+  "singleInstance": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto",
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": false,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "secondInstance": {
+      "code": 0,
+      "signal": null,
+      "importLogger": true,
+      "readyApi": false
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "Fresh install locale",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  },
+  "background": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto",
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": false,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": false,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "Fresh install locale",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at",
+      "Desktop launched with --background; main window will stay hidden"
+    ]
+  },
+  "returning": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [
+        {
+          "id": "fixture",
+          "browser": "test",
+          "extra": "keep"
+        }
+      ],
+      "proxy": "",
+      "configPath": "",
+      "language": "fr",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "old",
+      "agentManagementTools": "auto",
+      "future": {
+        "keep": 9
+      }
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [
+        {
+          "id": "fixture",
+          "browser": "test",
+          "extra": "keep"
+        }
+      ],
+      "proxy": "",
+      "configPath": "",
+      "language": "fr",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "old",
+      "agentManagementTools": "auto",
+      "future": {
+        "keep": 9
+      }
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [
+        {
+          "id": "fixture",
+          "browser": "test",
+          "extra": "keep"
+        }
+      ],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "old",
+      "agentManagementTools": "auto",
+      "future": {
+        "keep": 9,
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": true,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  },
+  "restart": {
+    "initial": {
+      "downloadPath": "<previous-home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "dark",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto",
+      "foundationRestart": {
+        "retained": [
+          "synthetic",
+          7
+        ]
+      }
+    },
+    "individual": {
+      "downloadPath": "<previous-home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "dark",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto",
+      "foundationRestart": {
+        "retained": [
+          "synthetic",
+          7
+        ]
+      }
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<previous-home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "dark",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto",
+      "foundationRestart": {
+        "retained": [
+          "synthetic",
+          7
+        ]
+      },
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": true,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  },
+  "current": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto"
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "ai-transcripts",
+      "agentManagementTools": "auto",
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": false,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  },
+  "malformedFields": {
+    "initial": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": null,
+      "configPath": "",
+      "language": "en",
+      "theme": 42,
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "unknown-family-v1",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "ask"
+    },
+    "individual": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": null,
+      "configPath": "",
+      "language": "en",
+      "theme": 42,
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "unknown-family-v1",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "ask"
+    },
+    "preload": {
+      "keys": [
+        "on",
+        "removeListener",
+        "send",
+        "getPathForFile"
+      ],
+      "groups": [
+        "undefined",
+        "undefined",
+        "undefined"
+      ],
+      "invalidFile": null
+    },
+    "persisted": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": null,
+      "configPath": "",
+      "language": "en",
+      "theme": 42,
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": false,
+      "launchAtLogin": false,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "unknown-family-v1",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "ask",
+      "future": {
+        "nested": {
+          "retained": [
+            "synthetic",
+            7
+          ]
+        }
+      }
+    },
+    "events": {
+      "afterBatch": 1,
+      "afterSingle": 2,
+      "afterRemoval": 2,
+      "afterReset": 2
+    },
+    "whatsNew": {
+      "before": true,
+      "after": false
+    },
+    "app": {
+      "version": "2.4.0",
+      "platform": "linux",
+      "downloader": {
+        "ytdlpReady": true,
+        "ffmpegReady": true
+      }
+    },
+    "kernel": {
+      "ready": true,
+      "state": "up-to-date",
+      "source": "bundled"
+    },
+    "windowState": {
+      "initial": false,
+      "afterToggle": true,
+      "afterSecondToggle": false
+    },
+    "share": {
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "width": 1080,
+      "height": 495,
+      "copied": true
+    },
+    "reset": {
+      "downloadPath": "<home>/Downloads/VidBee",
+      "maxConcurrentDownloads": 5,
+      "downloadWithoutChannelSubfolders": false,
+      "browserForCookies": "none",
+      "cookiesPath": "",
+      "extensionCookieSources": [],
+      "proxy": "",
+      "configPath": "",
+      "language": "en",
+      "theme": "system",
+      "oneClickDownload": true,
+      "oneClickDownloadType": "video",
+      "oneClickQuality": "best",
+      "oneClickContainer": "auto",
+      "closeToTray": true,
+      "hideDockIcon": true,
+      "launchAtLogin": true,
+      "subscriptionOnlyLatestDefault": true,
+      "enableDownloadNotifications": true,
+      "rememberLastAudioLanguage": true,
+      "preferredAudioLanguage": "",
+      "downloadSubtitles": true,
+      "subtitleLanguages": [
+        "interface"
+      ],
+      "embedSubs": true,
+      "writeAutoSubs": true,
+      "embedThumbnail": false,
+      "embedMetadata": true,
+      "embedChapters": true,
+      "filenameStyle": "pretty",
+      "filenameViaVidBee": true,
+      "shareWatermark": false,
+      "sequentialFilenames": true,
+      "autoTranscribeAfterDownload": true,
+      "maxConcurrentTranscriptions": 1,
+      "asrTier": "minimal",
+      "ttsModelId": "kokoro-multi-lang-v1_0",
+      "transcriptionProvider": "local",
+      "cloudTranscriptionModelId": "qwen/qwen3-asr-1.7b",
+      "downloadMirror": "auto",
+      "lastSeenWhatsNew": "",
+      "agentManagementTools": "auto"
+    },
+    "screens": [
+      {
+        "route": "#/settings",
+        "hasControls": true,
+        "hasExpectedText": true
+      },
+      {
+        "route": "#/about",
+        "hasControls": true,
+        "hasExpectedText": true
+      }
+    ],
+    "boot": [
+      "Log file location:",
+      "database initialized at",
+      "ffmpeg initialized successfully",
+      "Extension API listening on",
+      "Automation descriptor written at",
+      "Desktop MCP available at"
+    ]
+  }
+}
