@@ -16,6 +16,17 @@ bun run test:golden --build apps/desktop/dist/linux-unpacked
 bun run test:golden apps/desktop/dist/linux-unpacked --scratch "$HOME/.cache/vidbee-goldens"
 ```
 
+The complete command also compares the admitted current-extension browser
+records and the separate browser-capture-unavailable host configuration. Build
+the current extension first with `bun run build:extension`. Set
+`VIDBEE_REQUIRE_REAL_BROWSER=1` to require actual unpacked-load/action-popup
+capability; a capability skip then fails the command. With supplied models and
+all local prerequisites, the complete suite compares all 506 committed documents:
+480 primary, four restart, 21 transcription and one unavailable-host document.
+The extended CLI SQLite case establishes its own CLI namespace; callers need no
+outer isolation wrapper. Paired old/new browser characterization and its reviewed
+unstable observations remain available through `--extension-browser-only`.
+
 The default build is `apps/desktop/dist/linux-unpacked`. An existing unpacked
 baseline can be supplied read-only. Node must support `node:sqlite`; the host also
 needs Linux user and network namespaces, `unshare`, `nsenter`, Python, and the

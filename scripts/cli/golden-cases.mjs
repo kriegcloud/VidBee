@@ -84,7 +84,7 @@ export async function runExtendedCliCases({runDir,build,client,record,command,ro
       const value=await invoke(label,['--vidbee-local',...(waitForCompletion?['--vidbee-wait']:[]),...args('cli-'+label+'.mp4',label)],binaries);
       assert.equal(value.code,0,JSON.stringify(value));await record('cli/extended/'+label,project(value));
     }
-    const sqlite=await command(process.execPath,[path.join(root,'scripts/cli/golden-sql.worker.mjs'),evidence],{env});
+    const sqlite=await command(process.execPath,[path.join(root,'scripts/cli/golden-sql.runner.mjs'),evidence],{env});
     assert.equal(sqlite.code,0,sqlite.stderr);await record('cli/extended/local-sqlite',JSON.parse(sqlite.stdout));
     // Probe the real loopback media separately from the deterministic byte fixture.
     const probe=await invoke('loopback-probe',['--dump-json',server.url+'/cli-probe.mp4'],binaries);

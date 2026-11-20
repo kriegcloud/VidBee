@@ -6,6 +6,7 @@ import { runExtensionApiCases } from './extension-api-cases.mjs'
 import { startLoopback } from './loopback.mjs'
 import { PHASE8_EXCLUSIONS } from './phase8-exclusions.mjs'
 import { phase8Prerequisites } from './phase8-prerequisites.mjs'
+import { runStandardBrowserCases } from './standard-browser-cases.mjs'
 
 const root = fileURLToPath(new URL('../../../../../', import.meta.url))
 export async function runPhase8Cases({
@@ -50,10 +51,26 @@ export async function runPhase8Cases({
     if (!extensionOnly) {
       await runCliAdditions({ client, runDir, build, record, roots, command, server, alias, raw })
     }
+    let browserUrl
+    if (
+      !(
+        extensionOnly ||
+        cliOnly ||
+        process.argv.includes('--phase8-only') ||
+        process.argv.includes('--subset')
+      )
+    ) {
+      browserUrl = await runStandardBrowserCases({ runDir, build, record, command })
+    }
     const allowed = [
       'Using fallback thinking options: TypeError: fetch failed',
       'Failed to cache thumbnail: TypeError: fetch failed',
-      `Failed to fetch metadata for: ${server.url}/404-phase8.mp4 Error: ERROR: [generic] 404-phase8:`
+      `Failed to fetch metadata for: ${server.url}/404-phase8.mp4 Error: ERROR: [generic] 404-phase8:`,
+      ...(browserUrl
+        ? [
+            `Failed to fetch metadata for: ${browserUrl}/404-phase8.mp4 Error: ERROR: [generic] 404-phase8:`
+          ]
+        : [])
     ]
     const unexpected = (await readFile(logFile, 'utf8'))
       .slice(logStart)

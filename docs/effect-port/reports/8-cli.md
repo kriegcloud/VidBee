@@ -11,6 +11,60 @@
 - [x] Finish repetition, alternate-checkout and loaded-core verification.
 - [x] Complete the lane handoff with omitted vectors and proof limits.
 
+## Standard golden command
+
+- [x] Make the standard command establish CLI SQL isolation without a caller wrapper.
+- [x] Include every committed document, with actual Chromium and supplied-model ASR.
+- [x] Pass three consecutive full runs, the CLI isolated runner and root gates.
+- [x] Verify unchanged goldens/protected files and restore the tracked CLI bundle.
+
+The extended SQLite case now uses `golden-sql.runner.mjs` and the existing
+user/mount/network/PID namespace helper. Synthetic HOME/XDG and descriptor files,
+loopback only, and masked owner config/install roots remain enforced. Masking
+includes passwd home as well as environment HOME, since the standard harness
+already supplies a synthetic HOME. SQL scratch stays under its evidence directory;
+reference mode survives the otherwise closed environment. The SQL guard is intact.
+The reported `run.mjs:62` `nsenter exited 1 (null)` wrapped that same SQL assertion;
+it was not a second namespace-entry failure.
+
+An exploratory run then exposed an old harness consumer importing the strict
+Effect constructor as the former Promise handle. `cli-local-seam.mjs` now imports
+the retained legacy local-client seam used by the shipping executable. Its
+reopen assertions and golden are unchanged. A coverage inventory also found the
+two admitted extension-browser documents and the unavailable-host document outside
+the standard registration. The phase-8 module now runs the current extension's
+existing real-browser worker and the separate unavailable-host companion. It
+restores its temporary HTML annotation, audits companion DNS, and rejects browser
+capability skips when `VIDBEE_REQUIRE_REAL_BROWSER=1`. The dedicated browser server
+starts after annotation because phase-8 routes cache HTML at startup. The old/new
+browser differential selector and its reviewed unstable observations stay separate.
+
+Pinned Node 22.23.4 and Bun 1.4.4; heavy jobs ran serially with memory preflight.
+The exact `VIDBEE_REQUIRE_REAL_BROWSER=1 bun run test:golden --scratch <dir>
+--models <models dir>` passed three consecutive times on unchanged harness source:
+
+| Final run / receipt | Comparisons | Failures | Elapsed | Combined evidence |
+| --- | ---: | ---: | ---: | --- |
+| 1 (`golden-6`) | 506 | 0 | 247.8s | `combined-1HiUgx` |
+| 2 (`golden-7`) | 506 | 0 | 236.3s | `combined-kledzS` |
+| 3 (`golden-8`) | 506 | 0 | 237.9s | `combined-PoNcAj` |
+
+Each run covers **all 506 committed documents**: 480 primary, four restart,
+21 transcription and one unavailable-host comparison. Each completes 20 real
+Chromium observations and seven clean DNS-log audits. `final-integrity.json` in
+lane `8-golden-fix` verifies the exact document set, 506 unchanged golden hashes,
+all three unchanged protected files and the restored tracked CLI bundle.
+The CLI lane's original isolated runner also passes: 485 comparisons without
+models. Root `bun run check` (17 tasks; 22 ported configs; zero violations),
+`CI=true bun run test` (27 Turbo tasks plus audit/downstream suites),
+`bun run deps:check` and `bun run port:check` all exit 0. The synthetic-HOME
+namespace/mask/descriptor/reference-mode probe passes too. Receipts retain the
+exploratory stale-seam failure (`golden-1`), the earlier 503-document runs
+(`golden-2`–`golden-4`), and the cached-template integration failure (`golden-5`);
+none is counted as final acceptance. No normalization or golden changed, and no
+protected file needed modification. This is local packaged proof; independent
+review and hosted CI remain with the orchestrator.
+
 ## Code review
 
 This section records remediation of the independent review of `7c4b9a2`.

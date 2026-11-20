@@ -1,5 +1,5 @@
 // The executable has no SQLite flag. Exercise only its documented local-client seam.
-import { createLocalClient } from '../../../../cli/src/transport/local-client.ts'
+import { createLocalClient } from '../../../../cli-legacy/src/local-client.ts'
 
 const [database, downloads, ytDlpPath, ffmpegLocation, url] = process.argv.slice(2)
 const options = {
