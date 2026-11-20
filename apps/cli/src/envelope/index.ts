@@ -1,13 +1,10 @@
-/**
- * JSON envelope shapes the CLI prints. Reference:
- *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §4.4
- *
- * Every CLI invocation produces exactly one JSON document on stdout.
- * Exit code is determined by ExitCode below; envelope and exit code
- * MUST be consistent.
- */
+import { dual } from "effect/Function";
+import * as P from "effect/Predicate";
+import * as Result from "effect/Result";
+import * as S from "effect/Schema";
+import type { Envelope, ErrorCode, ErrorEnvelope, RenderOptions } from "../Envelope.model.js";
 
-import type { Task } from '@vidbee/task-queue-legacy'
+export * from "../Envelope.model.js";
 
 export const ExitCode = {
   /** probe success | detached download enqueue success | wait-mode success */
@@ -21,83 +18,26 @@ export const ExitCode = {
   /** auth failure */
   AUTH_FAILED: 4,
   /** internal contract error (schema mismatch, version mismatch) */
-  CONTRACT_ERROR: 5
-} as const
+  CONTRACT_ERROR: 5,
+} as const;
 
-export type ExitCode = (typeof ExitCode)[keyof typeof ExitCode]
+export type ExitCode = (typeof ExitCode)[keyof typeof ExitCode];
 
-export interface ProbeSuccessEnvelope {
-  ok: true
-  mode: 'probe'
-  command: string
-  ytDlp: { exitCode: number; stdout: string; stderr: string }
-}
-
-export interface DownloadDetachedEnvelope {
-  ok: true
-  mode: 'download'
-  task: Pick<Task, 'id' | 'status' | 'attempt' | 'maxAttempts'> & {
-    command: string
-  }
-}
-
-export interface DownloadWaitSuccessEnvelope {
-  ok: true
-  mode: 'download'
-  task: Task
-  ytDlp: { exitCode: number; stdoutTail: string; stderrTail: string }
-}
-
-export interface DownloadWaitFailureEnvelope {
-  ok: false
-  mode: 'download'
-  task: Task
-  ytDlp: { exitCode: number; stdoutTail: string; stderrTail: string }
-}
-
-export type ErrorCode =
-  | 'PARSE_ERROR'
-  | 'UNKNOWN_VIDBEE_FLAG'
-  | 'INVALID_TARGET'
-  | 'INVALID_PRIORITY'
-  | 'INVALID_MAX_ATTEMPTS'
-  | 'INVALID_TIMEOUT'
-  | 'MISSING_VALUE'
-  | 'UNEXPECTED_VALUE'
-  | 'STDOUT_OUTPUT_DISALLOWED'
-  | 'PROBE_OUTPUT_TOO_LARGE'
-  | 'DESKTOP_NOT_READY'
-  | 'API_UNREACHABLE'
-  | 'HANDSHAKE_FAILED'
-  | 'TOKEN_EXPIRED'
-  | 'AUTH_FAILED'
-  | 'CONTRACT_VERSION_MISMATCH'
-  | 'CONTRACT_SCHEMA_MISMATCH'
-  | 'NOT_IMPLEMENTED'
-  | 'UNKNOWN_ERROR'
-
-export interface ErrorEnvelope {
-  ok: false
-  code: ErrorCode
-  message: string
-  details?: Record<string, unknown>
-}
-
-export type Envelope =
-  | ProbeSuccessEnvelope
-  | DownloadDetachedEnvelope
-  | DownloadWaitSuccessEnvelope
-  | DownloadWaitFailureEnvelope
-  | ErrorEnvelope
-  | { ok: true; mode: 'subcommand'; subcommand: string; result: unknown }
-
-export interface RenderOptions {
-  pretty?: boolean
-}
-
-export function renderEnvelope(env: Envelope, opts: RenderOptions = {}): string {
-  return opts.pretty ? JSON.stringify(env, null, 2) : JSON.stringify(env)
-}
+const compact = S.encodeResult(S.fromJsonString(S.Unknown));
+const pretty = S.encodeResult(S.fromJsonString(S.Unknown, { space: 2 }));
+export const renderEnvelope: {
+  (env: Envelope, opts?: RenderOptions): string;
+  (opts?: RenderOptions): (env: Envelope) => string;
+} = dual(
+  (args) =>
+    args.length >= 2 ||
+    (args.length === 1 &&
+      (args[0] === null ||
+        (args[0] !== undefined && typeof args[0] !== "object") ||
+        (typeof args[0] === "object" && args[0] !== null && "ok" in args[0]))),
+  (env: Envelope, opts: RenderOptions = {}): string =>
+    P.isTruthy(opts.pretty) ? Result.getOrThrow(pretty(env)) : Result.getOrThrow(compact(env))
+);
 
 /**
  * Map an ErrorCode to its corresponding exit code per §4.4. Anything not
@@ -106,31 +46,30 @@ export function renderEnvelope(env: Envelope, opts: RenderOptions = {}): string 
  */
 export function exitCodeForError(code: ErrorCode): ExitCode {
   switch (code) {
-    case 'DESKTOP_NOT_READY':
-    case 'API_UNREACHABLE':
-    case 'HANDSHAKE_FAILED':
-      return ExitCode.HOST_UNREACHABLE
-    case 'AUTH_FAILED':
-    case 'TOKEN_EXPIRED':
-      return ExitCode.AUTH_FAILED
-    case 'CONTRACT_VERSION_MISMATCH':
-    case 'CONTRACT_SCHEMA_MISMATCH':
-      return ExitCode.CONTRACT_ERROR
-    case 'PROBE_OUTPUT_TOO_LARGE':
-      return ExitCode.WAIT_NON_SUCCESS
-    case 'NOT_IMPLEMENTED':
-      return ExitCode.CONTRACT_ERROR
+    case "DESKTOP_NOT_READY":
+    case "API_UNREACHABLE":
+    case "HANDSHAKE_FAILED":
+      return ExitCode.HOST_UNREACHABLE;
+    case "AUTH_FAILED":
+    case "TOKEN_EXPIRED":
+      return ExitCode.AUTH_FAILED;
+    case "CONTRACT_VERSION_MISMATCH":
+    case "CONTRACT_SCHEMA_MISMATCH":
+      return ExitCode.CONTRACT_ERROR;
+    case "PROBE_OUTPUT_TOO_LARGE":
+      return ExitCode.WAIT_NON_SUCCESS;
+    case "NOT_IMPLEMENTED":
+      return ExitCode.CONTRACT_ERROR;
     default:
-      return ExitCode.ARG_ERROR
+      return ExitCode.ARG_ERROR;
   }
 }
 
-export function errorEnvelope(
-  code: ErrorCode,
-  message: string,
-  details?: Record<string, unknown>
-): ErrorEnvelope {
-  return details === undefined
-    ? { ok: false, code, message }
-    : { ok: false, code, message, details }
-}
+export const errorEnvelope: {
+  (code: ErrorCode, message: string, details?: Record<string, unknown>): ErrorEnvelope;
+  (message: string, details?: Record<string, unknown>): (code: ErrorCode) => ErrorEnvelope;
+} = dual(
+  (args) => args.length >= 3 || (args.length === 2 && typeof args[1] === "string"),
+  (code: ErrorCode, message: string, details?: Record<string, unknown>): ErrorEnvelope =>
+    details === undefined ? { ok: false, code, message } : { ok: false, code, message, details }
+);

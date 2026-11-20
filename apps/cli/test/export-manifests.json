@@ -1,0 +1,528 @@
+{
+  ".": [
+    {
+      "name": "AutomationClient",
+      "kind": "effect operation"
+    },
+    {
+      "name": "AutomationClientOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "AutomationHttpError",
+      "kind": "schema"
+    },
+    {
+      "name": "AutomationSession",
+      "kind": "type"
+    },
+    {
+      "name": "AutostartOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "AutostartResult",
+      "kind": "schema"
+    },
+    {
+      "name": "buildForwardedInput",
+      "kind": "pure function"
+    },
+    {
+      "name": "checkUpgrade",
+      "kind": "effect operation"
+    },
+    {
+      "name": "CliAutomation",
+      "kind": "service"
+    },
+    {
+      "name": "CliAutomationLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliAutostart",
+      "kind": "service"
+    },
+    {
+      "name": "CliAutostartLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliConnection",
+      "kind": "service"
+    },
+    {
+      "name": "CliConnectionLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliDescriptor",
+      "kind": "service"
+    },
+    {
+      "name": "CliDescriptorLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliError",
+      "kind": "type"
+    },
+    {
+      "name": "CliFailure",
+      "kind": "schema"
+    },
+    {
+      "name": "CliHost",
+      "kind": "service"
+    },
+    {
+      "name": "CliHostLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliLauncher",
+      "kind": "service"
+    },
+    {
+      "name": "CliLauncherLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliLocal",
+      "kind": "service"
+    },
+    {
+      "name": "CliLocalLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliOutput",
+      "kind": "service"
+    },
+    {
+      "name": "CliOutputLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliPidLiveness",
+      "kind": "service"
+    },
+    {
+      "name": "CliPidLivenessLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliProbe",
+      "kind": "service"
+    },
+    {
+      "name": "CliProbeLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliProbeProcess",
+      "kind": "service"
+    },
+    {
+      "name": "CliProbeProcessLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliProgram",
+      "kind": "service"
+    },
+    {
+      "name": "CliProgramLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliRegistry",
+      "kind": "service"
+    },
+    {
+      "name": "CliRegistryLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliUpgrade",
+      "kind": "service"
+    },
+    {
+      "name": "CliUpgradeLive",
+      "kind": "layer"
+    },
+    {
+      "name": "CliVersion",
+      "kind": "service"
+    },
+    {
+      "name": "CliVersionInfo",
+      "kind": "schema"
+    },
+    {
+      "name": "CliVersionLive",
+      "kind": "layer"
+    },
+    {
+      "name": "compareSemver",
+      "kind": "pure function"
+    },
+    {
+      "name": "connect",
+      "kind": "effect operation"
+    },
+    {
+      "name": "ConnectResult",
+      "kind": "type"
+    },
+    {
+      "name": "createLocalClient",
+      "kind": "effect operation"
+    },
+    {
+      "name": "defaultCachePath",
+      "kind": "effect operation"
+    },
+    {
+      "name": "DescriptorPayload",
+      "kind": "schema"
+    },
+    {
+      "name": "dispatchSubcommand",
+      "kind": "effect operation"
+    },
+    {
+      "name": "DownloadDetachedEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "DownloadWaitFailureEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "DownloadWaitSuccessEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "EffectContractClient",
+      "kind": "type"
+    },
+    {
+      "name": "enqueueDownload",
+      "kind": "effect operation"
+    },
+    {
+      "name": "EnqueueOptions",
+      "kind": "type"
+    },
+    {
+      "name": "EnqueueResult",
+      "kind": "type"
+    },
+    {
+      "name": "ensureDesktopReady",
+      "kind": "effect operation"
+    },
+    {
+      "name": "Envelope",
+      "kind": "schema"
+    },
+    {
+      "name": "ErrorCode",
+      "kind": "schema"
+    },
+    {
+      "name": "errorEnvelope",
+      "kind": "pure function"
+    },
+    {
+      "name": "ErrorEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "ExitCode",
+      "kind": "constant"
+    },
+    {
+      "name": "exitCodeForError",
+      "kind": "pure function"
+    },
+    {
+      "name": "Flags",
+      "kind": "type"
+    },
+    {
+      "name": "handshakeReply",
+      "kind": "effect operation"
+    },
+    {
+      "name": "HandshakeWire",
+      "kind": "schema"
+    },
+    {
+      "name": "HttpObservation",
+      "kind": "schema"
+    },
+    {
+      "name": "isLoopbackOrPrivateHost",
+      "kind": "pure function"
+    },
+    {
+      "name": "isPidAlive",
+      "kind": "effect operation"
+    },
+    {
+      "name": "LauncherSpec",
+      "kind": "schema"
+    },
+    {
+      "name": "ListInput",
+      "kind": "schema"
+    },
+    {
+      "name": "ListParseError",
+      "kind": "schema"
+    },
+    {
+      "name": "ListStatus",
+      "kind": "schema"
+    },
+    {
+      "name": "LocalClientOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "LocalSession",
+      "kind": "type"
+    },
+    {
+      "name": "parseArgv",
+      "kind": "pure function"
+    },
+    {
+      "name": "ParsedArgv",
+      "kind": "schema"
+    },
+    {
+      "name": "ParseError",
+      "kind": "schema"
+    },
+    {
+      "name": "parseListArgs",
+      "kind": "pure function"
+    },
+    {
+      "name": "Priority",
+      "kind": "schema"
+    },
+    {
+      "name": "ProbeOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "ProbeResult",
+      "kind": "schema"
+    },
+    {
+      "name": "ProbeSuccessEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "readCliVersion",
+      "kind": "effect operation"
+    },
+    {
+      "name": "readDescriptor",
+      "kind": "effect operation"
+    },
+    {
+      "name": "ReadDescriptorResult",
+      "kind": "schema"
+    },
+    {
+      "name": "redactArgs",
+      "kind": "pure function"
+    },
+    {
+      "name": "REDACTED_PLACEHOLDER",
+      "kind": "constant"
+    },
+    {
+      "name": "redactText",
+      "kind": "pure function"
+    },
+    {
+      "name": "renderEnvelope",
+      "kind": "pure function"
+    },
+    {
+      "name": "RenderOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "ResolveDescriptorOptions",
+      "kind": "schema"
+    },
+    {
+      "name": "resolveDescriptorPath",
+      "kind": "effect operation"
+    },
+    {
+      "name": "run",
+      "kind": "effect operation"
+    },
+    {
+      "name": "runProbe",
+      "kind": "effect operation"
+    },
+    {
+      "name": "RunResult",
+      "kind": "schema"
+    },
+    {
+      "name": "selectTransport",
+      "kind": "pure function"
+    },
+    {
+      "name": "SubcommandContext",
+      "kind": "type"
+    },
+    {
+      "name": "SubcommandResult",
+      "kind": "type"
+    },
+    {
+      "name": "Target",
+      "kind": "schema"
+    },
+    {
+      "name": "terminal",
+      "kind": "effect operation"
+    },
+    {
+      "name": "transportNotReady",
+      "kind": "pure function"
+    },
+    {
+      "name": "TransportSelection",
+      "kind": "type"
+    },
+    {
+      "name": "UpgradeCache",
+      "kind": "schema"
+    },
+    {
+      "name": "UpgradeCheckInput",
+      "kind": "schema"
+    },
+    {
+      "name": "UpgradeCheckResult",
+      "kind": "schema"
+    },
+    {
+      "name": "validateApiUrl",
+      "kind": "pure function"
+    },
+    {
+      "name": "VidbeeFlags",
+      "kind": "schema"
+    },
+    {
+      "name": "WireTaskId",
+      "kind": "schema"
+    }
+  ],
+  "./parser": [
+    {
+      "name": "Flags",
+      "kind": "type"
+    },
+    {
+      "name": "ListInput",
+      "kind": "schema"
+    },
+    {
+      "name": "ListStatus",
+      "kind": "schema"
+    },
+    {
+      "name": "parseArgv",
+      "kind": "pure function"
+    },
+    {
+      "name": "ParsedArgv",
+      "kind": "schema"
+    },
+    {
+      "name": "ParseError",
+      "kind": "schema"
+    },
+    {
+      "name": "parseListArgs",
+      "kind": "pure function"
+    },
+    {
+      "name": "Priority",
+      "kind": "schema"
+    },
+    {
+      "name": "Target",
+      "kind": "schema"
+    },
+    {
+      "name": "VidbeeFlags",
+      "kind": "schema"
+    }
+  ],
+  "./envelope": [
+    {
+      "name": "DownloadDetachedEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "DownloadWaitFailureEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "DownloadWaitSuccessEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "Envelope",
+      "kind": "schema"
+    },
+    {
+      "name": "ErrorCode",
+      "kind": "schema"
+    },
+    {
+      "name": "errorEnvelope",
+      "kind": "pure function"
+    },
+    {
+      "name": "ErrorEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "ExitCode",
+      "kind": "constant"
+    },
+    {
+      "name": "exitCodeForError",
+      "kind": "pure function"
+    },
+    {
+      "name": "ProbeSuccessEnvelope",
+      "kind": "schema"
+    },
+    {
+      "name": "renderEnvelope",
+      "kind": "pure function"
+    },
+    {
+      "name": "RenderOptions",
+      "kind": "schema"
+    }
+  ]
+}

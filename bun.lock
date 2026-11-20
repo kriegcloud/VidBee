@@ -25,22 +25,53 @@
         "vidbee": "./dist/bin/vidbee.mjs",
       },
       "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "effect": "catalog:",
         "yt-dlp-wrap-plus": "catalog:",
       },
       "devDependencies": {
+        "@biomejs/biome": "catalog:",
+        "@effect/vitest": "catalog:",
         "@types/better-sqlite3": "catalog:",
         "@types/node": "catalog:",
         "@vidbee/db": "workspace:^",
         "@vidbee/downloader-core": "workspace:^",
         "@vidbee/downloader-core-legacy": "workspace:^",
-        "@vidbee/logger": "workspace:^",
+        "@vidbee/schema": "workspace:^",
         "@vidbee/subscriptions-core": "workspace:^",
         "@vidbee/subscriptions-core-legacy": "workspace:^",
+        "@vidbee/task-queue": "workspace:^",
         "@vidbee/task-queue-legacy": "workspace:^",
         "@vidbee/transcription": "workspace:^",
         "@vidbee/transcription-legacy": "workspace:^",
         "esbuild": "catalog:",
+        "tsrs": "catalog:",
+        "tsx": "catalog:",
         "typescript": "catalog:",
+        "vitest": "catalog:",
+      },
+      "optionalDependencies": {
+        "better-sqlite3": "catalog:",
+      },
+    },
+    "apps/cli-legacy": {
+      "name": "@vidbee/cli-legacy",
+      "version": "0.1.0",
+      "dependencies": {
+        "@effect/platform-node": "catalog:",
+        "@vidbee/cli": "workspace:^",
+        "@vidbee/db": "workspace:^",
+        "@vidbee/downloader-core": "workspace:^",
+        "@vidbee/downloader-core-legacy": "workspace:^",
+        "@vidbee/task-queue-legacy": "workspace:^",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@effect/vitest": "catalog:",
+        "@types/better-sqlite3": "catalog:",
+        "@types/node": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:",
       },
       "optionalDependencies": {
         "better-sqlite3": "catalog:",
@@ -1428,6 +1459,8 @@
     "@vidbee/browser-capture-legacy": ["@vidbee/browser-capture-legacy@workspace:packages/browser-capture-legacy"],
 
     "@vidbee/cli": ["@vidbee/cli@workspace:apps/cli"],
+
+    "@vidbee/cli-legacy": ["@vidbee/cli-legacy@workspace:apps/cli-legacy"],
 
     "@vidbee/db": ["@vidbee/db@workspace:packages/db"],
 

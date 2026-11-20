@@ -8,6 +8,8 @@
   "root": true,
   "files": {
     "includes": [
+      "apps/cli/**",
+      "!apps/cli/scripts/**",
       "packages/schema/**",
       "apps/extension/**",
       "!apps/extension/assets/content.css",

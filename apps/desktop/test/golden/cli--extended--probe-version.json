@@ -1,0 +1,15 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "probe",
+    "command": "yt-dlp --version",
+    "ytDlp": {
+      "exitCode": 0,
+      "stdout": "fixture probe\n",
+      "stderr": "fixture tail\n"
+    }
+  },
+  "stderr": ""
+}

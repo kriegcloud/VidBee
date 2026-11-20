@@ -1,0 +1,14 @@
+import {build} from 'esbuild';
+import {mkdtempSync,writeFileSync,symlinkSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {repo} from './isolation.mjs';
+import * as old from '../../../fixtures/cli-pre-port/library.mjs';
+if(process.env.CLI_ISOLATED!=='1')throw Error('isolation required');
+const scratch=mkdtempSync(join(tmpdir(),'cli-encoding-diagnostic-'));symlinkSync(join(repo,'node_modules'),join(scratch,'node_modules'));
+const built=await build({stdin:{contents:"export {renderEnvelope} from '@vidbee/cli/envelope'",resolveDir:repo,loader:'ts'},bundle:true,format:'esm',platform:'node',write:false});
+writeFileSync(join(scratch,'candidate.mjs'),built.outputFiles[0].contents);const candidate=await import(pathToFileURL(join(scratch,'candidate.mjs')));
+const cycle={};cycle.self=cycle;
+const observe=(module,result)=>{try{return {value:module.renderEnvelope({ok:true,mode:'subcommand',subcommand:'fixture',result})};}catch(error){return {name:error.name,message:error.message};}};
+for(const [name,result]of [['bigint',1n],['cycle',cycle]])process.stdout.write(JSON.stringify({case:name,old:observe(old,result),candidate:observe(candidate,result)})+'\n');

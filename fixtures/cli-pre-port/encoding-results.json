@@ -1,0 +1,4 @@
+[
+  "{\"error\":{\"name\":\"TypeError\",\"message\":\"Do not know how to serialize a BigInt\",\"code\":{\"$scalar\":\"undefined\"},\"exitCode\":{\"$scalar\":\"undefined\"}},\"engine\":true}",
+  "{\"error\":{\"name\":\"TypeError\",\"message\":\"Converting circular structure to JSON\\n    --> starting at object with constructor 'Object'\\n    --- property 'self' closes the circle\",\"code\":{\"$scalar\":\"undefined\"},\"exitCode\":{\"$scalar\":\"undefined\"}},\"engine\":true}"
+]

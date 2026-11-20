@@ -1,72 +1,46 @@
-/**
- * Resolve the installed CLI version by reading the package.json that ships
- * alongside the bundle (or the source tree, in dev). We avoid hard-coding
- * the version into a generated TS file so that a `pnpm version` bump in
- * `package.json` is picked up without an extra build step.
- *
- * Reference: NEX-148 §3.
- */
+import { DownloadFiles } from "@vidbee/downloader-core/DownloadFiles.service";
+import * as Effect from "effect/Effect";
+import * as Path from "effect/Path";
+import * as S from "effect/Schema";
+import { CliHost } from "../CliHost.service.js";
+import { CliVersion } from "../CliVersion.service.js";
+import type { CliVersionInfo } from "../Upgrade.model.js";
 
-import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+export type { CliVersionInfo } from "../Upgrade.model.js";
 
-const FALLBACK_VERSION = '0.0.0-dev'
-
-export interface CliVersionInfo {
-  cli: string
-  contract: string
-  changelog: string
-}
-
-/**
- * The CLI and the shared `taskQueueContract` ship from the same monorepo;
- * we surface the contract version as the same string until the package
- * grows a separate semver. Hosts that pin a specific contract major use
- * this string for compatibility checks.
- */
-export function readCliVersion(
-  candidatePaths: readonly string[] = defaultCandidatePaths()
-): CliVersionInfo {
-  for (const p of candidatePaths) {
-    try {
-      const pkg = JSON.parse(readFileSync(p, 'utf-8')) as {
-        name?: string
-        version?: string
-      }
-      if (pkg.name === '@vidbee/cli' && typeof pkg.version === 'string') {
-        return {
-          cli: pkg.version,
-          contract: pkg.version,
-          changelog:
-            'https://github.com/nexmoe/vidbee/blob/main/apps/cli/CHANGELOG.md'
-        }
-      }
-    } catch {
-      // try the next candidate
+const Package = S.Struct({ name: S.Literal("@vidbee/cli"), version: S.String });
+const json = S.decodeEffect(S.fromJsonString(Package));
+export const readVersionFiles = Effect.fn("readVersionFiles")(function* (candidates?: ReadonlyArray<string>) {
+  const files = yield* DownloadFiles;
+  let paths = candidates;
+  if (paths === undefined) {
+    const path = yield* Path.Path;
+    const host = yield* CliHost;
+    const here = yield* path.fromFileUrl(host.executingArtifactUrl).pipe(Effect.result);
+    if (here._tag === "Failure") paths = [];
+    else {
+      const dir = path.dirname(here.success);
+      paths = [
+        path.resolve(dir, "..", "package.json"),
+        path.resolve(dir, "..", "..", "package.json"),
+        path.resolve(dir, "..", "..", "..", "package.json"),
+      ];
+    }
+  }
+  let version = "0.0.0-dev";
+  for (const candidate of paths) {
+    const parsed = yield* files.read(candidate).pipe(Effect.flatMap(json), Effect.option);
+    if (parsed._tag === "Some") {
+      version = parsed.value.version;
+      break;
     }
   }
   return {
-    cli: FALLBACK_VERSION,
-    contract: FALLBACK_VERSION,
-    changelog:
-      'https://github.com/nexmoe/vidbee/blob/main/apps/cli/CHANGELOG.md'
-  }
-}
-
-function defaultCandidatePaths(): string[] {
-  let here: string
-  try {
-    here = fileURLToPath(import.meta.url)
-  } catch {
-    return []
-  }
-  const dir = dirname(here)
-  // dist/index.mjs            → ../package.json  (npm tarball + Desktop bundle)
-  // src/local-info/version.ts → ../../package.json (dev)
-  return [
-    resolve(dir, '..', 'package.json'),
-    resolve(dir, '..', '..', 'package.json'),
-    resolve(dir, '..', '..', '..', 'package.json')
-  ]
-}
+    cli: version,
+    contract: version,
+    changelog: "https://github.com/nexmoe/vidbee/blob/main/apps/cli/CHANGELOG.md",
+  } satisfies CliVersionInfo;
+});
+export const readCliVersion = Effect.fn("readCliVersion")(function* (candidates?: ReadonlyArray<string>) {
+  return yield* (yield* CliVersion).read(candidates);
+});
