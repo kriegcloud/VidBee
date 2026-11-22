@@ -1,15 +1,15 @@
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
+import { scratchRoot } from './scratch.mjs'
 import { settingsHarness, sourceLoader, SourceImportError } from './source-harness.mjs'
 
 export function observe(selection = 'all') {
-  const temporary = fs.mkdtempSync(path.join(process.env.TMPDIR || os.tmpdir(), 'foundation-'))
+  const temporary = fs.mkdtempSync(path.join(scratchRoot(), 'foundation-'))
   const observations = {}
   try {
     if (selection === 'all' || selection === 'base') {
     const cases = {
-      missing: undefined, empty: '', partial: '{"language":"fr"}', malformed: '{',
+      missing: undefined, emptyDocument: '{}', empty: '', partial: '{"language":"fr"}', malformed: '{',
       unknown: JSON.stringify({ future: { nested: [1, null, 'x'] }, extensionCookieSources: [{ id: 'x', browser: 'test', future: 7 }] }),
       wrong: JSON.stringify({ theme: 42, language: false, launchAtLogin: null, asrTier: 'invalid',
         agentManagementTools: 'legacy', subtitleLanguages: [' en ', 3, 'en', 'fr'],
@@ -30,12 +30,14 @@ export function observe(selection = 'all') {
         const getAll = h.manager.getAll()
         const individual = Object.fromEntries(Object.keys(getAll).map((key) => [key, h.manager.get(key)]))
         const prompt = h.manager.shouldPromptWhatsNew()
+        const dotted={before:h.manager.get('future.deep')??'<undefined>',absent:h.manager.get('future.absent')??'<undefined>'}
+        h.manager.set('future.deep',7);dotted.single=h.manager.get('future.deep')
         h.manager.applyFreshInstallLocale()
         h.manager.set('cookiesPath', '/synthetic/cookies.txt')
         const single = h.raw()
         h.manager.setAll({ proxy: 'http://fixture.invalid', 'future.deep': 9 })
-        observations[name] = { before, getAll, individual, prompt, single, batch: h.raw(), trace: h.trace }
-      } catch (error) { if (error instanceof SourceImportError) throw error; observations[name] = { error: { name: error.name, message: error.message } } }
+        dotted.batch=h.manager.get('future.deep');observations[name] = { dotted, afterLocale:h.manager.get('language'), before, getAll, individual, prompt, single, batch: h.raw(), trace: h.trace }
+      } catch (error) { if (error instanceof SourceImportError) throw error; observations[name] = { error: { name: error.name, message: error.message }, exists:fs.existsSync(path.join(directory,'config.json')), bytes:fs.existsSync(path.join(directory,'config.json'))?fs.readFileSync(path.join(directory,'config.json'),'utf8'):null } }
     }
     for (const [name, options] of Object.entries({ portable: { portable: true }, mkdirFailure: { failMkdir: true },
       repairFailure: { failKey: 'agentManagementTools' } })) {
@@ -156,7 +158,7 @@ function auditSettings(temporary, selection = 'all') {
     if (previousField[operation] !== key) { h.manager.reset(); previousField[operation] = key }
     h.trace.length = 0
     if (operation === 'set') h.manager.set(key, value); else h.manager.setAll({ [key]: value })
-    out.fields.push({ key, value, operation, ...snapshot(h) })
+    out.fields.push({ key, value:value===undefined?'<undefined>':value, operation, ...snapshot(h) })
   }
   if (selection === 'all' || selection === 'fields:downloadPath') {
   const covered = Object.keys(matrix).sort(), actual = Object.keys(make('coverage').manager.getAll()).sort()
@@ -164,7 +166,7 @@ function auditSettings(temporary, selection = 'all') {
   }
   }
   if (selection === 'all' || selection === 'normalization') {
-  const normalization = { asrTier: ['minimal','whisper-base','balanced','whisper-medium','whisper-turbo','sense-voice','sense-voice-2025',
+  const normalization = { agentManagementTools:[undefined,null,false,true,0,7,'','invalid','legacy','ask','auto','full'],transcriptionProvider:[undefined,null,false,true,0,7,'','invalid','local','cloud'],downloadMirror:[undefined,null,false,true,0,7,'','invalid','auto','cn','global'], asrTier: ['minimal','whisper-base','balanced','whisper-medium','whisper-turbo','sense-voice','sense-voice-2025',
     'fire-red-asr','parakeet-v2','parakeet-v3','orukeet','quality','qwen3-1.7b','paraformer-zh'],
     subtitleLanguages: [['EN','en','all','??','fr','de','es','ja','ko'], [], ['??','all',3]], ttsModelId: ['unknown-family-v1','bad / id'] }
   out.normalization = []
@@ -172,9 +174,10 @@ function auditSettings(temporary, selection = 'all') {
   for (const [key, values] of Object.entries(normalization)) for (const [i, value] of values.entries()) for (const operation of ['startup','set','setAll']) {
     const h = operation === 'startup' ? make(`norm-${key}-${i}-${operation}`, { [key]: value }) : normalizedManagers[operation]
     if (operation !== 'startup') { h.manager.reset(); h.trace.length = 0 }
-    if (operation === 'set') h.manager.set(key, value)
-    if (operation === 'setAll') h.manager.setAll({ [key]: value })
-    out.normalization.push({ key, value, operation, ...snapshot(h) })
+    let failure
+    try {if (operation === 'set') h.manager.set(key, value)
+    if (operation === 'setAll') h.manager.setAll({ [key]: value })}catch(error){failure={name:error.name,message:error.message}}
+    out.normalization.push({ key, value:value===undefined?'<undefined>':value, operation, failure, ...snapshot(h) })
   }
   }
   if (selection === 'all' || selection === 'failures') {

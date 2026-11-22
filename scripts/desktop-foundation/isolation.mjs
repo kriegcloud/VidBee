@@ -1,3 +1,4 @@
+import { buildInputs } from './build-inputs.mjs'
 import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -39,5 +40,6 @@ export async function verifyWorker({ run, identity }) {
   }
   assert.equal(await digest(path.join(receipt.build, 'resources/app.asar')), receipt.asar)
   assert.equal(await digest(path.join(receipt.build, 'vidbee')), receipt.executable)
+  assert.deepEqual(await buildInputs(receipt.build), receipt.manifest, 'Isolation refused: selected build changed')
   return receipt
 }

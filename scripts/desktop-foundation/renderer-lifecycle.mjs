@@ -23,7 +23,8 @@ function bridge() {
   return{ipcEvents,ipcRenderer,exposed,trace}
 }
 export async function lifecycleObservations() {
-  const out={},b=bridge(),h=hooks(),navigation=[];let pathname='/settings'
+  const out={},b=bridge(),h=hooks(),navigation=[],deliveries=[];let pathname='/settings'
+  const on=b.ipcEvents.on.bind(b.ipcEvents);b.ipcEvents.on=(channel,fn)=>on(channel,(...args)=>{if(channel==='app:show-home')deliveries.push(pathname);return fn(...args)})
   const noop=()=>{}
   const auto=new Proxy({}, {get:(_target,key)=>key==='__esModule'?true:noop})
   const loadLayout=(b,h,navigation)=>sourceLoader({react:h.react,'react/jsx-runtime':{jsx:(type,props)=>({type:typeof type==='function'?'<component>':String(type),props}),jsxs:()=>null},
@@ -39,7 +40,7 @@ export async function lifecycleObservations() {
   emit();let cleanup=mount();const before=navigation.slice()
   emit();emit();emit();const slow=navigation.slice()
   pathname='/';h.render(()=>module.AppLayout());emit();const atHome=navigation.slice()
-  cleanup();emit();cleanup=mount();const resubscribe=navigation.slice()
+  pathname='/settings';h.render(()=>module.AppLayout());cleanup();const deliveriesBeforeAbsence=deliveries.length;emit();cleanup=mount();const resubscribe=navigation.slice();assert.equal(deliveries.length,deliveriesBeforeAbsence);assert.deepEqual(resubscribe,atHome)
   pathname='/about';h.render(()=>module.AppLayout());emit();cleanup()
   const oldDocument=navigation.slice()
   const next=bridge();next.ipcRenderer.emit('app:show-home',{})
@@ -47,7 +48,7 @@ export async function lifecycleObservations() {
   newHooks.render(()=>newModule.AppLayout());const newCleanup=newHooks.effects[0]()
   const afterReloadMount=newNavigation.slice()
   emit();next.ipcRenderer.emit('app:show-home',{});newCleanup()
-  out.home={afterReloadMount,newNavigation,before,slow,atHome,resubscribe,oldDocument,oldListeners:b.ipcRenderer.listenerCount('app:show-home'),newListeners:next.ipcRenderer.listenerCount('app:show-home')}
+  out.home={deliveries,deliveriesBeforeAbsence,afterReloadMount,newNavigation,before,slow,atHome,resubscribe,oldDocument,oldListeners:b.ipcRenderer.listenerCount('app:show-home'),newListeners:next.ipcRenderer.listenerCount('app:show-home')}
   // Actual TitleBar cleanup supplies original callbacks to a wrapper-based API.
   const titleHooks=hooks(),titleBridge=bridge()
   const Title=sourceLoader({react:titleHooks.react,'react/jsx-runtime':{jsx:(_type,props)=>props},'../../lib/ipc':{ipcEvents:titleBridge.ipcEvents,ipcServices:{window:{}}},
@@ -65,16 +66,20 @@ export async function lifecycleObservations() {
       '@vidbee/logger/legacy/client':{logger:{error:(...args)=>trace.push(['error',args[0],args[1].message])}}})('apps/desktop/src/preload/index.ts')
     out.preload.push({isolation,fail,trace,keys:Object.keys(window),api:window.api?Object.keys(window.api):[]})
   }
-  const infoHooks=hooks(),requests=[],errors=[],settings=sourceLoader()('apps/desktop/src/shared/types/index.ts').defaultSettings,kernel={state:'preparing',ready:false,source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-runtime',error:null,progress:7,preparationStep:'copying'},version=deferred(),os=deferred()
+  out.appInfo=[]
+  for(const metadataMode of ['failure','success','unmounted']) {
+  const infoHooks=hooks(),requests=[],errors=[],settings={...sourceLoader()('apps/desktop/src/shared/types/index.ts').defaultSettings,browserForCookies:'firefox',cookiesPath:'/fixture/cookies',proxy:'http://fixture.invalid',configPath:'/fixture/config',maxConcurrentDownloads:3,oneClickQuality:'720p',oneClickContainer:'mkv',downloadSubtitles:true,subtitleLanguages:['fr','de']},kernel={state:'preparing',ready:false,source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-runtime',error:null,progress:7,preparationStep:'copying'},version=deferred(),os=deferred()
   const info=sourceLoader({react:infoHooks.react,$window:{electron:{process:{platform:'linux',versions:{electron:'fixture-electron',chrome:'fixture-chrome',node:'fixture-node'}}}},
     jotai:{useAtomValue:atom=>atom==='settings'?settings:kernel},'@renderer/store/settings':{settingsAtom:'settings'},'@renderer/store/ytdlp-kernel':{ytdlpKernelStatusAtom:'kernel'},
     '@renderer/lib/ipc':{ipcServices:{app:{getVersion:()=>{requests.push('version');return version.promise},getOsVersion:()=>{requests.push('os');return os.promise}}}},
     '../../lib/logger':{logger:{error:(message,error)=>errors.push([message,error.message])}}
   })('apps/desktop/src/renderer/src/components/feedback/FeedbackLinks.tsx')
   const provisional=infoHooks.render(()=>info.useAppInfo());const offA=infoHooks.effects[0]();infoHooks.render(()=>info.useAppInfo());const offB=infoHooks.effects[0]()
-  version.reject(Error('metadata'));os.resolve('fixture-os');await turns();offA();offB()
+  if(metadataMode==='unmounted'){offA();offB()}
+  if(metadataMode==='failure')version.reject(Error('metadata'));else version.resolve('fixture-version');os.resolve('fixture-os');await turns();offA();offB()
   const after=infoHooks.render(()=>info.useAppInfo());infoHooks.effects[0]();await turns()
-  out.appInfo={requests,errors,provisional,after,updates:infoHooks.updates}
+  out.appInfo.push({metadataMode,requests,errors,provisional,after,updates:infoHooks.updates})
+  }
   out.share=[]
   for(const mode of ['closed','success','late','rejection']) {
     const hooksApi=hooks(),platform=deferred(),requests=[]

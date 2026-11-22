@@ -52,7 +52,7 @@ invocation. It never searches for an application by name.
 ```sh
 TZ=UTC bun run test:foundation:packaged \
   --build apps/desktop/dist/linux-unpacked --scratch "$LANE" \
-  --sha256 f9d34a07af53e9fbd2574be46a935138f56ffa7faeb70288da1636f154467f7e
+  --manifest "$LANE/candidate.json" --sha256 "$CANDIDATE_ASAR_SHA256"
 ```
 
 Scratch must be under a lane containing `BRIEF.md`. The parent records a random
@@ -66,7 +66,11 @@ namespace, refuse. The safety tests use a fake endpoint and require zero
 connections. A child-only preload also forbids fetch/WebSocket access, so a
 regression cannot fall through to any host-network CDP port during the negative test. There is no supported host-network worker mode.
 
-Every comparison checks the complete build manifest, plus archive and executable
+Every comparison explicitly selects its candidate manifest using `--manifest`.
+Generate it with the read-only `buildInputs(build)` export and keep it in scratch.
+The immutable `build.expected.json` is required only for `--record`; comparisons
+never re-record behavior to admit a new archive. Every comparison checks that
+selected complete build manifest, plus archive and executable
 before each primary launch. The secondary process and worker also verify the
 archive; the worker verifies the executable. Recordings use this worktree's old
 build, not the owner's checkout or installation. Its archive is
@@ -107,3 +111,33 @@ previous receipts and inspect each change. Re-recording cannot authorize a port
 parity failure. No existing public golden or normalizer is changed by this suite.
 New RPC validation, typed presentation, Effect Atom ownership, Cause forwarding
 and transport capacity/overflow remain implementation work for part 2.
+
+
+Third-pass additions include actual registry/service import ordering, real auth
+module import/initialization effects, exact Promise-turn clocks through settings
+and native-dialog application channels, complete parser operation matrices,
+failed-constructor byte preservation and dotted reads. Window tests vary seeded
+state, bounds and lifecycle flags and hold the real quit preparation dependencies.
+Shared schema fixtures retain parse/safeParse values, issues and errors, including
+missing versus explicitly undefined properties. Calendar hosts fix UTC and en-US.
+
+The package now has fifteen profiles (thirteen successful boots and two invalid
+JSON failures). The fresh profile additionally exercises real Show Home IPC across
+absence/reload, a controlled snapshot/event race, and Settings control families
+across General, Metadata and Advanced. Pickers use controlled owned-main handlers
+for selection/cancellation/failure. Each changed control records outgoing writes,
+visible values and reload persistence. Source coverage separately invokes 28
+Settings handlers per picker outcome and freezes nondefault metadata projections.
+
+The test launcher adds a loopback main inspector inside its owned namespace.
+`inspector.mjs` repeats `verifyWorker` before opening any socket and checks the
+inspected PID against the verified application. Its callers only change that
+scratch instance's handlers and windows. There is no host-namespace inspector
+mode. Native message boxes, clipboard readback, and physical window-manager
+integration still need an owned headed display; no separate pre-change manual
+receipts are supplied by this suite.
+
+Packaged OS labels must exactly equal `Linux ` plus the current `os.release()` before their release
+suffix becomes `<host-release>` in the behavioral fixture. The exact host value
+is retained in each run's `host-environment.json`. Source OS transformation
+vectors remain exact; UTC and Tokyo behavioral fixtures stay separate.

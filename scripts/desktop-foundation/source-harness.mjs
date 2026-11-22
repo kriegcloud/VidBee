@@ -16,7 +16,7 @@ export function sourceLoader(overrides = {}) {
   // Keep one realm per loader, rather than allocating one for every dependency.
   const realm = vm.createContext({ Error, TypeError, RangeError, SyntaxError,
     console: overrides.$console ?? console, Buffer, URL, navigator: overrides.$navigator,
-    Date: overrides.$Date ?? Date, __glob: overrides.$glob, AbortController,
+    Date: overrides.$Date ?? Date, Intl: overrides.$Intl ?? Intl, __glob: overrides.$glob, AbortController,
     fetch: overrides.$fetch, process: overrides.$process ?? process, window: overrides.$window,
     setTimeout: overrides.$setTimeout ?? setTimeout, clearTimeout, setInterval, clearInterval })
   function load(relative) {
@@ -27,7 +27,7 @@ export function sourceLoader(overrides = {}) {
     const nativeRequire = createRequire(filename)
     const require = (id) => {
       if (Object.hasOwn(overrides, id)) return overrides[id]
-      if (overrides.$require) { const result = overrides.$require(id); if (result !== undefined) return result }
+      if (overrides.$require) { const result = overrides.$require(id, filename); if (result !== undefined) return result }
       if (id.startsWith('.')) {
         const base = path.resolve(path.dirname(filename), id)
         const resolved = [base, base.replace(/\.js$/, '.ts'), base.replace(/\.js$/, '.tsx'), `${base}.ts`, `${base}.tsx`, `${base}.js`, path.join(base, 'index.ts')]
@@ -35,7 +35,7 @@ export function sourceLoader(overrides = {}) {
         if (!resolved) throw new SourceImportError(`Unresolved source import ${id}`)
         return load(resolved)
       }
-      if (id.startsWith('@shared/')) return load(path.join(root, 'apps/desktop/src/shared', id.slice(8)) + '.ts')
+      if (id.startsWith('@shared/')) { const base=path.join(root,'apps/desktop/src/shared',id.slice(8));return load(fs.existsSync(base+'.ts')?base+'.ts':path.join(base,'index.ts')) }
       return nativeRequire(id)
     }
     const source = fs.readFileSync(filename, 'utf8')

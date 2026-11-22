@@ -1,4 +1,7 @@
-import { buildInputs } from './build-inputs.mjs'
+import { packagedControls } from './packaged-controls.mjs'
+import { packagedEvents } from './packaged-events.mjs'
+import os from 'node:os'
+import { admitBuild } from './build-admission.mjs'
 import assert from 'node:assert/strict'
 import { verifyWorker, namespace } from './isolation.mjs'
 import { randomUUID, createHash } from 'node:crypto'
@@ -146,8 +149,12 @@ if (args.includes('--worker')) {
     })()`)
     if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails))
     const observations = result.result.value
+    assert.equal(observations.os, `Linux ${os.release()}`, 'Unexpected OS-label transformation')
+    observations.os = 'Linux <host-release>'
+    await fs.writeFile(path.join(owned.run,'host-environment.json'),JSON.stringify({platform:os.platform(),release:os.release(),observed:`Linux ${os.release()}`}))
     observations.storage = storage
     if (secondInstance) observations.secondInstance = secondInstance
+    if(path.basename(owned.run)==='fresh')observations.packagedEvents=await packagedEvents(owned,cdp)
     const restartWrite = await cdp.evaluate(`(async () => {
       await window.electron.ipcRenderer.invoke('settings.setAll', { theme: 'dark',
         foundationRestart: { retained: ['synthetic', 7] } })
@@ -200,6 +207,7 @@ if (args.includes('--worker')) {
     observations.reloaded = reloaded.result.value
     assert.deepEqual(observations.controls.settings, observations.reloaded.settings)
     assert.equal(observations.controls.after, observations.reloaded.checked)
+    if(path.basename(owned.run)==='fresh')observations.controlFamilies=await packagedControls(owned,cdp)
     let nativeWindowInspection
     try { nativeWindowInspection = await command('Browser.getWindowForTarget', { targetId: pages[0].id }) }
     catch (error) { nativeWindowInspection = { error: error.message } }
@@ -242,16 +250,19 @@ assert(args.includes('--build') && args.includes('--scratch') && args.includes('
 const build = path.resolve(option('--build'))
 const scratch = path.resolve(option('--scratch'))
 const expectedHash = option('--sha256')
+assert(!(args.includes('--record')&&option('--only-profile')),'Recording requires every profile')
 assert.equal(process.version, `v${(await fs.readFile(path.join(here, '../../.node-version'), 'utf8')).trim()}`, 'Use pinned Node')
 const expectedBuild = JSON.parse(await fs.readFile(path.join(here, 'build.expected.json'), 'utf8'))
-assert.deepEqual(await buildInputs(build), expectedBuild, 'Pre-port executable or external build inputs changed')
+assert(option('--manifest'), 'Require explicit --manifest for the selected build')
+const { selected, verify: verifyManifest } = await admitBuild({ build, manifest: path.resolve(option('--manifest')), baseline: expectedBuild, recording: args.includes('--record'), sha256: expectedHash })
 const timezone = process.env.TZ ?? 'UTC'
 assert(['UTC', 'Asia/Tokyo'].includes(timezone), 'Use TZ=UTC or TZ=Asia/Tokyo for the packaged fixture')
 const expected = path.join(here, timezone === 'Asia/Tokyo' ? 'packaged.tokyo.expected.json' : 'packaged.expected.json')
 const verify = async () => {
+  await verifyManifest()
   const hash = createHash('sha256').update(await fs.readFile(path.join(build, 'resources/app.asar'))).digest('hex')
   assert.equal(hash, expectedHash, 'Build changed before recording')
-  assert.equal(createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex'), expectedBuild.vidbee)
+  assert.equal(createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex'), selected.vidbee)
   return hash
 }
 await fs.mkdir(scratch, { recursive: true })
@@ -267,33 +278,45 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => {
 })
 const observations = {}
 const quote = (value) => String.fromCharCode(39) + value.replaceAll(String.fromCharCode(39), String.fromCharCode(39, 92, 39, 39)) + String.fromCharCode(39)
+const inspectedBuild=path.join(work,'inspected-build');await fs.mkdir(inspectedBuild);await fs.symlink(path.join(build,'resources'),path.join(inspectedBuild,'resources'));await fs.writeFile(path.join(inspectedBuild,'vidbee'),`#!/bin/sh\nexec ${quote(path.join(build,'vidbee'))} --inspect=127.0.0.1:9231 \"$@\"\n`,{mode:0o755})
 const backgroundBuild = path.join(work, 'background-build')
 await fs.mkdir(backgroundBuild)
 await fs.symlink(path.join(build, 'resources'), path.join(backgroundBuild, 'resources'))
 const quotedBinary = quote(path.join(build, 'vidbee'))
-await fs.writeFile(path.join(backgroundBuild, 'vidbee'), `#!/bin/sh\nexec ${quotedBinary} --background "$@"\n`, { mode: 0o755 })
-for (const [name, config] of Object.entries({ fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
+await fs.writeFile(path.join(backgroundBuild, 'vidbee'), `#!/bin/sh\nexec ${quotedBinary} --inspect=127.0.0.1:9231 --background "$@"\n`, { mode: 0o755 })
+for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '', invalidJson: '{', portableFresh: undefined, portableExternal: {downloadPath:'/external/media'}, portableMarkerFailure: {downloadPath:'/external/media'}, fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
   future: { keep: 9 }, extensionCookieSources: [{ id: 'fixture', browser: 'test', extra: 'keep' }] },
   restart: 'reuse',
   current: { language: 'en', lastSeenWhatsNew: 'ai-transcripts' },
   portable: { downloadPath: '/portable/old/media', theme: 42, launchAtLogin: true, future: { nested: [7, {keep:true}] }, asrTier: 'paraformer-zh', downloadMirror: 'invalid', transcriptionProvider: 'invalid' },
   malformedFields: { future: { nested: [7, {keep:true}] }, theme: 42, proxy: null, asrTier: 'invalid', agentManagementTools: 'legacy',
     ttsModelId: 'unknown-family-v1', downloadMirror: 'invalid', transcriptionProvider: 'invalid' } })) {
+  if(option('--only-profile')&&option('--only-profile')!==name)continue
   await verify()
   const run = path.join(work, name)
   let seed = ''
   if (config === 'reuse') { seed = path.join(work, 'returning', 'userdata') }
-  else if (config) {
+  else if (config !== undefined) {
     seed = path.join(work, `${name}-seed`); await fs.mkdir(seed)
-    await fs.writeFile(path.join(seed, 'config.json'), JSON.stringify(config))
+    await fs.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config))
   }
   const launchSetup = path.join(work, `${name}-launch.sh`)
-  await fs.writeFile(launchSetup, `export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name === 'portable' ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\ncp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"\n` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
-  const launcher = spawn('bash', [path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : build, run, '180', seed, '', launchSetup],
+  await fs.writeFile(launchSetup, `export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
+  const launcher = spawn('bash', [path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup],
     { cwd: scratch, stdio: ['ignore', 'ignore', 'pipe'] })
   active = launcher
   let stderr = ''; launcher.stderr.on('data', (data) => { stderr += data })
   try {
+    if(name.startsWith('invalid')) {
+      let log='';const deadline=Date.now()+30000
+      while(Date.now()<deadline){try{log=await fs.readFile(path.join(run,'stdout.log'),'utf8')}catch{};if(log.includes('SyntaxError')||log.includes('Unexpected end of JSON')||log.includes('JSON'))break;if(launcher.exitCode!==null)break;await delay(100)}
+      assert.match(log,/SyntaxError|JSON/,'Missing malformed startup failure')
+      assert.equal(await fs.readFile(path.join(run,'userdata/config.json'),'utf8'),config,'Startup damaged invalid settings bytes')
+      const failedBeforeReadiness=await fs.access(path.join(run,'mcp.json')).then(()=>false,()=>true)
+      assert(failedBeforeReadiness,'Malformed settings unexpectedly reached MCP readiness')
+      observations[name]={failedBeforeReadiness,retainedBytes:config,configExists:true,syntaxFailure:/SyntaxError|JSON/.test(log)}
+      await verify();continue
+    }
     const deadline = Date.now() + 90_000
     let pid
     while (Date.now() < deadline) {
@@ -315,12 +338,13 @@ for (const [name, config] of Object.entries({ fresh: undefined, controlledQuit: 
     }
     await fs.writeFile(path.join(run, 'identity.json'), JSON.stringify({ identity, run: await fs.realpath(run), lane,
       host, owned, parentPid: process.pid, namespacePid: pid, appPid, build, asar: expectedHash,
-      executable: createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex') }), { mode: 0o600 })
+      manifest: selected, executable: createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex') }), { mode: 0o600 })
     const output = path.join(work, `${name}.json`)
     const result = await capture('nsenter', ['-t', pid, '-U', '-n', '-m', '--preserve-credentials', process.execPath,
-      fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name === 'portable' ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
+      fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
       ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000 })
     assert.equal(result.code, 0, result.stderr)
+    await verify()
     const raw = JSON.parse(await fs.readFile(output, 'utf8'))
     // Only the exact throwaway HOME/download root varies. No generic string/clock/error filtering.
     let normalized = JSON.stringify(raw).split(path.join(run, 'home')).join('<home>').split(path.join(run, 'portable')).join('<portable>')
@@ -334,7 +358,7 @@ for (const [name, config] of Object.entries({ fresh: undefined, controlledQuit: 
     observations[name].boot = milestones.map((label) => ({ label, index: log.indexOf(label) }))
       .filter((entry) => entry.index >= 0).sort((a, b) => a.index - b.index).map((entry) => entry.label)
     assert(observations[name].boot.includes('Desktop MCP available at'), 'Missing packaged boot milestone')
-    await fs.writeFile(path.join(work, `${name}-stored.json`), await fs.readFile(path.join(run, name === 'portable' ? 'portable/Data/UserData/config.json' : 'userdata/config.json')))
+    await fs.writeFile(path.join(work, `${name}-stored.json`), await fs.readFile(path.join(run, name.startsWith('portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')))
   } finally {
     if (launcher.exitCode === null) {
       const ended = new Promise((resolve) => launcher.once('close', resolve))
@@ -346,5 +370,5 @@ for (const [name, config] of Object.entries({ fresh: undefined, controlledQuit: 
 await fs.writeFile(path.join(work, 'build.json'), JSON.stringify({ appAsarSha256: await verify(), build, node: process.version, timezone: process.env.TZ ?? 'UTC' }))
 await fs.writeFile(path.join(work, 'actual.json'), JSON.stringify(observations, null, 2))
 if (args.includes('--record')) await fs.writeFile(expected, JSON.stringify(observations, null, 2) + '\n')
-else assert.deepEqual(observations, JSON.parse(await fs.readFile(expected, 'utf8')))
-process.stdout.write(`Packaged foundation: 9 profiles passed; evidence ${work}\n`)
+else {const oracle=JSON.parse(await fs.readFile(expected,'utf8'));assert.deepEqual(observations,option('--only-profile')?{[option('--only-profile')]:oracle[option('--only-profile')]}:oracle)}
+process.stdout.write(`Packaged foundation: ${Object.keys(observations).length} profiles passed; evidence ${work}\n`)

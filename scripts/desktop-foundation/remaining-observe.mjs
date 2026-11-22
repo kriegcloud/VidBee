@@ -1,10 +1,12 @@
+import { sharedMatrixObservations } from './shared-matrix.mjs'
+import { windowMatrixObservations } from './window-matrix.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 import { EventEmitter } from 'node:events'
 import { sourceLoader, root } from './source-harness.mjs'
 const turns=async()=>{for(let i=0;i<30;i++)await Promise.resolve()}
 export async function remainingObservations() {
-  const out={window:[],kernel:[],skills:[]}
+  const out={sharedMatrix:sharedMatrixObservations(),windowMatrix:windowMatrixObservations(),window:[],kernel:[],skills:[]}
   for(const initiallyMaximized of [false,true]) {
     const trace=[],window=new EventEmitter();let max=false
     Object.assign(window,{getNormalBounds:()=>({width:901,height:702}),isMinimized:()=>false,isFullScreen:()=>false,isMaximized:()=>max,maximize:()=>{trace.push(['maximize']);max=true;window.emit('maximize')}})
@@ -14,17 +16,20 @@ export async function remainingObservations() {
     window.emit('resize');window.emit('show');window.emit('close');const beforeClosed=trace.slice();window.emit('closed')
     out.window.push({initiallyMaximized,beforeShow,beforeClosed,trace})
   }
-  for(const mode of ['snapshot','snapshot-rejection','retry-rejection']) {
-    const trace=[],values=[],errors=[];let effect,resolve,reject,retryReject
-    const snapshot=new Promise((a,b)=>{resolve=a;reject=b}),retry=new Promise((_a,b)=>{retryReject=b})
+  for(const mode of ['snapshot','snapshot-rejection','retry-rejection','preparing','progress','failed','recovered','race']) {
+    const trace=[],values=[],errors=[];let effect,resolve,reject,retryReject,retryResolve,live
+    const snapshot=new Promise((a,b)=>{resolve=a;reject=b}),retry=new Promise((a,b)=>{retryResolve=a;retryReject=b})
     let atomId=0
     const module=sourceLoader({react:{useEffect:fn=>{effect=fn},useCallback:fn=>fn},jotai:{atom:value=>({id:atomId++,value}),useAtom:atom=>[atom.value,value=>values.push(value)]},
-      '../lib/ipc':{ipcEvents:{on:(channel,fn)=>{trace.push(['subscribe',channel]);return fn},removeListener:(channel)=>trace.push(['remove',channel])},ipcServices:{app:{getYtDlpKernelStatus:()=>{trace.push(['snapshot']);return snapshot},retryYtDlpKernelPreparation:()=>{trace.push(['retry']);return retry}}}},
+      '../lib/ipc':{ipcEvents:{on:(channel,fn)=>{trace.push(['subscribe',channel]);live=fn;return fn},removeListener:(channel)=>trace.push(['remove',channel])},ipcServices:{app:{getYtDlpKernelStatus:()=>{trace.push(['snapshot']);return snapshot},retryYtDlpKernelPreparation:()=>{trace.push(['retry']);return retry}}}},
       '../lib/logger':{logger:{error:(message,error)=>errors.push([message,error.message])}}
     })('apps/desktop/src/renderer/src/store/ytdlp-kernel.ts')
     const initial=module.ytdlpKernelStatusAtom.value,hook=module.useYtDlpKernelStatus(),off=effect()
-    if(mode==='snapshot-rejection')reject(Error('snapshot failed'));else resolve({ready:true,state:'ready',source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-node',progress:100,step:'complete',error:null})
+    const statuses={preparing:{ready:false,state:'preparing',source:null,ytDlpVersion:null,nodeVersion:null,progress:0,preparationStep:'copying',error:null},progress:{ready:false,state:'preparing',source:'bundled',ytDlpVersion:'old',nodeVersion:'node-old',progress:37,preparationStep:'validating',error:null},failed:{ready:false,state:'unavailable',source:'bundled',ytDlpVersion:null,nodeVersion:'fixture-node',progress:null,preparationStep:null,error:'preparation failed'},recovered:{ready:true,state:'up-to-date',source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-node',progress:null,preparationStep:null,error:null}}
+    if(mode==='race')live(statuses.progress)
+    if(mode==='snapshot-rejection')reject(Error('snapshot failed'));else resolve(statuses[mode]??statuses.recovered)
     await turns()
+    if(['preparing','progress','failed','recovered','race'].includes(mode)){for(const status of Object.values(statuses))live(status);const p=hook.retry();retryResolve(statuses[mode]??statuses.recovered);await p}
     if(mode==='retry-rejection'){const p=hook.retry().then(value=>({value}),error=>({error:error.message}));retryReject(Error('retry failed'));out.kernel.push({mode,initial,trace,values,errors,retry:await p})}
     else out.kernel.push({mode,initial,trace,values,errors})
     off()

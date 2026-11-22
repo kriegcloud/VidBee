@@ -1,3 +1,7 @@
+import { scratchRoot } from './scratch.mjs'
+import { screenControlObservations } from './screen-controls.mjs'
+import { channelTimingObservations } from './channel-timing.mjs'
+import { importGraphObservations } from './import-graph.mjs'
 import { bootObservations } from './boot-observe.mjs'
 import { lifecycleObservations } from './renderer-lifecycle.mjs'
 import { loggingObservations } from './log-observe.mjs'
@@ -28,6 +32,9 @@ export function portableObservations() {
     module.rememberPortableRoot()
     out.push({marker,previous:module.previousPortableRoot,env,trace})
   }
+  for(const packaged of [false,true])for(const variables of [{},{VIDBEE_PORTABLE_DIR:'/portable/one'},{PORTABLE_EXECUTABLE_DIR:'/portable/two'},{VIDBEE_PORTABLE_DIR:'/portable/one',PORTABLE_EXECUTABLE_DIR:'/portable/two'},{VIDBEE_PORTABLE_DIR:'',PORTABLE_EXECUTABLE_DIR:''},{VIDBEE_PORTABLE_DIR:'/portable/one',PORTABLE_EXECUTABLE_DIR:''}]) {
+    const trace=[],env={...variables};const module=sourceLoader({$process:{env},'node:fs':{readFileSync:(...args)=>{trace.push(['read',...args]);return '/portable/old'},mkdirSync:(...args)=>trace.push(['mkdir',...args]),writeFileSync:(...args)=>trace.push(['write',...args])},electron:{app:{isPackaged:packaged,getPath:key=>{trace.push(['getPath',key]);return '/synthetic/appData'},setPath:(...args)=>trace.push(['setPath',...args])}}})('apps/desktop/src/main/portable.ts');module.rememberPortableRoot();out.push({packaged,variables,root:module.portableRoot,portable:module.isPortableMode,env,trace})
+  }
   // Path lookup failure is observed at the real manager boundary without letting Conf choose a host profile.
   const trace=[]
   class Store { constructor(options) { trace.push(['construct',options]); throw Error('controlled store stop') } }
@@ -35,7 +42,7 @@ export function portableObservations() {
     './portable':{isPortableMode:false},'node:os':{homedir:()=>'/synthetic/home'},'./utils/logger':{}})('apps/desktop/src/main/settings.ts') }
   catch(error){trace.push(['thrown',error.message])}
   out.push({pathLookupFailure:trace})
-  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-path-fallback-'))
+  const directory=fs.mkdtempSync(path.join(scratchRoot(),'foundation-path-fallback-'))
   try {
     const once=path.join(directory,'once'),always=path.join(directory,'always');fs.mkdirSync(once);fs.mkdirSync(always)
     fs.writeFileSync(path.join(once,'config.json'),JSON.stringify({language:'fr',lastSeenWhatsNew:'old'}))
@@ -111,10 +118,11 @@ export async function appObservations() {
     if(scenario==='synchronous-failure')d.promise.catch(()=>{})
     out.dialogs.push({scenario,focused:focused??null,calls,pendingAfterDeparture,cancelled,outcome:await outcome,listeners:sender.eventNames()})
   }
-  const trace=[],preparation=deferred(),status={ready:true,state:'ready',source:'bundled',ytDlpVersion:'fixture',nodeVersion:'fixture',progress:100}
+  const trace=[],preparation=deferred(),status={ready:true,state:'up-to-date',source:'bundled',ytDlpVersion:'fixture',nodeVersion:'fixture',progress:100}
   const Service=appFixture({kernel:{prepare:()=>{trace.push('prepare');return preparation.promise},getStatus:()=>{trace.push('status');return status}},app:{quit:()=>trace.push('quit')}})
   const service=new Service(),p=service.retryYtDlpKernelPreparation({});await turns();out.retryPending=trace.slice();preparation.resolve();out.retryResult=await p
   service.quit({});out.retryTrace=trace
+  {const trace=[],failure=Error('preparation failed'),pending=deferred();const Retry=appFixture({kernel:{prepare:()=>{trace.push('prepare');return pending.promise},getStatus:()=>{trace.push('status');return status}}});const p=new Retry().retryYtDlpKernelPreparation({}).catch(error=>{assert.equal(error,failure);return error.message});pending.reject(failure);out.retryFailure={result:await p,trace}}
   for(const responses of [[{ok:false},{ok:false}],[{ok:true,type:'text/plain'},{ok:true,type:'image/x-icon'}],['throw','throw'],[{ok:true,type:null}]]) {
     const calls=[],logs=[]
     const Icon=appFixture({logs,fetch:async url=>{calls.push(url);const next=responses[calls.length-1];if(next==='throw')throw Error('offline');return {ok:next.ok,headers:{get:()=>next.type},arrayBuffer:async()=>new Uint8Array([1,2,3]).buffer}}})
@@ -179,7 +187,7 @@ export async function captureObservations() {
 
 
 export function settingsEventObservations() {
-  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-events-'))
+  const directory=fs.mkdtempSync(path.join(scratchRoot(),'foundation-events-'))
   try {
     const h=settingsHarness(directory),trace=[]
     const windows=[1,2].map(id=>({webContents:{send:(...args)=>trace.push(['broadcast',id,args,h.raw()])}}))
@@ -195,32 +203,9 @@ export function settingsEventObservations() {
 }
 
 
-export function importEffectsObservations() {
-  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-imports-')),trace=[]
-  const stop=Error('owned exit'),noop=()=>{};let settings
-  const app={isPackaged:true,getPath:()=>'/synthetic/profile',setPath:noop,setName:noop,commandLine:{appendSwitch:noop},on:noop,
-    requestSingleInstanceLock:()=>{trace.push(['lock']);return false},exit:code=>{trace.push(['exit',code]);throw stop}}
-  const ipcMain={on:noop,removeHandler:channel=>trace.push(['remove',channel]),handle:channel=>trace.push(['handle',channel])}
-  const registry=()=>sourceLoader({electron:{ipcMain},'electron-ipc-decorator':{createServices:()=>{trace.push(['createServices']);return{fs:{saveMarkdownPdf:noop}}}},
-    $require:id=>id.startsWith('./services/')?new Proxy({},{get:()=>class{}}):undefined})('apps/desktop/src/main/ipc/index.ts')
-  try {
-    const load=sourceLoader({$process:{argv:['fixture'],env:{},platform:'linux',on:noop},electron:{app,BrowserWindow:{},ipcMain,protocol:{registerSchemesAsPrivileged:noop}},
-      'electron-log/main':{initialize:()=>trace.push(['logger']),info:noop,error:noop},'./config/logger-config':{configureLogger:()=>trace.push(['configure'])},
-      './lib/auth-client':{setupDesktopAuth:noop},'./lib/ipc-coalescer':{createKeyedCoalescer:()=>({})},
-      './lib/subscriptions-host':{getDesktopSubscriptions:()=>({on:noop})},'./lib/privileged-schemes':{installPrivilegedSchemeCollector:()=>noop},
-      $require:id=>{
-        if(id==='./ipc'){trace.push(['import','ipc']);return registry()}
-        if(id==='./settings'){settings=settingsHarness(directory);trace.push(['import','settings',settings.trace.slice(),settings.raw()]);return{settingsManager:settings.manager}}
-        if(id.startsWith('node:'))return undefined
-        return{}
-      }})
-    assert.throws(()=>load('apps/desktop/src/main/index.ts'),error=>error===stop)
-    assert(settings)
-    return plain(trace)
-  } finally {fs.rmSync(directory,{recursive:true,force:true})}
-}
+export const importEffectsObservations = importGraphObservations
 
 export async function auditObservations() {
-  return plain({importEffects:importEffectsObservations(),settingsEvents:settingsEventObservations(),remaining:await remainingObservations(),boot:await bootObservations(),lifecycle:await lifecycleObservations(),logging:loggingObservations(),portable:portableObservations(),renderer:await rendererObservations(),app:await appObservations(),registrar:await registrarObservations(),capture:await captureObservations()})
+  return plain({screenControls:await screenControlObservations(),channelTiming:await channelTimingObservations(),importEffects:importEffectsObservations(),settingsEvents:settingsEventObservations(),remaining:await remainingObservations(),boot:await bootObservations(),lifecycle:await lifecycleObservations(),logging:loggingObservations(),portable:portableObservations(),renderer:await rendererObservations(),app:await appObservations(),registrar:await registrarObservations(),capture:await captureObservations()})
 }
 if(process.argv.includes('--record')) auditObservations().then(value => process.stdout.write(JSON.stringify(value,null,2)+'\n'))
