@@ -1,0 +1,452 @@
+import { $DesktopId } from "@vidbee/identity/packages";
+import * as Context from "effect/Context";
+import * as Effect from "effect/Effect";
+import * as HashMap from "effect/HashMap";
+import * as O from "effect/Option";
+import * as P from "effect/Predicate";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js";
+import { makeResourceBudget, makeRetentionLedger } from "../../renderer/src/transport/ElectronRpc.model.js";
+import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
+
+const $TransportId = $DesktopId.create("main/ipc/ElectronRpcAdmission.service");
+
+/**
+ * Validates the per-document, per-window and application ceilings used before admitting RPC work; byte ceilings include retained copies and native work has its own slot limit.
+ *
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
+ *
+ * ```ts
+ * import { Limits } from "./ElectronRpcAdmission.service.js"
+ * import * as S from "effect/Schema"
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Limits)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const Limits = S.Struct({
+  sessions: S.Int,
+  clients: S.Int,
+  unary: S.Int,
+  streams: S.Int,
+  documentUnary: S.Int,
+  documentStreams: S.Int,
+  appUnary: S.Int,
+  appStreams: S.Int,
+  frameBytes: S.Int,
+  windowBytes: S.Int,
+  appBytes: S.Int,
+  native: S.Int,
+  appNative: S.Int,
+}).pipe($TransportId.annoteSchema("Limits", { description: "Limits boundary in the desktop transport contract." }));
+/**
+ * Decoded representation validated by {@link Limits}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type Limits = typeof Limits.Type;
+/**
+ * Provides the frozen admission ceilings for concurrent RPC work, serialized frames and retained storage; these are outstanding-ownership limits rather than lifetime traffic quotas.
+ *
+ * **Example** (Use limits with its owner)
+ *
+ * ```ts
+ * import { limits } from "./ElectronRpcAdmission.service.js"
+ * export const largestFrame = limits.frameBytes;
+ * largestFrame // => 67108864
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
+export const limits: Limits = {
+  sessions: 16,
+  clients: 64,
+  unary: 256,
+  streams: 64,
+  documentUnary: 1024,
+  documentStreams: 256,
+  appUnary: 16384,
+  appStreams: 4096,
+  frameBytes: 64 * 1024 * 1024,
+  windowBytes: 128 * 1024 * 1024,
+  appBytes: 2 * 1024 * 1024 * 1024,
+  native: 64,
+  appNative: 1024,
+};
+/**
+ * Identifies one logical RPC attempt by document session, client and request ID, including whether it reserves a stream slot or discards its response.
+ *
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
+ *
+ * ```ts
+ * import { Request } from "./ElectronRpcAdmission.service.js"
+ * import * as S from "effect/Schema"
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Request)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const Request = S.Struct({
+  session: S.String,
+  client: S.Int,
+  id: S.Union([S.String, S.Finite]),
+  stream: S.Boolean,
+  discard: S.Boolean,
+}).pipe($TransportId.annoteSchema("Request", { description: "Request boundary in the desktop transport contract." }));
+/**
+ * Decoded representation validated by {@link Request}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type Request = typeof Request.Type;
+/**
+ * Owns an admitted request and its document resource budget; finalized settles after the request, retained frames and native completion release their independent ownership.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export interface Lease {
+  readonly finalized: Effect.Effect<void>;
+  readonly request: Request;
+  readonly resources: import("../../renderer/src/transport/ElectronRpc.model.js").ResourceBudget;
+  readonly retainNative: (bytes: number) => Effect.Effect<NativeLease, DeliveryError>;
+  readonly terminal: Effect.Effect<void>;
+}
+/**
+ * Keeps native work charged to its origin after document departure; resize must succeed before growth and complete releases the native reservation exactly once.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export interface NativeLease {
+  readonly complete: Effect.Effect<void>;
+  readonly resize: (bytes: number) => Effect.Effect<void, DeliveryError>;
+}
+interface Account {
+  readonly budget: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionAccount;
+  bytes: number;
+  native: number;
+}
+interface Client {
+  ended: boolean;
+  requests: HashMap.HashMap<string | number, { readonly lease: Lease; readonly disconnect: () => void }>;
+  streams: number;
+  unary: number;
+}
+interface Document {
+  readonly account: Account;
+  clients: HashMap.HashMap<number, Client>;
+  readonly resources: import("../../renderer/src/transport/ElectronRpc.model.js").ResourceBudget;
+  streams: number;
+  unary: number;
+}
+
+/**
+ * Creates the application admission ledger shared by document generations. Disconnecting a renderer closes its admission while native work retains its origin account until cleanup completes.
+ *
+ * **Example** (Use makeAdmission with its owner)
+ *
+ * ```ts
+ * import { makeAdmission } from "./ElectronRpcAdmission.service.js"
+ * export const admission = makeAdmission();
+ * admission.connectNow("document", "window");
+ * export const active = admission.stats();
+ * // active reports the connected document and outstanding admission counters.
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
+export const makeAdmission = (bounds: Limits = limits) => {
+  let accounts = HashMap.empty<string, Account>();
+  let documents = HashMap.empty<string, Document>();
+  let appUnary = 0;
+  let appStreams = 0;
+  const ledger = makeRetentionLedger({ windowBytes: bounds.windowBytes, appBytes: bounds.appBytes });
+  let appNative = 0;
+  const retireAccount = (account: Account) => {
+    if (account.native !== 0 || account.bytes !== 0) return;
+    for (const document of HashMap.values(documents)) if (document.account === account) return;
+    for (const [id, current] of HashMap.toEntries(accounts))
+      if (current === account) accounts = HashMap.remove(accounts, id);
+  };
+  const connectNow = (session: string, windowAccount: string) => {
+    if (HashMap.has(documents, session)) return true;
+    if (HashMap.size(documents) >= bounds.sessions || !ledger.connect(session, windowAccount)) return false;
+    const account = O.getOrElse(HashMap.get(accounts, windowAccount), () => ({
+      bytes: 0,
+      native: 0,
+      budget: ledger.forWindow(windowAccount),
+    }));
+    accounts = HashMap.set(accounts, windowAccount, account);
+    const budget = ledger.document(session);
+    if (budget === undefined) return false;
+    documents = HashMap.set(documents, session, {
+      account,
+      resources: makeResourceBudget(budget),
+      clients: HashMap.empty(),
+      unary: 0,
+      streams: 0,
+    });
+    return true;
+  };
+  const connect = (session: string, windowAccount: string) =>
+    Effect.suspend(() => (connectNow(session, windowAccount) ? Effect.void : Effect.fail(failure("SessionCapacity"))));
+  const admit = Effect.fn("ElectronRpcAdmission.admit")(function* (input: Request) {
+    const request = yield* S.decodeEffect(Request)(input).pipe(Effect.mapError(() => failure("InvalidRequest")));
+    const doc = HashMap.get(documents, request.session);
+    if (O.isNone(doc)) return yield* failure("Disconnected");
+    if (P.isString(request.id) && Str.startsWith("@effect/rpc/notification/")(request.id))
+      return yield* failure("ReservedRequestId");
+    const document = doc.value;
+    let client = O.getOrUndefined(HashMap.get(document.clients, request.client));
+    if (client === undefined) {
+      if (HashMap.size(document.clients) >= bounds.clients) return yield* failure("ClientCapacity");
+      client = { ended: false, requests: HashMap.empty(), unary: 0, streams: 0 };
+      document.clients = HashMap.set(document.clients, request.client, client);
+    }
+    if (client.ended) return yield* failure("InputEnded");
+    if (HashMap.has(client.requests, request.id)) return yield* failure("DuplicateRequestId");
+    if (
+      request.stream
+        ? client.streams >= bounds.streams ||
+          document.streams >= bounds.documentStreams ||
+          appStreams >= bounds.appStreams
+        : client.unary >= bounds.unary || document.unary >= bounds.documentUnary || appUnary >= bounds.appUnary
+    )
+      return yield* failure("RequestCapacity");
+    const owner = client;
+    if (request.stream) {
+      owner.streams++;
+      document.streams++;
+      appStreams++;
+    } else {
+      owner.unary++;
+      document.unary++;
+      appUnary++;
+    }
+    let execution = false;
+    let protocol = false;
+    let native = 0;
+    let released = false;
+    const release = () => {
+      if (released || !execution || !protocol || native !== 0) return;
+      released = true;
+      owner.requests = HashMap.remove(owner.requests, request.id);
+      if (request.stream) {
+        owner.streams--;
+        document.streams--;
+        appStreams--;
+      } else {
+        owner.unary--;
+        document.unary--;
+        appUnary--;
+      }
+    };
+    const lease: Lease = {
+      request,
+      resources: document.resources,
+      finalized: Effect.sync(() => {
+        execution = true;
+        release();
+      }),
+      terminal: Effect.sync(() => {
+        protocol = true;
+        release();
+      }),
+      retainNative: Effect.fn("ElectronRpcAdmission.retainNative")(function* (initial: number) {
+        if (
+          released ||
+          execution ||
+          !HashMap.has(documents, request.session) ||
+          !Number.isSafeInteger(initial) ||
+          initial < 0 ||
+          document.account.native >= bounds.native ||
+          appNative >= bounds.appNative
+        )
+          return yield* failure("NativeCapacity");
+        const retained = document.account.budget.reserve(initial);
+        if (retained === undefined) return yield* failure("NativeCapacity");
+        document.account.bytes += initial;
+        native++;
+        document.account.native++;
+        appNative++;
+        let bytes = initial;
+        let done = false;
+        return {
+          resize: (next: number) =>
+            Effect.suspend(() => {
+              if (done || next < 0 || !Number.isSafeInteger(next) || !retained.resize(next))
+                return Effect.fail(failure("NativeCapacity"));
+              document.account.bytes += next - bytes;
+              bytes = next;
+              return Effect.void;
+            }),
+          complete: Effect.sync(() => {
+            if (done) return;
+            done = true;
+            retained.release();
+            document.account.bytes -= bytes;
+            native--;
+            document.account.native--;
+            appNative--;
+            release();
+            retireAccount(document.account);
+          }),
+        };
+      }),
+    };
+    owner.requests = HashMap.set(owner.requests, request.id, {
+      lease,
+      disconnect: () => {
+        protocol = true;
+        release();
+      },
+    });
+    return lease;
+  });
+  const endInput = (session: string, clientId: number) =>
+    Effect.sync(() => {
+      const doc = HashMap.get(documents, session);
+      if (O.isSome(doc)) {
+        const client = HashMap.get(doc.value.clients, clientId);
+        if (O.isSome(client)) client.value.ended = true;
+      }
+    });
+  const disconnectClientNow = ({
+    session,
+    client: clientId,
+  }: {
+    readonly session: string;
+    readonly client: number;
+  }) => {
+    const doc = HashMap.get(documents, session);
+    if (O.isNone(doc)) return;
+    const client = HashMap.get(doc.value.clients, clientId);
+    if (O.isNone(client)) return;
+    client.value.ended = true;
+    for (const entry of HashMap.values(client.value.requests)) entry.disconnect();
+    doc.value.clients = HashMap.remove(doc.value.clients, clientId);
+  };
+  const disconnectNow = (session: string) => {
+    const doc = HashMap.get(documents, session);
+    if (O.isNone(doc)) return;
+    for (const client of HashMap.keys(doc.value.clients)) disconnectClientNow({ session, client });
+    documents = HashMap.remove(documents, session);
+    ledger.disconnect(session);
+    retireAccount(doc.value.account);
+  };
+  const disconnect = (session: string) => Effect.sync(() => disconnectNow(session));
+  let operationBytes = HashMap.empty<
+    string,
+    import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease
+  >();
+  const operationAccount = {
+    begin: (origin: string) => {
+      if (appNative >= bounds.appNative) return undefined;
+      const account = O.getOrElse(HashMap.get(accounts, origin), () => ({
+        bytes: 0,
+        native: 0,
+        budget: ledger.forWindow(origin),
+      }));
+      if (account.native >= bounds.native || appNative >= bounds.appNative) return undefined;
+      accounts = HashMap.set(accounts, origin, account);
+      account.native++;
+      appNative++;
+      let live = true;
+      return () => {
+        if (!live) return;
+        live = false;
+        account.native--;
+        appNative--;
+        retireAccount(account);
+      };
+    },
+    reserve: (origin: string, bytes: number) => {
+      let retained = O.getOrUndefined(HashMap.get(operationBytes, origin));
+      if (retained === undefined) {
+        retained = ledger.forWindow(origin).reserve(0);
+        if (retained === undefined) return false;
+        operationBytes = HashMap.set(operationBytes, origin, retained);
+      }
+      const accepted = retained.resize(retained.bytes() + bytes);
+      if (!accepted && retained.bytes() === 0) {
+        retained.release();
+        operationBytes = HashMap.remove(operationBytes, origin);
+      }
+      return accepted;
+    },
+    release: (origin: string, bytes: number) => {
+      const retained = HashMap.get(operationBytes, origin);
+      if (O.isNone(retained)) return;
+      retained.value.resize(retained.value.bytes() - bytes);
+      if (retained.value.bytes() === 0) {
+        retained.value.release();
+        operationBytes = HashMap.remove(operationBytes, origin);
+      }
+    },
+  };
+  return {
+    operationAccount,
+    synchronousAccount: (origin: string) => ({
+      native: () => operationAccount.begin(origin),
+      reserve: (bytes: number) => operationAccount.reserve(origin, bytes),
+      release: (bytes: number) => operationAccount.release(origin, bytes),
+    }),
+    resources: (session: string) => O.map(HashMap.get(documents, session), (doc) => doc.resources),
+    connect,
+    connectNow,
+    ledger,
+    bounds,
+    admit,
+    endInput,
+    disconnect,
+    disconnectNow,
+    disconnectClientNow,
+    stats: () => ({
+      sessions: HashMap.size(documents),
+      accounts: HashMap.size(accounts),
+      appUnary,
+      appStreams,
+      appBytes: ledger.stats().data,
+      controlBytes: ledger.stats().control,
+      appNative,
+    }),
+  };
+};
+/**
+ * Provides the application-wide RPC admission owner; bootstrap supplies one instance so window and document limits aggregate across all clients.
+ *
+ * **Example** (Use ElectronRpcAdmission with its owner)
+ *
+ * ```ts
+ * import { ElectronRpcAdmission } from "./ElectronRpcAdmission.service.js"
+ * import * as Effect from "effect/Effect"
+ * export const inspect = ElectronRpcAdmission.use((admission) => Effect.sync(() => admission.stats()));
+ * // Provide the application admission layer to observe current outstanding ownership.
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
+export class ElectronRpcAdmission extends Context.Service<ElectronRpcAdmission, ReturnType<typeof makeAdmission>>()(
+  "vidbee/main/ipc/ElectronRpcAdmission.service/ElectronRpcAdmission"
+) {}
