@@ -6,16 +6,20 @@ import { RpcObserved } from "../RpcObservation.model.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/census/AiNative.model");
 
 /**
- * Validates Save Scope at the desktop capability boundary before dispatch.
+ * Selects the conversation and message, run and artifact IDs included in an AI persistence operation.
  *
- * **Example** (Use SaveScope at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { SaveScope } from "./AiNative.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(SaveScope);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(SaveScope)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -30,23 +34,27 @@ export const SaveScope = S.Struct({
   $TransportId.annoteSchema("SaveScope", { description: "Save Scope boundary in the desktop transport contract." })
 );
 /**
- * Describes Save Scope ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link SaveScope}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type SaveScope = typeof SaveScope.Type;
 /**
- * Validates Entry at the desktop capability boundary before dispatch.
+ * Preserves an AI native entry with its tagged observation representation for replay.
  *
- * **Example** (Use Entry at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Entry } from "./AiNative.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Entry);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Entry)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -56,23 +64,27 @@ export const Entry = RpcObserved(S.Record(S.String, S.Unknown)).pipe(
   $TransportId.annoteSchema("Entry", { description: "Entry boundary in the desktop transport contract." })
 );
 /**
- * Describes Entry ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Entry}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Entry = typeof Entry.Type;
 /**
- * Validates Pi Event at the desktop capability boundary before dispatch.
+ * Preserves a native agent event and its optional message, entry and data payloads.
  *
- * **Example** (Use PiEvent at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PiEvent } from "./AiNative.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PiEvent);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PiEvent)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -87,23 +99,27 @@ export const PiEvent = RpcObserved(
   })
 ).pipe($TransportId.annoteSchema("PiEvent", { description: "Pi Event boundary in the desktop transport contract." }));
 /**
- * Describes Pi Event ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link PiEvent}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type PiEvent = typeof PiEvent.Type;
 /**
- * Validates Tool Definition at the desktop capability boundary before dispatch.
+ * Preserves a native tool definition, including the parameter schema supplied by the agent runtime.
  *
- * **Example** (Use ToolDefinition at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ToolDefinition } from "./AiNative.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ToolDefinition);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ToolDefinition)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -117,7 +133,7 @@ export const ToolDefinition = RpcObserved(
   })
 );
 /**
- * Describes Tool Definition ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ToolDefinition}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

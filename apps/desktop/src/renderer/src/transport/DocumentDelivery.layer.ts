@@ -4,15 +4,15 @@ import { DocumentDelivery, makeDeliveryGate } from "./DocumentDelivery.service.j
 import { DocumentResources } from "./ElectronRpc.model.js";
 
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Provides a document delivery gate charged to DocumentResources and disconnects it on scope exit, failing pending completion cuts.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./DocumentDelivery.layer.js"
  * import * as Layer from "effect/Layer"
- * const acquire = Layer.build(layer);
- * void acquire;
+ * export const acquire = Layer.build(layer);
+ * // Run acquire inside the application or document scope with its required services.
  * ```
  *
  * @category layers

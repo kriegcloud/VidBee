@@ -4,15 +4,15 @@ import { DocumentResources } from "../../renderer/src/transport/ElectronRpc.mode
 import { DocumentSubscriptions, makeSubscriptions } from "./DocumentSubscriptions.service.js";
 
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Provides source-subscription factories backed by the shared document resource budget; composition creates a separate owner for each logical client.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./DocumentSubscriptions.layer.js"
  * import * as Layer from "effect/Layer"
- * const acquire = Layer.build(layer);
- * void acquire;
+ * export const acquire = Layer.build(layer);
+ * // Run acquire inside the application or document scope with its required services.
  * ```
  *
  * @category layers

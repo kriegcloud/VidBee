@@ -34,15 +34,15 @@ import type * as RpcGroup from "effect/rpc/RpcGroup";
 import type * as RpcMessage from "effect/rpc/RpcMessage";
 
 /**
- * Driver installs listener before connecting and owns document lifecycle cleanup.
+ * Provides the document-authenticated renderer framing connection and its retention account; the driver installs delivery before connecting and owns native lifecycle teardown.
  *
- * **Example** (Use DesktopRpcConnection at its owning boundary)
+ * **Example** (Use DesktopRpcConnection with its owner)
  *
  * ```ts
  * import { DesktopRpcConnection } from "./ElectronRpcClient.layer.js"
  * import * as Effect from "effect/Effect"
- * const access = DesktopRpcConnection.use(Effect.succeed);
- * void access;
+ * export const inspect = DesktopRpcConnection.use((connection) => Effect.succeed(connection.session));
+ * // Provide the connected document layer to read its authenticated session.
  * ```
  *
  * @category services
@@ -104,19 +104,15 @@ const transportFailure = (reason: string) =>
 const clientError = (reason: string) =>
   RpcClientError.make({ reason: RpcClientDefect.make({ message: reason, cause: transportFailure(reason) }) });
 /**
- * Per-request dispatch never blocks the physical receive drain on a client queue.
- * Use the returned makeClient factory (or ownedStream for an explicitly composed stream)
- * to retain decoded values until downstream consumption or cancellation. The raw Protocol
- * is a framing fixture boundary; bare stream decoding without a consumer owner fails visibly.
- * Raw asQueue access requires its own scoped consumption owner.
+ * Builds the document receive drain and ownership-aware client factory. Each logical client has bounded workers; owned streams retain decoded chunks until consumption or cancellation, while raw queue use requires an explicit consumption owner.
  *
- * **Example** (Use makeClientProtocol at its owning boundary)
+ * **Example** (Use makeClientProtocol with its owner)
  *
  * ```ts
  * import { makeClientProtocol } from "./ElectronRpcClient.layer.js"
  * import * as Effect from "effect/Effect"
- * const acquireDocument = Effect.scoped(makeClientProtocol());
- * void acquireDocument;
+ * export const inspect = Effect.scoped(Effect.map(makeClientProtocol(), (owner) => owner.stats()));
+ * // Provide DesktopRpcConnection and run while the document is live; leaving the scope retires every client.
  * ```
  *
  * @category utilities
@@ -165,7 +161,7 @@ export const makeClientProtocol = Effect.fn("ElectronRpcClient.make")(function* 
     Effect.forkScoped
   );
   const releaseFrame = (client: number, storageId?: number) => {
-    if (storageId === undefined) return;
+    if (storageId === undefined || transportDead) return;
     const size = measureValue({ session: connection.session, client, message: { _tag: "StorageReleased", storageId } });
     const lease = size === undefined ? undefined : account.reserve(size, true);
     if (lease === undefined || !Queue.offerUnsafe(releases, { client, storageId, lease })) {
@@ -243,6 +239,24 @@ export const makeClientProtocol = Effect.fn("ElectronRpcClient.make")(function* 
           Deferred.doneUnsafe(owner.value.closed, Exit.void);
         }
       });
+      const documentDead = Effect.suspend(() => {
+        transportDead = true;
+        delivery.disconnect();
+        return Effect.gen(function* () {
+          for (const client of HashMap.keys(clients)) yield* close(client);
+          let packet = Queue.takeUnsafe(ingress);
+          while (packet !== undefined && Exit.isSuccess(packet)) {
+            packet.value.lease.release();
+            packet = Queue.takeUnsafe(ingress);
+          }
+          Queue.failCauseUnsafe(ingress, Cause.die(failure("DocumentClosed")));
+          let command = Queue.takeUnsafe(releases);
+          while (command !== undefined && Exit.isSuccess(command)) {
+            command.value.lease.release();
+            command = Queue.takeUnsafe(releases);
+          }
+        });
+      });
       const control = Effect.fn("ElectronRpcClient.control")(function* (
         client: number,
         controls: Queue.Queue<Control>
@@ -300,7 +314,7 @@ export const makeClientProtocol = Effect.fn("ElectronRpcClient.make")(function* 
             if (output.session !== connection.session) return;
             const message = output.message;
             if (message._tag === "DocumentClosed") {
-              for (const client of HashMap.keys(clients)) yield* close(client);
+              yield* documentDead;
               return;
             }
             if (
@@ -352,24 +366,7 @@ export const makeClientProtocol = Effect.fn("ElectronRpcClient.make")(function* 
           );
         }
       });
-      yield* Effect.forkScoped(
-        receive.pipe(
-          Effect.ensuring(
-            Effect.suspend(() =>
-              Effect.gen(function* () {
-                transportDead = true;
-                delivery.disconnect();
-                for (const client of HashMap.keys(clients)) yield* close(client);
-                let packet = Queue.takeUnsafe(ingress);
-                while (packet !== undefined && Exit.isSuccess(packet)) {
-                  packet.value.lease.release();
-                  packet = Queue.takeUnsafe(ingress);
-                }
-              })
-            )
-          )
-        )
-      );
+      yield* Effect.forkScoped(receive.pipe(Effect.ensuring(documentDead)));
       return {
         run: Effect.fn("ElectronRpcClient.run")(function* (
           client: number,
@@ -702,18 +699,20 @@ export const makeClientProtocol = Effect.fn("ElectronRpcClient.make")(function* 
 });
 
 /**
- * Supplies the document's ownership-aware client factory and delivery gate.
+ * Provides the document’s ownership-aware RPC client factory and delivery gate; use makeClient for streams so decoded storage remains charged through downstream consumption.
  *
- * **Example** (Create a client with automatic stream storage release)
+ * **Example** (Use DesktopRpcClient with its owner)
  *
  * ```ts
  * import { DesktopRpcClient } from "./ElectronRpcClient.layer.js"
+ * import * as S from "effect/Schema"
+ * import * as Effect from "effect/Effect"
  * import * as Rpc from "effect/rpc/Rpc"
  * import * as RpcGroup from "effect/rpc/RpcGroup"
- * import * as S from "effect/Schema"
- * const group = RpcGroup.make(Rpc.make("Watch", { success: S.String, stream: true }));
- * const client = DesktopRpcClient.use((owner) => owner.makeClient(group));
- * void client;
+ * import * as Stream from "effect/Stream"
+ * export const group = RpcGroup.make(Rpc.make("Watch", { success: S.String, stream: true }));
+ * export const watch = DesktopRpcClient.use((owner) => Effect.flatMap(owner.makeClient(group), (client) => Stream.runCollect(client.Watch())));
+ * // Run with the live document layer; collection consumes and releases every retained chunk.
  * ```
  *
  * @category services
@@ -725,15 +724,15 @@ export class DesktopRpcClient extends Context.Service<
 >()("vidbee/renderer/src/transport/ElectronRpcClient.layer/DesktopRpcClient") {}
 
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Provides the ownership-aware renderer client and document delivery services from one receive drain; scope exit closes admission and releases queued ownership.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./ElectronRpcClient.layer.js"
  * import * as Layer from "effect/Layer"
- * const acquire = Layer.build(layer);
- * void acquire;
+ * export const acquire = Layer.build(layer);
+ * // Run acquire inside the application or document scope with its required services.
  * ```
  *
  * @category layers

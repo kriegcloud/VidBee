@@ -10,16 +10,20 @@ const array = <F extends S.Constraint>(field: F) => RpcMutableArray(field);
 const internal = <F extends S.Struct.Fields>(fields: F) =>
   S.StructWithRest(S.Struct(fields), [S.Record(S.String, S.mutableKey(S.Unknown))]);
 /**
- * Validates Stored Message at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredMessage at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredMessage } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredMessage);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredMessage)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -43,23 +47,27 @@ export const StoredMessage = internal({
   })
 );
 /**
- * Describes Stored Message ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredMessage}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredMessage = typeof StoredMessage.Type;
 /**
- * Validates Stored Artifact at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredArtifact at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredArtifact } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredArtifact);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredArtifact)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -84,23 +92,27 @@ export const StoredArtifact = internal({
   })
 );
 /**
- * Describes Stored Artifact ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredArtifact}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredArtifact = typeof StoredArtifact.Type;
 /**
- * Validates Stored Image at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredImage at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredImage } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredImage);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredImage)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -119,23 +131,27 @@ export const StoredImage = internal({
   $TransportId.annoteSchema("StoredImage", { description: "Stored Image boundary in the desktop transport contract." })
 );
 /**
- * Describes Stored Image ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredImage}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredImage = typeof StoredImage.Type;
 /**
- * Validates Stored Tool at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredTool at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredTool } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredTool);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredTool)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -160,23 +176,27 @@ export const StoredTool = internal({
   $TransportId.annoteSchema("StoredTool", { description: "Stored Tool boundary in the desktop transport contract." })
 );
 /**
- * Describes Stored Tool ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredTool}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredTool = typeof StoredTool.Type;
 /**
- * Validates Stored Activity at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredActivity at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredActivity } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredActivity);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredActivity)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -207,23 +227,27 @@ export const StoredActivity = S.Union([
   })
 );
 /**
- * Describes Stored Activity ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredActivity}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredActivity = typeof StoredActivity.Type;
 /**
- * Validates Stored Run at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredRun at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredRun } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredRun);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredRun)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -290,23 +314,27 @@ export const StoredRun = internal({
   $TransportId.annoteSchema("StoredRun", { description: "Stored Run boundary in the desktop transport contract." })
 );
 /**
- * Describes Stored Run ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredRun}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type StoredRun = typeof StoredRun.Type;
 /**
- * Validates Stored Thread at the desktop capability boundary before dispatch.
+ * Preserves the native persisted conversation representation for storage and recovery, rather than substituting the live renderer projection.
  *
- * **Example** (Use StoredThread at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { StoredThread } from "./StoredThread.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(StoredThread);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(StoredThread)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -331,7 +359,7 @@ export const StoredThread = internal({
   })
 );
 /**
- * Describes Stored Thread ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link StoredThread}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

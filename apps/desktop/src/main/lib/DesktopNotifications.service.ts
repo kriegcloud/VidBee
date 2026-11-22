@@ -9,16 +9,20 @@ import type { DeliveryError } from "../../renderer/src/transport/DocumentDeliver
 const $TransportId = $DesktopId.create("main/lib/DesktopNotifications.service");
 
 /**
- * Validates Recipients at the desktop transport boundary before dispatch.
+ * Selects a live broadcast, a particular window or the notification owner; recipient resolution happens when publication runs.
  *
- * **Example** (Use Recipients at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Recipients } from "./DesktopNotifications.service.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Recipients);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Recipients)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -32,22 +36,21 @@ export const Recipients = S.Union([
   $TransportId.annoteSchema("Recipients", { description: "Recipients boundary in the desktop transport contract." })
 );
 /**
- * Describes Recipients ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Recipients}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Recipients = typeof Recipients.Type;
 /**
- * Producers call twice where their existing success/finalizer policy calls twice.
+ * Publishes through the existing live-window registry without caching recipients or deduplicating producer calls; the producer retains its original success and finalizer publication policy.
  *
- * **Example** (Use DesktopNotifications at its owning boundary)
+ * **Example** (Use DesktopNotifications with its owner)
  *
  * ```ts
  * import { DesktopNotifications } from "./DesktopNotifications.service.js"
- * import * as Effect from "effect/Effect"
- * const access = DesktopNotifications.use(Effect.succeed);
- * void access;
+ * export const publish = DesktopNotifications.use((owner) => owner.publish({ recipients: { kind: "all-live-windows" }, channel: "changed", value: 1 }));
+ * // Run with the live window service; an empty registry succeeds without sending.
  * ```
  *
  * @category services
@@ -65,7 +68,7 @@ export class DesktopNotifications extends Context.Service<
 >()("vidbee/main/lib/DesktopNotifications.service/DesktopNotifications") {}
 
 /**
- * Describes Notification Target ownership at the desktop transport boundary.
+ * Borrows a currently live window target and its existing send operation; account selects an explicit recipient and activeMain selects the current main target.
  *
  * @category type-level
  * @since 0.0.0
@@ -76,15 +79,16 @@ export interface NotificationTarget {
   readonly send: (channel: string, value: unknown) => Effect.Effect<void, DeliveryError>;
 }
 /**
- * Borrow the existing live-window owner; this adapter keeps no recipient map or queue.
+ * Resolves recipients from the supplied live-window owner for every publication and sends in traversal order; it retains no independent recipient registry or queue.
  *
- * **Example** (Use makeNotifications at its owning boundary)
+ * **Example** (Use makeNotifications with its owner)
  *
  * ```ts
  * import { makeNotifications } from "./DesktopNotifications.service.js"
  * import * as Effect from "effect/Effect"
- * const notifications = makeNotifications(Effect.succeed([]));
- * void notifications.publish({ recipients: { kind: "all-live-windows" }, channel: "changed", value: 1 });
+ * export const notifications = Effect.succeed([]).pipe(makeNotifications);
+ * export const publish = notifications.publish({ recipients: { kind: "all-live-windows" }, channel: "changed", value: 1 });
+ * // Run publish with the live recipient resolver; this empty resolver sends nothing.
  * ```
  *
  * @category utilities
@@ -111,15 +115,16 @@ export const makeNotifications = (
   }),
 });
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Provides live-window notifications from the existing recipient resolver; rebuilding the layer does not create an independent window registry.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./DesktopNotifications.service.js"
+ * import * as Effect from "effect/Effect"
  * import * as Layer from "effect/Layer"
- * const provide = (options: Parameters<typeof layer>[0]) => layer(options).pipe(Layer.build);
- * void provide;
+ * export const acquire = Effect.succeed([]).pipe(layer, Layer.build);
+ * // Build in a scope; the empty live-window resolver sends no notifications.
  * ```
  *
  * @category layers

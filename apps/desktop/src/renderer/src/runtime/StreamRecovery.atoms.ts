@@ -2,13 +2,13 @@ import * as HashMap from "effect/HashMap";
 import * as HashSet from "effect/HashSet";
 
 /**
- * Identity governs transport repair only; existing consumer hydration races are unchanged.
+ * Creates source-specific recovery state with bounded replay deduplication; source identity and sequence govern overlap without changing consumer hydration policy.
  *
- * **Example** (Use makeRecovery at its owning boundary)
+ * **Example** (Use makeRecovery with its owner)
  *
  * ```ts
  * import { makeRecovery } from "./StreamRecovery.atoms.js"
- * const repair = makeRecovery();
+ * export const repair = makeRecovery();
  * repair.dispose();
  * ```
  *

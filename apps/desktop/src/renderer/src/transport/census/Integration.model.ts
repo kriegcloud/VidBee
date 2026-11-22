@@ -8,16 +8,20 @@ import { RpcArray, RpcOptional } from "../RpcField.model.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/census/Integration.model");
 
 /**
- * Validates Integration Failure at the desktop capability boundary before dispatch.
+ * Carries a native integrations failure separately from transport or delivery errors.
  *
- * **Example** (Use IntegrationFailure at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { IntegrationFailure } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(IntegrationFailure);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(IntegrationFailure)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -31,16 +35,20 @@ export class IntegrationFailure extends S.TaggedError<IntegrationFailure, { read
   })
 ) {}
 /**
- * Validates Mcp Status at the desktop capability boundary before dispatch.
+ * Describes MCP enablement, live server state, configuration path and published tool count.
  *
- * **Example** (Use McpStatus at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { McpStatus } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(McpStatus);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(McpStatus)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -57,23 +65,27 @@ export const McpStatus = S.Struct({
   $TransportId.annoteSchema("McpStatus", { description: "Mcp Status boundary in the desktop transport contract." })
 );
 /**
- * Describes Mcp Status ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link McpStatus}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type McpStatus = typeof McpStatus.Type;
 /**
- * Validates Capability Kind at the desktop capability boundary before dispatch.
+ * Selects the MCP capability collection: tools, resources or prompts.
  *
- * **Example** (Use CapabilityKind at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CapabilityKind } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CapabilityKind);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CapabilityKind)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -85,23 +97,27 @@ export const CapabilityKind = LiteralKit.LiteralKit(["tools", "resources", "prom
   })
 );
 /**
- * Describes Capability Kind ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CapabilityKind}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CapabilityKind = typeof CapabilityKind.Type;
 /**
- * Validates Capability at the desktop capability boundary before dispatch.
+ * Pairs an MCP capability name with its localized label key and description.
  *
- * **Example** (Use Capability at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Capability } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Capability);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Capability)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -111,23 +127,27 @@ export const Capability = S.Struct({ name: S.String, labelKey: S.String, descrip
   $TransportId.annoteSchema("Capability", { description: "Capability boundary in the desktop transport contract." })
 );
 /**
- * Describes Capability ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Capability}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Capability = typeof Capability.Type;
 /**
- * Validates Capability Groups at the desktop capability boundary before dispatch.
+ * Groups named MCP capabilities by identifier and capability kind.
  *
- * **Example** (Use CapabilityGroups at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CapabilityGroups } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CapabilityGroups);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CapabilityGroups)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -141,22 +161,27 @@ export const CapabilityGroups = RpcArray(
   })
 );
 /**
- * Describes Capability Groups ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CapabilityGroups}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CapabilityGroups = typeof CapabilityGroups.Type;
 /**
- * Constructs Credit Number Value with explicit lifetime and failure ownership.
+ * Accepts an observed numeric credit value without silently replacing exceptional numbers.
  *
- * **Example** (Use CreditNumberValue at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CreditNumberValue } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const validate = S.decodeUnknownEffect(CreditNumberValue);
- * void validate({});
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CreditNumberValue)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category utilities
@@ -168,22 +193,27 @@ export const CreditNumberValue = S.declare((u): u is number => P.isNumber(u)).pi
   })
 );
 /**
- * Describes Credit Number Value ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CreditNumberValue}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CreditNumberValue = typeof CreditNumberValue.Type;
 /**
- * Constructs Credit Number with explicit lifetime and failure ownership.
+ * Preserves exceptional credit numbers with explicit wire tags so NaN, infinities and negative zero round-trip.
  *
- * **Example** (Use CreditNumber at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CreditNumber } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const validate = S.decodeUnknownEffect(CreditNumber);
- * void validate({});
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CreditNumber)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category utilities
@@ -209,23 +239,27 @@ export const CreditNumber = S.Union([S.Finite, S.Literals(["NaN", "Infinity", "-
   })
 );
 /**
- * Describes Credit Number ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CreditNumber}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CreditNumber = typeof CreditNumber.Type;
 /**
- * Validates Credit Bucket at the desktop capability boundary before dispatch.
+ * Describes credit balances and usage for one accounting bucket.
  *
- * **Example** (Use CreditBucket at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CreditBucket } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CreditBucket);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CreditBucket)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -243,23 +277,27 @@ export const CreditBucket = S.Struct({
   })
 );
 /**
- * Describes Credit Bucket ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CreditBucket}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CreditBucket = typeof CreditBucket.Type;
 /**
- * Validates Credits at the desktop capability boundary before dispatch.
+ * Describes credit balances grouped by feature and source, including interrupted and reconciling work.
  *
- * **Example** (Use Credits at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Credits } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Credits);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Credits)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -273,23 +311,27 @@ export const Credits = S.Struct({
   reconcilingCredits: RpcOptional(CreditNumber),
 }).pipe($TransportId.annoteSchema("Credits", { description: "Credits boundary in the desktop transport contract." }));
 /**
- * Describes Credits ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Credits}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Credits = typeof Credits.Type;
 /**
- * Validates Nonnegative Safe at the desktop capability boundary before dispatch.
+ * Restricts pagination counts and offsets to nonnegative safe integers.
  *
- * **Example** (Use NonnegativeSafe at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { NonnegativeSafe } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(NonnegativeSafe);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(NonnegativeSafe)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -305,23 +347,27 @@ export const NonnegativeSafe = S.Finite.check(
   })
 );
 /**
- * Describes Nonnegative Safe ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link NonnegativeSafe}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type NonnegativeSafe = typeof NonnegativeSafe.Type;
 /**
- * Validates History Cursor at the desktop capability boundary before dispatch.
+ * Identifies a stable history position by timestamp and record ID.
  *
- * **Example** (Use HistoryCursor at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { HistoryCursor } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(HistoryCursor);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(HistoryCursor)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -336,23 +382,27 @@ export const HistoryCursor = S.StructWithRest(
   })
 );
 /**
- * Describes History Cursor ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link HistoryCursor}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type HistoryCursor = typeof HistoryCursor.Type;
 /**
- * Validates Reservation Status at the desktop capability boundary before dispatch.
+ * Distinguishes reserved credit work from work awaiting reconciliation.
  *
- * **Example** (Use ReservationStatus at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ReservationStatus } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ReservationStatus);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ReservationStatus)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -364,23 +414,27 @@ export const ReservationStatus = LiteralKit.LiteralKit(["reserved", "reconciling
   })
 );
 /**
- * Describes Reservation Status ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ReservationStatus}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ReservationStatus = typeof ReservationStatus.Type;
 /**
- * Validates Reservation at the desktop capability boundary before dispatch.
+ * Describes a credit reservation and its deadline, progress and recovery timestamps.
  *
- * **Example** (Use Reservation at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Reservation } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Reservation);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Reservation)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -401,23 +455,27 @@ export const Reservation = S.Struct({
   $TransportId.annoteSchema("Reservation", { description: "Reservation boundary in the desktop transport contract." })
 );
 /**
- * Describes Reservation ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Reservation}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Reservation = typeof Reservation.Type;
 /**
- * Validates Reservations at the desktop capability boundary before dispatch.
+ * Preserves the observed collection of outstanding credit reservations.
  *
- * **Example** (Use Reservations at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Reservations } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Reservations);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Reservations)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -431,23 +489,27 @@ export const Reservations = RpcArray(Reservation)
     })
   );
 /**
- * Describes Reservations ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Reservations}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Reservations = typeof Reservations.Type;
 /**
- * Validates Snapshot at the desktop capability boundary before dispatch.
+ * Pairs current credits with outstanding reservations in one account snapshot.
  *
- * **Example** (Use Snapshot at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Snapshot } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Snapshot);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Snapshot)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -457,7 +519,7 @@ export const Snapshot = S.Struct({ credits: Credits, reservations: Reservations 
   $TransportId.annoteSchema("Snapshot", { description: "Snapshot boundary in the desktop transport contract." })
 );
 /**
- * Describes Snapshot ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Snapshot}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -470,16 +532,20 @@ const nullable = S.NullOr(S.String.check(S.isMaxLength(1024))).pipe(
   $TransportId.annoteSchema("nullable", { description: "nullable boundary in the desktop transport contract." })
 );
 /**
- * Validates Receipt at the desktop capability boundary before dispatch.
+ * Preserves a billing history receipt with charged and refunded credits and model usage metadata.
  *
- * **Example** (Use Receipt at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Receipt } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Receipt);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Receipt)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -504,23 +570,27 @@ export const Receipt = S.StructWithRest(
   [S.Record(S.String, S.Unknown)]
 ).pipe($TransportId.annoteSchema("Receipt", { description: "Receipt boundary in the desktop transport contract." }));
 /**
- * Describes Receipt ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Receipt}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Receipt = typeof Receipt.Type;
 /**
- * Validates History at the desktop capability boundary before dispatch.
+ * Describes a page of billing receipts and its optional continuation cursor.
  *
- * **Example** (Use History at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { History } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(History);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(History)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -531,23 +601,27 @@ export const History = S.Struct({
   nextCursor: S.NullOr(HistoryCursor),
 }).pipe($TransportId.annoteSchema("History", { description: "History boundary in the desktop transport contract." }));
 /**
- * Describes History ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link History}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type History = typeof History.Type;
 /**
- * Validates Overview at the desktop capability boundary before dispatch.
+ * Preserves invitation, invited-user and gifted-credit observations from the account overview.
  *
- * **Example** (Use Overview at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Overview } from "./Integration.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Overview);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Overview)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -560,7 +634,7 @@ export const Overview = S.Struct({
   giftedCreditRecords: S.Unknown,
 }).pipe($TransportId.annoteSchema("Overview", { description: "Overview boundary in the desktop transport contract." }));
 /**
- * Describes Overview ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Overview}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

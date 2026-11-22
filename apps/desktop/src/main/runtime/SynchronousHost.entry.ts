@@ -10,14 +10,18 @@ import type * as ManagedRuntime from "effect/ManagedRuntime";
 import type { SynchronousCall } from "../lib/SynchronousHost.service.js";
 
 /**
- * Warmed compatibility runner; reservations survive uninterruptible accidental suspension.
+ * Creates a warmed synchronous compatibility runner with bounded reservations. Accidental suspension revokes ordinary calls, interrupts the fiber and retains cleanup ownership until release settles.
  *
- * **Example** (Use makeSynchronousHost at its owning boundary)
+ * **Example** (Use makeSynchronousHost with its owner)
  *
  * ```ts
  * import { makeSynchronousHost } from "./SynchronousHost.entry.js"
- * const compose = (options: Parameters<typeof makeSynchronousHost>[0]) => makeSynchronousHost(options);
- * void compose;
+ * import * as Effect from "effect/Effect"
+ * export const read = (options: Parameters<typeof makeSynchronousHost>[0]) => {
+ *   const host = makeSynchronousHost(options);
+ *   return host.run((call) => Effect.sync(() => call.use(() => 42)));
+ * };
+ * // A warmed runtime returns 42 synchronously; accidental suspension is rejected.
  * ```
  *
  * @category utilities

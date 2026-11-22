@@ -14,16 +14,20 @@ import * as M from "./Transcript.model.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/census/Transcript.rpc");
 
 /**
- * Validates Dependencies at the desktop capability boundary before dispatch.
+ * Binds transcription work to the exact change, model, download, settings, account, agent and export subscriptions it depends on.
  *
- * **Example** (Use Dependencies at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Dependencies } from "./Transcript.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Dependencies);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Dependencies)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -41,23 +45,27 @@ export const Dependencies = S.Struct({
   $TransportId.annoteSchema("Dependencies", { description: "Dependencies boundary in the desktop transport contract." })
 );
 /**
- * Describes Dependencies ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Dependencies}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Dependencies = typeof Dependencies.Type;
 /**
- * Validates Initial at the desktop capability boundary before dispatch.
+ * Binds an initial transcription read to its active subscription token.
  *
- * **Example** (Use Initial at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Initial } from "./Transcript.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Initial);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Initial)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -67,7 +75,7 @@ export const Initial = S.Struct({ token: Token }).pipe(
   $TransportId.annoteSchema("Initial", { description: "Initial boundary in the desktop transport contract." })
 );
 /**
- * Describes Initial ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Initial}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -76,15 +84,16 @@ export type Initial = typeof Initial.Type;
 const done = <A, I, RD, RE>(success: S.Codec<A, I, RD, RE>) =>
   Completion({ success: RpcObserved(success), error: TranscriptOperationError });
 /**
- * Validates Transcript Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for transcription, model management and subtitle export; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use TranscriptRpcs at its owning boundary)
+ * **Example** (Use TranscriptRpcs with its owner)
  *
  * ```ts
  * import { TranscriptRpcs } from "./Transcript.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(TranscriptRpcs);
- * void client;
+ * export const make = RpcClient.make(TranscriptRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas

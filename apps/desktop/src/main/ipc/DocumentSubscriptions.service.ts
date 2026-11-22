@@ -4,6 +4,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
 import * as O from "effect/Option";
 import * as Queue from "effect/Queue";
 import * as Result from "effect/Result";
@@ -23,7 +24,7 @@ interface Lifecycle {
   readonly token: Token;
 }
 /**
- * Describes Registration ownership at the desktop transport boundary.
+ * Represents one source incarnation with immutable identity with its queued observations and owned native listener releases; departure ends admission while borrowed observations keep their retained charge.
  *
  * @category type-level
  * @since 0.0.0
@@ -49,14 +50,18 @@ export interface Registration<A> extends Lifecycle {
   readonly token: Token;
 }
 /**
- * A separate owner is constructed for each authenticated logical client.
+ * Creates one source-subscription owner for an authenticated logical client; registration replacement and departure close native listeners, while borrowed observations remain charged until their consumer releases them.
  *
- * **Example** (Use makeSubscriptions at its owning boundary)
+ * **Example** (Use makeSubscriptions with its owner)
  *
  * ```ts
  * import { makeSubscriptions } from "./DocumentSubscriptions.service.js"
- * const compose = (options: Parameters<typeof makeSubscriptions>[0]) => makeSubscriptions(options);
- * void compose;
+ * export const owner = makeSubscriptions({ identity: { document: "d", client: "c", generation: 1, epoch: "epoch" }, onTerminal: () => {} });
+ * export const releaseDocument = owner.disconnect;
+ * // Run on departure; no native listeners have been acquired in this example.
+ * export const release = releaseDocument;
+ * // Run release on document departure; the resulting registration count is zero.
+ * owner.stats().registrations // => 0
  * ```
  *
  * @category utilities
@@ -86,8 +91,26 @@ export const makeSubscriptions = ({
   let live = true;
   let bytes = 0;
   let slots = HashMap.empty<string, Lifecycle>();
+  let states = HashMap.empty<number, { installing: boolean; borrowed: HashSet.HashSet<number>; failed: number }>();
   const failedReleases: Array<() => void> = [];
   const cleanupCauses: Array<unknown> = [];
+  const retain = <A>(sub: Registration<A>) => {
+    const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
+    if (state === undefined) return;
+    if (!sub.active && !state.installing && sub.bytes === 0 && state.failed === 0) {
+      sub.retention?.release();
+      states = HashMap.remove(states, sub.token.serial);
+    } else sub.retention?.resize((sub.active || state.installing ? 4096 : 0) + sub.bytes + state.failed * 256);
+  };
+  const releaseValue = <A>(sub: Registration<A>, sequence: number) => {
+    const amount = O.getOrElse(HashMap.get(sub.charges, sequence), () => 0);
+    bytes -= amount;
+    sub.bytes -= amount;
+    sub.charges = HashMap.remove(sub.charges, sequence);
+    const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
+    if (state !== undefined) state.borrowed = HashSet.remove(state.borrowed, sequence);
+    retain(sub);
+  };
   const close = Effect.fn("DocumentSubscriptions.close")(function* <A>(sub: Registration<A>, reason: string) {
     if (!sub.active) return;
     sub.active = false;
@@ -100,6 +123,8 @@ export const makeSubscriptions = ({
     for (const release of A.reverse(sub.releases)) {
       const exit = yield* Effect.exit(Effect.sync(release));
       if (Exit.isFailure(exit)) {
+        const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
+        if (state !== undefined) state.failed++;
         failedReleases.push(release);
         cleanupCauses.push(exit.cause);
         live = false;
@@ -109,11 +134,10 @@ export const makeSubscriptions = ({
     while (Queue.takeUnsafe(sub.queue) !== undefined) {
       /* release queued ownership below */
     }
-    bytes -= sub.bytes;
-    sub.bytes = 0;
-    sub.charges = HashMap.empty();
-    if (failedReleases.length === 0) sub.retention?.release();
-    else sub.retention?.resize(Math.max(256, failedReleases.length * 256));
+    const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
+    for (const [sequence] of HashMap.toEntries(sub.charges))
+      if (state === undefined || !HashSet.has(state.borrowed, sequence)) releaseValue(sub, sequence);
+    retain(sub);
     Queue.failCauseUnsafe(sub.queue, Cause.fail(failure(reason)));
     const current = HashMap.get(slots, sub.token.family);
     if (O.isSome(current) && sameToken({ left: current.value.token, right: sub.token }))
@@ -148,6 +172,8 @@ export const makeSubscriptions = ({
       charges: HashMap.empty(),
       close: Effect.void,
     };
+    const state = { installing: true, borrowed: HashSet.empty<number>(), failed: 0 };
+    states = HashMap.set(states, token.serial, state);
     sub.close = close(sub, "RegistrationClosed");
     yield* Effect.acquireRelease(
       Effect.sync(() => {
@@ -227,6 +253,18 @@ export const makeSubscriptions = ({
             sub.bytes += retained.bytes;
           },
           (release) => {
+            if (!sub.active) {
+              const released = Result.try({ try: release, catch: (original) => original });
+              if (Result.isFailure(released)) {
+                state.failed++;
+                bytes += 256;
+                failedReleases.push(release);
+                cleanupCauses.push(Cause.die(released.failure));
+                live = false;
+              }
+              retain(sub);
+              return;
+            }
             // The installer reports ownership immediately after acquisition. Retain even if capacity is exceeded so teardown can release it.
             if (sub.releases.length >= 16) {
               sub.releases.push(release);
@@ -245,6 +283,8 @@ export const makeSubscriptions = ({
         )
       )
     );
+    state.installing = false;
+    retain(sub);
     if (
       Exit.isFailure(installed) ||
       overflow ||
@@ -285,13 +325,11 @@ export const makeSubscriptions = ({
   const watch = <A>(sub: Registration<A>) =>
     Stream.unwrap(
       Effect.map(requireActive(sub.token), () => {
-        let current = 0;
+        let current: number | undefined;
         const release = () => {
-          const amount = Math.min(current, sub.bytes);
-          bytes -= amount;
-          sub.bytes -= amount;
-          current = 0;
-          sub.retention?.resize(4096 + sub.bytes + sub.releases.length * 256);
+          if (current === undefined) return;
+          releaseValue(sub, current);
+          current = undefined;
         };
         return Stream.concat(
           Stream.succeed({
@@ -299,13 +337,18 @@ export const makeSubscriptions = ({
             token: sub.token,
             epoch: sub.epoch,
           } satisfies import("../../renderer/src/transport/DocumentDelivery.model.ts").Registered),
-          Stream.fromQueue(sub.queue).pipe(
-            Stream.map((observation) => {
-              release();
-              current = O.getOrElse(HashMap.get(sub.charges, observation.sequence), () => 0);
-              sub.charges = HashMap.remove(sub.charges, observation.sequence);
-              return observation;
-            })
+          Stream.fromEffectRepeat(Queue.take(sub.queue)).pipe(
+            Stream.mapEffect((observation) =>
+              Effect.sync(() => {
+                release();
+                if (!sub.active)
+                  return Result.getOrThrowWith(Result.fail(failure("RegistrationClosed")), (error) => error);
+                current = observation.sequence;
+                const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
+                if (state !== undefined) state.borrowed = HashSet.add(state.borrowed, current);
+                return observation;
+              })
+            )
           )
         ).pipe(Stream.ensuring(Effect.sync(release)));
       })
@@ -324,15 +367,15 @@ export const makeSubscriptions = ({
   };
 };
 /**
- * Supplies Document Subscriptions through the owning application or document scope.
+ * Constructs per-client source owners using the document resource budget supplied by composition; never reuse one owner for unrelated logical clients.
  *
- * **Example** (Use DocumentSubscriptions at its owning boundary)
+ * **Example** (Use DocumentSubscriptions with its owner)
  *
  * ```ts
  * import { DocumentSubscriptions } from "./DocumentSubscriptions.service.js"
  * import * as Effect from "effect/Effect"
- * const access = DocumentSubscriptions.use(Effect.succeed);
- * void access;
+ * export const make = DocumentSubscriptions.use((service) => Effect.sync(() => service.make({ identity: { document: "d", client: "c", generation: 1, epoch: "e" }, onTerminal: () => {} }).stats()));
+ * // Provide document resources; this creates one client owner and reads its initial registration count.
  * ```
  *
  * @category services

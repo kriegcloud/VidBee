@@ -11,7 +11,7 @@ import { failure } from "./DocumentDelivery.errors.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/RpcObservation.model");
 
 /**
- * Recursive tagged wire tree; marker-shaped application objects stay ordinary objects.
+ * Decoded representation validated by {@link WireValue}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -26,15 +26,20 @@ export type WireValue =
   | { readonly t: "a"; readonly v: ReadonlyArray<WireValue> }
   | { readonly t: "o"; readonly v: ReadonlyArray<readonly [string, WireValue]> };
 /**
- * Constructs Wire Value with explicit lifetime and failure ownership.
+ * Validates the recursive tagged observation tree used to preserve native JavaScript observations across JSON, including undefined, exceptional numbers and ordered object keys.
  *
- * **Example** (Use WireValue at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { WireValue } from "./RpcObservation.model.js"
  * import * as S from "effect/Schema"
- * const validate = S.decodeUnknownEffect(WireValue);
- * void validate({});
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(WireValue)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category utilities
@@ -65,14 +70,15 @@ const makeBudget = () => {
   };
 };
 /**
- * Constructs pack with explicit lifetime and failure ownership.
+ * Packs a native observation into bounded JSON-safe tags, preserving exceptional numbers, undefined and object key order; cycles and unsupported descriptors fail visibly.
  *
- * **Example** (Use pack at its owning boundary)
+ * **Example** (Use pack with its owner)
  *
  * ```ts
  * import { pack } from "./RpcObservation.model.js"
- * const encoded = pack({ value: undefined, count: -0 });
- * void encoded;
+ * import * as Effect from "effect/Effect"
+ * export const packedTag = pack({ value: undefined, count: -0 }).pipe(Effect.map((wire) => wire.t));
+ * // Running packedTag yields "o" for this ordered object observation.
  * ```
  *
  * @category utilities
@@ -122,14 +128,14 @@ export const pack = Effect.fn("RpcObservation.pack")(function* (input: unknown) 
   return yield* visit(input, [], 0);
 });
 /**
- * Constructs unpack with explicit lifetime and failure ownership.
+ * Reconstructs a native observation from its bounded tagged tree without JSON normalization of undefined or exceptional numeric values.
  *
- * **Example** (Use unpack at its owning boundary)
+ * **Example** (Use unpack with its owner)
  *
  * ```ts
  * import { unpack } from "./RpcObservation.model.js"
- * const decoded = unpack({ t: "u" });
- * void decoded;
+ * export const decoded = unpack({ t: "u" });
+ * // Running decoded yields undefined, rather than omitting the observation.
  * ```
  *
  * @category utilities
@@ -177,15 +183,20 @@ export const unpack = Effect.fn("RpcObservation.unpack")(function* (input: WireV
   return yield* visit(input, 0);
 });
 /**
- * Constructs Observed Value with explicit lifetime and failure ownership.
+ * Converts a bounded tagged observation tree to its native JavaScript value and back; packing rejects cycles, accessors and unsupported objects instead of silently normalizing them.
  *
- * **Example** (Use ObservedValue at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ObservedValue } from "./RpcObservation.model.js"
  * import * as S from "effect/Schema"
- * const validate = S.decodeUnknownEffect(ObservedValue);
- * void validate({});
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ObservedValue)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category utilities
@@ -209,22 +220,27 @@ export const ObservedValue: S.Codec<unknown, WireValue> = WireValue.pipe(
   })
 );
 /**
- * Describes Observed Value ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ObservedValue}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ObservedValue = typeof ObservedValue.Type;
 /**
- * Constructs Rpc Observed with explicit lifetime and failure ownership.
+ * Adds an observation-preserving wire representation to a projected view: required view fields are validated while additional native fields and key order survive the round trip.
  *
- * **Example** (Use RpcObserved at its owning boundary)
+ * **Example** (Use RpcObserved with its owner)
  *
  * ```ts
  * import { RpcObserved } from "./RpcObservation.model.js"
  * import * as S from "effect/Schema"
- * const retained = RpcObserved(S.Struct({ name: S.String }));
- * void S.encodeEffect(retained)({ name: "ready" });
+ * import * as Result from "effect/Result"
+ * export const codec = RpcObserved(S.Struct({ name: S.String }));
+ * export const encoded = S.encodeResult(codec)({ name: "ready" });
+ * if (Result.isSuccess(encoded)) {
+ *   const decoded = S.decodeResult(codec)(encoded.success);
+ *   if (Result.isSuccess(decoded)) decoded.success.name // => "ready"
+ * }
  * ```
  *
  * @category utilities

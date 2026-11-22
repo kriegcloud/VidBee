@@ -4,16 +4,20 @@ import * as S from "effect/Schema";
 const $TransportId = $DesktopId.create("renderer/src/transport/DocumentDelivery.errors");
 
 /**
- * Public delivery failures contain no host objects or payloads.
+ * Reports failure to establish a subscription registration or satisfy its delivery cut; callers must not treat a failed cut as an observed successful mutation.
  *
- * **Example** (Use DeliveryError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DeliveryError } from "./DocumentDelivery.errors.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DeliveryError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DeliveryError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -31,16 +35,16 @@ export class DeliveryError extends S.TaggedError<DeliveryError, { readonly brand
 ) {}
 
 /**
- * Constructs failure with explicit lifetime and failure ownership.
+ * Builds a typed delivery failure with matching reason and message; use it when registration ownership or an inclusive completion cut can no longer be honored.
  *
- * **Example** (Use failure at its owning boundary)
+ * **Example** (Use failure with its owner)
  *
  * ```ts
  * import { failure } from "./DocumentDelivery.errors.js"
  * import * as Effect from "effect/Effect"
- * const refused = failure("DocumentClosed");
- * const failed = Effect.fail(refused);
- * void failed;
+ * export const refused = failure("DocumentClosed");
+ * export const failed = Effect.fail(refused);
+ * // Run failed through Effect.result to inspect the typed DocumentClosed delivery error.
  * ```
  *
  * @category utilities
@@ -49,16 +53,20 @@ export class DeliveryError extends S.TaggedError<DeliveryError, { readonly brand
 export const failure = (reason: string): DeliveryError => DeliveryError.make({ reason, message: reason });
 
 /**
- * Content-free transport faults for the document's public failure atom.
+ * Reports loss of a renderer document connection. Once this failure closes admission, creating a new logical client cannot revive that document.
  *
- * **Example** (Use ElectronRpcTransportError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ElectronRpcTransportError } from "./DocumentDelivery.errors.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ElectronRpcTransportError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ElectronRpcTransportError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -79,16 +87,20 @@ export class ElectronRpcTransportError extends S.TaggedError<
   })
 ) {}
 /**
- * Validates Electron Rpc Capacity Error at the desktop transport boundary before dispatch.
+ * Identifies the exhausted admission resource and limit so callers can distinguish bounded refusal from an operation failure.
  *
- * **Example** (Use ElectronRpcCapacityError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ElectronRpcCapacityError } from "./DocumentDelivery.errors.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ElectronRpcCapacityError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ElectronRpcCapacityError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -118,7 +130,7 @@ export class ElectronRpcCapacityError extends S.TaggedError<
   })
 ) {}
 /**
- * Describes Transport Failure ownership at the desktop transport boundary.
+ * Unifies typed document transport and capacity failures for renderer recovery without replacing capability-specific operation errors.
  *
  * @category type-level
  * @since 0.0.0

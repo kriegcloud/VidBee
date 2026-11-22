@@ -2,15 +2,15 @@ import * as Layer from "effect/Layer";
 import { ElectronRpcAdmission, makeAdmission } from "./ElectronRpcAdmission.service.js";
 
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Installs one application admission ledger; reuse this layer across document generations so reconnecting cannot reset window or application limits.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./ElectronRpcAdmission.layer.js"
  * import * as Layer from "effect/Layer"
- * const acquire = Layer.build(layer);
- * void acquire;
+ * export const acquire = Layer.build(layer);
+ * // Run acquire inside the application or document scope with its required services.
  * ```
  *
  * @category layers

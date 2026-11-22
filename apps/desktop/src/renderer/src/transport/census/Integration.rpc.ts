@@ -21,16 +21,20 @@ import {
 const $TransportId = $DesktopId.create("renderer/src/transport/census/Integration.rpc");
 
 /**
- * Validates Account Operation Error at the desktop capability boundary before dispatch.
+ * Carries a capability-specific operation failure without confusing it with RPC transport failure.
  *
- * **Example** (Use AccountOperationError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountOperationError } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountOperationError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountOperationError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -44,16 +48,20 @@ export class AccountOperationError extends S.TaggedError<AccountOperationError, 
   })
 ) {}
 /**
- * Validates Mcp Operation Error at the desktop capability boundary before dispatch.
+ * Carries a capability-specific operation failure without confusing it with RPC transport failure.
  *
- * **Example** (Use McpOperationError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { McpOperationError } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(McpOperationError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(McpOperationError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -67,16 +75,20 @@ export class McpOperationError extends S.TaggedError<McpOperationError, { readon
   })
 ) {}
 /**
- * Validates Account Credits at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountCredits at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountCredits } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountCredits);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountCredits)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -88,23 +100,27 @@ export const AccountCredits = RpcObserved(Credits).pipe(
   })
 );
 /**
- * Describes Account Credits ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountCredits}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountCredits = typeof AccountCredits.Type;
 /**
- * Validates Account Reservations at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountReservations at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountReservations } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountReservations);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountReservations)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -116,23 +132,27 @@ export const AccountReservations = RpcObserved(Reservations).pipe(
   })
 );
 /**
- * Describes Account Reservations ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountReservations}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountReservations = typeof AccountReservations.Type;
 /**
- * Validates Account Snapshot at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountSnapshot at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountSnapshot } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountSnapshot);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountSnapshot)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -144,23 +164,27 @@ export const AccountSnapshot = RpcObserved(Snapshot).pipe(
   })
 );
 /**
- * Describes Account Snapshot ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountSnapshot}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountSnapshot = typeof AccountSnapshot.Type;
 /**
- * Validates Account History at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountHistory at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountHistory } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountHistory);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountHistory)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -172,23 +196,27 @@ export const AccountHistory = RpcObserved(History).pipe(
   })
 );
 /**
- * Describes Account History ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountHistory}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountHistory = typeof AccountHistory.Type;
 /**
- * Validates Account Overview at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountOverview at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountOverview } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountOverview);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountOverview)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -200,23 +228,27 @@ export const AccountOverview = RpcObserved(Overview).pipe(
   })
 );
 /**
- * Describes Account Overview ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountOverview}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountOverview = typeof AccountOverview.Type;
 /**
- * Validates Account Passthrough at the desktop capability boundary before dispatch.
+ * Preserves an account service observation without rebuilding unknown native fields or normalizing exceptional values.
  *
- * **Example** (Use AccountPassthrough at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AccountPassthrough } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AccountPassthrough);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AccountPassthrough)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -228,23 +260,27 @@ export const AccountPassthrough = ObservedValue.pipe(
   })
 );
 /**
- * Describes Account Passthrough ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link AccountPassthrough}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type AccountPassthrough = typeof AccountPassthrough.Type;
 /**
- * Validates History Input at the desktop capability boundary before dispatch.
+ * Selects an account history page using the native cursor contract.
  *
- * **Example** (Use HistoryInput at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { HistoryInput } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(HistoryInput);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(HistoryInput)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -256,23 +292,27 @@ export const HistoryInput = S.Struct({ cursor: HistoryCursor.pipe(RpcObserved, R
   })
 );
 /**
- * Describes History Input ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link HistoryInput}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type HistoryInput = typeof HistoryInput.Type;
 /**
- * Validates Page Input at the desktop capability boundary before dispatch.
+ * Selects an account history page using the native cursor contract.
  *
- * **Example** (Use PageInput at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PageInput } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PageInput);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PageInput)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -282,23 +322,27 @@ export const PageInput = S.Struct({ cursor: RpcOptional(ObservedValue) }).pipe(
   $TransportId.annoteSchema("PageInput", { description: "Page Input boundary in the desktop transport contract." })
 );
 /**
- * Describes Page Input ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link PageInput}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type PageInput = typeof PageInput.Type;
 /**
- * Validates Initial Read at the desktop capability boundary before dispatch.
+ * Binds an initial account read to the exact credit subscription required by its completion cut.
  *
- * **Example** (Use InitialRead at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { InitialRead } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(InitialRead);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(InitialRead)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -308,7 +352,7 @@ export const InitialRead = S.Struct({ creditsToken: RpcOptional(Token) }).pipe(
   $TransportId.annoteSchema("InitialRead", { description: "Initial Read boundary in the desktop transport contract." })
 );
 /**
- * Describes Initial Read ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link InitialRead}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -317,15 +361,16 @@ export type InitialRead = typeof InitialRead.Type;
 const account = <A extends S.Constraint>(success: A) => Completion({ success, error: AccountOperationError });
 const mcp = <A extends S.Constraint>(success: A) => Completion({ success, error: McpOperationError });
 /**
- * Validates Mcp Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for MCP status and capability operations; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use McpRpcs at its owning boundary)
+ * **Example** (Use McpRpcs with its owner)
  *
  * ```ts
  * import { McpRpcs } from "./Integration.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(McpRpcs);
- * void client;
+ * export const make = RpcClient.make(McpRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -338,15 +383,16 @@ export const McpRpcs = RpcGroup.make(
   Rpc.make("Mcp.RotateToken", { success: mcp(McpStatus), error: DeliveryError })
 );
 /**
- * Validates Account Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for account credits, authentication and history; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use AccountRpcs at its owning boundary)
+ * **Example** (Use AccountRpcs with its owner)
  *
  * ```ts
  * import { AccountRpcs } from "./Integration.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(AccountRpcs);
- * void client;
+ * export const make = RpcClient.make(AccountRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -395,16 +441,20 @@ export const AccountRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Renderer Ready at the desktop capability boundary before dispatch.
+ * Declares the credit and authentication subscription tokens installed before renderer-ready work begins.
  *
- * **Example** (Use RendererReady at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { RendererReady } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(RendererReady);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(RendererReady)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -416,23 +466,27 @@ export const RendererReady = S.Struct({ creditsTokens: RpcArray(Token), authToke
   })
 );
 /**
- * Describes Renderer Ready ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RendererReady}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type RendererReady = typeof RendererReady.Type;
 /**
- * Validates Transcript Extraction View at the desktop capability boundary before dispatch.
+ * Projects extracted transcript metadata, available tracks, selected track and segments.
  *
- * **Example** (Use TranscriptExtractionView at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { TranscriptExtractionView } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(TranscriptExtractionView);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(TranscriptExtractionView)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -456,23 +510,27 @@ export const TranscriptExtractionView = RpcObserved(
   })
 );
 /**
- * Describes Transcript Extraction View ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link TranscriptExtractionView}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type TranscriptExtractionView = typeof TranscriptExtractionView.Type;
 /**
- * Validates Transcript Snapshot at the desktop capability boundary before dispatch.
+ * Preserves transcript extraction status, update time and any classified extraction failure.
  *
- * **Example** (Use TranscriptSnapshot at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { TranscriptSnapshot } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(TranscriptSnapshot);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(TranscriptSnapshot)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -494,23 +552,27 @@ export const TranscriptSnapshot = RpcObserved(
   })
 );
 /**
- * Describes Transcript Snapshot ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link TranscriptSnapshot}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type TranscriptSnapshot = typeof TranscriptSnapshot.Type;
 /**
- * Validates Observation Task at the desktop capability boundary before dispatch.
+ * Preserves a task observation with scheduling priority, group, parent and attempt limits.
  *
- * **Example** (Use ObservationTask at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ObservationTask } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ObservationTask);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ObservationTask)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -535,23 +597,27 @@ export const ObservationTask = RpcObserved(
   })
 );
 /**
- * Describes Observation Task ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ObservationTask}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ObservationTask = typeof ObservationTask.Type;
 /**
- * Validates Observation Admission at the desktop capability boundary before dispatch.
+ * Validates task input and scheduling metadata before admitting observed work.
  *
- * **Example** (Use ObservationAdmission at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ObservationAdmission } from "./Integration.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ObservationAdmission);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ObservationAdmission)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -569,7 +635,7 @@ export const ObservationAdmission = S.Struct({
   })
 );
 /**
- * Describes Observation Admission ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ObservationAdmission}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

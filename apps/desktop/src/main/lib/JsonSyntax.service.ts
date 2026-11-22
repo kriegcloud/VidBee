@@ -3,15 +3,15 @@ import type * as Effect from "effect/Effect";
 import type { OriginalFailure } from "./OriginalFailure.errors.js";
 
 /**
- * Compatibility injects native syntax diagnostics; strict consumers never recreate them.
+ * Parses native JSON through the injected compatibility unit so malformed-input diagnostics preserve the original native thrown value and legacy error text.
  *
- * **Example** (Use JsonSyntax at its owning boundary)
+ * **Example** (Use JsonSyntax with its owner)
  *
  * ```ts
  * import { JsonSyntax } from "./JsonSyntax.service.js"
  * import * as Effect from "effect/Effect"
- * const access = JsonSyntax.use(Effect.succeed);
- * void access;
+ * export const parsed = JsonSyntax.use((syntax) => Effect.result(syntax.parse("{bad")));
+ * // Provide the native compatibility parser; the failure retains its native syntax diagnostic.
  * ```
  *
  * @category services

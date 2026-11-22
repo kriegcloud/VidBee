@@ -8,14 +8,14 @@ import { failure } from "./DocumentDelivery.errors.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/RpcCensus.model");
 
 /**
- * Independent of schema keys: own-key order, array identity/length and Object.is leaves.
+ * Compares native observations using Object.is leaves, own-key order and array structure; missing keys, explicit undefined and negative zero remain observably different.
  *
- * **Example** (Use sameObservation at its owning boundary)
+ * **Example** (Use sameObservation with its owner)
  *
  * ```ts
  * import { sameObservation } from "./RpcCensus.model.js"
- * const preserved = sameObservation({ left: { value: undefined }, right: { value: undefined } });
- * void preserved;
+ * export const preserved = sameObservation({ left: { value: undefined }, right: { value: undefined } });
+ * preserved // => true
  * ```
  *
  * @category utilities
@@ -42,15 +42,15 @@ export const sameObservation = ({ left, right }: { readonly left: unknown; reado
   return true;
 };
 /**
- * Supply the complete selected declaration's payload/success schema, including envelopes.
+ * Exercises a complete declaration codec through encoding, JSON framing and decoding, then checks native observation parity; use payload and success envelopes rather than isolated leaf schemas.
  *
- * **Example** (Use census at its owning boundary)
+ * **Example** (Use census with its owner)
  *
  * ```ts
  * import { census } from "./RpcCensus.model.js"
  * import * as S from "effect/Schema"
- * const roundTrip = census({ schema: S.String, value: "hello" });
- * void roundTrip;
+ * export const roundTrip = census({ schema: S.String, value: "hello" });
+ * // roundTrip records observation parity through the complete JSON framing path.
  * ```
  *
  * @category utilities

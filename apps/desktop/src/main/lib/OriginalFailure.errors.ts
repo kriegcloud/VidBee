@@ -4,16 +4,20 @@ import * as S from "effect/Schema";
 const $TransportId = $DesktopId.create("main/lib/OriginalFailure.errors");
 
 /**
- * Main-only carrier. Its identity is tested; arbitrary lookalike objects are never unwrapped.
+ * Carries the original in-process thrown value together with its operation and legacy message; unwrap it only at the legacy boundary so rejection identity is preserved.
  *
- * **Example** (Use OriginalFailure at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { OriginalFailure } from "./OriginalFailure.errors.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(OriginalFailure);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(OriginalFailure)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -31,15 +35,15 @@ export class OriginalFailure extends S.TaggedError<OriginalFailure, { readonly b
   })
 ) {}
 /**
- * Constructs original Failure with explicit lifetime and failure ownership.
+ * Captures a native thrown value without cloning or stringifying it, attaching operation and legacy-message metadata for strict Effect error handling.
  *
- * **Example** (Use originalFailure at its owning boundary)
+ * **Example** (Use originalFailure with its owner)
  *
  * ```ts
  * import { originalFailure } from "./OriginalFailure.errors.js"
- * const original = { nativeCode: "closed" };
- * const carried = originalFailure({ original, operation: "read", legacyMessage: "closed" });
- * void carried;
+ * export const original = { nativeCode: "closed" };
+ * export const carried = originalFailure({ original, operation: "read", legacyMessage: "closed" });
+ * carried.original === original // => true
  * ```
  *
  * @category utilities
@@ -55,16 +59,16 @@ export const originalFailure = ({
   readonly legacyMessage: string;
 }) => OriginalFailure.make({ original, operation, legacyMessage });
 /**
- * Constructs unwrap Original with explicit lifetime and failure ownership.
+ * Restores the original thrown value from an OriginalFailure carrier; unrelated values pass through unchanged, preserving legacy rejection identity.
  *
- * **Example** (Use unwrapOriginal at its owning boundary)
+ * **Example** (Use unwrapOriginal with its owner)
  *
  * ```ts
  * import { unwrapOriginal } from "./OriginalFailure.errors.js"
  * import { originalFailure } from "./OriginalFailure.errors.js";
- * const original = { nativeCode: "closed" };
- * const restored = unwrapOriginal(originalFailure({ original, operation: "read", legacyMessage: "closed" }));
- * void restored;
+ * export const original = { nativeCode: "closed" };
+ * export const restored = unwrapOriginal(originalFailure({ original, operation: "read", legacyMessage: "closed" }));
+ * restored === original // => true
  * ```
  *
  * @category utilities
