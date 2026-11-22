@@ -127,6 +127,7 @@
     "sherpa-onnx-win-x64": "catalog:"
   },
   "devDependencies": {
+    "@effect/vitest": "catalog:",
     "@biomejs/biome": "catalog:",
     "@electron/asar": "catalog:",
     "@electron-toolkit/tsconfig": "catalog:",

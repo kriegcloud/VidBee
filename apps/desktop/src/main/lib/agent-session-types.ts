@@ -109,7 +109,12 @@ export interface ExtensionToolContext extends ExtensionContext {
 export interface ExtensionEvents {
   session_start: { type: 'session_start' }
   session_shutdown: { type: 'session_shutdown'; reason: string }
-  before_agent_start: { type: 'before_agent_start'; systemPrompt: string; prompt: string }
+  before_agent_start: {
+    type: 'before_agent_start'
+    systemPrompt: string
+    systemPromptOptions: { skills: readonly Skill[] }
+    prompt: string
+  }
   input: { type: 'input'; text: string; source: 'rpc' }
   turn_start: { type: 'turn_start' }
   tool_call: {
