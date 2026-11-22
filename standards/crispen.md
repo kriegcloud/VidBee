@@ -1,0 +1,148 @@
+> VidBee edition. Authority: repository instructions, PLAN A1/A2, and the approved
+> [standards tooling design](../docs/effect-port/design/standards-tooling.md) precede this edition. D1 deletes existing
+> facades in phase 10; D2 uses deterministic scoped ownership; D3 preserves emitted
+> error bytes with tagged failures and boundary formatting; D4 adjudicates encoded
+> causes per field; D5 requires an exact independently approved parity contract.
+> No classification changes a compiler diagnostic, port check, or empty allowlist.
+> Adaptations: VidBee branding, package aliases, runtime owners, commands and graph.
+> Local enforcement: R01–R22, T01–T08 and RV obligations in the approved design.
+> Attribution: adapted from beep-effect `.claude/skills/crispen/SKILL.md` at `71d246dc5a49d3f41222308b866d42c220cf1ee4`.
+
+---
+name: crispen
+description: >
+  Refactoring operator: "crispen", "crisp this up", "reduce helpers", "colocate
+  behavior", "helper-wall cleanup", "schema is truth" as a refactor request.
+  Absorbs invariants from existing business logic into existing schemas —
+  decode/guard-wall deletion, *Defaults removal, literal-family collapse,
+  Option-ifying nullish fields. NOT for authoring new schemas or domain models
+  (use schema-first-development).
+argument-hint: "[lite|full|ultra]"
+metadata:
+  version: "0.2.0"
+  status: active
+---
+
+# Crispen
+
+**The schema is truth; behavior precipitates.** Crispening is a *refactoring
+operator*: it pushes invariants and pure behavior already living in business
+logic *into the schema and onto the data*, so business-logic files shrink to
+intent. Win condition: **the first ~200 lines of any business-logic module read
+as pure intent** — no decode/guard helper wall, no `*Defaults` spreads, no
+imperative `let`/`for`/`push` loops.
+
+This is lazy-minimalism aimed at existing schema-shaped code. It is a
+*lens*, not a law source: the schema laws live in **`schema-first-development`**
+(and `effect-first-development` for anything broader). When crispening instinct
+conflicts with those laws, **the laws win**. Authoring *new* schemas or domain
+models is `schema-first-development`'s lane, not this skill's.
+
+## Persistence
+
+ACTIVE EVERY RESPONSE while engaged. No drift back to helper-wall habits. Still
+active if unsure. Off only: "stop crispen" / "normal mode". Default: **full**.
+Switch: `/crispen lite|full|ultra`. Level persists until changed or session end.
+
+## The crispening ladder
+
+Before you keep a helper, climb. **Stop at the first rung that removes the
+noise** — but only *after* you understand the module and trace the real flow.
+Absorbing logic into the wrong schema is a second bug wearing a smaller diff.
+
+1. **Can the schema carry this invariant instead of code?** (default, refinement,
+   brand, `Option` field)
+2. **Does a schema/combinator/primitive already exist?** Check upstream
+   `effect/Schema` first, then search `@vidbee/schema` and `@vidbee/identity` before
+   inventing — see `schema-first-development` →
+   `references/schema-first/local-primitives.md`. Where upstream covers a
+   VidBee-owned helper's intent, its covered facets retire in the same
+   PR that migrates their consumers, with no alias; the whole concept retires
+   unless the lines reading its uncovered members outnumber the lines using its
+   covered facets (ADAPT, per the facet census in
+   the approved standards-tooling design "upstream-first retirement").
+3. **Absence/nullish → `Option` in the schema**, not a null-check.
+4. **Constant/bool default → the schema**, not a `*Defaults` spread.
+5. **Decode/guard wall → upstream operations at the use site**; retain in-body class guards and non-codec domain statics.
+6. **Repeated literal/variant family → one node + a kit** (`LiteralKit` for a named domain; `S.Literals` for an anonymous inline
+   union never referenced by name).
+7. **Branching → a fold; passthrough → point-free.**
+8. **Split roles**: `.model.ts` / `.behavior.ts` / `.codec.ts` / `.render.ts` /
+   `.escape.ts` — specialize per package, no package needs all five.
+
+For every rung, the exact combinator, its signature, and a real usage site are in
+**[crispening reference](references/crispen/crispening.md)** (this skill). The governing rules for *which*
+pattern is lawful are in **`schema-first-development`**: `references/schema-first/repo-laws.md`
+(enforced laws), `references/schema-first/pattern-catalog.md` (pattern selection +
+anti-patterns), `references/schema-first/local-primitives.md` (shared `@vidbee/schema`
+primitives), `references/schema-first/examples.md` (real exemplars). Load those, don't
+re-derive them here.
+
+## Output discipline
+
+Code first. Then at most three short lines: **what invariant moved into the
+schema, what helper wall was deleted, what was deliberately left.** No essays.
+If the explanation is longer than the deletion, delete the explanation.
+
+Mark deliberately un-absorbed logic with a `crispen:` comment naming *why* and
+the *upgrade path*:
+
+```ts
+// crispen: kept as a helper — the refinement needs a cross-field check S.makeFilterGroup
+// can't express yet; fold into the schema when it can.
+```
+
+## Intensity
+
+| Level | What changes |
+|-------|--------------|
+| **lite** | Build/leave what's asked, but name the crispening opportunity in one line — the schema or combinator that would absorb it. User picks. |
+| **full** | The ladder enforced. Absorb invariants into the schema, colocate statics, collapse literals, delete the helper wall. Shortest diff. Default. |
+| **ultra** | Absorption extremist. Deletion before addition; challenge whether the helper/field/variant needs to exist at all; refuse to write a helper a combinator already provides. |
+
+## When NOT to crispen
+
+- **Authoring-intent work** (new schemas, new domain models, boundary decode
+  design) → `schema-first-development`.
+- **Never weaken a trust boundary.** Escaping, sanitization, URL/injection guards
+  stay explicit and property-tested. Behavior parity over cleverness.
+- **Never touch load-bearing `declare namespace Type/Encoded` blocks** — required
+  for `S.suspend` mutual recursion. Verbosity there is correct, not debt.
+- **Don't collapse a union that needs distinct per-variant behavior**; an
+  exhaustive-match arm per real variant is the feature, not the noise.
+- **Keep one runnable proof behind every absorption** — a law/round-trip test
+  that fails if the moved invariant breaks.
+- Never lazy about understanding: the ladder shortens the code, never the reading.
+
+## Verify
+
+```bash
+bun run standards:check
+bun run standards:check
+bun run standards:check
+bun run standards:check
+bun run standards:check
+bun run standards:check
+bun run check && CI=true bun run test && bun run deps:check && bun run port:check                    # full proof
+```
+
+Smell-checks before you start — the walls to demolish:
+
+```bash
+rg -n 'const (is|decode)\w+ = S\.(is|decodeUnknown)' path/   # decode/guard wall
+rg -n '\.\.\.\w*Defaults\b' path/                            # *Defaults spreads
+rg -n ' as [A-Z]| as unknown|![.)\]]' path/                  # assertions / non-null
+```
+
+Do not run manual `turbo`/`docgen`/`vitest` while a another heavy gate is
+in flight — daemon contention emits spurious failures; use read-only probes.
+
+## Reference & escalation
+
+- **[crispening reference](references/crispen/crispening.md)** (this skill) — the crispening toolkit map:
+  upstream combinators, absorption moves, and VidBee proofs.
+- **`schema-first-development`** — THE law source: `references/schema-first/repo-laws.md`,
+  `references/schema-first/pattern-catalog.md`, `references/schema-first/local-primitives.md`,
+  `references/schema-first/examples.md`.
+- **`effect-first-development`** — anything broader than schema work (services,
+  errors, concurrency).

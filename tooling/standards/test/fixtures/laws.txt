@@ -1,0 +1,952 @@
+[
+  {
+    "name": "node-export",
+    "source": "export { join } from \"node:path\";",
+    "expected": [
+      {
+        "code": "node-module",
+        "kind": "violation",
+        "start": 0,
+        "end": 33
+      }
+    ]
+  },
+  {
+    "name": "node-bare",
+    "source": "import * as Path from \"path/posix\";",
+    "expected": [
+      {
+        "code": "node-module",
+        "kind": "violation",
+        "start": 0,
+        "end": 35
+      }
+    ]
+  },
+  {
+    "name": "node-dynamic",
+    "source": "const x = await import(\"node:fs/promises\");",
+    "expected": [
+      {
+        "code": "node-module",
+        "kind": "violation",
+        "start": 16,
+        "end": 42
+      }
+    ]
+  },
+  {
+    "name": "node-equals",
+    "source": "import fs = require(\"node:fs\");",
+    "expected": [
+      {
+        "code": "node-module",
+        "kind": "violation",
+        "start": 12,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "name": "node-require-alias",
+    "source": "const load = require; const x = load(\"node:crypto\");",
+    "expected": [
+      {
+        "code": "node-module",
+        "kind": "violation",
+        "start": 32,
+        "end": 51
+      }
+    ]
+  },
+  {
+    "name": "node-shadow",
+    "source": "const require = (x: string) => x; require(\"node:path\");",
+    "expected": []
+  },
+  {
+    "name": "node-counterpart-neighbor",
+    "source": "import * as Path from \"effect/Path\";",
+    "expected": []
+  },
+  {
+    "name": "node-unlisted-neighbor",
+    "source": "import * as Assert from \"node:assert\";",
+    "expected": []
+  },
+  {
+    "name": "computed-load",
+    "source": "const target: string = \"effect/Path\"; await import(target);",
+    "expected": [
+      {
+        "code": "unresolved-module",
+        "kind": "candidate",
+        "start": 44,
+        "end": 58
+      }
+    ]
+  },
+  {
+    "name": "effect-root",
+    "source": "export { Effect } from \"effect\";",
+    "expected": [
+      {
+        "code": "effect-root",
+        "kind": "violation",
+        "start": 0,
+        "end": 32
+      }
+    ]
+  },
+  {
+    "name": "private-reference",
+    "source": "import type { X } from \"@beep/private\";",
+    "expected": [
+      {
+        "code": "private-module",
+        "kind": "violation",
+        "start": 0,
+        "end": 39
+      }
+    ]
+  },
+  {
+    "name": "compiler-reference",
+    "source": "import type { Node } from \"typescript/unstable/ast\";",
+    "expected": [
+      {
+        "code": "compiler-boundary",
+        "kind": "violation",
+        "start": 0,
+        "end": 52
+      }
+    ]
+  },
+  {
+    "name": "namespace-alias",
+    "source": "import * as Array from \"effect/Array\";",
+    "expected": [
+      {
+        "code": "namespace-alias",
+        "kind": "violation",
+        "start": 0,
+        "end": 38
+      }
+    ]
+  },
+  {
+    "name": "namespace-reexport",
+    "source": "export * as Schema from \"effect/Schema\";",
+    "expected": [
+      {
+        "code": "namespace-alias",
+        "kind": "violation",
+        "start": 0,
+        "end": 40
+      }
+    ]
+  },
+  {
+    "name": "namespace-neighbor",
+    "source": "import * as A from \"effect/Array\"; import type * as Schema from \"effect/Schema\";",
+    "expected": []
+  },
+  {
+    "name": "any-keyword",
+    "source": "type Value = any;",
+    "expected": [
+      {
+        "code": "explicit-any",
+        "kind": "violation",
+        "start": 13,
+        "end": 16
+      }
+    ]
+  },
+  {
+    "name": "any-string-neighbor",
+    "source": "const message = \"any as unknown!\";",
+    "expected": []
+  },
+  {
+    "name": "as-assertion",
+    "source": "const value = \"x\" as string;",
+    "expected": [
+      {
+        "code": "type-assertion",
+        "kind": "violation",
+        "start": 14,
+        "end": 27
+      }
+    ]
+  },
+  {
+    "name": "angle-assertion",
+    "source": "const value = <string>\"x\";",
+    "expected": [
+      {
+        "code": "type-assertion",
+        "kind": "violation",
+        "start": 14,
+        "end": 25
+      }
+    ]
+  },
+  {
+    "name": "const-neighbor",
+    "source": "const value = [\"x\"] as const;",
+    "expected": []
+  },
+  {
+    "name": "satisfies-neighbor",
+    "source": "const value = \"x\" satisfies string;",
+    "expected": []
+  },
+  {
+    "name": "non-null",
+    "source": "const value: string | undefined = undefined; value!;",
+    "expected": [
+      {
+        "code": "non-null",
+        "kind": "violation",
+        "start": 45,
+        "end": 51
+      }
+    ]
+  },
+  {
+    "name": "directive",
+    "source": "// @ts-ignore\nconst value = 1;",
+    "expected": [
+      {
+        "code": "suppression",
+        "kind": "violation",
+        "start": 0,
+        "end": 13
+      }
+    ]
+  },
+  {
+    "name": "directive-prose-neighbor",
+    "source": "// Explain why @ts-ignore is prohibited.\nconst value = 1;",
+    "expected": []
+  },
+  {
+    "name": "directive-string-neighbor",
+    "source": "const value = \"// @ts-ignore\";",
+    "expected": []
+  },
+  {
+    "name": "runtime-typeof",
+    "source": "const value = 1; typeof value;",
+    "expected": [
+      {
+        "code": "runtime-typeof",
+        "kind": "violation",
+        "start": 17,
+        "end": 29
+      }
+    ]
+  },
+  {
+    "name": "runtime-local-window",
+    "source": "const window = 1; typeof window === \"undefined\";",
+    "expected": [
+      {
+        "code": "runtime-typeof",
+        "kind": "violation",
+        "start": 18,
+        "end": 31
+      }
+    ]
+  },
+  {
+    "name": "runtime-global-neighbor",
+    "source": "typeof window === \"undefined\";",
+    "expected": []
+  },
+  {
+    "name": "type-query-neighbor",
+    "source": "const value = 1; type T = typeof value;",
+    "expected": []
+  },
+  {
+    "name": "native-error",
+    "source": "new Error(\"failure\");",
+    "expected": [
+      {
+        "code": "native-error",
+        "kind": "violation",
+        "start": 0,
+        "end": 20
+      }
+    ]
+  },
+  {
+    "name": "native-error-alias",
+    "source": "const Failure = RangeError; new Failure(\"failure\");",
+    "expected": [
+      {
+        "code": "native-error",
+        "kind": "violation",
+        "start": 28,
+        "end": 50
+      }
+    ]
+  },
+  {
+    "name": "native-error-global",
+    "source": "globalThis.TypeError(\"failure\");",
+    "expected": [
+      {
+        "code": "native-error",
+        "kind": "violation",
+        "start": 0,
+        "end": 31
+      }
+    ]
+  },
+  {
+    "name": "native-error-shadow",
+    "source": "class Error {} new Error();",
+    "expected": []
+  },
+  {
+    "name": "throw-string",
+    "source": "throw \"failure\";",
+    "expected": [
+      {
+        "code": "non-schema-throw",
+        "kind": "violation",
+        "start": 0,
+        "end": 16
+      }
+    ]
+  },
+  {
+    "name": "throw-unknown",
+    "source": "const refusal = (value: unknown) => { throw value; };",
+    "expected": [
+      {
+        "code": "unresolved-throw",
+        "kind": "candidate",
+        "start": 38,
+        "end": 50
+      }
+    ]
+  },
+  {
+    "name": "throw-schema-neighbor",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nclass Failure extends S.TaggedError<Failure, { readonly brand: unique symbol }>()(\"Failure\", {}, $I.annoteError(\"Failure\", { description: \"Failure fixture.\" })) {} throw new Failure({});",
+    "expected": []
+  },
+  {
+    "name": "executable-switch",
+    "source": "const x = 1; switch (x) { case 1: break; }",
+    "expected": [
+      {
+        "code": "switch",
+        "kind": "violation",
+        "start": 13,
+        "end": 42
+      }
+    ]
+  },
+  {
+    "name": "switch-string-neighbor",
+    "source": "const x = \"switch (x) {}\";",
+    "expected": []
+  },
+  {
+    "name": "numeric-duration",
+    "source": "import * as Effect from \"effect/Effect\"; Effect.sleep(100);",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 54,
+        "end": 57
+      }
+    ]
+  },
+  {
+    "name": "duration-alias",
+    "source": "import { sleep as pause } from \"effect/Effect\"; const ms = 100; pause(ms);",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 70,
+        "end": 72
+      }
+    ]
+  },
+  {
+    "name": "duration-arithmetic",
+    "source": "import * as Schedule from \"effect/Schedule\"; Schedule.spaced(2 * 100);",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 61,
+        "end": 68
+      }
+    ]
+  },
+  {
+    "name": "duration-union",
+    "source": "import * as Effect from \"effect/Effect\"; const pause = (duration: number | \"1 second\") => Effect.sleep(duration);",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 103,
+        "end": 111
+      }
+    ]
+  },
+  {
+    "name": "duration-unknown",
+    "source": "import * as Effect from \"effect/Effect\"; const wait = (value: unknown) => Effect.sleep(value);",
+    "expected": [
+      {
+        "code": "unresolved-duration",
+        "kind": "candidate",
+        "start": 87,
+        "end": 92
+      }
+    ]
+  },
+  {
+    "name": "duration-value-neighbor",
+    "source": "import * as Effect from \"effect/Effect\"; import * as Duration from \"effect/Duration\"; Effect.sleep(Duration.millis(100));",
+    "expected": []
+  },
+  {
+    "name": "numeric-unrelated-neighbor",
+    "source": "const count = (n: number) => n; count(100);",
+    "expected": []
+  },
+  {
+    "name": "optional-reference",
+    "source": "import * as S from \"effect/Schema\"; const optional = S.optional;",
+    "expected": [
+      {
+        "code": "non-exact-optional",
+        "kind": "violation",
+        "start": 53,
+        "end": 63
+      }
+    ]
+  },
+  {
+    "name": "optional-alias",
+    "source": "import { optional as opt } from \"effect/Schema\"; opt;",
+    "expected": [
+      {
+        "code": "non-exact-optional",
+        "kind": "violation",
+        "start": 49,
+        "end": 52
+      }
+    ]
+  },
+  {
+    "name": "optional-shadow",
+    "source": "const S = { optional: (x: number) => x }; S.optional(1);",
+    "expected": []
+  },
+  {
+    "name": "exact-optional-neighbor",
+    "source": "import * as S from \"effect/Schema\"; S.optionalKey(S.String);",
+    "expected": []
+  },
+  {
+    "name": "native-sort",
+    "source": "const xs = [2, 1]; xs.sort();",
+    "expected": [
+      {
+        "code": "native-sort",
+        "kind": "violation",
+        "start": 19,
+        "end": 26
+      }
+    ]
+  },
+  {
+    "name": "native-sort-computed",
+    "source": "const xs = [2, 1]; xs[\"toSorted\"]();",
+    "expected": [
+      {
+        "code": "native-sort",
+        "kind": "violation",
+        "start": 19,
+        "end": 33
+      }
+    ]
+  },
+  {
+    "name": "native-sort-extracted",
+    "source": "const xs = [2, 1]; const sort = xs.sort;",
+    "expected": [
+      {
+        "code": "native-sort",
+        "kind": "violation",
+        "start": 32,
+        "end": 39
+      }
+    ]
+  },
+  {
+    "name": "native-sort-prototype",
+    "source": "Array.prototype.sort.call([2, 1]);",
+    "expected": [
+      {
+        "code": "native-sort",
+        "kind": "violation",
+        "start": 0,
+        "end": 20
+      }
+    ]
+  },
+  {
+    "name": "native-sort-domain-neighbor",
+    "source": "const domain = { sort() { return 1; } }; domain.sort();",
+    "expected": []
+  },
+  {
+    "name": "native-sort-typed-array-neighbor",
+    "source": "const bytes = new Uint8Array([2, 1]); bytes.sort();",
+    "expected": []
+  },
+  {
+    "name": "unresolved-sort",
+    "source": "const sort = (value) => value.sort();",
+    "expected": [
+      {
+        "code": "unresolved-sort",
+        "kind": "candidate",
+        "start": 24,
+        "end": 34
+      }
+    ]
+  },
+  {
+    "name": "native-collection",
+    "source": "new Map();",
+    "expected": [
+      {
+        "code": "native-collection",
+        "kind": "violation",
+        "start": 0,
+        "end": 9
+      }
+    ]
+  },
+  {
+    "name": "native-collection-alias",
+    "source": "const Collection = Set; new Collection();",
+    "expected": [
+      {
+        "code": "native-collection",
+        "kind": "violation",
+        "start": 24,
+        "end": 40
+      }
+    ]
+  },
+  {
+    "name": "native-collection-computed",
+    "source": "new globalThis[\"WeakMap\"]();",
+    "expected": [
+      {
+        "code": "native-collection",
+        "kind": "violation",
+        "start": 0,
+        "end": 27
+      }
+    ]
+  },
+  {
+    "name": "native-collection-shadow",
+    "source": "class Map {} new Map();",
+    "expected": []
+  },
+  {
+    "name": "native-static",
+    "source": "Object.freeze({});",
+    "expected": [
+      {
+        "code": "native-static",
+        "kind": "violation",
+        "start": 0,
+        "end": 13
+      }
+    ]
+  },
+  {
+    "name": "native-static-alias",
+    "source": "const { assign: copy } = Object; copy({}, {});",
+    "expected": [
+      {
+        "code": "native-static",
+        "kind": "violation",
+        "start": 33,
+        "end": 37
+      }
+    ]
+  },
+  {
+    "name": "native-static-computed",
+    "source": "Array[\"from\"]([1]);",
+    "expected": [
+      {
+        "code": "native-static",
+        "kind": "violation",
+        "start": 0,
+        "end": 13
+      }
+    ]
+  },
+  {
+    "name": "native-date",
+    "source": "Date.parse(\"2020-01-01\");",
+    "expected": [
+      {
+        "code": "native-static",
+        "kind": "violation",
+        "start": 0,
+        "end": 10
+      }
+    ]
+  },
+  {
+    "name": "native-static-json-neighbor",
+    "source": "JSON.parse(\"{}\");",
+    "expected": []
+  },
+  {
+    "name": "native-static-domain-neighbor",
+    "source": "const Object = { freeze: (x: number) => x }; Object.freeze(1);",
+    "expected": []
+  },
+  {
+    "name": "extended-schema-name",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst ValueSchema = S.String.pipe($I.annoteSchema(\"ValueSchema\", { description: \"Value domain.\" }));",
+    "expected": [
+      {
+        "code": "schema-suffix",
+        "kind": "violation",
+        "start": 144,
+        "end": 237
+      }
+    ]
+  },
+  {
+    "name": "extended-schema-unrelated-name",
+    "source": "const ValueSchema = 1;",
+    "expected": []
+  },
+  {
+    "name": "extended-missing-companion",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \n/** Value domain.\n * @category schemas\n * @since 0.0.0\n */\nexport const Value = S.String.pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }));",
+    "expected": [
+      {
+        "code": "schema-companion",
+        "kind": "violation",
+        "start": 210,
+        "end": 291
+      }
+    ]
+  },
+  {
+    "name": "extended-schema-companion-neighbor",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \n/** Value domain.\n * @category schemas\n * @since 0.0.0\n */\nexport const Value = S.String.pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }));\n/** Value type.\n * @category type-level\n * @since 0.0.0\n */\nexport type Value = typeof Value.Type;",
+    "expected": []
+  },
+  {
+    "name": "extended-missing-annotation",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst Value = S.Struct({ value: S.String });",
+    "expected": [
+      {
+        "code": "missing-annotation",
+        "kind": "violation",
+        "start": 144,
+        "end": 181
+      }
+    ]
+  },
+  {
+    "name": "extended-annotation-alias-neighbor",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst annotate = $I.annoteSchema(\"Value\", { description: \"Value domain.\" }); const Value = S.String.pipe(annotate);",
+    "expected": []
+  },
+  {
+    "name": "extended-generator",
+    "source": "import * as Effect from \"effect/Effect\"; const workflow = (value: number) => Effect.gen(function* () { return value; });",
+    "expected": [
+      {
+        "code": "reusable-generator",
+        "kind": "violation",
+        "start": 58,
+        "end": 119
+      }
+    ]
+  },
+  {
+    "name": "extended-generator-pipe",
+    "source": "import * as Effect from \"effect/Effect\"; const workflow = (value: number) => Effect.gen(function* () { return value; }).pipe(Effect.map((n) => n + 1));",
+    "expected": [
+      {
+        "code": "reusable-generator",
+        "kind": "violation",
+        "start": 58,
+        "end": 150
+      }
+    ]
+  },
+  {
+    "name": "extended-generator-value-neighbor",
+    "source": "import * as Effect from \"effect/Effect\"; const workflow = Effect.gen(function* () { return 1; });",
+    "expected": []
+  },
+  {
+    "name": "extended-generator-fn-neighbor",
+    "source": "import * as Effect from \"effect/Effect\"; const workflow = Effect.fn(\"workflow\")(function* (value: number) { return value; });",
+    "expected": []
+  },
+  {
+    "name": "extended-unnamed-span",
+    "source": "import * as Effect from \"effect/Effect\"; const workflow = Effect.fn(function* (value: number) { return value; });",
+    "expected": [
+      {
+        "code": "unnamed-span",
+        "kind": "violation",
+        "start": 58,
+        "end": 112
+      }
+    ]
+  },
+  {
+    "name": "extended-brand",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nclass Value extends S.Class<Value>(\"Value\")({ value: S.String }, $I.annoteClass(\"Value\", { description: \"Value domain.\" })) {}",
+    "expected": [
+      {
+        "code": "missing-brand",
+        "kind": "violation",
+        "start": 138,
+        "end": 264
+      }
+    ]
+  },
+  {
+    "name": "extended-opaque-member",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nclass Value extends S.Opaque<Value, { readonly brand: unique symbol }>()(S.Struct({ value: S.String }).pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }))) { count() { return 1; } }",
+    "expected": [
+      {
+        "code": "opaque-member",
+        "kind": "violation",
+        "start": 138,
+        "end": 332
+      }
+    ]
+  },
+  {
+    "name": "extended-model-arrow",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nclass Value extends S.Class<Value, { readonly brand: unique symbol }>(\"Value\")({ value: S.String }, $I.annoteClass(\"Value\", { description: \"Value domain.\" })) { count = () => 1; }",
+    "expected": [
+      {
+        "code": "model-arrow-field",
+        "kind": "violation",
+        "start": 138,
+        "end": 317
+      }
+    ]
+  },
+  {
+    "name": "extended-model-prototype-neighbor",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nclass Value extends S.Class<Value, { readonly brand: unique symbol }>(\"Value\")({ value: S.String }, $I.annoteClass(\"Value\", { description: \"Value domain.\" })) { count() { return 1; } }",
+    "expected": []
+  },
+  {
+    "name": "extended-literal-domain",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst Value = S.Literals([\"a\", \"b\"]).pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }));",
+    "expected": [
+      {
+        "code": "literal-domain",
+        "kind": "violation",
+        "start": 144,
+        "end": 239
+      }
+    ]
+  },
+  {
+    "name": "extended-literal-field-neighbor",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst Value = S.Struct({ value: S.Literals([\"a\", \"b\"]) }).pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }));",
+    "expected": []
+  },
+  {
+    "name": "extended-defect-stack",
+    "source": "import * as S from \"effect/Schema\"; import { $StandardsId } from \"@vidbee/identity/packages\"; const $I = $StandardsId.create(\"fixture\"); \nconst Value = S.Defect().pipe($I.annoteSchema(\"Value\", { description: \"Value domain.\" }));",
+    "expected": [
+      {
+        "code": "defect-stack",
+        "kind": "violation",
+        "start": 152,
+        "end": 162
+      }
+    ]
+  },
+  {
+    "name": "extended-runtime-owner",
+    "source": "import * as Effect from \"effect/Effect\"; Effect.runSync(Effect.succeed(1));",
+    "expected": [
+      {
+        "code": "runtime-owner",
+        "kind": "candidate",
+        "start": 41,
+        "end": 74
+      }
+    ]
+  },
+  {
+    "name": "extended-promise-driver",
+    "source": "import * as Effect from \"effect/Effect\"; Effect.tryPromise(() => Promise.resolve(1));",
+    "expected": [
+      {
+        "code": "promise-driver",
+        "kind": "candidate",
+        "start": 41,
+        "end": 84
+      }
+    ]
+  },
+  {
+    "name": "extended-missing-doc",
+    "source": "export interface Value { readonly value: string }",
+    "expected": [
+      {
+        "code": "missing-doc",
+        "kind": "violation",
+        "start": 0,
+        "end": 49
+      }
+    ]
+  },
+  {
+    "name": "extended-doc-neighbor",
+    "source": "/** Value protocol.\n * @category protocols\n * @since 0.0.0\n */\nexport interface Value { readonly value: string }",
+    "expected": []
+  },
+  {
+    "name": "extended-legacy-carrier",
+    "source": "/** Lead.\n * @example const value = 1\n */\nconst value = 1;",
+    "expected": [
+      {
+        "code": "legacy-carrier",
+        "kind": "violation",
+        "start": 0,
+        "end": 41
+      }
+    ]
+  },
+  {
+    "name": "extended-legacy-string-neighbor",
+    "source": "const value = \"/** @example not a source comment */\";",
+    "expected": []
+  },
+  {
+    "name": "extended-tag-spelling",
+    "source": "/** Lead.\n * @return value\n */\nconst value = 1;",
+    "expected": [
+      {
+        "code": "tag-spelling",
+        "kind": "violation",
+        "start": 0,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "name": "extended-tag-braces",
+    "source": "/** Lead.\n * @param {string} value - Input.\n */\nconst value = 1;",
+    "expected": [
+      {
+        "code": "tag-type-braces",
+        "kind": "violation",
+        "start": 0,
+        "end": 47
+      }
+    ]
+  },
+  {
+    "name": "extended-since",
+    "source": "/** Lead.\n * @since 1.0.0\n */\nconst value = 1;",
+    "expected": [
+      {
+        "code": "since",
+        "kind": "violation",
+        "start": 0,
+        "end": 29
+      }
+    ]
+  },
+  {
+    "name": "extended-category",
+    "source": "/** Lead.\n * @category modules\n */\nconst value = 1;",
+    "expected": [
+      {
+        "code": "category",
+        "kind": "violation",
+        "start": 0,
+        "end": 34
+      }
+    ]
+  },
+  {
+    "name": "extended-manual-tag",
+    "source": "const isValue = (value: { readonly _tag: \"Value\" | \"Other\" }) => value._tag === \"Value\";",
+    "expected": [
+      {
+        "code": "manual-tag-guard",
+        "kind": "violation",
+        "start": 16,
+        "end": 87
+      }
+    ]
+  },
+  {
+    "name": "extended-manual-extra-condition-neighbor",
+    "source": "const isValue = (value: { readonly _tag: \"Value\" | \"Other\", ready: boolean }) => value._tag === \"Value\" && value.ready;",
+    "expected": []
+  },
+  {
+    "name": "nested-duration",
+    "source": "import * as Effect from \"effect/Effect\"; Effect.timeoutOrElse(Effect.succeed(1), { duration: 100, orElse: () => Effect.succeed(2) });",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 93,
+        "end": 96
+      }
+    ]
+  },
+  {
+    "name": "nested-duration-alias",
+    "source": "import * as Effect from \"effect/Effect\"; const options = { duration: 100, orElse: () => Effect.succeed(2) }; Effect.timeoutOrElse(Effect.succeed(1), options);",
+    "expected": [
+      {
+        "code": "numeric-duration",
+        "kind": "violation",
+        "start": 69,
+        "end": 72
+      }
+    ]
+  },
+  {
+    "name": "duration-opaque-command-neighbor",
+    "source": "import * as ChildProcess from \"effect/process/ChildProcess\"; import type * as ChildProcessSpawner from \"effect/process/ChildProcessSpawner\"; declare const spawner: ChildProcessSpawner.ChildProcessSpawner; spawner.string(ChildProcess.make(\"git\", [\"init\", \"-q\"]));",
+    "expected": []
+  }
+]

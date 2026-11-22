@@ -11,6 +11,8 @@
       "apps/cli/**",
       "!apps/cli/scripts/**",
       "packages/schema/**",
+      "packages/identity/**",
+      "tooling/standards/**",
       "apps/extension/**",
       "!apps/extension/assets/content.css",
       "!apps/extension/.wxt",
