@@ -173,6 +173,7 @@
       },
       "devDependencies": {
         "@biomejs/biome": "catalog:",
+        "@effect/vitest": "catalog:",
         "@electron-toolkit/tsconfig": "catalog:",
         "@electron/asar": "catalog:",
         "@iconify/json": "catalog:",

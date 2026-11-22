@@ -956,6 +956,7 @@ export class VideoAgentSession {
     await this.pluginEvent({
       type: 'before_agent_start',
       systemPrompt: this.options.systemPrompt,
+      systemPromptOptions: { skills: this.skills },
       prompt: input
     })
     await this.conversation.configure({ thinkingLevel: this.thinkingLevel }, BACKGROUND_CONTEXT)

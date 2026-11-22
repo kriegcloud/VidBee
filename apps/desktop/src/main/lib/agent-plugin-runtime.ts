@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
+import type { Usage } from '@earendil-works/pi-ai'
 import type { SessionEntry } from './agent-session-types'
 
 /** Load legacy plugins with host utilities, without loading or installing the Coding Agent runtime. */
@@ -24,6 +25,9 @@ export async function createAgentPluginRuntime(packageRoot: string, directory: s
         getPackageDir: () => directory,
         /** Terminal configuration commands are not exposed by the application host. */
         getSettingsListTheme: () => ({}),
+        /** Supply the reviewer with the selected transport's token accounting. */
+        calculateContextTokens: (usage: Usage) =>
+          usage.totalTokens || usage.input + usage.output + usage.cacheRead + usage.cacheWrite,
         /** Support the web plugin's optional history inspection without another session runtime. */
         buildSessionContext: (entries: SessionEntry[]) => ({
           messages: entries.flatMap((entry) => (entry.type === 'message' ? [entry.message] : []))
