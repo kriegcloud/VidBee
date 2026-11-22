@@ -60,13 +60,18 @@ export const WireValue: S.Codec<WireValue> = S.suspend(() =>
   $TransportId.annoteSchema("WireValue", { description: "Wire Value boundary in the desktop transport contract." })
 );
 const numericToken = (value: number) => (Object.is(value, -0) ? "-0" : value.toString());
+// A 32-byte minimum per counted node bounds traversal by the existing 64-MiB
+// observation ceiling. The former independent 65,536-node limit rejected a
+// 440-KiB structured settings document; the byte account now also bounds nodes.
+const observationBytes = 64 * 1024 * 1024;
+const minimumNodeBytes = 32;
 const makeBudget = () => {
   let nodes = 0;
   let bytes = 0;
   return (depth: number, textBytes = 32) => {
     nodes++;
-    bytes += textBytes;
-    return depth <= 64 && nodes <= 65536 && bytes <= 64 * 1024 * 1024;
+    bytes += textBytes < minimumNodeBytes ? minimumNodeBytes : textBytes;
+    return depth <= 64 && nodes <= observationBytes / minimumNodeBytes && bytes <= observationBytes;
   };
 };
 /**

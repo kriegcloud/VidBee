@@ -54,7 +54,7 @@ export async function captureRendererFoundation(owned,cdp,command) {
  */
 export async function packagedServices(owned,cdp,command) {
  const main=await mainInspector(owned)
- const run=async expression=>{const result=await main.evaluate(`globalThis.__servicesInspectorPending=(0,eval)(${JSON.stringify(expression)})`);assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
+ const run=async expression=>{const result=await main.evaluate(`globalThis.__servicesInspectorPending=(0,eval)(${JSON.stringify(expression)})`,{awaitPromise:false}).catch(error=>{throw new Error('Owned main expression failed: '+expression,{cause:error})});assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
  const view=async expression=>{const result=await cdp.evaluate(expression);assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
  const phase=name=>fs.writeFile(path.join(owned.run,'services-phase.txt'),name)
  const capture=()=>captureRendererFoundation(owned,cdp,command)
@@ -70,6 +70,10 @@ export async function packagedServices(owned,cdp,command) {
   // Avoid native picker UI: the decorated capability below uses a read-only API.
   const measurement=await view(`(async()=>{await window.electron.ipcRenderer.invoke('settings.set','foundationMeasurement','x'.repeat(459*1024));const snapshot=await __services.clients.settings.getAll();return {bytes:snapshot.foundationMeasurement.length,renderer:__services.document.retentionStats()}})()`)
   assert.equal(measurement.bytes,459*1024)
+  const structuredMeasurement=await view(`(async()=>{const records=Array.from({length:2850},(_,i)=>({future:{a:1,b:0,c:1,d:0,e:1,f:0,g:1,h:0},browser:'chrome',id:'p'+i}));await window.electron.ipcRenderer.invoke('settings.set','foundationStructured',records);const snapshot=await __services.clients.settings.getAll();return {records:snapshot.foundationStructured.length,bytes:new TextEncoder().encode(JSON.stringify(snapshot,null,'\\t')).length,keys:Object.keys(snapshot.foundationStructured[0]),renderer:__services.document.retentionStats()}})()`)
+  assert.equal(structuredMeasurement.records,2850);assert(structuredMeasurement.bytes>=2*459*1024);assert.deepEqual(structuredMeasurement.keys,['future','browser','id'])
+  const depthMeasurement=await view(`(async()=>{const value=Array.from({length:63}).reduce(child=>({next:child}),'depth-leaf');await window.electron.ipcRenderer.invoke('settings.set','foundationDepth',value);const snapshot=await __services.clients.settings.getAll();let leaf=snapshot.foundationDepth;for(let i=0;i<63;i++)leaf=leaf.next;return {nativeDepth:64,leaf,renderer:__services.document.retentionStats()}})()`)
+  assert.equal(depthMeasurement.nativeDepth,64);assert.equal(depthMeasurement.leaf,'depth-leaf')
   const original=reads.settings.theme,next=original==='dark'?'light':'dark'
   await view(`__services.clients.settings.set('theme',${JSON.stringify(next)})`)
   await capture()
@@ -118,6 +122,6 @@ export async function packagedServices(owned,cdp,command) {
   const after=await counters()
   const finalRenderer=await view('({retention:__services.document.retentionStats(),storage:__services.document.storage.stats()})')
   assert(after.settings>0&&after.kernel>0,'Quit probe must retain active streams')
-  return {panels,bridgeKeys,reads,measurement,persistence:{original,written:next,afterReload:persisted.theme},image,secondWindow:{id:second,before:single,opened:two,closed:isolated},before,after,finalRenderer,nativeWork:{held:nativeHeld,afterDeparture,released:nativeReleased},failurePresented:true,failedCall,activeStreamsAtQuit:true}
+  return {panels,bridgeKeys,reads,measurement,structuredMeasurement,depthMeasurement,persistence:{original,written:next,afterReload:persisted.theme},image,secondWindow:{id:second,before:single,opened:two,closed:isolated},before,after,finalRenderer,nativeWork:{held:nativeHeld,afterDeparture,released:nativeReleased},failurePresented:true,failedCall,activeStreamsAtQuit:true}
  }finally{main.close()}
 }

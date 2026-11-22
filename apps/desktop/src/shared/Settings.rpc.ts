@@ -9,7 +9,7 @@ import { SettingsError } from "./Settings.errors.js";
 import { SettingKey, SettingsPatch, SettingsView, SettingUpdate, SettingValue } from "./Settings.model.js";
 
 /** Settings procedures preserve application failures inside Completion and delivery failures outside.
- * Reads bind the live settings registration before their initial snapshot. Raw legacy channels do not use these schemas.
+ * Reads bind the live settings registration before their initial snapshot; writes bind its current optional registration and return its observation cut on both application exits. Raw legacy channels do not use these schemas.
  *
  * **Example** (Inspect the foundation settings group)
  * ```ts

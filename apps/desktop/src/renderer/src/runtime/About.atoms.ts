@@ -1,3 +1,4 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -7,6 +8,8 @@ import type * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import type { makeFoundationAtoms } from "./Foundation.atoms.js";
 import type { makeFoundationCalls } from "./FoundationCalls.service.js";
 import type { makeFoundationStorage } from "./FoundationStorage.service.js";
+
+const $I = $DesktopId.create("renderer/src/runtime/About.atoms");
 
 /** Owns About's once-per-document metadata read, including cached failure. Version and OS requests start together; the stable atom changes once after the pair settles.
  * **Example** (Construct the metadata owner in a document layer)
@@ -64,7 +67,7 @@ export const makeAboutActions = Effect.fn("About.make")(function* ({
 export class FoundationAbout extends Context.Service<
   FoundationAbout,
   Effect.Success<ReturnType<typeof makeAboutActions>>
->()("vidbee/renderer/src/runtime/About.atoms/FoundationAbout") {}
+>()($I`FoundationAbout`) {}
 /** Supplies an already configured metadata owner within the shared document graph.
  * **Example** (Build the document metadata layer)
  * ```ts

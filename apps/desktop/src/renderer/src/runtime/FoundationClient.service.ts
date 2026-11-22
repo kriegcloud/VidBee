@@ -1,3 +1,4 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
@@ -111,6 +112,8 @@ const make = Effect.gen(function* () {
   });
   return { client, transport, startSettings, startKernel, report: failures.report };
 });
+const $I = $DesktopId.create("renderer/src/runtime/FoundationClient.service");
+
 /** One foundation client per document graph; all three groups share its authenticated transport and delivery gate. Registration is observed before dependent snapshot calls begin.
  * **Example** (Read the client factory from the document graph)
  * ```ts
@@ -122,7 +125,7 @@ const make = Effect.gen(function* () {
  * @since 0.0.0
  */
 export class FoundationClient extends Context.Service<FoundationClient, Effect.Success<typeof make>>()(
-  "vidbee/renderer/src/runtime/FoundationClient.service/FoundationClient"
+  $I`FoundationClient`
 ) {}
 /** Acquires the foundation client in the document scope and retains its stream workers until that document closes.
  * **Example** (Build with the document protocol)

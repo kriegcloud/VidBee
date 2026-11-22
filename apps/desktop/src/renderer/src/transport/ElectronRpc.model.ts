@@ -391,7 +391,7 @@ export const measureFrame = (text: string) => {
  * @since 0.0.0
  */
 export const makeRetentionLedger = ({
-  windowBytes = 128 * 1024 * 1024,
+  windowBytes = 256 * 1024 * 1024,
   appBytes = 2 * 1024 * 1024 * 1024,
   documentBytes = windowBytes,
   controlBytes = 64 * 1024,
@@ -526,7 +526,11 @@ export const measureValue = (input: unknown): number | undefined => {
   let nodes = 0;
   const visit = (value: unknown, ancestors: ReadonlyArray<object>, depth: number): number | undefined => {
     if (S.is(S.Uint8Array)(value)) return 256 + value.byteLength * 2;
-    if (++nodes > 65536 || depth > 64) return undefined;
+    // Every traversed node retains at least 128 accounted bytes. Keep traversal
+    // subordinate to the existing 128-MiB value ceiling. Each native object edge
+    // expands to three tagged wire edges; 4 * 64 also covers RPC envelopes while
+    // preserving the observation codec's full 64-level native depth contract.
+    if (++nodes > (128 * 1024 * 1024) / 128 || depth > 4 * 64) return undefined;
     if (P.isString(value)) {
       let escapes = 0;
       for (let index = 0; index < value.length; index++) {
@@ -723,7 +727,7 @@ export class DocumentResources extends Context.Service<DocumentResources, Resour
  */
 export const makeCodecOwnership = ({
   account,
-  ceiling = 64 * 1024 * 1024,
+  ceiling = 128 * 1024 * 1024,
   decoded,
   refused,
 }: {

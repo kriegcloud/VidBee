@@ -34643,6 +34643,20 @@
       "classification": "pending-port",
       "reason": "Legacy synchronous clock compatibility adapter; pure report formatting belongs to the strict foundation helper.",
       "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/review.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/services-mutations.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable new-path packaged foundation probes under the existing owned isolation and build-admission harness.",
+      "executable": true
     }
   ]
 }

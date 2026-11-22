@@ -74,21 +74,13 @@ export const drainLegacyNative = Effect.suspend(() =>
   Effect.forEach(legacyNativeTasks, Deferred.await, { concurrency: 1, discard: true })
 )
 export const runFoundationPromise = <A, E>(
-  operation: (call: SynchronousCall) => Effect.Effect<A, E>,
-  nativeBytes = 4096
+  operation: (call: SynchronousCall) => Effect.Effect<A, E>
 ): Promise<A> => {
   if (!legacyNativeOpen) {
     return Promise.reject(failure('NativeClosed'))
   }
-  const account = foundationAdmission.operationAccount
-  const releaseNative = account.begin('compatibility-host')
-  if (!releaseNative) {
-    return Promise.reject(failure('NativeCapacity'))
-  }
-  if (!account.reserve('compatibility-host', nativeBytes)) {
-    releaseNative()
-    return Promise.reject(failure('NativeCapacity'))
-  }
+  // Old invoke channels retain their original admission contract. Track actual
+  // completion for shutdown without borrowing the new transport's window quota.
   const completed = Deferred.makeUnsafe<void, unknown>()
   legacyNativeTasks = HashSet.add(legacyNativeTasks, completed)
   const cleanups: Array<() => void> = []
@@ -121,8 +113,6 @@ export const runFoundationPromise = <A, E>(
           (exit) =>
             Effect.sync(() => {
               if (Exit.isSuccess(exit)) {
-                account.release('compatibility-host', nativeBytes)
-                releaseNative()
                 legacyNativeTasks = HashSet.remove(legacyNativeTasks, completed)
               }
               Deferred.doneUnsafe(completed, exit)

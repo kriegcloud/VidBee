@@ -39,7 +39,10 @@ async function fixture({
     lastSeenWhatsNew: '',
     future: { z: undefined, a: [-0, 8n] }
   }
-  let failureKey
+  let failureKey,
+    broadcastFailure = false,
+    holdObservations = false
+  const held = []
   let receiveMain, depart
   const receivers = new Map(),
     renderers = []
@@ -144,7 +147,14 @@ async function fixture({
           ),
         authorize: () => Effect.succeed(true),
         account: (session) => Effect.succeed(session.split('/')[0]),
-        send: (session, frame) => Effect.sync(() => receivers.get(session)?.(frame))
+        send: (session, frame) =>
+          Effect.sync(() => {
+            if (holdObservations && JSON.stringify(frame).includes('Observation')) {
+              held.push(() => receivers.get(session)?.(frame))
+            } else {
+              receivers.get(session)?.(frame)
+            }
+          })
       },
       handlers: {
         events,
@@ -162,6 +172,9 @@ async function fixture({
           broadcast: () => {
             trace.push(['broadcast'])
             events.settings.publish('1', undefined)
+            if (broadcastFailure) {
+              throw new Error('after publication')
+            }
           }
         })
       },
@@ -200,6 +213,19 @@ async function fixture({
     runtime,
     settings,
     sync,
+    hold: (value) => {
+      holdObservations = value
+    },
+    held: () => held.length,
+    release: () => {
+      holdObservations = false
+      for (const send of held.splice(0)) {
+        send()
+      }
+    },
+    failBroadcast: (value) => {
+      broadcastFailure = value
+    },
     fail: (key) => {
       failureKey = key
     },
@@ -609,4 +635,129 @@ describe('pure kernel report and legacy clock adapter', () => {
     expect(url.searchParams.get('logs')).toBe(`${'x'.repeat(4000)}\n…(truncated)`)
     expect(url.searchParams.get('app_version')).toBe('VidBeep v1.0')
   })
+})
+
+describe('review counterexamples at the production boundary', () => {
+  for (const method of ['set', 'setAll']) {
+    for (const fail of [false, true]) {
+      it(`${method} waits for its admitted observation on ${fail ? 'failed' : 'successful'} application exit`, async () => {
+        const h = await fixture()
+        try {
+          await h.renderer.runtime.runPromise(h.calls.settings.getAll)
+          const revision = h.renderer.registry.get(h.renderer.atoms.settingsInvalidation)
+          h.hold(true)
+          h.failBroadcast(fail)
+          let settled = false
+          const operation =
+            method === 'set'
+              ? h.calls.settings.set('theme', 'dark')
+              : h.calls.settings.setAll([['theme', 'dark']])
+          const result = h.renderer.runtime.runPromise(operation).then(
+            () => {
+              settled = true
+              return 'success'
+            },
+            () => {
+              settled = true
+              return 'failure'
+            }
+          )
+          for (let i = 0; i < 100 && h.held() === 0; i++) {
+            await new Promise((resolve) => setImmediate(resolve))
+          }
+          expect(h.held()).toBeGreaterThan(0)
+          expect(await h.renderer.runtime.runPromise(h.calls.app.getVersion)).toBe('fixture')
+          expect(settled).toBe(false)
+          expect(h.renderer.registry.get(h.renderer.atoms.settingsInvalidation)).toBe(revision)
+          h.release()
+          expect(await result).toBe(fail ? 'failure' : 'success')
+          expect(h.renderer.registry.get(h.renderer.atoms.settingsInvalidation)).toBeGreaterThan(
+            revision
+          )
+        } finally {
+          h.release()
+          await h.close()
+        }
+      })
+    }
+  }
+  it('admits a write without a settings registration, without inventing a dependency', async () => {
+    const h = await fixture()
+    try {
+      await h.renderer.runtime.runPromise(h.calls.settings.set('theme', 'dark'))
+      expect(h.raw().theme).toBe('dark')
+    } finally {
+      await h.close()
+    }
+  })
+  for (const records of [2650, 2850, 5700]) {
+    it(`GetAll preserves ${records} structured records below, at and above the real profile maximum`, async () => {
+      const h = await fixture()
+      try {
+        const preferences = Array.from({ length: records }, (_, i) => ({
+          future: { a: 1, b: 0, c: 1, d: 0, e: 1, f: 0, g: 1, h: 0 },
+          browser: 'chrome',
+          id: `p${i}`
+        }))
+        h.sync.run((call) =>
+          h.settings.forCall(call).set('future', {
+            kept: true,
+            deep: Array.from({ length: 8 }).reduce((value) => ({ next: value }), {
+              leaf: 'retained'
+            })
+          })
+        )
+        h.sync.run((call) => h.settings.forCall(call).set('extensionCookieSources', preferences))
+        const bytes = Buffer.byteLength(JSON.stringify(h.raw(), null, '\t'))
+        if (records === 2650) {
+          expect(bytes).toBeLessThan(459 * 1024)
+        }
+        if (records === 2850) {
+          expect(bytes).toBeGreaterThanOrEqual(459 * 1024)
+        }
+        if (records === 5700) {
+          expect(bytes).toBeGreaterThanOrEqual(2 * 459 * 1024)
+        }
+        const result = await h.renderer.runtime.runPromise(h.calls.settings.getAll)
+        expect(result.extensionCookieSources).toEqual(preferences)
+        expect(result.future).toEqual(h.raw().future)
+        console.info('Structured settings calibration', JSON.stringify({ records, bytes }))
+        expect(Object.keys(result.extensionCookieSources[0])).toEqual(['future', 'browser', 'id'])
+      } finally {
+        await h.close()
+      }
+    }, 30_000)
+  }
+  it('preserves nested insertion order and own undefined through Get → Set', async () => {
+    const h = await fixture()
+    try {
+      const value = [{ future: { z: undefined, a: -0 }, browser: 'chrome', id: 'one' }]
+      h.sync.run((call) => h.settings.forCall(call).set('extensionCookieSources', value))
+      const result = await h.renderer.runtime.runPromise(
+        h.calls.settings.get('extensionCookieSources')
+      )
+      expect(Object.keys(result[0])).toEqual(['future', 'browser', 'id'])
+      expect(Object.hasOwn(result[0].future, 'z')).toBe(true)
+      expect(Object.is(result[0].future.a, -0)).toBe(true)
+      await h.renderer.runtime.runPromise(h.calls.settings.set('extensionCookieSources', result))
+      expect(Object.keys(h.raw().extensionCookieSources[0])).toEqual(['future', 'browser', 'id'])
+      expect(Object.hasOwn(h.raw().extensionCookieSources[0].future, 'z')).toBe(true)
+    } finally {
+      await h.close()
+    }
+  })
+})
+
+it('GetAll carries the full supported 64-level native observation through its tagged wire tree', async () => {
+  const h = await fixture()
+  try {
+    const value = Array.from({ length: 63 }).reduce((child) => ({ next: child }), 'leaf')
+    h.sync.run((call) => h.settings.forCall(call).set('future', value))
+    await expect(h.renderer.runtime.runPromise(h.calls.settings.getAll)).resolves.toHaveProperty(
+      'future',
+      value
+    )
+  } finally {
+    await h.close()
+  }
 })

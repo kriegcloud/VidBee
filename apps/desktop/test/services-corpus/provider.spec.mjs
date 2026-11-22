@@ -135,3 +135,73 @@ describe('borrowed document provider', () => {
     }
   })
 })
+
+it('reconciles the real Jotai projection through React StrictMode detach and permanent remount', async () => {
+  const { Provider, createStore, useAtomValue } = await import('jotai')
+  const Atom = await import('effect/reactivity/Atom')
+  const { sourceLoader } = await import('../../../../scripts/desktop-foundation/source-harness.mjs')
+  const registry = AtomRegistry.make(),
+    source = Atom.make('first').pipe(Atom.keepAlive),
+    store = createStore()
+  const load = sourceLoader({
+    '../legacy/document': {
+      getDesktopDocument: () => ({
+        registry,
+        storage: { write: (atom, value) => registry.set(atom, value) }
+      })
+    }
+  })
+  const projected = load(
+    'apps/desktop/src/renderer/src/lib/foundation-state.ts',
+    true
+  ).projectFoundationAtom(source)
+  const host = document.createElement('div')
+  let root = createRoot(host),
+    mounts = 0,
+    cleanups = 0
+  function View() {
+    const value = useAtomValue(projected)
+    React.useEffect(() => {
+      mounts++
+      return () => {
+        cleanups++
+      }
+    }, [])
+    return React.createElement('span', null, value)
+  }
+  const tree = () =>
+    React.createElement(
+      React.StrictMode,
+      null,
+      React.createElement(Provider, { store }, React.createElement(View))
+    )
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true
+  try {
+    expect(store.get(projected)).toBe('first')
+    registry.set(source, 'before-mount')
+    await React.act(async () => {
+      root.render(tree())
+    })
+    expect(host.textContent).toBe('before-mount')
+    expect(mounts).toBe(2)
+    expect(cleanups).toBe(1)
+    await React.act(async () => {
+      registry.set(source, 'live')
+    })
+    expect(host.textContent).toBe('live')
+    await React.act(async () => {
+      root.unmount()
+    })
+    registry.set(source, 'gap')
+    root = createRoot(host)
+    await React.act(async () => {
+      root.render(tree())
+    })
+    expect(host.textContent).toBe('gap')
+  } finally {
+    await React.act(async () => {
+      root.unmount()
+    })
+    registry.dispose()
+  }
+})

@@ -1,3 +1,4 @@
+import * as Effect from 'effect/Effect'
 import { BrowserWindow } from 'electron'
 import type { IpcContext } from 'electron-ipc-decorator'
 import type { ShareCardPayload } from '../../compatibility/shared/types/share-card'
@@ -32,9 +33,13 @@ export class WindowService {
     registerLegacy('window.close', this.close.bind(this))
     registerLegacy('window.isMaximized', this.isMaximized.bind(this))
   }
-  async captureShareCard(_context: IpcContext, payload: ShareCardPayload): Promise<ArrayBuffer> {
-    const png = await runFoundationPromise((call) => core.forCall(call).captureShareCard(payload))
-    return Uint8Array.from(png).buffer
+  captureShareCard(_context: IpcContext, payload: ShareCardPayload): Promise<ArrayBuffer> {
+    return runFoundationPromise((call) =>
+      core
+        .forCall(call)
+        .captureShareCard(payload)
+        .pipe(Effect.map((png) => Uint8Array.from(png).buffer))
+    )
   }
   writeShareImage(_context: IpcContext, data: ArrayBuffer): void {
     runFoundation((call) => core.forCall(call).writeShareImage(NativePngInput.make(data)))

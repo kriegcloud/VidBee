@@ -201,8 +201,10 @@ export const makeFoundationHandlers = ({
             bound
           );
         }),
-        "Settings.Set": (update) =>
-          complete(
+        "Settings.Set": Effect.fn("Settings.Set")(function* (update, options) {
+          const lease = yield* server.requestLease(options.headers);
+          const bound = yield* streams.bindOptional(lease, "settings");
+          return yield* complete(
             callEffect(
               (call) =>
                 makeSettingsApplication({
@@ -210,10 +212,14 @@ export const makeFoundationHandlers = ({
                   call,
                   native: settingsNative([[update.key, update.value]]),
                 }).update
-            ).pipe(Effect.as(undefined), Effect.mapError(writeError))
-          ),
-        "Settings.SetAll": ({ settings: updates }) =>
-          complete(
+            ).pipe(Effect.as(undefined), Effect.mapError(writeError)),
+            bound
+          );
+        }),
+        "Settings.SetAll": Effect.fn("Settings.SetAll")(function* ({ settings: updates }, options) {
+          const lease = yield* server.requestLease(options.headers);
+          const bound = yield* streams.bindOptional(lease, "settings");
+          return yield* complete(
             callEffect(
               (call) =>
                 makeSettingsApplication({
@@ -223,8 +229,10 @@ export const makeFoundationHandlers = ({
                     A.map(updates, (update) => [update.key, update.value] satisfies readonly [string, unknown])
                   ),
                 }).update
-            ).pipe(Effect.as(undefined), Effect.mapError(writeError))
-          ),
+            ).pipe(Effect.as(undefined), Effect.mapError(writeError)),
+            bound
+          );
+        }),
         "Settings.Reset": () =>
           complete(
             callEffect(

@@ -6,7 +6,8 @@ import { getDesktopDocument } from '../legacy/document'
 export const projectFoundationAtom = <A>(source: Atom.Writable<A, A>) => {
   const document = getDesktopDocument()
   const revision = atom(false)
-  revision.onMount = (set) => document.registry.subscribe(source, () => set((value) => !value))
+  revision.onMount = (set) =>
+    document.registry.subscribe(source, () => set((value) => !value), { immediate: true })
   return atom(
     (get) => {
       get(revision)

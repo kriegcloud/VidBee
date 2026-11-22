@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, URL as NodeURL } from 'node:url'
 import vm from 'node:vm'
 import * as AtomRegistry from 'effect/reactivity/AtomRegistry'
 import * as Effect from 'effect/Effect'
@@ -11,9 +11,9 @@ import { transformSync } from 'esbuild'
 export class SourceImportError extends Error {}
 const compiled = Object.create(null)
 let settingsLogicLoader
-const strictDefinitions = new Set(JSON.parse(fs.readFileSync(new URL('../../apps/desktop/port-units.json', import.meta.url), 'utf8')).files.filter(row=>row.partition==='strict').map(row=>path.resolve(rootPath(),row.file)))
-function rootPath(){return fileURLToPath(new URL('../../',import.meta.url))}
-export const root = fileURLToPath(new URL('../../', import.meta.url))
+const strictDefinitions = new Set(JSON.parse(fs.readFileSync(new NodeURL('../../apps/desktop/port-units.json', import.meta.url), 'utf8')).files.filter(row=>row.partition==='strict').map(row=>path.resolve(rootPath(),row.file)))
+function rootPath(){return fileURLToPath(new NodeURL('../../',import.meta.url))}
+export const root = fileURLToPath(new NodeURL('../../', import.meta.url))
 // Execute the actual source, replacing only named host boundaries. No copied algorithms.
 // Separate caches make import-time initialization repeatable without touching a real profile.
 export function sourceLoader(overrides = {}) {

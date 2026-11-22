@@ -1,5 +1,8 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as Context from "effect/Context";
 import type { TransportFailure } from "../transport/DocumentDelivery.errors.js";
+
+const $I = $DesktopId.create("renderer/src/runtime/FoundationFailures.service");
 
 /** Reports connection and source failures into the document's one visible failure atom. Intentional scope interruption is handled as teardown rather than a new failure.
  * **Example** (Report through the document owner)
@@ -16,4 +19,4 @@ import type { TransportFailure } from "../transport/DocumentDelivery.errors.js";
 export class FoundationFailures extends Context.Service<
   FoundationFailures,
   { readonly report: (failure: TransportFailure) => void }
->()("vidbee/renderer/src/runtime/FoundationFailures.service/FoundationFailures") {}
+>()($I`FoundationFailures`) {}

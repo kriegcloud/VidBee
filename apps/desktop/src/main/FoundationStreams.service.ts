@@ -14,7 +14,7 @@ import type { FoundationEventValues, makeFoundationEvents } from "./FoundationEv
 import type { Lease } from "./ipc/ElectronRpcAdmission.service.js";
 import type { ElectronRpcServer } from "./ipc/ElectronRpcServer.layer.js";
 
-/** Owns one subscription registry per authenticated logical client. Invalidation coalesces to one queued pulse; kernel keeps one charged immutable latest slot behind its queued observation; show-home never coalesces or replays.
+/** Owns one subscription registry per authenticated logical client. Optional unary bindings capture the current family at admission without inventing a registration. Invalidation coalesces to one queued pulse; kernel keeps one charged immutable latest slot behind its queued observation; show-home never coalesces or replays.
  * **Example** (Build the stream owner alongside the mounted server)
  * ```ts
  * import { makeFoundationStreams } from './FoundationStreams.service.js'
@@ -151,6 +151,13 @@ export const makeFoundationStreams = ({
     );
   return {
     bind,
+    bindOptional: (lease: Lease, family: keyof FoundationEventValues) =>
+      Effect.suspend(() => {
+        const current = O.getOrUndefined(HashMap.get(clients, key(lease)));
+        return current === undefined
+          ? Effect.succeed({ capture: Effect.succeed([]) })
+          : current.owner.bindOptional(family);
+      }),
     settings: (headers: Readonly<Record<string, string>>) => watch("settings", headers, events.settings.listen),
     kernel: (headers: Readonly<Record<string, string>>) => watch("kernel", headers, events.kernel.listen),
     home: (headers: Readonly<Record<string, string>>) => watch("home", headers, events.home.listen),

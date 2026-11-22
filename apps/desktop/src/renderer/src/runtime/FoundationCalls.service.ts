@@ -9,6 +9,7 @@ import { FoundationClient } from "./FoundationClient.service.js";
 import type * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import type { RpcClientError } from "effect/rpc/RpcClientError";
 import type { MessageBoxOptions } from "../../../shared/App.model.js";
+import type { SettingValue } from "../../../shared/Settings.model.js";
 import type { ShareCardPayload } from "../../../shared/types/share-card.js";
 import type { DeliveryError } from "../transport/DocumentDelivery.errors.js";
 import type { makeFoundationAtoms } from "./Foundation.atoms.js";
@@ -110,7 +111,9 @@ export const makeFoundationCalls = ({
       get: Effect.fn("SettingsClient.get")(function* (key: import("../../../shared/Settings.model.js").SettingKey) {
         const settings = yield* settingsToken;
         const value = yield* consume((owner) => owner.client["Settings.Get"]({ key, settings }));
-        return yield* S.decodeEffect(AppSettings.fields[key])(value).pipe(
+        return yield* S.decodeEffect(
+          S.declare((input: unknown): input is SettingValue => S.is(AppSettings.fields[key])(input))
+        )(value).pipe(
           Effect.mapError(() => SettingsDecodeError.make({ operation: "get", issue: "Invalid selected setting value" }))
         );
       }),
