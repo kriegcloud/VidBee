@@ -76,7 +76,9 @@ export async function runTranscriptionCases({
           result.push({ pid: Number(pid), cmd: cmd.replaceAll('\0', ' ') })
         }
       } catch (error) {
-        if (!['ENOENT', 'ESRCH'].includes(error.code)) {
+        // EACCES: a process in another user namespace (for example another run on the same
+        // host); its environment cannot be ours, so it is not one of this run's workers.
+        if (!['ENOENT', 'ESRCH', 'EACCES'].includes(error.code)) {
           throw error
         }
       }
