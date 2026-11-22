@@ -51,10 +51,10 @@ export function importGraphObservations() {
   try {
     let failure
     try {load('apps/desktop/src/main/index.ts')} catch(error) {failure=error}
-    assert.equal(trace.filter(row=>row[0]==='settings:construct').length,1)
-    assert.equal(trace.filter(row=>row[0]==='ai:construct').length,1)
-    assert.equal(trace.filter(row=>row[0]==='ai:listen').length,1)
-    assert.equal(trace.filter(row=>row[0]==='ai:watch').length,1)
+    assert.equal(trace.filter(row=>row[0]==='settings:construct').length,1, failure?.stack)
+    assert.equal(trace.filter(row=>row[0]==='ai:construct').length,1, failure?.stack)
+    assert.equal(trace.filter(row=>row[0]==='ai:listen').length,1, failure?.stack)
+    assert.equal(trace.filter(row=>row[0]==='ai:watch').length,1, failure?.stack)
     assert(trace.findIndex(row=>row[0]==='settings:construct')<trace.findIndex(row=>row[0]==='handle'))
     assert.equal(failure,stop,'Import initialization must reach rejected-lock exit')
     return JSON.parse(JSON.stringify(trace).split(directory).join('<profile>'))

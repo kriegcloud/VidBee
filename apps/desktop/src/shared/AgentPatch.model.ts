@@ -19,17 +19,24 @@ const $I = $DesktopId.create('shared/AgentPatch.model')
  * @since 0.0.0
  */
 export const AgentPersistScope = S.Struct({
-  thread: S.Boolean.pipe(S.optional, S.mutableKey),
-  messageIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-  runIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-  artifactIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey)
+  thread: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  messageIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  runIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  artifactIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentPersistScope', { description: 'AgentPersistScope shared boundary data.' })
 )
 /** Decoded mutable AgentPersistScope data.
  * @category type-level
  * @since 0.0.0
- * @example AgentPersistScope
+ *
+ * **Example** (Access the AgentPersistScope contract)
+ *
+ * ```ts
+ * import { AgentPersistScope } from './AgentPatch.model.js'
+ * void AgentPersistScope
+ * ```
+ *
  */
 export type AgentPersistScope = typeof AgentPersistScope.Type
 
@@ -50,14 +57,21 @@ export type AgentPersistScope = typeof AgentPersistScope.Type
 export const AgentRouteIdentity = S.Struct({
   downloadId: S.String.pipe(S.mutableKey),
   promptId: S.String.pipe(S.mutableKey),
-  threadId: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey)
+  threadId: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentRouteIdentity', { description: 'AgentRouteIdentity shared boundary data.' })
 )
 /** Decoded mutable AgentRouteIdentity data.
  * @category type-level
  * @since 0.0.0
- * @example AgentRouteIdentity
+ *
+ * **Example** (Access the AgentRouteIdentity contract)
+ *
+ * ```ts
+ * import { AgentRouteIdentity } from './AgentPatch.model.js'
+ * void AgentRouteIdentity
+ * ```
+ *
  */
 export type AgentRouteIdentity = typeof AgentRouteIdentity.Type
 
@@ -100,7 +114,14 @@ export const AgentEventApplyResult = S.Union([
 /** Decoded mutable AgentEventApplyResult data.
  * @category type-level
  * @since 0.0.0
- * @example AgentEventApplyResult
+ *
+ * **Example** (Access the AgentEventApplyResult contract)
+ *
+ * ```ts
+ * import { AgentEventApplyResult } from './AgentPatch.model.js'
+ * void AgentEventApplyResult
+ * ```
+ *
  */
 export type AgentEventApplyResult = typeof AgentEventApplyResult.Type
 
@@ -129,7 +150,14 @@ export const AgentGapRecovery = S.Struct({
 /** Decoded mutable AgentGapRecovery data.
  * @category type-level
  * @since 0.0.0
- * @example AgentGapRecovery
+ *
+ * **Example** (Access the AgentGapRecovery contract)
+ *
+ * ```ts
+ * import { AgentGapRecovery } from './AgentPatch.model.js'
+ * void AgentGapRecovery
+ * ```
+ *
  */
 export type AgentGapRecovery = typeof AgentGapRecovery.Type
 
@@ -152,14 +180,21 @@ export const CatalogMemoryEntry = S.Struct({
   removed: S.Boolean.pipe(S.mutableKey),
   history: S.Boolean.pipe(S.mutableKey),
   downloadId: S.String.pipe(S.mutableKey),
-  summary: AgentThreadSummary.pipe(S.optional, S.mutableKey)
+  summary: AgentThreadSummary.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('CatalogMemoryEntry', { description: 'CatalogMemoryEntry shared boundary data.' })
 )
 /** Decoded mutable CatalogMemoryEntry data.
  * @category type-level
  * @since 0.0.0
- * @example CatalogMemoryEntry
+ *
+ * **Example** (Access the CatalogMemoryEntry contract)
+ *
+ * ```ts
+ * import { CatalogMemoryEntry } from './AgentPatch.model.js'
+ * void CatalogMemoryEntry
+ * ```
+ *
  */
 export type CatalogMemoryEntry =
   typeof CatalogMemoryEntry.Type /** Ordered immutable catalog index; structural for legacy construction.
@@ -175,6 +210,17 @@ export type CatalogMemoryEntry =
  * @category schemas
  * @since 0.0.0
  */
+/** Structural CatalogMemory contract for legacy construction.
+ * @category schemas
+ * @since 0.0.0
+ *
+ * **Example** (Access CatalogMemory)
+ *
+ * ```ts
+ * import { CatalogMemory } from './AgentPatch.model.js'
+ * void CatalogMemory
+ * ```
+ */
 export const CatalogMemory = S.Struct({
   entries: S.HashMap(S.String, CatalogMemoryEntry).pipe(S.mutableKey),
   keys: S.Array(S.String).pipe(S.mutable, S.mutableKey)
@@ -186,6 +232,13 @@ export const CatalogMemory = S.Struct({
 /** CatalogMemory shared contract.
  * @category utilities
  * @since 0.0.0
- * @example CatalogMemory
+ *
+ * **Example** (Access the CatalogMemory contract)
+ *
+ * ```ts
+ * import { CatalogMemory } from './AgentPatch.model.js'
+ * void CatalogMemory
+ * ```
+ *
  */
 export type CatalogMemory = typeof CatalogMemory.Type

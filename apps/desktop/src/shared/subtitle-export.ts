@@ -1,6 +1,7 @@
 import { $DesktopId } from '@vidbee/identity/packages'
 import * as A from 'effect/Array'
 import { dual } from 'effect/Function'
+import * as Order from 'effect/Order'
 import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
 import * as Sparse from './ArrayHelpers.js'
@@ -12,11 +13,21 @@ const alignSubtitleCuesBody = (
   primary: readonly SubtitleCue[],
   secondary: readonly SubtitleCue[]
 ): string[] => {
-  const rows = Sparse.map({ items: primary, map: (cue, index) => ({ ...cue, index }) }).sort(
-    (left, right) => left.startMs - right.startMs
+  const rows = A.sort(
+    Sparse.map({ items: primary, map: (cue, index) => ({ ...cue, index }) }),
+    Order.make<SubtitleCue & { index: number }>((left, right) => {
+      const difference = left.startMs - right.startMs
+      return difference < 0 ? -1 : difference > 0 ? 1 : 0
+    })
   )
   const result = Sparse.map({ items: primary, map: (): string[] => [] })
-  for (const cue of [...secondary].sort((left, right) => left.startMs - right.startMs)) {
+  for (const cue of A.sort(
+    [...secondary],
+    Order.make<SubtitleCue>((left, right) => {
+      const difference = left.startMs - right.startMs
+      return difference < 0 ? -1 : difference > 0 ? 1 : 0
+    })
+  )) {
     if (Str.trim(cue.text).length === 0) {
       continue
     }
@@ -43,7 +54,14 @@ const alignSubtitleCuesBody = (
   return Sparse.map({ items: result, map: (lines) => A.join(lines, '\n') })
 }
 /** Align cue overlaps in data-first or pipeable form.
- * @example alignSubtitleCues([], [])
+ *
+ * **Example** (Access the alignSubtitleCues contract)
+ *
+ * ```ts
+ * import { alignSubtitleCues } from './subtitle-export.js'
+ * void alignSubtitleCues
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */
@@ -52,7 +70,15 @@ export const alignSubtitleCues: {
   (secondary: readonly SubtitleCue[]): (primary: readonly SubtitleCue[]) => string[]
 } = dual(2, alignSubtitleCuesBody)
 
-/** Format a cue timestamp as HH:MM:SS,mmm for SubRip and video exports.  * @example formatSrtClock
+/** Format a cue timestamp as HH:MM:SS,mmm for SubRip and video exports.
+ *
+ * **Example** (Access the formatSrtClock contract)
+ *
+ * ```ts
+ * import { formatSrtClock } from './subtitle-export.js'
+ * void formatSrtClock
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -65,7 +91,15 @@ export function formatSrtClock(ms: number): string {
   return `${Str.padStart(2, '0')(String(hours))}:${Str.padStart(2, '0')(String(minutes))}:${Str.padStart(2, '0')(String(seconds))},${Str.padStart(3, '0')(String(millis))}`
 }
 
-/** Build a SubRip document shared by interactive and MCP exports.  * @example buildSrtDocument
+/** Build a SubRip document shared by interactive and MCP exports.
+ *
+ * **Example** (Access the buildSrtDocument contract)
+ *
+ * ```ts
+ * import { buildSrtDocument } from './subtitle-export.js'
+ * void buildSrtDocument
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -80,7 +114,15 @@ export function buildSrtDocument(units: SubtitleCue[]): string {
   )
 }
 
-/** Build a WebVTT document shared by transcript exports and subtitle-only downloads.  * @example buildVttDocument
+/** Build a WebVTT document shared by transcript exports and subtitle-only downloads.
+ *
+ * **Example** (Access the buildVttDocument contract)
+ *
+ * ```ts
+ * import { buildVttDocument } from './subtitle-export.js'
+ * void buildVttDocument
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -95,7 +137,15 @@ export function buildVttDocument(units: SubtitleCue[]): string {
   )}`
 }
 
-/** Format an ASS timestamp using centisecond precision.  * @example formatAssClock
+/** Format an ASS timestamp using centisecond precision.
+ *
+ * **Example** (Access the formatAssClock contract)
+ *
+ * ```ts
+ * import { formatAssClock } from './subtitle-export.js'
+ * void formatAssClock
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -108,7 +158,15 @@ export function formatAssClock(ms: number): string {
   return `${hours}:${Str.padStart(2, '0')(String(minutes))}:${Str.padStart(2, '0')(String(seconds))}.${Str.padStart(2, '0')(String(centis))}`
 }
 
-/** Escape captions so libass cannot interpret user text as formatting commands.  * @example escapeAssText
+/** Escape captions so libass cannot interpret user text as formatting commands.
+ *
+ * **Example** (Access the escapeAssText contract)
+ *
+ * ```ts
+ * import { escapeAssText } from './subtitle-export.js'
+ * void escapeAssText
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -119,7 +177,15 @@ export function escapeAssText(text: string): string {
   )(Str.replaceAll('}', '\\}')(Str.replaceAll('{', '\\{')(Str.replaceAll('\\', '\\\\')(text))))
 }
 
-/** Build the same ASS track for interactive and externally requested caption burn-in.  * @example buildAssDocument
+/** Build the same ASS track for interactive and externally requested caption burn-in.
+ *
+ * **Example** (Access the buildAssDocument contract)
+ *
+ * ```ts
+ * import { buildAssDocument } from './subtitle-export.js'
+ * void buildAssDocument
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -173,6 +239,13 @@ export const SubtitleCue = S.Struct({
 /** Decoded mutable SubtitleCue data.
  * @category type-level
  * @since 0.0.0
- * @example SubtitleCue
+ *
+ * **Example** (Access the SubtitleCue contract)
+ *
+ * ```ts
+ * import { SubtitleCue } from './subtitle-export.js'
+ * void SubtitleCue
+ * ```
+ *
  */
 export type SubtitleCue = typeof SubtitleCue.Type

@@ -2,6 +2,7 @@ import { $DesktopId } from '@vidbee/identity/packages'
 import { LiteralKit } from '@vidbee/schema/LiteralKit'
 import * as Effect from 'effect/Effect'
 import * as S from 'effect/Schema'
+import * as SchemaTransformation from 'effect/SchemaTransformation'
 import { strictObject } from './StrictObject'
 
 const $I = $DesktopId.create('shared/video-localization')
@@ -25,7 +26,17 @@ import { TtsModelId } from './Tts.model'
 export const SubtitleExportInput = S.Struct({
   sourceKey: S.String.check(S.isMinLength(1)).check(S.isMaxLength(100)).pipe(S.mutableKey),
   format: LiteralKit(['srt', 'vtt', 'mkv', 'mp4']).pipe(S.mutableKey),
-  bilingual: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey)
+  bilingual: S.UndefinedOr(S.Boolean).pipe(
+    S.decodeTo(
+      S.Boolean,
+      SchemaTransformation.transform({
+        decode: (value) => (value === undefined ? false : value),
+        encode: (value) => value
+      })
+    ),
+    S.withDecodingDefaultKey(Effect.succeed(false)),
+    S.mutableKey
+  )
 }).pipe(
   strictObject,
   $I.annoteSchema('SubtitleExportInput', {
@@ -49,26 +60,56 @@ export const SubtitleExportInput = S.Struct({
  */
 export const DubbingInput = S.Struct({
   sourceKey: S.String.check(S.isMinLength(1)).check(S.isMaxLength(100)).pipe(S.mutableKey),
-  modelId: TtsModelId.pipe(S.optional, S.mutableKey),
+  modelId: TtsModelId.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   voice: S.Finite.check(S.isInt())
     .check(S.isGreaterThanOrEqualTo(0))
     .check(S.isLessThanOrEqualTo(1_000_000))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   reference: S.Struct({
     file: S.String.check(S.isMinLength(1))
       .check(S.isMaxLength(200))
       .check(S.isPattern(/^(?!\/|\\|[A-Za-z]:)(?!.*(?:^|[\\/])\.\.(?:[\\/]|$))[^\n\r]+\.wav$/))
       .pipe(S.mutableKey),
-    text: S.String.check(S.isMinLength(1)).check(S.isMaxLength(4000)).pipe(S.optional, S.mutableKey)
-  }).pipe(strictObject, S.optional, S.mutableKey),
-  background: LiteralKit(['remove', 'separate']).pipe(
-    S.withDecodingDefault(Effect.succeed('separate')),
+    text: S.String.check(S.isMinLength(1))
+      .check(S.isMaxLength(4000))
+      .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+  }).pipe(strictObject, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  background: S.UndefinedOr(LiteralKit(['remove', 'separate'])).pipe(
+    S.decodeTo(
+      LiteralKit(['remove', 'separate']),
+      SchemaTransformation.transform({
+        decode: (value) => (value === undefined ? 'separate' : value),
+        encode: (value) => value
+      })
+    ),
+    S.withDecodingDefaultKey(Effect.succeed<'remove' | 'separate'>('separate')),
     S.mutableKey
   ),
   maxSpeed: S.Finite.check(S.isGreaterThanOrEqualTo(1))
     .check(S.isLessThanOrEqualTo(2))
-    .pipe(S.withDecodingDefault(Effect.succeed(1.5)), S.mutableKey),
-  burnSubtitles: S.Boolean.pipe(S.withDecodingDefault(Effect.succeed(false)), S.mutableKey),
+    .pipe(
+      S.UndefinedOr,
+      S.decodeTo(
+        S.Finite.check(S.isGreaterThanOrEqualTo(1)).check(S.isLessThanOrEqualTo(2)),
+        SchemaTransformation.transform({
+          decode: (value) => (value === undefined ? 1.5 : value),
+          encode: (value) => value
+        })
+      ),
+      S.withDecodingDefaultKey(Effect.succeed(1.5)),
+      S.mutableKey
+    ),
+  burnSubtitles: S.UndefinedOr(S.Boolean).pipe(
+    S.decodeTo(
+      S.Boolean,
+      SchemaTransformation.transform({
+        decode: (value) => (value === undefined ? false : value),
+        encode: (value) => value
+      })
+    ),
+    S.withDecodingDefaultKey(Effect.succeed(false)),
+    S.mutableKey
+  ),
   speechOverrides: S.Array(
     S.Struct({
       cueIndex: S.Finite.check(S.isInt())
@@ -81,7 +122,7 @@ export const DubbingInput = S.Struct({
   )
     .pipe(S.mutable)
     .check(S.isMaxLength(50_000))
-    .pipe(S.optional, S.mutableKey)
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   strictObject,
   $I.annoteSchema('DubbingInput', {
@@ -91,12 +132,26 @@ export const DubbingInput = S.Struct({
 /** SubtitleExportInput shared contract.
  * @category utilities
  * @since 0.0.0
- * @example SubtitleExportInput
+ *
+ * **Example** (Access the SubtitleExportInput contract)
+ *
+ * ```ts
+ * import { SubtitleExportInput } from './video-localization.js'
+ * void SubtitleExportInput
+ * ```
+ *
  */
 export type SubtitleExportInput = typeof SubtitleExportInput.Type
 /** DubbingInput shared contract.
  * @category utilities
  * @since 0.0.0
- * @example DubbingInput
+ *
+ * **Example** (Access the DubbingInput contract)
+ *
+ * ```ts
+ * import { DubbingInput } from './video-localization.js'
+ * void DubbingInput
+ * ```
+ *
  */
 export type DubbingInput = typeof DubbingInput.Type

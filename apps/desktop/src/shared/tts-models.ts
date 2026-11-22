@@ -18,7 +18,14 @@ const $I = $DesktopId.create('shared/tts-models')
 /** TTS_FAMILIES shared contract.
  * @category utilities
  * @since 0.0.0
- * @example TTS_FAMILIES
+ *
+ * **Example** (Access the TTS_FAMILIES contract)
+ *
+ * ```ts
+ * import { TTS_FAMILIES } from './tts-models.js'
+ * void TTS_FAMILIES
+ * ```
+ *
  */
 export const TTS_FAMILIES = [
   'vits',
@@ -32,7 +39,14 @@ export const TTS_FAMILIES = [
 /** TtsModelId shared contract.
  * @category utilities
  * @since 0.0.0
- * @example TtsModelId
+ *
+ * **Example** (Load tts-models helpers)
+ *
+ * ```ts
+ * import * as Shared from './tts-models.js'
+ * void Shared
+ * ```
+ *
  */
 
 /** Preserve existing defaults and verified metadata as optional overrides, never a selectable-model whitelist. */
@@ -124,11 +138,26 @@ const TTS_PRESETS = [
 /** DEFAULT_TTS_MODEL_ID shared contract.
  * @category utilities
  * @since 0.0.0
- * @example DEFAULT_TTS_MODEL_ID
+ *
+ * **Example** (Access the DEFAULT_TTS_MODEL_ID contract)
+ *
+ * ```ts
+ * import { DEFAULT_TTS_MODEL_ID } from './tts-models.js'
+ * void DEFAULT_TTS_MODEL_ID
+ * ```
+ *
  */
 export const DEFAULT_TTS_MODEL_ID: TtsModelId = TTS_PRESETS[0].id
 
-/** Classify model families rather than maintaining a whitelist of individual model IDs.  * @example ttsModelFamily
+/** Classify model families rather than maintaining a whitelist of individual model IDs.
+ *
+ * **Example** (Access the ttsModelFamily contract)
+ *
+ * ```ts
+ * import { ttsModelFamily } from './tts-models.js'
+ * void ttsModelFamily
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -249,7 +278,15 @@ function getTtsModelBody(input: {
   })
 }
 
-/** Recover older or invalid stored preferences using the original default.  * @example parseTtsModelId
+/** Recover older or invalid stored preferences using the original default.
+ *
+ * **Example** (Access the parseTtsModelId contract)
+ *
+ * ```ts
+ * import { parseTtsModelId } from './tts-models.js'
+ * void parseTtsModelId
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -317,13 +354,27 @@ function resolveTtsSpeakerBody(input: {
 }
 
 /** Explicit language parsing for strict model lookup.
- * @example getTtsModel({id:'unknown',languageOf:code=>code})
+ *
+ * **Example** (Access the getTtsModel contract)
+ *
+ * ```ts
+ * import { getTtsModel } from './tts-models.js'
+ * void getTtsModel
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */
 export const getTtsModel = recordFunction(getTtsModelBody)
 /** Validate speaker selection with explicit language semantics.
- * @example resolveTtsSpeaker({modelOrId:'unknown',language:'en',languageOf:code=>code})
+ *
+ * **Example** (Access the resolveTtsSpeaker contract)
+ *
+ * ```ts
+ * import { resolveTtsSpeaker } from './tts-models.js'
+ * void resolveTtsSpeaker
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */
@@ -359,7 +410,14 @@ export const TtsFamily = LiteralKit([
 /** Decoded mutable TtsFamily data.
  * @category type-level
  * @since 0.0.0
- * @example TtsFamily
+ *
+ * **Example** (Access the TtsFamily contract)
+ *
+ * ```ts
+ * import { TtsFamily } from './tts-models.js'
+ * void TtsFamily
+ * ```
+ *
  */
 export type TtsFamily = typeof TtsFamily.Type
 
@@ -383,13 +441,13 @@ export const TtsModelDefinition = S.Struct({
   family: TtsFamily.pipe(S.mutableKey),
   description: S.String.pipe(S.mutableKey),
   downloadBytes: S.Finite.pipe(S.mutableKey),
-  sha256: S.String.pipe(S.optional, S.mutableKey),
-  voiceCount: S.Finite.pipe(S.optional, S.mutableKey),
+  sha256: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  voiceCount: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   languages: S.Array(
     S.Struct({
       code: S.String.pipe(S.mutableKey),
       defaultVoice: S.Finite.pipe(S.mutableKey),
-      lang: S.String.pipe(S.optional, S.mutableKey)
+      lang: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
     })
   ).pipe(S.mutableKey)
 }).pipe(
@@ -400,6 +458,13 @@ export const TtsModelDefinition = S.Struct({
 /** Decoded mutable TtsModelDefinition data.
  * @category type-level
  * @since 0.0.0
- * @example TtsModelDefinition
+ *
+ * **Example** (Access the TtsModelDefinition contract)
+ *
+ * ```ts
+ * import { TtsModelDefinition } from './tts-models.js'
+ * void TtsModelDefinition
+ * ```
+ *
  */
 export type TtsModelDefinition = typeof TtsModelDefinition.Type

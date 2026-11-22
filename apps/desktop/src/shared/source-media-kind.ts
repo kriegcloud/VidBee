@@ -25,13 +25,27 @@ export const SourceMediaKind = LiteralKit(['audio', 'video']).pipe(
 /** SourceMediaKind shared contract.
  * @category utilities
  * @since 0.0.0
- * @example SourceMediaKind
+ *
+ * **Example** (Access the SourceMediaKind contract)
+ *
+ * ```ts
+ * import { SourceMediaKind } from './source-media-kind.js'
+ * void SourceMediaKind
+ * ```
+ *
  */
 export type SourceMediaKind = typeof SourceMediaKind.Type
 
 /**
  * Classify a download as audio-only or video from the same signals the player uses.
- * @example sourceMediaKind
+ *
+ * **Example** (Access the sourceMediaKind contract)
+ *
+ * ```ts
+ * import { sourceMediaKind } from './source-media-kind.js'
+ * void sourceMediaKind
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -57,7 +71,15 @@ export function sourceMediaKind(input: {
   return 'video'
 }
 
-/** Turn a missing-video-stream failure into a non-retryable tool error.  * @example agentUnusableVideoError
+/** Turn a missing-video-stream failure into a non-retryable tool error.
+ *
+ * **Example** (Access the agentUnusableVideoError contract)
+ *
+ * ```ts
+ * import { agentUnusableVideoError } from './source-media-kind.js'
+ * void agentUnusableVideoError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -98,6 +120,13 @@ export const SourceMediaFailure = S.Struct({
 /** SourceMediaFailure shared contract.
  * @category utilities
  * @since 0.0.0
- * @example SourceMediaFailure
+ *
+ * **Example** (Access the SourceMediaFailure contract)
+ *
+ * ```ts
+ * import { SourceMediaFailure } from './source-media-kind.js'
+ * void SourceMediaFailure
+ * ```
+ *
  */
 export type SourceMediaFailure = typeof SourceMediaFailure.Type

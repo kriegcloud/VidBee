@@ -11,14 +11,28 @@ const inputKeys = HashSet.fromIterable(['language', 'append', 'cues'])
 /** Version of the subtitle artifact format stored by the agent.
  * @category constants
  * @since 0.0.0
- * @example AGENT_SUBTITLE_MODEL_VERSION
+ *
+ * **Example** (Access the AGENT_SUBTITLE_MODEL_VERSION contract)
+ *
+ * ```ts
+ * import { AGENT_SUBTITLE_MODEL_VERSION } from './agent-subtitles.js'
+ * void AGENT_SUBTITLE_MODEL_VERSION
+ * ```
+ *
  */
 export const AGENT_SUBTITLE_MODEL_VERSION = 'agent-subtitles-v1'
 
 /** Maximum number of source-time cues admitted by one tool call.
  * @category constants
  * @since 0.0.0
- * @example MAX_AGENT_SUBTITLE_CUES
+ *
+ * **Example** (Access the MAX_AGENT_SUBTITLE_CUES contract)
+ *
+ * ```ts
+ * import { MAX_AGENT_SUBTITLE_CUES } from './agent-subtitles.js'
+ * void MAX_AGENT_SUBTITLE_CUES
+ * ```
+ *
  */
 export const MAX_AGENT_SUBTITLE_CUES = 500
 
@@ -29,8 +43,8 @@ export const MAX_AGENT_SUBTITLE_CUES = 500
  * ```ts
  * import * as S from 'effect/Schema'
  * import { AgentSubtitleCue } from './agent-subtitles.js'
- * const cue = S.decodeUnknownSync(AgentSubtitleCue)({start: 0, end: 1, text: ' Hello '})
- * cue.text // => 'Hello'
+ * const decoded = S.decodeResult(AgentSubtitleCue)({start: 0, end: 1, text: ' Hello '})
+ * void decoded
  * ```
  *
  * @category schemas
@@ -63,7 +77,14 @@ export const AgentSubtitleCue = S.Record(S.String, S.Unknown)
 /** Decoded mutable subtitle cue.
  * @category type-level
  * @since 0.0.0
- * @example AgentSubtitleCue
+ *
+ * **Example** (Access the AgentSubtitleCue contract)
+ *
+ * ```ts
+ * import { AgentSubtitleCue } from './agent-subtitles.js'
+ * void AgentSubtitleCue
+ * ```
+ *
  */
 export type AgentSubtitleCue = typeof AgentSubtitleCue.Type
 
@@ -74,9 +95,11 @@ export type AgentSubtitleCue = typeof AgentSubtitleCue.Type
  * ```ts
  * import * as S from 'effect/Schema'
  * import { AgentSubtitleInput } from './agent-subtitles.js'
- * const input = S.decodeUnknownSync(AgentSubtitleInput)({language: ' en ', cues: [{start: 0, end: 1, text: ' Caption '}]})
- * input.language // => 'en'
- * input.cues[0]?.text // => 'Caption'
+ * const input = S.decodeResult(AgentSubtitleInput)({language: ' en ', cues: [{start: 0, end: 1, text: ' Caption '}]})
+ * if (input._tag === 'Success') {
+ *   input.success.language // => 'en'
+ *   input.success.cues[0]?.text // => 'Caption'
+ * }
  * ```
  *
  * @category schemas
@@ -100,7 +123,7 @@ export const AgentSubtitleInput = S.Record(S.String, S.Unknown)
           S.isBetweenLength(2, 35),
           S.isPattern(/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i)
         ).pipe(S.mutableKey),
-        append: S.Boolean.pipe(S.optional, S.mutableKey),
+        append: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
         cues: S.Array(AgentSubtitleCue)
           .check(S.isBetweenLength(1, MAX_AGENT_SUBTITLE_CUES))
           .pipe(S.mutable, S.mutableKey)
@@ -114,6 +137,13 @@ export const AgentSubtitleInput = S.Record(S.String, S.Unknown)
 /** Decoded mutable subtitle tool input; explicit undefined remains permitted for append.
  * @category type-level
  * @since 0.0.0
- * @example AgentSubtitleInput
+ *
+ * **Example** (Access the AgentSubtitleInput contract)
+ *
+ * ```ts
+ * import { AgentSubtitleInput } from './agent-subtitles.js'
+ * void AgentSubtitleInput
+ * ```
+ *
  */
 export type AgentSubtitleInput = typeof AgentSubtitleInput.Type

@@ -1,3 +1,4 @@
+import * as O from 'effect/Option'
 import * as Native from '../../shared/agent-markdown'
 import {
   AGENT_MARKDOWN_MEDIA as ReexportAGENT_MARKDOWN_MEDIA,
@@ -33,26 +34,28 @@ export {
   type ReexportUnboundArticleImageTimesInput as UnboundArticleImageTimesInput
 }
 
-import * as Effect from 'effect/Effect'
 import * as HM from 'effect/HashMap'
 import * as HS from 'effect/HashSet'
 import type { AgentArtifact } from '../../shared/AgentAttachment.model'
-import { SharedOperationError } from '../../shared/AgentFailure.model'
 import type { AgentResponsePart } from '../../shared/agent-markdown'
 export function artifactIdFromUrl(
   url: string,
   artifacts: AgentArtifact[] = []
 ): string | undefined {
-  return Native.artifactIdFromUrl({
-    url,
-    artifacts
-  })
+  return O.getOrUndefined(
+    Native.artifactIdFromUrl({
+      url,
+      artifacts
+    })
+  )
 }
 export function clockFromImage(alt: string, url: string): number | null {
-  return Native.clockFromImage({
-    alt,
-    url
-  })
+  return O.getOrNull(
+    Native.clockFromImage({
+      alt,
+      url
+    })
+  )
 }
 export function matchArtifactByClock(
   artifacts: AgentArtifact[],
@@ -61,13 +64,15 @@ export function matchArtifactByClock(
   runId?: string,
   returnedIds?: ReadonlySet<string>
 ): AgentArtifact | undefined {
-  return Native.matchArtifactByClock({
-    artifacts,
-    used: HS.fromIterable(used),
-    time,
-    runId,
-    returnedIds: returnedIds === undefined ? undefined : HS.fromIterable(returnedIds)
-  })
+  return O.getOrUndefined(
+    Native.matchArtifactByClock({
+      artifacts,
+      used: HS.fromIterable(used),
+      time,
+      runId,
+      returnedIds: returnedIds === undefined ? undefined : HS.fromIterable(returnedIds)
+    })
+  )
 }
 export function bindArticleImageArtifacts(
   text: string,
@@ -136,23 +141,33 @@ export function splitAgentResponseMedia(
     includeUncited
   })
 }
-export function embedArtifactImages(
+export async function embedArtifactImages(
   markdown: string,
   artifacts: AgentArtifact[],
   readImage: (artifact: AgentArtifact) => Promise<string>
 ): Promise<string> {
-  return Effect.runPromise(
-    Native.embedArtifactImages({
-      markdown,
-      artifacts
-    }).pipe(
-      Effect.provideService(Native.ImageReader, {
-        readImage: (artifact) =>
-          Effect.tryPromise({
-            try: () => Promise.resolve(readImage(artifact)),
-            catch: () => SharedOperationError.make({ message: 'Image read failed' })
-          })
-      })
-    )
+  const ids = [...new Set(citedArtifactIds(markdown, artifacts))]
+  if (ids.length === 0) {
+    return markdown
+  }
+  const byId = new Map(artifacts.map((item) => [item.id.toLowerCase(), item]))
+  const dataUris = new Map<string, string>()
+  await Promise.all(
+    ids.map(async (id) => {
+      const artifact = byId.get(id)
+      if (!artifact) {
+        return
+      }
+      try {
+        const base64 = await readImage(artifact)
+        if (!base64) {
+          return
+        }
+        dataUris.set(id, `data:${Native.artifactImageMime(artifact)};base64,${base64}`)
+      } catch {
+        // Leave the original citation; PDF/Markdown can still show the caption.
+      }
+    })
   )
+  return embedArtifactDataUris(markdown, dataUris, artifacts)
 }

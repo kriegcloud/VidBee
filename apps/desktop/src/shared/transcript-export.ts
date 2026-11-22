@@ -2,6 +2,7 @@ import { applyViaVidBeeFilename } from '@vidbee/downloader-core/filename-style'
 import { $DesktopId } from '@vidbee/identity/packages'
 import { LiteralKit } from '@vidbee/schema/LiteralKit'
 import * as A from 'effect/Array'
+import * as P from 'effect/Predicate'
 import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
 import * as Sparse from './ArrayHelpers.js'
@@ -12,7 +13,13 @@ const $I = $DesktopId.create('shared/transcript-export')
 /** BuildTranscriptExportInput shared contract.
  * @category ports
  * @since 0.0.0
- * @example BuildTranscriptExportInput
+ *
+ * **Example** (Import the BuildTranscriptExportInput contract)
+ *
+ * ```ts
+ * export type { BuildTranscriptExportInput } from './transcript-export.js'
+ * ```
+ *
  */
 export interface BuildTranscriptExportInput {
   format: TranscriptExportFormat
@@ -31,7 +38,14 @@ const SENTENCE_SPLIT = /(?<=[.!?。！？…])\s*/
 
 /**
  * Format a clock as `MM:SS.mmm`, matching the export preview.
- * @example formatExportClock
+ *
+ * **Example** (Access the formatExportClock contract)
+ *
+ * ```ts
+ * import { formatExportClock } from './transcript-export.js'
+ * void formatExportClock
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -47,7 +61,7 @@ export const formatExportClock = (ms: number): string => {
  * Split text with Intl.Segmenter when available, then fall back to regex.
  */
 const splitWithSegmenter = (text: string, granularity: 'word' | 'sentence'): TextPiece[] | null => {
-  if (typeof Intl === 'undefined' || typeof Intl.Segmenter !== 'function') {
+  if (P.isUndefined(globalThis.Intl) || !P.isFunction(Intl.Segmenter)) {
     return null
   }
   const segmenter = new Intl.Segmenter(undefined, {
@@ -175,44 +189,49 @@ const renderUnit = (
   const start = formatExportClock(unit.startMs)
   const range = `${start} --> ${formatExportClock(unit.endMs)}`
   const srtRange = `${formatSrtClock(unit.startMs)} --> ${formatSrtClock(unit.endMs)}`
-  switch (style) {
-    case 'subtitles': {
-      if (isMarkdown) {
-        const heading = showTimestamp ? `${index + 1}. \`${srtRange}\`` : `${index + 1}.`
-        return `${heading}\n\n${unit.text}`
-      }
-      const lines = [String(index + 1)]
-      if (showTimestamp) {
-        lines.push(srtRange)
-      }
-      lines.push(unit.text)
-      return A.join(lines, '\n')
+  if (style === 'subtitles') {
+    if (isMarkdown) {
+      const heading = showTimestamp ? `${index + 1}. \`${srtRange}\`` : `${index + 1}.`
+      return `${heading}\n\n${unit.text}`
     }
-    case 'segments': {
-      const speaker = resolveSpeaker(unit.speakerId)
-      if (isMarkdown) {
-        const heading = showTimestamp ? `### ${speaker}\n\n\`${start}\`` : `### ${speaker}`
-        return `${heading}\n\n${unit.text}`
-      }
-      const heading = showTimestamp ? `${speaker}  ${start}` : speaker
-      return `${heading}\n${unit.text}`
+    const lines = [String(index + 1)]
+    if (showTimestamp) {
+      lines.push(srtRange)
     }
-    case 'whisper':
-      if (isMarkdown) {
-        return showTimestamp ? `\`${range}\` ${unit.text}` : unit.text
-      }
-      return showTimestamp ? `[${range}]  ${unit.text}` : unit.text
-    default:
-      if (isMarkdown) {
-        return showTimestamp ? `**${start}**\n\n${unit.text}` : unit.text
-      }
-      return showTimestamp ? `${start}\n${unit.text}` : unit.text
+    lines.push(unit.text)
+    return A.join(lines, '\n')
   }
+  if (style === 'segments') {
+    const speaker = resolveSpeaker(unit.speakerId)
+    if (isMarkdown) {
+      const heading = showTimestamp ? `### ${speaker}\n\n\`${start}\`` : `### ${speaker}`
+      return `${heading}\n\n${unit.text}`
+    }
+    const heading = showTimestamp ? `${speaker}  ${start}` : speaker
+    return `${heading}\n${unit.text}`
+  }
+  if (style === 'whisper') {
+    if (isMarkdown) {
+      return showTimestamp ? `\`${range}\` ${unit.text}` : unit.text
+    }
+    return showTimestamp ? `[${range}]  ${unit.text}` : unit.text
+  }
+  if (isMarkdown) {
+    return showTimestamp ? `**${start}**\n\n${unit.text}` : unit.text
+  }
+  return showTimestamp ? `${start}\n${unit.text}` : unit.text
 }
 
 /**
  * Build the plain-text export preview for the selected style and options.
- * @example buildTranscriptExportText
+ *
+ * **Example** (Access the buildTranscriptExportText contract)
+ *
+ * ```ts
+ * import { buildTranscriptExportText } from './transcript-export.js'
+ * void buildTranscriptExportText
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -232,7 +251,14 @@ export const buildTranscriptExportText = (input: BuildTranscriptExportInput): st
 
 /**
  * Pick the container extension for a video-and-subtitle export.
- * @example videoEncodeExtension
+ *
+ * **Example** (Access the videoEncodeExtension contract)
+ *
+ * ```ts
+ * import { videoEncodeExtension } from './transcript-export.js'
+ * void videoEncodeExtension
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -298,7 +324,14 @@ export const TranscriptExportStyle = LiteralKit([
 /** Decoded mutable TranscriptExportStyle data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportStyle
+ *
+ * **Example** (Access the TranscriptExportStyle contract)
+ *
+ * ```ts
+ * import { TranscriptExportStyle } from './transcript-export.js'
+ * void TranscriptExportStyle
+ * ```
+ *
  */
 export type TranscriptExportStyle = typeof TranscriptExportStyle.Type
 
@@ -324,7 +357,14 @@ export const TranscriptExportFormat = LiteralKit(['txt', 'md', 'srt']).pipe(
 /** Decoded mutable TranscriptExportFormat data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportFormat
+ *
+ * **Example** (Access the TranscriptExportFormat contract)
+ *
+ * ```ts
+ * import { TranscriptExportFormat } from './transcript-export.js'
+ * void TranscriptExportFormat
+ * ```
+ *
  */
 export type TranscriptExportFormat = typeof TranscriptExportFormat.Type
 
@@ -350,7 +390,14 @@ export const TranscriptVideoEncode = LiteralKit(['soft', 'hard']).pipe(
 /** Decoded mutable TranscriptVideoEncode data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptVideoEncode
+ *
+ * **Example** (Access the TranscriptVideoEncode contract)
+ *
+ * ```ts
+ * import { TranscriptVideoEncode } from './transcript-export.js'
+ * void TranscriptVideoEncode
+ * ```
+ *
  */
 export type TranscriptVideoEncode = typeof TranscriptVideoEncode.Type
 
@@ -376,7 +423,14 @@ export const TranscriptExportGrouping = LiteralKit(['none', 'words', 'sentences'
 /** Decoded mutable TranscriptExportGrouping data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportGrouping
+ *
+ * **Example** (Access the TranscriptExportGrouping contract)
+ *
+ * ```ts
+ * import { TranscriptExportGrouping } from './transcript-export.js'
+ * void TranscriptExportGrouping
+ * ```
+ *
  */
 export type TranscriptExportGrouping = typeof TranscriptExportGrouping.Type
 
@@ -406,7 +460,14 @@ export const TranscriptExportFileExtension = S.Union([
 /** Decoded mutable TranscriptExportFileExtension data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportFileExtension
+ *
+ * **Example** (Access the TranscriptExportFileExtension contract)
+ *
+ * ```ts
+ * import { TranscriptExportFileExtension } from './transcript-export.js'
+ * void TranscriptExportFileExtension
+ * ```
+ *
  */
 export type TranscriptExportFileExtension = typeof TranscriptExportFileExtension.Type
 
@@ -437,7 +498,14 @@ export const TranscriptExportSegment = S.Struct({
 /** Decoded mutable TranscriptExportSegment data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportSegment
+ *
+ * **Example** (Access the TranscriptExportSegment contract)
+ *
+ * ```ts
+ * import { TranscriptExportSegment } from './transcript-export.js'
+ * void TranscriptExportSegment
+ * ```
+ *
  */
 export type TranscriptExportSegment = typeof TranscriptExportSegment.Type
 
@@ -468,23 +536,54 @@ export const TranscriptExportUnit = S.Struct({
 /** Decoded mutable TranscriptExportUnit data.
  * @category type-level
  * @since 0.0.0
- * @example TranscriptExportUnit
+ *
+ * **Example** (Access the TranscriptExportUnit contract)
+ *
+ * ```ts
+ * import { TranscriptExportUnit } from './transcript-export.js'
+ * void TranscriptExportUnit
+ * ```
+ *
  */
 export type TranscriptExportUnit = typeof TranscriptExportUnit.Type
 
-/** Record contract for buildExportUnits.
+/** Record contract for buildExportUnits. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example BuildExportUnitsInput
+ *
+ * **Example** (Access the BuildExportUnitsInput contract)
+ *
+ * ```ts
+ * import { BuildExportUnitsInput } from './transcript-export.js'
+ * void BuildExportUnitsInput
+ * ```
+ *
  */
-export interface BuildExportUnitsInput {
-  segments: TranscriptExportSegment[]
-  grouping: TranscriptExportGrouping
-}
+export const BuildExportUnitsInput = S.Struct({
+  segments: TranscriptExportSegment.pipe(S.Array, S.mutable, S.mutableKey),
+  grouping: S.mutableKey(TranscriptExportGrouping)
+}).pipe(
+  $I.annoteSchema('BuildExportUnitsInput', {
+    description:
+      'Explicit input record for BuildExportUnitsInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived BuildExportUnitsInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type BuildExportUnitsInput = typeof BuildExportUnitsInput.Type
 /** buildExportUnits with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example buildExportUnits
+ *
+ * **Example** (Access the buildExportUnits contract)
+ *
+ * ```ts
+ * import { buildExportUnits } from './transcript-export.js'
+ * void buildExportUnits
+ * ```
+ *
  */
 export const buildExportUnits: {
   (): (input: BuildExportUnitsInput) => TranscriptExportUnit[]
@@ -492,20 +591,48 @@ export const buildExportUnits: {
 } = recordFunction((input: BuildExportUnitsInput): TranscriptExportUnit[] =>
   buildExportUnitsBody(input.segments, input.grouping)
 )
-/** Record contract for buildTranscriptExportFileName.
+/** Record contract for buildTranscriptExportFileName. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example BuildTranscriptExportFileNameInput
+ *
+ * **Example** (Access the BuildTranscriptExportFileNameInput contract)
+ *
+ * ```ts
+ * import { BuildTranscriptExportFileNameInput } from './transcript-export.js'
+ * void BuildTranscriptExportFileNameInput
+ * ```
+ *
  */
-export interface BuildTranscriptExportFileNameInput {
-  title: string
-  format?: TranscriptExportFileExtension | undefined
-  viaVidBee?: boolean | undefined
-}
+export const BuildTranscriptExportFileNameInput = S.Struct({
+  title: S.mutableKey(S.String),
+  format: S.Union([TranscriptExportFileExtension, S.Undefined]).pipe(
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  ),
+  viaVidBee: S.Union([S.Boolean, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('BuildTranscriptExportFileNameInput', {
+    description:
+      'Explicit input record for BuildTranscriptExportFileNameInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived BuildTranscriptExportFileNameInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type BuildTranscriptExportFileNameInput = typeof BuildTranscriptExportFileNameInput.Type
 /** buildTranscriptExportFileName with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example buildTranscriptExportFileName
+ *
+ * **Example** (Access the buildTranscriptExportFileName contract)
+ *
+ * ```ts
+ * import { buildTranscriptExportFileName } from './transcript-export.js'
+ * void buildTranscriptExportFileName
+ * ```
+ *
  */
 export const buildTranscriptExportFileName: {
   (): (input: BuildTranscriptExportFileNameInput) => string
@@ -513,19 +640,44 @@ export const buildTranscriptExportFileName: {
 } = recordFunction((input: BuildTranscriptExportFileNameInput): string =>
   buildTranscriptExportFileNameBody(input.title, input.format, input.viaVidBee)
 )
-/** Record contract for buildVideoSubtitleExportFileName.
+/** Record contract for buildVideoSubtitleExportFileName. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example BuildVideoSubtitleExportFileNameInput
+ *
+ * **Example** (Access the BuildVideoSubtitleExportFileNameInput contract)
+ *
+ * ```ts
+ * import { BuildVideoSubtitleExportFileNameInput } from './transcript-export.js'
+ * void BuildVideoSubtitleExportFileNameInput
+ * ```
+ *
  */
-export interface BuildVideoSubtitleExportFileNameInput {
-  title: string
-  mode: TranscriptVideoEncode
-}
+export const BuildVideoSubtitleExportFileNameInput = S.Struct({
+  title: S.mutableKey(S.String),
+  mode: S.mutableKey(TranscriptVideoEncode)
+}).pipe(
+  $I.annoteSchema('BuildVideoSubtitleExportFileNameInput', {
+    description:
+      'Explicit input record for BuildVideoSubtitleExportFileNameInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived BuildVideoSubtitleExportFileNameInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type BuildVideoSubtitleExportFileNameInput =
+  typeof BuildVideoSubtitleExportFileNameInput.Type
 /** buildVideoSubtitleExportFileName with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example buildVideoSubtitleExportFileName
+ *
+ * **Example** (Access the buildVideoSubtitleExportFileName contract)
+ *
+ * ```ts
+ * import { buildVideoSubtitleExportFileName } from './transcript-export.js'
+ * void buildVideoSubtitleExportFileName
+ * ```
+ *
  */
 export const buildVideoSubtitleExportFileName: {
   (): (input: BuildVideoSubtitleExportFileNameInput) => string

@@ -1,7 +1,14 @@
 /** Sparse-preserving map used where legacy arrays retain holes.
  * @category mapping
  * @since 0.0.0
- * @example map
+ *
+ * **Example** (Access the map contract)
+ *
+ * ```ts
+ * import { map } from './ArrayHelpers.js'
+ * void map
+ * ```
+ *
  */
 export const map = <A, B>(input: {
   items: readonly A[]
@@ -19,7 +26,14 @@ export const map = <A, B>(input: {
 /** Stable filtering with the native sparse-array visitation contract.
  * @category filtering
  * @since 0.0.0
- * @example filter
+ *
+ * **Example** (Access the filter contract)
+ *
+ * ```ts
+ * import { filter } from './ArrayHelpers.js'
+ * void filter
+ * ```
+ *
  */
 export const filter = <A>(input: {
   items: readonly A[]
@@ -36,7 +50,14 @@ export const filter = <A>(input: {
 /** Flatten mapped rows without visiting holes at either level.
  * @category mapping
  * @since 0.0.0
- * @example flatMap
+ *
+ * **Example** (Access the flatMap contract)
+ *
+ * ```ts
+ * import { flatMap } from './ArrayHelpers.js'
+ * void flatMap
+ * ```
+ *
  */
 export const flatMap = <A, B>(input: {
   items: readonly A[]
@@ -58,7 +79,14 @@ export const flatMap = <A, B>(input: {
 /** Native negative and fractional array indexing.
  * @category getters
  * @since 0.0.0
- * @example at
+ *
+ * **Example** (Access the at contract)
+ *
+ * ```ts
+ * import { at } from './ArrayHelpers.js'
+ * void at
+ * ```
+ *
  */
 export const at = <A>(input: { items: readonly A[]; index: number }): A | undefined => {
   const index = Math.trunc(input.index)
@@ -66,7 +94,14 @@ export const at = <A>(input: { items: readonly A[]; index: number }): A | undefi
 }
 
 /** Test existing array entries in order, preserving the legacy sparse-array contract.
- * @example some({items:[1,2],predicate:value=>value===2})
+ *
+ * **Example** (Access the some contract)
+ *
+ * ```ts
+ * import { some } from './ArrayHelpers.js'
+ * void some
+ * ```
+ *
  * @category filtering
  * @since 0.0.0
  */

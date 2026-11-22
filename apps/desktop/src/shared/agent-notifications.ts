@@ -6,7 +6,14 @@ const $I = $DesktopId.create('shared/agent-notifications')
 /** AGENT_NOTIFICATION_OPEN_CHANNEL shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AGENT_NOTIFICATION_OPEN_CHANNEL
+ *
+ * **Example** (Access the AGENT_NOTIFICATION_OPEN_CHANNEL contract)
+ *
+ * ```ts
+ * import { AGENT_NOTIFICATION_OPEN_CHANNEL } from './agent-notifications.js'
+ * void AGENT_NOTIFICATION_OPEN_CHANNEL
+ * ```
+ *
  */
 export const AGENT_NOTIFICATION_OPEN_CHANNEL = 'ai:open-notification-thread'
 
@@ -38,6 +45,13 @@ export const AgentNotificationTarget = S.Struct({
 /** Decoded AgentNotificationTarget data.
  * @category type-level
  * @since 0.0.0
- * @example AgentNotificationTarget
+ *
+ * **Example** (Access the AgentNotificationTarget contract)
+ *
+ * ```ts
+ * import { AgentNotificationTarget } from './agent-notifications.js'
+ * void AgentNotificationTarget
+ * ```
+ *
  */
 export type AgentNotificationTarget = typeof AgentNotificationTarget.Type

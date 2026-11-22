@@ -3,11 +3,47 @@ import { LiteralKit } from '@vidbee/schema/LiteralKit'
 import * as P from 'effect/Predicate'
 import * as S from 'effect/Schema'
 
-const JsonValue = S.Json
-const JsonObject = S.JsonObject
-const Api = S.String
-const ProviderId = S.String
-const ModelThinkingLevel = LiteralKit(['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
+const $I = $DesktopId.create('shared/RawMessage.model')
+const JsonValue: S.Codec<import('@earendil-works/pi-ai').JsonValue> = S.suspend(() =>
+  S.Union([
+    S.Null,
+    S.Boolean,
+    S.Finite,
+    S.String,
+    S.Array(JsonValue),
+    S.Record(S.String, JsonValue.pipe(S.mutableKey))
+  ])
+).pipe(
+  $I.annoteSchema('JsonValue', {
+    description: 'Shared JsonValue schema used by the boundary models.'
+  })
+)
+const JsonObject = S.Record(S.String, JsonValue.pipe(S.mutableKey)).pipe(
+  $I.annoteSchema('JsonObject', {
+    description: 'Shared JsonObject schema used by the boundary models.'
+  })
+)
+const Api = S.String.pipe(
+  $I.annoteSchema('Api', { description: 'Shared Api schema used by the boundary models.' })
+)
+const ProviderId = S.String.pipe(
+  $I.annoteSchema('ProviderId', {
+    description: 'Shared ProviderId schema used by the boundary models.'
+  })
+)
+const ModelThinkingLevel = LiteralKit([
+  'off',
+  'minimal',
+  'low',
+  'medium',
+  'high',
+  'xhigh',
+  'max'
+]).pipe(
+  $I.annoteSchema('ModelThinkingLevel', {
+    description: 'Shared ModelThinkingLevel schema used by the boundary models.'
+  })
+)
 const StopReason = LiteralKit([
   'pending',
   'stop',
@@ -16,13 +52,24 @@ const StopReason = LiteralKit([
   'error',
   'aborted',
   'deferred'
-])
+]).pipe(
+  $I.annoteSchema('StopReason', {
+    description: 'Shared StopReason schema used by the boundary models.'
+  })
+)
 const GrammarVariants = S.Struct({
-  openai_lark: S.optional(S.String),
-  openai_regex: S.optional(S.String)
-})
-const TParameters = S.declare((u): u is NonNullable<unknown> => P.isNotNullish(u))
-const $I = $DesktopId.create('shared/RawMessage.model')
+  openai_lark: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  openai_regex: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('GrammarVariants', {
+    description: 'Shared GrammarVariants schema used by the boundary models.'
+  })
+)
+const TParameters = S.declare((u): u is NonNullable<unknown> => P.isNotNullish(u)).pipe(
+  $I.annoteSchema('TParameters', {
+    description: 'Shared TParameters schema used by the boundary models.'
+  })
+)
 
 /** TextContent shared data; structural for legacy construction.
  *
@@ -41,12 +88,19 @@ const $I = $DesktopId.create('shared/RawMessage.model')
 export const TextContent = S.Struct({
   type: S.Literal('text').pipe(S.mutableKey),
   text: S.String.pipe(S.mutableKey),
-  textSignature: S.String.pipe(S.optional, S.mutableKey)
+  textSignature: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe($I.annoteSchema('TextContent', { description: 'TextContent shared boundary data.' }))
 /** Decoded mutable TextContent data.
  * @category type-level
  * @since 0.0.0
- * @example TextContent
+ *
+ * **Example** (Access the TextContent contract)
+ *
+ * ```ts
+ * import { TextContent } from './RawMessage.model.js'
+ * void TextContent
+ * ```
+ *
  */
 export type TextContent = typeof TextContent.Type
 
@@ -67,15 +121,22 @@ export type TextContent = typeof TextContent.Type
 export const ThinkingContent = S.Struct({
   type: S.Literal('thinking').pipe(S.mutableKey),
   thinking: S.String.pipe(S.mutableKey),
-  thinkingSignature: S.String.pipe(S.optional, S.mutableKey),
-  redacted: S.Boolean.pipe(S.optional, S.mutableKey)
+  thinkingSignature: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  redacted: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ThinkingContent', { description: 'ThinkingContent shared boundary data.' })
 )
 /** Decoded mutable ThinkingContent data.
  * @category type-level
  * @since 0.0.0
- * @example ThinkingContent
+ *
+ * **Example** (Access the ThinkingContent contract)
+ *
+ * ```ts
+ * import { ThinkingContent } from './RawMessage.model.js'
+ * void ThinkingContent
+ * ```
+ *
  */
 export type ThinkingContent = typeof ThinkingContent.Type
 
@@ -101,7 +162,14 @@ export const ImageContent = S.Struct({
 /** Decoded mutable ImageContent data.
  * @category type-level
  * @since 0.0.0
- * @example ImageContent
+ *
+ * **Example** (Access the ImageContent contract)
+ *
+ * ```ts
+ * import { ImageContent } from './RawMessage.model.js'
+ * void ImageContent
+ * ```
+ *
  */
 export type ImageContent = typeof ImageContent.Type
 
@@ -124,14 +192,21 @@ export const ToolCall = S.Struct({
   id: S.String.pipe(S.mutableKey),
   name: S.String.pipe(S.mutableKey),
   arguments: JsonObject.pipe(S.mutableKey),
-  thoughtSignature: S.String.pipe(S.optional, S.mutableKey),
-  namespace: S.String.pipe(S.optional, S.mutableKey),
-  argumentsError: S.String.pipe(S.optional, S.mutableKey)
+  thoughtSignature: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  namespace: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  argumentsError: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe($I.annoteSchema('ToolCall', { description: 'ToolCall shared boundary data.' }))
 /** Decoded mutable ToolCall data.
  * @category type-level
  * @since 0.0.0
- * @example ToolCall
+ *
+ * **Example** (Access the ToolCall contract)
+ *
+ * ```ts
+ * import { ToolCall } from './RawMessage.model.js'
+ * void ToolCall
+ * ```
+ *
  */
 export type ToolCall = typeof ToolCall.Type
 
@@ -154,8 +229,8 @@ export const Usage = S.Struct({
   output: S.Finite.pipe(S.mutableKey),
   cacheRead: S.Finite.pipe(S.mutableKey),
   cacheWrite: S.Finite.pipe(S.mutableKey),
-  cacheWrite1h: S.Finite.pipe(S.optional, S.mutableKey),
-  reasoning: S.Finite.pipe(S.optional, S.mutableKey),
+  cacheWrite1h: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  reasoning: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   totalTokens: S.Finite.pipe(S.mutableKey),
   cost: S.Struct({
     input: S.Finite.pipe(S.mutableKey),
@@ -168,7 +243,14 @@ export const Usage = S.Struct({
 /** Decoded mutable Usage data.
  * @category type-level
  * @since 0.0.0
- * @example Usage
+ *
+ * **Example** (Access the Usage contract)
+ *
+ * ```ts
+ * import { Usage } from './RawMessage.model.js'
+ * void Usage
+ * ```
+ *
  */
 export type Usage = typeof Usage.Type
 
@@ -191,14 +273,21 @@ export const DeferredHandle = S.Struct({
   modelId: S.String.pipe(S.mutableKey),
   api: S.String.pipe(S.mutableKey),
   id: S.String.pipe(S.mutableKey),
-  expiresAt: S.Finite.pipe(S.optional, S.mutableKey),
-  pollAfterMs: S.Finite.pipe(S.optional, S.mutableKey),
-  data: JsonValue.pipe(S.optional, S.mutableKey)
+  expiresAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  pollAfterMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  data: JsonValue.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe($I.annoteSchema('DeferredHandle', { description: 'DeferredHandle shared boundary data.' }))
 /** Decoded mutable DeferredHandle data.
  * @category type-level
  * @since 0.0.0
- * @example DeferredHandle
+ *
+ * **Example** (Access the DeferredHandle contract)
+ *
+ * ```ts
+ * import { DeferredHandle } from './RawMessage.model.js'
+ * void DeferredHandle
+ * ```
+ *
  */
 export type DeferredHandle = typeof DeferredHandle.Type
 
@@ -226,7 +315,14 @@ export const UserMessage = S.Struct({
 /** Decoded mutable UserMessage data.
  * @category type-level
  * @since 0.0.0
- * @example UserMessage
+ *
+ * **Example** (Access the UserMessage contract)
+ *
+ * ```ts
+ * import { UserMessage } from './RawMessage.model.js'
+ * void UserMessage
+ * ```
+ *
  */
 export type UserMessage = typeof UserMessage.Type
 
@@ -247,11 +343,11 @@ export type UserMessage = typeof UserMessage.Type
 export const NestedToolCallRecord = S.Struct({
   id: S.String.pipe(S.mutableKey),
   name: S.String.pipe(S.mutableKey),
-  arguments: JsonObject.pipe(S.optional, S.mutableKey),
-  argumentsBytes: S.Finite.pipe(S.optional, S.mutableKey),
+  arguments: JsonObject.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  argumentsBytes: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   status: LiteralKit(['ok', 'error', 'unfinished']).pipe(S.mutableKey),
-  durationMs: S.Finite.pipe(S.optional, S.mutableKey),
-  error: S.String.pipe(S.optional, S.mutableKey)
+  durationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  error: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('NestedToolCallRecord', {
     description: 'NestedToolCallRecord shared boundary data.'
@@ -260,7 +356,14 @@ export const NestedToolCallRecord = S.Struct({
 /** Decoded mutable NestedToolCallRecord data.
  * @category type-level
  * @since 0.0.0
- * @example NestedToolCallRecord
+ *
+ * **Example** (Access the NestedToolCallRecord contract)
+ *
+ * ```ts
+ * import { NestedToolCallRecord } from './RawMessage.model.js'
+ * void NestedToolCallRecord
+ * ```
+ *
  */
 export type NestedToolCallRecord = typeof NestedToolCallRecord.Type
 
@@ -287,7 +390,14 @@ export const NestedToolCalls = S.Struct({
 /** Decoded mutable NestedToolCalls data.
  * @category type-level
  * @since 0.0.0
- * @example NestedToolCalls
+ *
+ * **Example** (Access the NestedToolCalls contract)
+ *
+ * ```ts
+ * import { NestedToolCalls } from './RawMessage.model.js'
+ * void NestedToolCalls
+ * ```
+ *
  */
 export type NestedToolCalls = typeof NestedToolCalls.Type
 
@@ -310,19 +420,26 @@ export const ToolResultMessage = S.Struct({
   toolCallId: S.String.pipe(S.mutableKey),
   toolName: S.String.pipe(S.mutableKey),
   content: S.Array(S.Union([TextContent, ImageContent])).pipe(S.mutable, S.mutableKey),
-  details: JsonValue.pipe(S.optional, S.mutableKey),
-  usage: Usage.pipe(S.optional, S.mutableKey),
-  nestedCalls: NestedToolCalls.pipe(S.optional, S.mutableKey),
+  details: JsonValue.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  usage: Usage.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  nestedCalls: NestedToolCalls.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   isError: S.Boolean.pipe(S.mutableKey),
   timestamp: S.Finite.pipe(S.mutableKey),
-  durationMs: S.Finite.pipe(S.optional, S.mutableKey)
+  durationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ToolResultMessage', { description: 'ToolResultMessage shared boundary data.' })
 )
 /** Decoded mutable ToolResultMessage data.
  * @category type-level
  * @since 0.0.0
- * @example ToolResultMessage
+ *
+ * **Example** (Access the ToolResultMessage contract)
+ *
+ * ```ts
+ * import { ToolResultMessage } from './RawMessage.model.js'
+ * void ToolResultMessage
+ * ```
+ *
  */
 export type ToolResultMessage = typeof ToolResultMessage.Type
 
@@ -357,7 +474,14 @@ export const ConstrainedSamplingConfig = S.Union([
 /** Decoded mutable ConstrainedSamplingConfig data.
  * @category type-level
  * @since 0.0.0
- * @example ConstrainedSamplingConfig
+ *
+ * **Example** (Access the ConstrainedSamplingConfig contract)
+ *
+ * ```ts
+ * import { ConstrainedSamplingConfig } from './RawMessage.model.js'
+ * void ConstrainedSamplingConfig
+ * ```
+ *
  */
 export type ConstrainedSamplingConfig = typeof ConstrainedSamplingConfig.Type
 
@@ -380,14 +504,22 @@ export const Tool = S.Struct({
   description: S.String.pipe(S.mutableKey),
   parameters: TParameters.pipe(S.mutableKey),
   constrainedSampling: S.Union([S.Literal(false), ConstrainedSamplingConfig]).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   )
 }).pipe($I.annoteSchema('Tool', { description: 'Tool shared boundary data.' }))
 /** Decoded mutable Tool data.
  * @category type-level
  * @since 0.0.0
- * @example Tool
+ *
+ * **Example** (Access the Tool contract)
+ *
+ * ```ts
+ * import { Tool } from './RawMessage.model.js'
+ * void Tool
+ * ```
+ *
  */
 export type Tool = typeof Tool.Type
 
@@ -411,7 +543,14 @@ export const ToolReference = S.Struct({
 /** Decoded mutable ToolReference data.
  * @category type-level
  * @since 0.0.0
- * @example ToolReference
+ *
+ * **Example** (Access the ToolReference contract)
+ *
+ * ```ts
+ * import { ToolReference } from './RawMessage.model.js'
+ * void ToolReference
+ * ```
+ *
  */
 export type ToolReference = typeof ToolReference.Type
 
@@ -430,10 +569,10 @@ export type ToolReference = typeof ToolReference.Type
  * @since 0.0.0
  */
 export const DiagnosticErrorInfo = S.Struct({
-  name: S.String.pipe(S.optional, S.mutableKey),
+  name: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   message: S.String.pipe(S.mutableKey),
-  stack: S.String.pipe(S.optional, S.mutableKey),
-  code: S.Union([S.String, S.Finite]).pipe(S.optional, S.mutableKey)
+  stack: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  code: S.Union([S.String, S.Finite]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('DiagnosticErrorInfo', {
     description: 'DiagnosticErrorInfo shared boundary data.'
@@ -442,7 +581,14 @@ export const DiagnosticErrorInfo = S.Struct({
 /** Decoded mutable DiagnosticErrorInfo data.
  * @category type-level
  * @since 0.0.0
- * @example DiagnosticErrorInfo
+ *
+ * **Example** (Access the DiagnosticErrorInfo contract)
+ *
+ * ```ts
+ * import { DiagnosticErrorInfo } from './RawMessage.model.js'
+ * void DiagnosticErrorInfo
+ * ```
+ *
  */
 export type DiagnosticErrorInfo = typeof DiagnosticErrorInfo.Type
 
@@ -463,8 +609,8 @@ export type DiagnosticErrorInfo = typeof DiagnosticErrorInfo.Type
 export const AssistantMessageDiagnostic = S.Struct({
   type: S.String.pipe(S.mutableKey),
   timestamp: S.Finite.pipe(S.mutableKey),
-  error: DiagnosticErrorInfo.pipe(S.optional, S.mutableKey),
-  details: JsonObject.pipe(S.optional, S.mutableKey)
+  error: DiagnosticErrorInfo.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  details: JsonObject.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AssistantMessageDiagnostic', {
     description: 'AssistantMessageDiagnostic shared boundary data.'
@@ -473,7 +619,14 @@ export const AssistantMessageDiagnostic = S.Struct({
 /** Decoded mutable AssistantMessageDiagnostic data.
  * @category type-level
  * @since 0.0.0
- * @example AssistantMessageDiagnostic
+ *
+ * **Example** (Access the AssistantMessageDiagnostic contract)
+ *
+ * ```ts
+ * import { AssistantMessageDiagnostic } from './RawMessage.model.js'
+ * void AssistantMessageDiagnostic
+ * ```
+ *
  */
 export type AssistantMessageDiagnostic = typeof AssistantMessageDiagnostic.Type
 
@@ -496,7 +649,7 @@ export const SdkCustomMessage = S.Struct({
   customType: S.String.pipe(S.mutableKey),
   content: UserMessage.fields.content.pipe(S.mutableKey),
   display: S.Boolean.pipe(S.mutableKey),
-  details: S.Unknown.pipe(S.optional, S.mutableKey),
+  details: S.Unknown.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   timestamp: S.Finite.pipe(S.mutableKey)
 }).pipe(
   $I.annoteSchema('SdkCustomMessage', { description: 'SdkCustomMessage shared boundary data.' })
@@ -504,7 +657,14 @@ export const SdkCustomMessage = S.Struct({
 /** Decoded mutable SdkCustomMessage data.
  * @category type-level
  * @since 0.0.0
- * @example SdkCustomMessage
+ *
+ * **Example** (Access the SdkCustomMessage contract)
+ *
+ * ```ts
+ * import { SdkCustomMessage } from './RawMessage.model.js'
+ * void SdkCustomMessage
+ * ```
+ *
  */
 export type SdkCustomMessage = typeof SdkCustomMessage.Type
 
@@ -526,17 +686,25 @@ export const SystemMessage = S.Struct({
   role: S.Literal('system').pipe(S.mutableKey),
   content: S.Union([S.String, S.Array(TextContent).pipe(S.mutable)]).pipe(S.mutableKey),
   sections: S.Record(S.String, S.Union([S.String, S.Null]).pipe(S.mutableKey)).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   ),
-  toolsAdded: S.Array(Tool).pipe(S.mutable, S.optional, S.mutableKey),
-  toolsRemoved: S.Array(ToolReference).pipe(S.mutable, S.optional, S.mutableKey),
+  toolsAdded: S.Array(Tool).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  toolsRemoved: S.Array(ToolReference).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   timestamp: S.Finite.pipe(S.mutableKey)
 }).pipe($I.annoteSchema('SystemMessage', { description: 'SystemMessage shared boundary data.' }))
 /** Decoded mutable SystemMessage data.
  * @category type-level
  * @since 0.0.0
- * @example SystemMessage
+ *
+ * **Example** (Access the SystemMessage contract)
+ *
+ * ```ts
+ * import { SystemMessage } from './RawMessage.model.js'
+ * void SystemMessage
+ * ```
+ *
  */
 export type SystemMessage = typeof SystemMessage.Type
 
@@ -560,26 +728,38 @@ export const AssistantMessage = S.Struct({
   api: Api.pipe(S.mutableKey),
   provider: ProviderId.pipe(S.mutableKey),
   model: S.String.pipe(S.mutableKey),
-  responseModel: S.String.pipe(S.optional, S.mutableKey),
-  responseId: S.String.pipe(S.optional, S.mutableKey),
-  providerThinkingLevel: S.String.pipe(S.optional, S.mutableKey),
-  thinkingLevel: ModelThinkingLevel.pipe(S.optional, S.mutableKey),
-  diagnostics: S.Array(AssistantMessageDiagnostic).pipe(S.mutable, S.optional, S.mutableKey),
+  responseModel: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  responseId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  providerThinkingLevel: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  thinkingLevel: ModelThinkingLevel.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  diagnostics: S.Array(AssistantMessageDiagnostic).pipe(
+    S.mutable,
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  ),
   usage: Usage.pipe(S.mutableKey),
   stopReason: StopReason.pipe(S.mutableKey),
-  deferred: DeferredHandle.pipe(S.optional, S.mutableKey),
-  errorMessage: S.String.pipe(S.optional, S.mutableKey),
-  rawStopReason: S.String.pipe(S.optional, S.mutableKey),
-  endTurn: S.Boolean.pipe(S.optional, S.mutableKey),
+  deferred: DeferredHandle.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  errorMessage: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  rawStopReason: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  endTurn: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   timestamp: S.Finite.pipe(S.mutableKey),
-  durationMs: S.Finite.pipe(S.optional, S.mutableKey)
+  durationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AssistantMessage', { description: 'AssistantMessage shared boundary data.' })
 )
 /** Decoded mutable AssistantMessage data.
  * @category type-level
  * @since 0.0.0
- * @example AssistantMessage
+ *
+ * **Example** (Access the AssistantMessage contract)
+ *
+ * ```ts
+ * import { AssistantMessage } from './RawMessage.model.js'
+ * void AssistantMessage
+ * ```
+ *
  */
 export type AssistantMessage = typeof AssistantMessage.Type
 
@@ -606,7 +786,14 @@ export const Message = S.Union([
 /** Decoded mutable Message data.
  * @category type-level
  * @since 0.0.0
- * @example Message
+ *
+ * **Example** (Access the Message contract)
+ *
+ * ```ts
+ * import { Message } from './RawMessage.model.js'
+ * void Message
+ * ```
+ *
  */
 export type Message =
   typeof Message.Type /** Installed SDK/app message union; structural for legacy construction.
@@ -622,6 +809,17 @@ export type Message =
  * @category schemas
  * @since 0.0.0
  */
+/** Structural AgentMessage contract for legacy construction. structural for legacy construction.
+ * @category schemas
+ * @since 0.0.0
+ *
+ * **Example** (Access AgentMessage)
+ *
+ * ```ts
+ * import { AgentMessage } from './RawMessage.model.js'
+ * void AgentMessage
+ * ```
+ */
 export const AgentMessage = S.Union([Message, SdkCustomMessage]).pipe(
   $I.annoteSchema('AgentMessage', {
     description: 'Installed pi messages and the application custom message.'
@@ -630,6 +828,13 @@ export const AgentMessage = S.Union([Message, SdkCustomMessage]).pipe(
 /** AgentMessage shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentMessage
+ *
+ * **Example** (Access the AgentMessage contract)
+ *
+ * ```ts
+ * import { AgentMessage } from './RawMessage.model.js'
+ * void AgentMessage
+ * ```
+ *
  */
 export type AgentMessage = typeof AgentMessage.Type

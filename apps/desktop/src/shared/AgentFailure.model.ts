@@ -36,7 +36,14 @@ export const AgentErrorCode = LiteralKit([
 /** AgentErrorCode shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentErrorCode
+ *
+ * **Example** (Access the AgentErrorCode contract)
+ *
+ * ```ts
+ * import { AgentErrorCode } from './AgentFailure.model.js'
+ * void AgentErrorCode
+ * ```
+ *
  */
 export type AgentErrorCode = typeof AgentErrorCode.Type
 
@@ -61,12 +68,26 @@ export const AgentFailure = S.Struct({
 /** AgentFailure shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentFailure
+ *
+ * **Example** (Access the AgentFailure contract)
+ *
+ * ```ts
+ * import { AgentFailure } from './AgentFailure.model.js'
+ * void AgentFailure
+ * ```
+ *
  */
 export type AgentFailure = typeof AgentFailure.Type
 
 /** Typed strict operation failure. Legacy Error constructors remain in compatibility.
- * @example SharedOperationError.make({message:'Unavailable'})
+ *
+ * **Example** (Access the SharedOperationError contract)
+ *
+ * ```ts
+ * import { SharedOperationError } from './AgentFailure.model.js'
+ * void SharedOperationError
+ * ```
+ *
  * @category errors
  * @since 0.0.0
  */

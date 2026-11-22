@@ -1,16 +1,28 @@
 import { languageList, languages, normalizeLanguageCode } from '@vidbee/i18n/languages'
+import { $DesktopId } from '@vidbee/identity/packages'
 import * as A from 'effect/Array'
 import * as HM from 'effect/HashMap'
 import * as HS from 'effect/HashSet'
 import * as O from 'effect/Option'
+import * as Order from 'effect/Order'
 import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
 import * as Sparse from './ArrayHelpers.js'
-import type { AiPrompt } from './ai-types'
+import { AiPrompt } from './ai-types'
 import { BUILTIN_SKILLS } from './builtin-skills'
 import { recordFunction } from './RecordFunction.js'
 
-/** Replaced with the current UI language name before a prompt is shown or sent.  * @example AI_PROMPT_UI_LANGUAGE_TOKEN
+const $I = $DesktopId.create('shared/ai-prompts')
+/** Replaced with the current UI language name before a prompt is shown or sent.
+ *
+ * **Example** (Access the AI_PROMPT_UI_LANGUAGE_TOKEN contract)
+ *
+ * ```ts
+ * import { AI_PROMPT_UI_LANGUAGE_TOKEN } from './ai-prompts.js'
+ * void AI_PROMPT_UI_LANGUAGE_TOKEN
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -47,7 +59,15 @@ const LEGACY_OVERVIEW_CONTENT = A.join(
   '\n'
 )
 
-/** Built-in Overview prompt, pinned beside the transcript tab.  * @example AI_OVERVIEW_PROMPT_ID
+/** Built-in Overview prompt, pinned beside the transcript tab.
+ *
+ * **Example** (Access the AI_OVERVIEW_PROMPT_ID contract)
+ *
+ * ```ts
+ * import { AI_OVERVIEW_PROMPT_ID } from './ai-prompts.js'
+ * void AI_OVERVIEW_PROMPT_ID
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -60,7 +80,15 @@ const DEFAULT_TRANSCRIPT_SIDEBAR_SKILLS = HS.fromIterable([
   'create-mindmap'
 ])
 
-/** Freeform Agent conversation started from New chat, not shown as a prompt tab.  * @example AI_CHAT_PROMPT_ID
+/** Freeform Agent conversation started from New chat, not shown as a prompt tab.
+ *
+ * **Example** (Access the AI_CHAT_PROMPT_ID contract)
+ *
+ * ```ts
+ * import { AI_CHAT_PROMPT_ID } from './ai-prompts.js'
+ * void AI_CHAT_PROMPT_ID
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -107,16 +135,27 @@ function agentChatPromptBody(now: number, hasSource = true): AiPrompt {
 /**
  * Default transcript skills authored in the repository library. `{{uiLanguage}}` is replaced
  * with the current interface language name before a prompt is shown or sent.
- * @example AI_PROMPT_PRESETS
+ *
+ * **Example** (Access the AI_PROMPT_PRESETS contract)
+ *
+ * ```ts
+ * import { AI_PROMPT_PRESETS } from './ai-prompts.js'
+ * void AI_PROMPT_PRESETS
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
-export const AI_PROMPT_PRESETS: readonly AiPromptPresetSeed[] = Sparse.filter({
-  items: BUILTIN_SKILLS,
-  predicate: (skill) => !['article-rewrite', 'faq', 'diagnose-task'].includes(skill.name)
-}).sort(
-  (left, right) =>
-    Number(right.name === AI_OVERVIEW_PROMPT_ID) - Number(left.name === AI_OVERVIEW_PROMPT_ID)
+export const AI_PROMPT_PRESETS: readonly AiPromptPresetSeed[] = A.sort(
+  Sparse.filter({
+    items: BUILTIN_SKILLS,
+    predicate: (skill) => !['article-rewrite', 'faq', 'diagnose-task'].includes(skill.name)
+  }),
+  Order.make<AiPromptPresetSeed>((left, right) => {
+    const difference =
+      Number(right.name === AI_OVERVIEW_PROMPT_ID) - Number(left.name === AI_OVERVIEW_PROMPT_ID)
+    return difference < 0 ? -1 : difference > 0 ? 1 : 0
+  })
 )
 const PRESET_NAMES = HS.fromIterable(
   Sparse.map({
@@ -278,7 +317,14 @@ const SUPERSEDED_PRESET_CONTENT: Record<string, readonly string[]> = {
  * Native name of a VidBee UI language, used inside built-in prompts.
  *
  * @param languageCode Saved or i18n language tag.
- * @example aiPromptUiLanguageName
+ *
+ * **Example** (Access the aiPromptUiLanguageName contract)
+ *
+ * ```ts
+ * import { aiPromptUiLanguageName } from './ai-prompts.js'
+ * void aiPromptUiLanguageName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -318,7 +364,14 @@ function canonicalizeAiPromptContentBody(promptId: string, content: string): str
  * True when a skill name ships with VidBee.
  *
  * @param name Standard skill name from storage or the UI.
- * @example isAiPromptPresetName
+ *
+ * **Example** (Access the isAiPromptPresetName contract)
+ *
+ * ```ts
+ * import { isAiPromptPresetName } from './ai-prompts.js'
+ * void isAiPromptPresetName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -366,7 +419,14 @@ function aiPromptDescriptionBody(
  * Build the default prompt list used on first launch.
  *
  * @param now Timestamp written onto createdAt/updatedAt.
- * @example createDefaultAiPrompts
+ *
+ * **Example** (Access the createDefaultAiPrompts contract)
+ *
+ * ```ts
+ * import { createDefaultAiPrompts } from './ai-prompts.js'
+ * void createDefaultAiPrompts
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -422,7 +482,15 @@ const withCurrentPromptFields = (
   }
 }
 
-/** Resolve saved sidebar preferences while keeping custom skills on their existing defaults.  * @example isTranscriptSkillSidebarEnabled
+/** Resolve saved sidebar preferences while keeping custom skills on their existing defaults.
+ *
+ * **Example** (Access the isTranscriptSkillSidebarEnabled contract)
+ *
+ * ```ts
+ * import { isTranscriptSkillSidebarEnabled } from './ai-prompts.js'
+ * void isTranscriptSkillSidebarEnabled
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -435,7 +503,15 @@ export function isTranscriptSkillSidebarEnabled(prompt: AiPrompt): boolean {
   )
 }
 
-/** Exclude invalid skills after resolving their transcript sidebar preference.  * @example isTranscriptSkillVisible
+/** Exclude invalid skills after resolving their transcript sidebar preference.
+ *
+ * **Example** (Access the isTranscriptSkillVisible contract)
+ *
+ * ```ts
+ * import { isTranscriptSkillVisible } from './ai-prompts.js'
+ * void isTranscriptSkillVisible
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -447,7 +523,14 @@ export function isTranscriptSkillVisible(prompt: AiPrompt): boolean {
  * Split the Overview prompt from the remaining visible prompt tabs.
  *
  * @param prompts Installed prompts shown in the transcript side panel.
- * @example partitionTranscriptPromptTabs
+ *
+ * **Example** (Access the partitionTranscriptPromptTabs contract)
+ *
+ * ```ts
+ * import { partitionTranscriptPromptTabs } from './ai-prompts.js'
+ * void partitionTranscriptPromptTabs
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -535,19 +618,43 @@ function mergeDefaultAiPromptsBody(existing: AiPrompt[], now: number): AiPrompt[
   ]
 }
 
-/** Record contract for agentChatPrompt.
+/** Record contract for agentChatPrompt. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AgentChatPromptInput
+ *
+ * **Example** (Access the AgentChatPromptInput contract)
+ *
+ * ```ts
+ * import { AgentChatPromptInput } from './ai-prompts.js'
+ * void AgentChatPromptInput
+ * ```
+ *
  */
-export interface AgentChatPromptInput {
-  now: number
-  hasSource?: boolean | undefined
-}
+export const AgentChatPromptInput = S.Struct({
+  now: S.mutableKey(S.Finite),
+  hasSource: S.Union([S.Boolean, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AgentChatPromptInput', {
+    description:
+      'Explicit input record for AgentChatPromptInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AgentChatPromptInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentChatPromptInput = typeof AgentChatPromptInput.Type
 /** agentChatPrompt with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example agentChatPrompt
+ *
+ * **Example** (Access the agentChatPrompt contract)
+ *
+ * ```ts
+ * import { agentChatPrompt } from './ai-prompts.js'
+ * void agentChatPrompt
+ * ```
+ *
  */
 export const agentChatPrompt: {
   (): (input: AgentChatPromptInput) => AiPrompt
@@ -555,19 +662,43 @@ export const agentChatPrompt: {
 } = recordFunction(
   (input: AgentChatPromptInput): AiPrompt => agentChatPromptBody(input.now, input.hasSource)
 )
-/** Record contract for resolveAiPromptContent.
+/** Record contract for resolveAiPromptContent. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ResolveAiPromptContentInput
+ *
+ * **Example** (Access the ResolveAiPromptContentInput contract)
+ *
+ * ```ts
+ * import { ResolveAiPromptContentInput } from './ai-prompts.js'
+ * void ResolveAiPromptContentInput
+ * ```
+ *
  */
-export interface ResolveAiPromptContentInput {
-  content: string
-  languageCode: string
-}
+export const ResolveAiPromptContentInput = S.Struct({
+  content: S.mutableKey(S.String),
+  languageCode: S.mutableKey(S.String)
+}).pipe(
+  $I.annoteSchema('ResolveAiPromptContentInput', {
+    description:
+      'Explicit input record for ResolveAiPromptContentInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ResolveAiPromptContentInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ResolveAiPromptContentInput = typeof ResolveAiPromptContentInput.Type
 /** resolveAiPromptContent with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example resolveAiPromptContent
+ *
+ * **Example** (Access the resolveAiPromptContent contract)
+ *
+ * ```ts
+ * import { resolveAiPromptContent } from './ai-prompts.js'
+ * void resolveAiPromptContent
+ * ```
+ *
  */
 export const resolveAiPromptContent: {
   (): (input: ResolveAiPromptContentInput) => string
@@ -575,19 +706,43 @@ export const resolveAiPromptContent: {
 } = recordFunction((input: ResolveAiPromptContentInput): string =>
   resolveAiPromptContentBody(input.content, input.languageCode)
 )
-/** Record contract for canonicalizeAiPromptContent.
+/** Record contract for canonicalizeAiPromptContent. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example CanonicalizeAiPromptContentInput
+ *
+ * **Example** (Access the CanonicalizeAiPromptContentInput contract)
+ *
+ * ```ts
+ * import { CanonicalizeAiPromptContentInput } from './ai-prompts.js'
+ * void CanonicalizeAiPromptContentInput
+ * ```
+ *
  */
-export interface CanonicalizeAiPromptContentInput {
-  promptId: string
-  content: string
-}
+export const CanonicalizeAiPromptContentInput = S.Struct({
+  promptId: S.mutableKey(S.String),
+  content: S.mutableKey(S.String)
+}).pipe(
+  $I.annoteSchema('CanonicalizeAiPromptContentInput', {
+    description:
+      'Explicit input record for CanonicalizeAiPromptContentInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived CanonicalizeAiPromptContentInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type CanonicalizeAiPromptContentInput = typeof CanonicalizeAiPromptContentInput.Type
 /** canonicalizeAiPromptContent with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example canonicalizeAiPromptContent
+ *
+ * **Example** (Access the canonicalizeAiPromptContent contract)
+ *
+ * ```ts
+ * import { canonicalizeAiPromptContent } from './ai-prompts.js'
+ * void canonicalizeAiPromptContent
+ * ```
+ *
  */
 export const canonicalizeAiPromptContent: {
   (): (input: CanonicalizeAiPromptContentInput) => string
@@ -598,7 +753,13 @@ export const canonicalizeAiPromptContent: {
 /** Record contract for aiPromptLabel.
  * @category ports
  * @since 0.0.0
- * @example AiPromptLabelInput
+ *
+ * **Example** (Import the AiPromptLabelInput contract)
+ *
+ * ```ts
+ * export type { AiPromptLabelInput } from './ai-prompts.js'
+ * ```
+ *
  */
 export interface AiPromptLabelInput {
   prompt: Pick<AiPrompt, 'name' | 'isPreset' | 'description'>
@@ -607,7 +768,14 @@ export interface AiPromptLabelInput {
 /** aiPromptLabel with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example aiPromptLabel
+ *
+ * **Example** (Access the aiPromptLabel contract)
+ *
+ * ```ts
+ * import { aiPromptLabel } from './ai-prompts.js'
+ * void aiPromptLabel
+ * ```
+ *
  */
 export const aiPromptLabel: {
   (): (input: AiPromptLabelInput) => string
@@ -618,7 +786,13 @@ export const aiPromptLabel: {
 /** Record contract for aiPromptDescription.
  * @category ports
  * @since 0.0.0
- * @example AiPromptDescriptionInput
+ *
+ * **Example** (Import the AiPromptDescriptionInput contract)
+ *
+ * ```ts
+ * export type { AiPromptDescriptionInput } from './ai-prompts.js'
+ * ```
+ *
  */
 export interface AiPromptDescriptionInput {
   prompt: Pick<AiPrompt, 'name' | 'isPreset' | 'description'>
@@ -627,7 +801,14 @@ export interface AiPromptDescriptionInput {
 /** aiPromptDescription with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example aiPromptDescription
+ *
+ * **Example** (Access the aiPromptDescription contract)
+ *
+ * ```ts
+ * import { aiPromptDescription } from './ai-prompts.js'
+ * void aiPromptDescription
+ * ```
+ *
  */
 export const aiPromptDescription: {
   (): (input: AiPromptDescriptionInput) => string
@@ -635,19 +816,43 @@ export const aiPromptDescription: {
 } = recordFunction((input: AiPromptDescriptionInput): string =>
   aiPromptDescriptionBody(input.prompt, input.translate)
 )
-/** Record contract for mergeDefaultAiPrompts.
+/** Record contract for mergeDefaultAiPrompts. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example MergeDefaultAiPromptsInput
+ *
+ * **Example** (Access the MergeDefaultAiPromptsInput contract)
+ *
+ * ```ts
+ * import { MergeDefaultAiPromptsInput } from './ai-prompts.js'
+ * void MergeDefaultAiPromptsInput
+ * ```
+ *
  */
-export interface MergeDefaultAiPromptsInput {
-  existing: AiPrompt[]
-  now: number
-}
+export const MergeDefaultAiPromptsInput = S.Struct({
+  existing: AiPrompt.pipe(S.Array, S.mutable, S.mutableKey),
+  now: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('MergeDefaultAiPromptsInput', {
+    description:
+      'Explicit input record for MergeDefaultAiPromptsInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived MergeDefaultAiPromptsInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type MergeDefaultAiPromptsInput = typeof MergeDefaultAiPromptsInput.Type
 /** mergeDefaultAiPrompts with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example mergeDefaultAiPrompts
+ *
+ * **Example** (Access the mergeDefaultAiPrompts contract)
+ *
+ * ```ts
+ * import { mergeDefaultAiPrompts } from './ai-prompts.js'
+ * void mergeDefaultAiPrompts
+ * ```
+ *
  */
 export const mergeDefaultAiPrompts: {
   (): (input: MergeDefaultAiPromptsInput) => AiPrompt[]

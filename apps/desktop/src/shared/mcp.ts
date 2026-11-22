@@ -34,7 +34,14 @@ export const DesktopMcpStatus = S.Struct({
 /** Decoded DesktopMcpStatus data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopMcpStatus
+ *
+ * **Example** (Access the DesktopMcpStatus contract)
+ *
+ * ```ts
+ * import { DesktopMcpStatus } from './mcp.js'
+ * void DesktopMcpStatus
+ * ```
+ *
  */
 export type DesktopMcpStatus = typeof DesktopMcpStatus.Type
 
@@ -67,7 +74,14 @@ export const DesktopMcpCapability = S.Struct({
 /** Decoded DesktopMcpCapability data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopMcpCapability
+ *
+ * **Example** (Access the DesktopMcpCapability contract)
+ *
+ * ```ts
+ * import { DesktopMcpCapability } from './mcp.js'
+ * void DesktopMcpCapability
+ * ```
+ *
  */
 export type DesktopMcpCapability = typeof DesktopMcpCapability.Type
 
@@ -100,6 +114,13 @@ export const DesktopMcpCapabilityGroup = S.Struct({
 /** Decoded DesktopMcpCapabilityGroup data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopMcpCapabilityGroup
+ *
+ * **Example** (Access the DesktopMcpCapabilityGroup contract)
+ *
+ * ```ts
+ * import { DesktopMcpCapabilityGroup } from './mcp.js'
+ * void DesktopMcpCapabilityGroup
+ * ```
+ *
  */
 export type DesktopMcpCapabilityGroup = typeof DesktopMcpCapabilityGroup.Type

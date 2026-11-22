@@ -1,7 +1,9 @@
 import { $DesktopId } from '@vidbee/identity/packages'
 import { LiteralKit } from '@vidbee/schema/LiteralKit'
+import * as A from 'effect/Array'
 import * as HM from 'effect/HashMap'
 import * as O from 'effect/Option'
+import * as Order from 'effect/Order'
 import * as P from 'effect/Predicate'
 import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
@@ -11,7 +13,7 @@ import { recordFunction } from './RecordFunction.js'
 const $I = $DesktopId.create('shared/agent-history')
 
 import { AI_CHAT_PROMPT_ID } from './AiPromptIds'
-import type { AgentChatRun, AgentThread, AgentThreadSummary } from './agent-chat'
+import { type AgentChatRun, AgentThread, AgentThreadSummary } from './agent-chat'
 
 const DAY_MS = 86_400_000
 const TITLE_MAX = 80
@@ -21,7 +23,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
  * True when the value is a canonical 8-4-4-4-12 hex UUID.
  *
  * @param value Candidate identifier.
- * @example isUuid
+ *
+ * **Example** (Access the isUuid contract)
+ *
+ * ```ts
+ * import { isUuid } from './agent-history.js'
+ * void isUuid
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -33,7 +42,14 @@ export function isUuid(value: string): boolean {
  * Collapse whitespace and cap length for a conversation tab title.
  *
  * @param value Raw title from the Agent or the user.
- * @example sanitizeAgentConversationTitle
+ *
+ * **Example** (Access the sanitizeAgentConversationTitle contract)
+ *
+ * ```ts
+ * import { sanitizeAgentConversationTitle } from './agent-history.js'
+ * void sanitizeAgentConversationTitle
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -62,12 +78,26 @@ export const AgentHistoryGroupKind = LiteralKit(['today', 'yesterday', 'weekday'
 /** AgentHistoryGroupKind shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentHistoryGroupKind
+ *
+ * **Example** (Access the AgentHistoryGroupKind contract)
+ *
+ * ```ts
+ * import { AgentHistoryGroupKind } from './agent-history.js'
+ * void AgentHistoryGroupKind
+ * ```
+ *
  */
 export type AgentHistoryGroupKind = typeof AgentHistoryGroupKind.Type
 
 /** Calendar projection, structural for legacy construction.
- * @example AgentHistoryGroup(S.String)
+ *
+ * **Example** (Access the AgentHistoryGroup contract)
+ *
+ * ```ts
+ * import { AgentHistoryGroup } from './agent-history.js'
+ * void AgentHistoryGroup
+ * ```
+ *
  * @category schemas
  * @since 0.0.0
  */
@@ -75,7 +105,7 @@ export const AgentHistoryGroup = <Item extends S.Constraint>(item: Item) =>
   S.Struct({
     key: S.String.pipe(S.mutableKey),
     kind: AgentHistoryGroupKind.pipe(S.mutableKey),
-    label: S.String.pipe(S.optional, S.mutableKey),
+    label: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     items: S.Array(item).pipe(S.mutable, S.mutableKey)
   }).pipe(
     $I.annoteSchema('AgentHistoryGroup', {
@@ -85,13 +115,26 @@ export const AgentHistoryGroup = <Item extends S.Constraint>(item: Item) =>
 /** AgentHistoryGroup shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentHistoryGroup
+ *
+ * **Example** (Access the AgentHistoryGroup contract)
+ *
+ * ```ts
+ * import { AgentHistoryGroup } from './agent-history.js'
+ * void AgentHistoryGroup
+ * ```
+ *
  */
 export type AgentHistoryGroup<T> = ReturnType<typeof AgentHistoryGroup<S.Schema<T>>>['Type']
 /** Injected local calendar operations; the compatibility entrypoint supplies Date and Intl.
  * @category ports
  * @since 0.0.0
- * @example AgentHistoryCalendar
+ *
+ * **Example** (Import the AgentHistoryCalendar contract)
+ *
+ * ```ts
+ * export type { AgentHistoryCalendar } from './agent-history.js'
+ * ```
+ *
  */
 export interface AgentHistoryCalendar {
   startOfLocalDay: (ms: number) => number
@@ -102,7 +145,14 @@ export interface AgentHistoryCalendar {
  * Local midnight for a timestamp so history groups follow the user's calendar day.
  *
  * @param ms Epoch milliseconds.
- * @example startOfLocalDay
+ *
+ * **Example** (Access the startOfLocalDay contract)
+ *
+ * ```ts
+ * import { startOfLocalDay } from './agent-history.js'
+ * void startOfLocalDay
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -114,7 +164,14 @@ export function startOfLocalDay(input: { ms: number; calendar: AgentHistoryCalen
  * One-line preview of the first user message on a conversation.
  *
  * @param thread Persisted agent thread.
- * @example agentThreadUserPreview
+ *
+ * **Example** (Access the agentThreadUserPreview contract)
+ *
+ * ```ts
+ * import { agentThreadUserPreview } from './agent-history.js'
+ * void agentThreadUserPreview
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -159,7 +216,14 @@ function agentConversationTitleBody(thread: AgentThread, videoTitle: string): st
  * True when the conversation still has a live model run.
  *
  * @param thread Persisted agent thread.
- * @example agentThreadIsRunning
+ *
+ * **Example** (Access the agentThreadIsRunning contract)
+ *
+ * ```ts
+ * import { agentThreadIsRunning } from './agent-history.js'
+ * void agentThreadIsRunning
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -167,7 +231,15 @@ export function agentThreadIsRunning(thread: AgentThread): boolean {
   return Sparse.some({ items: thread.runs, predicate: (run) => run.status === 'running' })
 }
 
-/** True while any live run in the conversation is waiting for manual permission.  * @example agentThreadNeedsApproval
+/** True while any live run in the conversation is waiting for manual permission.
+ *
+ * **Example** (Access the agentThreadNeedsApproval contract)
+ *
+ * ```ts
+ * import { agentThreadNeedsApproval } from './agent-history.js'
+ * void agentThreadNeedsApproval
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -184,7 +256,14 @@ export function agentThreadNeedsApproval(thread: AgentThread): boolean {
  * The run the download list reports: a live run first, otherwise the most recently updated.
  *
  * @param thread Persisted agent thread.
- * @example agentThreadLatestRun
+ *
+ * **Example** (Access the agentThreadLatestRun contract)
+ *
+ * ```ts
+ * import { agentThreadLatestRun } from './agent-history.js'
+ * void agentThreadLatestRun
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -205,7 +284,14 @@ export function agentThreadLatestRun(thread: AgentThread): AgentChatRun | undefi
  * Latest product timestamp on a thread, ignoring empty conversations.
  *
  * @param thread Persisted agent thread.
- * @example agentThreadUpdatedAt
+ *
+ * **Example** (Access the agentThreadUpdatedAt contract)
+ *
+ * ```ts
+ * import { agentThreadUpdatedAt } from './agent-history.js'
+ * void agentThreadUpdatedAt
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -243,7 +329,13 @@ function groupAgentHistoryBody<
   }
 >(items: T[], now: number, locale: string, calendar: AgentHistoryCalendar): AgentHistoryGroup<T>[] {
   const byUpdated = (left: T, right: T): number => right.updatedAt - left.updatedAt
-  const rest = [...items].sort(byUpdated)
+  const rest = A.sort(
+    [...items],
+    Order.make<T>((left, right) => {
+      const difference = byUpdated(left, right)
+      return difference < 0 ? -1 : difference > 0 ? 1 : 0
+    })
+  )
   const today = calendar.startOfLocalDay(now)
   let groups = HM.empty<string, AgentHistoryGroup<T>>()
   const order: string[] = []
@@ -323,7 +415,14 @@ function agentHistoryDisplayTitleBody(
 }
 
 /** Sort and group history using an explicit calendar.
- * @example groupAgentHistory({items:[],now:0,locale:'en',calendar})
+ *
+ * **Example** (Access the groupAgentHistory contract)
+ *
+ * ```ts
+ * import { groupAgentHistory } from './agent-history.js'
+ * void groupAgentHistory
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */
@@ -341,7 +440,14 @@ export function groupAgentHistory<
 /** groupAgentHistory shared contract.
  * @category utilities
  * @since 0.0.0
- * @example groupAgentHistory
+ *
+ * **Example** (Access the groupAgentHistory contract)
+ *
+ * ```ts
+ * import { groupAgentHistory } from './agent-history.js'
+ * void groupAgentHistory
+ * ```
+ *
  */
 export function groupAgentHistory<
   T extends {
@@ -357,7 +463,14 @@ export function groupAgentHistory<
 /** groupAgentHistory shared contract.
  * @category utilities
  * @since 0.0.0
- * @example groupAgentHistory
+ *
+ * **Example** (Access the groupAgentHistory contract)
+ *
+ * ```ts
+ * import { groupAgentHistory } from './agent-history.js'
+ * void groupAgentHistory
+ * ```
+ *
  */
 export function groupAgentHistory<
   T extends {
@@ -374,19 +487,43 @@ export function groupAgentHistory<
   return input === undefined ? apply : apply(input)
 }
 
-/** Record contract for agentConversationTitle.
+/** Record contract for agentConversationTitle. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AgentConversationTitleInput
+ *
+ * **Example** (Access the AgentConversationTitleInput contract)
+ *
+ * ```ts
+ * import { AgentConversationTitleInput } from './agent-history.js'
+ * void AgentConversationTitleInput
+ * ```
+ *
  */
-export interface AgentConversationTitleInput {
-  thread: AgentThread
-  videoTitle: string
-}
+export const AgentConversationTitleInput = S.Struct({
+  thread: S.mutableKey(AgentThread),
+  videoTitle: S.mutableKey(S.String)
+}).pipe(
+  $I.annoteSchema('AgentConversationTitleInput', {
+    description:
+      'Explicit input record for AgentConversationTitleInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AgentConversationTitleInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentConversationTitleInput = typeof AgentConversationTitleInput.Type
 /** agentConversationTitle with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example agentConversationTitle
+ *
+ * **Example** (Access the agentConversationTitle contract)
+ *
+ * ```ts
+ * import { agentConversationTitle } from './agent-history.js'
+ * void agentConversationTitle
+ * ```
+ *
  */
 export const agentConversationTitle: {
   (): (input: AgentConversationTitleInput) => string
@@ -394,20 +531,44 @@ export const agentConversationTitle: {
 } = recordFunction((input: AgentConversationTitleInput): string =>
   agentConversationTitleBody(input.thread, input.videoTitle)
 )
-/** Record contract for agentHistoryDisplayTitle.
+/** Record contract for agentHistoryDisplayTitle. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AgentHistoryDisplayTitleInput
+ *
+ * **Example** (Access the AgentHistoryDisplayTitleInput contract)
+ *
+ * ```ts
+ * import { AgentHistoryDisplayTitleInput } from './agent-history.js'
+ * void AgentHistoryDisplayTitleInput
+ * ```
+ *
  */
-export interface AgentHistoryDisplayTitleInput {
-  item: AgentThreadSummary
-  untitled: string
-  promptLabel: string
-}
+export const AgentHistoryDisplayTitleInput = S.Struct({
+  item: S.mutableKey(AgentThreadSummary),
+  untitled: S.mutableKey(S.String),
+  promptLabel: S.mutableKey(S.String)
+}).pipe(
+  $I.annoteSchema('AgentHistoryDisplayTitleInput', {
+    description:
+      'Explicit input record for AgentHistoryDisplayTitleInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AgentHistoryDisplayTitleInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentHistoryDisplayTitleInput = typeof AgentHistoryDisplayTitleInput.Type
 /** agentHistoryDisplayTitle with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example agentHistoryDisplayTitle
+ *
+ * **Example** (Access the agentHistoryDisplayTitle contract)
+ *
+ * ```ts
+ * import { agentHistoryDisplayTitle } from './agent-history.js'
+ * void agentHistoryDisplayTitle
+ * ```
+ *
  */
 export const agentHistoryDisplayTitle: {
   (): (input: AgentHistoryDisplayTitleInput) => string

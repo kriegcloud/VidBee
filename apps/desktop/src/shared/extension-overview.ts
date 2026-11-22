@@ -29,10 +29,10 @@ export const ExtensionOverviewInput = S.Struct({
   requestId: S.String.pipe(S.mutableKey),
   sourceUrl: S.String.pipe(S.mutableKey),
   transcriptText: S.String.pipe(S.mutableKey),
-  transcriptLanguage: S.String.pipe(S.optional, S.mutableKey),
-  transcriptOrigin: LiteralKit(['ai', 'human']).pipe(S.optional, S.mutableKey),
-  uiLanguage: S.String.pipe(S.optional, S.mutableKey),
-  forceRegenerate: S.Boolean.pipe(S.optional, S.mutableKey)
+  transcriptLanguage: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  transcriptOrigin: LiteralKit(['ai', 'human']).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  uiLanguage: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  forceRegenerate: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ExtensionOverviewInput', {
     description: 'ExtensionOverviewInput shared boundary data.'
@@ -41,7 +41,14 @@ export const ExtensionOverviewInput = S.Struct({
 /** Decoded mutable ExtensionOverviewInput data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionOverviewInput
+ *
+ * **Example** (Access the ExtensionOverviewInput contract)
+ *
+ * ```ts
+ * import { ExtensionOverviewInput } from './extension-overview.js'
+ * void ExtensionOverviewInput
+ * ```
+ *
  */
 export type ExtensionOverviewInput = typeof ExtensionOverviewInput.Type
 
@@ -75,7 +82,14 @@ export const ExtensionOverviewSnapshot = S.Struct({
 /** Decoded mutable ExtensionOverviewSnapshot data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionOverviewSnapshot
+ *
+ * **Example** (Access the ExtensionOverviewSnapshot contract)
+ *
+ * ```ts
+ * import { ExtensionOverviewSnapshot } from './extension-overview.js'
+ * void ExtensionOverviewSnapshot
+ * ```
+ *
  */
 export type ExtensionOverviewSnapshot = typeof ExtensionOverviewSnapshot.Type
 
@@ -105,6 +119,13 @@ export const ExtensionOverviewJob = S.Struct({
 /** Decoded mutable ExtensionOverviewJob data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionOverviewJob
+ *
+ * **Example** (Access the ExtensionOverviewJob contract)
+ *
+ * ```ts
+ * import { ExtensionOverviewJob } from './extension-overview.js'
+ * void ExtensionOverviewJob
+ * ```
+ *
  */
 export type ExtensionOverviewJob = typeof ExtensionOverviewJob.Type

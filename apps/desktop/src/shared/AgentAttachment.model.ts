@@ -20,19 +20,26 @@ export const AgentArtifact = S.Struct({
   id: S.String.pipe(S.mutableKey),
   threadId: S.String.pipe(S.mutableKey),
   runId: S.String.pipe(S.mutableKey),
-  sourceDownloadId: S.optional(S.String).pipe(S.mutableKey),
+  sourceDownloadId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   kind: LiteralKit(['image', 'video']).pipe(S.mutableKey),
   name: S.String.pipe(S.mutableKey),
   path: S.String.pipe(S.mutableKey),
-  posterPath: S.optional(S.String).pipe(S.mutableKey),
+  posterPath: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   start: S.Finite.pipe(S.mutableKey),
-  end: S.optional(S.Finite).pipe(S.mutableKey),
-  width: S.optional(S.Finite).pipe(S.mutableKey),
-  height: S.optional(S.Finite).pipe(S.mutableKey)
+  end: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  width: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  height: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe($I.annoteSchema('AgentArtifact', { description: 'Saved media produced by a chat run.' }))
 /** AgentArtifact shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentArtifact
+ *
+ * **Example** (Access the AgentArtifact contract)
+ *
+ * ```ts
+ * import { AgentArtifact } from './AgentAttachment.model.js'
+ * void AgentArtifact
+ * ```
+ *
  */
 export type AgentArtifact = typeof AgentArtifact.Type

@@ -4,7 +4,15 @@ import * as Str from 'effect/String'
 import { recordFunction } from './RecordFunction.js'
 
 const $I = $DesktopId.create('shared/live-log')
-/** Trailing characters kept for one task's live yt-dlp log in main and the renderer.  * @example LIVE_LOG_CHAR_CAP
+/** Trailing characters kept for one task's live yt-dlp log in main and the renderer.
+ *
+ * **Example** (Access the LIVE_LOG_CHAR_CAP contract)
+ *
+ * ```ts
+ * import { LIVE_LOG_CHAR_CAP } from './live-log.js'
+ * void LIVE_LOG_CHAR_CAP
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -49,24 +57,55 @@ export const DownloadLogIpcPayload = S.Struct({
 /** Decoded mutable DownloadLogIpcPayload data.
  * @category type-level
  * @since 0.0.0
- * @example DownloadLogIpcPayload
+ *
+ * **Example** (Access the DownloadLogIpcPayload contract)
+ *
+ * ```ts
+ * import { DownloadLogIpcPayload } from './live-log.js'
+ * void DownloadLogIpcPayload
+ * ```
+ *
  */
 export type DownloadLogIpcPayload = typeof DownloadLogIpcPayload.Type
 
-/** Record contract for appendCappedLog.
+/** Record contract for appendCappedLog. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AppendCappedLogInput
+ *
+ * **Example** (Access the AppendCappedLogInput contract)
+ *
+ * ```ts
+ * import { AppendCappedLogInput } from './live-log.js'
+ * void AppendCappedLogInput
+ * ```
+ *
  */
-export interface AppendCappedLogInput {
-  current: string
-  chunk: string
-  cap: number
-}
+export const AppendCappedLogInput = S.Struct({
+  current: S.mutableKey(S.String),
+  chunk: S.mutableKey(S.String),
+  cap: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('AppendCappedLogInput', {
+    description:
+      'Explicit input record for AppendCappedLogInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AppendCappedLogInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AppendCappedLogInput = typeof AppendCappedLogInput.Type
 /** appendCappedLog with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example appendCappedLog
+ *
+ * **Example** (Access the appendCappedLog contract)
+ *
+ * ```ts
+ * import { appendCappedLog } from './live-log.js'
+ * void appendCappedLog
+ * ```
+ *
  */
 export const appendCappedLog: {
   (): (input: AppendCappedLogInput) => string

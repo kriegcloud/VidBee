@@ -50,6 +50,8 @@ export function sourceLoader(overrides = {}) {
     evaluate(module, module.exports, require, path.dirname(filename))
     return module.exports
   }
+  // Test factories can create promises in the very same realm as both implementations.
+  Object.defineProperty(load, 'inRealm', { value: expression => vm.runInContext(expression, realm) })
   return load
 }
 

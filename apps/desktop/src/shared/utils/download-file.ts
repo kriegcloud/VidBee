@@ -24,7 +24,7 @@ const $I = $DesktopId.create('shared/utils/download-file')
 export const FileNameOptions = S.Struct({
   title: S.String,
   format: S.String,
-  savedFileName: S.optional(S.String)
+  savedFileName: S.String.pipe(S.UndefinedOr, S.optionalKey)
 }).pipe(
   $I.annoteSchema('FileNameOptions', {
     description: 'Ordered saved-name fallback selection.'
@@ -33,7 +33,14 @@ export const FileNameOptions = S.Struct({
 /** FileNameOptions shared contract.
  * @category utilities
  * @since 0.0.0
- * @example FileNameOptions
+ *
+ * **Example** (Access the FileNameOptions contract)
+ *
+ * ```ts
+ * import { FileNameOptions } from './download-file.js'
+ * void FileNameOptions
+ * ```
+ *
  */
 export type FileNameOptions = typeof FileNameOptions.Type
 /** Path selection options; structural for legacy construction.
@@ -52,7 +59,7 @@ export type FileNameOptions = typeof FileNameOptions.Type
 export const FilePathOptions = S.Struct({
   ...FileNameOptions.fields,
   downloadPath: S.String,
-  filePath: S.optional(S.String)
+  filePath: S.String.pipe(S.UndefinedOr, S.optionalKey)
 }).pipe(
   $I.annoteSchema('FilePathOptions', {
     description: 'Recorded path followed by ordered filename candidates.'
@@ -61,13 +68,27 @@ export const FilePathOptions = S.Struct({
 /** FilePathOptions shared contract.
  * @category utilities
  * @since 0.0.0
- * @example FilePathOptions
+ *
+ * **Example** (Access the FilePathOptions contract)
+ *
+ * ```ts
+ * import { FilePathOptions } from './download-file.js'
+ * void FilePathOptions
+ * ```
+ *
  */
 export type FilePathOptions = typeof FilePathOptions.Type
 /** Remove yt-dlp format suffixes while preserving absent and blank names.
  * @category normalization
  * @since 0.0.0
- * @example normalizeSavedFileName
+ *
+ * **Example** (Access the normalizeSavedFileName contract)
+ *
+ * ```ts
+ * import { normalizeSavedFileName } from './download-file.js'
+ * void normalizeSavedFileName
+ * ```
+ *
  */
 export const normalizeSavedFileName = (fileName?: string): string | undefined => {
   const hasName = P.isTruthy(fileName)
@@ -83,7 +104,14 @@ export const normalizeSavedFileName = (fileName?: string): string | undefined =>
 /** Saved name candidates precede product-branded title fallbacks.
  * @category queries
  * @since 0.0.0
- * @example buildFileNameCandidates
+ *
+ * **Example** (Access the buildFileNameCandidates contract)
+ *
+ * ```ts
+ * import { buildFileNameCandidates } from './download-file.js'
+ * void buildFileNameCandidates
+ * ```
+ *
  */
 export const buildFileNameCandidates: {
   (): (options: FileNameOptions) => string[]
@@ -116,7 +144,14 @@ export const buildFileNameCandidates: {
 /** Recorded path is first; stable deduplication never iterates the hash set.
  * @category queries
  * @since 0.0.0
- * @example buildFilePathCandidates
+ *
+ * **Example** (Access the buildFilePathCandidates contract)
+ *
+ * ```ts
+ * import { buildFilePathCandidates } from './download-file.js'
+ * void buildFilePathCandidates
+ * ```
+ *
  */
 export const buildFilePathCandidates: {
   (): (options: FilePathOptions) => string[]
@@ -140,7 +175,14 @@ export const buildFilePathCandidates: {
 /** Normalize a title for matching historical media filenames.
  * @category normalization
  * @since 0.0.0
- * @example normalizeFilenameKey
+ *
+ * **Example** (Access the normalizeFilenameKey contract)
+ *
+ * ```ts
+ * import { normalizeFilenameKey } from './download-file.js'
+ * void normalizeFilenameKey
+ * ```
+ *
  */
 export const normalizeFilenameKey = (value: string): string =>
   pipe(
@@ -153,7 +195,14 @@ export const normalizeFilenameKey = (value: string): string =>
 /** Preserve the empty key for missing and falsy input.
  * @category normalization
  * @since 0.0.0
- * @example buildFilenameKey
+ *
+ * **Example** (Access the buildFilenameKey contract)
+ *
+ * ```ts
+ * import { buildFilenameKey } from './download-file.js'
+ * void buildFilenameKey
+ * ```
+ *
  */
 export const buildFilenameKey = (value?: string): string => {
   const hasValue = P.isTruthy(value)

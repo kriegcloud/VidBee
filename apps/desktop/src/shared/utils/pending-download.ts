@@ -30,13 +30,27 @@ export const PendingDownloadInput = S.Struct({
 /** PendingDownloadInput shared contract.
  * @category utilities
  * @since 0.0.0
- * @example PendingDownloadInput
+ *
+ * **Example** (Access the PendingDownloadInput contract)
+ *
+ * ```ts
+ * import { PendingDownloadInput } from './pending-download.js'
+ * void PendingDownloadInput
+ * ```
+ *
  */
 export type PendingDownloadInput = typeof PendingDownloadInput.Type
 
 /**
  * True when a caller already provided enough video metadata for list rendering.
- * @example hasDisplayMetadata
+ *
+ * **Example** (Access the hasDisplayMetadata contract)
+ *
+ * ```ts
+ * import { hasDisplayMetadata } from './pending-download.js'
+ * void hasDisplayMetadata
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -53,7 +67,14 @@ export const hasDisplayMetadata = (
 /**
  * Build the pending row shown as soon as a download is accepted, before
  * yt-dlp metadata hydration finishes.
- * @example buildPendingDownloadItem
+ *
+ * **Example** (Access the buildPendingDownloadItem contract)
+ *
+ * ```ts
+ * import { buildPendingDownloadItem } from './pending-download.js'
+ * void buildPendingDownloadItem
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

@@ -21,7 +21,9 @@ const TTS_FAMILIES = [
   'pocket',
   'supertonic'
 ] as const
-const text = S.String.check(S.isMaxLength(4096))
+const text = S.String.check(S.isMaxLength(4096)).pipe(
+  $I.annoteSchema('text', { description: 'Shared text schema used by the boundary models.' })
+)
 
 /** Explicit public setting fields; internal migration markers and enforced updates are excluded. */
 /** AgentSettingsPatch; structural for legacy construction.
@@ -90,44 +92,92 @@ export const AgentSettingsPatch = S.Struct({
   downloadMirror: LiteralKit(['auto', 'cn', 'global']).pipe(S.mutableKey)
 })
   .mapFields((fields) => ({
-    downloadPath: fields.downloadPath.pipe(S.optional),
-    maxConcurrentDownloads: fields.maxConcurrentDownloads.pipe(S.optional),
-    downloadWithoutChannelSubfolders: fields.downloadWithoutChannelSubfolders.pipe(S.optional),
-    browserForCookies: fields.browserForCookies.pipe(S.optional),
-    cookiesPath: fields.cookiesPath.pipe(S.optional),
-    proxy: fields.proxy.pipe(S.optional),
-    configPath: fields.configPath.pipe(S.optional),
-    language: fields.language.pipe(S.optional),
-    theme: fields.theme.pipe(S.optional),
-    oneClickDownload: fields.oneClickDownload.pipe(S.optional),
-    oneClickDownloadType: fields.oneClickDownloadType.pipe(S.optional),
-    oneClickQuality: fields.oneClickQuality.pipe(S.optional),
-    oneClickContainer: fields.oneClickContainer.pipe(S.optional),
-    closeToTray: fields.closeToTray.pipe(S.optional),
-    hideDockIcon: fields.hideDockIcon.pipe(S.optional),
-    launchAtLogin: fields.launchAtLogin.pipe(S.optional),
-    subscriptionOnlyLatestDefault: fields.subscriptionOnlyLatestDefault.pipe(S.optional),
-    enableDownloadNotifications: fields.enableDownloadNotifications.pipe(S.optional),
-    rememberLastAudioLanguage: fields.rememberLastAudioLanguage.pipe(S.optional),
-    preferredAudioLanguage: fields.preferredAudioLanguage.pipe(S.optional),
-    downloadSubtitles: fields.downloadSubtitles.pipe(S.optional),
-    subtitleLanguages: fields.subtitleLanguages.pipe(S.optional),
-    embedSubs: fields.embedSubs.pipe(S.optional),
-    writeAutoSubs: fields.writeAutoSubs.pipe(S.optional),
-    embedThumbnail: fields.embedThumbnail.pipe(S.optional),
-    embedMetadata: fields.embedMetadata.pipe(S.optional),
-    embedChapters: fields.embedChapters.pipe(S.optional),
-    filenameStyle: fields.filenameStyle.pipe(S.optional),
-    filenameViaVidBee: fields.filenameViaVidBee.pipe(S.optional),
-    shareWatermark: fields.shareWatermark.pipe(S.optional),
-    sequentialFilenames: fields.sequentialFilenames.pipe(S.optional),
-    autoTranscribeAfterDownload: fields.autoTranscribeAfterDownload.pipe(S.optional),
-    maxConcurrentTranscriptions: fields.maxConcurrentTranscriptions.pipe(S.optional),
-    asrTier: fields.asrTier.pipe(S.optional),
-    ttsModelId: fields.ttsModelId.pipe(S.optional),
-    transcriptionProvider: fields.transcriptionProvider.pipe(S.optional),
-    cloudTranscriptionModelId: fields.cloudTranscriptionModelId.pipe(S.optional),
-    downloadMirror: fields.downloadMirror.pipe(S.optional)
+    downloadPath: fields.downloadPath.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    maxConcurrentDownloads: fields.maxConcurrentDownloads.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    downloadWithoutChannelSubfolders: fields.downloadWithoutChannelSubfolders.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    browserForCookies: fields.browserForCookies.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    cookiesPath: fields.cookiesPath.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    proxy: fields.proxy.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    configPath: fields.configPath.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    language: fields.language.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    theme: fields.theme.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    oneClickDownload: fields.oneClickDownload.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    oneClickDownloadType: fields.oneClickDownloadType.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    oneClickQuality: fields.oneClickQuality.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    oneClickContainer: fields.oneClickContainer.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    closeToTray: fields.closeToTray.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    hideDockIcon: fields.hideDockIcon.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    launchAtLogin: fields.launchAtLogin.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    subscriptionOnlyLatestDefault: fields.subscriptionOnlyLatestDefault.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    enableDownloadNotifications: fields.enableDownloadNotifications.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    rememberLastAudioLanguage: fields.rememberLastAudioLanguage.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    preferredAudioLanguage: fields.preferredAudioLanguage.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    downloadSubtitles: fields.downloadSubtitles.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    subtitleLanguages: fields.subtitleLanguages.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    embedSubs: fields.embedSubs.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    writeAutoSubs: fields.writeAutoSubs.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    embedThumbnail: fields.embedThumbnail.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    embedMetadata: fields.embedMetadata.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    embedChapters: fields.embedChapters.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    filenameStyle: fields.filenameStyle.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    filenameViaVidBee: fields.filenameViaVidBee.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    shareWatermark: fields.shareWatermark.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    sequentialFilenames: fields.sequentialFilenames.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    autoTranscribeAfterDownload: fields.autoTranscribeAfterDownload.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    maxConcurrentTranscriptions: fields.maxConcurrentTranscriptions.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    asrTier: fields.asrTier.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    ttsModelId: fields.ttsModelId.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    transcriptionProvider: fields.transcriptionProvider.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    cloudTranscriptionModelId: fields.cloudTranscriptionModelId.pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
+    downloadMirror: fields.downloadMirror.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
   }))
   .pipe(
     strictObject,
@@ -152,18 +202,18 @@ export const AgentSettingsPatch = S.Struct({
  */
 export const AgentTtsModelInput = S.Struct({
   action: LiteralKit(['status', 'select', 'prepare']).pipe(S.mutableKey),
-  modelId: TtsModelId.pipe(S.optional, S.mutableKey),
-  query: S.String.check(S.isMaxLength(200)).pipe(S.optional, S.mutableKey),
-  language: S.String.check(S.isMaxLength(30)).pipe(S.optional, S.mutableKey),
-  family: LiteralKit(TTS_FAMILIES).pipe(S.optional, S.mutableKey),
+  modelId: TtsModelId.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  query: S.String.check(S.isMaxLength(200)).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  language: S.String.check(S.isMaxLength(30)).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  family: LiteralKit(TTS_FAMILIES).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   offset: S.Finite.check(S.isInt())
     .check(S.isGreaterThanOrEqualTo(0))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   limit: S.Finite.check(S.isInt())
     .check(S.isGreaterThanOrEqualTo(1))
     .check(S.isLessThanOrEqualTo(30))
-    .pipe(S.optional, S.mutableKey),
-  refresh: S.Boolean.pipe(S.optional, S.mutableKey)
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  refresh: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   strictObject,
   $I.annoteSchema('AgentTtsModelInput', {
@@ -200,48 +250,52 @@ export const AgentAiSettingsInput = S.Struct({
     'restore_prompts'
   ]).pipe(S.mutableKey),
   id: S.NullOr(S.String.check(S.isMinLength(1)).check(S.isMaxLength(200))).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   ),
   presetId: S.String.check(S.isMinLength(1))
     .check(S.isMaxLength(100))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   copyApiKeyFromId: S.String.check(S.isMinLength(1))
     .check(S.isMaxLength(200))
-    .pipe(S.optional, S.mutableKey),
-  baseUrl: S.String.check(S.isMaxLength(4096)).pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  baseUrl: S.String.check(S.isMaxLength(4096)).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   modelId: S.String.check(S.isMinLength(1))
     .check(S.isMaxLength(200))
-    .pipe(S.optional, S.mutableKey),
-  name: S.String.check(S.isMinLength(1)).check(S.isMaxLength(200)).pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  name: S.String.check(S.isMinLength(1))
+    .check(S.isMaxLength(200))
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   contextWindow: S.Finite.check(S.isInt())
     .check(S.isGreaterThanOrEqualTo(4096))
     .check(S.isLessThanOrEqualTo(2_000_000))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   maxTokens: S.Finite.check(S.isInt())
     .check(S.isGreaterThanOrEqualTo(1))
     .check(S.isLessThanOrEqualTo(2_000_000))
-    .pipe(S.optional, S.mutableKey),
-  vision: S.Boolean.pipe(S.optional, S.mutableKey),
-  tools: S.Boolean.pipe(S.optional, S.mutableKey),
-  reasoning: S.Boolean.pipe(S.optional, S.mutableKey),
-  thinkingOnly: S.Boolean.pipe(S.optional, S.mutableKey),
-  allowDisableThinking: S.Boolean.pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  vision: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  tools: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  reasoning: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  thinkingOnly: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  allowDisableThinking: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   thinkingLevels: S.Array(LiteralKit(AGENT_THINKING_LEVELS))
     .pipe(S.mutable)
     .check(S.isMaxLength(AGENT_THINKING_LEVELS.length))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   defaultThinkingLevel: LiteralKit(['auto', ...AGENT_THINKING_LEVELS]).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   ),
   description: S.String.check(S.isMinLength(1))
     .check(S.isMaxLength(1024))
-    .pipe(S.optional, S.mutableKey),
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   content: S.String.check(S.isMinLength(1))
     .check(S.isMaxLength(50_000))
-    .pipe(S.optional, S.mutableKey),
-  autoRun: S.Boolean.pipe(S.optional, S.mutableKey)
+    .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  autoRun: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   strictObject,
   $I.annoteSchema('AgentAiSettingsInput', {
@@ -252,20 +306,41 @@ export const AgentAiSettingsInput = S.Struct({
 /** Decoded AgentSettingsPatch data.
  * @category type-level
  * @since 0.0.0
- * @example AgentSettingsPatch
+ *
+ * **Example** (Access the AgentSettingsPatch contract)
+ *
+ * ```ts
+ * import { AgentSettingsPatch } from './agent-settings.js'
+ * void AgentSettingsPatch
+ * ```
+ *
  */
 export type AgentSettingsPatch = typeof AgentSettingsPatch.Type
 
 /** Decoded AgentTtsModelInput data.
  * @category type-level
  * @since 0.0.0
- * @example AgentTtsModelInput
+ *
+ * **Example** (Access the AgentTtsModelInput contract)
+ *
+ * ```ts
+ * import { AgentTtsModelInput } from './agent-settings.js'
+ * void AgentTtsModelInput
+ * ```
+ *
  */
 export type AgentTtsModelInput = typeof AgentTtsModelInput.Type
 
 /** Decoded AgentAiSettingsInput data.
  * @category type-level
  * @since 0.0.0
- * @example AgentAiSettingsInput
+ *
+ * **Example** (Access the AgentAiSettingsInput contract)
+ *
+ * ```ts
+ * import { AgentAiSettingsInput } from './agent-settings.js'
+ * void AgentAiSettingsInput
+ * ```
+ *
  */
 export type AgentAiSettingsInput = typeof AgentAiSettingsInput.Type

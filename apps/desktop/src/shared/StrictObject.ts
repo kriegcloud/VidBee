@@ -3,7 +3,14 @@ import * as R from 'effect/Record'
 import * as S from 'effect/Schema'
 
 /** Reject unknown keys before decoding fields, retaining the public field model.
- * @example strictObject(S.Struct({ id: S.String }))
+ *
+ * **Example** (Access the strictObject contract)
+ *
+ * ```ts
+ * import { strictObject } from './StrictObject.js'
+ * void strictObject
+ * ```
+ *
  * @category schemas
  * @since 0.0.0
  */

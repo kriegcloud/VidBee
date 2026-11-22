@@ -7,7 +7,14 @@ const $I = $DesktopId.create('shared/types/auth')
 /** Build a mutable pagination envelope around a caller-selected item codec; structural for legacy construction.
  * @category schemas
  * @since 0.0.0
- * @example DesktopPaginatedResult
+ *
+ * **Example** (Access the DesktopPaginatedResult contract)
+ *
+ * ```ts
+ * import { DesktopPaginatedResult } from './auth.js'
+ * void DesktopPaginatedResult
+ * ```
+ *
  */
 export const DesktopPaginatedResult = <T extends S.Top>(item: T) =>
   S.Struct({
@@ -21,7 +28,14 @@ export const DesktopPaginatedResult = <T extends S.Top>(item: T) =>
 /** Mutable pagination used by the legacy account API.
  * @category type-level
  * @since 0.0.0
- * @example DesktopPaginatedResult
+ *
+ * **Example** (Access the DesktopPaginatedResult contract)
+ *
+ * ```ts
+ * import { DesktopPaginatedResult } from './auth.js'
+ * void DesktopPaginatedResult
+ * ```
+ *
  */
 export type DesktopPaginatedResult<T> = ReturnType<
   typeof DesktopPaginatedResult<S.Codec<T>>
@@ -53,7 +67,14 @@ export const DesktopAuthUser = S.Struct({
 /** Decoded mutable DesktopAuthUser data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAuthUser
+ *
+ * **Example** (Access the DesktopAuthUser contract)
+ *
+ * ```ts
+ * import { DesktopAuthUser } from './auth.js'
+ * void DesktopAuthUser
+ * ```
+ *
  */
 export type DesktopAuthUser = typeof DesktopAuthUser.Type
 
@@ -86,7 +107,14 @@ export const DesktopAiCreditSourceUsage = S.Struct({
 /** Decoded mutable DesktopAiCreditSourceUsage data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditSourceUsage
+ *
+ * **Example** (Access the DesktopAiCreditSourceUsage contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditSourceUsage } from './auth.js'
+ * void DesktopAiCreditSourceUsage
+ * ```
+ *
  */
 export type DesktopAiCreditSourceUsage = typeof DesktopAiCreditSourceUsage.Type
 
@@ -113,13 +141,13 @@ export const DesktopAiCreditUsage = S.Struct({
   bySource: S.Struct({
     granted: DesktopAiCreditSourceUsage.pipe(S.mutableKey),
     purchased: DesktopAiCreditSourceUsage.pipe(S.mutableKey)
-  }).pipe(S.optional, S.mutableKey),
+  }).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   expiringSoonCredits: S.Finite.pipe(S.mutableKey),
-  interruptedCredits: S.Finite.pipe(S.optional, S.mutableKey),
+  interruptedCredits: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   quotaCredits: S.Finite.pipe(S.mutableKey),
   remainingCredits: S.Finite.pipe(S.mutableKey),
   reservedCredits: S.Finite.pipe(S.mutableKey),
-  reconcilingCredits: S.Finite.pipe(S.optional, S.mutableKey),
+  reconcilingCredits: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   usedCredits: S.Finite.pipe(S.mutableKey)
 }).pipe(
   $I.annoteSchema('DesktopAiCreditUsage', {
@@ -129,7 +157,14 @@ export const DesktopAiCreditUsage = S.Struct({
 /** Decoded mutable DesktopAiCreditUsage data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditUsage
+ *
+ * **Example** (Access the DesktopAiCreditUsage contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditUsage } from './auth.js'
+ * void DesktopAiCreditUsage
+ * ```
+ *
  */
 export type DesktopAiCreditUsage = typeof DesktopAiCreditUsage.Type
 
@@ -161,7 +196,14 @@ export const DesktopInvitationOverview = S.Struct({
 /** Decoded mutable DesktopInvitationOverview data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopInvitationOverview
+ *
+ * **Example** (Access the DesktopInvitationOverview contract)
+ *
+ * ```ts
+ * import { DesktopInvitationOverview } from './auth.js'
+ * void DesktopInvitationOverview
+ * ```
+ *
  */
 export type DesktopInvitationOverview = typeof DesktopInvitationOverview.Type
 
@@ -194,7 +236,14 @@ export const DesktopInvitedUser = S.Struct({
 /** Decoded mutable DesktopInvitedUser data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopInvitedUser
+ *
+ * **Example** (Access the DesktopInvitedUser contract)
+ *
+ * ```ts
+ * import { DesktopInvitedUser } from './auth.js'
+ * void DesktopInvitedUser
+ * ```
+ *
  */
 export type DesktopInvitedUser = typeof DesktopInvitedUser.Type
 
@@ -234,7 +283,14 @@ export const DesktopGiftedCreditRecord = S.Struct({
 /** Decoded mutable DesktopGiftedCreditRecord data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopGiftedCreditRecord
+ *
+ * **Example** (Access the DesktopGiftedCreditRecord contract)
+ *
+ * ```ts
+ * import { DesktopGiftedCreditRecord } from './auth.js'
+ * void DesktopGiftedCreditRecord
+ * ```
+ *
  */
 export type DesktopGiftedCreditRecord = typeof DesktopGiftedCreditRecord.Type
 
@@ -269,7 +325,14 @@ export const DesktopCloudCacheStats = S.Record(
 /** Decoded mutable DesktopCloudCacheStats data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopCloudCacheStats
+ *
+ * **Example** (Access the DesktopCloudCacheStats contract)
+ *
+ * ```ts
+ * import { DesktopCloudCacheStats } from './auth.js'
+ * void DesktopCloudCacheStats
+ * ```
+ *
  */
 export type DesktopCloudCacheStats = typeof DesktopCloudCacheStats.Type
 
@@ -289,7 +352,7 @@ export type DesktopCloudCacheStats = typeof DesktopCloudCacheStats.Type
  * structural for legacy construction.
  */
 export const DesktopAiReservation = S.Struct({
-  recoveryStoppedAt: S.Union([S.Finite, S.Null]).pipe(S.optional, S.mutableKey),
+  recoveryStoppedAt: S.Union([S.Finite, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   createdAt: S.Finite.pipe(S.mutableKey),
   deadlineAt: S.Finite.pipe(S.mutableKey),
   expiresAt: S.Finite.pipe(S.mutableKey),
@@ -307,7 +370,14 @@ export const DesktopAiReservation = S.Struct({
 /** Decoded mutable DesktopAiReservation data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiReservation
+ *
+ * **Example** (Access the DesktopAiReservation contract)
+ *
+ * ```ts
+ * import { DesktopAiReservation } from './auth.js'
+ * void DesktopAiReservation
+ * ```
+ *
  */
 export type DesktopAiReservation = typeof DesktopAiReservation.Type
 
@@ -337,7 +407,14 @@ export const DesktopAiCreditHistoryCursor = S.Struct({
 /** Decoded mutable DesktopAiCreditHistoryCursor data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditHistoryCursor
+ *
+ * **Example** (Access the DesktopAiCreditHistoryCursor contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditHistoryCursor } from './auth.js'
+ * void DesktopAiCreditHistoryCursor
+ * ```
+ *
  */
 export type DesktopAiCreditHistoryCursor = typeof DesktopAiCreditHistoryCursor.Type
 
@@ -378,7 +455,14 @@ export const DesktopAiCreditReceipt = S.Struct({
 /** Decoded mutable DesktopAiCreditReceipt data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditReceipt
+ *
+ * **Example** (Access the DesktopAiCreditReceipt contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditReceipt } from './auth.js'
+ * void DesktopAiCreditReceipt
+ * ```
+ *
  */
 export type DesktopAiCreditReceipt = typeof DesktopAiCreditReceipt.Type
 
@@ -408,7 +492,14 @@ export const DesktopAiCreditHistory = S.Struct({
 /** Decoded mutable DesktopAiCreditHistory data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditHistory
+ *
+ * **Example** (Access the DesktopAiCreditHistory contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditHistory } from './auth.js'
+ * void DesktopAiCreditHistory
+ * ```
+ *
  */
 export type DesktopAiCreditHistory = typeof DesktopAiCreditHistory.Type
 
@@ -438,7 +529,14 @@ export const DesktopAiCreditSnapshot = S.Struct({
 /** Decoded mutable DesktopAiCreditSnapshot data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAiCreditSnapshot
+ *
+ * **Example** (Access the DesktopAiCreditSnapshot contract)
+ *
+ * ```ts
+ * import { DesktopAiCreditSnapshot } from './auth.js'
+ * void DesktopAiCreditSnapshot
+ * ```
+ *
  */
 export type DesktopAiCreditSnapshot = typeof DesktopAiCreditSnapshot.Type
 
@@ -472,6 +570,13 @@ export const DesktopAccountOverview = S.Struct({
 /** Decoded mutable DesktopAccountOverview data.
  * @category type-level
  * @since 0.0.0
- * @example DesktopAccountOverview
+ *
+ * **Example** (Access the DesktopAccountOverview contract)
+ *
+ * ```ts
+ * import { DesktopAccountOverview } from './auth.js'
+ * void DesktopAccountOverview
+ * ```
+ *
  */
 export type DesktopAccountOverview = typeof DesktopAccountOverview.Type

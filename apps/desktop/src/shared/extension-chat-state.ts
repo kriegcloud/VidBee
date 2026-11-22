@@ -1,21 +1,51 @@
+import { $DesktopId } from '@vidbee/identity/packages'
+import * as A from 'effect/Array'
+import * as Order from 'effect/Order'
 import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
 import * as Sparse from './ArrayHelpers.js'
 import { applyAgentRunEvent } from './agent-thread-patch'
-import type { ExtensionChatEvent, ExtensionChatState } from './extension-chat'
+import { ExtensionChatEvent, ExtensionChatState } from './extension-chat'
 import { recordFunction } from './RecordFunction.js'
 
-/** Apply the same ordered thread patches as Desktop without polling conversation snapshots.  * @example ExtensionChatEventInput
+const $I = $DesktopId.create('shared/extension-chat-state')
+/** Apply the same ordered thread patches as Desktop without polling conversation snapshots. structural for legacy construction.
+ *
+ * **Example** (Access the ExtensionChatEventInput contract)
+ *
+ * ```ts
+ * import { ExtensionChatEventInput } from './extension-chat-state.js'
+ * void ExtensionChatEventInput
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
-export interface ExtensionChatEventInput {
-  readonly current: ExtensionChatState
-  readonly incoming: ExtensionChatEvent
-}
+export const ExtensionChatEventInput = S.Struct({
+  current: ExtensionChatState,
+  incoming: ExtensionChatEvent
+}).pipe(
+  $I.annoteSchema('ExtensionChatEventInput', {
+    description:
+      'Explicit input record for ExtensionChatEventInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ExtensionChatEventInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ExtensionChatEventInput = typeof ExtensionChatEventInput.Type
 /** applyExtensionChatEvent shared contract.
  * @category utilities
  * @since 0.0.0
- * @example applyExtensionChatEvent
+ *
+ * **Example** (Access the applyExtensionChatEvent contract)
+ *
+ * ```ts
+ * import { applyExtensionChatEvent } from './extension-chat-state.js'
+ * void applyExtensionChatEvent
+ * ```
+ *
  */
 export const applyExtensionChatEvent: {
   (): (input: ExtensionChatEventInput) => {
@@ -81,8 +111,20 @@ export const applyExtensionChatEvent: {
         revision: notice.revision,
         catalog: {
           ...current.catalog,
-          threads: threads.sort((a, b) => b.updatedAt - a.updatedAt),
-          history: history.sort((a, b) => b.updatedAt - a.updatedAt),
+          threads: A.sort(
+            threads,
+            Order.make<(typeof threads)[number]>((a, b) => {
+              const difference = b.updatedAt - a.updatedAt
+              return difference < 0 ? -1 : difference > 0 ? 1 : 0
+            })
+          ),
+          history: A.sort(
+            history,
+            Order.make<(typeof history)[number]>((a, b) => {
+              const difference = b.updatedAt - a.updatedAt
+              return difference < 0 ? -1 : difference > 0 ? 1 : 0
+            })
+          ),
           statuses,
           sources:
             incoming.source === undefined

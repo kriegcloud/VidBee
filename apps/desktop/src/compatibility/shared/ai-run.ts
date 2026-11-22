@@ -1,3 +1,4 @@
+import * as O from 'effect/Option'
 import * as Native from '../../shared/ai-run'
 import {
   AI_PROMPT_RECOVERY_DELAYS_MS as ReexportAI_PROMPT_RECOVERY_DELAYS_MS,
@@ -52,10 +53,12 @@ export function promptTabIndicator(
   status: AiPromptRunStatus,
   viewed = false
 ): PromptTabIndicator | null {
-  return Native.promptTabIndicator({
-    status,
-    viewed
-  })
+  return O.getOrNull(
+    Native.promptTabIndicator({
+      status,
+      viewed
+    })
+  )
 }
 export function formatAiPromptError(message: string, viaCloud = false): string {
   return Native.formatAiPromptError({

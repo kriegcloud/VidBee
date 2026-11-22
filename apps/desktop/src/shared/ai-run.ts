@@ -2,14 +2,16 @@ import { $DesktopId } from '@vidbee/identity/packages'
 import { LiteralKit } from '@vidbee/schema/LiteralKit'
 import * as A from 'effect/Array'
 import * as HS from 'effect/HashSet'
+import * as O from 'effect/Option'
 import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
 import * as Sparse from './ArrayHelpers.js'
 import { recordFunction } from './RecordFunction.js'
 
 const $I = $DesktopId.create('shared/ai-run')
 
-import type { AiPromptErrorCode, AiPromptRunSnapshot, AiPromptRunStatus } from './ai-types'
+import { type AiPromptErrorCode, type AiPromptRunSnapshot, AiPromptRunStatus } from './ai-types'
 
 const TERMINAL_PROMPT_RUN_STATUSES = HS.fromIterable<AiPromptRunStatus>([
   'completed',
@@ -55,7 +57,14 @@ function idlePromptRunSnapshotBody(
  * Reserved internal ids are not real downloads and must not be stored.
  *
  * @param downloadId Download id.
- * @example isEphemeralPromptRunDownloadId
+ *
+ * **Example** (Access the isEphemeralPromptRunDownloadId contract)
+ *
+ * ```ts
+ * import { isEphemeralPromptRunDownloadId } from './ai-run.js'
+ * void isEphemeralPromptRunDownloadId
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -66,7 +75,14 @@ export const isEphemeralPromptRunDownloadId = (downloadId: string): boolean =>
  * True when a snapshot is a finished result that should survive a restart.
  *
  * @param status Run lifecycle.
- * @example isTerminalPromptRunStatus
+ *
+ * **Example** (Access the isTerminalPromptRunStatus contract)
+ *
+ * ```ts
+ * import { isTerminalPromptRunStatus } from './ai-run.js'
+ * void isTerminalPromptRunStatus
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -95,7 +111,14 @@ export const PromptTabIndicator = LiteralKit(['running', 'completed', 'error']).
 /** PromptTabIndicator shared contract.
  * @category utilities
  * @since 0.0.0
- * @example PromptTabIndicator
+ *
+ * **Example** (Access the PromptTabIndicator contract)
+ *
+ * ```ts
+ * import { PromptTabIndicator } from './ai-run.js'
+ * void PromptTabIndicator
+ * ```
+ *
  */
 export type PromptTabIndicator = typeof PromptTabIndicator.Type
 
@@ -123,7 +146,14 @@ function promptTabIndicatorBody(
  * Walk `error.cause` so a terse SDK message still includes the syscall.
  *
  * @param error Thrown value from the provider client.
- * @example flattenErrorMessage
+ *
+ * **Example** (Access the flattenErrorMessage contract)
+ *
+ * ```ts
+ * import { flattenErrorMessage } from './ai-run.js'
+ * void flattenErrorMessage
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -211,14 +241,29 @@ function formatAiPromptErrorBody(message: string, viaCloud = false): string {
  * True when the model wrote tokens but the SSE stream omitted finish_reason.
  *
  * @param message Flattened provider or runner error.
- * @example isIncompleteAiStreamError
+ *
+ * **Example** (Access the isIncompleteAiStreamError contract)
+ *
+ * ```ts
+ * import { isIncompleteAiStreamError } from './ai-run.js'
+ * void isIncompleteAiStreamError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
 export const isIncompleteAiStreamError = (message: string): boolean =>
   INCOMPLETE_STREAM_PATTERN.test(message)
 
-/** Five recovery attempts after the initial request, with increasing backoff.  * @example AI_PROMPT_RECOVERY_DELAYS_MS
+/** Five recovery attempts after the initial request, with increasing backoff.
+ *
+ * **Example** (Access the AI_PROMPT_RECOVERY_DELAYS_MS contract)
+ *
+ * ```ts
+ * import { AI_PROMPT_RECOVERY_DELAYS_MS } from './ai-run.js'
+ * void AI_PROMPT_RECOVERY_DELAYS_MS
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -249,7 +294,14 @@ const CLOUD_RETRYABLE_REASONS = HS.make(
  * reworded at any time.
  *
  * @param failure Error envelope from the Cloud stream, or a bare provider message.
- * @example isRecoverableAiFailure
+ *
+ * **Example** (Access the isRecoverableAiFailure contract)
+ *
+ * ```ts
+ * import { isRecoverableAiFailure } from './ai-run.js'
+ * void isRecoverableAiFailure
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -267,7 +319,15 @@ export const isRecoverableAiFailure = (failure: {
   return isRecoverableAiPromptError(failure.message ?? '')
 }
 
-/** Retry transient upstream failures and truncated output without retrying permanent rejections.  * @example isRecoverableAiPromptError
+/** Retry transient upstream failures and truncated output without retrying permanent rejections.
+ *
+ * **Example** (Access the isRecoverableAiPromptError contract)
+ *
+ * ```ts
+ * import { isRecoverableAiPromptError } from './ai-run.js'
+ * void isRecoverableAiPromptError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -341,7 +401,14 @@ function classifyAiPromptErrorBody(
  * True when the user should be sent to provider settings to fix this failure.
  *
  * @param code Classified error.
- * @example aiPromptErrorNeedsProviderSettings
+ *
+ * **Example** (Access the aiPromptErrorNeedsProviderSettings contract)
+ *
+ * ```ts
+ * import { aiPromptErrorNeedsProviderSettings } from './ai-run.js'
+ * void aiPromptErrorNeedsProviderSettings
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -356,20 +423,44 @@ export const aiPromptErrorNeedsProviderSettings = (code: AiPromptErrorCode | nul
   code === 'empty-output' ||
   code === 'unknown'
 
-/** Record contract for idlePromptRunSnapshot.
+/** Record contract for idlePromptRunSnapshot. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example IdlePromptRunSnapshotInput
+ *
+ * **Example** (Access the IdlePromptRunSnapshotInput contract)
+ *
+ * ```ts
+ * import { IdlePromptRunSnapshotInput } from './ai-run.js'
+ * void IdlePromptRunSnapshotInput
+ * ```
+ *
  */
-export interface IdlePromptRunSnapshotInput {
-  downloadId: string
-  promptId: string
-  now: number
-}
+export const IdlePromptRunSnapshotInput = S.Struct({
+  downloadId: S.mutableKey(S.String),
+  promptId: S.mutableKey(S.String),
+  now: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('IdlePromptRunSnapshotInput', {
+    description:
+      'Explicit input record for IdlePromptRunSnapshotInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived IdlePromptRunSnapshotInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type IdlePromptRunSnapshotInput = typeof IdlePromptRunSnapshotInput.Type
 /** idlePromptRunSnapshot with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example idlePromptRunSnapshot
+ *
+ * **Example** (Access the idlePromptRunSnapshot contract)
+ *
+ * ```ts
+ * import { idlePromptRunSnapshot } from './ai-run.js'
+ * void idlePromptRunSnapshot
+ * ```
+ *
  */
 export const idlePromptRunSnapshot: {
   (): (input: IdlePromptRunSnapshotInput) => AiPromptRunSnapshot
@@ -378,39 +469,88 @@ export const idlePromptRunSnapshot: {
   (input: IdlePromptRunSnapshotInput): AiPromptRunSnapshot =>
     idlePromptRunSnapshotBody(input.downloadId, input.promptId, input.now)
 )
-/** Record contract for promptTabIndicator.
+/** Record contract for promptTabIndicator. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example PromptTabIndicatorInput
+ *
+ * **Example** (Access the PromptTabIndicatorInput contract)
+ *
+ * ```ts
+ * import { PromptTabIndicatorInput } from './ai-run.js'
+ * void PromptTabIndicatorInput
+ * ```
+ *
  */
-export interface PromptTabIndicatorInput {
-  status: AiPromptRunStatus
-  viewed?: boolean | undefined
-}
+export const PromptTabIndicatorInput = S.Struct({
+  status: S.mutableKey(AiPromptRunStatus),
+  viewed: S.Union([S.Boolean, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('PromptTabIndicatorInput', {
+    description:
+      'Explicit input record for PromptTabIndicatorInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived PromptTabIndicatorInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type PromptTabIndicatorInput = typeof PromptTabIndicatorInput.Type
 /** promptTabIndicator with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example promptTabIndicator
+ *
+ * **Example** (Access the promptTabIndicator contract)
+ *
+ * ```ts
+ * import { promptTabIndicator } from './ai-run.js'
+ * void promptTabIndicator
+ * ```
+ *
  */
 export const promptTabIndicator: {
-  (): (input: PromptTabIndicatorInput) => PromptTabIndicator | null
-  (input: PromptTabIndicatorInput): PromptTabIndicator | null
-} = recordFunction((input: PromptTabIndicatorInput): PromptTabIndicator | null =>
-  promptTabIndicatorBody(input.status, input.viewed)
+  (): (input: PromptTabIndicatorInput) => O.Option<PromptTabIndicator>
+  (input: PromptTabIndicatorInput): O.Option<PromptTabIndicator>
+} = recordFunction(
+  (input: PromptTabIndicatorInput): O.Option<PromptTabIndicator> =>
+    O.fromNullishOr(promptTabIndicatorBody(input.status, input.viewed))
 )
-/** Record contract for formatAiPromptError.
+/** Record contract for formatAiPromptError. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example FormatAiPromptErrorInput
+ *
+ * **Example** (Access the FormatAiPromptErrorInput contract)
+ *
+ * ```ts
+ * import { FormatAiPromptErrorInput } from './ai-run.js'
+ * void FormatAiPromptErrorInput
+ * ```
+ *
  */
-export interface FormatAiPromptErrorInput {
-  message: string
-  viaCloud?: boolean | undefined
-}
+export const FormatAiPromptErrorInput = S.Struct({
+  message: S.mutableKey(S.String),
+  viaCloud: S.Union([S.Boolean, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('FormatAiPromptErrorInput', {
+    description:
+      'Explicit input record for FormatAiPromptErrorInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived FormatAiPromptErrorInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type FormatAiPromptErrorInput = typeof FormatAiPromptErrorInput.Type
 /** formatAiPromptError with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example formatAiPromptError
+ *
+ * **Example** (Access the formatAiPromptError contract)
+ *
+ * ```ts
+ * import { formatAiPromptError } from './ai-run.js'
+ * void formatAiPromptError
+ * ```
+ *
  */
 export const formatAiPromptError: {
   (): (input: FormatAiPromptErrorInput) => string
@@ -418,19 +558,43 @@ export const formatAiPromptError: {
 } = recordFunction((input: FormatAiPromptErrorInput): string =>
   formatAiPromptErrorBody(input.message, input.viaCloud)
 )
-/** Record contract for classifyAiPromptError.
+/** Record contract for classifyAiPromptError. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ClassifyAiPromptErrorInput
+ *
+ * **Example** (Access the ClassifyAiPromptErrorInput contract)
+ *
+ * ```ts
+ * import { ClassifyAiPromptErrorInput } from './ai-run.js'
+ * void ClassifyAiPromptErrorInput
+ * ```
+ *
  */
-export interface ClassifyAiPromptErrorInput {
-  message: string | null | undefined
-  emptyText?: boolean | undefined
-}
+export const ClassifyAiPromptErrorInput = S.Struct({
+  message: S.mutableKey(S.Union([S.String, S.Null, S.Undefined])),
+  emptyText: S.Union([S.Boolean, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ClassifyAiPromptErrorInput', {
+    description:
+      'Explicit input record for ClassifyAiPromptErrorInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ClassifyAiPromptErrorInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ClassifyAiPromptErrorInput = typeof ClassifyAiPromptErrorInput.Type
 /** classifyAiPromptError with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example classifyAiPromptError
+ *
+ * **Example** (Access the classifyAiPromptError contract)
+ *
+ * ```ts
+ * import { classifyAiPromptError } from './ai-run.js'
+ * void classifyAiPromptError
+ * ```
+ *
  */
 export const classifyAiPromptError: {
   (): (input: ClassifyAiPromptErrorInput) => AiPromptErrorCode

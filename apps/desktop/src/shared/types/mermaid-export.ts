@@ -4,7 +4,15 @@ import * as S from 'effect/Schema'
 
 const $I = $DesktopId.create('shared/types/mermaid-export')
 
-/** Main → hidden share renderer: export one saved Mermaid diagram.  * @example MERMAID_EXPORT_CHANNEL
+/** Main → hidden share renderer: export one saved Mermaid diagram.
+ *
+ * **Example** (Access the MERMAID_EXPORT_CHANNEL contract)
+ *
+ * ```ts
+ * import { MERMAID_EXPORT_CHANNEL } from './mermaid-export.js'
+ * void MERMAID_EXPORT_CHANNEL
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -38,7 +46,14 @@ export const MermaidExportPayload = S.Struct({
 /** Decoded MermaidExportPayload data.
  * @category type-level
  * @since 0.0.0
- * @example MermaidExportPayload
+ *
+ * **Example** (Access the MermaidExportPayload contract)
+ *
+ * ```ts
+ * import { MermaidExportPayload } from './mermaid-export.js'
+ * void MermaidExportPayload
+ * ```
+ *
  */
 export type MermaidExportPayload = typeof MermaidExportPayload.Type
 
@@ -68,6 +83,13 @@ export const MermaidExportImage = S.Struct({
 /** Decoded MermaidExportImage data.
  * @category type-level
  * @since 0.0.0
- * @example MermaidExportImage
+ *
+ * **Example** (Access the MermaidExportImage contract)
+ *
+ * ```ts
+ * import { MermaidExportImage } from './mermaid-export.js'
+ * void MermaidExportImage
+ * ```
+ *
  */
 export type MermaidExportImage = typeof MermaidExportImage.Type

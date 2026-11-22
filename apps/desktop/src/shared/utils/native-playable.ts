@@ -36,7 +36,14 @@ const extensionOf = (filePath: string): string => {
 
 /**
  * True when Chromium can play this path as audio without remuxing or transcoding.
- * @example isNativelyPlayableAudio
+ *
+ * **Example** (Access the isNativelyPlayableAudio contract)
+ *
+ * ```ts
+ * import { isNativelyPlayableAudio } from './native-playable.js'
+ * void isNativelyPlayableAudio
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

@@ -4,6 +4,7 @@ import { isDownloadTaskKind } from '@vidbee/task-queue/types'
 import * as A from 'effect/Array'
 import { pipe } from 'effect/Function'
 import * as O from 'effect/Option'
+import * as Order from 'effect/Order'
 import * as P from 'effect/Predicate'
 import * as S from 'effect/Schema'
 import * as Str from 'effect/String'
@@ -23,7 +24,14 @@ const $I = $DesktopId.create('shared/extension-overview-reuse')
  * True when an existing Overview is worth showing instead of starting another run.
  *
  * @param snapshot Live agent or prompt-run result for one download.
- * @example isReusableOverviewSnapshot
+ *
+ * **Example** (Access the isReusableOverviewSnapshot contract)
+ *
+ * ```ts
+ * import { isReusableOverviewSnapshot } from './extension-overview-reuse.js'
+ * void isReusableOverviewSnapshot
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -41,7 +49,14 @@ export function isReusableOverviewSnapshot(snapshot: AiPromptRunSnapshot): boole
  * Project the selected Overview agent reply onto the extension snapshot contract.
  *
  * @param thread Persisted Desktop agent thread for this video.
- * @example snapshotFromOverviewThread
+ *
+ * **Example** (Access the snapshotFromOverviewThread contract)
+ *
+ * ```ts
+ * import { snapshotFromOverviewThread } from './extension-overview-reuse.js'
+ * void snapshotFromOverviewThread
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -105,7 +120,13 @@ function overviewStatusFromAgent(
  * @param sourceUrl Watch URL from the extension tab.
  * @param tasks Local download history rows.
  * @param hasReusableOverview True when that download already has a showable Overview.
- * @example OverviewSourceLookup
+ *
+ * **Example** (Import the OverviewSourceLookup contract)
+ *
+ * ```ts
+ * export type { OverviewSourceLookup } from './extension-overview-reuse.js'
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -117,7 +138,14 @@ export interface OverviewSourceLookup {
 /** findDownloadIdForSourceUrl shared contract.
  * @category utilities
  * @since 0.0.0
- * @example findDownloadIdForSourceUrl
+ *
+ * **Example** (Access the findDownloadIdForSourceUrl contract)
+ *
+ * ```ts
+ * import { findDownloadIdForSourceUrl } from './extension-overview-reuse.js'
+ * void findDownloadIdForSourceUrl
+ * ```
+ *
  */
 export const findDownloadIdForSourceUrl: {
   (): (input: OverviewSourceLookup) => string | null
@@ -140,7 +168,15 @@ export const findDownloadIdForSourceUrl: {
     }
     const withOverview = A.filter(matches, (task) => hasReusableOverview(task.id))
     const pool = withOverview.length > 0 ? withOverview : matches
-    return [...pool].sort((left, right) => right.updatedAt - left.updatedAt)[0]?.id ?? null
+    return (
+      A.sort(
+        [...pool],
+        Order.make<OverviewDownloadMatch>((left, right) => {
+          const difference = right.updatedAt - left.updatedAt
+          return difference < 0 ? -1 : difference > 0 ? 1 : 0
+        })
+      )[0]?.id ?? null
+    )
   }
 )
 
@@ -148,7 +184,14 @@ export const findDownloadIdForSourceUrl: {
  * Reuse a Desktop download's Overview when possible; otherwise bind work to that download.
  *
  * @param input Source URL, regenerate flag, local tasks, and a live Overview lookup.
- * @example resolveExtensionOverviewTarget
+ *
+ * **Example** (Access the resolveExtensionOverviewTarget contract)
+ *
+ * ```ts
+ * import { resolveExtensionOverviewTarget } from './extension-overview-reuse.js'
+ * void resolveExtensionOverviewTarget
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -225,7 +268,14 @@ export const OverviewDownloadMatch = S.Struct({
 /** Decoded mutable OverviewDownloadMatch data.
  * @category type-level
  * @since 0.0.0
- * @example OverviewDownloadMatch
+ *
+ * **Example** (Access the OverviewDownloadMatch contract)
+ *
+ * ```ts
+ * import { OverviewDownloadMatch } from './extension-overview-reuse.js'
+ * void OverviewDownloadMatch
+ * ```
+ *
  */
 export type OverviewDownloadMatch = typeof OverviewDownloadMatch.Type
 
@@ -255,6 +305,13 @@ export const ExtensionOverviewTarget = S.Struct({
 /** Decoded mutable ExtensionOverviewTarget data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionOverviewTarget
+ *
+ * **Example** (Access the ExtensionOverviewTarget contract)
+ *
+ * ```ts
+ * import { ExtensionOverviewTarget } from './extension-overview-reuse.js'
+ * void ExtensionOverviewTarget
+ * ```
+ *
  */
 export type ExtensionOverviewTarget = typeof ExtensionOverviewTarget.Type

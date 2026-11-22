@@ -1,6 +1,7 @@
 import * as A from 'effect/Array'
 import { dual } from 'effect/Function'
 import * as O from 'effect/Option'
+import * as Order from 'effect/Order'
 import * as P from 'effect/Predicate'
 import type { AppSettings, DownloadOptions, VideoFormat, VideoInfo } from '../types'
 
@@ -59,7 +60,15 @@ const sortAudioFormatsByQuality = (a: VideoFormat, b: VideoFormat): number => {
   return getFormatSize(b) - getFormatSize(a)
 }
 
-/** Builds the metadata fields that should survive a download task projection.  * @example buildVideoInfoDownloadMetadata
+/** Builds the metadata fields that should survive a download task projection.
+ *
+ * **Example** (Access the buildVideoInfoDownloadMetadata contract)
+ *
+ * ```ts
+ * import { buildVideoInfoDownloadMetadata } from './video-info-metadata.js'
+ * void buildVideoInfoDownloadMetadata
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -81,7 +90,15 @@ export const buildVideoInfoDownloadMetadata = (
   }
 }
 
-/** Picks a display format that mirrors the one-click quality preset.  * @example pickOneClickSelectedFormat
+/** Picks a display format that mirrors the one-click quality preset.
+ *
+ * **Example** (Access the pickOneClickSelectedFormat contract)
+ *
+ * ```ts
+ * import { pickOneClickSelectedFormat } from './video-info-metadata.js'
+ * void pickOneClickSelectedFormat
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -101,8 +118,12 @@ export const pickOneClickSelectedFormat: {
   ): VideoFormat | undefined => {
     const formats = videoInfo?.formats ?? []
     if (settings.oneClickDownloadType === 'audio') {
-      const sortedAudioFormats = filterFormats(formats, isAudioOnlyFormat).sort(
-        sortAudioFormatsByQuality
+      const sortedAudioFormats = A.sort(
+        filterFormats(formats, isAudioOnlyFormat),
+        Order.make<VideoFormat>((left, right) => {
+          const difference = sortAudioFormatsByQuality(left, right)
+          return difference < 0 ? -1 : difference > 0 ? 1 : 0
+        })
       )
       if (sortedAudioFormats.length === 0) {
         return undefined
@@ -125,7 +146,13 @@ export const pickOneClickSelectedFormat: {
       })
       return O.getOrUndefined(matchingBitrate) ?? sortedAudioFormats[0]
     }
-    const sortedVideoFormats = filterFormats(formats, isVideoFormat).sort(sortVideoFormatsByQuality)
+    const sortedVideoFormats = A.sort(
+      filterFormats(formats, isVideoFormat),
+      Order.make<VideoFormat>((left, right) => {
+        const difference = sortVideoFormatsByQuality(left, right)
+        return difference < 0 ? -1 : difference > 0 ? 1 : 0
+      })
+    )
     if (sortedVideoFormats.length === 0) {
       return undefined
     }

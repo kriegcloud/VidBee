@@ -8,13 +8,27 @@ const $I = $DesktopId.create('shared/app-icon-menu')
 /** APP_ICON_MENU_COMMAND_CHANNEL shared contract.
  * @category utilities
  * @since 0.0.0
- * @example APP_ICON_MENU_COMMAND_CHANNEL
+ *
+ * **Example** (Access the APP_ICON_MENU_COMMAND_CHANNEL contract)
+ *
+ * ```ts
+ * import { APP_ICON_MENU_COMMAND_CHANNEL } from './app-icon-menu.js'
+ * void APP_ICON_MENU_COMMAND_CHANNEL
+ * ```
+ *
  */
 export const APP_ICON_MENU_COMMAND_CHANNEL = 'playback:icon-menu'
 /** APP_ICON_SHOW_HOME_CHANNEL shared contract.
  * @category utilities
  * @since 0.0.0
- * @example APP_ICON_SHOW_HOME_CHANNEL
+ *
+ * **Example** (Access the APP_ICON_SHOW_HOME_CHANNEL contract)
+ *
+ * ```ts
+ * import { APP_ICON_SHOW_HOME_CHANNEL } from './app-icon-menu.js'
+ * void APP_ICON_SHOW_HOME_CHANNEL
+ * ```
+ *
  */
 export const APP_ICON_SHOW_HOME_CHANNEL = 'app:show-home'
 
@@ -38,7 +52,14 @@ export const AppIconMenuCommand = LiteralKit(['next', 'previous', 'toggle']).pip
 /** AppIconMenuCommand shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AppIconMenuCommand
+ *
+ * **Example** (Access the AppIconMenuCommand contract)
+ *
+ * ```ts
+ * import { AppIconMenuCommand } from './app-icon-menu.js'
+ * void AppIconMenuCommand
+ * ```
+ *
  */
 export type AppIconMenuCommand = typeof AppIconMenuCommand.Type
 
@@ -69,14 +90,28 @@ export const AppIconMenuState = S.Struct({
 /** AppIconMenuState shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AppIconMenuState
+ *
+ * **Example** (Access the AppIconMenuState contract)
+ *
+ * ```ts
+ * import { AppIconMenuState } from './app-icon-menu.js'
+ * void AppIconMenuState
+ * ```
+ *
  */
 export type AppIconMenuState = typeof AppIconMenuState.Type
 
 /** EMPTY_APP_ICON_MENU_STATE shared contract.
  * @category utilities
  * @since 0.0.0
- * @example EMPTY_APP_ICON_MENU_STATE
+ *
+ * **Example** (Access the EMPTY_APP_ICON_MENU_STATE contract)
+ *
+ * ```ts
+ * import { EMPTY_APP_ICON_MENU_STATE } from './app-icon-menu.js'
+ * void EMPTY_APP_ICON_MENU_STATE
+ * ```
+ *
  */
 export const EMPTY_APP_ICON_MENU_STATE: AppIconMenuState = {
   canNext: false,
@@ -87,7 +122,14 @@ export const EMPTY_APP_ICON_MENU_STATE: AppIconMenuState = {
 
 /**
  * Derive dock/tray playback actions from the current session and playlist.
- * @example buildAppIconMenuState
+ *
+ * **Example** (Access the buildAppIconMenuState contract)
+ *
+ * ```ts
+ * import { buildAppIconMenuState } from './app-icon-menu.js'
+ * void buildAppIconMenuState
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -107,7 +149,14 @@ export const buildAppIconMenuState = (input: {
 
 /**
  * True when two icon-menu snapshots would render the same items.
- * @example sameAppIconMenuState
+ *
+ * **Example** (Access the sameAppIconMenuState contract)
+ *
+ * ```ts
+ * import { sameAppIconMenuState } from './app-icon-menu.js'
+ * void sameAppIconMenuState
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -125,7 +174,14 @@ export const sameAppIconMenuState: {
 
 /**
  * Narrow a renderer IPC payload to a known icon-menu command.
- * @example isAppIconMenuCommand
+ *
+ * **Example** (Access the isAppIconMenuCommand contract)
+ *
+ * ```ts
+ * import { isAppIconMenuCommand } from './app-icon-menu.js'
+ * void isAppIconMenuCommand
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

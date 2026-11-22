@@ -6,7 +6,14 @@ const $I = $DesktopId.create('shared/AgentUi.model')
 /** Shared UI element projection; structural for legacy construction. Library validation remains in its existing boundary.
  * @category schemas
  * @since 0.0.0
- * @example AgentUiElement
+ *
+ * **Example** (Access the AgentUiElement contract)
+ *
+ * ```ts
+ * import { AgentUiElement } from './AgentUi.model.js'
+ * void AgentUiElement
+ * ```
+ *
  */
 export const AgentUiElement = S.Struct({
   type: LiteralKit([
@@ -41,7 +48,14 @@ export const AgentUiSpec = S.Struct({
 /** AgentUiSpec shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentUiSpec
+ *
+ * **Example** (Access the AgentUiSpec contract)
+ *
+ * ```ts
+ * import { AgentUiSpec } from './AgentUi.model.js'
+ * void AgentUiSpec
+ * ```
+ *
  */
 export type AgentUiSpec = typeof AgentUiSpec.Type
 /** Confirmed UI answer; structural for legacy construction.
@@ -65,7 +79,14 @@ export const AgentUiResponse = S.Struct({
 /** AgentUiResponse shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentUiResponse
+ *
+ * **Example** (Access the AgentUiResponse contract)
+ *
+ * ```ts
+ * import { AgentUiResponse } from './AgentUi.model.js'
+ * void AgentUiResponse
+ * ```
+ *
  */
 export type AgentUiResponse = typeof AgentUiResponse.Type
 /** Ordered chat activity; structural for legacy construction.
@@ -97,13 +118,26 @@ export const AgentActivity = S.Union([
     kind: S.Literal('tool').pipe(S.mutableKey),
     toolId: S.String.pipe(S.mutableKey),
     name: S.String.pipe(S.mutableKey),
-    count: S.Finite.pipe(S.optional, S.mutableKey),
+    count: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     artifactIds: S.Array(S.String).pipe(S.mutable, S.mutableKey)
   })
 ]).pipe($I.annoteSchema('AgentActivity', { description: 'Ordered model and tool activity.' }))
 /** AgentActivity shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentActivity
+ *
+ * **Example** (Access the AgentActivity contract)
+ *
+ * ```ts
+ * import { AgentActivity } from './AgentUi.model.js'
+ * void AgentActivity
+ * ```
+ *
  */
 export type AgentActivity = typeof AgentActivity.Type
+
+/** Decoded AgentUiElement data.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentUiElement = typeof AgentUiElement.Type

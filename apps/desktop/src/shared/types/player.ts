@@ -27,7 +27,14 @@ export const PlayerAttachInput = S.Struct({
 /** Decoded PlayerAttachInput data.
  * @category type-level
  * @since 0.0.0
- * @example PlayerAttachInput
+ *
+ * **Example** (Access the PlayerAttachInput contract)
+ *
+ * ```ts
+ * import { PlayerAttachInput } from './player.js'
+ * void PlayerAttachInput
+ * ```
+ *
  */
 export type PlayerAttachInput = typeof PlayerAttachInput.Type
 
@@ -49,13 +56,20 @@ export type PlayerAttachInput = typeof PlayerAttachInput.Type
  */
 export const PlayerAttachResult = S.Struct({
   playablePath: S.mutableKey(S.String),
-  reason: S.String.pipe(S.optional, S.mutableKey)
+  reason: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('PlayerAttachResult', { description: 'PlayerAttachResult shared boundary data.' })
 )
 /** Decoded PlayerAttachResult data.
  * @category type-level
  * @since 0.0.0
- * @example PlayerAttachResult
+ *
+ * **Example** (Access the PlayerAttachResult contract)
+ *
+ * ```ts
+ * import { PlayerAttachResult } from './player.js'
+ * void PlayerAttachResult
+ * ```
+ *
  */
 export type PlayerAttachResult = typeof PlayerAttachResult.Type

@@ -16,7 +16,15 @@ const $I = $DesktopId.create('shared/extension-transcript')
 
 /** A short-lived capability grants access to only this caption extract. */
 
-/** Read the language tag and format from a yt-dlp caption sidecar name.  * @example parseCaptionSidecarName
+/** Read the language tag and format from a yt-dlp caption sidecar name.
+ *
+ * **Example** (Access the parseCaptionSidecarName contract)
+ *
+ * ```ts
+ * import { parseCaptionSidecarName } from './extension-transcript.js'
+ * void parseCaptionSidecarName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -52,7 +60,15 @@ export function parseCaptionSidecarName(fileName: string): {
   }
 }
 
-/** Parse JSON3, WebVTT, SRT, or ASS caption text into timed cues.  * @example captionCuesFromPayload
+/** Parse JSON3, WebVTT, SRT, or ASS caption text into timed cues.
+ *
+ * **Example** (Access the captionCuesFromPayload contract)
+ *
+ * ```ts
+ * import { captionCuesFromPayload } from './extension-transcript.js'
+ * void captionCuesFromPayload
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -94,7 +110,15 @@ export const captionCuesFromPayload: {
   }
 )
 
-/** Pick the requested track, otherwise a human track, otherwise the first.  * @example pickExtensionCaptionTrack
+/** Pick the requested track, otherwise a human track, otherwise the first.
+ *
+ * **Example** (Access the pickExtensionCaptionTrack contract)
+ *
+ * ```ts
+ * import { pickExtensionCaptionTrack } from './extension-transcript.js'
+ * void pickExtensionCaptionTrack
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -108,7 +132,14 @@ export function pickExtensionCaptionTrack<
 /** pickExtensionCaptionTrack shared contract.
  * @category utilities
  * @since 0.0.0
- * @example pickExtensionCaptionTrack
+ *
+ * **Example** (Access the pickExtensionCaptionTrack contract)
+ *
+ * ```ts
+ * import { pickExtensionCaptionTrack } from './extension-transcript.js'
+ * void pickExtensionCaptionTrack
+ * ```
+ *
  */
 export function pickExtensionCaptionTrack<
   T extends {
@@ -120,7 +151,14 @@ export function pickExtensionCaptionTrack<
 /** pickExtensionCaptionTrack shared contract.
  * @category utilities
  * @since 0.0.0
- * @example pickExtensionCaptionTrack
+ *
+ * **Example** (Access the pickExtensionCaptionTrack contract)
+ *
+ * ```ts
+ * import { pickExtensionCaptionTrack } from './extension-transcript.js'
+ * void pickExtensionCaptionTrack
+ * ```
+ *
  */
 export function pickExtensionCaptionTrack<
   T extends {
@@ -160,7 +198,15 @@ export function pickExtensionCaptionTrack<
   )
 }
 
-/** Map yt-dlp caption-extract stderr onto the extension's transcript error codes.  * @example classifyCaptionExtractError
+/** Map yt-dlp caption-extract stderr onto the extension's transcript error codes.
+ *
+ * **Example** (Access the classifyCaptionExtractError contract)
+ *
+ * ```ts
+ * import { classifyCaptionExtractError } from './extension-transcript.js'
+ * void classifyCaptionExtractError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -257,7 +303,14 @@ export const ExtensionTranscriptStatus = LiteralKit(['running', 'completed', 'er
 /** Decoded mutable ExtensionTranscriptStatus data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptStatus
+ *
+ * **Example** (Access the ExtensionTranscriptStatus contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptStatus } from './extension-transcript.js'
+ * void ExtensionTranscriptStatus
+ * ```
+ *
  */
 export type ExtensionTranscriptStatus = typeof ExtensionTranscriptStatus.Type
 
@@ -288,7 +341,14 @@ export const ExtensionTranscriptErrorCode = LiteralKit([
 /** Decoded mutable ExtensionTranscriptErrorCode data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptErrorCode
+ *
+ * **Example** (Access the ExtensionTranscriptErrorCode contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptErrorCode } from './extension-transcript.js'
+ * void ExtensionTranscriptErrorCode
+ * ```
+ *
  */
 export type ExtensionTranscriptErrorCode = typeof ExtensionTranscriptErrorCode.Type
 
@@ -309,8 +369,8 @@ export type ExtensionTranscriptErrorCode = typeof ExtensionTranscriptErrorCode.T
 export const ExtensionTranscriptInput = S.Struct({
   requestId: S.String.pipe(S.mutableKey),
   sourceUrl: S.String.pipe(S.mutableKey),
-  language: S.String.pipe(S.optional, S.mutableKey),
-  refresh: S.Boolean.pipe(S.optional, S.mutableKey)
+  language: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  refresh: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ExtensionTranscriptInput', {
     description: 'ExtensionTranscriptInput shared boundary data.'
@@ -319,7 +379,14 @@ export const ExtensionTranscriptInput = S.Struct({
 /** Decoded mutable ExtensionTranscriptInput data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptInput
+ *
+ * **Example** (Access the ExtensionTranscriptInput contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptInput } from './extension-transcript.js'
+ * void ExtensionTranscriptInput
+ * ```
+ *
  */
 export type ExtensionTranscriptInput = typeof ExtensionTranscriptInput.Type
 
@@ -349,7 +416,14 @@ export const ExtensionTranscriptSegment = S.Struct({
 /** Decoded mutable ExtensionTranscriptSegment data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptSegment
+ *
+ * **Example** (Access the ExtensionTranscriptSegment contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptSegment } from './extension-transcript.js'
+ * void ExtensionTranscriptSegment
+ * ```
+ *
  */
 export type ExtensionTranscriptSegment = typeof ExtensionTranscriptSegment.Type
 
@@ -380,7 +454,14 @@ export const ExtensionTranscriptTrack = S.Struct({
 /** Decoded mutable ExtensionTranscriptTrack data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptTrack
+ *
+ * **Example** (Access the ExtensionTranscriptTrack contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptTrack } from './extension-transcript.js'
+ * void ExtensionTranscriptTrack
+ * ```
+ *
  */
 export type ExtensionTranscriptTrack = typeof ExtensionTranscriptTrack.Type
 
@@ -417,7 +498,14 @@ export const ExtensionTranscriptSnapshot = S.Struct({
 /** Decoded mutable ExtensionTranscriptSnapshot data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptSnapshot
+ *
+ * **Example** (Access the ExtensionTranscriptSnapshot contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptSnapshot } from './extension-transcript.js'
+ * void ExtensionTranscriptSnapshot
+ * ```
+ *
  */
 export type ExtensionTranscriptSnapshot = typeof ExtensionTranscriptSnapshot.Type
 
@@ -447,7 +535,14 @@ export const ExtensionTranscriptJob = S.Struct({
 /** Decoded mutable ExtensionTranscriptJob data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionTranscriptJob
+ *
+ * **Example** (Access the ExtensionTranscriptJob contract)
+ *
+ * ```ts
+ * import { ExtensionTranscriptJob } from './extension-transcript.js'
+ * void ExtensionTranscriptJob
+ * ```
+ *
  */
 export type ExtensionTranscriptJob = typeof ExtensionTranscriptJob.Type
 
@@ -473,6 +568,13 @@ export const CaptionSidecarFormat = LiteralKit(['ass', 'json3', 'srt', 'vtt']).p
 /** Decoded mutable CaptionSidecarFormat data.
  * @category type-level
  * @since 0.0.0
- * @example CaptionSidecarFormat
+ *
+ * **Example** (Access the CaptionSidecarFormat contract)
+ *
+ * ```ts
+ * import { CaptionSidecarFormat } from './extension-transcript.js'
+ * void CaptionSidecarFormat
+ * ```
+ *
  */
 export type CaptionSidecarFormat = typeof CaptionSidecarFormat.Type

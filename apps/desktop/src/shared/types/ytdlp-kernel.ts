@@ -32,7 +32,14 @@ export const YtDlpKernelState = LiteralKit([
 /** Decoded YtDlpKernelState data.
  * @category type-level
  * @since 0.0.0
- * @example YtDlpKernelState
+ *
+ * **Example** (Access the YtDlpKernelState contract)
+ *
+ * ```ts
+ * import { YtDlpKernelState } from './ytdlp-kernel.js'
+ * void YtDlpKernelState
+ * ```
+ *
  */
 export type YtDlpKernelState = typeof YtDlpKernelState.Type
 
@@ -54,11 +61,22 @@ export type YtDlpKernelState = typeof YtDlpKernelState.Type
  */
 export const YtDlpKernelPreparationStep = S.NullOr(
   LiteralKit(['copying', 'validating', 'finalizing'])
+).pipe(
+  $I.annoteSchema('YtDlpKernelPreparationStep', {
+    description: 'Shared YtDlpKernelPreparationStep schema used by the boundary models.'
+  })
 )
 /** Decoded YtDlpKernelPreparationStep data.
  * @category type-level
  * @since 0.0.0
- * @example YtDlpKernelPreparationStep
+ *
+ * **Example** (Access the YtDlpKernelPreparationStep contract)
+ *
+ * ```ts
+ * import { YtDlpKernelPreparationStep } from './ytdlp-kernel.js'
+ * void YtDlpKernelPreparationStep
+ * ```
+ *
  */
 export type YtDlpKernelPreparationStep = typeof YtDlpKernelPreparationStep.Type
 
@@ -93,6 +111,13 @@ export const YtDlpKernelStatus = S.Struct({
 /** Decoded YtDlpKernelStatus data.
  * @category type-level
  * @since 0.0.0
- * @example YtDlpKernelStatus
+ *
+ * **Example** (Access the YtDlpKernelStatus contract)
+ *
+ * ```ts
+ * import { YtDlpKernelStatus } from './ytdlp-kernel.js'
+ * void YtDlpKernelStatus
+ * ```
+ *
  */
 export type YtDlpKernelStatus = typeof YtDlpKernelStatus.Type

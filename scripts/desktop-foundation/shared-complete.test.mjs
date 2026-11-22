@@ -229,3 +229,102 @@ test('complete shared port: catalog objects retain legacy truthy endpoint overri
  const [before,after]=modulePair('ai-presets'),a=before.getAiProviderPreset('cliproxy'),b=after.getAiProviderPreset('cliproxy'),originalA=a.requiresBaseUrl,originalB=b.requiresBaseUrl
  try {for(const flag of [undefined,null,false,true,0,1,NaN,'','yes',{}]){a.requiresBaseUrl=flag;b.requiresBaseUrl=flag;compare('ai-presets','resolveAiProviderBaseUrl',[['cliproxy',' https://fixture.test/v1 ']])}} finally {a.requiresBaseUrl=originalA;b.requiresBaseUrl=originalB}
 })
+
+it.effect('legacy image Promise settlement preserves every frozen microtask boundary in the same realm', () => Effect.promise(async () => {
+ const load = sourceLoader(options)
+ const before = load(fixture+'agent-markdown.ts'), after = load(compat+'agent-markdown.ts')
+ const resolved=load.inRealm('(value) => Promise.resolve(value)')
+ const rejected=load.inRealm('(error) => Promise.reject(error)')
+ const images = [1,2,3].map(i=>({id:`12345678-1234-1234-1234-12345678901${i}`,threadId:'t',runId:'r',kind:'image',name:'shot.png',path:'/shot.png',start:i,end:i,createdAt:0}))
+ for(const mode of ['none','resolved','throw','several','reject','thenable','sync']) {
+  const artifacts=mode==='several'?images:images.slice(0,1)
+  const text=mode==='none'?'no citations':artifacts.map(x=>`![image](artifact:${x.id})`).join('\n')
+  const trace=async implementation=>{
+   const events=[]
+   const promise=implementation.embedArtifactImages(text,artifacts,item=>{
+    events.push(`read:${item.id}`)
+    if(mode==='throw')throw new Error('read')
+    if(mode==='reject')return rejected(new Error('read'))
+    if(mode==='thenable')return {then(resolve){events.push('thenable');resolve('AA==')}}
+    return mode==='sync'?'AA==':resolved('AA==')
+   })
+   events.push('returned')
+   const settled=promise.then(value=>{events.push('settled');return value})
+   let tick=0
+   const count=()=>{events.push(`microtask:${++tick}`);if(tick<16)queueMicrotask(count)}
+   queueMicrotask(count)
+   const value=await settled
+   // Drain the bounded counter so traces compare the same observation window.
+   for(let i=0;i<20;i++)await Promise.resolve()
+   return {events,value}
+  }
+  expect(await trace(after),mode).toEqual(await trace(before))
+ }
+}))
+
+test('legacy transcript observations admit negative starts and TTS identifiers retain the full 200 character boundary',()=>{
+ const segment=current(shared+'extension-transcript.ts').ExtensionTranscriptSegment
+ expect(Result.isSuccess(S.decodeUnknownResult(segment)({start:-1,end:0,text:'observed'}))).toBe(true)
+ const a=old(fixture+'tts-models.ts').ttsModelIdSchema,b=current(compat+'tts-models.ts').ttsModelIdSchema
+ for(const length of [1,198,199,200,201]) {
+  const text='a'.repeat(length)
+  expect(b.safeParse(text).success).toBe(a.safeParse(text).success)
+  expect(b.safeParse(text).success).toBe(length<=200)
+ }
+})
+
+test('Effect Orders retain source order for tied markdown, format, catalog and skill entries',()=>{
+ const artifacts=[{id:'12345678-1234-1234-1234-123456789011',kind:'image',path:'a.png',runId:'r',start:4},{id:'12345678-1234-1234-1234-123456789012',kind:'image',path:'b.png',runId:'r',start:6}]
+ for(const rows of [artifacts,[...artifacts].reverse()])compare('agent-markdown','matchArtifactByClock',[[rows,new Set(),5,'r']])
+ for(const kind of ['audio','video']) {
+  const formats=['first','second'].map(format_id=>({format_id,ext:'mp4',height:720,width:1280,vcodec:kind==='audio'?'none':'h264',acodec:'aac',tbr:100,quality:1,filesize:1000}))
+  for(const rows of [formats,[...formats].reverse()])compare('utils/video-info-metadata','pickOneClickSelectedFormat',[[{formats:rows},{oneClickDownloadType:kind,oneClickQuality:'best'}]])
+ }
+ const summaries=['a','b'].map(id=>({id,downloadId:'d',promptId:id,title:id,updatedAt:1,running:false}))
+ for(const rows of [summaries,[...summaries].reverse()]) {
+  const state={revision:0,thread:null,catalog:{downloadId:'d',threads:rows,history:rows,statuses:{},sources:{}}}
+  const summary={id:'c',downloadId:'d',promptId:'c',title:'c',updatedAt:1,running:false}
+  compare('extension-chat-state','applyExtensionChatEvent',[[state,{type:'agent',event:{catalog:{kind:'upsert',revision:1,summary,history:true,runStatus:'idle'}}}]])
+ }
+ const [before,after]=modulePair('ai-prompts')
+ expect(after.AI_PROMPT_PRESETS.map(item=>item.name)).toEqual(before.AI_PROMPT_PRESETS.map(item=>item.name))
+})
+
+test('exact-key decoding preserves missing and present undefined with original default boundaries',()=>{
+ const pairs=[['video-localization','subtitleExportInputSchema','SubtitleExportInput',{sourceKey:'s',format:'srt'}],['video-localization','dubbingInputSchema','DubbingInput',{sourceKey:'s'}]]
+ for(const [file,legacyName,name,base]of pairs)for(const key of ['bilingual','background','maxSpeed','burnSubtitles']) {
+  const legacy=old(fixture+file+'.ts')[legacyName],schema=current(shared+file+'.ts')[name]
+  for(const input of [base,{...base,[key]:undefined}]){
+   const expected=legacy.safeParse(input),actual=S.decodeUnknownResult(schema)(input)
+   expect(Result.isSuccess(actual)).toBe(expected.success)
+   if(expected.success&&Result.isSuccess(actual))expect(actual.success).toEqual(expected.data)
+  }
+ }
+ const attach=current(shared+'types/player.ts').PlayerAttachResult
+ for(const value of [{playablePath:'p'},{playablePath:'p',reason:undefined}]){
+  const decoded=S.decodeUnknownResult(attach)(value)
+  // This is a presence assertion over an independent literal, not an old output fed to new code.
+  expect(Result.isSuccess(decoded)).toBe(true)
+  if(Result.isSuccess(decoded))expect(Object.hasOwn(decoded.success,'reason')).toBe(Object.hasOwn(value,'reason'))
+ }
+})
+
+test('strict lookup operations carry absence in Option while compatibility keeps legacy shapes',()=>{
+ const native=current(shared+'agent-markdown.ts'),legacy=current(compat+'agent-markdown.ts')
+ const missing=native.artifactIdFromUrl({url:'not-an-artifact',artifacts:[]})
+ expect(missing._tag).toBe('None')
+ expect(legacy.artifactIdFromUrl('not-an-artifact',[])).toBeUndefined()
+ expect(native.clockFromImage({alt:'no clock',url:'unknown'})._tag).toBe('None')
+ expect(legacy.clockFromImage('no clock','unknown')).toBeNull()
+ const found=native.clockFromImage({alt:'0:05',url:'unknown'})
+ expect(found._tag).toBe('Some')
+ expect(found.value).toBe(5)
+ const run=current(shared+'ai-run.ts')
+ expect(run.promptTabIndicator({status:'idle'})._tag).toBe('None')
+ expect(current(compat+'ai-run.ts').promptTabIndicator('idle')).toBeNull()
+ for(const file of fs.readdirSync(compat,{recursive:true}).filter(file=>file.endsWith('.ts'))){
+  const source=fs.readFileSync(compat+file,'utf8')
+  expect(source,`Promise turns in ${file}`).not.toMatch(/Effect\.(?:runPromise|tryPromise|promise)|\.then\(|\.catch\(|\.finally\(/)
+  if(file!=='agent-markdown.ts')expect(source,`async export in ${file}`).not.toMatch(/\basync\b|\bPromise\b/)
+ }
+})

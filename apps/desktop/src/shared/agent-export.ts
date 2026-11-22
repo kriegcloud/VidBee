@@ -6,7 +6,14 @@ import * as Str from 'effect/String'
  * Build a filesystem-safe base name from a media title.
  *
  * @param title Source title shown on the share card or export dialog.
- * @example exportBaseFileName
+ *
+ * **Example** (Access the exportBaseFileName contract)
+ *
+ * ```ts
+ * import { exportBaseFileName } from './agent-export.js'
+ * void exportBaseFileName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -41,7 +48,14 @@ export const exportBaseFileName = (title?: string | null): string => {
  * The name ends with `via VidBeep` before the extension.
  *
  * @param title Source title shown on the share card.
- * @example shareImageFileName
+ *
+ * **Example** (Access the shareImageFileName contract)
+ *
+ * ```ts
+ * import { shareImageFileName } from './agent-export.js'
+ * void shareImageFileName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -60,7 +74,14 @@ const exportFileNameBody = (title: string | null | undefined, extension: string)
   applyViaVidBeeFilename(`${exportBaseFileName(title)}.${Str.replace(/^\./, '')(extension)}`)
 
 /** Data-first and pipeable exportFileName.
- * @example exportFileName('', '')
+ *
+ * **Example** (Access the exportFileName contract)
+ *
+ * ```ts
+ * import { exportFileName } from './agent-export.js'
+ * void exportFileName
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */

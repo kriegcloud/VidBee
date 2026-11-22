@@ -3,7 +3,14 @@ import * as S from 'effect/Schema'
 
 const $I = $DesktopId.create('shared/BuiltinSkill.model')
 /** Authored skill metadata; structural for legacy construction.
- * @example BuiltinSkillFrontmatter.make({name:'overview',description:'Summarize'})
+ *
+ * **Example** (Access the BuiltinSkillFrontmatter contract)
+ *
+ * ```ts
+ * import { BuiltinSkillFrontmatter } from './BuiltinSkill.model.js'
+ * void BuiltinSkillFrontmatter
+ * ```
+ *
  * @category schemas
  * @since 0.0.0
  */
@@ -32,6 +39,19 @@ export const BuiltinSkill = S.Struct({
 /** BuiltinSkill shared contract.
  * @category utilities
  * @since 0.0.0
- * @example BuiltinSkill
+ *
+ * **Example** (Access the BuiltinSkill contract)
+ *
+ * ```ts
+ * import { BuiltinSkill } from './BuiltinSkill.model.js'
+ * void BuiltinSkill
+ * ```
+ *
  */
 export type BuiltinSkill = typeof BuiltinSkill.Type
+
+/** Decoded BuiltinSkillFrontmatter data.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type BuiltinSkillFrontmatter = typeof BuiltinSkillFrontmatter.Type

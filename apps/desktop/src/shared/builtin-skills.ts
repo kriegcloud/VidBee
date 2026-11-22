@@ -3,7 +3,14 @@ import * as R from 'effect/Record'
 import { parseBuiltinSkill } from '../drivers/shared/BuiltinSkill.driver'
 
 /** Eager repository skills; raw glob order and this filename remain the build-time contract.
- * @example BUILTIN_SKILLS[0]?.name
+ *
+ * **Example** (Access the BUILTIN_SKILLS contract)
+ *
+ * ```ts
+ * import { BUILTIN_SKILLS } from './builtin-skills.js'
+ * void BUILTIN_SKILLS
+ * ```
+ *
  * @category constants
  * @since 0.0.0
  */

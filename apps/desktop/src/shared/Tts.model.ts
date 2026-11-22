@@ -24,12 +24,26 @@ export const TtsModelId = S.String.check(S.isPattern(/^[a-zA-Z0-9][a-zA-Z0-9._-]
 /** Decoded model identifier.
  * @category type-level
  * @since 0.0.0
- * @example TtsModelId
+ *
+ * **Example** (Access the TtsModelId contract)
+ *
+ * ```ts
+ * import { TtsModelId } from './Tts.model.js'
+ * void TtsModelId
+ * ```
+ *
  */
 export type TtsModelId = typeof TtsModelId.Type
 /** Original provisional speech model default.
  * @category constants
  * @since 0.0.0
- * @example DEFAULT_TTS_MODEL_ID
+ *
+ * **Example** (Access the DEFAULT_TTS_MODEL_ID contract)
+ *
+ * ```ts
+ * import { DEFAULT_TTS_MODEL_ID } from './Tts.model.js'
+ * void DEFAULT_TTS_MODEL_ID
+ * ```
+ *
  */
 export const DEFAULT_TTS_MODEL_ID: TtsModelId = 'kokoro-multi-lang-v1_0'

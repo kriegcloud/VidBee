@@ -74,15 +74,23 @@ export const AgentUiTask = S.Struct({
   title: S.String.pipe(S.mutableKey),
   status: TaskStatus.pipe(S.mutableKey),
   progress: S.NullOr(S.Finite).pipe(S.mutableKey),
-  error: S.String.pipe(S.optional, S.mutableKey),
+  error: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   download: S.Struct(Struct.omit(DownloadItem.fields, ['ytDlpCommand', 'ytDlpLog', 'error'])).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   )
 }).pipe($I.annoteSchema('AgentUiTask', { description: 'Native download card projection.' }))
 /** AgentUiTask shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentUiTask
+ *
+ * **Example** (Access the AgentUiTask contract)
+ *
+ * ```ts
+ * import { AgentUiTask } from './agent-ui.js'
+ * void AgentUiTask
+ * ```
+ *
  */
 export type AgentUiTask = typeof AgentUiTask.Type

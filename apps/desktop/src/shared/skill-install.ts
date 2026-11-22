@@ -6,7 +6,14 @@ const $I = $DesktopId.create('shared/skill-install')
 /** MAX_SKILL_UPLOAD_BYTES shared contract.
  * @category utilities
  * @since 0.0.0
- * @example MAX_SKILL_UPLOAD_BYTES
+ *
+ * **Example** (Access the MAX_SKILL_UPLOAD_BYTES contract)
+ *
+ * ```ts
+ * import { MAX_SKILL_UPLOAD_BYTES } from './skill-install.js'
+ * void MAX_SKILL_UPLOAD_BYTES
+ * ```
+ *
  */
 export const MAX_SKILL_UPLOAD_BYTES = 10 * 1024 * 1024
 
@@ -36,7 +43,14 @@ export const GitHubSkillSource = S.Struct({
 /** Decoded GitHubSkillSource data.
  * @category type-level
  * @since 0.0.0
- * @example GitHubSkillSource
+ *
+ * **Example** (Access the GitHubSkillSource contract)
+ *
+ * ```ts
+ * import { GitHubSkillSource } from './skill-install.js'
+ * void GitHubSkillSource
+ * ```
+ *
  */
 export type GitHubSkillSource = typeof GitHubSkillSource.Type
 
@@ -68,6 +82,13 @@ export const GitHubSkillInstallInput = S.Struct({
 /** Decoded GitHubSkillInstallInput data.
  * @category type-level
  * @since 0.0.0
- * @example GitHubSkillInstallInput
+ *
+ * **Example** (Access the GitHubSkillInstallInput contract)
+ *
+ * ```ts
+ * import { GitHubSkillInstallInput } from './skill-install.js'
+ * void GitHubSkillInstallInput
+ * ```
+ *
  */
 export type GitHubSkillInstallInput = typeof GitHubSkillInstallInput.Type

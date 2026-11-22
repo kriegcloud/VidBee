@@ -19,7 +19,14 @@ export { ReexportAgentActivity as AgentActivity }
 /** AGENT_THINKING_LEVELS shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AGENT_THINKING_LEVELS
+ *
+ * **Example** (Access the AGENT_THINKING_LEVELS contract)
+ *
+ * ```ts
+ * import { AGENT_THINKING_LEVELS } from './agent-chat.js'
+ * void AGENT_THINKING_LEVELS
+ * ```
+ *
  */
 export const AGENT_THINKING_LEVELS = [
   'off',
@@ -31,7 +38,15 @@ export const AGENT_THINKING_LEVELS = [
   'max'
 ] as const
 
-/** Effort levels a custom provider can advertise. Off is controlled separately.  * @example PROVIDER_THINKING_EFFORT_LEVELS
+/** Effort levels a custom provider can advertise. Off is controlled separately.
+ *
+ * **Example** (Access the PROVIDER_THINKING_EFFORT_LEVELS contract)
+ *
+ * ```ts
+ * import { PROVIDER_THINKING_EFFORT_LEVELS } from './agent-chat.js'
+ * void PROVIDER_THINKING_EFFORT_LEVELS
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -41,11 +56,26 @@ export const PROVIDER_THINKING_EFFORT_LEVELS = ['low', 'medium', 'high', 'xhigh'
 /** AGENT_MAX_MESSAGE_IMAGES shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AGENT_MAX_MESSAGE_IMAGES
+ *
+ * **Example** (Access the AGENT_MAX_MESSAGE_IMAGES contract)
+ *
+ * ```ts
+ * import { AGENT_MAX_MESSAGE_IMAGES } from './agent-chat.js'
+ * void AGENT_MAX_MESSAGE_IMAGES
+ * ```
+ *
  */
 export const AGENT_MAX_MESSAGE_IMAGES = 10
 
-/** Reserved conversation scope for chats without an attached library video.  * @example AGENT_WORKSPACE_ID
+/** Reserved conversation scope for chats without an attached library video.
+ *
+ * **Example** (Access the AGENT_WORKSPACE_ID contract)
+ *
+ * ```ts
+ * import { AGENT_WORKSPACE_ID } from './agent-chat.js'
+ * void AGENT_WORKSPACE_ID
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -71,7 +101,15 @@ export { ReexportAgentArtifact as AgentArtifact }
  * Upserts that do not write a new seq still carry a newer revision.
  */
 
-/** Keep selected images in the draft until a user message durably references them.  * @example draftAgentImages
+/** Keep selected images in the draft until a user message durably references them.
+ *
+ * **Example** (Access the draftAgentImages contract)
+ *
+ * ```ts
+ * import { draftAgentImages } from './agent-chat.js'
+ * void draftAgentImages
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -91,7 +129,14 @@ export function draftAgentImages(thread: AgentThread): AgentImageAttachment[] {
  *
  * Tool calls, compaction and other events all count; the clock only stops when
  * the run settles with a final result.
- * @example agentThinkingElapsedMs
+ *
+ * **Example** (Access the agentThinkingElapsedMs contract)
+ *
+ * ```ts
+ * import { agentThinkingElapsedMs } from './agent-chat.js'
+ * void agentThinkingElapsedMs
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -100,7 +145,15 @@ export const agentThinkingElapsedMs: {
   (startedAt: number, now: number): number
 } = dual(2, (startedAt: number, now: number): number => Math.max(0, now - startedAt))
 
-/** Walk only the selected branch, rejecting corrupt cycles.  * @example selectedAgentMessages
+/** Walk only the selected branch, rejecting corrupt cycles.
+ *
+ * **Example** (Access the selectedAgentMessages contract)
+ *
+ * ```ts
+ * import { selectedAgentMessages } from './agent-chat.js'
+ * void selectedAgentMessages
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -153,7 +206,14 @@ export const AgentThinkingLevel = LiteralKit([
 /** Decoded mutable AgentThinkingLevel data.
  * @category type-level
  * @since 0.0.0
- * @example AgentThinkingLevel
+ *
+ * **Example** (Access the AgentThinkingLevel contract)
+ *
+ * ```ts
+ * import { AgentThinkingLevel } from './agent-chat.js'
+ * void AgentThinkingLevel
+ * ```
+ *
  */
 export type AgentThinkingLevel = typeof AgentThinkingLevel.Type
 
@@ -185,7 +245,14 @@ export const ProviderThinkingEffortLevel = LiteralKit([
 /** Decoded mutable ProviderThinkingEffortLevel data.
  * @category type-level
  * @since 0.0.0
- * @example ProviderThinkingEffortLevel
+ *
+ * **Example** (Access the ProviderThinkingEffortLevel contract)
+ *
+ * ```ts
+ * import { ProviderThinkingEffortLevel } from './agent-chat.js'
+ * void ProviderThinkingEffortLevel
+ * ```
+ *
  */
 export type ProviderThinkingEffortLevel = typeof ProviderThinkingEffortLevel.Type
 
@@ -211,7 +278,14 @@ export const ProviderDefaultThinkingLevel = S.Union([S.Literal('auto'), AgentThi
 /** Decoded mutable ProviderDefaultThinkingLevel data.
  * @category type-level
  * @since 0.0.0
- * @example ProviderDefaultThinkingLevel
+ *
+ * **Example** (Access the ProviderDefaultThinkingLevel contract)
+ *
+ * ```ts
+ * import { ProviderDefaultThinkingLevel } from './agent-chat.js'
+ * void ProviderDefaultThinkingLevel
+ * ```
+ *
  */
 export type ProviderDefaultThinkingLevel = typeof ProviderDefaultThinkingLevel.Type
 
@@ -241,7 +315,14 @@ export const AgentThinkingOptions = S.Struct({
 /** Decoded mutable AgentThinkingOptions data.
  * @category type-level
  * @since 0.0.0
- * @example AgentThinkingOptions
+ *
+ * **Example** (Access the AgentThinkingOptions contract)
+ *
+ * ```ts
+ * import { AgentThinkingOptions } from './agent-chat.js'
+ * void AgentThinkingOptions
+ * ```
+ *
  */
 export type AgentThinkingOptions = typeof AgentThinkingOptions.Type
 
@@ -270,7 +351,14 @@ export const AgentImageUpload = S.Struct({
 /** Decoded mutable AgentImageUpload data.
  * @category type-level
  * @since 0.0.0
- * @example AgentImageUpload
+ *
+ * **Example** (Access the AgentImageUpload contract)
+ *
+ * ```ts
+ * import { AgentImageUpload } from './agent-chat.js'
+ * void AgentImageUpload
+ * ```
+ *
  */
 export type AgentImageUpload = typeof AgentImageUpload.Type
 
@@ -305,7 +393,14 @@ export const AgentImageAttachment = S.Struct({
 /** Decoded mutable AgentImageAttachment data.
  * @category type-level
  * @since 0.0.0
- * @example AgentImageAttachment
+ *
+ * **Example** (Access the AgentImageAttachment contract)
+ *
+ * ```ts
+ * import { AgentImageAttachment } from './agent-chat.js'
+ * void AgentImageAttachment
+ * ```
+ *
  */
 export type AgentImageAttachment = typeof AgentImageAttachment.Type
 
@@ -337,7 +432,14 @@ export const AgentRunStatus = LiteralKit([
 /** Decoded mutable AgentRunStatus data.
  * @category type-level
  * @since 0.0.0
- * @example AgentRunStatus
+ *
+ * **Example** (Access the AgentRunStatus contract)
+ *
+ * ```ts
+ * import { AgentRunStatus } from './agent-chat.js'
+ * void AgentRunStatus
+ * ```
+ *
  */
 export type AgentRunStatus = typeof AgentRunStatus.Type
 
@@ -369,7 +471,14 @@ export const AgentToolCallStatus = LiteralKit([
 /** Decoded mutable AgentToolCallStatus data.
  * @category type-level
  * @since 0.0.0
- * @example AgentToolCallStatus
+ *
+ * **Example** (Access the AgentToolCallStatus contract)
+ *
+ * ```ts
+ * import { AgentToolCallStatus } from './agent-chat.js'
+ * void AgentToolCallStatus
+ * ```
+ *
  */
 export type AgentToolCallStatus = typeof AgentToolCallStatus.Type
 
@@ -414,7 +523,14 @@ export const AgentApprovalAction = LiteralKit([
 /** Decoded mutable AgentApprovalAction data.
  * @category type-level
  * @since 0.0.0
- * @example AgentApprovalAction
+ *
+ * **Example** (Access the AgentApprovalAction contract)
+ *
+ * ```ts
+ * import { AgentApprovalAction } from './agent-chat.js'
+ * void AgentApprovalAction
+ * ```
+ *
  */
 export type AgentApprovalAction = typeof AgentApprovalAction.Type
 
@@ -433,7 +549,7 @@ export type AgentApprovalAction = typeof AgentApprovalAction.Type
  * @since 0.0.0
  */
 export const AgentApprovalRequest = S.Struct({
-  grantKey: S.String.pipe(S.optional, S.mutableKey),
+  grantKey: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   action: AgentApprovalAction.pipe(S.mutableKey),
   summary: S.String.pipe(S.mutableKey),
   risk: LiteralKit(['destructive', 'config', 'network']).pipe(S.mutableKey)
@@ -445,7 +561,14 @@ export const AgentApprovalRequest = S.Struct({
 /** Decoded mutable AgentApprovalRequest data.
  * @category type-level
  * @since 0.0.0
- * @example AgentApprovalRequest
+ *
+ * **Example** (Access the AgentApprovalRequest contract)
+ *
+ * ```ts
+ * import { AgentApprovalRequest } from './agent-chat.js'
+ * void AgentApprovalRequest
+ * ```
+ *
  */
 export type AgentApprovalRequest = typeof AgentApprovalRequest.Type
 
@@ -469,12 +592,12 @@ export const AgentChatMessage = S.Struct({
   runId: S.Union([S.String, S.Null]).pipe(S.mutableKey),
   role: LiteralKit(['user', 'assistant']).pipe(S.mutableKey),
   text: S.String.pipe(S.mutableKey),
-  uiResponse: AgentUiResponse.pipe(S.optional, S.mutableKey),
-  imageIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
+  uiResponse: AgentUiResponse.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  imageIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   thinking: S.String.pipe(S.mutableKey),
-  thinkingMs: S.Finite.pipe(S.optional, S.mutableKey),
+  thinkingMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   createdAt: S.Finite.pipe(S.mutableKey),
-  legacy: S.Boolean.pipe(S.optional, S.mutableKey)
+  legacy: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentChatMessage', {
     description: 'AgentChatMessage shared boundary data.'
@@ -483,7 +606,14 @@ export const AgentChatMessage = S.Struct({
 /** Decoded mutable AgentChatMessage data.
  * @category type-level
  * @since 0.0.0
- * @example AgentChatMessage
+ *
+ * **Example** (Access the AgentChatMessage contract)
+ *
+ * ```ts
+ * import { AgentChatMessage } from './agent-chat.js'
+ * void AgentChatMessage
+ * ```
+ *
  */
 export type AgentChatMessage = typeof AgentChatMessage.Type
 
@@ -513,7 +643,14 @@ export const AgentContextCheckpoint = S.Struct({
 /** Decoded mutable AgentContextCheckpoint data.
  * @category type-level
  * @since 0.0.0
- * @example AgentContextCheckpoint
+ *
+ * **Example** (Access the AgentContextCheckpoint contract)
+ *
+ * ```ts
+ * import { AgentContextCheckpoint } from './agent-chat.js'
+ * void AgentContextCheckpoint
+ * ```
+ *
  */
 export type AgentContextCheckpoint = typeof AgentContextCheckpoint.Type
 
@@ -536,75 +673,80 @@ export const AgentChatRun = S.Struct({
   messageId: S.String.pipe(S.mutableKey),
   status: AgentRunStatus.pipe(S.mutableKey),
   error: S.Union([S.String, S.Null]).pipe(S.mutableKey),
-  errorCode: AgentErrorCode.pipe(S.optional, S.mutableKey),
+  errorCode: AgentErrorCode.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   model: S.String.pipe(S.mutableKey),
   instruction: S.String.pipe(S.mutableKey),
   createdAt: S.Finite.pipe(S.mutableKey),
   updatedAt: S.Finite.pipe(S.mutableKey),
   rawMessages: S.Array(AgentMessage).pipe(S.mutable, S.mutableKey),
-  sessionEntries: S.Array(S.Unknown).pipe(S.mutable, S.optional, S.mutableKey),
+  sessionEntries: S.Array(S.Unknown).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   evidenceCoverage: S.Record(
     S.String,
     S.Array(S.Tuple([S.Finite, S.Finite]).pipe(S.mutable)).pipe(S.mutable, S.mutableKey)
-  ).pipe(S.optional, S.mutableKey),
-  evidenceSource: S.String.pipe(S.optional, S.mutableKey),
-  sourceDownloadId: S.String.pipe(S.optional, S.mutableKey),
-  taskIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-  fullSourceReview: S.Boolean.pipe(S.optional, S.mutableKey),
-  preloadedSourceLines: S.Finite.pipe(S.optional, S.mutableKey),
-  articleSections: S.Array(S.Unknown).pipe(S.mutable, S.optional, S.mutableKey),
+  ).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  evidenceSource: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceDownloadId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  taskIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  fullSourceReview: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  preloadedSourceLines: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  articleSections: S.Array(S.Unknown).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   articleReview: S.Struct({
-    status: LiteralKit(['passed', 'issues', 'unavailable']).pipe(S.optional, S.mutableKey),
+    status: LiteralKit(['passed', 'issues', 'unavailable']).pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    ),
     checkedSections: S.Finite.pipe(S.mutableKey),
     issues: S.Finite.pipe(S.mutableKey),
     passed: S.Boolean.pipe(S.mutableKey)
-  }).pipe(S.optional, S.mutableKey),
-  activity: S.Array(AgentActivity).pipe(S.mutable, S.optional, S.mutableKey),
+  }).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  activity: S.Array(AgentActivity).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   lifecycle: S.Array(
     S.Struct({
       id: S.String.pipe(S.mutableKey),
       messageCount: S.Finite.pipe(S.mutableKey),
       status: LiteralKit(['retrying', 'compacting', 'recovering']).pipe(S.mutableKey)
     })
-  ).pipe(S.mutable, S.optional, S.mutableKey),
+  ).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   tools: S.Array(
     S.Struct({
       id: S.String.pipe(S.mutableKey),
       name: S.String.pipe(S.mutableKey),
       status: AgentToolCallStatus.pipe(S.mutableKey),
-      detail: S.String.pipe(S.optional, S.mutableKey),
-      taskId: S.String.pipe(S.optional, S.mutableKey),
-      approval: AgentApprovalRequest.pipe(S.optional, S.mutableKey),
-      ui: AgentUiSpec.pipe(S.optional, S.mutableKey),
+      detail: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+      taskId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+      approval: AgentApprovalRequest.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+      ui: AgentUiSpec.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
       skills: S.Array(
         S.Struct({
           name: S.String.pipe(S.mutableKey),
           description: S.String.pipe(S.mutableKey),
           resource: S.String.pipe(S.mutableKey)
         })
-      ).pipe(S.mutable, S.optional, S.mutableKey)
+      ).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
     })
   ).pipe(S.mutable, S.mutableKey),
   usage: S.Struct({
     input: S.Finite.pipe(S.mutableKey),
     output: S.Finite.pipe(S.mutableKey),
     totalTokens: S.Finite.pipe(S.mutableKey),
-    cacheRead: S.Finite.pipe(S.optional, S.mutableKey),
-    cacheWrite: S.Finite.pipe(S.optional, S.mutableKey),
-    reasoning: S.Finite.pipe(S.optional, S.mutableKey)
-  }).pipe(S.optional, S.mutableKey),
-  sourceOffset: S.Finite.pipe(S.optional, S.mutableKey),
+    cacheRead: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    cacheWrite: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    reasoning: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+  }).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceOffset: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   contextSummary: S.Struct({
     digest: S.String.pipe(S.mutableKey),
     text: S.String.pipe(S.mutableKey)
-  }).pipe(S.optional, S.mutableKey),
-  contextCheckpoint: AgentContextCheckpoint.pipe(S.optional, S.mutableKey),
-  workingNotes: S.String.pipe(S.optional, S.mutableKey),
+  }).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  contextCheckpoint: AgentContextCheckpoint.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  workingNotes: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   contextStatus: LiteralKit(['compacting', 'recovering', 'reviewing', 'writing']).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   ),
-  cloudResultId: S.String.pipe(S.optional, S.mutableKey)
+  cloudResultId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentChatRun', {
     description: 'AgentChatRun shared boundary data.'
@@ -613,7 +755,14 @@ export const AgentChatRun = S.Struct({
 /** Decoded mutable AgentChatRun data.
  * @category type-level
  * @since 0.0.0
- * @example AgentChatRun
+ *
+ * **Example** (Access the AgentChatRun contract)
+ *
+ * ```ts
+ * import { AgentChatRun } from './agent-chat.js'
+ * void AgentChatRun
+ * ```
+ *
  */
 export type AgentChatRun = typeof AgentChatRun.Type
 
@@ -637,13 +786,13 @@ export const AgentThread = S.Struct({
   promptId: S.String.pipe(S.mutableKey),
   leafId: S.Union([S.String, S.Null]).pipe(S.mutableKey),
   seq: S.Finite.pipe(S.mutableKey),
-  title: S.String.pipe(S.optional, S.mutableKey),
-  thinkingLevel: AgentThinkingLevel.pipe(S.optional, S.mutableKey),
+  title: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  thinkingLevel: AgentThinkingLevel.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   messages: S.Array(AgentChatMessage).pipe(S.mutable, S.mutableKey),
   runs: S.Array(AgentChatRun).pipe(S.mutable, S.mutableKey),
   artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.mutableKey),
-  images: S.Array(AgentImageAttachment).pipe(S.mutable, S.optional, S.mutableKey),
-  toolGrants: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey)
+  images: S.Array(AgentImageAttachment).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  toolGrants: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentThread', {
     description: 'AgentThread shared boundary data.'
@@ -652,7 +801,14 @@ export const AgentThread = S.Struct({
 /** Decoded mutable AgentThread data.
  * @category type-level
  * @since 0.0.0
- * @example AgentThread
+ *
+ * **Example** (Access the AgentThread contract)
+ *
+ * ```ts
+ * import { AgentThread } from './agent-chat.js'
+ * void AgentThread
+ * ```
+ *
  */
 export type AgentThread = typeof AgentThread.Type
 
@@ -677,9 +833,13 @@ export const AgentThreadSummary = S.Struct({
   title: S.String.pipe(S.mutableKey),
   updatedAt: S.Finite.pipe(S.mutableKey),
   running: S.Boolean.pipe(S.mutableKey),
-  approvalPending: S.Boolean.pipe(S.optional, S.mutableKey),
-  status: S.Union([AgentRunStatus, S.Literal('idle')]).pipe(S.optional, S.mutableKey),
-  model: S.String.pipe(S.optional, S.mutableKey)
+  approvalPending: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  status: S.Union([AgentRunStatus, S.Literal('idle')]).pipe(
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  ),
+  model: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentThreadSummary', {
     description: 'AgentThreadSummary shared boundary data.'
@@ -688,7 +848,14 @@ export const AgentThreadSummary = S.Struct({
 /** Decoded mutable AgentThreadSummary data.
  * @category type-level
  * @since 0.0.0
- * @example AgentThreadSummary
+ *
+ * **Example** (Access the AgentThreadSummary contract)
+ *
+ * ```ts
+ * import { AgentThreadSummary } from './agent-chat.js'
+ * void AgentThreadSummary
+ * ```
+ *
  */
 export type AgentThreadSummary = typeof AgentThreadSummary.Type
 
@@ -710,13 +877,13 @@ export const AgentThreadPatch = S.Struct({
   downloadId: S.String.pipe(S.mutableKey),
   promptId: S.String.pipe(S.mutableKey),
   threadId: S.String.pipe(S.mutableKey),
-  leafId: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
-  title: S.String.pipe(S.optional, S.mutableKey),
-  toolGrants: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-  images: S.Array(AgentImageAttachment).pipe(S.mutable, S.optional, S.mutableKey),
-  messages: S.Array(AgentChatMessage).pipe(S.mutable, S.optional, S.mutableKey),
-  runs: S.Array(AgentChatRun).pipe(S.mutable, S.optional, S.mutableKey),
-  artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.optional, S.mutableKey)
+  leafId: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  title: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  toolGrants: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  images: S.Array(AgentImageAttachment).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  messages: S.Array(AgentChatMessage).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  runs: S.Array(AgentChatRun).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentThreadPatch', {
     description: 'AgentThreadPatch shared boundary data.'
@@ -725,7 +892,14 @@ export const AgentThreadPatch = S.Struct({
 /** Decoded mutable AgentThreadPatch data.
  * @category type-level
  * @since 0.0.0
- * @example AgentThreadPatch
+ *
+ * **Example** (Access the AgentThreadPatch contract)
+ *
+ * ```ts
+ * import { AgentThreadPatch } from './agent-chat.js'
+ * void AgentThreadPatch
+ * ```
+ *
  */
 export type AgentThreadPatch = typeof AgentThreadPatch.Type
 
@@ -766,7 +940,14 @@ export const AgentCatalogNotice = S.Union([
 /** Decoded mutable AgentCatalogNotice data.
  * @category type-level
  * @since 0.0.0
- * @example AgentCatalogNotice
+ *
+ * **Example** (Access the AgentCatalogNotice contract)
+ *
+ * ```ts
+ * import { AgentCatalogNotice } from './agent-chat.js'
+ * void AgentCatalogNotice
+ * ```
+ *
  */
 export type AgentCatalogNotice = typeof AgentCatalogNotice.Type
 
@@ -791,9 +972,9 @@ export const AgentRunEvent = S.Struct({
   seq: S.Finite.pipe(S.mutableKey),
   type: S.String.pipe(S.mutableKey),
   createdAt: S.Finite.pipe(S.mutableKey),
-  snapshot: AgentThread.pipe(S.optional, S.mutableKey),
-  patch: AgentThreadPatch.pipe(S.optional, S.mutableKey),
-  catalog: AgentCatalogNotice.pipe(S.optional, S.mutableKey)
+  snapshot: AgentThread.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  patch: AgentThreadPatch.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  catalog: AgentCatalogNotice.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentRunEvent', {
     description: 'AgentRunEvent shared boundary data.'
@@ -802,7 +983,14 @@ export const AgentRunEvent = S.Struct({
 /** Decoded mutable AgentRunEvent data.
  * @category type-level
  * @since 0.0.0
- * @example AgentRunEvent
+ *
+ * **Example** (Access the AgentRunEvent contract)
+ *
+ * ```ts
+ * import { AgentRunEvent } from './agent-chat.js'
+ * void AgentRunEvent
+ * ```
+ *
  */
 export type AgentRunEvent = typeof AgentRunEvent.Type
 
@@ -821,18 +1009,18 @@ export type AgentRunEvent = typeof AgentRunEvent.Type
  * @since 0.0.0
  */
 export const AgentChatInput = S.Struct({
-  uiResponse: AgentUiResponse.pipe(S.optional, S.mutableKey),
-  thinkingLevel: AgentThinkingLevel.pipe(S.optional, S.mutableKey),
+  uiResponse: AgentUiResponse.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  thinkingLevel: AgentThinkingLevel.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   downloadId: S.String.pipe(S.mutableKey),
   promptId: S.String.pipe(S.mutableKey),
-  threadId: S.String.pipe(S.optional, S.mutableKey),
-  transcriptText: S.String.pipe(S.optional, S.mutableKey),
-  text: S.String.pipe(S.optional, S.mutableKey),
-  imageIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-  retryMessageId: S.String.pipe(S.optional, S.mutableKey),
-  uiLanguage: S.String.pipe(S.optional, S.mutableKey),
-  sourceTitle: S.String.pipe(S.optional, S.mutableKey),
-  sourceDurationMs: S.Finite.pipe(S.optional, S.mutableKey)
+  threadId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  transcriptText: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  text: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  imageIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  retryMessageId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  uiLanguage: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceTitle: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceDurationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('AgentChatInput', {
     description: 'AgentChatInput shared boundary data.'
@@ -841,6 +1029,13 @@ export const AgentChatInput = S.Struct({
 /** Decoded mutable AgentChatInput data.
  * @category type-level
  * @since 0.0.0
- * @example AgentChatInput
+ *
+ * **Example** (Access the AgentChatInput contract)
+ *
+ * ```ts
+ * import { AgentChatInput } from './agent-chat.js'
+ * void AgentChatInput
+ * ```
+ *
  */
 export type AgentChatInput = typeof AgentChatInput.Type

@@ -15,7 +15,14 @@ const FENCE = /^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/u
  * True when the model returned at least one Overview field we can lay out.
  *
  * @param parsed Structured Overview.
- * @example hasOverviewStructure
+ *
+ * **Example** (Access the hasOverviewStructure contract)
+ *
+ * ```ts
+ * import { hasOverviewStructure } from './overview-result.js'
+ * void hasOverviewStructure
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -133,7 +140,14 @@ const looksLikeQuote = (rest: string): boolean => /^\s*["“«「『]/.test(rest
  * Parse Overview markdown into a takeaway, chapters, and key quotes.
  *
  * @param markdown Raw prompt result, possibly still streaming.
- * @example parseOverviewMarkdown
+ *
+ * **Example** (Access the parseOverviewMarkdown contract)
+ *
+ * ```ts
+ * import { parseOverviewMarkdown } from './overview-result.js'
+ * void parseOverviewMarkdown
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -234,7 +248,14 @@ export const OverviewChapter = S.Struct({
 /** Decoded mutable OverviewChapter data.
  * @category type-level
  * @since 0.0.0
- * @example OverviewChapter
+ *
+ * **Example** (Access the OverviewChapter contract)
+ *
+ * ```ts
+ * import { OverviewChapter } from './overview-result.js'
+ * void OverviewChapter
+ * ```
+ *
  */
 export type OverviewChapter = typeof OverviewChapter.Type
 
@@ -264,7 +285,14 @@ export const OverviewQuote = S.Struct({
 /** Decoded mutable OverviewQuote data.
  * @category type-level
  * @since 0.0.0
- * @example OverviewQuote
+ *
+ * **Example** (Access the OverviewQuote contract)
+ *
+ * ```ts
+ * import { OverviewQuote } from './overview-result.js'
+ * void OverviewQuote
+ * ```
+ *
  */
 export type OverviewQuote = typeof OverviewQuote.Type
 
@@ -294,7 +322,14 @@ export const ParsedOverview = S.Struct({
 /** Decoded mutable ParsedOverview data.
  * @category type-level
  * @since 0.0.0
- * @example ParsedOverview
+ *
+ * **Example** (Access the ParsedOverview contract)
+ *
+ * ```ts
+ * import { ParsedOverview } from './overview-result.js'
+ * void ParsedOverview
+ * ```
+ *
  */
 export type ParsedOverview = typeof ParsedOverview.Type
 
@@ -323,24 +358,55 @@ export const OverviewPlayhead = S.Struct({
 /** Decoded mutable OverviewPlayhead data.
  * @category type-level
  * @since 0.0.0
- * @example OverviewPlayhead
+ *
+ * **Example** (Access the OverviewPlayhead contract)
+ *
+ * ```ts
+ * import { OverviewPlayhead } from './overview-result.js'
+ * void OverviewPlayhead
+ * ```
+ *
  */
 export type OverviewPlayhead = typeof OverviewPlayhead.Type
 
-/** Record contract for overviewPlayhead.
+/** Record contract for overviewPlayhead. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example OverviewPlayheadInput
+ *
+ * **Example** (Access the OverviewPlayheadInput contract)
+ *
+ * ```ts
+ * import { OverviewPlayheadInput } from './overview-result.js'
+ * void OverviewPlayheadInput
+ * ```
+ *
  */
-export interface OverviewPlayheadInput {
-  chapters: readonly OverviewChapter[]
-  currentSeconds: number
-  durationSeconds?: number | undefined
-}
+export const OverviewPlayheadInput = S.Struct({
+  chapters: OverviewChapter.pipe(S.Array, S.mutableKey),
+  currentSeconds: S.mutableKey(S.Finite),
+  durationSeconds: S.Union([S.Finite, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('OverviewPlayheadInput', {
+    description:
+      'Explicit input record for OverviewPlayheadInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived OverviewPlayheadInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type OverviewPlayheadInput = typeof OverviewPlayheadInput.Type
 /** overviewPlayhead with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example overviewPlayhead
+ *
+ * **Example** (Access the overviewPlayhead contract)
+ *
+ * ```ts
+ * import { overviewPlayhead } from './overview-result.js'
+ * void overviewPlayhead
+ * ```
+ *
  */
 export const overviewPlayhead: {
   (): (input: OverviewPlayheadInput) => OverviewPlayhead

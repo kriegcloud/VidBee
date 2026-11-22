@@ -10,7 +10,15 @@ const $I = $DesktopId.create('shared/ai-provider-groups')
 
 /** One settings entry containing all models configured for the same provider. */
 
-/** Recover the provider name from model suffixes added by the legacy dialog.  * @example aiProviderName
+/** Recover the provider name from model suffixes added by the legacy dialog.
+ *
+ * **Example** (Access the aiProviderName contract)
+ *
+ * ```ts
+ * import { aiProviderName } from './ai-provider-groups.js'
+ * void aiProviderName
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -27,7 +35,15 @@ export function aiProviderName(provider: AiProviderConfig): string {
   return provider.name
 }
 
-/** Group models by stable identity, with a name and endpoint fallback for old settings.  * @example groupAiProviders
+/** Group models by stable identity, with a name and endpoint fallback for old settings.
+ *
+ * **Example** (Access the groupAiProviders contract)
+ *
+ * ```ts
+ * import { groupAiProviders } from './ai-provider-groups.js'
+ * void groupAiProviders
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -88,6 +104,13 @@ export const AiProviderGroup = S.Struct({
 /** Decoded mutable AiProviderGroup data.
  * @category type-level
  * @since 0.0.0
- * @example AiProviderGroup
+ *
+ * **Example** (Access the AiProviderGroup contract)
+ *
+ * ```ts
+ * import { AiProviderGroup } from './ai-provider-groups.js'
+ * void AiProviderGroup
+ * ```
+ *
  */
 export type AiProviderGroup = typeof AiProviderGroup.Type

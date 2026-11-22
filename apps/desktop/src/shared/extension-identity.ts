@@ -1,4 +1,12 @@
-/** Shared public identity for unpacked development builds; no signing key is distributed.  * @example VIDBEE_DEV_EXTENSION_PUBLIC_KEY
+/** Shared public identity for unpacked development builds; no signing key is distributed.
+ *
+ * **Example** (Access the VIDBEE_DEV_EXTENSION_PUBLIC_KEY contract)
+ *
+ * ```ts
+ * import { VIDBEE_DEV_EXTENSION_PUBLIC_KEY } from './extension-identity.js'
+ * void VIDBEE_DEV_EXTENSION_PUBLIC_KEY
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -8,12 +16,26 @@ export const VIDBEE_DEV_EXTENSION_PUBLIC_KEY =
 /** VIDBEE_DEV_EXTENSION_ID shared contract.
  * @category utilities
  * @since 0.0.0
- * @example VIDBEE_DEV_EXTENSION_ID
+ *
+ * **Example** (Access the VIDBEE_DEV_EXTENSION_ID contract)
+ *
+ * ```ts
+ * import { VIDBEE_DEV_EXTENSION_ID } from './extension-identity.js'
+ * void VIDBEE_DEV_EXTENSION_ID
+ * ```
+ *
  */
 export const VIDBEE_DEV_EXTENSION_ID = 'gidnfopabhandhndkgihfbnegphbeadp'
 /** VIDBEE_DEV_EXTENSION_ORIGIN shared contract.
  * @category utilities
  * @since 0.0.0
- * @example VIDBEE_DEV_EXTENSION_ORIGIN
+ *
+ * **Example** (Access the VIDBEE_DEV_EXTENSION_ORIGIN contract)
+ *
+ * ```ts
+ * import { VIDBEE_DEV_EXTENSION_ORIGIN } from './extension-identity.js'
+ * void VIDBEE_DEV_EXTENSION_ORIGIN
+ * ```
+ *
  */
 export const VIDBEE_DEV_EXTENSION_ORIGIN = `chrome-extension://${VIDBEE_DEV_EXTENSION_ID}`

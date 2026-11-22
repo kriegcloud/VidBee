@@ -917,7 +917,13 @@ interface LegacyServices {
 /** Legacy service proxy contract with the original decorator type transformation.
  * @category protocols
  * @since 0.0.0
- * @example IpcServices
+ *
+ * **Example** (Import the IpcServices contract)
+ *
+ * ```ts
+ * export type { IpcServices } from './ipc.js'
+ * ```
+ *
  */
 export type IpcServices = {
   [G in keyof LegacyServices]: {

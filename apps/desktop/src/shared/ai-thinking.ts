@@ -64,7 +64,14 @@ const toStep = (chunk: string): PromptThinkingStep => {
  * Split model thinking into step rows instead of dumping it as one markdown blob.
  *
  * @param thinking Raw thinking / reasoning text from the model.
- * @example parseThinkingSteps
+ *
+ * **Example** (Access the parseThinkingSteps contract)
+ *
+ * ```ts
+ * import { parseThinkingSteps } from './ai-thinking.js'
+ * void parseThinkingSteps
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -142,7 +149,7 @@ const isThinkingSameAsAnswerBody = (thinking: string, text: string): boolean => 
  * @since 0.0.0
  */
 export const PromptThinkingStep = S.Struct({
-  description: S.String.pipe(S.optional, S.mutableKey),
+  description: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   label: S.String.pipe(S.mutableKey)
 }).pipe(
   $I.annoteSchema('PromptThinkingStep', {
@@ -152,11 +159,25 @@ export const PromptThinkingStep = S.Struct({
 /** Decoded mutable PromptThinkingStep data.
  * @category type-level
  * @since 0.0.0
- * @example PromptThinkingStep
+ *
+ * **Example** (Access the PromptThinkingStep contract)
+ *
+ * ```ts
+ * import { PromptThinkingStep } from './ai-thinking.js'
+ * void PromptThinkingStep
+ * ```
+ *
  */
 export type PromptThinkingStep = typeof PromptThinkingStep.Type
 /** Data-first and pipeable isThinkingSameAsAnswer.
- * @example isThinkingSameAsAnswer('', '')
+ *
+ * **Example** (Access the isThinkingSameAsAnswer contract)
+ *
+ * ```ts
+ * import { isThinkingSameAsAnswer } from './ai-thinking.js'
+ * void isThinkingSameAsAnswer
+ * ```
+ *
  * @category rules
  * @since 0.0.0
  */

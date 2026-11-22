@@ -1,17 +1,17 @@
+import { $DesktopId } from '@vidbee/identity/packages'
 import * as A from 'effect/Array'
 import { pipe } from 'effect/Function'
 import * as HashMap from 'effect/HashMap'
 import * as HashSet from 'effect/HashSet'
 import * as O from 'effect/Option'
 import * as P from 'effect/Predicate'
-import type {
-  AgentEventApplyResult,
-  AgentGapRecovery,
-  AgentPersistScope,
-  AgentRouteIdentity,
-  CatalogMemory
-} from './AgentPatch.model.js'
+import * as S from 'effect/Schema'
 import {
+  type AgentEventApplyResult,
+  AgentGapRecovery,
+  type AgentPersistScope,
+  AgentRouteIdentity,
+  CatalogMemory,
   AgentEventApplyResult as ReexportAgentEventApplyResult,
   AgentGapRecovery as ReexportAgentGapRecovery,
   AgentPersistScope as ReexportAgentPersistScope,
@@ -19,6 +19,8 @@ import {
   CatalogMemoryEntry as ReexportCatalogMemoryEntry
 } from './AgentPatch.model.js'
 import * as Sparse from './ArrayHelpers.js'
+
+const $I = $DesktopId.create('shared/agent-thread-patch')
 
 export {
   ReexportAgentEventApplyResult as AgentEventApplyResult,
@@ -29,16 +31,16 @@ export {
 }
 
 import {
-  type AgentActivity,
+  AgentActivity,
   type AgentArtifact,
-  type AgentCatalogNotice,
-  type AgentChatRun,
+  AgentCatalogNotice,
+  AgentChatRun,
   type AgentImageAttachment,
-  type AgentRunEvent,
+  AgentRunEvent,
   type AgentRunStatus,
-  type AgentThread,
-  type AgentThreadPatch,
-  type AgentThreadSummary,
+  AgentThread,
+  AgentThreadPatch,
+  AgentThreadSummary,
   selectedAgentMessages
 } from './agent-chat'
 import { recordFunction } from './RecordFunction.js'
@@ -58,7 +60,14 @@ import { recordFunction } from './RecordFunction.js'
 
 /**
  * Start a gap-repair record with no request outstanding.
- * @example createAgentGapRecovery
+ *
+ * **Example** (Access the createAgentGapRecovery contract)
+ *
+ * ```ts
+ * import { createAgentGapRecovery } from './agent-thread-patch.js'
+ * void createAgentGapRecovery
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -172,7 +181,14 @@ function settleAgentRecoveryBody(
 /**
  * Allow a focus repair to read again. Does not cancel an RPC already in flight.
  * @param recovery Current repair record.
- * @example resetAgentRecovery
+ *
+ * **Example** (Access the resetAgentRecovery contract)
+ *
+ * ```ts
+ * import { resetAgentRecovery } from './agent-thread-patch.js'
+ * void resetAgentRecovery
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -190,7 +206,14 @@ export function resetAgentRecovery(recovery: AgentGapRecovery): AgentGapRecovery
 /**
  * Keep a public artifact without its local filesystem path.
  * @param artifact Stored artifact.
- * @example projectAgentArtifact
+ *
+ * **Example** (Access the projectAgentArtifact contract)
+ *
+ * ```ts
+ * import { projectAgentArtifact } from './agent-thread-patch.js'
+ * void projectAgentArtifact
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -205,7 +228,14 @@ export function projectAgentArtifact(artifact: AgentArtifact): AgentArtifact {
 /**
  * Keep a public image without its local filesystem path.
  * @param image Stored image attachment.
- * @example projectAgentImage
+ *
+ * **Example** (Access the projectAgentImage contract)
+ *
+ * ```ts
+ * import { projectAgentImage } from './agent-thread-patch.js'
+ * void projectAgentImage
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -363,7 +393,14 @@ function projectAgentPatchBody(
 /**
  * Event header safe to store. Snapshot, patch, and catalog payloads stay off the row.
  * @param event Event about to be broadcast.
- * @example durableAgentEvent
+ *
+ * **Example** (Access the durableAgentEvent contract)
+ *
+ * ```ts
+ * import { durableAgentEvent } from './agent-thread-patch.js'
+ * void durableAgentEvent
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -383,7 +420,14 @@ export function durableAgentEvent(
 /**
  * Route a snapshot or patch. Catalog-only notices have no thread route.
  * @param event Broadcast event.
- * @example agentEventRoute
+ *
+ * **Example** (Access the agentEventRoute contract)
+ *
+ * ```ts
+ * import { agentEventRoute } from './agent-thread-patch.js'
+ * void agentEventRoute
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -565,7 +609,14 @@ function applyAgentRunEventBody(
 /**
  * Status of the selected branch. Branch changes this even when the title does not.
  * @param thread Public or stored thread.
- * @example selectedAgentRunView
+ *
+ * **Example** (Access the selectedAgentRunView contract)
+ *
+ * ```ts
+ * import { selectedAgentRunView } from './agent-thread-patch.js'
+ * void selectedAgentRunView
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -646,8 +697,8 @@ function mergeCatalogListBody(
   memory: CatalogMemory,
   requestedRevision: number,
   options?: {
-    downloadId?: string
-    historyOnly?: boolean
+    downloadId?: string | undefined
+    historyOnly?: boolean | undefined
   }
 ): AgentThreadSummary[] {
   let entries = HashMap.empty<string, AgentThreadSummary>()
@@ -694,19 +745,43 @@ function mergeCatalogListBody(
   return result
 }
 
-/** Record contract for observeAgentSeq.
+/** Record contract for observeAgentSeq. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ObserveAgentSeqInput
+ *
+ * **Example** (Access the ObserveAgentSeqInput contract)
+ *
+ * ```ts
+ * import { ObserveAgentSeqInput } from './agent-thread-patch.js'
+ * void ObserveAgentSeqInput
+ * ```
+ *
  */
-export interface ObserveAgentSeqInput {
-  recovery: AgentGapRecovery
-  seq: number
-}
+export const ObserveAgentSeqInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  seq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('ObserveAgentSeqInput', {
+    description:
+      'Explicit input record for ObserveAgentSeqInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ObserveAgentSeqInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ObserveAgentSeqInput = typeof ObserveAgentSeqInput.Type
 /** observeAgentSeq with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example observeAgentSeq
+ *
+ * **Example** (Access the observeAgentSeq contract)
+ *
+ * ```ts
+ * import { observeAgentSeq } from './agent-thread-patch.js'
+ * void observeAgentSeq
+ * ```
+ *
  */
 export const observeAgentSeq: {
   (): (input: ObserveAgentSeqInput) => AgentGapRecovery
@@ -714,19 +789,47 @@ export const observeAgentSeq: {
 } = recordFunction(
   (input: ObserveAgentSeqInput): AgentGapRecovery => observeAgentSeqBody(input.recovery, input.seq)
 )
-/** Record contract for requestAgentRecovery.
+/** Record contract for requestAgentRecovery. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example RequestAgentRecoveryInput
+ *
+ * **Example** (Access the RequestAgentRecoveryInput contract)
+ *
+ * ```ts
+ * import { RequestAgentRecoveryInput } from './agent-thread-patch.js'
+ * void RequestAgentRecoveryInput
+ * ```
+ *
  */
-export interface RequestAgentRecoveryInput {
-  recovery: AgentGapRecovery
-  reason?: 'gap' | 'refresh' | undefined
-}
+export const RequestAgentRecoveryInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  reason: S.Union([S.Literal('gap'), S.Literal('refresh'), S.Undefined]).pipe(
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  )
+}).pipe(
+  $I.annoteSchema('RequestAgentRecoveryInput', {
+    description:
+      'Explicit input record for RequestAgentRecoveryInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived RequestAgentRecoveryInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type RequestAgentRecoveryInput = typeof RequestAgentRecoveryInput.Type
 /** requestAgentRecovery with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example requestAgentRecovery
+ *
+ * **Example** (Access the requestAgentRecovery contract)
+ *
+ * ```ts
+ * import { requestAgentRecovery } from './agent-thread-patch.js'
+ * void requestAgentRecovery
+ * ```
+ *
  */
 export const requestAgentRecovery: {
   (): (input: RequestAgentRecoveryInput) => {
@@ -747,19 +850,43 @@ export const requestAgentRecovery: {
     action: 'start' | 'busy' | 'wait'
   } => requestAgentRecoveryBody(input.recovery, input.reason)
 )
-/** Record contract for settleAgentRecovery.
+/** Record contract for settleAgentRecovery. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example SettleAgentRecoveryInput
+ *
+ * **Example** (Access the SettleAgentRecoveryInput contract)
+ *
+ * ```ts
+ * import { SettleAgentRecoveryInput } from './agent-thread-patch.js'
+ * void SettleAgentRecoveryInput
+ * ```
+ *
  */
-export interface SettleAgentRecoveryInput {
-  recovery: AgentGapRecovery
-  appliedSeq: number
-}
+export const SettleAgentRecoveryInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  appliedSeq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('SettleAgentRecoveryInput', {
+    description:
+      'Explicit input record for SettleAgentRecoveryInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived SettleAgentRecoveryInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type SettleAgentRecoveryInput = typeof SettleAgentRecoveryInput.Type
 /** settleAgentRecovery with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example settleAgentRecovery
+ *
+ * **Example** (Access the settleAgentRecovery contract)
+ *
+ * ```ts
+ * import { settleAgentRecovery } from './agent-thread-patch.js'
+ * void settleAgentRecovery
+ * ```
+ *
  */
 export const settleAgentRecovery: {
   (): (input: SettleAgentRecoveryInput) => {
@@ -780,19 +907,43 @@ export const settleAgentRecovery: {
     action: 'settled' | 'follow-up' | 'wait'
   } => settleAgentRecoveryBody(input.recovery, input.appliedSeq)
 )
-/** Record contract for projectAgentRun.
+/** Record contract for projectAgentRun. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ProjectAgentRunInput
+ *
+ * **Example** (Access the ProjectAgentRunInput contract)
+ *
+ * ```ts
+ * import { ProjectAgentRunInput } from './agent-thread-patch.js'
+ * void ProjectAgentRunInput
+ * ```
+ *
  */
-export interface ProjectAgentRunInput {
-  run: AgentChatRun
-  activity: AgentActivity[]
-}
+export const ProjectAgentRunInput = S.Struct({
+  run: S.mutableKey(AgentChatRun),
+  activity: AgentActivity.pipe(S.Array, S.mutable, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ProjectAgentRunInput', {
+    description:
+      'Explicit input record for ProjectAgentRunInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ProjectAgentRunInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ProjectAgentRunInput = typeof ProjectAgentRunInput.Type
 /** projectAgentRun with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example projectAgentRun
+ *
+ * **Example** (Access the projectAgentRun contract)
+ *
+ * ```ts
+ * import { projectAgentRun } from './agent-thread-patch.js'
+ * void projectAgentRun
+ * ```
+ *
  */
 export const projectAgentRun: {
   (): (input: ProjectAgentRunInput) => AgentChatRun
@@ -803,7 +954,13 @@ export const projectAgentRun: {
 /** Record contract for projectAgentThread.
  * @category ports
  * @since 0.0.0
- * @example ProjectAgentThreadInput
+ *
+ * **Example** (Import the ProjectAgentThreadInput contract)
+ *
+ * ```ts
+ * export type { ProjectAgentThreadInput } from './agent-thread-patch.js'
+ * ```
+ *
  */
 export interface ProjectAgentThreadInput {
   thread: AgentThread
@@ -812,7 +969,14 @@ export interface ProjectAgentThreadInput {
 /** projectAgentThread with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example projectAgentThread
+ *
+ * **Example** (Access the projectAgentThread contract)
+ *
+ * ```ts
+ * import { projectAgentThread } from './agent-thread-patch.js'
+ * void projectAgentThread
+ * ```
+ *
  */
 export const projectAgentThread: {
   (): (input: ProjectAgentThreadInput) => AgentThread
@@ -824,7 +988,13 @@ export const projectAgentThread: {
 /** Record contract for projectAgentPatch.
  * @category ports
  * @since 0.0.0
- * @example ProjectAgentPatchInput
+ *
+ * **Example** (Import the ProjectAgentPatchInput contract)
+ *
+ * ```ts
+ * export type { ProjectAgentPatchInput } from './agent-thread-patch.js'
+ * ```
+ *
  */
 export interface ProjectAgentPatchInput {
   thread: AgentThread
@@ -834,7 +1004,14 @@ export interface ProjectAgentPatchInput {
 /** projectAgentPatch with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example projectAgentPatch
+ *
+ * **Example** (Access the projectAgentPatch contract)
+ *
+ * ```ts
+ * import { projectAgentPatch } from './agent-thread-patch.js'
+ * void projectAgentPatch
+ * ```
+ *
  */
 export const projectAgentPatch: {
   (): (input: ProjectAgentPatchInput) => AgentThreadPatch
@@ -843,19 +1020,43 @@ export const projectAgentPatch: {
   (input: ProjectAgentPatchInput): AgentThreadPatch =>
     projectAgentPatchBody(input.thread, input.scope, input.activityFor)
 )
-/** Record contract for agentEventMatches.
+/** Record contract for agentEventMatches. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AgentEventMatchesInput
+ *
+ * **Example** (Access the AgentEventMatchesInput contract)
+ *
+ * ```ts
+ * import { AgentEventMatchesInput } from './agent-thread-patch.js'
+ * void AgentEventMatchesInput
+ * ```
+ *
  */
-export interface AgentEventMatchesInput {
-  event: AgentRunEvent
-  identity: AgentRouteIdentity
-}
+export const AgentEventMatchesInput = S.Struct({
+  event: S.mutableKey(AgentRunEvent),
+  identity: S.mutableKey(AgentRouteIdentity)
+}).pipe(
+  $I.annoteSchema('AgentEventMatchesInput', {
+    description:
+      'Explicit input record for AgentEventMatchesInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AgentEventMatchesInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentEventMatchesInput = typeof AgentEventMatchesInput.Type
 /** agentEventMatches with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example agentEventMatches
+ *
+ * **Example** (Access the agentEventMatches contract)
+ *
+ * ```ts
+ * import { agentEventMatches } from './agent-thread-patch.js'
+ * void agentEventMatches
+ * ```
+ *
  */
 export const agentEventMatches: {
   (): (input: AgentEventMatchesInput) => boolean
@@ -863,20 +1064,44 @@ export const agentEventMatches: {
 } = recordFunction((input: AgentEventMatchesInput): boolean =>
   agentEventMatchesBody(input.event, input.identity)
 )
-/** Record contract for applyAgentThreadPatch.
+/** Record contract for applyAgentThreadPatch. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ApplyAgentThreadPatchInput
+ *
+ * **Example** (Access the ApplyAgentThreadPatchInput contract)
+ *
+ * ```ts
+ * import { ApplyAgentThreadPatchInput } from './agent-thread-patch.js'
+ * void ApplyAgentThreadPatchInput
+ * ```
+ *
  */
-export interface ApplyAgentThreadPatchInput {
-  current: AgentThread
-  patch: AgentThreadPatch
-  seq: number
-}
+export const ApplyAgentThreadPatchInput = S.Struct({
+  current: S.mutableKey(AgentThread),
+  patch: S.mutableKey(AgentThreadPatch),
+  seq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('ApplyAgentThreadPatchInput', {
+    description:
+      'Explicit input record for ApplyAgentThreadPatchInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ApplyAgentThreadPatchInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ApplyAgentThreadPatchInput = typeof ApplyAgentThreadPatchInput.Type
 /** applyAgentThreadPatch with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example applyAgentThreadPatch
+ *
+ * **Example** (Access the applyAgentThreadPatch contract)
+ *
+ * ```ts
+ * import { applyAgentThreadPatch } from './agent-thread-patch.js'
+ * void applyAgentThreadPatch
+ * ```
+ *
  */
 export const applyAgentThreadPatch: {
   (): (input: ApplyAgentThreadPatchInput) => AgentThread
@@ -885,19 +1110,43 @@ export const applyAgentThreadPatch: {
   (input: ApplyAgentThreadPatchInput): AgentThread =>
     applyAgentThreadPatchBody(input.current, input.patch, input.seq)
 )
-/** Record contract for acceptAgentThread.
+/** Record contract for acceptAgentThread. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example AcceptAgentThreadInput
+ *
+ * **Example** (Access the AcceptAgentThreadInput contract)
+ *
+ * ```ts
+ * import { AcceptAgentThreadInput } from './agent-thread-patch.js'
+ * void AcceptAgentThreadInput
+ * ```
+ *
  */
-export interface AcceptAgentThreadInput {
-  current: AgentThread | null
-  incoming: AgentThread
-}
+export const AcceptAgentThreadInput = S.Struct({
+  current: S.mutableKey(S.Union([AgentThread, S.Null])),
+  incoming: S.mutableKey(AgentThread)
+}).pipe(
+  $I.annoteSchema('AcceptAgentThreadInput', {
+    description:
+      'Explicit input record for AcceptAgentThreadInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AcceptAgentThreadInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AcceptAgentThreadInput = typeof AcceptAgentThreadInput.Type
 /** acceptAgentThread with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example acceptAgentThread
+ *
+ * **Example** (Access the acceptAgentThread contract)
+ *
+ * ```ts
+ * import { acceptAgentThread } from './agent-thread-patch.js'
+ * void acceptAgentThread
+ * ```
+ *
  */
 export const acceptAgentThread: {
   (): (input: AcceptAgentThreadInput) => AgentThread
@@ -906,20 +1155,44 @@ export const acceptAgentThread: {
   (input: AcceptAgentThreadInput): AgentThread =>
     acceptAgentThreadBody(input.current, input.incoming)
 )
-/** Record contract for applyAgentRunEvent.
+/** Record contract for applyAgentRunEvent. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example ApplyAgentRunEventInput
+ *
+ * **Example** (Access the ApplyAgentRunEventInput contract)
+ *
+ * ```ts
+ * import { ApplyAgentRunEventInput } from './agent-thread-patch.js'
+ * void ApplyAgentRunEventInput
+ * ```
+ *
  */
-export interface ApplyAgentRunEventInput {
-  current: AgentThread | null
-  event: AgentRunEvent
-  identity: AgentRouteIdentity
-}
+export const ApplyAgentRunEventInput = S.Struct({
+  current: S.mutableKey(S.Union([AgentThread, S.Null])),
+  event: S.mutableKey(AgentRunEvent),
+  identity: S.mutableKey(AgentRouteIdentity)
+}).pipe(
+  $I.annoteSchema('ApplyAgentRunEventInput', {
+    description:
+      'Explicit input record for ApplyAgentRunEventInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ApplyAgentRunEventInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ApplyAgentRunEventInput = typeof ApplyAgentRunEventInput.Type
 /** applyAgentRunEvent with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example applyAgentRunEvent
+ *
+ * **Example** (Access the applyAgentRunEvent contract)
+ *
+ * ```ts
+ * import { applyAgentRunEvent } from './agent-thread-patch.js'
+ * void applyAgentRunEvent
+ * ```
+ *
  */
 export const applyAgentRunEvent: {
   (): (input: ApplyAgentRunEventInput) => AgentEventApplyResult
@@ -928,19 +1201,43 @@ export const applyAgentRunEvent: {
   (input: ApplyAgentRunEventInput): AgentEventApplyResult =>
     applyAgentRunEventBody(input.current, input.event, input.identity)
 )
-/** Record contract for rememberCatalog.
+/** Record contract for rememberCatalog. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example RememberCatalogInput
+ *
+ * **Example** (Access the RememberCatalogInput contract)
+ *
+ * ```ts
+ * import { RememberCatalogInput } from './agent-thread-patch.js'
+ * void RememberCatalogInput
+ * ```
+ *
  */
-export interface RememberCatalogInput {
-  memory: CatalogMemory
-  notice: AgentCatalogNotice
-}
+export const RememberCatalogInput = S.Struct({
+  memory: S.mutableKey(CatalogMemory),
+  notice: S.mutableKey(AgentCatalogNotice)
+}).pipe(
+  $I.annoteSchema('RememberCatalogInput', {
+    description:
+      'Explicit input record for RememberCatalogInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived RememberCatalogInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type RememberCatalogInput = typeof RememberCatalogInput.Type
 /** rememberCatalog with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example rememberCatalog
+ *
+ * **Example** (Access the rememberCatalog contract)
+ *
+ * ```ts
+ * import { rememberCatalog } from './agent-thread-patch.js'
+ * void rememberCatalog
+ * ```
+ *
  */
 export const rememberCatalog: {
   (): (input: RememberCatalogInput) => {
@@ -961,26 +1258,51 @@ export const rememberCatalog: {
     applied: boolean
   } => rememberCatalogBody(input.memory, input.notice)
 )
-/** Record contract for mergeCatalogList.
+/** Record contract for mergeCatalogList. structural for legacy construction.
  * @category ports
  * @since 0.0.0
- * @example MergeCatalogListInput
+ *
+ * **Example** (Access the MergeCatalogListInput contract)
+ *
+ * ```ts
+ * import { MergeCatalogListInput } from './agent-thread-patch.js'
+ * void MergeCatalogListInput
+ * ```
+ *
  */
-export interface MergeCatalogListInput {
-  rows: readonly AgentThreadSummary[]
-  memory: CatalogMemory
-  requestedRevision: number
-  options?:
-    | {
-        downloadId?: string
-        historyOnly?: boolean
-      }
-    | undefined
-}
+export const MergeCatalogListInput = S.Struct({
+  rows: AgentThreadSummary.pipe(S.Array, S.mutableKey),
+  memory: S.mutableKey(CatalogMemory),
+  requestedRevision: S.mutableKey(S.Finite),
+  options: S.Union([
+    S.Struct({
+      downloadId: S.mutableKey(S.String.pipe(S.UndefinedOr, S.optionalKey)),
+      historyOnly: S.mutableKey(S.Boolean.pipe(S.UndefinedOr, S.optionalKey))
+    }),
+    S.Undefined
+  ]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('MergeCatalogListInput', {
+    description:
+      'Explicit input record for MergeCatalogListInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived MergeCatalogListInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type MergeCatalogListInput = typeof MergeCatalogListInput.Type
 /** mergeCatalogList with an explicit record and zero-argument pipeable form.
  * @category utilities
  * @since 0.0.0
- * @example mergeCatalogList
+ *
+ * **Example** (Access the mergeCatalogList contract)
+ *
+ * ```ts
+ * import { mergeCatalogList } from './agent-thread-patch.js'
+ * void mergeCatalogList
+ * ```
+ *
  */
 export const mergeCatalogList: {
   (): (input: MergeCatalogListInput) => AgentThreadSummary[]

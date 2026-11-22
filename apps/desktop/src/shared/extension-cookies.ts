@@ -9,9 +9,13 @@ const $I = $DesktopId.create('shared/extension-cookies')
 const ExtensionCookieSourcePreferenceFields = S.Struct({
   id: S.String.pipe(S.mutableKey),
   browser: S.String.pipe(S.mutableKey),
-  variant: LiteralKit(['dev', 'store']).pipe(S.optional, S.mutableKey),
-  lastConnectedAt: S.Finite.pipe(S.optional, S.mutableKey)
-})
+  variant: LiteralKit(['dev', 'store']).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  lastConnectedAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ExtensionCookieSourcePreferenceFields', {
+    description: 'Shared ExtensionCookieSourcePreferenceFields schema used by the boundary models.'
+  })
+)
 
 /** ExtensionCookieSourcePreference shared data; structural for legacy construction.
  *
@@ -38,7 +42,14 @@ export const ExtensionCookieSourcePreference: S.Codec<
 /** Decoded mutable ExtensionCookieSourcePreference data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionCookieSourcePreference
+ *
+ * **Example** (Access the ExtensionCookieSourcePreference contract)
+ *
+ * ```ts
+ * import { ExtensionCookieSourcePreference } from './extension-cookies.js'
+ * void ExtensionCookieSourcePreference
+ * ```
+ *
  */
 export type ExtensionCookieSourcePreference = typeof ExtensionCookieSourcePreference.Type
 
@@ -60,9 +71,9 @@ export type ExtensionCookieSourcePreference = typeof ExtensionCookieSourcePrefer
 export const ExtensionCookieSource = S.Struct({
   ...ExtensionCookieSourcePreferenceFields.fields,
   ...S.Struct({
-    legacy: S.Boolean.pipe(S.optional, S.mutableKey),
+    legacy: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     connected: S.Boolean.pipe(S.mutableKey),
-    lastSeenAt: S.Finite.pipe(S.optional, S.mutableKey),
+    lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey)
   }).fields
 }).pipe(
@@ -73,7 +84,14 @@ export const ExtensionCookieSource = S.Struct({
 /** Decoded mutable ExtensionCookieSource data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionCookieSource
+ *
+ * **Example** (Access the ExtensionCookieSource contract)
+ *
+ * ```ts
+ * import { ExtensionCookieSource } from './extension-cookies.js'
+ * void ExtensionCookieSource
+ * ```
+ *
  */
 export type ExtensionCookieSource = typeof ExtensionCookieSource.Type
 
@@ -94,10 +112,10 @@ export type ExtensionCookieSource = typeof ExtensionCookieSource.Type
  */
 export const ExtensionCookieConnection = S.Struct({
   connected: S.Boolean.pipe(S.mutableKey),
-  browser: S.String.pipe(S.optional, S.mutableKey),
-  lastSeenAt: S.Finite.pipe(S.optional, S.mutableKey),
+  browser: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey),
-  activeSourceId: S.String.pipe(S.optional, S.mutableKey),
+  activeSourceId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   sources: S.Array(ExtensionCookieSource).pipe(S.mutable, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ExtensionCookieConnection', {
@@ -107,7 +125,14 @@ export const ExtensionCookieConnection = S.Struct({
 /** Decoded mutable ExtensionCookieConnection data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionCookieConnection
+ *
+ * **Example** (Access the ExtensionCookieConnection contract)
+ *
+ * ```ts
+ * import { ExtensionCookieConnection } from './extension-cookies.js'
+ * void ExtensionCookieConnection
+ * ```
+ *
  */
 export type ExtensionCookieConnection = typeof ExtensionCookieConnection.Type
 
@@ -132,6 +157,13 @@ export const ExtensionCookieRow = NetscapeCookieInput.pipe(
 /** Decoded mutable ExtensionCookieRow data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionCookieRow
+ *
+ * **Example** (Access the ExtensionCookieRow contract)
+ *
+ * ```ts
+ * import { ExtensionCookieRow } from './extension-cookies.js'
+ * void ExtensionCookieRow
+ * ```
+ *
  */
 export type ExtensionCookieRow = typeof ExtensionCookieRow.Type

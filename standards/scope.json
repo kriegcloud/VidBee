@@ -5931,6 +5931,13 @@
       "executable": false
     },
     {
+      "file": "apps/desktop/test/agent-skill-permissions.spec.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Unported legacy test inherited unchanged from main; retains legacy test APIs until its owning test lane ports it.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/test/cliproxy.test.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -10327,6 +10334,13 @@
       "executable": false
     },
     {
+      "file": "docs/effect-port/design/desktop-foundation.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
       "file": "docs/effect-port/design/downloader-core.md",
       "package": "vidbee-workspace",
       "classification": "active",
@@ -10558,10 +10572,24 @@
       "executable": false
     },
     {
+      "file": "docs/effect-port/reports/9.0-shared-interface-classification.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
       "file": "docs/effect-port/reports/9.0-shared-ledger.json",
       "package": "vidbee-workspace",
       "classification": "data",
       "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/reports/9.0.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
       "executable": false
     },
     {
@@ -23662,6 +23690,230 @@
       "executable": true
     },
     {
+      "file": "scripts/desktop-foundation/README.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/audit-observe.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/audit.expected.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/audit.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/behavior.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/boot-observe.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/build-admission.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/build-admission.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/build-inputs.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/build.expected.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/channel-timing.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/containment.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/containment.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/detached-fixture.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-helper-inputs.d.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen record contracts from 8d3dddb4, used by required schema parity proof until phase 10.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc-manifest.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Shared correction proof and inventory metadata.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/index.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/account-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/ai-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/app-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/browser-cookies-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/download-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/file-system-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/history-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/mcp-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/player-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/settings-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/site-icon-url.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/subscription-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/thumbnail-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/transcript-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/window-service.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: frozen original IPC source retained only for exact contract characterization; delete with its phase 10 compatibility proof.",
+      "executable": true
+    },
+    {
       "file": "scripts/desktop-foundation/fixtures/shared-port/README.md",
       "package": "vidbee-workspace",
       "classification": "data",
@@ -24054,6 +24306,146 @@
       "executable": true
     },
     {
+      "file": "scripts/desktop-foundation/foundation.test.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/import-graph.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/inspector.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/isolation.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/log-observe.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/no-network-fixture.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/observe.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/owned-process.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged-controls.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged-events.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged.expected.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged.tokyo.expected.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/remaining-observe.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/renderer-lifecycle.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/safety.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/scratch.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/screen-controls.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/semantics.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/settings.expected.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
       "file": "scripts/desktop-foundation/shared-complete.test.mjs",
       "package": "vidbee-workspace",
       "classification": "active",
@@ -24061,10 +24453,94 @@
       "executable": true
     },
     {
+      "file": "scripts/desktop-foundation/shared-doc-examples.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Required executable shared contract proof and ledger validation.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-laws.entry.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Required executable shared contract proof and ledger validation.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-ledger.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Required executable shared contract proof and ledger validation.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-matrix.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
       "file": "scripts/desktop-foundation/shared-port.test.mjs",
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-type-parity.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Required executable shared contract proof and ledger validation.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/source-harness.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/source-runner.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/supervisor.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/teardown.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/tsconfig.parity.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Shared correction proof and inventory metadata.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/tsconfig.strict-shared.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Shared correction proof and inventory metadata.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/window-matrix.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
       "executable": true
     },
     {

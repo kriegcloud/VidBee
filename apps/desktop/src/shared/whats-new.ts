@@ -1,13 +1,31 @@
+import * as A from 'effect/Array'
 import * as HashSet from 'effect/HashSet'
+import * as Order from 'effect/Order'
 import * as Str from 'effect/String'
 
-/** Release id for the current What's New card. Bump when the next set of features ships.  * @example WHATS_NEW_ID
+/** Release id for the current What's New card. Bump when the next set of features ships.
+ *
+ * **Example** (Access the WHATS_NEW_ID contract)
+ *
+ * ```ts
+ * import { WHATS_NEW_ID } from './whats-new.js'
+ * void WHATS_NEW_ID
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
 export const WHATS_NEW_ID = 'ai-transcripts'
 
-/** Feature rows shown in the What's New dialog, in display order.  * @example WHATS_NEW_FEATURE_IDS
+/** Feature rows shown in the What's New dialog, in display order.
+ *
+ * **Example** (Access the WHATS_NEW_FEATURE_IDS contract)
+ *
+ * ```ts
+ * import { WHATS_NEW_FEATURE_IDS } from './whats-new.js'
+ * void WHATS_NEW_FEATURE_IDS
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -16,7 +34,13 @@ export const WHATS_NEW_FEATURE_IDS = ['transcript', 'speakers', 'summary', 'loca
 /** WhatsNewFeatureId shared contract.
  * @category utilities
  * @since 0.0.0
- * @example WhatsNewFeatureId
+ *
+ * **Example** (Import the WhatsNewFeatureId contract)
+ *
+ * ```ts
+ * export type { WhatsNewFeatureId } from './whats-new.js'
+ * ```
+ *
  */
 export type WhatsNewFeatureId = (typeof WHATS_NEW_FEATURE_IDS)[number]
 
@@ -29,7 +53,14 @@ export type WhatsNewFeatureId = (typeof WHATS_NEW_FEATURE_IDS)[number]
  * @param lastSeenWhatsNew Stored release id, empty when never recorded.
  * @param isReturningUser True when a settings file already existed at launch.
  * @param currentId Release id to compare against. Defaults to `WHATS_NEW_ID`.
- * @example shouldShowWhatsNew
+ *
+ * **Example** (Access the shouldShowWhatsNew contract)
+ *
+ * ```ts
+ * import { shouldShowWhatsNew } from './whats-new.js'
+ * void shouldShowWhatsNew
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -61,7 +92,14 @@ const IN_PROGRESS_STATES = HashSet.fromIterable(['queued', 'retry-scheduled', 'r
  *
  * @param snapshots Transcript rows currently on this computer.
  * @returns A download id, or null when nothing useful is available.
- * @example pickWhatsNewTranscriptId
+ *
+ * **Example** (Access the pickWhatsNewTranscriptId contract)
+ *
+ * ```ts
+ * import { pickWhatsNewTranscriptId } from './whats-new.js'
+ * void pickWhatsNewTranscriptId
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -73,8 +111,13 @@ export const pickWhatsNewTranscriptId = (
   }>
 ): string | null => {
   const newestId = (items: Array<{ downloadTaskId: string; updatedAt?: number }>): string | null =>
-    [...items].sort((left, right) => (right.updatedAt ?? 0) - (left.updatedAt ?? 0))[0]
-      ?.downloadTaskId ?? null
+    A.sort(
+      [...items],
+      Order.make<(typeof items)[number]>((left, right) => {
+        const difference = (right.updatedAt ?? 0) - (left.updatedAt ?? 0)
+        return difference < 0 ? -1 : difference > 0 ? 1 : 0
+      })
+    )[0]?.downloadTaskId ?? null
 
   const completed: Array<{ downloadTaskId: string; updatedAt?: number }> = []
   const pending: Array<{ downloadTaskId: string; updatedAt?: number }> = []

@@ -23,25 +23,54 @@ export const AgentPermissionMode = LiteralKit(['ask', 'auto', 'full']).pipe(
 /** AGENT_PERMISSION_MODES shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AGENT_PERMISSION_MODES
+ *
+ * **Example** (Access the AGENT_PERMISSION_MODES contract)
+ *
+ * ```ts
+ * import { AGENT_PERMISSION_MODES } from './agent-permissions.js'
+ * void AGENT_PERMISSION_MODES
+ * ```
+ *
  */
 export const AGENT_PERMISSION_MODES = AgentPermissionMode.literals
 
 /** AgentPermissionMode shared contract.
  * @category utilities
  * @since 0.0.0
- * @example AgentPermissionMode
+ *
+ * **Example** (Access the AgentPermissionMode contract)
+ *
+ * ```ts
+ * import { AgentPermissionMode } from './agent-permissions.js'
+ * void AgentPermissionMode
+ * ```
+ *
  */
 export type AgentPermissionMode = typeof AgentPermissionMode.Type
 
 /** DEFAULT_AGENT_PERMISSION_MODE shared contract.
  * @category utilities
  * @since 0.0.0
- * @example DEFAULT_AGENT_PERMISSION_MODE
+ *
+ * **Example** (Access the DEFAULT_AGENT_PERMISSION_MODE contract)
+ *
+ * ```ts
+ * import { DEFAULT_AGENT_PERMISSION_MODE } from './agent-permissions.js'
+ * void DEFAULT_AGENT_PERMISSION_MODE
+ * ```
+ *
  */
 export const DEFAULT_AGENT_PERMISSION_MODE: AgentPermissionMode = 'auto'
 
-/** Default missing settings to review while keeping legacy and invalid values manual.  * @example parseAgentPermissionMode
+/** Default missing settings to review while keeping legacy and invalid values manual.
+ *
+ * **Example** (Access the parseAgentPermissionMode contract)
+ *
+ * ```ts
+ * import { parseAgentPermissionMode } from './agent-permissions.js'
+ * void parseAgentPermissionMode
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

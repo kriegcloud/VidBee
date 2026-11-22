@@ -8,7 +8,14 @@ const PRIVATE_IPV4 =
  * True when the extension may send this watch URL to Desktop over loopback.
  *
  * @param value Candidate video page URL.
- * @example isExtensionSourceUrl
+ *
+ * **Example** (Access the isExtensionSourceUrl contract)
+ *
+ * ```ts
+ * import { isExtensionSourceUrl } from './extension-source-url.js'
+ * void isExtensionSourceUrl
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

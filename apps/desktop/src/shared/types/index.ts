@@ -88,7 +88,14 @@ export type {
 /** SUBSCRIPTION_DUPLICATE_FEED_ERROR shared contract.
  * @category utilities
  * @since 0.0.0
- * @example SUBSCRIPTION_DUPLICATE_FEED_ERROR
+ *
+ * **Example** (Access the SUBSCRIPTION_DUPLICATE_FEED_ERROR contract)
+ *
+ * ```ts
+ * import { SUBSCRIPTION_DUPLICATE_FEED_ERROR } from './index.js'
+ * void SUBSCRIPTION_DUPLICATE_FEED_ERROR
+ * ```
+ *
  */
 export const SUBSCRIPTION_DUPLICATE_FEED_ERROR = 'SUBSCRIPTION_DUPLICATE_FEED_URL'
 
@@ -97,14 +104,28 @@ export const SUBSCRIPTION_DUPLICATE_FEED_ERROR = 'SUBSCRIPTION_DUPLICATE_FEED_UR
 /** DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE shared contract.
  * @category utilities
  * @since 0.0.0
- * @example DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE
+ *
+ * **Example** (Access the DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE contract)
+ *
+ * ```ts
+ * import { DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE } from './index.js'
+ * void DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE
+ * ```
+ *
  */
 export const DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE = '%(uploader)s/%(title)s.%(ext)s'
 
 /** defaultSettings shared contract.
  * @category utilities
  * @since 0.0.0
- * @example defaultSettings
+ *
+ * **Example** (Access the defaultSettings contract)
+ *
+ * ```ts
+ * import { defaultSettings } from './index.js'
+ * void defaultSettings
+ * ```
+ *
  */
 export const defaultSettings: AppSettings = {
   downloadPath: '',

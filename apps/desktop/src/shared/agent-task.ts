@@ -23,15 +23,19 @@ import { MediaTransformInput } from './media-transform'
  */
 export const AgentTaskInput = S.Union([
   S.Struct({
-    kind: LiteralKit(['video', 'audio']).pipe(S.optional, S.mutableKey),
+    kind: LiteralKit(['video', 'audio']).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     url: S.String.check(S.isMinLength(1)).check(S.isMaxLength(4096)).pipe(S.mutableKey),
     title: S.String.check(S.isMinLength(1))
       .check(S.isMaxLength(200))
-      .pipe(S.optional, S.mutableKey),
+      .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     format: S.String.check(S.isMinLength(1))
       .check(S.isMaxLength(500))
-      .pipe(S.optional, S.mutableKey),
-    container: LiteralKit(['auto', 'mp4', 'mkv', 'webm', 'original']).pipe(S.optional, S.mutableKey)
+      .pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    container: LiteralKit(['auto', 'mp4', 'mkv', 'webm', 'original']).pipe(
+      S.UndefinedOr,
+      S.optionalKey,
+      S.mutableKey
+    )
   }).pipe(strictObject),
   S.Struct({
     ...MediaTransformInput.to.fields,
@@ -70,25 +74,30 @@ export const AgentTaskInput = S.Union([
 export const AgentTaskParameters = S.Struct({
   ...MediaTransformInput.to.fields,
   ...AgentTaskInput.members[0].to.fields,
-  background: S.Boolean.pipe(S.optional, S.mutableKey),
+  background: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   kind: LiteralKit(['video', 'audio', 'conversion', 'transcription', 'model-download']).pipe(
-    S.optional,
+    S.UndefinedOr,
+    S.optionalKey,
     S.mutableKey
   ),
-  asrTier: S.String.check(S.isBetweenLength(1, 100)).pipe(S.optional, S.mutableKey)
+  asrTier: S.String.check(S.isBetweenLength(1, 100)).pipe(
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  )
 })
   .mapFields((fields) => ({
-    parentId: fields.parentId.pipe(S.optional),
-    format: fields.format.pipe(S.optional),
-    startSeconds: fields.startSeconds.pipe(S.optional),
-    durationSeconds: fields.durationSeconds.pipe(S.optional),
-    height: fields.height.pipe(S.optional),
-    title: fields.title.pipe(S.optional),
-    kind: fields.kind.pipe(S.optional),
-    url: fields.url.pipe(S.optional),
-    container: fields.container.pipe(S.optional),
-    background: fields.background.pipe(S.optional),
-    asrTier: fields.asrTier.pipe(S.optional)
+    parentId: fields.parentId.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    format: fields.format.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    startSeconds: fields.startSeconds.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    durationSeconds: fields.durationSeconds.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    height: fields.height.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    title: fields.title.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    kind: fields.kind.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    url: fields.url.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    container: fields.container.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    background: fields.background.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    asrTier: fields.asrTier.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
   }))
   .pipe(
     strictObject,
@@ -100,13 +109,27 @@ export const AgentTaskParameters = S.Struct({
 /** Decoded AgentTaskInput data.
  * @category type-level
  * @since 0.0.0
- * @example AgentTaskInput
+ *
+ * **Example** (Access the AgentTaskInput contract)
+ *
+ * ```ts
+ * import { AgentTaskInput } from './agent-task.js'
+ * void AgentTaskInput
+ * ```
+ *
  */
 export type AgentTaskInput = typeof AgentTaskInput.Type
 
 /** Decoded AgentTaskParameters data.
  * @category type-level
  * @since 0.0.0
- * @example AgentTaskParameters
+ *
+ * **Example** (Access the AgentTaskParameters contract)
+ *
+ * ```ts
+ * import { AgentTaskParameters } from './agent-task.js'
+ * void AgentTaskParameters
+ * ```
+ *
  */
 export type AgentTaskParameters = typeof AgentTaskParameters.Type

@@ -9,30 +9,66 @@ import { AgentArtifact } from '../AgentAttachment.model.js'
 import { recordFunction } from '../RecordFunction.js'
 import { MermaidExportImage } from './mermaid-export.js'
 
+const $I = $DesktopId.create('shared/types/share-card')
 const AgentSkillLabel = S.Struct({
   name: S.String.pipe(S.mutableKey),
-  label: S.String.pipe(S.optional, S.mutableKey)
-})
-const $I = $DesktopId.create('shared/types/share-card')
-/** CSS width of the branded share poster.  * @example SHARE_CARD_WIDTH
+  label: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AgentSkillLabel', {
+    description: 'Shared AgentSkillLabel schema used by the boundary models.'
+  })
+)
+/** CSS width of the branded share poster.
+ *
+ * **Example** (Access the SHARE_CARD_WIDTH contract)
+ *
+ * ```ts
+ * import { SHARE_CARD_WIDTH } from './share-card.js'
+ * void SHARE_CARD_WIDTH
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
 export const SHARE_CARD_WIDTH = 540
 
-/** Hash route that mounts the hidden capture page instead of the app shell.  * @example SHARE_CAPTURE_HASH
+/** Hash route that mounts the hidden capture page instead of the app shell.
+ *
+ * **Example** (Access the SHARE_CAPTURE_HASH contract)
+ *
+ * ```ts
+ * import { SHARE_CAPTURE_HASH } from './share-card.js'
+ * void SHARE_CAPTURE_HASH
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
 export const SHARE_CAPTURE_HASH = '/share-capture'
 
-/** Main → hidden renderer: paint this card.  * @example SHARE_CAPTURE_RENDER_CHANNEL
+/** Main → hidden renderer: paint this card.
+ *
+ * **Example** (Access the SHARE_CAPTURE_RENDER_CHANNEL contract)
+ *
+ * ```ts
+ * import { SHARE_CAPTURE_RENDER_CHANNEL } from './share-card.js'
+ * void SHARE_CAPTURE_RENDER_CHANNEL
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
 export const SHARE_CAPTURE_RENDER_CHANNEL = 'share-capture:render'
 
-/** Hidden renderer → main: card box is stable.  * @example SHARE_CAPTURE_READY_CHANNEL
+/** Hidden renderer → main: card box is stable.
+ *
+ * **Example** (Access the SHARE_CAPTURE_READY_CHANNEL contract)
+ *
+ * ```ts
+ * import { SHARE_CAPTURE_READY_CHANNEL } from './share-card.js'
+ * void SHARE_CAPTURE_READY_CHANNEL
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -64,7 +100,14 @@ export const ShareCaptionQuote = S.Struct({
 /** Decoded mutable ShareCaptionQuote data.
  * @category type-level
  * @since 0.0.0
- * @example ShareCaptionQuote
+ *
+ * **Example** (Access the ShareCaptionQuote contract)
+ *
+ * ```ts
+ * import { ShareCaptionQuote } from './share-card.js'
+ * void ShareCaptionQuote
+ * ```
+ *
  */
 export type ShareCaptionQuote = typeof ShareCaptionQuote.Type
 
@@ -83,18 +126,18 @@ export type ShareCaptionQuote = typeof ShareCaptionQuote.Type
  * @since 0.0.0
  */
 export const SharePromptCardPayload = S.Struct({
-  artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.optional, S.mutableKey),
-  runId: S.String.pipe(S.optional, S.mutableKey),
-  coverSrc: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
+  artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+  runId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  coverSrc: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   kind: S.Literal('prompt').pipe(S.mutableKey),
   markdown: S.String.pipe(S.mutableKey),
   promptTitle: S.String.pipe(S.mutableKey),
-  sourceByline: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
-  sourceTitle: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
+  sourceByline: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceTitle: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   tagline: S.String.pipe(S.mutableKey),
-  thinkingLabel: S.String.pipe(S.optional, S.mutableKey),
-  userText: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
-  userSkills: S.Array(AgentSkillLabel).pipe(S.mutable, S.optional, S.mutableKey)
+  thinkingLabel: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  userText: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  userSkills: S.Array(AgentSkillLabel).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('SharePromptCardPayload', {
     description: 'SharePromptCardPayload shared boundary data.'
@@ -103,7 +146,14 @@ export const SharePromptCardPayload = S.Struct({
 /** Decoded mutable SharePromptCardPayload data.
  * @category type-level
  * @since 0.0.0
- * @example SharePromptCardPayload
+ *
+ * **Example** (Access the SharePromptCardPayload contract)
+ *
+ * ```ts
+ * import { SharePromptCardPayload } from './share-card.js'
+ * void SharePromptCardPayload
+ * ```
+ *
  */
 export type SharePromptCardPayload = typeof SharePromptCardPayload.Type
 
@@ -122,12 +172,12 @@ export type SharePromptCardPayload = typeof SharePromptCardPayload.Type
  * @since 0.0.0
  */
 export const ShareCaptionCardPayload = S.Struct({
-  coverSrc: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
-  durationMs: S.Finite.pipe(S.optional, S.mutableKey),
+  coverSrc: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  durationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   kind: S.Literal('caption').pipe(S.mutableKey),
   quote: ShareCaptionQuote.pipe(S.mutableKey),
-  sourceByline: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
-  sourceTitle: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
+  sourceByline: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sourceTitle: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   tagline: S.String.pipe(S.mutableKey)
 }).pipe(
   $I.annoteSchema('ShareCaptionCardPayload', {
@@ -137,7 +187,14 @@ export const ShareCaptionCardPayload = S.Struct({
 /** Decoded mutable ShareCaptionCardPayload data.
  * @category type-level
  * @since 0.0.0
- * @example ShareCaptionCardPayload
+ *
+ * **Example** (Access the ShareCaptionCardPayload contract)
+ *
+ * ```ts
+ * import { ShareCaptionCardPayload } from './share-card.js'
+ * void ShareCaptionCardPayload
+ * ```
+ *
  */
 export type ShareCaptionCardPayload = typeof ShareCaptionCardPayload.Type
 
@@ -161,7 +218,14 @@ export const ShareCardPayload = S.Union([ShareCaptionCardPayload, SharePromptCar
 /** Decoded mutable ShareCardPayload data.
  * @category type-level
  * @since 0.0.0
- * @example ShareCardPayload
+ *
+ * **Example** (Access the ShareCardPayload contract)
+ *
+ * ```ts
+ * import { ShareCardPayload } from './share-card.js'
+ * void ShareCardPayload
+ * ```
+ *
  */
 export type ShareCardPayload = typeof ShareCardPayload.Type
 
@@ -184,8 +248,8 @@ export type ShareCardPayload = typeof ShareCardPayload.Type
  * @since 0.0.0
  */
 export const ShareBylineInput = S.Struct({
-  platform: S.String.pipe(S.NullOr, S.optional),
-  channel: S.String.pipe(S.NullOr, S.optional)
+  platform: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
+  channel: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey)
 }).pipe(
   $I.annoteSchema('ShareBylineInput', {
     description: 'Source labels; structural for legacy construction.'
@@ -194,13 +258,27 @@ export const ShareBylineInput = S.Struct({
 /** ShareBylineInput shared contract.
  * @category utilities
  * @since 0.0.0
- * @example ShareBylineInput
+ *
+ * **Example** (Access the ShareBylineInput contract)
+ *
+ * ```ts
+ * import { ShareBylineInput } from './share-card.js'
+ * void ShareBylineInput
+ * ```
+ *
  */
 export type ShareBylineInput = typeof ShareBylineInput.Type
 /** shareCardSourceByline shared contract.
  * @category utilities
  * @since 0.0.0
- * @example shareCardSourceByline
+ *
+ * **Example** (Access the shareCardSourceByline contract)
+ *
+ * ```ts
+ * import { shareCardSourceByline } from './share-card.js'
+ * void shareCardSourceByline
+ * ```
+ *
  */
 export const shareCardSourceByline: {
   (): (input: ShareBylineInput) => string
@@ -243,8 +321,8 @@ export const SharePromptUserInput = S.Struct({
     S.Struct({ id: S.String, parentId: S.NullOr(S.String), role: S.String, text: S.String })
   ).pipe(S.mutable),
   assistantId: S.String,
-  promptTitle: S.String.pipe(S.NullOr, S.optional),
-  promptName: S.String.pipe(S.NullOr, S.optional)
+  promptTitle: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
+  promptName: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey)
 }).pipe(
   $I.annoteSchema('SharePromptUserInput', {
     description: 'Instruction projection; structural for legacy construction.'
@@ -253,13 +331,27 @@ export const SharePromptUserInput = S.Struct({
 /** SharePromptUserInput shared contract.
  * @category utilities
  * @since 0.0.0
- * @example SharePromptUserInput
+ *
+ * **Example** (Access the SharePromptUserInput contract)
+ *
+ * ```ts
+ * import { SharePromptUserInput } from './share-card.js'
+ * void SharePromptUserInput
+ * ```
+ *
  */
 export type SharePromptUserInput = typeof SharePromptUserInput.Type
 /** sharePromptUserText shared contract.
  * @category utilities
  * @since 0.0.0
- * @example sharePromptUserText
+ *
+ * **Example** (Access the sharePromptUserText contract)
+ *
+ * ```ts
+ * import { sharePromptUserText } from './share-card.js'
+ * void sharePromptUserText
+ * ```
+ *
  */
 export const sharePromptUserText: {
   (): (input: SharePromptUserInput) => string | undefined
@@ -325,7 +417,14 @@ export const ShareCaptureRenderMessage = S.Struct({
 /** Decoded mutable ShareCaptureRenderMessage data.
  * @category type-level
  * @since 0.0.0
- * @example ShareCaptureRenderMessage
+ *
+ * **Example** (Access the ShareCaptureRenderMessage contract)
+ *
+ * ```ts
+ * import { ShareCaptureRenderMessage } from './share-card.js'
+ * void ShareCaptureRenderMessage
+ * ```
+ *
  */
 export type ShareCaptureRenderMessage = typeof ShareCaptureRenderMessage.Type
 
@@ -347,7 +446,7 @@ export const ShareImageLayout = S.Struct({
   width: S.Finite.pipe(S.mutableKey),
   height: S.Finite.pipe(S.mutableKey),
   padding: S.Finite.pipe(S.mutableKey),
-  footerTop: S.Finite.pipe(S.optional, S.mutableKey),
+  footerTop: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   safeBreaks: S.Array(S.Finite).pipe(S.mutable, S.mutableKey),
   preferredBreaks: S.Array(S.Finite).pipe(S.mutable, S.mutableKey)
 }).pipe(
@@ -356,7 +455,14 @@ export const ShareImageLayout = S.Struct({
 /** Decoded mutable ShareImageLayout data.
  * @category type-level
  * @since 0.0.0
- * @example ShareImageLayout
+ *
+ * **Example** (Access the ShareImageLayout contract)
+ *
+ * ```ts
+ * import { ShareImageLayout } from './share-card.js'
+ * void ShareImageLayout
+ * ```
+ *
  */
 export type ShareImageLayout = typeof ShareImageLayout.Type
 
@@ -375,9 +481,9 @@ export type ShareImageLayout = typeof ShareImageLayout.Type
  * @since 0.0.0
  */
 export const ShareCaptureReadyMessage = S.Struct({
-  diagram: MermaidExportImage.pipe(S.optional, S.mutableKey),
-  error: S.String.pipe(S.optional, S.mutableKey),
-  layout: ShareImageLayout.pipe(S.optional, S.mutableKey),
+  diagram: MermaidExportImage.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  error: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  layout: ShareImageLayout.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   height: S.Finite.pipe(S.mutableKey),
   requestId: S.Finite.pipe(S.mutableKey),
   width: S.Finite.pipe(S.mutableKey)
@@ -389,7 +495,14 @@ export const ShareCaptureReadyMessage = S.Struct({
 /** Decoded mutable ShareCaptureReadyMessage data.
  * @category type-level
  * @since 0.0.0
- * @example ShareCaptureReadyMessage
+ *
+ * **Example** (Access the ShareCaptureReadyMessage contract)
+ *
+ * ```ts
+ * import { ShareCaptureReadyMessage } from './share-card.js'
+ * void ShareCaptureReadyMessage
+ * ```
+ *
  */
 export type ShareCaptureReadyMessage = typeof ShareCaptureReadyMessage.Type
 
@@ -397,7 +510,14 @@ export type ShareCaptureReadyMessage = typeof ShareCaptureReadyMessage.Type
  * True when the renderer URL is the hidden share-capture page.
  *
  * @param hash `location.hash`, with or without a leading `#`.
- * @example isShareCaptureHash
+ *
+ * **Example** (Access the isShareCaptureHash contract)
+ *
+ * ```ts
+ * import { isShareCaptureHash } from './share-card.js'
+ * void isShareCaptureHash
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

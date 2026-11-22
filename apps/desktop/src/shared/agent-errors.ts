@@ -55,7 +55,14 @@ const CLOUD_REASON_CODES: Record<string, AgentErrorCode> = {
  *
  * @param envelope Structured error fields from a Cloud stream failure frame.
  * @returns Structured failure, or undefined when the envelope carries no reason contract.
- * @example agentFailureFromCloudReason
+ *
+ * **Example** (Access the agentFailureFromCloudReason contract)
+ *
+ * ```ts
+ * import { agentFailureFromCloudReason } from './agent-errors.js'
+ * void agentFailureFromCloudReason
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -99,7 +106,14 @@ const LEGACY_INCOMPLETE =
  * Encode a failure into transportable text: "[VB:CODE] message".
  *
  * @param failure Structured failure to serialize.
- * @example encodeAgentError
+ *
+ * **Example** (Access the encodeAgentError contract)
+ *
+ * ```ts
+ * import { encodeAgentError } from './agent-errors.js'
+ * void encodeAgentError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -112,7 +126,14 @@ export function encodeAgentError(failure: AgentFailure): string {
  * True when this code is eligible for SDK connection retries.
  *
  * @param code Machine-readable failure code.
- * @example isRetryableAgentError
+ *
+ * **Example** (Access the isRetryableAgentError contract)
+ *
+ * ```ts
+ * import { isRetryableAgentError } from './agent-errors.js'
+ * void isRetryableAgentError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -124,7 +145,14 @@ export function isRetryableAgentError(code: AgentErrorCode): boolean {
  * Parse "[VB:CODE] ..." markers; the only legacy fallback regex lives here.
  *
  * @param text Encoded or historical error text.
- * @example parseAgentError
+ *
+ * **Example** (Access the parseAgentError contract)
+ *
+ * ```ts
+ * import { parseAgentError } from './agent-errors.js'
+ * void parseAgentError
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
@@ -158,7 +186,14 @@ export function parseAgentError(text: string | undefined): AgentFailure {
  * only translator that speaks that vocabulary.
  *
  * @param failure Structured failure from parseAgentError or a classifier.
- * @example toSdkRetryMessage
+ *
+ * **Example** (Access the toSdkRetryMessage contract)
+ *
+ * ```ts
+ * import { toSdkRetryMessage } from './agent-errors.js'
+ * void toSdkRetryMessage
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */

@@ -54,7 +54,7 @@ export const ExtensionChatSource = S.Struct({
   sourceUrl: S.String.pipe(S.mutableKey),
   title: S.String.pipe(S.mutableKey),
   duration: S.Finite.pipe(S.mutableKey),
-  language: S.String.pipe(S.optional, S.mutableKey),
+  language: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   auto: S.Boolean.pipe(S.mutableKey),
   segments: S.Array(
     S.Struct({
@@ -71,7 +71,14 @@ export const ExtensionChatSource = S.Struct({
 /** Decoded mutable ExtensionChatSource data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatSource
+ *
+ * **Example** (Access the ExtensionChatSource contract)
+ *
+ * ```ts
+ * import { ExtensionChatSource } from './extension-chat.js'
+ * void ExtensionChatSource
+ * ```
+ *
  */
 export type ExtensionChatSource = typeof ExtensionChatSource.Type
 
@@ -100,7 +107,14 @@ export const ExtensionChatSession = S.Struct({
 /** Decoded mutable ExtensionChatSession data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatSession
+ *
+ * **Example** (Access the ExtensionChatSession contract)
+ *
+ * ```ts
+ * import { ExtensionChatSession } from './extension-chat.js'
+ * void ExtensionChatSession
+ * ```
+ *
  */
 export type ExtensionChatSession = typeof ExtensionChatSession.Type
 
@@ -122,8 +136,8 @@ export const ExtensionChatCommand = S.Union([
   S.Struct({
     type: S.Literal('open').pipe(S.mutableKey),
     promptId: S.String.pipe(S.mutableKey),
-    threadId: S.String.pipe(S.optional, S.mutableKey),
-    followSource: S.Boolean.pipe(S.optional, S.mutableKey)
+    threadId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    followSource: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
   }),
   S.Struct({
     type: S.Literal('create').pipe(S.mutableKey),
@@ -133,11 +147,11 @@ export const ExtensionChatCommand = S.Union([
     type: S.Literal('send').pipe(S.mutableKey),
     requestId: S.String.pipe(S.mutableKey),
     threadId: S.String.pipe(S.mutableKey),
-    text: S.String.pipe(S.optional, S.mutableKey),
-    retryMessageId: S.String.pipe(S.optional, S.mutableKey),
-    thinkingLevel: AgentThinkingLevel.pipe(S.optional, S.mutableKey),
-    imageIds: S.Array(S.String).pipe(S.mutable, S.optional, S.mutableKey),
-    uiResponse: AgentUiResponse.pipe(S.optional, S.mutableKey)
+    text: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    retryMessageId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    thinkingLevel: AgentThinkingLevel.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    imageIds: S.Array(S.String).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
+    uiResponse: AgentUiResponse.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
   }),
   S.Struct({
     type: S.Literal('thinking').pipe(S.mutableKey),
@@ -182,7 +196,14 @@ export const ExtensionChatCommand = S.Union([
 /** Decoded mutable ExtensionChatCommand data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatCommand
+ *
+ * **Example** (Access the ExtensionChatCommand contract)
+ *
+ * ```ts
+ * import { ExtensionChatCommand } from './extension-chat.js'
+ * void ExtensionChatCommand
+ * ```
+ *
  */
 export type ExtensionChatCommand = typeof ExtensionChatCommand.Type
 
@@ -211,7 +232,14 @@ export const ExtensionChatVideo = S.Struct({
 /** Decoded mutable ExtensionChatVideo data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatVideo
+ *
+ * **Example** (Access the ExtensionChatVideo contract)
+ *
+ * ```ts
+ * import { ExtensionChatVideo } from './extension-chat.js'
+ * void ExtensionChatVideo
+ * ```
+ *
  */
 export type ExtensionChatVideo = typeof ExtensionChatVideo.Type
 
@@ -234,9 +262,9 @@ export const AgentComposerOptions = S.Struct({
     S.Struct({
       value: S.String.pipe(S.mutableKey),
       label: S.String.pipe(S.mutableKey),
-      description: S.String.pipe(S.optional, S.mutableKey),
-      presetId: S.String.pipe(S.optional, S.mutableKey),
-      modelId: S.String.pipe(S.optional, S.mutableKey)
+      description: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+      presetId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+      modelId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
     })
   ).pipe(S.mutable, S.mutableKey),
   selected: S.String.pipe(S.mutableKey),
@@ -249,7 +277,14 @@ export const AgentComposerOptions = S.Struct({
 /** Decoded mutable AgentComposerOptions data.
  * @category type-level
  * @since 0.0.0
- * @example AgentComposerOptions
+ *
+ * **Example** (Access the AgentComposerOptions contract)
+ *
+ * ```ts
+ * import { AgentComposerOptions } from './extension-chat.js'
+ * void AgentComposerOptions
+ * ```
+ *
  */
 export type AgentComposerOptions = typeof AgentComposerOptions.Type
 
@@ -271,8 +306,8 @@ export const ExtensionChatExport = S.Struct({
   threadId: S.String.pipe(S.mutableKey),
   messageId: S.String.pipe(S.mutableKey),
   format: LiteralKit(['md', 'pdf', 'png']).pipe(S.mutableKey),
-  split: S.Boolean.pipe(S.optional, S.mutableKey),
-  imageCount: S.Finite.pipe(S.optional, S.mutableKey)
+  split: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  imageCount: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
 }).pipe(
   $I.annoteSchema('ExtensionChatExport', {
     description: 'ExtensionChatExport shared boundary data.'
@@ -281,7 +316,14 @@ export const ExtensionChatExport = S.Struct({
 /** Decoded mutable ExtensionChatExport data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatExport
+ *
+ * **Example** (Access the ExtensionChatExport contract)
+ *
+ * ```ts
+ * import { ExtensionChatExport } from './extension-chat.js'
+ * void ExtensionChatExport
+ * ```
+ *
  */
 export type ExtensionChatExport = typeof ExtensionChatExport.Type
 
@@ -308,7 +350,14 @@ export const ExtensionChatFile = S.Struct({
 /** Decoded mutable ExtensionChatFile data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatFile
+ *
+ * **Example** (Access the ExtensionChatFile contract)
+ *
+ * ```ts
+ * import { ExtensionChatFile } from './extension-chat.js'
+ * void ExtensionChatFile
+ * ```
+ *
  */
 export type ExtensionChatFile = typeof ExtensionChatFile.Type
 
@@ -342,7 +391,14 @@ export const ExtensionChatVideos = S.Struct({
 /** Decoded mutable ExtensionChatVideos data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatVideos
+ *
+ * **Example** (Access the ExtensionChatVideos contract)
+ *
+ * ```ts
+ * import { ExtensionChatVideos } from './extension-chat.js'
+ * void ExtensionChatVideos
+ * ```
+ *
  */
 export type ExtensionChatVideos = typeof ExtensionChatVideos.Type
 
@@ -381,7 +437,14 @@ export const ExtensionChatCatalog = S.Struct({
 /** Decoded mutable ExtensionChatCatalog data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatCatalog
+ *
+ * **Example** (Access the ExtensionChatCatalog contract)
+ *
+ * ```ts
+ * import { ExtensionChatCatalog } from './extension-chat.js'
+ * void ExtensionChatCatalog
+ * ```
+ *
  */
 export type ExtensionChatCatalog = typeof ExtensionChatCatalog.Type
 
@@ -409,7 +472,14 @@ export const ExtensionChatState = S.Struct({
 /** Decoded mutable ExtensionChatState data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatState
+ *
+ * **Example** (Access the ExtensionChatState contract)
+ *
+ * ```ts
+ * import { ExtensionChatState } from './extension-chat.js'
+ * void ExtensionChatState
+ * ```
+ *
  */
 export type ExtensionChatState = typeof ExtensionChatState.Type
 
@@ -435,7 +505,7 @@ export const ExtensionChatEvent = S.Union([
   S.Struct({
     type: S.Literal('agent').pipe(S.mutableKey),
     event: AgentRunEvent.pipe(S.mutableKey),
-    source: ExtensionChatVideo.pipe(S.optional, S.mutableKey)
+    source: ExtensionChatVideo.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
   }),
   S.Struct({
     type: S.Literal('settings').pipe(S.mutableKey)
@@ -450,6 +520,13 @@ export const ExtensionChatEvent = S.Union([
 /** Decoded mutable ExtensionChatEvent data.
  * @category type-level
  * @since 0.0.0
- * @example ExtensionChatEvent
+ *
+ * **Example** (Access the ExtensionChatEvent contract)
+ *
+ * ```ts
+ * import { ExtensionChatEvent } from './extension-chat.js'
+ * void ExtensionChatEvent
+ * ```
+ *
  */
 export type ExtensionChatEvent = typeof ExtensionChatEvent.Type

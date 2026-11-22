@@ -19,7 +19,14 @@ const BILIBILI_ID = /^BV[\dA-Za-z]{10}$/
  * Normalize a public video URL to the same identity Desktop and the extension use.
  *
  * @param input Watch, Shorts, Live, share, or Bilibili page URL.
- * @example videoIdentityFromUrl
+ *
+ * **Example** (Access the videoIdentityFromUrl contract)
+ *
+ * ```ts
+ * import { videoIdentityFromUrl } from './video-identity.js'
+ * void videoIdentityFromUrl
+ * ```
+ *
  * @category utilities
  * @since 0.0.0
  */
