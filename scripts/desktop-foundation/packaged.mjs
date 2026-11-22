@@ -1,4 +1,4 @@
-import { containedLaunch } from './containment.mjs'
+import { launchOwned, stopOwned, descendantPid } from './owned-process.mjs'
 import { packagedControls } from './packaged-controls.mjs'
 import { packagedEvents } from './packaged-events.mjs'
 import os from 'node:os'
@@ -225,6 +225,15 @@ if (args.includes('--worker')) {
     })()`)
     assert(!minimize.exceptionDetails)
     await command('Page.bringToFront')
+    // Headless focus delivery is asynchronous. Establish the requested initial
+    // state before observing the close command; never normalize its outcome.
+    for(let i=0;i<50;i++) {
+      const focus=await cdp.evaluate('window.focus(); document.hasFocus()')
+      assert(!focus.exceptionDetails)
+      if(focus.result.value)break
+      await delay(20)
+    }
+    assert.equal((await cdp.evaluate('document.hasFocus()')).result.value,true,'Close probe could not establish focus')
     const close = await cdp.evaluate(`(async () => {
       window.focus()
       const focused = document.hasFocus()
@@ -271,15 +280,13 @@ const verify = async () => {
   return hash
 }
 await fs.mkdir(scratch, { recursive: true })
-const host = Object.fromEntries(await Promise.all(['net', 'user', 'mnt'].map(async kind => [kind, await namespace('self', kind)])))
+const host = Object.fromEntries(await Promise.all(['net', 'user', 'mnt', 'pid', 'ipc', 'uts'].map(async kind => [kind, await namespace('self', kind)])))
 const work = await fs.mkdtemp(path.join(scratch, 'foundation-'))
+let laneRoot=scratch
+while(!await fs.access(path.join(laneRoot,'BRIEF.md')).then(()=>true,()=>false)){const parent=path.dirname(laneRoot);assert.notEqual(parent,laneRoot,'Require scratch under lane');laneRoot=parent}
 let active
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => {
-  if (active && active.exitCode === null && active.signalCode === null) {
-    const ended = new Promise((resolve) => active.once('close', resolve))
-    const ownerPid=Number((await fs.readFile(path.join(active.ownedWork,'containment.pid'),'utf8')).trim())
-    process.kill(ownerPid,'SIGTERM'); await ended
-  }
+  if (active) await stopOwned(active)
   process.exit(1)
 })
 const observations = {}
@@ -308,9 +315,7 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
   }
   const launchSetup = path.join(work, `${name}-launch.sh`)
   await fs.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
-  const launcher = spawn('bwrap', containedLaunch(work, ['bash','-c','echo $$ > "$1/containment.pid"; shift; exec "$@"','contained',work,'bash', path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup]),
-    { cwd: scratch, stdio: ['ignore', 'ignore', 'pipe'] })
-  launcher.ownedWork=work
+  const launcher = launchOwned(work, ['bash', path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup], [build,path.join(laneRoot,'BRIEF.md')], { cwd: scratch })
   active = launcher
   let stderr = ''; launcher.stderr.on('data', (data) => { stderr += data })
   try {
@@ -334,8 +339,10 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
     assert(pid, `Readiness deadline: ${stderr}`)
     const identity = randomUUID()
     const appPid = (await fs.readFile(path.join(run, 'app.pid'), 'utf8')).trim()
-    const owned = Object.fromEntries(await Promise.all(['net', 'user', 'mnt'].map(async kind => [kind, await namespace(pid, kind)])))
-    for (const kind of ['net','user','mnt']) assert.notEqual(owned[kind], host[kind], 'Parent failed to create isolated namespace')
+    const namespaceHostPid = await descendantPid(launcher, pid)
+    assert(namespaceHostPid, 'Owned namespace process missing')
+    const owned = Object.fromEntries(await Promise.all(['net', 'user', 'mnt', 'pid', 'ipc', 'uts'].map(async kind => [kind, await namespace(namespaceHostPid, kind)])))
+    for (const kind of ['net','user','mnt','pid','ipc','uts']) assert.notEqual(owned[kind], host[kind], 'Parent failed to create isolated namespace')
     let lane = scratch
     while (true) {
       try { await fs.access(path.join(lane, 'BRIEF.md')); break } catch {}
@@ -347,7 +354,7 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
       host, owned, parentPid: process.pid, namespacePid: pid, appPid, build, asar: expectedHash,
       manifest: selected, executable: createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex') }), { mode: 0o600 })
     const output = path.join(work, `${name}.json`)
-    const result = await capture('nsenter', ['-t', pid, '-U', '-n', '-m', '--preserve-credentials', process.execPath,
+    const result = await capture('nsenter', ['-t', namespaceHostPid, '-U', '-n', '-m', '-p', '-i', '-u', '--preserve-credentials', process.execPath,
       fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
       ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000 })
     assert.equal(result.code, 0, result.stderr)
@@ -367,11 +374,7 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
     assert(observations[name].boot.includes('Desktop MCP available at'), 'Missing packaged boot milestone')
     await fs.writeFile(path.join(work, `${name}-stored.json`), await fs.readFile(path.join(run, name.startsWith('portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')))
   } finally {
-    if (launcher.exitCode === null) {
-      const ended = new Promise((resolve) => launcher.once('close', resolve))
-      const ownerPid=Number((await fs.readFile(path.join(work,'containment.pid'),'utf8')).trim())
-      process.kill(ownerPid,'SIGTERM'); await ended
-    }
+    await stopOwned(launcher)
     active = undefined
   }
 }

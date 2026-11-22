@@ -49,12 +49,14 @@ export function importGraphObservations() {
       return undefined
     }})
   try {
-    assert.throws(()=>load('apps/desktop/src/main/index.ts'),e=>e===stop)
+    let failure
+    try {load('apps/desktop/src/main/index.ts')} catch(error) {failure=error}
     assert.equal(trace.filter(row=>row[0]==='settings:construct').length,1)
-    assert(trace.findIndex(row=>row[0]==='settings:construct')<trace.findIndex(row=>row[0]==='handle'))
     assert.equal(trace.filter(row=>row[0]==='ai:construct').length,1)
     assert.equal(trace.filter(row=>row[0]==='ai:listen').length,1)
     assert.equal(trace.filter(row=>row[0]==='ai:watch').length,1)
+    assert(trace.findIndex(row=>row[0]==='settings:construct')<trace.findIndex(row=>row[0]==='handle'))
+    assert.equal(failure,stop,'Import initialization must reach rejected-lock exit')
     return JSON.parse(JSON.stringify(trace).split(directory).join('<profile>'))
   } finally {fs.rmSync(directory,{recursive:true,force:true})}
 }

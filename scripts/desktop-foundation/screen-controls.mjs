@@ -1,3 +1,4 @@
+import { settingIdentity } from './behavior.mjs'
 import { sourceLoader } from './source-harness.mjs'
 const turns=async()=>{for(let i=0;i<30;i++)await Promise.resolve()}
 export async function screenControlObservations() {
@@ -22,7 +23,7 @@ export async function screenControlObservations() {
     const visit=node=>{if(Array.isArray(node)){node.forEach(visit);return}if(!node||typeof node!=='object')return;if(node.props){nodes.push(node);visit(node.props.children)}}
     stateIndex=0;visit(Settings())
     const cases=[]
-    for(const [index,node] of nodes.entries()) {
+    for(const node of nodes) {
       const p=node.props,type=typeof node.type==='string'?node.type:node.type?.name
       const before=trace.length
       if(type==='Button'&&typeof p.onClick==='function'&&['settings.selectPath','settings.selectFile'].includes(p.children))await p.onClick()
@@ -30,11 +31,11 @@ export async function screenControlObservations() {
       else if(type==='Select'&&p.onValueChange){const options=[];const collect=n=>{if(Array.isArray(n))return n.forEach(collect);if(n?.type==='SelectItem')options.push(n.props.value);if(n?.props)collect(n.props.children)};collect(p.children);const value=options.find(v=>v!==p.value);if(value!==undefined)await p.onValueChange(value)}
       else if(type==='SubtitleLanguagePicker')await p.onValueChange(['fr','de'])
       else if(type==='Input'&&p.onChange)await p.onChange({target:{value:p.type==='number'?'3':'fixture text'}})
-      else if(type==='AsrModelPicker'){await p.onChangeConcurrency(2);await p.onSelectTier('balanced');await p.onToggleAutoTranscribe()}
-      else if(type==='CloudTranscriptionSettings'){await p.onChange('transcriptionProvider','cloud');await p.onChange('cloudTranscriptionModelId','fixture-model')}
-      else if(type==='FilenameStylePicker'){await p.onChange('classic');await p.onFilenameViaVidBeeChange(false)}
+      else if(typeof p.onChangeConcurrency==='function'){await p.onChangeConcurrency(2);await p.onSelectTier('balanced');await p.onToggleAutoTranscribe()}
+      else if(typeof p.onChange==='function'&&p.settings&&typeof p.onOpenAccount==='function'){await p.onChange('transcriptionProvider','cloud');await p.onChange('cloudTranscriptionModelId','fixture-model')}
+      else if(typeof p.onFilenameViaVidBeeChange==='function'){await p.onChange('classic');await p.onFilenameViaVidBeeChange(false)}
       await turns()
-      if(trace.length>before)cases.push({index,type,before:{value:p.value,checked:p.checked,disabled:p.disabled},effects:trace.slice(before)})
+      if(trace.length>before)cases.push({identity:settingIdentity(trace.slice(before)),before:{value:p.value,checked:p.checked,disabled:p.disabled},effects:trace.slice(before)})
     }
     out.push({pathMode,cases,final:settings})
   }

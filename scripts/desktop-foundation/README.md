@@ -185,3 +185,25 @@ every run. The third-pass twenty-run source receipt predates `scratch.mjs`; its
 later five stress passes are separate evidence. Temporary mutation copies prove
 that the repaired assertions reject the audit's regressions; no tracked source
 or immutable recording build is mutated.
+
+Fifth-pass boundary: `test:foundation` enters the same empty-root Bubblewrap
+allow-list as the packaged launcher when namespaces are available. Only `/usr`,
+the selected Node/Bun directories, checkout, selected build and required `/etc`
+files are readable; owned scratch is writable. Home/profile trees, `/run`, host
+`/tmp`, devices, sockets and host processes are absent. Private PID/proc, IPC,
+UTS and network namespaces apply. The source process negative tests alone may
+skip with a reason on incapable hosts; source observations still execute there.
+Packaged runs have no fallback.
+
+`owned-process.mjs` starts a namespace supervisor. Closing its stdin requests
+teardown, followed by a bounded wait and direct-child termination if necessary.
+The namespace init exits to terminate all remaining members. No PID read from a
+file is signalled. Namespace PID translation is read-only admission metadata.
+
+`behavior.mjs` projects both historical and actual traces, excluding only import,
+host and SDK loader diagnostics. The full import trace is retained separately in
+TMPDIR by the source runner. Initialization counts and every ordered application
+effect remain checked. Screen cases use setting/action identity with values,
+effects and final settings; tree indexes and component names are not compared.
+Show Home implementation locators live in one adapter locator, whose failures
+explicitly say the adapter needs updating and are setup failures.

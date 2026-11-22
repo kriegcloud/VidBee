@@ -3,6 +3,20 @@ import path from 'node:path'
 import * as asar from '@electron/asar'
 import { mainInspector } from './inspector.mjs'
 import { setTimeout as delay } from 'node:timers/promises'
+// All implementation-dependent adapter knowledge lives here. Locator failures are
+// setup failures, never evidence that the characterized behavior changed.
+function showHomeLocator(archive) {
+  const missing = detail => {throw new Error(`Show Home adapter needs updating: ${detail}`)}
+  const rootBinding='(0, import_client.createRoot)(rootElement)'
+  const effectText='ipcEvents.on(APP_ICON_SHOW_HOME_CHANNEL'
+  for(const file of asar.listPackage(archive).filter(file=>file.includes('/renderer/assets/index-')&&file.endsWith('.js'))) {
+    const code=asar.extractFile(archive,file.slice(1)).toString(),offset=code.indexOf(rootBinding)
+    if(offset<0)continue
+    if(!code.includes(effectText))missing('consumer effect locator missing')
+    return {entry:file,line:code.slice(0,offset).split('\n').length-1,effectText,capture:'globalThis.__foundationClient=import_client;true',pause:pending=>Promise.race([pending,delay(10000).then(()=>missing('renderer breakpoint not reached'))]),missing}
+  }
+  return missing('renderer root binding missing')
+}
 export async function packagedEvents(owned,cdp,command) {
   const main=await mainInspector(owned)
   const run=async expression=>{const result=await main.evaluate(expression);assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
@@ -12,38 +26,31 @@ export async function packagedEvents(owned,cdp,command) {
   try {
     // React's commit hook exposes the actual mounted AppLayout effect. Gate only
     // its setup/cleanup boundaries; never replace its callback or navigation code.
+    const locator=showHomeLocator(path.join(owned.build,'resources/app.asar'))
     await command('Page.enable')
     const hook=await command('Page.addScriptToEvaluateOnNewDocument',{source:`
       globalThis.__foundationDeliveries=[];
       globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__={supportsFiber:true,inject:()=>1,onCommitFiberUnmount:()=>{},onCommitFiberRoot:(_id,root)=>{
         globalThis.__foundationFiberRoot=root;const visit=fiber=>{if(!fiber)return;
           const last=fiber.updateQueue?.lastEffect;
-          if(last){let effect=last.next;do{if(!globalThis.__foundationEffect&&effect.create?.toString().includes('ipcEvents.on(APP_ICON_SHOW_HOME_CHANNEL')){
+          if(last){let effect=last.next;do{if(!globalThis.__foundationEffect&&effect.create?.toString().includes(${JSON.stringify(locator.effectText)})){
             globalThis.__foundationEffect=effect;globalThis.__foundationCreate=effect.create;
             effect.create=()=>{globalThis.__foundationMountReady=true;return ()=>{}};
             let dep=fiber.dependencies?.firstContext;while(dep){if(typeof dep.memoizedValue?.navigate==='function')globalThis.__foundationRouter=dep.memoizedValue;dep=dep.next}
           }effect=effect.next}while(effect!==last.next)}visit(fiber.child);visit(fiber.sibling)};visit(root.current)
       }};
     `})
-    const archive=path.join(owned.build,'resources/app.asar')
-    let entry,code
-    for(const file of asar.listPackage(archive).filter(file=>file.includes('/renderer/assets/index-')&&file.endsWith('.js'))){
-      const source=asar.extractFile(archive,file.slice(1)).toString()
-      if(source.includes('import_client.createRoot)(rootElement)')){entry=file;code=source;break}
-    }
-    assert(entry,'Actual renderer entrypoint missing')
-    const offset=code.indexOf('(0, import_client.createRoot)(rootElement)')
     await command('Debugger.enable')
-    const breakpoint=await command('Debugger.setBreakpointByUrl',{url:'vidbee://renderer/assets/'+path.basename(entry),lineNumber:code.slice(0,offset).split('\n').length-1})
+    const breakpoint=await command('Debugger.setBreakpointByUrl',{url:'vidbee://renderer/assets/'+path.basename(locator.entry),lineNumber:locator.line})
     const paused=command('$paused')
     await renderer(`location.hash='/settings';location.reload();true`)
-    const frame=await paused
-    const captured=await command('Debugger.evaluateOnCallFrame',{callFrameId:frame.callFrames[0].callFrameId,expression:'globalThis.__foundationClient=import_client;true',returnByValue:true})
-    assert(!captured.exceptionDetails,JSON.stringify(captured.exceptionDetails))
+    const frame=await locator.pause(paused)
+    const captured=await command('Debugger.evaluateOnCallFrame',{callFrameId:frame.callFrames[0].callFrameId,expression:locator.capture,returnByValue:true})
+    if(captured.exceptionDetails)locator.missing('compiled root capture failed')
     await command('Debugger.removeBreakpoint',{breakpointId:breakpoint.breakpointId})
     await command('Debugger.resume');await command('Debugger.disable');await delay(1500)
-    assert.equal(await renderer('Boolean(globalThis.__foundationMountReady)'),true,'Actual consumer effect was not gated')
-    assert.equal(await renderer('Boolean(globalThis.__foundationRouter)'),true,'Actual router missing')
+    if(!await renderer('Boolean(globalThis.__foundationMountReady)'))locator.missing('consumer effect was not gated')
+    if(!await renderer('Boolean(globalThis.__foundationRouter)'))locator.missing('router context missing')
     await renderer(`globalThis.__foundationCounter=window.api.on('app:show-home',()=>__foundationDeliveries.push(location.hash));true`)
     await send('app:show-home',null);await delay(100)
     const beforeMount=await renderer(`({route:location.hash,deliveries:__foundationDeliveries.slice()})`)

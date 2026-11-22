@@ -16,7 +16,7 @@ export async function verifyWorker({ run, identity }) {
   assert.equal(await fs.realpath(run), receipt.run)
   assert(inside(receipt.lane, receipt.run), 'Isolation refused: profile outside lane')
   await fs.access(path.join(receipt.lane, 'BRIEF.md'))
-  for (const kind of ['net', 'user', 'mnt']) {
+  for (const kind of ['net', 'user', 'mnt', 'pid', 'ipc', 'uts']) {
     const current = await namespace('self', kind)
     assert.notEqual(current, receipt.host[kind], `Isolation refused: host ${kind} namespace`)
     assert.equal(current, receipt.owned[kind], `Isolation refused: unowned ${kind} namespace`)

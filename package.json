@@ -41,7 +41,7 @@
     "port:check": "node scripts/port-check.mjs",
     "test:audit:other": "VIDBEE_CLI_PORTED=1 node --import tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/ui/test/*.test.ts scripts/cli/characterization/*.node.ts && bun run --cwd packages/subscriptions-core-legacy test",
     "test:audit:shared": "tsx --test apps/desktop/test/*.test.ts packages/task-queue-legacy/test/*.test.ts packages/downloader-core-legacy/test/*.node.ts packages/subscriptions-core/test/*.test.ts packages/ui/test/*.test.ts",
-    "test:foundation": "node --import tsx --test scripts/desktop-foundation/*.node.ts && bunx --bun vitest run scripts/desktop-foundation/foundation.test.mjs",
+    "test:foundation": "node scripts/desktop-foundation/source-runner.mjs",
     "test:foundation:packaged": "node scripts/desktop-foundation/packaged.mjs"
   },
   "devDependencies": {
