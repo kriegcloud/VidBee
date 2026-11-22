@@ -32,5 +32,20 @@ export async function channelTimingObservations() {
     const observation=await settlementObservation(e=>{error=e;return handlers[channel]({sender:'owned'},channel==='settings.get'?'theme':{message:'fixture'})},e=>mode==='deferred-failure'?reject(e):resolve('value'))
     out.push({channel,mode,...observation,console:logs.map(args=>args.map(v=>v===error?'<original-error>':v))})
   }
+  for(const channel of ['settings.set','settings.setAll'])for(const failure of [false,true]) {
+    const handlers={},events=[],logs=[];let original
+    const settingsManager={setAll:value=>{events.push(['write',value]);if(failure)throw original},getAll:()=>({launchAtLogin:false})}
+    let load
+    load=sourceLoader({electron:{ipcMain:{handle:(name,fn)=>{handlers[name]=fn}},BrowserWindow:{getAllWindows:()=>[{webContents:{send:(...args)=>events.push(['broadcast',...args])}}]}},
+      $console:{error:(...args)=>logs.push(args)},
+      '../../settings':{settingsManager},'../settings':{settingsManager},
+      '../utils/auto-launch':{applyAutoLaunchSetting:value=>events.push(['login',value])},'../utils/dock':{applyDockVisibility:()=>{}},
+      './app-icon-menu':{refreshAppIconMenus:()=>{}},'./task-queue-host':{applyDesktopQueueConcurrency:()=>{}},
+      '../../lib/task-queue-host':{},'../../utils/auto-launch':{},'../../utils/dock':{},
+      $require:id=>id==='electron-ipc-decorator'?load('node_modules/electron-ipc-decorator/dist/index.js'):undefined})
+    const {SettingsService}=load('apps/desktop/src/main/ipc/services/settings-service.ts');new SettingsService()
+    const observation=await settlementObservation(e=>{original=e;const result=handlers[channel]({},...(channel==='settings.set'?['launchAtLogin',false]:[{launchAtLogin:false}]));events.push(['caller-returned']);return result.then(value=>{events.push(['caller-success']);return value},error=>{events.push(['caller-failure']);throw error})})
+    out.push({channel,mode:failure?'write-failure':'write-success',...observation,events,console:logs.map(args=>args.map(v=>v===original?'<original-error>':v))})
+  }
   return out
 }

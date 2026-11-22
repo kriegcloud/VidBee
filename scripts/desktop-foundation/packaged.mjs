@@ -1,3 +1,4 @@
+import { containedLaunch } from './containment.mjs'
 import { packagedControls } from './packaged-controls.mjs'
 import { packagedEvents } from './packaged-events.mjs'
 import os from 'node:os'
@@ -44,10 +45,12 @@ if (args.includes('--worker')) {
     control.addEventListener('open', resolve, { once: true })
     control.addEventListener('error', reject, { once: true })
   })
+  let pauseResolve
   let commandId = 0
   const pending = Object.create(null)
   control.addEventListener('message', event => {
     const response = JSON.parse(event.data)
+    if(response.method==='Debugger.paused'){pauseResolve?.(response.params);return}
     const request = pending[response.id]
     if (!request) return
     delete pending[response.id]
@@ -56,6 +59,7 @@ if (args.includes('--worker')) {
     else request.resolve(response.result)
   })
   const command = (method, params = {}) => new Promise((resolve, reject) => {
+    if(method==='$paused'){pauseResolve=resolve;return}
     const id = ++commandId
     pending[id] = { resolve, reject, timer: setTimeout(() => { delete pending[id]; reject(new Error(`CDP ${method} deadline`)) }, 10000) }
     control.send(JSON.stringify({ id, method, params }))
@@ -64,6 +68,7 @@ if (args.includes('--worker')) {
   const rawPath = path.join(owned.run, args.includes('--portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')
   const readRaw = async () => JSON.parse(await fs.readFile(rawPath, 'utf8'))
   const storage = { constructor: await readRaw() }
+  if(['portableExternal','portableMarkerFailure'].includes(path.basename(owned.run)))assert.equal(storage.constructor.downloadPath,path.join(owned.run,'home/external-media'),'External-to-portable download path changed')
   for (const [label, expression] of [
     ['single', "window.electron.ipcRenderer.invoke('settings.set', 'cookiesPath', '/synthetic/cookies')"],
     ['batch', "window.electron.ipcRenderer.invoke('settings.setAll', {configPath:'/synthetic/config',preferredAudioLanguage:'fr'})"]
@@ -154,7 +159,7 @@ if (args.includes('--worker')) {
     await fs.writeFile(path.join(owned.run,'host-environment.json'),JSON.stringify({platform:os.platform(),release:os.release(),observed:`Linux ${os.release()}`}))
     observations.storage = storage
     if (secondInstance) observations.secondInstance = secondInstance
-    if(path.basename(owned.run)==='fresh')observations.packagedEvents=await packagedEvents(owned,cdp)
+    if(path.basename(owned.run)==='fresh')observations.packagedEvents=await packagedEvents(owned,cdp,command)
     const restartWrite = await cdp.evaluate(`(async () => {
       await window.electron.ipcRenderer.invoke('settings.setAll', { theme: 'dark',
         foundationRestart: { retained: ['synthetic', 7] } })
@@ -272,7 +277,8 @@ let active
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => {
   if (active && active.exitCode === null && active.signalCode === null) {
     const ended = new Promise((resolve) => active.once('close', resolve))
-    active.kill('SIGTERM'); await ended
+    const ownerPid=Number((await fs.readFile(path.join(active.ownedWork,'containment.pid'),'utf8')).trim())
+    process.kill(ownerPid,'SIGTERM'); await ended
   }
   process.exit(1)
 })
@@ -284,7 +290,7 @@ await fs.mkdir(backgroundBuild)
 await fs.symlink(path.join(build, 'resources'), path.join(backgroundBuild, 'resources'))
 const quotedBinary = quote(path.join(build, 'vidbee'))
 await fs.writeFile(path.join(backgroundBuild, 'vidbee'), `#!/bin/sh\nexec ${quotedBinary} --inspect=127.0.0.1:9231 --background "$@"\n`, { mode: 0o755 })
-for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '', invalidJson: '{', portableFresh: undefined, portableExternal: {downloadPath:'/external/media'}, portableMarkerFailure: {downloadPath:'/external/media'}, fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
+for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '', invalidJson: '{', portableFresh: undefined, portableExternal: {downloadPath:'<external-media>'}, portableMarkerFailure: {downloadPath:'<external-media>'}, fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
   future: { keep: 9 }, extensionCookieSources: [{ id: 'fixture', browser: 'test', extra: 'keep' }] },
   restart: 'reuse',
   current: { language: 'en', lastSeenWhatsNew: 'ai-transcripts' },
@@ -298,12 +304,13 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
   if (config === 'reuse') { seed = path.join(work, 'returning', 'userdata') }
   else if (config !== undefined) {
     seed = path.join(work, `${name}-seed`); await fs.mkdir(seed)
-    await fs.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config))
+    await fs.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config).replace('<external-media>',path.join(run,'home/external-media')))
   }
   const launchSetup = path.join(work, `${name}-launch.sh`)
-  await fs.writeFile(launchSetup, `export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
-  const launcher = spawn('bash', [path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup],
+  await fs.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
+  const launcher = spawn('bwrap', containedLaunch(work, ['bash','-c','echo $$ > "$1/containment.pid"; shift; exec "$@"','contained',work,'bash', path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup]),
     { cwd: scratch, stdio: ['ignore', 'ignore', 'pipe'] })
+  launcher.ownedWork=work
   active = launcher
   let stderr = ''; launcher.stderr.on('data', (data) => { stderr += data })
   try {
@@ -362,7 +369,8 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
   } finally {
     if (launcher.exitCode === null) {
       const ended = new Promise((resolve) => launcher.once('close', resolve))
-      launcher.kill('SIGTERM'); await ended
+      const ownerPid=Number((await fs.readFile(path.join(work,'containment.pid'),'utf8')).trim())
+      process.kill(ownerPid,'SIGTERM'); await ended
     }
     active = undefined
   }

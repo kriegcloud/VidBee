@@ -2098,9 +2098,243 @@
           "<original-error>"
         ]
       ]
+    },
+    {
+      "channel": "settings.set",
+      "mode": "write-success",
+      "trace": [
+        [
+          "returned",
+          0
+        ],
+        [
+          "turn",
+          0
+        ],
+        [
+          "turn",
+          1
+        ],
+        [
+          "success",
+          2,
+          null
+        ],
+        [
+          "turn",
+          2
+        ]
+      ],
+      "logs": [],
+      "events": [
+        [
+          "write",
+          {
+            "launchAtLogin": false
+          }
+        ],
+        [
+          "login",
+          false
+        ],
+        [
+          "broadcast",
+          "settings:changed"
+        ],
+        [
+          "caller-returned"
+        ],
+        [
+          "caller-success"
+        ]
+      ],
+      "console": []
+    },
+    {
+      "channel": "settings.set",
+      "mode": "write-failure",
+      "trace": [
+        [
+          "returned",
+          0
+        ],
+        [
+          "turn",
+          0
+        ],
+        [
+          "failure",
+          1,
+          "original"
+        ],
+        [
+          "turn",
+          1
+        ]
+      ],
+      "logs": [],
+      "events": [
+        [
+          "write",
+          {
+            "launchAtLogin": false
+          }
+        ],
+        [
+          "caller-returned"
+        ],
+        [
+          "caller-failure"
+        ]
+      ],
+      "console": [
+        [
+          "Error in IPC method settings.set:",
+          "<original-error>"
+        ]
+      ]
+    },
+    {
+      "channel": "settings.setAll",
+      "mode": "write-success",
+      "trace": [
+        [
+          "returned",
+          0
+        ],
+        [
+          "turn",
+          0
+        ],
+        [
+          "turn",
+          1
+        ],
+        [
+          "success",
+          2,
+          null
+        ],
+        [
+          "turn",
+          2
+        ]
+      ],
+      "logs": [],
+      "events": [
+        [
+          "write",
+          {
+            "launchAtLogin": false
+          }
+        ],
+        [
+          "login",
+          false
+        ],
+        [
+          "broadcast",
+          "settings:changed"
+        ],
+        [
+          "caller-returned"
+        ],
+        [
+          "caller-success"
+        ]
+      ],
+      "console": []
+    },
+    {
+      "channel": "settings.setAll",
+      "mode": "write-failure",
+      "trace": [
+        [
+          "returned",
+          0
+        ],
+        [
+          "turn",
+          0
+        ],
+        [
+          "failure",
+          1,
+          "original"
+        ],
+        [
+          "turn",
+          1
+        ]
+      ],
+      "logs": [],
+      "events": [
+        [
+          "write",
+          {
+            "launchAtLogin": false
+          }
+        ],
+        [
+          "caller-returned"
+        ],
+        [
+          "caller-failure"
+        ]
+      ],
+      "console": [
+        [
+          "Error in IPC method settings.setAll:",
+          "<original-error>"
+        ]
+      ]
     }
   ],
   "importEffects": [
+    [
+      "import",
+      "apps/desktop/src/main/index.ts"
+    ],
+    [
+      "import",
+      "node_modules/@electron-toolkit/utils/dist/index.cjs"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/constants.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/utils/format-preferences.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/config/logger-config.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/desktop-console-format.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/index.ts"
+    ],
+    [
+      "import",
+      "node_modules/electron-ipc-decorator/dist/index.js"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/account-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/auth-client.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/renderer-csp.ts"
+    ],
     [
       "auth:storage",
       {
@@ -2129,6 +2363,74 @@
           "owned-plugin"
         ]
       }
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/ai-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/ai-presets.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-artifacts.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-chat-store.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-history.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/ai-prompts.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/builtin-skills.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-thread-patch.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-chat.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-directory.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-run-event.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-activity.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-output.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/queue-ref.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-prompt-store.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/ai-run.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/utils/logger.ts"
     ],
     [
       "log:scope",
@@ -2175,7 +2477,63 @@
       "ai"
     ],
     [
+      "import",
+      "apps/desktop/src/main/lib/database.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/database/migrate.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/database-path.ts"
+    ],
+    [
+      "log:scope",
+      "database"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/video-library-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/settings.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-permissions.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/tts-models.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/types/index.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/whats-new.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/download-path-policy.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/system-locale.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/portable.ts"
+    ],
+    [
       "settings:construct"
+    ],
+    [
+      "fs:mkdir",
+      "<profile>/Downloads/VidBee"
     ],
     [
       "settings:write",
@@ -2183,6 +2541,998 @@
       "ai-transcripts"
     ],
     [
+      "import",
+      "apps/desktop/src/main/lib/markdown-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-markdown.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/ai-prompt-text.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-media.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/source-media-kind.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-cookies.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/extension-identity.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-origin.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ffmpeg-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/bundled-resources-path.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/source-file.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/social-media-file.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ytdlp-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/markdown-pdf.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/video-library-files.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-chat-runner.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-errors.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-ui.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-article.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-article-review.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-document.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-budget.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-article-images.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-cloud-budget.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-cloud-request.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-cloud-slots.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-compaction.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-memory.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-context.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skills.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skill-document.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-events.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-evidence.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-image-attachments.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-model-profile.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-notifications.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-notifications.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-progress.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-run-context.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-subtitles.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-subtitles.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/transcript-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-prompt-runner.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-agent-core",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/compat",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-model.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/compat",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-store.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skill-files.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skill-install.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/skill-install.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skill-migration.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-secrets.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cliproxy.ts"
+    ],
+    [
+      "fs:mkdir",
+      "<profile>/skills"
+    ],
+    [
+      "ai:construct"
+    ],
+    [
+      "settings:write",
+      "prompts",
+      [
+        {
+          "name": "overview",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": -1,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "bullet-points",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 0,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "create-mindmap",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 1,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "extract-statistics",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 2,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "generate-faq",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 3,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "improve-grammar",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 4,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "paraphrase-content",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 5,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "translate",
+          "isPreset": true,
+          "autoRun": false,
+          "sortOrder": 6,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "article-rewrite",
+          "isPreset": true,
+          "autoRun": false,
+          "workflowOnly": true,
+          "sortOrder": 8,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "faq",
+          "isPreset": true,
+          "autoRun": false,
+          "workflowOnly": true,
+          "sortOrder": 9,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        },
+        {
+          "name": "diagnose-task",
+          "isPreset": true,
+          "autoRun": false,
+          "workflowOnly": true,
+          "sortOrder": 10,
+          "createdAt": 1583755200000,
+          "updatedAt": 1583755200000,
+          "content": ""
+        }
+      ]
+    ],
+    [
+      "ai:listen"
+    ],
+    [
+      "ai:watch",
+      "<profile>/skills",
+      {
+        "recursive": true,
+        "persistent": false
+      }
+    ],
+    [
+      "app:once",
+      "will-quit"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cloud-models.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cloud-capabilities.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-skill-auto-run.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/asr-model-task.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/import-local-media.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/projection.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ipc-coalescer.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/transcript-list-snapshot.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/transcript-queue-index.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/transcript-stage-history.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/transcription-worker-path.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-transcript.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-run-machine.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-run-timers.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-session.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/compat",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-durable-session.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/chord/context",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/compat",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord"
+    ],
+    [
+      "sdk:import",
+      "@earendil-works/pi-durable/env/node"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable/storage/jsonl/node",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord/delta"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable/tool-search",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/pi-ai"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-durable-tasks.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/chord/context",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable/storage/jsonl/node",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord/delta"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-model-runtime.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/compat",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/models",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-durable-tools.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/chord/context",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-ai/models",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "self"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord"
+    ],
+    [
+      "sdk:import",
+      "@earendil-works/pi-durable/env/node"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-permissions.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-plugin-runtime.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-tool-approval.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-skill-runtime.ts"
+    ],
+    [
+      "host",
+      "@earendil-works/pi-durable/tools",
+      "ERR_PACKAGE_PATH_NOT_EXPORTED under pinned Node + tsx require",
+      "@earendil-works/chord/output"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-tool-loading.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-web-access.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-extension-runtime.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-task-wait.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/video-localization.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-management-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-task.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/media-transform.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-capability-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-settings.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-ui-tool.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-ui-response.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-ui-tasks.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-usage.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-composer.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-conversations.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-provider-test.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ai-remote-models.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cloud-device.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/app-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ytdlp-kernel-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ytdlp-kernel-command.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/bounded-output-buffer.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ytdlp-kernel-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/ytdlp-kernel-model.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/site-icon-url.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/browser-cookies-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/browser-cookie-access.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/utils/path-helpers.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/download-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/download-facade.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/live-log.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/utils/pending-download.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cancelled-download-parts.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/command-utils.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/download-engine/args-builder.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/download-metadata.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/utils/video-info-metadata.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/yt-dlp-info.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/yt-dlp-metadata-command.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/download-queue-events.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/gallery-dl-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/social-session-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/social-session-keyring.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/path-resolver.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/social-profile-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/task-queue-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/asr-model-executor.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/browser-capture-sidecar-path.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/cloud-transcription.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/download-power-save.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/media-transform-executor.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/media-probe.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/subtitle-download-executor.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/subtitle-download.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/subtitle-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/library-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/remote-captions.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/extension-transcript.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/file-system-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/share-capture-window.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/types/mermaid-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/types/share-card.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/share-image-split.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/history-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/history-manager.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/mcp-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/config.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/automation-descriptor.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/http.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/server.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/ai-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/tool.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/export-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/mermaid-diagrams.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/settings-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-capability-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/settings-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/utils/auto-launch.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/utils/dock.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/app-icon-menu.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/app-icon-menu.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/settings-effects.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/subscription-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/agent-management-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/subscriptions-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/profile-subscriptions.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/subscription-enqueue.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/task-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/mcp/transcript-tools.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/transcript-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/export-video-subtitles.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/export-video-subtitles-args.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/playable-media.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/utils/native-playable.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/player-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/player-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/settings-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/subscription-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/thumbnail-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/local-poster.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/concurrency-limiter.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/local-poster-args.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/thumbnail-cache.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/thumbnail-download.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/transcript-service.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/ipc/services/window-service.ts"
+    ],
+    [
       "remove",
       "account.getOverview"
     ],
@@ -3689,6 +5039,106 @@
     [
       "handle",
       "fs.saveMarkdownPdf"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/app-quit.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/quit-confirmation-host.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/quit-confirmation.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/privileged-schemes.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/renderer-console-log.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/startup-dependencies.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/task-queue-migrate.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/task-queue-migrate-policy.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/window-state.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/local-api.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat-actions.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/agent-export.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat-cards.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat-events.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat-requests.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-chat-source.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/extension-source-url.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/video-identity.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-overview.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/shared/extension-overview-reuse.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-token.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/extension-transcript.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/lib/local-api-guard.ts"
+    ],
+    [
+      "import",
+      "apps/desktop/src/main/tray.ts"
     ],
     [
       "logger"
@@ -3722,6 +5172,14 @@
     ],
     [
       "csp:whenReady"
+    ],
+    [
+      "log:info",
+      "database initialized at <profile>/vidbee.db"
+    ],
+    [
+      "log:info",
+      "subscriptions: migrated download_id → task_id on subscription_items"
     ],
     [
       "lock"
@@ -92914,106 +94372,121 @@
           ]
         }
       ],
-      "calendar": [
-        {
-          "key": "today",
-          "kind": "today",
-          "label": "<undefined>",
-          "items": [
-            {
-              "id": "1a",
-              "updatedAt": 86400000
-            },
-            {
-              "id": "1b",
-              "updatedAt": 86400000
-            },
-            {
-              "id": "0a",
-              "updatedAt": 0
-            },
-            {
-              "id": "0b",
-              "updatedAt": 0
-            }
-          ]
-        },
-        {
-          "key": "yesterday",
-          "kind": "yesterday",
-          "label": "<undefined>",
-          "items": [
-            {
-              "id": "2a",
-              "updatedAt": -86400000
-            },
-            {
-              "id": "2b",
-              "updatedAt": -86400000
-            }
-          ]
-        },
-        {
-          "key": "weekday:-2",
-          "kind": "weekday",
-          "label": "Saturday",
-          "items": [
-            {
-              "id": "3a",
-              "updatedAt": -172800000
-            },
-            {
-              "id": "3b",
-              "updatedAt": -172800000
-            }
-          ]
-        },
-        {
-          "key": "weekday:-6",
-          "kind": "weekday",
-          "label": "Tuesday",
-          "items": [
-            {
-              "id": "4a",
-              "updatedAt": -518400000
-            },
-            {
-              "id": "4b",
-              "updatedAt": -518400000
-            }
-          ]
-        },
-        {
-          "key": "date:-7",
-          "kind": "date",
-          "label": "Mar 2, 2020",
-          "items": [
-            {
-              "id": "5a",
-              "updatedAt": -604800000
-            },
-            {
-              "id": "5b",
-              "updatedAt": -604800000
-            }
-          ]
-        },
-        {
-          "key": "date:-8",
-          "kind": "date",
-          "label": "Mar 1, 2020",
-          "items": [
-            {
-              "id": "6a",
-              "updatedAt": -691200000
-            },
-            {
-              "id": "6b",
-              "updatedAt": -691200000
-            }
-          ]
-        }
-      ]
+      "calendar": {
+        "midnight": 1583712000000,
+        "groups": [
+          {
+            "key": "today",
+            "kind": "today",
+            "label": "<undefined>",
+            "items": [
+              {
+                "id": "1a",
+                "updatedAt": 1583798400000
+              },
+              {
+                "id": "1b",
+                "updatedAt": 1583798400000
+              },
+              {
+                "id": "same-day-2330",
+                "updatedAt": 1583796600000
+              },
+              {
+                "id": "same-day-0030",
+                "updatedAt": 1583713800000
+              },
+              {
+                "id": "0a",
+                "updatedAt": 1583712000000
+              },
+              {
+                "id": "0b",
+                "updatedAt": 1583712000000
+              }
+            ]
+          },
+          {
+            "key": "yesterday",
+            "kind": "yesterday",
+            "label": "<undefined>",
+            "items": [
+              {
+                "id": "previous-2330",
+                "updatedAt": 1583710200000
+              },
+              {
+                "id": "2a",
+                "updatedAt": 1583625600000
+              },
+              {
+                "id": "2b",
+                "updatedAt": 1583625600000
+              }
+            ]
+          },
+          {
+            "key": "weekday:1583539200000",
+            "kind": "weekday",
+            "label": "Saturday",
+            "items": [
+              {
+                "id": "3a",
+                "updatedAt": 1583539200000
+              },
+              {
+                "id": "3b",
+                "updatedAt": 1583539200000
+              }
+            ]
+          },
+          {
+            "key": "weekday:1583193600000",
+            "kind": "weekday",
+            "label": "Tuesday",
+            "items": [
+              {
+                "id": "4a",
+                "updatedAt": 1583193600000
+              },
+              {
+                "id": "4b",
+                "updatedAt": 1583193600000
+              }
+            ]
+          },
+          {
+            "key": "date:1583107200000",
+            "kind": "date",
+            "label": "Mar 2, 2020",
+            "items": [
+              {
+                "id": "5a",
+                "updatedAt": 1583107200000
+              },
+              {
+                "id": "5b",
+                "updatedAt": 1583107200000
+              }
+            ]
+          },
+          {
+            "key": "date:1583020800000",
+            "kind": "date",
+            "label": "Mar 1, 2020",
+            "items": [
+              {
+                "id": "6a",
+                "updatedAt": 1583020800000
+              },
+              {
+                "id": "6b",
+                "updatedAt": 1583020800000
+              }
+            ]
+          }
+        ]
+      }
     },
     "windowMatrix": [
       {

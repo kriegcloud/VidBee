@@ -23,6 +23,13 @@ export async function verifyWorker({ run, identity }) {
     assert.equal(current, await namespace(receipt.namespacePid, kind))
     assert.equal(current, await namespace(receipt.appPid, kind))
   }
+  const mounts=(await fs.readFile('/proc/self/mountinfo','utf8')).trim().split('\n').map(line=>line.split(' '))
+  assert(mounts.find(fields=>fields[4]==='/')?.[5].split(',').includes('ro'),'Isolation refused: root is writable')
+  const work=path.dirname(receipt.run)
+  for(const fields of mounts.filter(fields=>fields[5].split(',').includes('rw'))) {
+    const target=fields[4]
+    assert([work,'/dev','/proc','/tmp'].some(root=>target===root||inside(root,target)),`Isolation refused: writable mount outside scratch/runtime: ${target}`)
+  }
   const interfaces = (await fs.readFile('/proc/net/dev', 'utf8')).trim().split('\n').slice(2).map(line => line.split(':')[0].trim())
   assert.deepEqual(interfaces, ['lo'], 'Isolation refused: network is not loopback-only')
   assert.equal(await fs.readlink(`/proc/${receipt.appPid}/exe`), path.join(receipt.build, 'vidbee'))

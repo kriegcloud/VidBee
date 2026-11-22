@@ -25,10 +25,11 @@ export async function packagedControls(owned,cdp) {
       else await view(`(()=>{const n=${row(key)}.querySelector('input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(n,${JSON.stringify(value)});n.dispatchEvent(new Event('input',{bubbles:true}));return true})()`)
       await delay(200)
       const after=await snapshot(),writes=await run(`__foundationWrites.slice(${start})`)
-      const visible=await view(`${row(key)}.innerText`)
+      const visible=await view(`${row(key)}.${kind==='input'?'querySelector("input").value':'innerText'}`)
       await view('location.reload();true');await delay(1500)
-      const reloaded=await snapshot(),visibleReload=await view(`${row(key)}.innerText`)
+      const reloaded=await snapshot(),visibleReload=await view(`${row(key)}.${kind==='input'?'querySelector("input").value':'innerText'}`)
       assert.deepEqual(reloaded[key],after[key]);assert.equal(visibleReload,visible)
+      if(kind==='input'){assert.equal(visible,value);assert.equal(visibleReload,value)}
       assert(writes.some(args=>args[0]===key),`No outbound write for ${key}`)
       out.push({tab,key,kind,before:before[key],after:after[key],writes,visible,visibleReload,reloaded:reloaded[key]})
       if(key==='language'){await view("window.electron.ipcRenderer.invoke('settings.set','language','en')");await view('location.reload();true');await delay(1500)}

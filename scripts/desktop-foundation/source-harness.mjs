@@ -22,6 +22,7 @@ export function sourceLoader(overrides = {}) {
   function load(relative) {
     const filename = path.resolve(root, relative)
     if (cache[filename]) return cache[filename].exports
+    overrides.$onLoad?.(path.relative(root,filename))
     const module = { exports: {} }
     cache[filename] = module
     const nativeRequire = createRequire(filename)

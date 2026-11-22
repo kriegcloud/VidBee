@@ -1523,7 +1523,7 @@
         "args": [],
         "phase": "batch",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -1573,7 +1573,7 @@
         "args": [],
         "phase": "single",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -1631,7 +1631,7 @@
         "args": [],
         "phase": "removed",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -1697,7 +1697,7 @@
     "invokeFailure": "Error invoking remote method 'settings.setAll': TypeError: Cannot convert undefined or null to object",
     "icon": null,
     "initial": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -1742,7 +1742,7 @@
       "agentManagementTools": "auto"
     },
     "individual": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -1801,7 +1801,7 @@
       "invalidFile": null
     },
     "persisted": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -1948,7 +1948,7 @@
     },
     "storage": {
       "constructor": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -1993,7 +1993,7 @@
         "agentManagementTools": "auto"
       },
       "single": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -2038,7 +2038,7 @@
         "agentManagementTools": "auto"
       },
       "batch": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -2263,7 +2263,7 @@
         "args": [],
         "phase": "batch",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -2313,7 +2313,7 @@
         "args": [],
         "phase": "single",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -2371,7 +2371,7 @@
         "args": [],
         "phase": "removed",
         "visible": {
-          "downloadPath": "/external/media",
+          "downloadPath": "<home>/external-media",
           "maxConcurrentDownloads": 5,
           "downloadWithoutChannelSubfolders": false,
           "browserForCookies": "none",
@@ -2437,7 +2437,7 @@
     "invokeFailure": "Error invoking remote method 'settings.setAll': TypeError: Cannot convert undefined or null to object",
     "icon": null,
     "initial": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -2482,7 +2482,7 @@
       "agentManagementTools": "auto"
     },
     "individual": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -2541,7 +2541,7 @@
       "invalidFile": null
     },
     "persisted": {
-      "downloadPath": "/external/media",
+      "downloadPath": "<home>/external-media",
       "maxConcurrentDownloads": 5,
       "downloadWithoutChannelSubfolders": false,
       "browserForCookies": "none",
@@ -2688,7 +2688,7 @@
     },
     "storage": {
       "constructor": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -2733,7 +2733,7 @@
         "agentManagementTools": "auto"
       },
       "single": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -2778,7 +2778,7 @@
         "agentManagementTools": "auto"
       },
       "batch": {
-        "downloadPath": "/external/media",
+        "downloadPath": "<home>/external-media",
         "maxConcurrentDownloads": 5,
         "downloadWithoutChannelSubfolders": false,
         "browserForCookies": "none",
@@ -3565,15 +3565,63 @@
     },
     "packagedEvents": {
       "home": {
-        "liveRoute": "#/",
+        "beforeMount": {
+          "route": "#/settings",
+          "deliveries": [
+            "#/settings"
+          ]
+        },
+        "slow": {
+          "route": "#/settings",
+          "deliveries": [
+            "#/settings",
+            "#/settings",
+            "#/settings"
+          ],
+          "navigation": [
+            [
+              {
+                "to": "/"
+              }
+            ],
+            [
+              {
+                "to": "/"
+              }
+            ]
+          ]
+        },
         "absent": {
           "route": "#/settings",
-          "deliveries": []
+          "deliveries": [
+            "#/settings",
+            "#/settings",
+            "#/settings",
+            "#/settings"
+          ]
         },
-        "subscribed": [
-          "#/settings",
-          "#/settings"
-        ],
+        "resubscribed": {
+          "route": "#/settings",
+          "deliveries": [
+            "#/settings",
+            "#/settings",
+            "#/settings",
+            "#/settings"
+          ]
+        },
+        "liveRoute": "#/",
+        "beforeReload": {
+          "route": "#/settings",
+          "pending": 1,
+          "deliveries": [
+            "#/settings",
+            "#/settings",
+            "#/settings",
+            "#/settings",
+            "#/settings",
+            "#/settings"
+          ]
+        },
         "afterReload": {
           "route": "#/settings",
           "oldState": "undefined"
@@ -3835,8 +3883,8 @@
             "http://fixture.invalid"
           ]
         ],
-        "visible": "Proxy\n\nProxy server for network requests",
-        "visibleReload": "Proxy\n\nProxy server for network requests",
+        "visible": "http://fixture.invalid",
+        "visibleReload": "http://fixture.invalid",
         "reloaded": "http://fixture.invalid"
       },
       {

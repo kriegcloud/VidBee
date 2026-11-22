@@ -141,3 +141,47 @@ Packaged OS labels must exactly equal `Linux ` plus the current `os.release()` b
 suffix becomes `<host-release>` in the behavioral fixture. The exact host value
 is retained in each run's `host-environment.json`. Source OS transformation
 vectors remain exact; UTC and Tokyo behavioral fixtures stay separate.
+
+Fourth-pass containment applies before every foundation packaged launch:
+`containment.mjs` runs the launcher beneath Bubblewrap with a recursively
+read-only root, only the fresh suite work directory writable, and private
+`/dev`, `/proc` and `/tmp` runtime mounts. The launch setup remounts the resolver
+files read-only. Worker admission inspects mount flags before any connection.
+The negative test requires `EROFS` for direct outside writes and a symlink escape,
+and a successful owned write. A fixture path outside its profile/portable root
+uses the owned `<home>/external-media` directory, whose preservation is asserted.
+Bubblewrap is a required host executable; there is no uncontained fallback.
+
+The real shared import graph now runs capability bodies, including ai-store's
+constructor, prompt setup, native watcher registration and listener setup, in the
+same loader through rejected-lock exit. Its ordered trace includes loaded files
+and exact ESM provider SDK subpaths the synchronous source VM cannot require.
+The native watcher is injected and SQLite uses the owned disposable profile.
+The pi-durable/env/node SDK module executes. Nine remaining SDK subpaths
+reject the pinned Node + tsx synchronous import route with
+ERR_PACKAGE_PATH_NOT_EXPORTED, directly or through an import-only dependency.
+Every exact failed dependency is frozen in the trace and separately verified by
+a contained offline probe. Plain Node loads more subpaths; that is not the
+source suite's tsx execution route.
+Settings write clocks cover both actual registrations through the actual settings
+host, successful writes and synchronous failure with caller continuation, ordered
+side effects, broadcasts, console arguments and error identity. The calendar case
+uses independent literal timestamps and directly freezes the midnight result.
+
+Packaged Show Home uses the React commit host to hold the actual AppLayout effect
+setup, unmounts/remounts the real React subtree for same-document absence, and holds the
+actual router's navigation completion. The consumer callback is never replaced.
+The independent delivery counter cannot navigate. Before-mount, slow navigation,
+absence/resubscription and pending old-navigation/reload are separate observations.
+The React root renderer is obtained from the actual consumer module through an
+owned debugger pause; its public render method performs a genuine subtree
+unmount/remount. DOM absence and return are checked. The lifecycle control does
+not establish physical window-manager behavior. The new-document case reloads
+the complete document. Proxy observations require the actual
+input value to equal the nondefault selection after save and reload.
+
+Final repeat receipts must bind all files in this directory before and after
+every run. The third-pass twenty-run source receipt predates `scratch.mjs`; its
+later five stress passes are separate evidence. Temporary mutation copies prove
+that the repaired assertions reject the audit's regressions; no tracked source
+or immutable recording build is mutated.

@@ -20,10 +20,11 @@ export function sharedMatrixObservations() {
   for(const title of ['Title','  ',''])for(const saved of [undefined,'','  ','Title.f123.mp4','Title.mp4'])for(const recorded of [undefined,'','/fixture/Title.mp4'])out.files.push({title,saved:saved??'<undefined>',recorded:recorded??'<undefined>',names:files.buildFileNameCandidates(title,'mp4',saved),paths:files.buildFilePathCandidates('/fixture',title,'mp4',saved,recorded)})
   class CalendarDate extends Date {setHours(...args){return this.setUTCHours(...args)}}
   const history=sourceLoader({$glob:()=>({}),$Date:CalendarDate,$Intl:{DateTimeFormat:class extends Intl.DateTimeFormat{constructor(locale,options){super(locale,{...options,timeZone:'UTC'})}}}})('apps/desktop/src/shared/agent-history.ts')
-  // Local constructor fixes the calendar coordinates for both TZ stability runs.
-  const now=Date.UTC(2020,2,9,12),midnight=history.startOfLocalDay(now)
+  // Literal coordinates are independent of startOfLocalDay and grouping.
+  const now=1583755200000,midnight=1583712000000
   const items=[0,-1,1,2,6,7,8].flatMap((days,index)=>[{id:`${index}a`,updatedAt:midnight-days*86400000},{id:`${index}b`,updatedAt:midnight-days*86400000}])
-  out.calendar=history.groupAgentHistory(items,now,'en-US').map(group=>({...group,key:group.key.replace(/\d{10,}/g,stamp=>String((Number(stamp)-midnight)/86400000)),items:group.items.map(item=>({...item,updatedAt:item.updatedAt-midnight}))}))
+  items.push({id:'same-day-0030',updatedAt:1583713800000},{id:'same-day-2330',updatedAt:1583796600000},{id:'previous-2330',updatedAt:1583710200000})
+  out.calendar={midnight:history.startOfLocalDay(now),groups:history.groupAgentHistory(items,now,'en-US')}
   const definitions=[
     ['agent-settings','agentSettingsSchema',{}],['agent-settings','agentTtsModelSchema',{action:'status'}],['agent-settings','agentAiSettingsSchema',{action:'list'}],
     ['agent-subtitles','agentSubtitleInputSchema',{language:' en ',cues:[{start:0,end:1,text:' text '}]}],
