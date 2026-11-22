@@ -191,8 +191,11 @@ allow-list as the packaged launcher when namespaces are available. Only `/usr`,
 the selected Node/Bun directories, checkout, selected build and required `/etc`
 files are readable; owned scratch is writable. Home/profile trees, `/run`, host
 `/tmp`, devices, sockets and host processes are absent. Private PID/proc, IPC,
-UTS and network namespaces apply. The source process negative tests alone may
-skip with a reason on incapable hosts; source observations still execute there.
+UTS and network namespaces apply. At an unsuccessful outer probe, source observations fail before candidate code
+executes. Only `GITHUB_ACTIONS=true` (ephemeral hosted CI) or explicit
+`VIDBEE_FOUNDATION_UNCONTAINED=1` allows an uncontained diagnostic run, which
+prints that it is not containment acceptance. `VIDBEE_REQUIRE_CONTAINMENT=1`
+overrides both exceptions. Negative tests may skip only in that diagnostic mode.
 Packaged runs have no fallback.
 
 `owned-process.mjs` starts a namespace supervisor. Closing its stdin requests
@@ -201,9 +204,41 @@ The namespace init exits to terminate all remaining members. No PID read from a
 file is signalled. Namespace PID translation is read-only admission metadata.
 
 `behavior.mjs` projects both historical and actual traces, excluding only import,
-host and SDK loader diagnostics. The full import trace is retained separately in
-TMPDIR by the source runner. Initialization counts and every ordered application
+host and SDK loader diagnostics. The full import trace is exported only when `VIDBEE_FOUNDATION_TRACE` names
+a destination file; its candidate-controlled source is read through the contained
+control-pipe helper. Initialization counts and every ordered application
 effect remain checked. Screen cases use setting/action identity with values,
 effects and final settings; tree indexes and component names are not compared.
 Show Home implementation locators live in one adapter locator, whose failures
 explicitly say the adapter needs updating and are setup failures.
+
+
+Sixth-pass parent boundary: `scratch-io.mjs` sends each operation to the fixed
+`scratch-io.py` helper in a fresh empty-root containment boundary. Only request
+and result bytes cross its control pipes. Descriptor-relative no-follow ancestor
+traversal rejects symlink directories; regular input files require a single link
+and nonblocking open rejects FIFOs without hanging. Exclusive output creation
+rejects replaced files, symlinks, hardlinks and FIFOs without truncation.
+All host packaged accesses after candidate execution use this helper: subsequent
+seed directory/config creation, launch setup creation, malformed-startup log and
+config reads/readiness check, readiness descriptor/PID reads, identity receipt,
+worker output read, boot log read, stored-config copy, final build/actual receipts.
+Wrapper creation precedes candidate execution. Source trace export uses the same
+helper; source cleanup executes inside containment. Other observer filesystem
+accesses and worker receipt writes already execute inside the outer boundary.
+Build manifests, checkout fixtures, host namespace metadata and the explicitly
+selected trace destination are trusted host inputs/outputs outside candidate scratch.
+
+Lifecycle update equality uses `window.isMaximized`, `app.metadata` and
+`share.platform` state identities with the complete ordered values. Historical
+numeric hook ordinals project to those identities; actual adapter tuples retain
+ordinals as a diagnostic third element, omitted only by the shared projection.
+
+Future RPC registration projection rule: explicitly enumerate new RPC channel
+names in a separate contract oracle. Partition registration rows by that exact
+set before comparison; the frozen legacy channel sequence retains every old
+channel, duplicate, registration/replacement operation and relative order.
+Compare new RPC channels separately with their own payload/order/count contract.
+Do not filter by a broad prefix or remove unknown channels: an unclassified
+registration must fail admission. Until such an explicit set and oracle exist,
+all registration rows remain in the frozen comparison.

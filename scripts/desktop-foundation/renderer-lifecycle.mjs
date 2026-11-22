@@ -1,3 +1,4 @@
+import { locateLifecycleState } from './lifecycle-locators.mjs'
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { sourceLoader } from './source-harness.mjs'
@@ -8,7 +9,7 @@ function hooks() {
   const slots=[],effects=[],updates=[]
   return {effects,updates,render:fn=>{cursor=0;effects.length=0;return fn()},react:{
     useEffect:fn=>effects.push(fn),useMemo:fn=>fn(),useCallback:fn=>fn,
-    useState:initial=>{const i=cursor++;if(!(i in slots))slots[i]=typeof initial==='function'?initial():initial;return[slots[i],value=>{slots[i]=value;updates.push([i,value])}]},
+    useState:(initial,identity)=>{const i=cursor++;if(!(i in slots))slots[i]=typeof initial==='function'?initial():initial;return[slots[i],value=>{slots[i]=value;updates.push([identity ?? `unidentified-state`,value,i])}]},
     useRef:initial=>{const i=cursor++;return slots[i]??=( {current:initial} )}
   }}
 }
@@ -22,7 +23,7 @@ function bridge() {
   const {ipcEvents}=sourceLoader({$window:exposed})('apps/desktop/src/renderer/src/lib/ipc.ts')
   return{ipcEvents,ipcRenderer,exposed,trace}
 }
-export async function lifecycleObservations() {
+export async function lifecycleObservations(transform = source => source) {
   const out={},b=bridge(),h=hooks(),navigation=[],deliveries=[];let pathname='/settings'
   const on=b.ipcEvents.on.bind(b.ipcEvents);b.ipcEvents.on=(channel,fn)=>on(channel,(...args)=>{if(channel==='app:show-home')deliveries.push(pathname);return fn(...args)})
   const noop=()=>{}
@@ -51,7 +52,7 @@ export async function lifecycleObservations() {
   out.home={deliveries,deliveriesBeforeAbsence,afterReloadMount,newNavigation,before,slow,atHome,resubscribe,oldDocument,oldListeners:b.ipcRenderer.listenerCount('app:show-home'),newListeners:next.ipcRenderer.listenerCount('app:show-home')}
   // Actual TitleBar cleanup supplies original callbacks to a wrapper-based API.
   const titleHooks=hooks(),titleBridge=bridge()
-  const Title=sourceLoader({react:titleHooks.react,'react/jsx-runtime':{jsx:(_type,props)=>props},'../../lib/ipc':{ipcEvents:titleBridge.ipcEvents,ipcServices:{window:{}}},
+  const Title=sourceLoader({$transform:(source,file)=>locateLifecycleState(transform(source,file),file),react:titleHooks.react,'react/jsx-runtime':{jsx:(_type,props)=>props},'../../lib/ipc':{ipcEvents:titleBridge.ipcEvents,ipcServices:{window:{}}},
     $require:id=>id.endsWith('.css')||id.startsWith('~icons/')||id.startsWith('@vidbee/ui/')?auto:undefined
   })('apps/desktop/src/renderer/src/components/ui/title-bar.tsx').TitleBar
   const counts=[]
@@ -69,7 +70,7 @@ export async function lifecycleObservations() {
   out.appInfo=[]
   for(const metadataMode of ['failure','success','unmounted']) {
   const infoHooks=hooks(),requests=[],errors=[],settings={...sourceLoader()('apps/desktop/src/shared/types/index.ts').defaultSettings,browserForCookies:'firefox',cookiesPath:'/fixture/cookies',proxy:'http://fixture.invalid',configPath:'/fixture/config',maxConcurrentDownloads:3,oneClickQuality:'720p',oneClickContainer:'mkv',downloadSubtitles:true,subtitleLanguages:['fr','de']},kernel={state:'preparing',ready:false,source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-runtime',error:null,progress:7,preparationStep:'copying'},version=deferred(),os=deferred()
-  const info=sourceLoader({react:infoHooks.react,$window:{electron:{process:{platform:'linux',versions:{electron:'fixture-electron',chrome:'fixture-chrome',node:'fixture-node'}}}},
+  const info=sourceLoader({$transform:(source,file)=>locateLifecycleState(transform(source,file),file),react:infoHooks.react,$window:{electron:{process:{platform:'linux',versions:{electron:'fixture-electron',chrome:'fixture-chrome',node:'fixture-node'}}}},
     jotai:{useAtomValue:atom=>atom==='settings'?settings:kernel},'@renderer/store/settings':{settingsAtom:'settings'},'@renderer/store/ytdlp-kernel':{ytdlpKernelStatusAtom:'kernel'},
     '@renderer/lib/ipc':{ipcServices:{app:{getVersion:()=>{requests.push('version');return version.promise},getOsVersion:()=>{requests.push('os');return os.promise}}}},
     '../../lib/logger':{logger:{error:(message,error)=>errors.push([message,error.message])}}
@@ -83,7 +84,7 @@ export async function lifecycleObservations() {
   out.share=[]
   for(const mode of ['closed','success','late','rejection']) {
     const hooksApi=hooks(),platform=deferred(),requests=[]
-    const Component=sourceLoader({react:hooksApi.react,$navigator:{userAgent:'Mac fixture'},
+    const Component=sourceLoader({$transform:(source,file)=>locateLifecycleState(transform(source,file),file),react:hooksApi.react,$navigator:{userAgent:'Mac fixture'},
       'react/jsx-runtime':{jsx:(_type,props)=>props},jotai:{useAtomValue:()=>null},'react-i18next':{useTranslation:()=>({t:x=>x})},
       '@renderer/lib/ipc':{ipcServices:{app:{getPlatform:()=>{requests.push('platform');return platform.promise}}}},
       $require:id=>id.startsWith('@renderer/')||id.startsWith('@vidbee/')||id==='sonner'||id.startsWith('./')?auto:undefined

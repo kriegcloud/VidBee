@@ -11,7 +11,8 @@ import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
-import { capture } from '../../apps/desktop/scripts/port/golden/capture.mjs'
+import { captureOwned as capture } from './owned-process.mjs'
+import { scratchIO, readinessAbsent } from './scratch-io.mjs'
 import { browserCaptureCdp } from '../../apps/desktop/scripts/port/golden/browser-capture-cdp.mjs'
 
 const args = process.argv.slice(2)
@@ -36,6 +37,7 @@ if (args.includes('--worker')) {
         XDG_DATA_HOME: path.join(run, 'home/.local/share'), VIDBEE_AUTOMATION_DESCRIPTOR: path.join(run, 'second-automation.json'),
         VIDBEE_MCP_CONFIG: path.join(run, 'second-mcp.json'), LANG: 'en_US.UTF-8', TZ: process.env.TZ ?? 'UTC' } })
     await fs.writeFile(path.join(run, 'second-instance.json'), JSON.stringify(result, null, 2))
+    assert(!result.timedOut && !result.error, `Capture failed: ${result.error?.message ?? (result.timedOut ? 'timeout' : result.stderr)}`)
     assert.equal(result.code, 0, result.stderr)
     secondInstance = { code: result.code, signal: result.signal,
       importLogger: result.stdout.includes('Log file location:'), readyApi: result.stdout.includes('Extension API listening on') }
@@ -282,6 +284,7 @@ const verify = async () => {
 await fs.mkdir(scratch, { recursive: true })
 const host = Object.fromEntries(await Promise.all(['net', 'user', 'mnt', 'pid', 'ipc', 'uts'].map(async kind => [kind, await namespace('self', kind)])))
 const work = await fs.mkdtemp(path.join(scratch, 'foundation-'))
+const io = scratchIO(work)
 let laneRoot=scratch
 while(!await fs.access(path.join(laneRoot,'BRIEF.md')).then(()=>true,()=>false)){const parent=path.dirname(laneRoot);assert.notEqual(parent,laneRoot,'Require scratch under lane');laneRoot=parent}
 let active
@@ -310,21 +313,21 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
   let seed = ''
   if (config === 'reuse') { seed = path.join(work, 'returning', 'userdata') }
   else if (config !== undefined) {
-    seed = path.join(work, `${name}-seed`); await fs.mkdir(seed)
-    await fs.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config).replace('<external-media>',path.join(run,'home/external-media')))
+    seed = path.join(work, `${name}-seed`); await io.mkdir(seed)
+    await io.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config).replace('<external-media>',path.join(run,'home/external-media')))
   }
   const launchSetup = path.join(work, `${name}-launch.sh`)
-  await fs.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
+  await io.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
   const launcher = launchOwned(work, ['bash', path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup], [build,path.join(laneRoot,'BRIEF.md')], { cwd: scratch })
   active = launcher
   let stderr = ''; launcher.stderr.on('data', (data) => { stderr += data })
   try {
     if(name.startsWith('invalid')) {
       let log='';const deadline=Date.now()+30000
-      while(Date.now()<deadline){try{log=await fs.readFile(path.join(run,'stdout.log'),'utf8')}catch{};if(log.includes('SyntaxError')||log.includes('Unexpected end of JSON')||log.includes('JSON'))break;if(launcher.exitCode!==null)break;await delay(100)}
+      while(Date.now()<deadline){try{log=await io.readFile(path.join(run,'stdout.log'),'utf8')}catch{};if(log.includes('SyntaxError')||log.includes('Unexpected end of JSON')||log.includes('JSON'))break;if(launcher.exitCode!==null)break;await delay(100)}
       assert.match(log,/SyntaxError|JSON/,'Missing malformed startup failure')
-      assert.equal(await fs.readFile(path.join(run,'userdata/config.json'),'utf8'),config,'Startup damaged invalid settings bytes')
-      const failedBeforeReadiness=await fs.access(path.join(run,'mcp.json')).then(()=>false,()=>true)
+      assert.equal(await io.readFile(path.join(run,'userdata/config.json'),'utf8'),config,'Startup damaged invalid settings bytes')
+      const failedBeforeReadiness=await readinessAbsent(io, path.join(run,'mcp.json'))
       assert(failedBeforeReadiness,'Malformed settings unexpectedly reached MCP readiness')
       observations[name]={failedBeforeReadiness,retainedBytes:config,configExists:true,syntaxFailure:/SyntaxError|JSON/.test(log)}
       await verify();continue
@@ -333,12 +336,12 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
     let pid
     while (Date.now() < deadline) {
       if (launcher.exitCode !== null) throw new Error(`Offline launcher exited ${launcher.exitCode}: ${stderr}`)
-      try { await fs.access(path.join(run, 'mcp.json')); pid = (await fs.readFile(path.join(run, 'namespace.pid'), 'utf8')).trim(); break }
+      try { await io.access(path.join(run, 'mcp.json')); pid = (await io.readFile(path.join(run, 'namespace.pid'), 'utf8')).trim(); break }
       catch { await delay(100) }
     }
     assert(pid, `Readiness deadline: ${stderr}`)
     const identity = randomUUID()
-    const appPid = (await fs.readFile(path.join(run, 'app.pid'), 'utf8')).trim()
+    const appPid = (await io.readFile(path.join(run, 'app.pid'), 'utf8')).trim()
     const namespaceHostPid = await descendantPid(launcher, pid)
     assert(namespaceHostPid, 'Owned namespace process missing')
     const owned = Object.fromEntries(await Promise.all(['net', 'user', 'mnt', 'pid', 'ipc', 'uts'].map(async kind => [kind, await namespace(namespaceHostPid, kind)])))
@@ -350,36 +353,37 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
       assert.notEqual(parent, lane, 'Require scratch under a lane with BRIEF.md')
       lane = parent
     }
-    await fs.writeFile(path.join(run, 'identity.json'), JSON.stringify({ identity, run: await fs.realpath(run), lane,
+    await io.writeFile(path.join(run, 'identity.json'), JSON.stringify({ identity, run, lane,
       host, owned, parentPid: process.pid, namespacePid: pid, appPid, build, asar: expectedHash,
       manifest: selected, executable: createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex') }), { mode: 0o600 })
     const output = path.join(work, `${name}.json`)
     const result = await capture('nsenter', ['-t', namespaceHostPid, '-U', '-n', '-m', '-p', '-i', '-u', '--preserve-credentials', process.execPath,
       fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
-      ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000 })
+      ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000, stop: () => stopOwned(launcher) })
+    assert(!result.timedOut && !result.error, `Capture failed: ${result.error?.message ?? (result.timedOut ? 'timeout' : result.stderr)}`)
     assert.equal(result.code, 0, result.stderr)
     await verify()
-    const raw = JSON.parse(await fs.readFile(output, 'utf8'))
+    const raw = JSON.parse(await io.readFile(output, 'utf8'))
     // Only the exact throwaway HOME/download root varies. No generic string/clock/error filtering.
     let normalized = JSON.stringify(raw).split(path.join(run, 'home')).join('<home>').split(path.join(run, 'portable')).join('<portable>')
     if (name === 'restart') normalized = normalized.split(path.join(work, 'returning/home')).join('<previous-home>')
     assert(!normalized.includes(work), 'An unclassified scratch path entered the fixture')
     observations[name] = JSON.parse(normalized)
-    const log = await fs.readFile(path.join(run, 'stdout.log'), 'utf8')
+    const log = await io.readFile(path.join(run, 'stdout.log'), 'utf8')
     const milestones = ['Log file location:', 'database initialized at', 'Fresh install locale',
       'ffmpeg initialized successfully', 'Extension API listening on', 'Automation descriptor written at',
       'Desktop MCP available at', 'Desktop launched with --background; main window will stay hidden']
     observations[name].boot = milestones.map((label) => ({ label, index: log.indexOf(label) }))
       .filter((entry) => entry.index >= 0).sort((a, b) => a.index - b.index).map((entry) => entry.label)
     assert(observations[name].boot.includes('Desktop MCP available at'), 'Missing packaged boot milestone')
-    await fs.writeFile(path.join(work, `${name}-stored.json`), await fs.readFile(path.join(run, name.startsWith('portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')))
+    await io.writeFile(path.join(work, `${name}-stored.json`), await io.readFile(path.join(run, name.startsWith('portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')))
   } finally {
     await stopOwned(launcher)
     active = undefined
   }
 }
-await fs.writeFile(path.join(work, 'build.json'), JSON.stringify({ appAsarSha256: await verify(), build, node: process.version, timezone: process.env.TZ ?? 'UTC' }))
-await fs.writeFile(path.join(work, 'actual.json'), JSON.stringify(observations, null, 2))
+await io.writeFile(path.join(work, 'build.json'), JSON.stringify({ appAsarSha256: await verify(), build, node: process.version, timezone: process.env.TZ ?? 'UTC' }))
+await io.writeFile(path.join(work, 'actual.json'), JSON.stringify(observations, null, 2))
 if (args.includes('--record')) await fs.writeFile(expected, JSON.stringify(observations, null, 2) + '\n')
 else {const oracle=JSON.parse(await fs.readFile(expected,'utf8'));assert.deepEqual(observations,option('--only-profile')?{[option('--only-profile')]:oracle[option('--only-profile')]}:oracle)}
 process.stdout.write(`Packaged foundation: ${Object.keys(observations).length} profiles passed; evidence ${work}\n`)
