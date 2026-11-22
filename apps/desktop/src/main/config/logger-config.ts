@@ -1,6 +1,11 @@
 import { initVidbeeLogger } from '@vidbee/logger/legacy'
-import log from 'electron-log/main'
+import { app, ipcMain } from 'electron'
+import { DesktopLogChannel } from '../../shared/logging/DesktopLog.model'
 import { formatDesktopConsoleLog } from '../lib/desktop-console-format'
+import { registerTelemetryDisposal } from '../lib/telemetry-disposal'
+import { createDesktopLogging } from '../logging/DesktopLogging.entry'
+import { electronLog as log, receiveDesktopLog } from '../logging/ElectronLog.driver'
+import { OtlpConfiguration, otlpEnabled } from '../logging/Otlp.model'
 
 /**
  * Configure electron-log
@@ -37,4 +42,21 @@ export function configureLogger() {
   })
 
   log.info('Log file location:', log.transports.file.getFile().path)
+
+  if (ipcMain !== undefined) {
+    ipcMain.on(DesktopLogChannel, (_event, input: unknown) => receiveDesktopLog(input))
+  }
+  const enabled = otlpEnabled(process.env.VIDBEE_OTLP_ENABLED)
+  const runtime = createDesktopLogging(
+    OtlpConfiguration.make({
+      enabled,
+      endpoint: enabled
+        ? (process.env.VIDBEE_OTLP_ENDPOINT ?? 'http://127.0.0.1:4318/v1/traces')
+        : '',
+      version: enabled ? app.getVersion() : ''
+    })
+  )
+  if (enabled) {
+    registerTelemetryDisposal(runtime.dispose)
+  }
 }

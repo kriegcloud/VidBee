@@ -1,9 +1,11 @@
 import { describe, expect, it } from "@effect/vitest";
+import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as References from "effect/References";
 import * as S from "effect/Schema";
 import { vi } from "vitest";
+import { logArguments } from "../src/LogArguments.js";
 import { clientLoggerLayer, clientSinkLayer, nodeLoggerLayer, nodeSinkLayer } from "../src/Logger.layer.js";
 import { CaughtErrorEvent } from "../src/Logger.model.js";
 import { logger } from "../src/legacy/client.js";
@@ -157,4 +159,18 @@ it("dual audit: caught-error data-last preserves the legacy sink payload", () =>
   const error = new Error("dual-audit");
   logCaughtError(error)("dual-event");
   expect(fake.error).toHaveBeenLastCalledWith({ event: "dual-event", error: "dual-audit", stack: error.stack });
+});
+
+it("preserves vectors, Error identity and full Causes in both argument-helper forms", () => {
+  const error = new Error("original argument");
+  const args = ["first", error, "tail"];
+  const cause = Cause.combine(Cause.fail("first cause"), Cause.die("second cause"));
+  const direct = logArguments(args, cause);
+  const curried = logArguments(cause)(args);
+  const expected = [...args, { cause: Cause.pretty(cause) }];
+  expect(direct).toEqual(expected);
+  expect(curried).toEqual(expected);
+  expect(direct[1]).toBe(error);
+  expect(curried[1]).toBe(error);
+  expect(logArguments(args, Cause.empty)).toBe(args);
 });

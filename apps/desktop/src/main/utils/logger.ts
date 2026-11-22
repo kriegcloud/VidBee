@@ -3,7 +3,7 @@
  * Directly use electron-log/main
  */
 
-import log from 'electron-log/main'
+import { electronLog as log } from '../logging/ElectronLog.driver'
 
 // Export electron-log instance
 export default log

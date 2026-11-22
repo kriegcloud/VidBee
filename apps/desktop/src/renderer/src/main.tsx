@@ -8,7 +8,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import { ShareCapturePage } from './pages/ShareCapture'
 import './i18n'
+import { DesktopLogChannel } from '../../shared/logging/DesktopLog.model'
 import { logger } from './lib/logger'
+import { createRendererLogger } from './logging/RendererLogger.entry'
+
+/** Effect logging runner for document-owned work. */
+export const rendererLogging = createRendererLogger((entry) =>
+  window.electron.ipcRenderer.send(DesktopLogChannel, entry)
+)
 
 // Setup global error handlers
 setupGlobalErrorHandlers()

@@ -117,7 +117,15 @@
     "@vidbee/downloader-core-legacy": "workspace:^",
     "@vidbee/browser-capture-legacy": "workspace:^",
     "@vidbee/subscriptions-core-legacy": "workspace:^",
-    "@vidbee/transcription-legacy": "workspace:^"
+    "@vidbee/transcription-legacy": "workspace:^",
+    "effect": "catalog:",
+    "@effect/opentelemetry": "catalog:",
+    "@opentelemetry/exporter-trace-otlp-proto": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
+    "@vidbee/schema": "workspace:^",
+    "@opentelemetry/sdk-trace-node": "catalog:",
+    "@vidbee/identity": "workspace:^",
+    "@opentelemetry/api-logs": "catalog:"
   },
   "optionalDependencies": {
     "sherpa-onnx-darwin-arm64": "catalog:",
@@ -146,6 +154,8 @@
     "react-dom": "catalog:",
     "typescript": "catalog:",
     "unplugin-icons": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "@effect/platform-bun": "catalog:",
+    "protobufjs": "catalog:"
   }
 }

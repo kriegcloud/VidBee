@@ -4,6 +4,13 @@ import { logger } from '@vidbee/logger/legacy/client'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createIpcProxy } from 'electron-ipc-decorator/client'
 import type { IpcServices } from '../main/ipc'
+import { DesktopLogChannel } from '../shared/logging/DesktopLog.model'
+import { createPreloadLogger } from './logging/PreloadLogger.entry'
+
+/** Effect logging runner for preload-owned work. */
+export const preloadLogging = createPreloadLogger((entry) =>
+  ipcRenderer.send(DesktopLogChannel, entry)
+)
 
 // Create type-safe IPC proxy using electron-ipc-decorator
 const ipcServices = createIpcProxy<IpcServices>(ipcRenderer)

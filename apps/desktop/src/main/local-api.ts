@@ -5,7 +5,6 @@ import type { Task, TaskQueueEvent } from '@vidbee/task-queue-legacy'
 
 import { projectTaskToLegacy } from '@vidbee/task-queue-legacy'
 import { app } from 'electron'
-import log from 'electron-log/main'
 import {
   getAutomationDescriptorPath,
   initAutomationDescriptor,
@@ -44,6 +43,7 @@ import {
   startDesktopTaskQueue,
   stopDesktopTaskQueue
 } from './lib/task-queue-host'
+import { electronLog as log } from './logging/ElectronLog.driver'
 import { handleMcpRequest, startDesktopMcp, stopDesktopMcp } from './mcp/http'
 
 const PORT_RANGE_START = LOCAL_API_PORT_START

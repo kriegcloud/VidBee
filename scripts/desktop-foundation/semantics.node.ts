@@ -186,7 +186,7 @@ test('boot imports and logger setup precede second-instance rejection and readin
     exit: (code) => { calls.push(`exit:${code}`); throw stop }, whenReady: () => { calls.push('ready'); return new Promise(() => {}) } }
   const load = sourceLoader({ $process: { argv: ['fixture', '--background'], env: {}, platform: 'linux', on: noop },
     electron: { app, BrowserWindow: {}, ipcMain: { on: noop }, protocol: { registerSchemesAsPrivileged: noop } },
-    'electron-log/main': { initialize: () => calls.push('logger'), info: noop, error: noop },
+    './logging/ElectronLog.driver': { electronLog: { initialize: () => calls.push('logger'), info: noop, error: noop } },
     './lib/auth-client': { setupDesktopAuth: noop },
     './lib/ipc-coalescer': { createKeyedCoalescer: () => ({}) },
     './lib/subscriptions-host': { getDesktopSubscriptions: () => ({ on: noop }) },

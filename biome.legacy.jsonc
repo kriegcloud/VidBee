@@ -110,6 +110,12 @@
       "!packages/ui/src/hooks/use-touch-primary.ts",
       "!packages/ui/src/components/ui/scroll-area.tsx",
       "!dist",
+      "!**/src/main/logging/**",
+      "!**/src/shared/logging/**",
+      "!**/src/preload/logging/**",
+      "!**/src/renderer/src/logging/**",
+      "!**/desktop-logging.spec.ts",
+      "!**/desktop-otlp.spec.ts",
       "!out",
       "!build"
     ]

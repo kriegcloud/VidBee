@@ -31,7 +31,7 @@ export async function bootObservations() {
       $process:{argv:['fixture',...(mode==='background'?['--background']:mode==='from-cli'?['--from-cli']:[])],env:{},platform:mode==='windows-login'?'win32':mode==='macos'?'darwin':'linux',on:record('process:on')},
       $setTimeout:(fn,ms)=>{timers.push({fn,ms});return{unref(){}}},
       electron:{app,BrowserWindow:Window,ipcMain,protocol:{registerSchemesAsPrivileged:record('schemes'),registerFileProtocol:record('fileProtocol')}},
-      'electron-log/main':log,'@electron-toolkit/utils':{electronApp:{setAppUserModelId:record('modelId')},optimizer:{}},
+      'electron-log/main':log,'./logging/ElectronLog.driver':{electronLog:log},'@electron-toolkit/utils':{electronApp:{setAppUserModelId:record('modelId')},optimizer:{}},
       '../../build/icon.png?asset':'fixture-icon','./config/logger-config':{configureLogger:record('configure')},
       './settings':{settingsManager:{applyFreshInstallLocale:record('freshLocale'),get:k=>k==='closeToTray'?closeToTray:false}},
       './ipc':{services:{app:{},settings:{},window:{}}},

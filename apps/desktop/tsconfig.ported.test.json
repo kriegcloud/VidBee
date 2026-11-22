@@ -1,6 +1,23 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
+  "files": [
+    "src/main/logging/DesktopConsoleFormat.ts",
+    "src/main/logging/DesktopLogger.layer.ts",
+    "src/main/logging/DesktopLogging.entry.ts",
+    "src/main/logging/ElectronLog.driver.ts",
+    "src/main/logging/Otlp.layer.ts",
+    "src/main/logging/Otlp.model.ts",
+    "src/preload/logging/PreloadLogger.entry.ts",
+    "src/renderer/src/logging/RendererLogger.entry.ts",
+    "src/shared/logging/DesktopLog.model.ts",
+    "src/shared/logging/DesktopLog.service.ts",
+    "src/shared/logging/DesktopLogger.layer.ts",
+    "src/shared/logging/ForwardLogger.layer.ts",
+    "test/desktop-logging.spec.ts",
+    "test/desktop-otlp.spec.ts",
+    "src/shared/logging/DesktopLogWire.model.ts",
+    "src/shared/logging/DesktopLogWire.driver.ts"
+  ],
   "include": [],
   "compilerOptions": {
     "module": "esnext",

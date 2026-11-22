@@ -3186,6 +3186,108 @@
       "partition": "legacy",
       "capability": "9.1-downloads",
       "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopConsoleFormat.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogging.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/test/desktop-logging.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/desktop-otlp.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/telemetry-disposal.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
     }
   ],
   "renames": []
