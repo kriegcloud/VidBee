@@ -12,10 +12,12 @@ import type { SynchronousCall } from "../lib/SynchronousHost.service.js";
 /** Warmed compatibility runner; reservations survive uninterruptible accidental suspension. */
 export const makeSynchronousHost = ({
   runtime,
+  native,
   capacity = 64,
   reserve,
   release,
 }: {
+  readonly native?: () => (() => void) | undefined;
   readonly runtime: ManagedRuntime.ManagedRuntime<never, never>;
   readonly capacity?: number;
   readonly reserve: (bytes: number) => boolean;
@@ -27,7 +29,16 @@ export const makeSynchronousHost = ({
   let failures = HashMap.empty<number, ReadonlyArray<() => void>>();
   const reject = (reason: string): never => Result.getOrThrowWith(Result.fail(failure(reason)), (error) => error);
   const run = <A, E>(make: (call: SynchronousCall) => Effect.Effect<A, E>): A => {
-    if (count >= capacity || serial >= Number.MAX_SAFE_INTEGER || !reserve(4096)) return reject("CleanupCapacity");
+    const releaseNative = native?.();
+    if (
+      (native !== undefined && releaseNative === undefined) ||
+      count >= capacity ||
+      serial >= Number.MAX_SAFE_INTEGER ||
+      !reserve(4096)
+    ) {
+      releaseNative?.();
+      return reject("CleanupCapacity");
+    }
     count++;
     const id = ++serial;
     let active = true;
@@ -53,6 +64,7 @@ export const makeSynchronousHost = ({
         count--;
         retained = HashMap.remove(retained, id);
         release(4096);
+        releaseNative?.();
       }
     };
     const fiber = runtime.runFork(

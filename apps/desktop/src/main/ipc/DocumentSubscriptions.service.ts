@@ -10,6 +10,8 @@ import * as Result from "effect/Result";
 import * as Stream from "effect/Stream";
 import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 import { sameToken } from "../../renderer/src/transport/DocumentDelivery.model.js";
+import { makeRetentionLedger, measureValue } from "../../renderer/src/transport/ElectronRpc.model.js";
+import { snapshotPublication } from "./Publication.service.js";
 import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 import type { Cut, Token } from "../../renderer/src/transport/DocumentDelivery.model.js";
 
@@ -35,12 +37,14 @@ export interface Registration<A> extends Lifecycle {
     DeliveryError
   >;
   releases: Array<() => void>;
+  readonly retention?: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
   sequence: number;
   readonly token: Token;
 }
 /** A separate owner is constructed for each authenticated logical client. */
 export const makeSubscriptions = ({
   identity,
+  resources,
   onTerminal,
   capacity = 256,
   byteLimit = 128 * 1024 * 1024,
@@ -51,10 +55,13 @@ export const makeSubscriptions = ({
     readonly generation: number;
     readonly epoch: string;
   };
+  readonly resources?: import("../../renderer/src/transport/ElectronRpc.model.js").ResourceBudget;
   readonly onTerminal: (token: Token, reason: DeliveryError) => void;
   readonly capacity?: number;
   readonly byteLimit?: number;
 }) => {
+  const local = makeRetentionLedger({ windowBytes: byteLimit });
+  const account = resources?.account ?? local.forWindow(identity.document);
   let serial = 0;
   let live = true;
   let bytes = 0;
@@ -84,6 +91,8 @@ export const makeSubscriptions = ({
     }
     bytes -= sub.bytes;
     sub.bytes = 0;
+    if (failedReleases.length === 0) sub.retention?.release();
+    else sub.retention?.resize(Math.max(256, failedReleases.length * 256));
     Queue.failCauseUnsafe(sub.queue, Cause.fail(failure(reason)));
     const current = HashMap.get(slots, sub.token.family);
     if (O.isSome(current) && sameToken({ left: current.value.token, right: sub.token }))
@@ -99,6 +108,8 @@ export const makeSubscriptions = ({
     const old = HashMap.get(slots, family);
     if (O.isSome(old)) yield* old.value.close;
     if (HashMap.size(slots) >= 1024) return yield* failure("RegistrationCapacity");
+    const retention = resources === undefined ? account.reserve(4096) : resources.claim("registration", 4096);
+    if (retention === undefined) return yield* failure("RegistrationCapacity");
     const queue = yield* Queue.make<
       Registration<A>["queue"] extends Queue.Queue<infer V, DeliveryError> ? V : never,
       DeliveryError
@@ -106,6 +117,7 @@ export const makeSubscriptions = ({
     const token: Token = { ...identity, family, serial: ++serial };
     const sub: Registration<A> = {
       token,
+      ...(retention === undefined ? {} : { retention }),
       epoch: identity.epoch,
       queue,
       sequence: 0,
@@ -130,7 +142,26 @@ export const makeSubscriptions = ({
           (value) => {
             if (!sub.active || overflow) return;
             const captured = Result.try({
-              try: () => snapshot(value),
+              try: () => {
+                const estimate = measureValue(value);
+                const staging = account.reserve(
+                  estimate === undefined ? 64 * 1024 * 1024 : Math.min(64 * 1024 * 1024, estimate * 4 + 4096)
+                );
+                if (staging === undefined)
+                  return Result.getOrThrowWith(Result.fail(failure("ObservationCapacity")), (error) => error);
+                const projected = Result.try({
+                  try: () => snapshot(value),
+                  catch: () => failure("ObservationEncodingFailed"),
+                });
+                if (Result.isFailure(projected)) {
+                  staging.release();
+                  return Result.getOrThrowWith(Result.fail(projected.failure), (error) => error);
+                }
+                return Result.getOrThrowWith(
+                  snapshotPublication({ value: projected.success.value, account, staging }),
+                  (error) => error
+                );
+              },
               catch: () => failure("ObservationEncodingFailed"),
             });
             if (Result.isFailure(captured)) {
@@ -144,8 +175,10 @@ export const makeSubscriptions = ({
               retained.bytes < 0 ||
               sub.sequence >= Number.MAX_SAFE_INTEGER ||
               sub.bytes + retained.bytes > byteLimit ||
-              bytes + retained.bytes > byteLimit
+              bytes + retained.bytes > byteLimit ||
+              (sub.retention !== undefined && !sub.retention.resize(4096 + sub.bytes + retained.bytes))
             ) {
+              retained.release();
               overflow = true;
               Queue.offerUnsafe(terminals, "StreamOverflow");
               return;
@@ -160,10 +193,12 @@ export const makeSubscriptions = ({
                 value: retained.value,
               })
             ) {
+              retained.release();
               overflow = true;
               Queue.offerUnsafe(terminals, "StreamOverflow");
               return;
             }
+            retained.release();
             sub.sequence = sequence;
             bytes += retained.bytes;
             sub.bytes += retained.bytes;

@@ -1,5 +1,4 @@
 import * as Effect from "effect/Effect";
-import * as Queue from "effect/Queue";
 import { RpcClientDefect, RpcClientError } from "effect/rpc/RpcClientError";
 import * as S from "effect/Schema";
 import { Connect } from "./ElectronRpc.model.js";
@@ -8,11 +7,11 @@ import type { DesktopRpcConnection } from "./ElectronRpcClient.layer.js";
 
 /** Listener acquisition precedes connect; its lifetime is the document scope. */
 export const makeBridgeConnection = Effect.fn("DesktopRpcConnection.make")(function* (bridge: DesktopRpcBridge) {
-  const frames = yield* Queue.bounded<unknown>(1024);
+  let receiver: ((frame: unknown) => void) | undefined;
   yield* Effect.acquireRelease(
     Effect.sync(() =>
       bridge.subscribe((frame) => {
-        Queue.offerUnsafe(frames, frame);
+        receiver?.(frame);
       })
     ),
     (unsubscribe) => Effect.sync(unsubscribe)
@@ -30,12 +29,15 @@ export const makeBridgeConnection = Effect.fn("DesktopRpcConnection.make")(funct
   const result: DesktopRpcConnection["Service"] = {
     session: connection.session,
     listen: (receive) =>
-      Effect.forkScoped(
-        Queue.take(frames).pipe(
-          Effect.flatMap((frame) => Effect.sync(() => receive(frame))),
-          Effect.forever
-        )
-      ).pipe(Effect.asVoid),
+      Effect.acquireRelease(
+        Effect.sync(() => {
+          receiver = receive;
+        }),
+        () =>
+          Effect.sync(() => {
+            receiver = undefined;
+          })
+      ),
     send: (frame) =>
       Effect.try({
         try: () => bridge.send(frame),

@@ -13,7 +13,21 @@
     "src/renderer/src/transport/ElectronRpcClient.layer.ts",
     "src/renderer/src/transport/RpcCensus.model.ts",
     "src/renderer/src/transport/RpcField.model.ts",
-    "src/renderer/src/transport/RpcObservation.model.ts"
+    "src/renderer/src/transport/RpcObservation.model.ts",
+    "src/renderer/src/transport/census/Ai.rpc.ts",
+    "src/renderer/src/transport/census/AiNative.model.ts",
+    "src/renderer/src/transport/census/Cloud.model.ts",
+    "src/renderer/src/transport/census/Downloads.rpc.ts",
+    "src/renderer/src/transport/census/Integration.model.ts",
+    "src/renderer/src/transport/census/Integration.rpc.ts",
+    "src/renderer/src/transport/census/RemoteCaptions.model.ts",
+    "src/renderer/src/transport/census/StoredThread.model.ts",
+    "src/renderer/src/transport/census/Subscription.errors.ts",
+    "src/renderer/src/transport/census/Subscription.model.ts",
+    "src/renderer/src/transport/census/Subscription.rpc.ts",
+    "src/renderer/src/transport/census/Transcript.errors.ts",
+    "src/renderer/src/transport/census/Transcript.model.ts",
+    "src/renderer/src/transport/census/Transcript.rpc.ts"
   ],
   "include": [],
   "compilerOptions": {

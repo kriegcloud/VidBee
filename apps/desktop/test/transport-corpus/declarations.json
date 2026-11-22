@@ -1,0 +1,1479 @@
+{
+  "designs": [
+    {
+      "file": "docs/effect-port/design/desktop-downloads.md",
+      "revision": "ce152fb277262616fb0ebfcff563a3ee4d9b4a65",
+      "sha256": "674fa6f7d149028ad3ee765013e179f097b3cb2f7f69d5686bf35b0aa7ef54b1"
+    },
+    {
+      "file": "docs/effect-port/design/desktop-subscriptions.md",
+      "revision": "ce152fb277262616fb0ebfcff563a3ee4d9b4a65",
+      "sha256": "d8a4ab6359ec80a2f126bb18ddffc8a7219256d55d3a144cfc0ae3b17cd2e35c"
+    },
+    {
+      "file": "docs/effect-port/design/desktop-transcription.md",
+      "revision": "ce152fb277262616fb0ebfcff563a3ee4d9b4a65",
+      "sha256": "b2ef8102029563879b895421a61d993579c266a76a841a1cf0a4b66442bb5362"
+    },
+    {
+      "file": "docs/effect-port/design/desktop-ai-chat.md",
+      "revision": "ce152fb277262616fb0ebfcff563a3ee4d9b4a65",
+      "sha256": "be22c82ae63eac29db4a60b62b1861cd5438cf07650a23df5b17ab03418adf46"
+    },
+    {
+      "file": "docs/effect-port/design/desktop-integrations.md",
+      "revision": "ce152fb277262616fb0ebfcff563a3ee4d9b4a65",
+      "sha256": "1c37f726053143cede2144d6c7ccf4e5386720140171aeb0a9324f797486c98b"
+    }
+  ],
+  "declarations": [
+    {
+      "capability": "integrations",
+      "tag": "Account.CancelAiReservation",
+      "stream": false,
+      "payload": "adaa8a8237925416a066b88dc8c1101d483d0e3fecd13096bf9b18a126da5e6c",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetAiCreditHistory",
+      "stream": false,
+      "payload": "3778cb2da326077f58a4c71383298194da892ff6536660d1151c9eb59be00269",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetAiCredits",
+      "stream": false,
+      "payload": "4911968630233513acde1fdbeea434e7b2bc844ed8a1d553f43281ecfbb70780",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetAiCreditSnapshot",
+      "stream": false,
+      "payload": "4911968630233513acde1fdbeea434e7b2bc844ed8a1d553f43281ecfbb70780",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetAiReservations",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetCacheStats",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetGiftedCreditRecords",
+      "stream": false,
+      "payload": "3778cb2da326077f58a4c71383298194da892ff6536660d1151c9eb59be00269",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetInvitationOverview",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetInvitedUsers",
+      "stream": false,
+      "payload": "3778cb2da326077f58a4c71383298194da892ff6536660d1151c9eb59be00269",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.GetOverview",
+      "stream": false,
+      "payload": "4911968630233513acde1fdbeea434e7b2bc844ed8a1d553f43281ecfbb70780",
+      "success": "940f508117a89b20c0946fd0eae3a7f462d59366478a54f6d941a855c5e3ed8b",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.WatchAuthContinue",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Account.WatchCreditsUpdated",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.CreateAgentThread",
+      "stream": false,
+      "payload": "5e12b17f09b82a1f280e99152b7e9b77089a569dcdfd5dc70b3c54e94d338cf9",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.CustomizeSkill",
+      "stream": false,
+      "payload": "bda3abe913b0105b94f1423312fbbef0e465e19483d51f35439b91c332e3fbdd",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.DecideAgentTool",
+      "stream": false,
+      "payload": "62d6ae87c95e137af304ec9123769fbe51e62ae088fd97c9514414b4e1592d09",
+      "success": "c8c12e2800bf19209f53210bea359c1e5ec330c720858efaac863f736560bc71",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.DeleteAgentThread",
+      "stream": false,
+      "payload": "e5c540b6f7116dcf5725cb07c2b13340673511ab438b54f26bb24f0f2dcdc92a",
+      "success": "75fdb0ffb0d4a2331e17a7d0e1bfc8cb3c61365274ee2164a354808702a35995",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.DeletePrompt",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.DeleteProvider",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.DislikePrompt",
+      "stream": false,
+      "payload": "622271868a347dbba87e20aa36fbca668bfdbd26e9b6ea8ee408630d23c45017",
+      "success": "c8c12e2800bf19209f53210bea359c1e5ec330c720858efaac863f736560bc71",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ExportSkillDocument",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "15021d1a30878eca4a0b44f660c1eaec73e9967e36bb691c4c13c7f73295cc61",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetAgentComposerOptions",
+      "stream": false,
+      "payload": "02ece46152b3e04b054c68a4fa681a5a974b0c4c7d63f8c15eb9056506601365",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetAgentEvents",
+      "stream": false,
+      "payload": "0df42bca732d41f82037df4b33fc6c7ce05621a80671acd3824a3b3494b488af",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetAgentThinkingOptions",
+      "stream": false,
+      "payload": "02ece46152b3e04b054c68a4fa681a5a974b0c4c7d63f8c15eb9056506601365",
+      "success": "a7a32f44a84b1e5b66466945e234611f067c1e9dc9e447a9cfecb783074a9a95",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetAgentThread",
+      "stream": false,
+      "payload": "e66ab3fad66f793f03b04a6ca97e2b26aa851fcd5349652192054557ffd0a6ef",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetAgentUiTasks",
+      "stream": false,
+      "payload": "0230c10c64d553ad9d4696349138758e24bee31dcf1f3236dacac8f7e390d991",
+      "success": "75fdb0ffb0d4a2331e17a7d0e1bfc8cb3c61365274ee2164a354808702a35995",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetCloudModels",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "8cbfd33f5eb9445087b698e62237ef82f01253d73a5b9c54e2d34f408b0a1789",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetPromptRun",
+      "stream": false,
+      "payload": "7622f3fb047eee4492150be622e832736db0ce126e6d816f746f7790503b2d92",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.GetSnapshot",
+      "stream": false,
+      "payload": "02ece46152b3e04b054c68a4fa681a5a974b0c4c7d63f8c15eb9056506601365",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ImportGitHubSkill",
+      "stream": false,
+      "payload": "2b028692c05f56f82a26dc99fa8f42c6b30003ed60ee7567d18ab467594f244b",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ImportSkillDocument",
+      "stream": false,
+      "payload": "b6fd5ca6f0902eb48514676f198b88244d57010e7c551585b5f729b952579ab9",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ImportSkillUpload",
+      "stream": false,
+      "payload": "3badb884c881aca60598d2db7119542d0d8015bded2117411b03ab88323073eb",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.InspectGitHubSkills",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "d63893a56d6ff69602b5802a51c99e3e587961ce9b911a0438f2dff65a6a6c62",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ListAgentHistory",
+      "stream": false,
+      "payload": "bb41a2cc0929051a15d697449f40a0289cfbe6a9ed71f70ac4e31f821ed2397a",
+      "success": "75fdb0ffb0d4a2331e17a7d0e1bfc8cb3c61365274ee2164a354808702a35995",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ListAgentThreads",
+      "stream": false,
+      "payload": "b4c939cba86dbd174c3f4fb5fdfef38947943609dada2fbc3baf717b91b97a59",
+      "success": "75fdb0ffb0d4a2331e17a7d0e1bfc8cb3c61365274ee2164a354808702a35995",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ListCatalogModels",
+      "stream": false,
+      "payload": "3950fc768f939b41225c887e4ef657b5ccd6febd18704f3c29e1127b69636306",
+      "success": "2b2ecdd49c93dd7b0a683336a9439c43dc27f19265a9fbef2509a067d49c4f6a",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ListPresets",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "b07fc97a716447618a11362c7d42a7fcae23ef2d6c1442ec95f6042657913402",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.ListRemoteModels",
+      "stream": false,
+      "payload": "6c96a3a3e952b4024dd544aede78132308b85e62de3581864f4380a3a6790740",
+      "success": "2b2ecdd49c93dd7b0a683336a9439c43dc27f19265a9fbef2509a067d49c4f6a",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.LookupCatalogModel",
+      "stream": false,
+      "payload": "202dbb36dbe939ea466115b8168dcf6f117fccc92d7983adf16b29d14b4a778c",
+      "success": "a9cf341e5d1433b5c312beb0169110bcd8e7382c2181f9de5d4e32e2055250bf",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.OpenSkillDirectory",
+      "stream": false,
+      "payload": "64fc2b4df5cc2bd652f6f8efc42c0659c16ac697b840f3d19d12128df2bef268",
+      "success": "c8c12e2800bf19209f53210bea359c1e5ec330c720858efaac863f736560bc71",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.RemoveAgentImage",
+      "stream": false,
+      "payload": "eb06bd10a7deb0a3039ad58238225856fc15ff8441f2b010f2ef8d48ba40d351",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.RenameAgentThread",
+      "stream": false,
+      "payload": "09365d580e9b37942e4eb31aba1172508a99d643230d9e4bcc16ebaecbfa1d88",
+      "success": "75fdb0ffb0d4a2331e17a7d0e1bfc8cb3c61365274ee2164a354808702a35995",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.RestoreDefaultPrompts",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SaveAgentArtifact",
+      "stream": false,
+      "payload": "2fad181c5ee60ced53e8a08a350b627a79b58552820ec6979ab9f8db914a08b2",
+      "success": "17fca24db83882fc1549d870a855a301719e2a5df6a8dc5c5d4e6489bffd1bf5",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SelectAgentBranch",
+      "stream": false,
+      "payload": "a60d00c8b05855f631eb05e3305a3935d33f3ff773cfabe91592b0c031f2cd53",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SelectAgentComposerModel",
+      "stream": false,
+      "payload": "da05bc2043b076f0aa19ff6cb887ca90e355105a6f0640dcbe88d645f8f85a68",
+      "success": "c8c12e2800bf19209f53210bea359c1e5ec330c720858efaac863f736560bc71",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SelectAgentImages",
+      "stream": false,
+      "payload": "adf508c2e1fdfa85ac3086dad605f19b724ec879f08d0b93f86c371ed60d186c",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SendAgentMessage",
+      "stream": false,
+      "payload": "a5d6352a8f78fd920573dccef061ffdbd4bd6073ecd27ba2794fe5b0657d3dc0",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SetActiveProvider",
+      "stream": false,
+      "payload": "baa62a14aad01b816584480f86616b74e5477f14de432fc6c04287ad5f541778",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SetAgentThinkingLevel",
+      "stream": false,
+      "payload": "d08c7b0bec77de6dde6459273d3deaa2186f053d06b728dc8f3cf7cc7bd398f0",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SetCloudModel",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SetSkillAutoRun",
+      "stream": false,
+      "payload": "c3037ed990171ec14c8341f91f401876828086dd32dad0d72dc297c1b2a4f72a",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.SetSkillTranscriptVisibility",
+      "stream": false,
+      "payload": "913fe863eb28ca1768bccf2bbb4b15d176cd5116dc1d241e0b1c092d013e4216",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.StartPrompt",
+      "stream": false,
+      "payload": "8207311f4361ee8737b7c761854739bb50c90b94c00f692844d99b507f1f07f6",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.StopAgentRun",
+      "stream": false,
+      "payload": "e5c540b6f7116dcf5725cb07c2b13340673511ab438b54f26bb24f0f2dcdc92a",
+      "success": "f730e60195c971ed130f82c3dd3c56de1546f53c51b671479f50320309c8128d",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.StopPrompt",
+      "stream": false,
+      "payload": "714f0a5cfd5eecd3bcf4a2789cfeb8329eeb949c83a9987c5f79d69305063de7",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.TakeAgentNotificationTarget",
+      "stream": false,
+      "payload": "ac18ed5da3e91ec8dbbd1954ef3c5b4c5e833ffd3d887a7e0a57a4b299be2ecf",
+      "success": "9afba99ee5c4ac677d77bc50b5db0cb931423546bc0a1f0da7406b126fcbf02a",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.TestProvider",
+      "stream": false,
+      "payload": "bdff068f0f20c376ce668c43d5ba94072dbfe70c2b2a1dfdfe46e2eef0a714b3",
+      "success": "43380a1091e55ee6f2218fe03fbc414ccc4679f21569457806c476a26a108a1c",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.UpsertPrompt",
+      "stream": false,
+      "payload": "5aed09abb387dc07be352b575c7796b4074fe002c5c908ffdaeee990a84acc6e",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.UpsertProvider",
+      "stream": false,
+      "payload": "bdff068f0f20c376ce668c43d5ba94072dbfe70c2b2a1dfdfe46e2eef0a714b3",
+      "success": "45f35d5d5cc7d4baa7d3a31e7ef45e555e8efbea0c8a131d94c44eddff8d0114",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.WatchAgentEvents",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.WatchNotificationClicks",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.WatchPromptRuns",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "ai-chat",
+      "tag": "Ai.WatchSettings",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.GetBrowserProfilePath",
+      "stream": false,
+      "payload": "cdb207ba55b80205864e7bd7dfdad8683af16e79dd811daec6aa0e25b60c9c8e",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.GetExtensionConnection",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.InspectCookieHealth",
+      "stream": false,
+      "payload": "0d5ff391245feb39f912e4fe6b20873ec763f28e884f4b9393712a988152a725",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.ListInstalledBrowsers",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.RemoveExtensionSource",
+      "stream": false,
+      "payload": "ae22d9721e436a4d9e57787ad01fbf3b1be3085ba31a94bc66afae9482c3fbc4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.SetExtensionSourceOrder",
+      "stream": false,
+      "payload": "27d9beea9e3737790a7f743a0316ab8f08131be7088f3cf4bea5576762897c6a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "BrowserCookies.ValidateBrowserProfilePath",
+      "stream": false,
+      "payload": "816780b0fd4b94ae63defd8190c981bad4e17035c318a479b9dce9f5f6d4669d",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.CancelAllDownloads",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.CancelDownload",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.CancelInstagramProfileMapping",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.DownloadFanslyProfile",
+      "stream": false,
+      "payload": "5d69d52aef1719b7de358cc36ebbb73283dfd4186748d0922d69265c8f7866c1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.DownloadOnlyFansProfile",
+      "stream": false,
+      "payload": "5d69d52aef1719b7de358cc36ebbb73283dfd4186748d0922d69265c8f7866c1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.DownloadSocialMedia",
+      "stream": false,
+      "payload": "b20df7620e793ae1db333c6c428a63dc5efaddec9f4785e378873c08c2ace669",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.DownloadSocialProfileItems",
+      "stream": false,
+      "payload": "d364deeb5e5415134339cd8ec2d5440ded80759716b177f303118bec37960fec",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.FanslyProfileCommand",
+      "stream": false,
+      "payload": "5d69d52aef1719b7de358cc36ebbb73283dfd4186748d0922d69265c8f7866c1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetActiveDownloads",
+      "stream": false,
+      "payload": "03cd566cceb0ae5391407e0fd99054b487e298f279afa20da9222adf50d52714",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetPlaylistInfo",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetQueueStatus",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetSocialProfile",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetVideoInfo",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.GetVideoInfoWithCommand",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.InspectInstagramProfile",
+      "stream": false,
+      "payload": "18ed4cd3d82049e5aed7bc492a0314d2674bc0cb03d6d78b40165a2f9e3d2d66",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.InspectSocialMedia",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ListFanslyProfiles",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ListInstagramProfiles",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ListOnlyFansProfiles",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ListSocialProfiles",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.MapSocialProfile",
+      "stream": false,
+      "payload": "edec17e99bd6174cc0b881c16232a9439dc68723487214a10b7bd4ee6bbcaecf",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.OnlyFansProfileCommand",
+      "stream": false,
+      "payload": "5d69d52aef1719b7de358cc36ebbb73283dfd4186748d0922d69265c8f7866c1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.OpenSocialProfileLogin",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.PauseDownload",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ResolveUrl",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.ResumeDownload",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.RetryDownload",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.StartDownload",
+      "stream": false,
+      "payload": "2629970edc8081ff6c9b13d8ed11a1bb914ad806df71a624033dbfac0a7fc8db",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.StartInstagramProfileDownload",
+      "stream": false,
+      "payload": "5d69d52aef1719b7de358cc36ebbb73283dfd4186748d0922d69265c8f7866c1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.StartPlaylistDownload",
+      "stream": false,
+      "payload": "93c477b41be46b234922a2298d0ae8629355a5efda46f5b9b5d8ff2ef21fa263",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.StopSocialProfile",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.UpdateDownloadInfo",
+      "stream": false,
+      "payload": "ab6d01cb72e36ad0fd6d8b728d17a564c28a9ddaaadb6e7ecb458bde53d21aa7",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.Watch",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Downloads.WatchDeeplink",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.CopyFileToClipboard",
+      "stream": false,
+      "payload": "73504260c1148fc792f1e5bb7f0598dbced89c267e2e0ba5e0f542434de25b3a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.DeleteFile",
+      "stream": false,
+      "payload": "3908eac97de8721632268e080341f6d361aede4ecdda007ade71d068250efb20",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.FileExists",
+      "stream": false,
+      "payload": "73504260c1148fc792f1e5bb7f0598dbced89c267e2e0ba5e0f542434de25b3a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.GetDefaultDownloadPath",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.OpenExternal",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.OpenFile",
+      "stream": false,
+      "payload": "73504260c1148fc792f1e5bb7f0598dbced89c267e2e0ba5e0f542434de25b3a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.OpenFileLocation",
+      "stream": false,
+      "payload": "73504260c1148fc792f1e5bb7f0598dbced89c267e2e0ba5e0f542434de25b3a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.OpenMacFilesAndFoldersSettings",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.ReadClipboardFilePaths",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SaveBinaryFile",
+      "stream": false,
+      "payload": "05e7ecebf9121757766842d7ba997fa4eb5b0909a4ce5f70e9bbd10bd57221d7",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SaveMarkdownPdf",
+      "stream": false,
+      "payload": "b3032c431894ffb14e434fb79f90a7d8d07bd60c7409eee269bc8a025000b6e6",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SaveSplitShareImage",
+      "stream": false,
+      "payload": "bf9c933c30bff174305bbb402234ad5cbdd491e7a6be10e6afb0516fc9e9d2e1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SaveTextFile",
+      "stream": false,
+      "payload": "0ef3fc46ac813d92e55df886d4f6fecc30706e37da4f8a63bf11dcd5690eb6da",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SelectDirectory",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SelectFile",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.SelectMediaFiles",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.ShareFile",
+      "stream": false,
+      "payload": "7fc6b075289c3c0f7de34c7ba0407d83f07bcfff8e08b7d26b79f0089212064d",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.ShowDownloadCompletedNotification",
+      "stream": false,
+      "payload": "50fdcd44987dafc021b358b68b17f5661378ff8a60ce92854d292d2c7b2c8d1b",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Files.ValidateCookiesFile",
+      "stream": false,
+      "payload": "73504260c1148fc792f1e5bb7f0598dbced89c267e2e0ba5e0f542434de25b3a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.AddHistoryItem",
+      "stream": false,
+      "payload": "e63ff12e01b3a610a62754ab5e167bf4eb43f504ec0322ae7efad8026a199a2c",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.ClearHistory",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.GetHistory",
+      "stream": false,
+      "payload": "03cd566cceb0ae5391407e0fd99054b487e298f279afa20da9222adf50d52714",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.GetHistoryById",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.GetHistoryCount",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.RemoveHistoryByPlaylistId",
+      "stream": false,
+      "payload": "6bf404788c0897d92a9bff81051648069068122fca7d1a54868528a54a5b15f4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.RemoveHistoryItem",
+      "stream": false,
+      "payload": "b875d695fab4ae3693ec402ceee84257127a8390fc1e9abb95b3c79cbee66bb4",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "History.RemoveHistoryItems",
+      "stream": false,
+      "payload": "a0b426a9bfa8c5ec05b40f94bb09b9a68f591ef46b8510c3a2faee946ba79a02",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Mcp.GetCapabilities",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "409cb21a7cbd8ea9c8d15b39038f608a3ce02c420d7cbd1030b3837fe716da88",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Mcp.GetStatus",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "fa3f431c31865eed06beca98ac98006a89445ae13fbb808010f735f777394f34",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Mcp.RotateToken",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "fa3f431c31865eed06beca98ac98006a89445ae13fbb808010f735f777394f34",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "integrations",
+      "tag": "Mcp.SetEnabled",
+      "stream": false,
+      "payload": "e522778b2cb928739449a066f1850575481c17e1af79f13d37bd27fc30798e90",
+      "success": "fa3f431c31865eed06beca98ac98006a89445ae13fbb808010f735f777394f34",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Player.Attach",
+      "stream": false,
+      "payload": "b25d97e21b133d06b037bcfd043f06e98bf17adaf1c1c55aa5d098581ebe188d",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Player.Detach",
+      "stream": false,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Player.SyncIconMenu",
+      "stream": false,
+      "payload": "d70065b99906ca79f5480573b0a2cbeaf7d721a6a6be7f397a92e01dafa4aaa1",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Player.WatchIconMenu",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "downloads",
+      "tag": "ShareCapture.Ready",
+      "stream": false,
+      "payload": "d93ac5ac9964f2e1835e23ac898cc357575dd1abd371d0ef3faf087e8280f629",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "ShareCapture.Watch",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "downloads",
+      "tag": "ShareCapture.WatchMermaid",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Changes",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Create",
+      "stream": false,
+      "payload": "610e6158e5d1686623f1767f559df2d908f1a67419cd01d3d7a4a02eac4b93a2",
+      "success": "2c2248a19777564e0f29edf6f389a9f5a7a7b56f4b30002dc9ffd8debfb452de",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.List",
+      "stream": false,
+      "payload": "03cd566cceb0ae5391407e0fd99054b487e298f279afa20da9222adf50d52714",
+      "success": "2c2248a19777564e0f29edf6f389a9f5a7a7b56f4b30002dc9ffd8debfb452de",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.QueueItem",
+      "stream": false,
+      "payload": "4be5f02fe27c74de2a691bf2831875cce6566dc2ef4c7a2c6aa9abe3bb679dd2",
+      "success": "b66d41eea0624fa69d100a853047cff3509b07bc3554849c42f61ebf8e88f5bb",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Refresh",
+      "stream": false,
+      "payload": "f0fe07f652be186fe0e501dc1d6424c4ac5a6518f35945e63c1b6bcf71397ecf",
+      "success": "e11fd30c5055be702567b6a1a63fdf78d54560eb3e4cf4457d136352715fbd48",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Remove",
+      "stream": false,
+      "payload": "aea3a1435503a6c4a3ce5f73b3361f85ad440ff961c238687c9a456aee45446f",
+      "success": "b66d41eea0624fa69d100a853047cff3509b07bc3554849c42f61ebf8e88f5bb",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Resolve",
+      "stream": false,
+      "payload": "1a7f506459cbbd50e08a8910f41c781486ccda7168532bb0083f315b7e9a7665",
+      "success": "2c2248a19777564e0f29edf6f389a9f5a7a7b56f4b30002dc9ffd8debfb452de",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "subscriptions",
+      "tag": "Subscriptions.Update",
+      "stream": false,
+      "payload": "fea773e1bf77060e43ac6d88cbecc89b7347086931256e90c7522d20e28111ce",
+      "success": "bc08fbf32ae21b9bb9af63db0007eb6abe03d25c2c838ac0ad530824ad580b8d",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Thumbnail.GetLocalPoster",
+      "stream": false,
+      "payload": "b2dd650f91f83473052f640dd7c72d915ce4141d9e430262132a12be41732ef6",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "downloads",
+      "tag": "Thumbnail.GetThumbnailPath",
+      "stream": false,
+      "payload": "3a9751e1d146a5983d27c6fe0bd7ef34eb68f29e3a12cbf9956828755b657ee6",
+      "success": "a00d0fcb5852de3a083fed7e2a27091c7377d78cdec335b7a140e2914a77dcb4",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.Cancel",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.CancelTier",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.CancelVideoExport",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.DeleteSegments",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.DeleteTier",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.EnsureTier",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.ExportVideo",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetCloudModels",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetDetail",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetForDownload",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetModelPrepStatus",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetModelStatus",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetPartials",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetPlaybackCues",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetSourceCues",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.GetStatusMap",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.ImportLocal",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.InsertSegment",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.Rediarize",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.RedownloadModels",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.Retry",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.SelectSource",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.SetTier",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.Start",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.UpdateSegment",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.Upgrade",
+      "stream": false,
+      "payload": "1131b011816d8ee6a32ee093061fc7fe627194576d1ce6437ac9b938686d5533",
+      "success": "5dbc2d23970b46bb52f56a92c216a5cd95fd99bd385b080db86dbdc23cbc0534",
+      "error": "dd022f47d1ad36f94e3b7442816e794e64c7e8cd36ccd33df3eb743912911471"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.WatchChanges",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.WatchExportProgress",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    },
+    {
+      "capability": "transcription",
+      "tag": "Transcript.WatchModels",
+      "stream": true,
+      "payload": "8d9cda6cdca958a9be6fcdf6ec8ade048ca349069469bc6c91c6012d3484901a",
+      "success": "f78833250752827694b55aab190a1e977e577df8526178d6332ff825cc2f628f",
+      "error": "51e8694246b9067dd7a62e10550113a4b21b6bc0858874860910620af0149d97"
+    }
+  ]
+}

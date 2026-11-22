@@ -6,6 +6,7 @@ import * as P from "effect/Predicate";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js";
+import { makeResourceBudget, makeRetentionLedger } from "../../renderer/src/transport/ElectronRpc.model.js";
 import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 
 export const Limits = S.Struct({
@@ -51,6 +52,7 @@ export type Request = typeof Request.Type;
 export interface Lease {
   readonly finalized: Effect.Effect<void>;
   readonly request: Request;
+  readonly resources: import("../../renderer/src/transport/ElectronRpc.model.js").ResourceBudget;
   readonly retainNative: (bytes: number) => Effect.Effect<NativeLease, DeliveryError>;
   readonly terminal: Effect.Effect<void>;
 }
@@ -59,6 +61,7 @@ export interface NativeLease {
   readonly resize: (bytes: number) => Effect.Effect<void, DeliveryError>;
 }
 interface Account {
+  readonly budget: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionAccount;
   bytes: number;
   native: number;
 }
@@ -71,6 +74,7 @@ interface Client {
 interface Document {
   readonly account: Account;
   clients: HashMap.HashMap<number, Client>;
+  readonly resources: import("../../renderer/src/transport/ElectronRpc.model.js").ResourceBudget;
   streams: number;
   unary: number;
 }
@@ -81,7 +85,7 @@ export const makeAdmission = (bounds: Limits = limits) => {
   let documents = HashMap.empty<string, Document>();
   let appUnary = 0;
   let appStreams = 0;
-  let appBytes = 0;
+  const ledger = makeRetentionLedger({ windowBytes: bounds.windowBytes, appBytes: bounds.appBytes });
   let appNative = 0;
   const retireAccount = (account: Account) => {
     if (account.native !== 0 || account.bytes !== 0) return;
@@ -89,25 +93,28 @@ export const makeAdmission = (bounds: Limits = limits) => {
     for (const [id, current] of HashMap.toEntries(accounts))
       if (current === account) accounts = HashMap.remove(accounts, id);
   };
-  const charge = (account: Account, delta: number) => {
-    if (
-      !Number.isSafeInteger(delta) ||
-      account.bytes + delta < 0 ||
-      account.bytes + delta > bounds.windowBytes ||
-      appBytes + delta > bounds.appBytes
-    )
-      return false;
-    account.bytes += delta;
-    appBytes += delta;
+  const connectNow = (session: string, windowAccount: string) => {
+    if (HashMap.has(documents, session)) return true;
+    if (HashMap.size(documents) >= bounds.sessions || !ledger.connect(session, windowAccount)) return false;
+    const account = O.getOrElse(HashMap.get(accounts, windowAccount), () => ({
+      bytes: 0,
+      native: 0,
+      budget: ledger.forWindow(windowAccount),
+    }));
+    accounts = HashMap.set(accounts, windowAccount, account);
+    const budget = ledger.document(session);
+    if (budget === undefined) return false;
+    documents = HashMap.set(documents, session, {
+      account,
+      resources: makeResourceBudget(budget),
+      clients: HashMap.empty(),
+      unary: 0,
+      streams: 0,
+    });
     return true;
   };
-  const connect = Effect.fn("ElectronRpcAdmission.connect")(function* (session: string, windowAccount: string) {
-    if (HashMap.has(documents, session) || HashMap.size(documents) >= bounds.sessions)
-      return yield* failure("SessionCapacity");
-    const account = O.getOrElse(HashMap.get(accounts, windowAccount), () => ({ bytes: 0, native: 0 }));
-    accounts = HashMap.set(accounts, windowAccount, account);
-    documents = HashMap.set(documents, session, { account, clients: HashMap.empty(), unary: 0, streams: 0 });
-  });
+  const connect = (session: string, windowAccount: string) =>
+    Effect.suspend(() => (connectNow(session, windowAccount) ? Effect.void : Effect.fail(failure("SessionCapacity"))));
   const admit = Effect.fn("ElectronRpcAdmission.admit")(function* (input: Request) {
     const request = yield* S.decodeEffect(Request)(input).pipe(Effect.mapError(() => failure("InvalidRequest")));
     const doc = HashMap.get(documents, request.session);
@@ -161,6 +168,7 @@ export const makeAdmission = (bounds: Limits = limits) => {
     };
     const lease: Lease = {
       request,
+      resources: document.resources,
       finalized: Effect.sync(() => {
         execution = true;
         release();
@@ -173,13 +181,16 @@ export const makeAdmission = (bounds: Limits = limits) => {
         if (
           released ||
           execution ||
+          !HashMap.has(documents, request.session) ||
           !Number.isSafeInteger(initial) ||
           initial < 0 ||
           document.account.native >= bounds.native ||
-          appNative >= bounds.appNative ||
-          !charge(document.account, initial)
+          appNative >= bounds.appNative
         )
           return yield* failure("NativeCapacity");
+        const retained = document.account.budget.reserve(initial);
+        if (retained === undefined) return yield* failure("NativeCapacity");
+        document.account.bytes += initial;
         native++;
         document.account.native++;
         appNative++;
@@ -188,15 +199,17 @@ export const makeAdmission = (bounds: Limits = limits) => {
         return {
           resize: (next: number) =>
             Effect.suspend(() => {
-              if (done || next < 0 || !Number.isSafeInteger(next) || !charge(document.account, next - bytes))
+              if (done || next < 0 || !Number.isSafeInteger(next) || !retained.resize(next))
                 return Effect.fail(failure("NativeCapacity"));
+              document.account.bytes += next - bytes;
               bytes = next;
               return Effect.void;
             }),
           complete: Effect.sync(() => {
             if (done) return;
             done = true;
-            charge(document.account, -bytes);
+            retained.release();
+            document.account.bytes -= bytes;
             native--;
             document.account.native--;
             appNative--;
@@ -243,11 +256,71 @@ export const makeAdmission = (bounds: Limits = limits) => {
     if (O.isNone(doc)) return;
     for (const client of HashMap.keys(doc.value.clients)) disconnectClientNow({ session, client });
     documents = HashMap.remove(documents, session);
+    ledger.disconnect(session);
     retireAccount(doc.value.account);
   };
   const disconnect = (session: string) => Effect.sync(() => disconnectNow(session));
+  let operationBytes = HashMap.empty<
+    string,
+    import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease
+  >();
+  const operationAccount = {
+    begin: (origin: string) => {
+      if (appNative >= bounds.appNative) return undefined;
+      const account = O.getOrElse(HashMap.get(accounts, origin), () => ({
+        bytes: 0,
+        native: 0,
+        budget: ledger.forWindow(origin),
+      }));
+      if (account.native >= bounds.native || appNative >= bounds.appNative) return undefined;
+      accounts = HashMap.set(accounts, origin, account);
+      account.native++;
+      appNative++;
+      let live = true;
+      return () => {
+        if (!live) return;
+        live = false;
+        account.native--;
+        appNative--;
+        retireAccount(account);
+      };
+    },
+    reserve: (origin: string, bytes: number) => {
+      let retained = O.getOrUndefined(HashMap.get(operationBytes, origin));
+      if (retained === undefined) {
+        retained = ledger.forWindow(origin).reserve(0);
+        if (retained === undefined) return false;
+        operationBytes = HashMap.set(operationBytes, origin, retained);
+      }
+      const accepted = retained.resize(retained.bytes() + bytes);
+      if (!accepted && retained.bytes() === 0) {
+        retained.release();
+        operationBytes = HashMap.remove(operationBytes, origin);
+      }
+      return accepted;
+    },
+    release: (origin: string, bytes: number) => {
+      const retained = HashMap.get(operationBytes, origin);
+      if (O.isNone(retained)) return;
+      retained.value.resize(retained.value.bytes() - bytes);
+      if (retained.value.bytes() === 0) {
+        retained.value.release();
+        operationBytes = HashMap.remove(operationBytes, origin);
+      }
+    },
+  };
   return {
+    operationAccount,
+    synchronousAccount: (origin: string) => ({
+      native: () => operationAccount.begin(origin),
+      reserve: (bytes: number) => operationAccount.reserve(origin, bytes),
+      release: (bytes: number) => operationAccount.release(origin, bytes),
+    }),
+    resources: (session: string) => O.map(HashMap.get(documents, session), (doc) => doc.resources),
     connect,
+    connectNow,
+    ledger,
+    bounds,
     admit,
     endInput,
     disconnect,
@@ -258,7 +331,8 @@ export const makeAdmission = (bounds: Limits = limits) => {
       accounts: HashMap.size(accounts),
       appUnary,
       appStreams,
-      appBytes,
+      appBytes: ledger.stats().data,
+      controlBytes: ledger.stats().control,
       appNative,
     }),
   };

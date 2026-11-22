@@ -10,6 +10,7 @@ import type { DeliveryError } from "../../renderer/src/transport/DocumentDeliver
 import type { OperationHandle, OperationOwner } from "./ApplicationOperations.service.js";
 
 export interface OperationAccount {
+  readonly begin?: (origin: string) => (() => void) | undefined;
   readonly release: (origin: string, bytes: number) => void;
   readonly reserve: (origin: string, bytes: number) => boolean;
 }
@@ -27,14 +28,18 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
     readonly reserveBytes: number;
     readonly run: (handle: OperationHandle<A, E>) => Effect.Effect<void>;
   }) {
+    const releaseNative = account.begin?.(options.originAccount);
     if (
+      (account.begin !== undefined && releaseNative === undefined) ||
       !accepting ||
       HashSet.size(active) >= maxWork ||
       !Number.isSafeInteger(options.reserveBytes) ||
       options.reserveBytes < 0 ||
       !account.reserve(options.originAccount, options.reserveBytes)
-    )
+    ) {
+      releaseNative?.();
       return yield* failure("OperationCapacity");
+    }
     let bytes = options.reserveBytes;
     let sealed = false;
     let completed = false;
@@ -87,6 +92,7 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
         return;
       }
       account.release(options.originAccount, bytes);
+      releaseNative?.();
       bytes = 0;
       active = HashSet.remove(active, handle.released);
       Deferred.doneUnsafe(released, Exit.void);

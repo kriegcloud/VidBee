@@ -914,6 +914,12 @@
       "environments": ["node"]
     },
     {
+      "file": "apps/desktop/src/main/lib/legacy/JsonSyntax.compat.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation-compatibility",
+      "environments": ["node", "test"]
+    },
+    {
       "file": "apps/desktop/src/main/lib/library-export.ts",
       "partition": "legacy",
       "capability": "9.0-foundation",
@@ -2948,6 +2954,90 @@
       "environments": ["node", "web", "test"]
     },
     {
+      "file": "apps/desktop/src/renderer/src/transport/census/Ai.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/AiNative.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Cloud.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Downloads.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Integration.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Integration.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/RemoteCaptions.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/StoredThread.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
       "file": "apps/desktop/src/shared/agent-chat.ts",
       "partition": "legacy",
       "capability": "9.4-ai",
@@ -3276,6 +3366,18 @@
       "partition": "legacy",
       "capability": "9.0-foundation",
       "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/test/ElectronLifecycle.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/test/ElectronLifecycle.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
     },
     {
       "file": "apps/desktop/test/TransportRuntime.entry.ts",

@@ -1,6 +1,7 @@
 import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as HashMap from "effect/HashMap";
@@ -11,9 +12,16 @@ import * as Queue from "effect/Queue";
 import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as RpcServer from "effect/rpc/RpcServer";
 import * as S from "effect/Schema";
+import * as Scope from "effect/Scope";
 import * as Str from "effect/String";
 import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js";
-import { Input, Output, ResponseExit } from "../../renderer/src/transport/ElectronRpc.model.js";
+import {
+  Input,
+  measureFrame,
+  measureValue,
+  Output,
+  ResponseExit,
+} from "../../renderer/src/transport/ElectronRpc.model.js";
 import { ElectronRpcAdmission } from "./ElectronRpcAdmission.service.js";
 import type * as Rpc from "effect/rpc/Rpc";
 import type * as RpcGroup from "effect/rpc/RpcGroup";
@@ -26,25 +34,40 @@ export class ElectronRpcWire extends Context.Service<
   ElectronRpcWire,
   {
     readonly listen: (
-      receive: (frame: unknown) => void,
+      receive: (frame: unknown, session: string, account: string) => void,
       close: (session: string) => void
     ) => Effect.Effect<void, never, import("effect/Scope").Scope>;
     readonly account: (session: string) => Effect.Effect<string, DeliveryError>;
     readonly send: (session: string, frame: string) => Effect.Effect<void, DeliveryError>;
   }
 >()("vidbee/main/ipc/ElectronRpcServer.layer/ElectronRpcWire") {}
+interface Ingress {
+  readonly lease: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
+  readonly raw: string | null;
+  readonly session: string;
+}
 interface RequestState {
   admission: string;
   readonly id: string | number;
   readonly lease: Lease;
+  readonly retained: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
   started: boolean;
   readonly tag: string;
   terminal: boolean;
 }
+interface Command {
+  readonly done?: Deferred.Deferred<void>;
+  readonly error: DeliveryError;
+  readonly requestId: string | number;
+}
 interface ClientState {
+  closed: boolean;
+  readonly controlLease: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
+  readonly controls: Queue.Queue<Command>;
   ended: boolean;
   readonly id: number;
   readonly local: number;
+  readonly outbound: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
   requests: HashMap.HashMap<string | number, RequestState>;
   readonly session: string;
 }
@@ -58,24 +81,42 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
 }) {
   const wire = yield* ElectronRpcWire;
   const admissionOwner = yield* ElectronRpcAdmission;
-  let documents = HashSet.empty<string>();
-  const ingress = yield* Queue.bounded<unknown>(1024);
+  const scope = yield* Scope.Scope;
+  const ready = Deferred.makeUnsafe<(id: number, message: RpcMessage.FromClientEncoded) => Effect.Effect<void>>();
+  let documents = HashMap.empty<string, Queue.Queue<Ingress>>();
+  const ingress = yield* Queue.bounded<Ingress>(1024);
   const disconnects = yield* Queue.bounded<number>(1024);
   let clients = HashMap.empty<string, ClientState>();
   let nextId = 0;
   let requestSerial = 0;
+  let completedFrames = 0;
   let executions = HashMap.empty<string, { readonly client: ClientState; readonly state: RequestState }>();
-  let dead = HashSet.empty<string>();
+  let dead = HashMap.empty<string, HashSet.HashSet<number>>();
+  let closedDocuments = HashSet.empty<string>();
+  let closingDocuments = HashSet.empty<string>();
+  let closePhysical: (session: string) => Effect.Effect<void> = () => Effect.void;
   const key = (session: string, client: number) => `${session.length}:${session}/${client}`;
   const drop = Effect.fn("ElectronRpcServer.drop")(function* (client: ClientState) {
     const id = key(client.session, client.local);
-    if (HashSet.has(dead, id)) return;
-    dead = HashSet.add(dead, id);
+    if (client.closed) return;
+    client.closed = true;
+    client.controlLease.release();
+    client.outbound.release();
+    const history = O.getOrElse(HashMap.get(dead, client.session), HashSet.empty<number>);
+    dead = HashMap.set(dead, client.session, HashSet.add(history, client.local));
+    let command = Queue.takeUnsafe(client.controls);
+    while (command !== undefined && Exit.isSuccess(command)) {
+      if (Exit.isSuccess(command) && command.value.done !== undefined)
+        Deferred.doneUnsafe(command.value.done, Exit.void);
+      command = Queue.takeUnsafe(client.controls);
+    }
+    Queue.failCauseUnsafe(client.controls, Cause.die(failure("ClientClosed")));
     clients = HashMap.remove(clients, id);
     admissionOwner.disconnectClientNow({ session: client.session, client: client.local });
     for (const state of HashMap.values(client.requests))
       if (!state.started) {
         yield* state.lease.finalized;
+        state.retained.release();
         executions = HashMap.remove(executions, state.admission);
       }
     Queue.offerUnsafe(disconnects, client.id);
@@ -84,96 +125,250 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
     );
     yield* send(client, { _tag: "Defect", defect }).pipe(Effect.ignoreCause);
   });
-  const send = Effect.fn("ElectronRpcServer.send")(function* (client: ClientState, message: Output["message"]) {
-    const frame = yield* S.encodeEffect(S.fromJsonString(Output))({
-      session: client.session,
-      client: client.local,
-      message,
-    }).pipe(Effect.mapError(() => failure("EncodingFailed")));
-    yield* wire.send(client.session, frame);
+  const send = Effect.fn("ElectronRpcServer.send")(function* (
+    client: Pick<ClientState, "session" | "local"> & { readonly outbound?: ClientState["outbound"] },
+    message: Output["message"]
+  ) {
+    const value = { version: 1, session: client.session, client: client.local, message } as const;
+    const amount = measureValue(value);
+    const control =
+      message._tag === "Terminal" ||
+      message._tag === "Defect" ||
+      message._tag === "Pong" ||
+      message._tag === "DocumentClosed";
+    const retained =
+      amount === undefined ? undefined : admissionOwner.ledger.document(client.session)?.reserve(amount, control);
+    if (retained === undefined) return yield* failure("BufferedCapacity");
+    yield* Effect.gen(function* () {
+      const frame = yield* S.encodeEffect(S.fromJsonString(Output))(value).pipe(
+        Effect.mapError(() => failure("EncodingFailed"))
+      );
+      if (measureFrame(frame).utf8 > admissionOwner.bounds.frameBytes) return yield* failure("FrameCapacity");
+      // Conservatively retain delivered values for the logical-client lifetime. RpcClient's
+      // queue-admission Ack does not prove that its consumer released a decoded value.
+      if (
+        !control &&
+        (client.outbound === undefined || !client.outbound.resize(client.outbound.bytes() + retained.bytes()))
+      )
+        return yield* failure("BufferedCapacity");
+      yield* wire.send(client.session, frame).pipe(Effect.onError(() => closePhysical(client.session)));
+    }).pipe(Effect.ensuring(Effect.sync(retained.release)));
+  });
+  const reject = Effect.fn("ElectronRpcServer.reject")(function* (session: string, local: number) {
+    const history = O.getOrElse(HashMap.get(dead, session), HashSet.empty<number>);
+    const live = A.filter(HashMap.values(clients), (entry) => entry.session === session).length;
+    if (live + HashSet.size(history) >= 64) return yield* Effect.die(failure("ClientCapacity"));
+    dead = HashMap.set(dead, session, HashSet.add(history, local));
+    const defect = yield* S.encodeEffect(RpcSerialization.json.codecFor(S.Defect()))(failure("TransportClosed")).pipe(
+      Effect.orDie
+    );
+    yield* send({ session, local }, { _tag: "Defect", defect }).pipe(Effect.ignoreCause);
   });
   let protocolInput: (id: number, message: RpcMessage.FromClientEncoded) => Effect.Effect<void> = () => Effect.void;
-  const protocol = yield* RpcServer.Protocol.make((write) =>
+  const parts = yield* ((write: (id: number, message: RpcMessage.FromClientEncoded) => Effect.Effect<void>) =>
     Effect.gen(function* () {
       protocolInput = write;
-      const drain = Effect.gen(function* () {
-        while (true) {
-          const raw = yield* Queue.take(ingress);
-          const parsed = yield* S.decodeUnknownEffect(S.fromJsonString(Input))(raw).pipe(Effect.orDie);
-          if (!HashSet.has(documents, parsed.session)) {
-            const account = yield* Effect.exit(wire.account(parsed.session));
-            // A frame authenticated by the driver can already be queued when its document vanishes.
-            if (Exit.isFailure(account)) continue;
-            const connected = yield* Effect.exit(admissionOwner.connect(parsed.session, account.value));
-            if (Exit.isFailure(connected)) continue;
-            documents = HashSet.add(documents, parsed.session);
+      const closeDocument = Effect.fn("ElectronRpcServer.closeDocument")(function* (session: string) {
+        if (HashSet.has(closingDocuments, session)) return;
+        closingDocuments = HashSet.add(closingDocuments, session);
+        const queue = HashMap.get(documents, session);
+        documents = HashMap.remove(documents, session);
+        const live = yield* Effect.exit(wire.account(session));
+        closedDocuments = Exit.isSuccess(live)
+          ? HashSet.add(closedDocuments, session)
+          : HashSet.remove(closedDocuments, session);
+        if (O.isSome(queue)) {
+          let packet = Queue.takeUnsafe(queue.value);
+          while (packet !== undefined && Exit.isSuccess(packet)) {
+            packet.value.lease.release();
+            packet = Queue.takeUnsafe(queue.value);
           }
-          const k = key(parsed.session, parsed.client);
-          if (HashSet.has(dead, k)) continue;
-          let client = O.getOrUndefined(HashMap.get(clients, k));
-          if (client === undefined) {
-            if (HashMap.size(clients) >= 1024 || nextId >= Number.MAX_SAFE_INTEGER)
-              return yield* Effect.die(failure("ClientCapacity"));
-            client = {
-              id: nextId++,
-              session: parsed.session,
-              local: parsed.client,
-              ended: false,
-              requests: HashMap.empty(),
-            };
-            clients = HashMap.set(clients, k, client);
-          }
-          const message = parsed.message;
-          if (message._tag === "Request") {
-            if (
-              client.ended ||
-              message.isNotification === true ||
-              (S.is(S.String)(message.id) && Str.startsWith("@effect/rpc/notification/")(message.id)) ||
-              HashMap.has(client.requests, message.id) ||
-              HashMap.size(client.requests) >= 320
-            ) {
-              yield* drop(client);
-              continue;
+          Queue.failCauseUnsafe(queue.value, Cause.die(failure("DocumentClosed")));
+        }
+        for (const client of HashMap.values(clients)) if (client.session === session) yield* drop(client);
+        yield* send({ session, local: 0 }, { _tag: "DocumentClosed" }).pipe(Effect.ignoreCause);
+        admissionOwner.disconnectNow(session);
+        dead = HashMap.remove(dead, session);
+        closingDocuments = HashSet.remove(closingDocuments, session);
+      });
+      closePhysical = closeDocument;
+      const drainDocument = Effect.fn("ElectronRpcServer.document")(
+        function* (queue: Queue.Queue<Ingress>, session: string) {
+          while (true) {
+            const packet = yield* Queue.take(queue);
+            const decoded = yield* Effect.exit(S.decodeUnknownEffect(S.fromJsonString(Input))(packet.raw));
+            if (Exit.isFailure(decoded) || decoded.value.session !== session) {
+              packet.lease.release();
+              return yield* Effect.die(failure("MalformedFrame"));
             }
-            const admitted = yield* Effect.exit(
-              admissionOwner.admit({
-                session: parsed.session,
-                client: parsed.client,
-                id: message.id,
-                stream: isStream(message.tag),
-                discard: message.discard === true,
-              })
-            );
-            if (Exit.isFailure(admitted)) {
-              yield* drop(client);
-              continue;
-            }
-            const admission = (++requestSerial).toString();
-            const state: RequestState = {
-              id: message.id,
-              tag: message.tag,
-              terminal: false,
-              started: false,
-              admission,
-              lease: admitted.value,
-            };
-            client.requests = HashMap.set(client.requests, message.id, state);
-            executions = HashMap.set(executions, admission, { client, state });
-          } else if (message._tag === "Eof") {
-            client.ended = true;
-            yield* admissionOwner.endInput(parsed.session, parsed.client);
-          }
-          const dispatched =
-            message._tag === "Request"
-              ? {
-                  ...message,
-                  headers: A.append(
-                    A.filter(message.headers, ([name]) => name !== "x-vidbee-admission"),
-                    ["x-vidbee-admission", requestSerial.toString()] satisfies [string, string]
-                  ),
+            const parsed = decoded.value;
+            let transferred = false;
+            yield* Effect.gen(function* () {
+              const k = key(parsed.session, parsed.client);
+              const history = O.getOrElse(HashMap.get(dead, parsed.session), HashSet.empty<number>);
+              if (HashSet.has(history, parsed.client)) return;
+              let client = O.getOrUndefined(HashMap.get(clients, k));
+              if (client === undefined && parsed.message._tag !== "Request") return;
+              const message = parsed.message;
+              if (packet.lease.control && message._tag === "Request") {
+                if (client !== undefined) yield* drop(client);
+                else yield* reject(session, parsed.client);
+                return;
+              }
+              if (message._tag === "Request") {
+                if (requestSerial >= Number.MAX_SAFE_INTEGER) {
+                  if (client !== undefined) yield* drop(client);
+                  else yield* reject(session, parsed.client);
+                  return;
                 }
-              : message;
-          yield* write(client.id, dispatched).pipe(Effect.onError(() => drop(client)));
+                if (
+                  client?.ended === true ||
+                  message.isNotification === true ||
+                  (S.is(S.String)(message.id) && Str.startsWith("@effect/rpc/notification/")(message.id)) ||
+                  (client !== undefined && HashMap.has(client.requests, message.id)) ||
+                  (client !== undefined && HashMap.size(client.requests) >= 320)
+                ) {
+                  if (client !== undefined) yield* drop(client);
+                  else yield* reject(session, parsed.client);
+                  return;
+                }
+                if (
+                  client === undefined &&
+                  A.filter(HashMap.values(clients), (entry) => entry.session === session).length +
+                    HashSet.size(history) >=
+                    64
+                )
+                  return yield* Effect.die(failure("ClientCapacity"));
+                const admitted = yield* Effect.exit(
+                  admissionOwner.admit({
+                    session: parsed.session,
+                    client: parsed.client,
+                    id: message.id,
+                    stream: isStream(message.tag),
+                    discard: message.discard === true,
+                  })
+                );
+                if (Exit.isFailure(admitted)) {
+                  if (client !== undefined) yield* drop(client);
+                  else yield* reject(session, parsed.client);
+                  return;
+                }
+                if (client === undefined) {
+                  // A control message never creates a protocol client or a retained history entry.
+                  if (parsed.message._tag !== "Request") return;
+                  const live = A.filter(HashMap.values(clients), (entry) => entry.session === session).length;
+                  if (live + HashSet.size(history) >= 64 || nextId >= Number.MAX_SAFE_INTEGER)
+                    return yield* Effect.die(failure("ClientCapacity"));
+                  const controlLease = admissionOwner.ledger.document(session)?.reserve(512, true);
+                  if (controlLease === undefined) {
+                    yield* admitted.value.finalized;
+                    yield* admitted.value.terminal;
+                    return yield* Effect.die(failure("ControlCapacity"));
+                  }
+                  const outbound = admissionOwner.ledger.document(session)?.reserve(0);
+                  if (outbound === undefined) {
+                    controlLease.release();
+                    yield* admitted.value.finalized;
+                    yield* admitted.value.terminal;
+                    return yield* Effect.die(failure("BufferedCapacity"));
+                  }
+                  const controls = yield* Queue.bounded<Command>(4);
+                  client = {
+                    closed: false,
+                    controls,
+                    controlLease,
+                    outbound,
+                    id: nextId++,
+                    session: parsed.session,
+                    local: parsed.client,
+                    ended: false,
+                    requests: HashMap.empty(),
+                  };
+                  clients = HashMap.set(clients, k, client);
+                  const current = client;
+                  yield* Effect.forkIn(
+                    Effect.gen(function* () {
+                      while (true) {
+                        const command = yield* Queue.take(controls);
+                        yield* force(current, command).pipe(
+                          Effect.ensuring(
+                            Effect.sync(() => {
+                              if (command.done !== undefined) Deferred.doneUnsafe(command.done, Exit.void);
+                            })
+                          )
+                        );
+                      }
+                    }).pipe(Effect.catchCause(() => drop(current))),
+                    scope
+                  );
+                }
+                const admission = (++requestSerial).toString();
+                const state: RequestState = {
+                  retained: packet.lease,
+                  id: message.id,
+                  tag: message.tag,
+                  terminal: false,
+                  started: false,
+                  admission,
+                  lease: admitted.value,
+                };
+                transferred = true;
+                client.requests = HashMap.set(client.requests, message.id, state);
+                executions = HashMap.set(executions, admission, { client, state });
+              } else if (message._tag === "Eof" && client !== undefined) {
+                client.ended = true;
+                yield* admissionOwner.endInput(parsed.session, parsed.client);
+              }
+              const dispatched =
+                message._tag === "Request"
+                  ? {
+                      ...message,
+                      headers: A.append(
+                        A.filter(message.headers, ([name]) => Str.toLowerCase(name) !== "x-vidbee-admission"),
+                        ["x-vidbee-admission", requestSerial.toString()] satisfies [string, string]
+                      ),
+                    }
+                  : message;
+              if (client === undefined) return;
+              const selected = client;
+              yield* write(selected.id, dispatched).pipe(Effect.onError(() => drop(selected)));
+            }).pipe(
+              Effect.ensuring(
+                Effect.sync(() => {
+                  if (!transferred) packet.lease.release();
+                  completedFrames = Math.min(Number.MAX_SAFE_INTEGER, completedFrames + 1);
+                })
+              )
+            );
+            yield* Effect.yieldNow;
+          }
+        },
+        (effect, _, session) => effect.pipe(Effect.ensuring(closeDocument(session)))
+      );
+      const drain = Effect.gen(function* () {
+        const write = yield* Deferred.await(ready);
+        protocolInput = write;
+        while (true) {
+          const packet = yield* Queue.take(ingress);
+          if (HashSet.has(closedDocuments, packet.session)) {
+            packet.lease.release();
+            continue;
+          }
+          let queue = O.getOrUndefined(HashMap.get(documents, packet.session));
+          if (queue === undefined) {
+            const account = yield* Effect.exit(wire.account(packet.session));
+            if (Exit.isFailure(account)) {
+              packet.lease.release();
+              continue;
+            }
+            queue = yield* Queue.bounded<Ingress>(64);
+            documents = HashMap.set(documents, packet.session, queue);
+            yield* Effect.forkIn(drainDocument(queue, packet.session).pipe(Effect.ignoreCause), scope);
+          }
+          if (!Queue.offerUnsafe(queue, packet)) {
+            packet.lease.release();
+            yield* closeDocument(packet.session);
+          }
         }
       });
       yield* Effect.forkScoped(
@@ -205,6 +400,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
             const state = HashMap.get(client.value.requests, response.requestId);
             if (O.isSome(state) && !state.value.started) {
               yield* state.value.lease.finalized;
+              state.value.retained.release();
               executions = HashMap.remove(executions, state.value.admission);
               client.value.requests = HashMap.remove(client.value.requests, response.requestId);
             }
@@ -232,46 +428,116 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         supportsNotifications: false,
         codecFor: RpcSerialization.json.codecFor,
       };
-    })
-  );
-  // Protocol.make owns run; install exactly one supervised ingress drain through it.
+    }))((id, message) => Effect.suspend(() => protocolInput(id, message)));
+  const protocol: RpcServer.Protocol["Service"] = {
+    ...parts,
+    run: Effect.fn("ElectronRpcServer.run")(function* (write) {
+      if (!Deferred.doneUnsafe(ready, Exit.succeed(write))) return yield* Effect.die(failure("AlreadyMounted"));
+      return yield* Effect.never;
+    }),
+  };
+  // Authentication precedes routing. Each document has its own supervised drain.
   yield* wire.listen(
-    (frame) => {
-      if (!Queue.offerUnsafe(ingress, frame)) Queue.failCauseUnsafe(ingress, Cause.die(failure("IngressCapacity")));
+    (frame, session, account) => {
+      if (HashSet.has(closedDocuments, session) || !admissionOwner.connectNow(session, account)) return;
+      const budget = admissionOwner.ledger.document(session);
+      const measured = S.is(S.String)(frame) ? measureFrame(frame) : undefined;
+      const data =
+        measured !== undefined && measured.utf8 <= admissionOwner.bounds.frameBytes
+          ? budget?.reserve(measured.retained)
+          : undefined;
+      const lease =
+        data ?? budget?.reserve(measured !== undefined && measured.retained <= 8192 ? measured.retained : 512, true);
+      if (lease === undefined) {
+        const queue = HashMap.get(documents, session);
+        if (O.isSome(queue)) Queue.failCauseUnsafe(queue.value, Cause.die(failure("BufferedCapacity")));
+        return;
+      }
+      const raw =
+        measured !== undefined &&
+        measured.utf8 <= admissionOwner.bounds.frameBytes &&
+        S.is(S.String)(frame) &&
+        (data !== undefined || measured.retained <= 8192)
+          ? frame
+          : null;
+      if (!Queue.offerUnsafe(ingress, { raw, session, lease })) {
+        lease.release();
+        const queue = HashMap.get(documents, session);
+        if (O.isSome(queue)) Queue.failCauseUnsafe(queue.value, Cause.die(failure("IngressCapacity")));
+      }
     },
     (session) => {
       admissionOwner.disconnectNow(session);
-      documents = HashSet.remove(documents, session);
-      for (const client of HashMap.values(clients))
-        if (client.session === session) {
-          clients = HashMap.remove(clients, key(session, client.local));
-          Queue.offerUnsafe(disconnects, client.id);
-        }
+      const queue = HashMap.get(documents, session);
+      documents = HashMap.remove(documents, session);
+      if (O.isSome(queue)) Queue.failCauseUnsafe(queue.value, Cause.die(failure("DocumentClosed")));
+      dead = HashMap.remove(dead, session);
+      closedDocuments = HashSet.remove(closedDocuments, session);
     }
   );
-  const terminate = Effect.fn("ElectronRpcServer.terminate")(function* (input: {
-    readonly session: string;
-    readonly client: number;
-    readonly requestId: string | number;
-    readonly error: DeliveryError;
-  }) {
-    const current = HashMap.get(clients, key(input.session, input.client));
-    if (O.isNone(current)) return;
-    const client = current.value;
+  const force = Effect.fn("ElectronRpcServer.force")(function* (client: ClientState, input: Command) {
     const state = HashMap.get(client.requests, input.requestId);
-    if (O.isNone(state) || state.value.terminal) return;
+    if (client.closed || O.isNone(state) || state.value.terminal) return;
     state.value.terminal = true;
     yield* state.value.lease.terminal;
-    const encoded = yield* encodeFailure(state.value.tag, input.error).pipe(Effect.orDie);
-    const response = yield* S.decodeUnknownEffect(ResponseExit)({
-      _tag: "Exit",
+    const estimate = measureValue({
+      reason: input.error.reason,
+      message: input.error.message,
       requestId: input.requestId,
-      exit: encoded,
-    }).pipe(Effect.orDie);
-    yield* send(client, { _tag: "Terminal", response }).pipe(Effect.catchCause(() => drop(client)));
-    // Interrupt releases the installed server's Ack wait. Its later Exit is suppressed.
-    yield* protocolInput(client.id, { _tag: "Interrupt", requestId: input.requestId });
+    });
+    const encoding =
+      estimate === undefined ? undefined : admissionOwner.ledger.document(client.session)?.reserve(estimate, true);
+    if (encoding === undefined) {
+      yield* drop(client);
+      return;
+    }
+    yield* Effect.gen(function* () {
+      const encoded = yield* encodeFailure(state.value.tag, input.error);
+      const response = yield* S.decodeUnknownEffect(ResponseExit)({
+        _tag: "Exit",
+        requestId: input.requestId,
+        exit: encoded,
+      });
+      yield* send(client, { _tag: "Terminal", response });
+      yield* protocolInput(client.id, { _tag: "Interrupt", requestId: input.requestId });
+    }).pipe(
+      Effect.catchCause(() => drop(client)),
+      Effect.ensuring(Effect.sync(encoding.release))
+    );
   });
+  const submitTermination = (
+    input: {
+      readonly session: string;
+      readonly client: number;
+      readonly requestId: string | number;
+      readonly error: DeliveryError;
+    },
+    done?: Deferred.Deferred<void>
+  ) => {
+    const current = HashMap.get(clients, key(input.session, input.client));
+    if (O.isNone(current) || current.value.closed) return false;
+    const command: Command = done === undefined ? input : { ...input, done };
+    if (!Queue.offerUnsafe(current.value.controls, command)) {
+      Queue.failCauseUnsafe(current.value.controls, Cause.die(failure("ControlCapacity")));
+      return false;
+    }
+    return true;
+  };
+  const terminate = Effect.fn("ElectronRpcServer.terminate")(function* (
+    input: Parameters<typeof submitTermination>[0]
+  ) {
+    const done = Deferred.makeUnsafe<void>();
+    if (submitTermination(input, done)) yield* Deferred.await(done);
+  });
+  yield* Effect.addFinalizer(() =>
+    Effect.sync(() => {
+      let packet = Queue.takeUnsafe(ingress);
+      while (packet !== undefined && Exit.isSuccess(packet)) {
+        packet.value.lease.release();
+        packet = Queue.takeUnsafe(ingress);
+      }
+    })
+  );
   const onRequest = <A, E, R>(
     effect: Effect.Effect<A, E, R>,
     request: { readonly headers: Readonly<Record<string, string>> }
@@ -285,6 +551,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         Effect.andThen(
           state.lease.finalized,
           Effect.sync(() => {
+            state.retained.release();
             executions = HashMap.remove(executions, state.admission);
             client.requests = HashMap.remove(client.requests, state.id);
           })
@@ -295,6 +562,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
   return {
     protocol,
     terminate,
+    submitTermination,
     onRequest,
     requestLease: (headers: Readonly<Record<string, string>>) =>
       Effect.suspend(() => {
@@ -303,7 +571,10 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
       }),
     stats: () => ({
       clients: HashMap.size(clients),
+      completedFrames,
       executions: HashMap.size(executions),
+      documents: HashMap.size(documents),
+      closedClients: A.reduce(HashMap.values(dead), 0, (total, history) => total + HashSet.size(history)),
       admission: admissionOwner.stats(),
     }),
   };

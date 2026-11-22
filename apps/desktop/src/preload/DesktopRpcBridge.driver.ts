@@ -14,7 +14,13 @@ export const makePreloadBridge = (
     const listener = (_event: unknown, frame: unknown) => {
       if (live) receive(frame);
     };
-    ipc.on(channels.message, listener);
+    try {
+      ipc.on(channels.message, listener);
+    } catch (error) {
+      live = false;
+      ipc.removeListener(channels.message, listener);
+      throw error;
+    }
     return () => {
       if (!live) return;
       live = false;

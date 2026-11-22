@@ -1,6 +1,7 @@
 import { it } from "@effect/vitest";
 import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
+import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
@@ -13,6 +14,7 @@ import * as Registry from "effect/reactivity/AtomRegistry";
 import * as Rpc from "effect/rpc/Rpc";
 import * as RpcClient from "effect/rpc/RpcClient";
 import * as RpcGroup from "effect/rpc/RpcGroup";
+import * as RpcMessage from "effect/rpc/RpcMessage";
 import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as RpcServer from "effect/rpc/RpcServer";
 import * as S from "effect/Schema";
@@ -27,12 +29,30 @@ import { makeNotifications } from "../src/main/lib/DesktopNotifications.service.
 import { originalFailure, unwrapOriginal } from "../src/main/lib/OriginalFailure.errors.js";
 import { makeOperations } from "../src/main/runtime/ApplicationOperations.layer.js";
 import { makeSynchronousHost } from "../src/main/runtime/SynchronousHost.entry.js";
-import { makeInvocationEntry } from "../src/renderer/src/runtime/RendererInvocation.entry.js";
+import {
+  makeInvocationEntry,
+  makeInvocationOwner,
+  makeRendererDocumentOwner,
+  makeTransportFailureOwner,
+} from "../src/renderer/src/runtime/RendererInvocation.entry.js";
 import { makeRecovery } from "../src/renderer/src/runtime/StreamRecovery.atoms.js";
-import { DeliveryError, failure } from "../src/renderer/src/transport/DocumentDelivery.errors.js";
+import {
+  DeliveryError,
+  ElectronRpcCapacityError,
+  failure,
+} from "../src/renderer/src/transport/DocumentDelivery.errors.js";
+import { layer as deliveryLayer } from "../src/renderer/src/transport/DocumentDelivery.layer.js";
 import { Completion, Subscription } from "../src/renderer/src/transport/DocumentDelivery.model.js";
-import { makeDeliveryGate } from "../src/renderer/src/transport/DocumentDelivery.service.js";
-import { Input, Output } from "../src/renderer/src/transport/ElectronRpc.model.js";
+import { DocumentDelivery, makeDeliveryGate } from "../src/renderer/src/transport/DocumentDelivery.service.js";
+import {
+  DocumentResources,
+  Input,
+  makeResourceBudget,
+  makeRetentionLedger,
+  measureFrame,
+  measureValue,
+  Output,
+} from "../src/renderer/src/transport/ElectronRpc.model.js";
 import { DesktopRpcConnection, makeClientProtocol } from "../src/renderer/src/transport/ElectronRpcClient.layer.js";
 import { census, sameObservation } from "../src/renderer/src/transport/RpcCensus.model.js";
 import { RpcOptional, RpcValue } from "../src/renderer/src/transport/RpcField.model.js";
@@ -40,6 +60,11 @@ import { ObservedValue, pack } from "../src/renderer/src/transport/RpcObservatio
 import { runtime } from "./TransportRuntime.entry.js";
 import type { OperationHandle } from "../src/main/runtime/ApplicationOperations.service.js";
 
+const Binary = Rpc.make("Binary", {
+  payload: { bytes: S.Uint8ArrayFromBase64 },
+  success: S.Uint8ArrayFromBase64,
+  error: DeliveryError,
+});
 const Echo = Rpc.make("Echo", { payload: { text: S.String }, success: S.String, error: DeliveryError });
 const Watch = Rpc.make("Watch", { success: S.Int, error: DeliveryError, stream: true });
 const Fail = Rpc.make("Fail", { success: S.Void, error: DeliveryError });
@@ -48,9 +73,17 @@ const Never = Rpc.make("Never", { success: S.Int, error: DeliveryError, stream: 
 const Observe = Rpc.make("Observe", { success: Subscription(S.Int), error: DeliveryError, stream: true });
 const Native = Rpc.make("Native", { success: S.Boolean, error: DeliveryError });
 const Flood = Rpc.make("Flood", { success: S.Int, error: DeliveryError, stream: true });
-const Rpcs = RpcGroup.make(Echo, Watch, Fail, Defect, Never, Observe, Native, Flood);
-const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly holdAck?: boolean } = {}) {
-  let receiveMain: (value: unknown) => void = () => {};
+const Rpcs = RpcGroup.make(Binary, Echo, Watch, Fail, Defect, Never, Observe, Native, Flood);
+const pair = Effect.fn("Test.pair")(function* ({
+  holdAck = false,
+  failTerminalEncoding = false,
+  requestIds,
+}: {
+  readonly holdAck?: boolean;
+  readonly failTerminalEncoding?: boolean;
+  readonly requestIds?: ReadonlyArray<string | number>;
+} = {}) {
+  let receiveMain: (value: unknown, session: string, account: string) => void = () => {};
   let receiveRenderer: (value: unknown) => void = () => {};
   let receiveOther: (value: unknown) => void = () => {};
   let documentLive = true;
@@ -63,17 +96,22 @@ const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly h
   const firstAck = yield* Deferred.make<void>();
   let acks = 0;
   let largestChunk = 0;
+  let terminalEncodes = 0;
   let lastRequest: { readonly client: number; readonly requestId: string | number } = { client: 0, requestId: 0 };
+  const admission = makeAdmission();
+  admission.connectNow("document", "window");
   const main = yield* makeServerProtocol({
     isStream: (tag) => tag === "Watch" || tag === "Never" || tag === "Observe" || tag === "Flood",
     encodeFailure: (tag, error) => {
+      terminalEncodes++;
+      if (failTerminalEncoding) return Effect.fail(failure("InjectedEncodingFailure"));
       const schema = tag === "Watch" || tag === "Never" ? Rpc.exitSchema(Watch) : Rpc.exitSchema(Echo);
       return S.encodeEffect(RpcSerialization.json.codecFor(schema))(error.pipe(Exit.fail)).pipe(
         Effect.mapError(() => failure("EncodeFailed"))
       );
     },
   }).pipe(
-    Effect.provideService(ElectronRpcAdmission, makeAdmission()),
+    Effect.provideService(ElectronRpcAdmission, admission),
     Effect.provideService(ElectronRpcWire, {
       listen: (receive, close) =>
         Effect.sync(() => {
@@ -103,6 +141,7 @@ const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly h
   );
   const renderer = yield* makeClientProtocol().pipe(
     Effect.provideService(DesktopRpcConnection, {
+      retention: admission.ledger.document("document") ?? admission.ledger.forWindow("window"),
       session: "document",
       listen: (receive) =>
         Effect.sync(() => {
@@ -120,11 +159,12 @@ const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly h
             }
             if (holdAck && parsed.success.message._tag === "Ack") return;
           }
-          receiveMain(frame);
+          if (documentLive) receiveMain(frame, "document", "window");
         }),
     })
   );
   const handlers = Rpcs.toLayer({
+    Binary: ({ bytes }) => Effect.succeed(bytes),
     Echo: ({ text }) => Effect.succeed(text),
     Native: Effect.fn("Test.Native")(
       function* (_payload: void, options: { readonly headers: Readonly<Record<string, string>> }) {
@@ -168,14 +208,28 @@ const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly h
       Effect.provideService(RpcServer.Protocol, main.protocol)
     )
   );
-  const client = yield* RpcClient.make(Rpcs).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol));
+  let serial = 0;
+  const client = yield* RpcClient.make(Rpcs, {
+    generateRequestId:
+      requestIds === undefined ? undefined : () => RpcMessage.RequestId(requestIds[serial++] ?? serial + 1000),
+  }).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol));
   return {
     client,
+    rawIngress: (raw: unknown) => receiveMain(raw, "document", "window"),
+    rawResponse: (raw: unknown) => receiveRenderer(raw),
+    unknownClient: RpcClient.make(
+      Rpc.make("Missing", { success: S.Void, error: DeliveryError }).pipe(RpcGroup.make)
+    ).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol)),
+    ingress: (input: Input) =>
+      S.encodeEffect(S.fromJsonString(Input))(input).pipe(
+        Effect.map((frame) => receiveMain(frame, input.session, input.session === "other" ? "other-window" : "window"))
+      ),
     main,
     renderer,
     firstChunk: Deferred.await(chunk),
     firstAck: Deferred.await(firstAck),
     wireStats: () => ({ acks, largestChunk }),
+    terminalEncodes: () => terminalEncodes,
     nextClient: RpcClient.make(Rpcs).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol)),
     request: () => lastRequest,
     disconnectMain: () => {
@@ -190,7 +244,7 @@ const pair = Effect.fn("Test.pair")(function* ({ holdAck = false }: { readonly h
             Effect.sync(() => {
               receiveOther = receive;
             }),
-          send: (frame) => Effect.sync(() => receiveMain(frame)),
+          send: (frame) => Effect.sync(() => receiveMain(frame, "other", "other-window")),
         })
       );
       return yield* RpcClient.make(Rpcs).pipe(Effect.provideService(RpcClient.Protocol, other.protocol));
@@ -715,6 +769,7 @@ it.effect("native retention: installed server request finalizer detaches documen
       transport.disconnectMain();
       yield* transport.nativeEnded;
       yield* Fiber.interrupt(invocation);
+      yield* Effect.yieldNow;
       expect(transport.main.stats().admission.appNative).toBe(1);
       expect(transport.main.stats().admission.appUnary).toBe(1);
       expect(transport.main.stats().admission.appBytes).toBe(4096);
@@ -1159,20 +1214,710 @@ it.effect("transport reload: queued old-session ingress cannot recreate a client
       const transport = yield* pair();
       yield* transport.client.Echo({ text: "original document" });
       const original = transport.request();
-      transport.disconnectMain();
-      yield* transport.renderer.protocol.send(original.client, {
-        _tag: "Request",
-        id: "old-document",
-        tag: "Echo",
-        payload: { text: "stale" },
-        headers: [],
+      const queued = yield* S.encodeEffect(S.fromJsonString(Input))({
+        session: "document",
+        client: original.client,
+        message: {
+          _tag: "Request",
+          id: "queued-before-departure",
+          tag: "Echo",
+          payload: { text: "queued" },
+          headers: [],
+        },
       });
+      // Authentication succeeded before departure; the physical drain has not run yet.
+      transport.rawIngress(queued);
+      transport.disconnectMain();
+      const stale = yield* Effect.exit(
+        transport.renderer.protocol.send(original.client, {
+          _tag: "Request",
+          id: "old-document",
+          tag: "Echo",
+          payload: { text: "stale" },
+          headers: [],
+        })
+      );
+      expect(Exit.isFailure(stale)).toBe(true);
       const otherWindow = yield* transport.nextWindow;
       const result = yield* otherWindow.Echo({ text: "other window remains live" });
       expect(result).toBe("other window remains live");
       expect(transport.main.stats().clients).toBe(1);
       expect(transport.main.stats().admission.sessions).toBe(1);
       expect(transport.main.stats().executions).toBe(0);
+    })
+  )
+);
+
+it.effect("adapter ownership: terminal encoding failure closes only its logical client", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ holdAck: true, failTerminalEncoding: true });
+      const other = yield* owner.nextClient;
+      const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+      yield* owner.firstAck;
+      yield* owner.main.terminate({ session: "document", ...owner.request(), error: failure("StreamOverflow") });
+      const watched = yield* Fiber.await(watching);
+      expect(Exit.isFailure(watched)).toBe(true);
+      yield* owner.neverEnded;
+      const survived = yield* other.Echo({ text: "survives" });
+      expect(survived).toBe("survives");
+      expect(owner.main.stats().executions).toBe(0);
+    })
+  )
+);
+
+it.effect("adapter ownership: unknown controls never create mappings and native callback commands are supervised", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ holdAck: true });
+      for (let client = 100; client < 1100; client++) {
+        yield* owner.ingress({ session: "document", client, message: { _tag: "Ping" } });
+        yield* Effect.yieldNow;
+      }
+      expect(owner.main.stats().clients).toBe(0);
+      const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+      yield* owner.firstAck;
+      expect(
+        owner.main.submitTermination({ session: "document", ...owner.request(), error: failure("StreamOverflow") })
+      ).toBe(true);
+      const watched = yield* Fiber.await(watching);
+      expect(Exit.isFailure(watched)).toBe(true);
+      yield* owner.neverEnded;
+      yield* owner.renderer.retired(owner.request());
+      expect(owner.renderer.stats().workers).toBe(0);
+    })
+  )
+);
+
+it.effect("adapter ownership: closed-client history has a document ceiling and retires with that document", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const other = yield* owner.nextWindow;
+      const ready = yield* other.Echo({ text: "ready" });
+      expect(ready).toBe("ready");
+      for (let client = 100; client < 165; client++) {
+        yield* owner.ingress({
+          session: "document",
+          client,
+          message: { _tag: "Request", id: 1, tag: "Echo", payload: { text: "x" }, headers: [] },
+        });
+        yield* Effect.yieldNow;
+        yield* owner.ingress({
+          session: "document",
+          client,
+          message: {
+            _tag: "Request",
+            id: "@effect/rpc/notification/x",
+            tag: "Echo",
+            payload: { text: "x" },
+            headers: [],
+          },
+        });
+        yield* Effect.yieldNow;
+      }
+      while (owner.main.stats().documents > 1 && owner.main.stats().completedFrames < 131) yield* Effect.yieldNow;
+      expect(owner.main.stats().closedClients).toBeLessThanOrEqual(64);
+      const isolated = yield* other.Echo({ text: "isolated" });
+      expect(isolated).toBe("isolated");
+      owner.disconnectMain();
+      yield* Effect.yieldNow;
+      expect(owner.main.stats().closedClients).toBe(0);
+    })
+  )
+);
+
+it.effect(
+  "retention ledger: data saturation preserves control, copies precharge and reload cannot reset a window",
+  () =>
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger({ windowBytes: 1024, appBytes: 2048, controlBytes: 64 });
+      expect(ledger.connect("old", "window")).toBe(true);
+      const origin = ledger.document("old");
+      const retained = origin?.reserve(900);
+      expect(retained).toBeDefined();
+      expect(origin?.reserve(125)).toBeUndefined();
+      const terminal = origin?.reserve(64, true);
+      expect(terminal).toBeDefined();
+      expect(origin?.reserve(1, true)).toBeUndefined();
+      ledger.disconnect("old");
+      expect(ledger.connect("new", "window")).toBe(true);
+      const current = ledger.document("new");
+      expect(current?.reserve(125)).toBeUndefined();
+      expect(retained?.resize(901)).toBe(false);
+      retained?.release();
+      terminal?.release();
+      const copy = current?.reserve(1024);
+      expect(copy).toBeDefined();
+      copy?.release();
+      copy?.release();
+      ledger.disconnect("new");
+      expect(ledger.stats()).toMatchObject({ data: 0, control: 0, leases: 0, windows: 0 });
+      expect(measureFrame('"🌍"').utf8).toBe(6);
+      expect(measureFrame('"\\""').retained).toBeGreaterThan(0);
+      expect(measureValue({ nested: [1, 2, "x"] })).toBeGreaterThan(0);
+      yield* Effect.void;
+    })
+);
+
+it.effect("common sub-budgets: repair attempt aggregate, auth aggregate and client-specific cut retirement", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      ledger.connect("document", "window");
+      const resources = makeResourceBudget(ledger.forWindow("window"));
+      const repairs = A.makeBy(17, () => makeRecovery({ resources }));
+      const attempts = A.map(repairs, (repair) => repair.begin("epoch"));
+      expect(repairs[16]?.accept({ attempt: attempts[16] ?? {}, nextEpoch: "epoch" })).toBe(false);
+      repairs[0]?.dispose();
+      const retry = repairs[16]?.begin("epoch");
+      expect(repairs[16]?.accept({ attempt: retry ?? {}, nextEpoch: "epoch" })).toBe(true);
+      for (const repair of repairs) repair.dispose();
+      const managed = yield* runtime;
+      const a = makeInvocationOwner({ runtime: managed, resources });
+      const b = makeInvocationOwner({ runtime: managed, resources });
+      for (let index = 0; index < 128; index++) {
+        expect(Result.isSuccess(a.registerAuth({ callback: () => {}, retainedBytes: 256 }))).toBe(true);
+        expect(Result.isSuccess(b.registerAuth({ callback: () => {}, retainedBytes: 256 }))).toBe(true);
+      }
+      expect(Result.isFailure(b.registerAuth({ callback: () => {}, retainedBytes: 256 }))).toBe(true);
+      a.close(() => {});
+      b.close(() => {});
+      const gate = makeDeliveryGate({ resources });
+      const cutA = {
+        token: { document: "d", client: "a", generation: 0, family: "events", serial: 0 },
+        epoch: "e",
+        through: 1,
+      };
+      const cutB = { ...cutA, token: { ...cutA.token, client: "b" } };
+      gate.applied({ ...cutB, through: 0 });
+      const waitingA = yield* Effect.forkScoped(gate.awaitCuts([cutA]));
+      const waitingB = yield* Effect.forkScoped(gate.awaitCuts([cutB]));
+      yield* Effect.yieldNow;
+      gate.retireClient("a");
+      expect(gate.stats().tokens).toBe(1);
+      gate.applied(cutB);
+      const resultA = yield* Fiber.await(waitingA);
+      const resultB = yield* Fiber.await(waitingB);
+      expect(Exit.isFailure(resultA)).toBe(true);
+      expect(Exit.isSuccess(resultB)).toBe(true);
+      gate.disconnect();
+      ledger.disconnect("document");
+      expect(ledger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("common native pool: operation owners share per-origin slots across document departure", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const admission = makeAdmission({ ...limits, native: 1, appNative: 2 });
+      const first = yield* makeOperations(admission.operationAccount);
+      const second = yield* makeOperations(admission.operationAccount);
+      const end = yield* Deferred.make<void>();
+      let factories = 0;
+      const run = Effect.fn("Test.nativeOperation")(function* () {
+        factories++;
+        yield* Deferred.await(end);
+      });
+      const a = yield* first.accept({ originAccount: "window", reserveBytes: 1024, run });
+      const denied = yield* Effect.exit(second.accept({ originAccount: "window", reserveBytes: 1024, run }));
+      expect(Exit.isFailure(denied)).toBe(true);
+      const b = yield* second.accept({ originAccount: "other", reserveBytes: 1024, run });
+      yield* Effect.yieldNow;
+      expect(factories).toBe(2);
+      expect(admission.stats().appNative).toBe(2);
+      yield* Deferred.succeed(end, undefined);
+      yield* a.released;
+      yield* b.released;
+      expect(admission.stats().appNative).toBe(0);
+      expect(admission.stats().appBytes).toBe(0);
+    })
+  )
+);
+
+for (const requestIds of [
+  [17, "17"],
+  ["17", 17],
+]) {
+  it.effect(
+    `transport identity: numeric/string IDs coexist in ordering ${requestIds[0] === 17 ? "number-first" : "string-first"}`,
+    () =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const owner = yield* pair({ requestIds });
+          const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+          yield* owner.firstAck;
+          const result = yield* owner.client.Echo({ text: "independent" });
+          expect(result).toBe("independent");
+          yield* Fiber.interrupt(watching);
+          yield* owner.neverEnded;
+        })
+      )
+  );
+}
+
+it.effect("transport acceptance: unknown procedure retires admission and leaves client live", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const unknown = yield* owner.unknownClient;
+      const rejected = yield* Effect.exit(unknown.Missing());
+      expect(Exit.isFailure(rejected)).toBe(true);
+      const result = yield* owner.client.Echo({ text: "after unknown" });
+      expect(result).toBe("after unknown");
+      expect(owner.main.stats().executions).toBe(0);
+    })
+  )
+);
+
+it.effect("transport acceptance: duplicate active ID closes one client and cancels its stream", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ requestIds: [17] });
+      const other = yield* owner.nextClient;
+      const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+      yield* owner.firstAck;
+      yield* owner.ingress({
+        session: "document",
+        client: owner.request().client,
+        message: { _tag: "Request", id: 17, tag: "Echo", payload: { text: "duplicate" }, headers: [] },
+      });
+      const ended = yield* Fiber.await(watching);
+      expect(Exit.isFailure(ended)).toBe(true);
+      yield* owner.neverEnded;
+      const result = yield* other.Echo({ text: "other logical client" });
+      expect(result).toBe("other logical client");
+    })
+  )
+);
+
+for (const raw of ["{", "{}", '{"session":"document","client":0,"message":{"_tag":"Request","headers":42}}']) {
+  it.effect(`transport acceptance: malformed ingress ${raw} retires its document and preserves another window`, () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const owner = yield* pair();
+        yield* owner.client.Echo({ text: "initialize" });
+        const other = yield* owner.nextWindow;
+        owner.rawIngress(raw);
+        yield* Effect.yieldNow;
+        const result = yield* other.Echo({ text: "window survives" });
+        expect(result).toBe("window survives");
+        expect(owner.main.stats().executions).toBe(0);
+      })
+    )
+  );
+}
+
+it.effect(
+  "transport acceptance: malformed response closes its renderer document without affecting another window",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const owner = yield* pair();
+        const other = yield* owner.nextWindow;
+        const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+        yield* owner.firstAck;
+        owner.rawResponse('{"session":"document","client":0,"message":{"_tag":"Exit","exit":null}}');
+        const ended = yield* Fiber.await(watching);
+        expect(Exit.isFailure(ended)).toBe(true);
+        const result = yield* other.Echo({ text: "isolated" });
+        expect(result).toBe("isolated");
+        expect(owner.renderer.stats().workers).toBe(0);
+      })
+    )
+);
+
+it.effect("transport acceptance: discarded native call retains execution and pool after startup acknowledgement", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      yield* owner.client.Native(undefined, { discard: true });
+      yield* owner.nativeStarted;
+      expect(owner.main.stats().executions).toBe(1);
+      expect(owner.main.stats().admission.appUnary).toBe(1);
+      owner.disconnectMain();
+      yield* owner.nativeEnded;
+      yield* Effect.yieldNow;
+      expect(owner.main.stats().admission.appNative).toBe(1);
+      yield* owner.completeNative();
+      expect(owner.main.stats().admission.appUnary).toBe(0);
+    })
+  )
+);
+
+it.effect("transport acceptance: Eof still admits forced Interrupt and drains a live stream", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ holdAck: true });
+      const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+      yield* owner.firstAck;
+      const request = owner.request();
+      yield* owner.renderer.protocol.send(request.client, { _tag: "Eof" });
+      yield* owner.main.terminate({ session: "document", ...request, error: failure("StreamOverflow") });
+      const ended = yield* Fiber.await(watching);
+      expect(Exit.isFailure(ended)).toBe(true);
+      yield* owner.neverEnded;
+      expect(owner.main.stats().executions).toBe(0);
+    })
+  )
+);
+
+it.effect("transport acceptance: actual interrupted sink is joined by its reserved control worker", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const entered = yield* Deferred.make<void>();
+      const installed = yield* Deferred.make<void>();
+      yield* owner.renderer.protocol
+        .run(999, (message) =>
+          message._tag === "Chunk"
+            ? Effect.andThen(Deferred.succeed(entered, undefined), Effect.never)
+            : message._tag === "Exit"
+              ? Deferred.succeed(installed, undefined).pipe(Effect.asVoid)
+              : Effect.void
+        )
+        .pipe(Effect.forkScoped);
+      yield* Effect.yieldNow;
+      yield* owner.renderer.protocol.send(999, {
+        _tag: "Request",
+        id: "blocked",
+        tag: "Never",
+        headers: [],
+        payload: null,
+      });
+      yield* Deferred.await(entered);
+      yield* owner.main.terminate({
+        session: "document",
+        client: 999,
+        requestId: "blocked",
+        error: failure("StreamOverflow"),
+      });
+      yield* Deferred.await(installed);
+      yield* owner.renderer.retired({ client: 999, requestId: "blocked" });
+      yield* owner.neverEnded;
+      expect(owner.renderer.stats().workers).toBe(0);
+      expect(owner.renderer.stats().bytes).toBe(0);
+    })
+  )
+);
+
+it.effect("transport acceptance: binary base64 round trip and concurrent completion preserve values", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const bytes = new Uint8Array(1024 * 1024);
+      for (let i = 0; i < bytes.length; i++) bytes[i] = i % 251;
+      const actual = yield* owner.client.Binary({ bytes });
+      expect(actual).toEqual(bytes);
+      const png = yield* S.decodeEffect(S.Uint8ArrayFromBase64)(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aRZkAAAAASUVORK5CYII="
+      );
+      const returnedPng = yield* owner.client.Binary({ bytes: png });
+      expect(returnedPng).toEqual(png);
+      expect(A.take(A.fromIterable(returnedPng), 8)).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+      const results = yield* Effect.forEach(A.range(0, 63), (i) => owner.client.Echo({ text: i.toString() }), {
+        concurrency: 16,
+      });
+      expect(results).toEqual(A.map(A.range(0, 63), (i) => i.toString()));
+      expect(owner.main.stats().executions).toBe(0);
+    })
+  )
+);
+
+for (const discard of [false, true]) {
+  it.effect(`transport acceptance: reserved namespace before first ordinary call, discard=${discard}`, () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const owner = yield* pair({ requestIds: ["@effect/rpc/notification/forbidden"] });
+        const rejected = yield* Effect.exit(owner.client.Echo({ text: "forbidden" }, { discard }));
+        expect(Exit.isFailure(rejected)).toBe(true);
+        const other = yield* owner.nextClient;
+        const result = yield* other.Echo({ text: "other" });
+        expect(result).toBe("other");
+        expect(owner.main.stats().executions).toBe(0);
+      })
+    )
+  );
+}
+
+it.effect("publication ownership: registration snapshots are immutable and share the common account", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      const resources = makeResourceBudget(ledger.forWindow("window"));
+      let publish: (value: { nested: { value: number } }) => void = () => {};
+      const owner = makeSubscriptions({
+        identity: { document: "d", client: "c", generation: 0, epoch: "e" },
+        resources,
+        onTerminal: () => {},
+      });
+      const sub = yield* owner.acquire(
+        "events",
+        (receive) => {
+          publish = receive;
+        },
+        (value: { nested: { value: number } }) => ({ value, bytes: 8 })
+      );
+      const value = { nested: { value: 1 } };
+      publish(value);
+      value.nested.value = 2;
+      const items = yield* owner.watch(sub).pipe(Stream.take(2), Stream.runCollect);
+      const item = items[1];
+      expect(item?._tag).toBe("Observation");
+      if (item?._tag === "Observation") {
+        expect(item.value.nested.value).toBe(1);
+        expect(Object.isFrozen(item.value.nested)).toBe(true);
+      }
+      expect(ledger.stats().data).toBeGreaterThan(4096);
+      yield* sub.close;
+      expect(ledger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect(
+  "publication ownership: capacity refusal happens before the snapshot factory and attempts source cleanup",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const ledger = makeRetentionLedger({ windowBytes: 4096 });
+        const resources = makeResourceBudget(ledger.forWindow("window"));
+        let captured = 0;
+        let released = 0;
+        const owner = makeSubscriptions({
+          identity: { document: "d", client: "c", generation: 0, epoch: "e" },
+          resources,
+          onTerminal: () => {},
+        });
+        const result = yield* Effect.exit(
+          owner.acquire(
+            "events",
+            (publish, own) => {
+              own(() => {
+                released++;
+              });
+              publish(1);
+            },
+            (value) => {
+              captured++;
+              return { value, bytes: 8 };
+            }
+          )
+        );
+        expect(Exit.isFailure(result)).toBe(true);
+        expect(captured).toBe(0);
+        expect(released).toBe(1);
+        expect(ledger.stats().data).toBe(0);
+      })
+    )
+);
+
+it.effect("invocation ownership: per-client admission and retirement preserve another client's pending work", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const managed = yield* runtime;
+      const ledger = makeRetentionLedger();
+      const owner = makeInvocationOwner({
+        runtime: managed,
+        resources: makeResourceBudget(ledger.forWindow("window")),
+      });
+      let settled = 0;
+      for (let index = 0; index < 257; index++)
+        owner.invoke({
+          client: 1,
+          effect: Effect.never,
+          settle: () => {
+            settled++;
+          },
+        });
+      owner.invoke({
+        client: 2,
+        effect: Effect.never,
+        settle: () => {
+          settled++;
+        },
+      });
+      expect(settled).toBe(1);
+      expect(owner.pending()).toBe(257);
+      owner.retireClient(1);
+      expect(settled).toBe(257);
+      expect(owner.pending()).toBe(1);
+      owner.close(() => {});
+      expect(settled).toBe(258);
+      expect(ledger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("transport failure atom: public registry publication is bounded and ignores departed owners", () =>
+  Effect.gen(function* () {
+    const registry = Registry.make();
+    const owner = makeTransportFailureOwner(registry);
+    const capacity = ElectronRpcCapacityError.make({
+      resource: "buffered bytes",
+      scope: "logical client",
+      message: "BufferedCapacity",
+    });
+    owner.report(capacity);
+    const current = registry.get(owner.atom);
+    expect(current._tag).toBe("Some");
+    if (current._tag === "Some") expect(current.value).toBe(capacity);
+    owner.close();
+    owner.report(ElectronRpcCapacityError.make({ resource: "frame bytes", scope: "document", message: "late" }));
+    expect(registry.get(owner.atom)).toBe(current);
+    registry.dispose();
+    yield* Effect.void;
+  })
+);
+
+it.effect(
+  "document owner: permanent departure closes invocation, cut and repair accounting before registry disposal",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const managed = yield* runtime;
+        const ledger = makeRetentionLedger();
+        const owner = makeRendererDocumentOwner({
+          runtime: managed,
+          resources: makeResourceBudget(ledger.forWindow("window")),
+        });
+        const recovery = Result.getOrThrowWith(owner.recovery({ client: "c", family: "history" }), (error) => error);
+        recovery.begin("epoch");
+        recovery.touch("task");
+        recovery.watermark({ id: "task", sequence: 1 });
+        owner.delivery.applied({
+          token: { document: "d", client: "c", generation: 0, family: "events", serial: 1 },
+          epoch: "e",
+          through: 1,
+        });
+        let settled = 0;
+        owner.invoke({
+          effect: Effect.never,
+          settle: () => {
+            settled++;
+          },
+        });
+        owner.registerAuth({ callback: () => {}, retainedBytes: 256 });
+        expect(ledger.stats().data).toBeGreaterThan(0);
+        let disposed = 0;
+        owner.close(() => {
+          disposed++;
+          expect(settled).toBe(1);
+          expect(ledger.stats().data).toBe(0);
+        });
+        owner.close(() => {
+          disposed++;
+        });
+        expect(disposed).toBe(1);
+        expect(Result.isFailure(owner.recovery({ client: "new", family: "history" }))).toBe(true);
+      })
+    )
+);
+
+it.effect("retention ownership: zero-byte native reservations and cached handles cannot reset a window", () =>
+  Effect.gen(function* () {
+    const ledger = makeRetentionLedger({ windowBytes: 1024, appBytes: 2048 });
+    const cached = ledger.forWindow("window");
+    const first = cached.reserve(1);
+    first?.release();
+    ledger.connect("old", "window");
+    const native = cached.reserve(0);
+    ledger.disconnect("old");
+    ledger.connect("new", "window");
+    expect(native?.resize(900)).toBe(true);
+    expect(ledger.document("new")?.reserve(125)).toBeUndefined();
+    native?.release();
+    const next = cached.reserve(900);
+    expect(next).toBeDefined();
+    expect(ledger.document("new")?.reserve(125)).toBeUndefined();
+    next?.release();
+    ledger.disconnect("new");
+    expect(ledger.stats()).toMatchObject({ data: 0, leases: 0, windows: 0 });
+    yield* Effect.void;
+  })
+);
+
+it.effect("document layer: scope disposal retires its watermark budget", () =>
+  Effect.gen(function* () {
+    const ledger = makeRetentionLedger();
+    const resources = makeResourceBudget(ledger.forWindow("window"));
+    yield* Effect.scoped(
+      Effect.gen(function* () {
+        const context = yield* Layer.build(deliveryLayer).pipe(Effect.provideService(DocumentResources, resources));
+        const owner = Context.get(context, DocumentDelivery);
+        owner.applied({
+          token: { document: "d", client: "c", generation: 0, family: "events", serial: 1 },
+          epoch: "e",
+          through: 1,
+        });
+        expect(ledger.stats().data).toBeGreaterThan(0);
+      })
+    );
+    expect(ledger.stats().data).toBe(0);
+  })
+);
+
+it.effect("auth publication: self-removal preserves subsequent synchronous prefixes and bounded ownership", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const managed = yield* runtime;
+      const ledger = makeRetentionLedger();
+      const owner = makeInvocationOwner({
+        runtime: managed,
+        resources: makeResourceBudget(ledger.forWindow("window")),
+      });
+      const trace: Array<string> = [];
+      let removeA = () => {};
+      removeA = Result.getOrThrowWith(
+        owner.registerAuth({
+          retainedBytes: 256,
+          callback: () => {
+            trace.push("A");
+            removeA();
+            owner.registerAuth({
+              retainedBytes: 256,
+              callback: () => {
+                trace.push("C");
+              },
+            });
+          },
+        }),
+        (error) => error
+      );
+      owner.registerAuth({
+        retainedBytes: 256,
+        callback: () => {
+          trace.push("B");
+        },
+      });
+      owner.emitAuth();
+      expect(trace).toEqual(["A", "B", "C"]);
+      expect(owner.callbackStats()).toEqual({ count: 2, bytes: 512 });
+      owner.close(() => {});
+      expect(ledger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("terminal accounting: nonenumerable Error.message is reserved before the actual exit encoder", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ holdAck: true });
+      const other = yield* owner.nextClient;
+      const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+      yield* owner.firstAck;
+      yield* owner.main.terminate({
+        session: "document",
+        ...owner.request(),
+        error: DeliveryError.make({ reason: "StreamOverflow", message: Str.repeat(65536)("x") }),
+      });
+      const stopped = yield* Fiber.await(watching);
+      expect(Exit.isFailure(stopped)).toBe(true);
+      yield* owner.neverEnded;
+      expect(owner.terminalEncodes()).toBe(0);
+      const result = yield* other.Echo({ text: "survives refusal" });
+      expect(result).toBe("survives refusal");
     })
   )
 );
