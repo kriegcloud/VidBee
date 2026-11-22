@@ -1,6 +1,20 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
+  "files": [
+    "src/renderer/src/runtime/RendererInvocation.entry.ts",
+    "src/renderer/src/runtime/StreamRecovery.atoms.ts",
+    "src/renderer/src/transport/DesktopRpcBridge.d.ts",
+    "src/renderer/src/transport/DesktopRpcConnection.driver.ts",
+    "src/renderer/src/transport/DocumentDelivery.errors.ts",
+    "src/renderer/src/transport/DocumentDelivery.layer.ts",
+    "src/renderer/src/transport/DocumentDelivery.model.ts",
+    "src/renderer/src/transport/DocumentDelivery.service.ts",
+    "src/renderer/src/transport/ElectronRpc.model.ts",
+    "src/renderer/src/transport/ElectronRpcClient.layer.ts",
+    "src/renderer/src/transport/RpcCensus.model.ts",
+    "src/renderer/src/transport/RpcField.model.ts",
+    "src/renderer/src/transport/RpcObservation.model.ts"
+  ],
   "include": [],
   "compilerOptions": {
     "module": "esnext",

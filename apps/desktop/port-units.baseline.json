@@ -56,6 +56,48 @@
       "environments": ["node"]
     },
     {
+      "file": "apps/desktop/src/main/ipc/DocumentSubscriptions.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/DocumentSubscriptions.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcAdmission.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcAdmission.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcServer.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcServer.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/Publication.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
       "file": "apps/desktop/src/main/ipc/index.ts",
       "partition": "legacy",
       "capability": "9.0-foundation",
@@ -150,6 +192,30 @@
       "partition": "legacy",
       "capability": "9.0-foundation",
       "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/DesktopNotifications.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/JsonSyntax.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/OriginalFailure.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/SynchronousHost.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
     },
     {
       "file": "apps/desktop/src/main/lib/agent-activity.ts",
@@ -674,18 +740,6 @@
       "environments": ["node"]
     },
     {
-      "file": "apps/desktop/src/main/lib/database/migrate.ts",
-      "partition": "legacy",
-      "capability": "9.0-foundation",
-      "environments": ["node"]
-    },
-    {
-      "file": "apps/desktop/src/main/lib/database/schema.ts",
-      "partition": "legacy",
-      "capability": "9.0-foundation",
-      "environments": ["node"]
-    },
-    {
       "file": "apps/desktop/src/main/lib/database-path.ts",
       "partition": "legacy",
       "capability": "9.0-foundation",
@@ -693,6 +747,18 @@
     },
     {
       "file": "apps/desktop/src/main/lib/database.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database/migrate.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database/schema.ts",
       "partition": "legacy",
       "capability": "9.0-foundation",
       "environments": ["node"]
@@ -1304,6 +1370,24 @@
       "environments": ["node"]
     },
     {
+      "file": "apps/desktop/src/main/runtime/ApplicationOperations.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/ApplicationOperations.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/SynchronousHost.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
       "file": "apps/desktop/src/main/settings.ts",
       "partition": "legacy",
       "capability": "9.0-foundation",
@@ -1338,6 +1422,12 @@
       "partition": "legacy",
       "capability": "9.0-foundation",
       "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/preload/DesktopRpcBridge.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
     },
     {
       "file": "apps/desktop/src/preload/index.d.ts",
@@ -2678,6 +2768,18 @@
       "environments": ["web"]
     },
     {
+      "file": "apps/desktop/src/renderer/src/runtime/RendererInvocation.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/StreamRecovery.atoms.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
       "file": "apps/desktop/src/renderer/src/store/agent-chat-launch.ts",
       "partition": "legacy",
       "capability": "9.4-ai",
@@ -2778,6 +2880,72 @@
       "partition": "legacy",
       "capability": "9.0-foundation",
       "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DesktopRpcBridge.d.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DesktopRpcConnection.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/ElectronRpc.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/ElectronRpcClient.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcCensus.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcField.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcObservation.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/agent-chat.ts",
@@ -3110,6 +3278,12 @@
       "environments": ["node", "web"]
     },
     {
+      "file": "apps/desktop/test/TransportRuntime.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
       "file": "apps/desktop/test/agent-skill-permissions.spec.ts",
       "partition": "legacy",
       "capability": "9.4-ai",
@@ -3124,6 +3298,12 @@
     {
       "file": "apps/desktop/test/concurrency-limiter.test.ts",
       "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/foundation-transport.spec.ts",
+      "partition": "strict",
       "capability": "9.0-foundation",
       "environments": ["test"]
     },
