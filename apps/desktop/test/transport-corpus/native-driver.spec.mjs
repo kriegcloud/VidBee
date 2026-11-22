@@ -387,3 +387,184 @@ it('fix4 R6: a connected window replaces its document at the sixteen-document ce
     )
   )
 })
+
+const review3WindowFixture = () => {
+  const handlers = new Map()
+  const ipcListeners = new Map()
+  const registered = new Set()
+  const departed = []
+  const makeWindow = (id) => {
+    const callbacks = new Map()
+    const contents = {
+      id,
+      mainFrame: { url: 'http://localhost:5173/', send() {} },
+      isDestroyed: () => false,
+      on(name, callback) {
+        const listeners = callbacks.get(name) ?? []
+        listeners.push(callback)
+        callbacks.set(name, listeners)
+        return this
+      },
+      removeListener(name, callback) {
+        callbacks.set(
+          name,
+          (callbacks.get(name) ?? []).filter((current) => current !== callback)
+        )
+        return this
+      },
+      emit(name, ...args) {
+        for (const callback of [...(callbacks.get(name) ?? [])]) {
+          callback(...args)
+        }
+      },
+      listenerCount(name) {
+        return (callbacks.get(name) ?? []).length
+      }
+    }
+    registered.add(contents)
+    return contents
+  }
+  const wire = makeElectronWire({
+    ipc: {
+      handle: (name, callback) => handlers.set(name, callback),
+      removeHandler: (name) => handlers.delete(name),
+      on: (name, callback) => ipcListeners.set(name, callback),
+      removeListener: (name) => ipcListeners.delete(name)
+    },
+    authority: {
+      registeredRole: (contents) => (registered.has(contents) ? 'visible' : undefined),
+      packagedRendererUrl: 'file:///app/index.html',
+      developmentRendererUrl: 'http://localhost:5173/',
+      allowsProcedure: () => true
+    }
+  })
+  return {
+    wire,
+    makeWindow,
+    departed,
+    connect: (contents) =>
+      handlers.get(channels.connect)({ sender: contents, senderFrame: contents.mainFrame }),
+    message: (contents) =>
+      ipcListeners.get(channels.message)(
+        { sender: contents, senderFrame: contents.mainFrame },
+        'old frame'
+      )
+  }
+}
+
+it('fix5 review3 crash-listener mutation: renderer crash revokes session admission until trusted commit', async () => {
+  const fixture = review3WindowFixture()
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        let messages = 0
+        yield* fixture.wire.listen(
+          () => {
+            messages++
+          },
+          (session) => fixture.departed.push(session)
+        )
+        const first = fixture.makeWindow(1),
+          second = fixture.makeWindow(2)
+        const old = fixture.connect(first),
+          independent = fixture.connect(second)
+        first.emit('render-process-gone', {}, { reason: 'crashed' })
+        assert.equal(yield* fixture.wire.authorize(old.session, 'Echo'), false)
+        assert.deepEqual(fixture.departed, [old.session])
+        fixture.message(first)
+        assert.equal(messages, 0)
+        assert.throws(() => fixture.connect(first))
+        assert.equal(yield* fixture.wire.authorize(independent.session, 'Echo'), true)
+        first.mainFrame = { url: 'http://localhost:5173/', send() {} }
+        first.emit('did-frame-navigate', {}, first.mainFrame.url, 200, 'OK', true, 2, 1)
+        const reloaded = fixture.connect(first)
+        assert.notEqual(reloaded.session, old.session)
+        assert.equal(yield* fixture.wire.authorize(reloaded.session, 'Echo'), true)
+      })
+    )
+  )
+})
+
+it('fix5 review3 destroyed-window mutation: destruction removes owned listeners and state without touching another window', async () => {
+  const fixture = review3WindowFixture()
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* fixture.wire.listen(
+          () => {},
+          (session) => fixture.departed.push(session)
+        )
+        const first = fixture.makeWindow(1),
+          second = fixture.makeWindow(2)
+        let unrelated = 0
+        first.on('destroyed', () => {
+          unrelated++
+        })
+        const old = fixture.connect(first),
+          independent = fixture.connect(second)
+        first.emit('destroyed')
+        assert.equal(unrelated, 1)
+        assert.deepEqual(fixture.departed, [old.session])
+        for (const event of ['did-start-navigation', 'did-frame-navigate', 'render-process-gone']) {
+          assert.equal(first.listenerCount(event), 0)
+        }
+        assert.equal(first.listenerCount('destroyed'), 1)
+        assert.equal(yield* fixture.wire.authorize(independent.session, 'Echo'), true)
+        // A different registered contents object with the same ID detects stale private state.
+        const replacementWindow = fixture.makeWindow(1)
+        const replacement = fixture.connect(replacementWindow)
+        assert.equal(yield* fixture.wire.authorize(replacement.session, 'Echo'), true)
+        first.emit('render-process-gone')
+        first.emit('destroyed')
+        assert.equal(yield* fixture.wire.authorize(replacement.session, 'Echo'), true)
+        assert.equal(unrelated, 2)
+      })
+    )
+  )
+})
+
+it('fix5 review3 wire-scope mutation: closing the wire releases every owned per-window listener', async () => {
+  const fixture = review3WindowFixture()
+  const first = fixture.makeWindow(1),
+    second = fixture.makeWindow(2)
+  let unrelated = 0
+  first.on('render-process-gone', () => {
+    unrelated++
+  })
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* fixture.wire.listen(
+          () => {},
+          (session) => fixture.departed.push(session)
+        )
+        fixture.connect(first)
+        fixture.connect(second)
+        assert.equal(first.listenerCount('render-process-gone'), 2)
+        assert.equal(second.listenerCount('render-process-gone'), 1)
+      })
+    )
+  )
+  assert.equal(fixture.departed.length, 2)
+  for (const contents of [first, second]) {
+    for (const event of ['did-start-navigation', 'did-frame-navigate', 'destroyed']) {
+      assert.equal(contents.listenerCount(event), 0)
+    }
+    assert.equal(contents.listenerCount('render-process-gone'), contents === first ? 1 : 0)
+  }
+  first.emit('render-process-gone')
+  assert.equal(unrelated, 1)
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* fixture.wire.listen(
+          () => {},
+          () => {}
+        )
+        const next = fixture.makeWindow(1)
+        const connected = fixture.connect(next)
+        assert.equal(yield* fixture.wire.authorize(connected.session, 'Echo'), true)
+      })
+    )
+  )
+})

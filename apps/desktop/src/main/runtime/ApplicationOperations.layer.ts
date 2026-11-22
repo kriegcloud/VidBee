@@ -126,8 +126,9 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
       active = HashSet.remove(active, handle.released);
       Deferred.doneUnsafe(released, Exit.void);
     });
-    // This owner exists before the worker can be interrupted, including before its first instruction.
-    const settlementScope = yield* Scope.fork(scope);
+    // One sequential child owns termination before fallback settlement, regardless of the parent strategy.
+    // Install the fallback first so the later worker finalizer runs before it (LIFO).
+    const settlementScope = yield* Scope.fork(scope, "sequential");
     yield* Scope.addFinalizer(settlementScope, settle(Exit.interrupt()));
     const work = Effect.uninterruptibleMask((restore) =>
       Effect.gen(function* () {
@@ -136,7 +137,7 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
         yield* settle(exit);
       })
     ).pipe(Effect.ensuring(Scope.close(settlementScope, Exit.void)));
-    yield* Effect.forkIn(work, scope);
+    yield* Effect.forkIn(work, settlementScope);
     return handle;
   }, Effect.uninterruptible);
   const owner: OperationOwner = {
