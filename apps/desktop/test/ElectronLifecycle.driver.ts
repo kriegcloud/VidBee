@@ -7,15 +7,21 @@ import { originalFailure } from "../src/main/lib/OriginalFailure.errors.js";
 import { Connect, channels, Input, Output } from "../src/renderer/src/transport/ElectronRpc.model.js";
 
 /**
- * Native APIs confined to this fixture driver; caller runs only an isolated packaged runtime.
+ * Acquires isolated Electron windows and an authenticated test wire in the fixture scope; scope closure destroys fixture-owned windows and removes native handlers without touching the owner application.
  *
- * **Example** (Use nativeHarness at its owning boundary)
+ * **Example** (Use nativeHarness with its owner)
  *
  * ```ts
  * import { nativeHarness } from "./ElectronLifecycle.driver.js"
  * import * as Effect from "effect/Effect"
- * const fixture = Effect.scoped(nativeHarness());
- * void fixture;
+ * export const observe = Effect.scoped(Effect.gen(function* () {
+ *   const harness = yield* nativeHarness();
+ *   yield* harness.wire.listen(() => {}, () => {});
+ *   const window = yield* harness.open();
+ *   const connected = yield* window.connect;
+ *   return connected.session;
+ * }));
+ * // Run only inside the isolated packaged Electron fixture; scope exit releases its native handlers.
  * ```
  *
  * @category utilities

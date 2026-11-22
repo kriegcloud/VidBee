@@ -152,3 +152,238 @@ it('fix3 R1: application authority rejects unregistered, wrong URL, subframe, st
     )
   )
 })
+
+it('fix4 R5/R6: navigation generations stay revoked until trusted commit and replacement fits sixteen slots', async () => {
+  const handlers = new Map()
+  const listeners = new Map()
+  const windows = []
+  const makeWindow = (id) => {
+    const callbacks = new Map()
+    const contents = {
+      id,
+      mainFrame: { url: 'http://localhost:5173/', send() {} },
+      isDestroyed: () => false,
+      on(name, fn) {
+        const list = callbacks.get(name) ?? []
+        list.push(fn)
+        callbacks.set(name, list)
+        return this
+      },
+      removeListener(name, fn) {
+        callbacks.set(
+          name,
+          (callbacks.get(name) ?? []).filter((item) => item !== fn)
+        )
+        return this
+      },
+      emit(name, ...args) {
+        for (const fn of [...(callbacks.get(name) ?? [])]) {
+          fn(...args)
+        }
+      }
+    }
+    windows.push(contents)
+    return contents
+  }
+  const wire = makeElectronWire({
+    ipc: {
+      handle: (key, fn) => handlers.set(key, fn),
+      removeHandler: (key) => handlers.delete(key),
+      on: (key, fn) => listeners.set(key, fn),
+      removeListener: (key) => listeners.delete(key)
+    },
+    authority: {
+      registeredRole: (sender) => (windows.includes(sender) ? 'visible' : undefined),
+      packagedRendererUrl: 'file:///app/index.html',
+      developmentRendererUrl: 'http://localhost:5173/',
+      allowsProcedure: () => true
+    }
+  })
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        let messages = 0
+        yield* wire.listen(
+          () => {
+            messages++
+          },
+          () => {}
+        )
+        const connect = (contents) =>
+          handlers.get(channels.connect)({ sender: contents, senderFrame: contents.mainFrame })
+        const first = makeWindow(1),
+          second = makeWindow(2)
+        const old = connect(first),
+          independent = connect(second)
+        first.emit('did-start-navigation', {}, 'https://untrusted.invalid/', false, true)
+        assert.equal(yield* wire.authorize(old.session, 'Echo'), false)
+        assert.throws(
+          () => connect(first),
+          'departing old document must not reconnect before commit'
+        )
+        listeners.get(channels.message)(
+          { sender: first, senderFrame: first.mainFrame },
+          'late old frame'
+        )
+        assert.equal(messages, 0)
+        first.emit(
+          'did-fail-provisional-load',
+          {},
+          -3,
+          'ERR_ABORTED',
+          'https://untrusted.invalid/',
+          true,
+          1,
+          1
+        )
+        assert.throws(() => connect(first), 'cancellation must not revive revoked authority')
+        first.emit('did-frame-navigate', {}, 'http://localhost:5173/', 200, 'OK', false, 1, 2)
+        assert.throws(() => connect(first), 'subframe commit must not reopen main admission')
+        first.mainFrame = { url: 'https://untrusted.invalid/', send() {} }
+        first.emit('did-frame-navigate', {}, first.mainFrame.url, 200, 'OK', true, 2, 1)
+        assert.throws(() => connect(first))
+        first.emit('did-start-navigation', {}, 'http://localhost:5173/', false, true)
+        first.mainFrame = { url: 'http://localhost:5173/', send() {} }
+        first.emit('did-frame-navigate', {}, first.mainFrame.url, 200, 'OK', true, 3, 1)
+        const reloaded = connect(first)
+        assert.notEqual(reloaded.session, old.session)
+        assert.equal(yield* wire.authorize(reloaded.session, 'Echo'), true)
+        assert.equal(yield* wire.authorize(independent.session, 'Echo'), true)
+        first.emit('did-start-navigation', {}, 'http://localhost:5173/#same', true, true)
+        assert.equal(yield* wire.authorize(reloaded.session, 'Echo'), true)
+        for (let id = 3; id <= 16; id++) {
+          connect(makeWindow(id))
+        }
+        const replacement = connect(first)
+        assert.notEqual(replacement.session, reloaded.session)
+        assert.equal(yield* wire.authorize(replacement.session, 'Echo'), true)
+        assert.equal(yield* wire.authorize(reloaded.session, 'Echo'), false)
+        assert.throws(() => connect(makeWindow(17)))
+        assert.equal(yield* wire.authorize(independent.session, 'Echo'), true)
+      })
+    )
+  )
+})
+
+it('fix4 survivor: URL host and credential guards reject otherwise identical development URLs', async () => {
+  const handlers = new Map()
+  const frame = { url: 'http://localhost:5173/', send() {} }
+  const contents = {
+    id: 1,
+    mainFrame: frame,
+    on() {},
+    removeListener() {},
+    isDestroyed: () => false
+  }
+  const wire = makeElectronWire({
+    ipc: {
+      handle: (key, fn) => handlers.set(key, fn),
+      removeHandler: (key) => handlers.delete(key),
+      on() {},
+      removeListener() {}
+    },
+    authority: {
+      registeredRole: () => 'visible',
+      packagedRendererUrl: 'file:///app/index.html',
+      developmentRendererUrl: 'http://localhost:5173/',
+      allowsProcedure: () => true
+    }
+  })
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* wire.listen(
+          () => {},
+          () => {}
+        )
+        const connect = () =>
+          handlers.get(channels.connect)({ sender: contents, senderFrame: frame })
+        for (const url of [
+          'http://evil.invalid:5173/',
+          'http://localhost.evil.invalid:5173/',
+          'http://user@localhost:5173/',
+          'http://:password@localhost:5173/',
+          'http://user:password@localhost:5173/'
+        ]) {
+          frame.url = url
+          assert.throws(connect, url)
+        }
+        frame.url = 'http://localhost:5173/?app=1#route'
+        assert(connect().session)
+      })
+    )
+  )
+})
+
+it('fix4 R6: a connected window replaces its document at the sixteen-document ceiling', async () => {
+  const handlers = new Map()
+  const listeners = new Map()
+  const windows = []
+  const makeWindow = (id) => {
+    const callbacks = new Map()
+    const contents = {
+      id,
+      mainFrame: { url: 'http://localhost:5173/', send() {} },
+      isDestroyed: () => false,
+      on(name, fn) {
+        const list = callbacks.get(name) ?? []
+        list.push(fn)
+        callbacks.set(name, list)
+        return this
+      },
+      removeListener(name, fn) {
+        callbacks.set(
+          name,
+          (callbacks.get(name) ?? []).filter((item) => item !== fn)
+        )
+        return this
+      },
+      emit(name, ...args) {
+        for (const fn of [...(callbacks.get(name) ?? [])]) {
+          fn(...args)
+        }
+      }
+    }
+    windows.push(contents)
+    return contents
+  }
+  const wire = makeElectronWire({
+    ipc: {
+      handle: (key, fn) => handlers.set(key, fn),
+      removeHandler: (key) => handlers.delete(key),
+      on: (key, fn) => listeners.set(key, fn),
+      removeListener: (key) => listeners.delete(key)
+    },
+    authority: {
+      registeredRole: (sender) => (windows.includes(sender) ? 'visible' : undefined),
+      packagedRendererUrl: 'file:///app/index.html',
+      developmentRendererUrl: 'http://localhost:5173/',
+      allowsProcedure: () => true
+    }
+  })
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* wire.listen(
+          () => {},
+          () => {}
+        )
+        const connect = (contents) =>
+          handlers.get(channels.connect)({ sender: contents, senderFrame: contents.mainFrame })
+        const first = makeWindow(1),
+          second = makeWindow(2)
+        const old = connect(first)
+        const independent = connect(second)
+        for (let id = 3; id <= 16; id++) {
+          connect(makeWindow(id))
+        }
+        const replacement = connect(first)
+        assert.notEqual(replacement.session, old.session)
+        assert.equal(yield* wire.authorize(replacement.session, 'Echo'), true)
+        assert.equal(yield* wire.authorize(old.session, 'Echo'), false)
+        assert.throws(() => connect(makeWindow(17)))
+        assert.equal(yield* wire.authorize(independent.session, 'Echo'), true)
+      })
+    )
+  )
+})

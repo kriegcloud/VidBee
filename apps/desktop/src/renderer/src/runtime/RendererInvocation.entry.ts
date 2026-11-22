@@ -18,14 +18,20 @@ import type { DeliveryError, TransportFailure } from "../transport/DocumentDeliv
 import type { ResourceBudget, RetentionLease } from "../transport/ElectronRpc.model.js";
 
 /**
- * One owner per document, closed before registry disposal on HMR/permanent departure.
+ * Owns invocation fibers and callbacks for one renderer document; departure settles callers before registry disposal and client retirement cancels only that client’s work.
  *
- * **Example** (Use makeInvocationOwner at its owning boundary)
+ * **Example** (Use makeInvocationOwner with its owner)
  *
  * ```ts
  * import { makeInvocationOwner } from "./RendererInvocation.entry.js"
- * const compose = (options: Parameters<typeof makeInvocationOwner>[0]) => makeInvocationOwner(options);
- * void compose;
+ * import * as Effect from "effect/Effect"
+ * export const start = (options: Parameters<typeof makeInvocationOwner>[0]) => {
+ *   const owner = makeInvocationOwner(options);
+ *   const results: unknown[] = [];
+ *   owner.invoke({ effect: Effect.succeed(42), settle: (exit) => { results.push(exit); } });
+ *   return { results, dispose: () => owner.close(() => {}) };
+ * };
+ * // start receives the live document runtime; call dispose before runtime disposal.
  * ```
  *
  * @category utilities
@@ -200,14 +206,20 @@ export const makeInvocationOwner = ({
 };
 
 /**
- * Constructs make Invocation Entry with explicit lifetime and failure ownership.
+ * Creates the invocation facade over a borrowed document runtime; composition must close the returned owner before disposing that runtime.
  *
- * **Example** (Use makeInvocationEntry at its owning boundary)
+ * **Example** (Use makeInvocationEntry with its owner)
  *
  * ```ts
  * import { makeInvocationEntry } from "./RendererInvocation.entry.js"
- * const compose = (options: Parameters<typeof makeInvocationEntry>[0]) => makeInvocationEntry(options);
- * void compose;
+ * import * as Effect from "effect/Effect"
+ * export const start = (runtime: Parameters<typeof makeInvocationEntry>[0]) => {
+ *   const owner = makeInvocationEntry(runtime);
+ *   const results: unknown[] = [];
+ *   owner.invoke({ effect: Effect.succeed(42), settle: (exit) => { results.push(exit); } });
+ *   return { results, dispose: () => owner.close(() => {}) };
+ * };
+ * // Call the returned dispose function on permanent departure.
  * ```
  *
  * @category utilities
@@ -217,15 +229,15 @@ export const makeInvocationEntry = (runtime: ManagedRuntime.ManagedRuntime<never
   makeInvocationOwner({ runtime });
 
 /**
- * Public AtomRegistry API; composition passes report to DesktopRpcConnection.onFailure.
+ * Stores the current typed transport failure in the document atom registry; report is suitable for the connection failure callback and close prevents later registry writes.
  *
- * **Example** (Use makeTransportFailureOwner at its owning boundary)
+ * **Example** (Use makeTransportFailureOwner with its owner)
  *
  * ```ts
  * import { makeTransportFailureOwner } from "./RendererInvocation.entry.js"
- * import * as AtomRegistry from "effect/reactivity/AtomRegistry";
- * const registry = AtomRegistry.make();
- * const owner = makeTransportFailureOwner(registry);
+ * import * as AtomRegistry from "effect/reactivity/AtomRegistry"
+ * export const registry = AtomRegistry.make();
+ * export const owner = makeTransportFailureOwner(registry);
  * owner.close();
  * registry.dispose();
  * ```
@@ -248,14 +260,17 @@ export const makeTransportFailureOwner = (registry: AtomRegistry.AtomRegistry) =
 };
 
 /**
- * Borrow the document runtime; own every subordinate gate/repair before permanent disposal.
+ * Combines document invocation, delivery, authentication and repair ownership. Permanent departure closes subordinate admission and settles work before disposing the atom registry.
  *
- * **Example** (Use makeRendererDocumentOwner at its owning boundary)
+ * **Example** (Use makeRendererDocumentOwner with its owner)
  *
  * ```ts
  * import { makeRendererDocumentOwner } from "./RendererInvocation.entry.js"
- * const compose = (options: Parameters<typeof makeRendererDocumentOwner>[0]) => makeRendererDocumentOwner(options);
- * void compose;
+ * export const own = (options: Parameters<typeof makeRendererDocumentOwner>[0]) => {
+ *   const document = makeRendererDocumentOwner(options);
+ *   return () => document.close();
+ * };
+ * // Pass the document runtime and registry disposer; invoke the returned function on HMR or departure.
  * ```
  *
  * @category utilities

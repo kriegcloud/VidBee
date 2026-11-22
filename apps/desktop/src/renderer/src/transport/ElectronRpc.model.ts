@@ -18,16 +18,20 @@ import { Counter, Registered } from "./DocumentDelivery.model.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/ElectronRpc.model");
 
 /**
- * Validates Request Id at the desktop transport boundary before dispatch.
+ * Preserves installed Effect RPC request identity as either a string or number; the numeric and textual forms are deliberately distinct.
  *
- * **Example** (Use RequestId at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { RequestId } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(RequestId);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(RequestId)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -37,7 +41,7 @@ export const RequestId = S.Union([S.String, S.Finite]).pipe(
   $TransportId.annoteSchema("RequestId", { description: "Request Id boundary in the desktop transport contract." })
 );
 /**
- * Describes Request Id ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RequestId}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -55,16 +59,20 @@ const Request = S.TaggedStruct("Request", {
   sampled: S.optionalKey(S.Boolean),
 }).pipe($TransportId.annoteSchema("Request", { description: "Request boundary in the desktop transport contract." }));
 /**
- * Validates From Client at the desktop transport boundary before dispatch.
+ * Validates installed Effect RPC client messages before dispatch, including requests, acknowledgements and interruption controls.
  *
- * **Example** (Use FromClient at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { FromClient } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(FromClient);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(FromClient)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -80,7 +88,7 @@ export const FromClient = S.Union([
   $TransportId.annoteSchema("FromClient", { description: "From Client boundary in the desktop transport contract." })
 );
 /**
- * Describes From Client ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link FromClient}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -101,16 +109,20 @@ const EncodedExit = S.Union([
   $TransportId.annoteSchema("EncodedExit", { description: "Encoded Exit boundary in the desktop transport contract." })
 );
 /**
- * Validates Response Exit at the desktop transport boundary before dispatch.
+ * Validates the terminal response for one request, preserving its installed RPC Exit representation and request identity.
  *
- * **Example** (Use ResponseExit at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ResponseExit } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ResponseExit);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ResponseExit)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -122,23 +134,27 @@ export const ResponseExit = S.TaggedStruct("Exit", { requestId: RequestId, exit:
   })
 );
 /**
- * Describes Response Exit ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ResponseExit}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ResponseExit = typeof ResponseExit.Type;
 /**
- * Validates From Server at the desktop transport boundary before dispatch.
+ * Validates installed Effect RPC responses, stream chunks and server controls before renderer dispatch.
  *
- * **Example** (Use FromServer at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { FromServer } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(FromServer);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(FromServer)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -153,23 +169,27 @@ export const FromServer = S.Union([
   $TransportId.annoteSchema("FromServer", { description: "From Server boundary in the desktop transport contract." })
 );
 /**
- * Describes From Server ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link FromServer}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type FromServer = typeof FromServer.Type;
 /**
- * Validates Input at the desktop transport boundary before dispatch.
+ * Envelopes a client message with protocol version, authenticated document session and logical client; those fields are checked before request admission.
  *
- * **Example** (Use Input at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Input } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Input);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Input)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -182,23 +202,27 @@ export const Input = S.Struct({
   message: S.Union([FromClient, S.TaggedStruct("StorageReleased", { storageId: Counter })]),
 }).pipe($TransportId.annoteSchema("Input", { description: "Input boundary in the desktop transport contract." }));
 /**
- * Describes Input ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Input}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Input = typeof Input.Type;
 /**
- * Validates Output at the desktop transport boundary before dispatch.
+ * Envelopes a server message with document and client identity plus optional retained-storage credit; consumers return that credit after the decoded value is no longer borrowed.
  *
- * **Example** (Use Output at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Output } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Output);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Output)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -216,23 +240,27 @@ export const Output = S.Struct({
   ]),
 }).pipe($TransportId.annoteSchema("Output", { description: "Output boundary in the desktop transport contract." }));
 /**
- * Describes Output ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Output}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Output = typeof Output.Type;
 /**
- * Validates Connect at the desktop transport boundary before dispatch.
+ * Validates the connection handshake containing the protocol version, issued session and document generation; it does not itself authorize an Electron sender.
  *
- * **Example** (Use Connect at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Connect } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Connect);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Connect)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -242,21 +270,21 @@ export const Connect = S.Struct({ session: S.String, generation: Counter, versio
   $TransportId.annoteSchema("Connect", { description: "Connect boundary in the desktop transport contract." })
 );
 /**
- * Describes Connect ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Connect}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Connect = typeof Connect.Type;
 /**
- * Constructs channels with explicit lifetime and failure ownership.
+ * Names the three fixed versioned Electron RPC channels; preload and main share these constants instead of accepting caller-selected native IPC channels.
  *
- * **Example** (Use channels at its owning boundary)
+ * **Example** (Use channels with its owner)
  *
  * ```ts
  * import { channels } from "./ElectronRpc.model.js"
- * const messageChannel = channels.message;
- * void messageChannel;
+ * export const messageChannel = channels.message;
+ * messageChannel // => "vidbee:rpc:message:v1"
  * ```
  *
  * @category utilities
@@ -268,7 +296,7 @@ export const channels = {
   end: "vidbee:rpc:end:v1",
 };
 /**
- * Narrow, browser-safe preload surface. Registration must precede connect.
+ * Defines the narrow preload surface: fixed-channel connection, string frame send, document disconnect and releasable delivery subscription; native event objects stay in preload.
  *
  * @category type-level
  * @since 0.0.0
@@ -281,7 +309,7 @@ export interface DesktopRpcBridge {
 }
 
 /**
- * Logical retention ownership. A transfer reserves its destination before releasing its source.
+ * Owns a reserved byte charge. Resize checks aggregate ceilings before growth, and release is idempotent.
  *
  * @category type-level
  * @since 0.0.0
@@ -293,7 +321,7 @@ export interface RetentionLease {
   readonly resize: (bytes: number) => boolean;
 }
 /**
- * Describes Retention Account ownership at the desktop transport boundary.
+ * Reserves outstanding bytes against the shared document, window and application ceilings; a refused reservation grants no ownership and must precede allocation.
  *
  * @category type-level
  * @since 0.0.0
@@ -302,15 +330,15 @@ export interface RetentionAccount {
   readonly reserve: (bytes: number, control?: boolean) => RetentionLease | undefined;
 }
 /**
- * No encoded byte buffer is allocated merely to measure incoming JSON.
+ * Measures UTF-8 bytes, UTF-16 storage and JSON structural cost directly from a string before parsing or allocating an encoded byte buffer.
  *
- * **Example** (Use measureFrame at its owning boundary)
+ * **Example** (Use measureFrame with its owner)
  *
  * ```ts
  * import { measureFrame } from "./ElectronRpc.model.js"
- * const size = measureFrame("hello");
- * const fits = size.utf8 < 64 * 1024 * 1024;
- * void fits;
+ * export const size = measureFrame("hello");
+ * export const fits = size.utf8 < 64 * 1024 * 1024;
+ * fits // => true
  * ```
  *
  * @category utilities
@@ -346,15 +374,15 @@ export const measureFrame = (text: string) => {
 };
 
 /**
- * Shared by all transport and amendment owners in a process; window accounts survive reload.
+ * Creates one process-local ledger for outstanding serialized, decoded and queued values; document accounts roll into persistent window and application accounts, and leases release capacity when ownership ends.
  *
- * **Example** (Use makeRetentionLedger at its owning boundary)
+ * **Example** (Use makeRetentionLedger with its owner)
  *
  * ```ts
  * import { makeRetentionLedger } from "./ElectronRpc.model.js"
- * const ledger = makeRetentionLedger();
+ * export const ledger = makeRetentionLedger();
  * ledger.connect("document", "window");
- * const lease = ledger.document("document")?.reserve(4096);
+ * export const lease = ledger.document("document")?.reserve(4096);
  * lease?.release();
  * ledger.disconnect("document");
  * ```
@@ -480,14 +508,15 @@ export const makeRetentionLedger = ({
 };
 
 /**
- * Upper bound for JSON serialization and retained plain-data traversal, before stringify.
+ * Computes a conservative retained-data reservation before serialization; returns undefined for unsupported, cyclic or over-complex values instead of traversing unbounded native objects.
  *
- * **Example** (Use measureValue at its owning boundary)
+ * **Example** (Use measureValue with its owner)
  *
  * ```ts
  * import { measureValue } from "./ElectronRpc.model.js"
- * const reservation = measureValue({ name: "hello" });
- * if (reservation !== undefined) { const requiredBytes = reservation; void requiredBytes; }
+ * export const reservation = measureValue({ name: "hello" });
+ * export const admittedBytes = reservation === undefined ? 0 : reservation;
+ * admittedBytes > 0 // => true
  * ```
  *
  * @category utilities
@@ -532,16 +561,20 @@ export const measureValue = (input: unknown): number | undefined => {
 };
 
 /**
- * Validates Resource Domain at the desktop transport boundary before dispatch.
+ * Names renderer sub-budgets charged to the same document, window and application accounts; domain limits supplement the shared byte ceiling.
  *
- * **Example** (Use ResourceDomain at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ResourceDomain } from "./ElectronRpc.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ResourceDomain);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ResourceDomain)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -561,22 +594,22 @@ export const ResourceDomain = LiteralKit([
   })
 );
 /**
- * Describes Resource Domain ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ResourceDomain}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ResourceDomain = typeof ResourceDomain.Type;
 /**
- * One instance per document, passed to every subordinate owner.
+ * Adds per-domain slot and byte ceilings to a shared document retention account; a successful claim charges both its sub-budget and the common window/application ledger until release.
  *
- * **Example** (Use makeResourceBudget at its owning boundary)
+ * **Example** (Use makeResourceBudget with its owner)
  *
  * ```ts
  * import { makeResourceBudget } from "./ElectronRpc.model.js"
  * import { makeRetentionLedger } from "./ElectronRpc.model.js";
- * const resources = makeResourceBudget(makeRetentionLedger().forWindow("window"));
- * const invocation = resources.claim("invocation", 256);
+ * export const resources = makeResourceBudget(makeRetentionLedger().forWindow("window"));
+ * export const invocation = resources.claim("invocation", 256);
  * invocation?.release();
  * ```
  *
@@ -631,7 +664,7 @@ export const makeResourceBudget = (account: RetentionAccount) => {
   };
 };
 /**
- * Describes Resource Budget ownership at the desktop transport boundary.
+ * Tracks per-domain slots and bytes in addition to the common document account; subordinate client owners release their own claims without disposing another client’s budget.
  *
  * @category type-level
  * @since 0.0.0
@@ -639,15 +672,20 @@ export const makeResourceBudget = (account: RetentionAccount) => {
 export type ResourceBudget = ReturnType<typeof makeResourceBudget>;
 
 /**
- * Supplies Document Resources through the owning application or document scope.
+ * Provides one document’s shared sub-budget owner to registrations, cuts, repairs, invocations and authentication callbacks, preventing independent owners from each spending the full byte ceiling.
  *
- * **Example** (Use DocumentResources at its owning boundary)
+ * **Example** (Use DocumentResources with its owner)
  *
  * ```ts
  * import { DocumentResources } from "./ElectronRpc.model.js"
  * import * as Effect from "effect/Effect"
- * const access = DocumentResources.use(Effect.succeed);
- * void access;
+ * export const reserve = DocumentResources.use((resources) => Effect.sync(() => {
+ *   const claim = resources.claim("invocation", 256);
+ *   const admitted = claim !== undefined;
+ *   claim?.release();
+ *   return admitted;
+ * }));
+ * // Provide the document budget; the result distinguishes admission from refusal.
  * ```
  *
  * @category services
@@ -658,19 +696,20 @@ export class DocumentResources extends Context.Service<DocumentResources, Resour
 ) {}
 
 /**
- * Reserves the entire admitted transformation arena before invoking an arbitrary RPC codec.
+ * Reserves a complete transformation arena before invoking an RPC payload codec; staged encoded and decoded values retain their charge through transfer, failure or abandoned-fiber cleanup.
  *
- * **Example** (Use makeCodecOwnership at its owning boundary)
+ * **Example** (Use makeCodecOwnership with its owner)
  *
  * ```ts
  * import { makeCodecOwnership } from "./ElectronRpc.model.js"
+ * import { makeRetentionLedger } from "./ElectronRpc.model.js";
  * import * as S from "effect/Schema"
  * import * as Effect from "effect/Effect"
- * import { makeRetentionLedger } from "./ElectronRpc.model.js";
- * const ledger = makeRetentionLedger();
- * const owner = makeCodecOwnership({ account: () => ledger.forWindow("window") });
- * const encoded = S.encodeEffect(owner.codecFor(S.String))("hello");
- * void encoded.pipe(Effect.ensuring(Effect.sync(owner.close)));
+ * export const ledger = makeRetentionLedger();
+ * export const owner = makeCodecOwnership({ account: () => ledger.forWindow("window") });
+ * export const encoded = S.encodeEffect(owner.codecFor(S.String))("hello");
+ * export const releaseAfterEncoding = encoded.pipe(Effect.ensuring(Effect.sync(owner.close)));
+ * // Execute at the document entrypoint; success yields "hello" and teardown releases staging.
  * ```
  *
  * @category utilities

@@ -8,16 +8,20 @@ import { RpcArray } from "../RpcField.model.js";
 const $I = $DesktopId.create("main/lib/RemoteCaptions.service");
 
 /**
- * Validates Remote Caption Snapshot at the desktop capability boundary before dispatch.
+ * Preserves the remote-caption task snapshot, including track selection, source cookies and cancellation state.
  *
- * **Example** (Use RemoteCaptionSnapshot at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { RemoteCaptionSnapshot } from "./RemoteCaptions.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(RemoteCaptionSnapshot);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(RemoteCaptionSnapshot)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -41,7 +45,7 @@ export const RemoteCaptionSnapshot = S.Struct({
   })
 );
 /**
- * Describes Remote Caption Snapshot ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RemoteCaptionSnapshot}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

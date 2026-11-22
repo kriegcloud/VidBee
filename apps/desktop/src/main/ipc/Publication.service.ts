@@ -13,15 +13,16 @@ import type { RetentionAccount, RetentionLease } from "../../renderer/src/transp
 const $TransportId = $DesktopId.create("main/ipc/Publication.service");
 
 /**
- * Invoke at one existing recipient-send point. Listener traversal stays with its source owner.
+ * Runs one source-owned recipient step, preserving legacy listener order and isolating migrated delivery and reporting failures so later legacy recipients still run.
  *
- * **Example** (Use publishRecipient at its owning boundary)
+ * **Example** (Use publishRecipient with its owner)
  *
  * ```ts
  * import { publishRecipient } from "./Publication.service.js"
  * import * as Effect from "effect/Effect"
- * const publish = publishRecipient({ value: "update", legacy: () => {}, migrated: () => Effect.void, report: () => Effect.void });
- * void publish;
+ * const delivered: string[] = [];
+ * export const publish = publishRecipient({ value: "update", legacy: (value) => { delivered.push(value); }, migrated: () => Effect.void, report: () => Effect.void }).pipe(Effect.as(delivered));
+ * // Running publish yields ["update"] after the legacy recipient has been called.
  * ```
  *
  * @category utilities
@@ -42,14 +43,14 @@ export const publishRecipient = Effect.fn("Publication.recipient")(function* <A>
 });
 
 /**
- * Called synchronously at the source's existing recipient-send point, before later listeners.
+ * Captures an immutable, observation-preserving publication at the existing source send point; the returned release callback owns the snapshot charge until delivery or discard.
  *
- * **Example** (Use snapshotPublication at its owning boundary)
+ * **Example** (Use snapshotPublication with its owner)
  *
  * ```ts
  * import { snapshotPublication } from "./Publication.service.js"
  * import { makeRetentionLedger } from "../../renderer/src/transport/ElectronRpc.model.js";
- * const captured = snapshotPublication({ value: { state: "ready" }, account: makeRetentionLedger().forWindow("window") });
+ * export const captured = snapshotPublication({ value: { state: "ready" }, account: makeRetentionLedger().forWindow("window") });
  * if (captured._tag === "Success") captured.success.release();
  * ```
  *

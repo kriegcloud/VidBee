@@ -12,16 +12,20 @@ import * as M from "./Subscription.model.js";
 const $TransportId = $DesktopId.create("renderer/src/transport/census/Subscription.rpc");
 
 /**
- * Validates Subscription Dependency at the desktop capability boundary before dispatch.
+ * Binds a feed read to the active subscription observation token.
  *
- * **Example** (Use SubscriptionDependency at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { SubscriptionDependency } from "./Subscription.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(SubscriptionDependency);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(SubscriptionDependency)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -33,23 +37,27 @@ export const SubscriptionDependency = S.Struct({ subscriptions: Token }).pipe(
   })
 );
 /**
- * Describes Subscription Dependency ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link SubscriptionDependency}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type SubscriptionDependency = typeof SubscriptionDependency.Type;
 /**
- * Validates Queue Dependencies at the desktop capability boundary before dispatch.
+ * Binds queue admission to both feed and download observation tokens.
  *
- * **Example** (Use QueueDependencies at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { QueueDependencies } from "./Subscription.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(QueueDependencies);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(QueueDependencies)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -61,22 +69,23 @@ export const QueueDependencies = S.Struct({ subscriptions: Token, downloads: Tok
   })
 );
 /**
- * Describes Queue Dependencies ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link QueueDependencies}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type QueueDependencies = typeof QueueDependencies.Type;
 /**
- * Validates Subscription Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for feed subscription reads, edits and queue admission; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use SubscriptionRpcs at its owning boundary)
+ * **Example** (Use SubscriptionRpcs with its owner)
  *
  * ```ts
  * import { SubscriptionRpcs } from "./Subscription.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(SubscriptionRpcs);
- * void client;
+ * export const make = RpcClient.make(SubscriptionRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas

@@ -5,16 +5,20 @@ import * as S from "effect/Schema";
 const $TransportId = $DesktopId.create("renderer/src/transport/census/Cloud.model");
 
 /**
- * Validates Cloud Accepted at the desktop capability boundary before dispatch.
+ * Validates accepted cloud work by request ID, model ID, text and charged credits while retaining additional response fields.
  *
- * **Example** (Use CloudAccepted at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CloudAccepted } from "./Cloud.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CloudAccepted);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CloudAccepted)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -29,23 +33,27 @@ export const CloudAccepted = S.StructWithRest(
   })
 );
 /**
- * Describes Cloud Accepted ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CloudAccepted}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type CloudAccepted = typeof CloudAccepted.Type;
 /**
- * Validates Cloud Observed Pipeline at the desktop capability boundary before dispatch.
+ * Projects the transcription pipeline result and observed language without narrowing away the native language observation.
  *
- * **Example** (Use CloudObservedPipeline at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CloudObservedPipeline } from "./Cloud.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CloudObservedPipeline);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CloudObservedPipeline)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -57,7 +65,7 @@ export const CloudObservedPipeline = S.Struct({ ...Pipeline.PipelineResult.field
   })
 );
 /**
- * Describes Cloud Observed Pipeline ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link CloudObservedPipeline}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

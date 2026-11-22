@@ -10,7 +10,7 @@ import type { DeliveryError } from "../../renderer/src/transport/DocumentDeliver
 import type { OperationHandle, OperationOwner } from "./ApplicationOperations.service.js";
 
 /**
- * Describes Operation Account ownership at the desktop transport boundary.
+ * Reserves and releases bytes and optional native slots in the originating application account; a renderer departure does not transfer this ownership to another client.
  *
  * @category type-level
  * @since 0.0.0
@@ -21,15 +21,19 @@ export interface OperationAccount {
   readonly reserve: (origin: string, bytes: number) => boolean;
 }
 /**
- * The caller supplies the application scope, never an individual request scope.
+ * Accepts work into an application scope before returning its handle. Logical completion may precede native release; scope interruption settles both signals and attempts every registered cleanup.
  *
- * **Example** (Use makeOperations at its owning boundary)
+ * **Example** (Use makeOperations with its owner)
  *
  * ```ts
  * import { makeOperations } from "./ApplicationOperations.layer.js"
  * import * as Effect from "effect/Effect"
- * const acquire = makeOperations({ reserve: () => true, release: () => {} });
- * void Effect.scoped(acquire);
+ * export const shutdown = Effect.scoped(Effect.gen(function* () {
+ *   const owner = yield* makeOperations({ reserve: () => true, release: () => {} });
+ *   yield* owner.closeAdmission;
+ *   yield* owner.drain;
+ * }));
+ * // Run shutdown at the application entrypoint; success means no accepted native ownership remains.
  * ```
  *
  * @category utilities
@@ -95,34 +99,46 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
         }),
     };
     active = HashSet.add(active, handle.released);
+    let settled = false;
+    const settle = Effect.fn("ApplicationOperations.settle")(function* (exit: Exit.Exit<void>) {
+      if (settled) return;
+      settled = true;
+      sealed = true;
+      if (!completed) {
+        completed = true;
+        Deferred.doneUnsafe(
+          logical,
+          Exit.succeed(Exit.isFailure(exit) ? Exit.failCause(exit.cause) : Exit.die("OperationIncomplete"))
+        );
+      } else if (Exit.isFailure(exit))
+        yield* Effect.logError("Application operation failed after logical completion", exit.cause).pipe(
+          Effect.ignoreCause
+        );
+      const exits = yield* Effect.forEach(cleanups, Effect.exit, { concurrency: 1 });
+      if (A.some(exits, Exit.isFailure)) {
+        failedCleanupTasks = HashMap.set(failedCleanupTasks, handle.released, cleanups);
+        Deferred.doneUnsafe(released, Exit.fail(failure("CleanupFailed")));
+        return;
+      }
+      account.release(options.originAccount, bytes);
+      releaseNative?.();
+      bytes = 0;
+      active = HashSet.remove(active, handle.released);
+      Deferred.doneUnsafe(released, Exit.void);
+    });
+    // This owner exists before the worker can be interrupted, including before its first instruction.
+    const settlementScope = yield* Scope.fork(scope);
+    yield* Scope.addFinalizer(settlementScope, settle(Exit.interrupt()));
     const work = Effect.uninterruptibleMask((restore) =>
       Effect.gen(function* () {
+        if (settled) return;
         const exit = yield* Effect.exit(restore(Effect.suspend(() => options.run(handle))));
-        if (!completed) {
-          completed = true;
-          Deferred.doneUnsafe(
-            logical,
-            Exit.succeed(Exit.isFailure(exit) ? Exit.failCause(exit.cause) : Exit.die("OperationIncomplete"))
-          );
-        } else if (Exit.isFailure(exit))
-          yield* Effect.logError("Application operation failed after logical completion", exit.cause);
-        sealed = true;
-        const exits = yield* Effect.forEach(cleanups, Effect.exit, { concurrency: 1 });
-        if (A.some(exits, Exit.isFailure)) {
-          failedCleanupTasks = HashMap.set(failedCleanupTasks, handle.released, cleanups);
-          Deferred.doneUnsafe(released, Exit.fail(failure("CleanupFailed")));
-          return;
-        }
-        account.release(options.originAccount, bytes);
-        releaseNative?.();
-        bytes = 0;
-        active = HashSet.remove(active, handle.released);
-        Deferred.doneUnsafe(released, Exit.void);
+        yield* settle(exit);
       })
-    );
+    ).pipe(Effect.ensuring(Scope.close(settlementScope, Exit.void)));
     yield* Effect.forkIn(work, scope);
     return handle;
-  });
+  }, Effect.uninterruptible);
   const owner: OperationOwner = {
     accept,
     closeAdmission: Effect.sync(() => {

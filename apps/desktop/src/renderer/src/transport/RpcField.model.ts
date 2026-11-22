@@ -8,15 +8,18 @@ import * as Issue from "effect/SchemaIssue";
 const $TransportId = $DesktopId.create("renderer/src/transport/RpcField.model");
 
 /**
- * Constructs Rpc Undefined with explicit lifetime and failure ownership.
+ * Encodes JavaScript undefined as the explicit RpcUndefined tag and decodes that tag back to undefined, preserving a value that JSON alone cannot represent.
  *
- * **Example** (Use RpcUndefined at its owning boundary)
+ * **Example** (Use RpcUndefined with its owner)
  *
  * ```ts
  * import { RpcUndefined } from "./RpcField.model.js"
  * import * as S from "effect/Schema"
- * const validate = S.decodeUnknownEffect(RpcUndefined);
- * void validate({});
+ * import * as Result from "effect/Result"
+ * export const encoded = S.encodeResult(RpcUndefined)(undefined);
+ * if (Result.isSuccess(encoded)) encoded.success._tag // => "RpcUndefined"
+ * export const decoded = S.decodeResult(RpcUndefined)({ _tag: "RpcUndefined" });
+ * if (Result.isSuccess(decoded)) decoded.success // => undefined
  * ```
  *
  * @category utilities
@@ -32,16 +35,17 @@ export const RpcUndefined = S.TaggedStruct("RpcUndefined", {}).pipe(
   })
 );
 /**
- * Constructs Rpc Value with explicit lifetime and failure ownership.
+ * Wraps a present field value in a RpcValue tag; undefined is rejected so RpcUndefined remains an unambiguous separate wire representation.
  *
- * **Example** (Use RpcValue at its owning boundary)
+ * **Example** (Use RpcValue with its owner)
  *
  * ```ts
  * import { RpcValue } from "./RpcField.model.js"
  * import * as S from "effect/Schema"
- * const value = RpcValue(S.String);
- * const decode = S.decodeUnknownEffect(value);
- * void decode({ _tag: "RpcValue", value: "ready" });
+ * import * as Result from "effect/Result"
+ * export const codec = RpcValue(S.String);
+ * export const decoded = S.decodeResult(codec)({ _tag: "RpcValue", value: "ready" });
+ * if (Result.isSuccess(decoded)) decoded.success // => "ready"
  * ```
  *
  * @category utilities
@@ -58,17 +62,21 @@ export const RpcValue = <A, I, RD, RE>(field: S.Codec<A, I, RD, RE>) =>
     })
   );
 /**
- * Constructs Rpc Optional with explicit lifetime and failure ownership.
+ * Preserves three optional-key states: absent, explicitly undefined and present. It composes tagged field codecs with exact optional keys instead of collapsing them through JSON.
  *
- * **Example** (Use RpcOptional at its owning boundary)
+ * **Example** (Use RpcOptional with its owner)
  *
  * ```ts
  * import { RpcOptional } from "./RpcField.model.js"
  * import * as S from "effect/Schema"
- * const payload = S.Struct({ name: RpcOptional(S.String) });
- * const decode = S.decodeUnknownEffect(payload);
- * void decode({});
- * void decode({ name: { _tag: "RpcUndefined" } });
+ * import * as Result from "effect/Result"
+ * export const codec = S.Struct({ name: RpcOptional(S.String) });
+ * export const missing = S.decodeResult(codec)({});
+ * export const explicit = S.decodeResult(codec)({ name: { _tag: "RpcUndefined" } });
+ * if (Result.isSuccess(missing) && Result.isSuccess(explicit)) {
+ *   Reflect.getOwnPropertyDescriptor(missing.success, "name") !== undefined // => false
+ *   Reflect.getOwnPropertyDescriptor(explicit.success, "name") !== undefined // => true
+ * }
  * ```
  *
  * @category utilities
@@ -89,15 +97,17 @@ const dense = (values: unknown): values is ReadonlyArray<unknown> => {
   return true;
 };
 /**
- * Constructs Rpc Array with explicit lifetime and failure ownership.
+ * Builds an array codec that checks dense own enumerable data indices before mapping elements; sparse indices, accessors, symbol keys and decorations fail admission before item codecs allocate.
  *
- * **Example** (Use RpcArray at its owning boundary)
+ * **Example** (Use RpcArray with its owner)
  *
  * ```ts
  * import { RpcArray } from "./RpcField.model.js"
  * import * as S from "effect/Schema"
- * const ids = RpcArray(S.String);
- * void S.encodeEffect(ids)(["first", "second"]);
+ * import * as Result from "effect/Result"
+ * export const ids = RpcArray(S.String);
+ * export const encoded = S.encodeResult(ids)(["first", "second"]);
+ * if (Result.isSuccess(encoded)) encoded.success // => ["first", "second"]
  * ```
  *
  * @category utilities
@@ -123,17 +133,19 @@ export const RpcArray = <Item extends S.Constraint>(item: Item) =>
     }
   );
 /**
- * Constructs Rpc Mutable Array with explicit lifetime and failure ownership.
+ * Builds the mutable TypeScript view of the same dense-array codec as RpcArray; mutation is permitted locally but wire admission still rejects holes, accessors and decorations.
  *
- * **Example** (Use RpcMutableArray at its owning boundary)
+ * **Example** (Use RpcMutableArray with its owner)
  *
  * ```ts
  * import { RpcMutableArray } from "./RpcField.model.js"
  * import * as S from "effect/Schema"
- * const ids = RpcMutableArray(S.String);
- * const values: typeof ids.Type = ["first"];
+ * import * as Result from "effect/Result"
+ * export const ids = RpcMutableArray(S.String);
+ * export const values: typeof ids.Type = ["first"];
  * values.push("second");
- * void S.encodeEffect(ids)(values);
+ * export const encoded = S.encodeResult(ids)(values);
+ * if (Result.isSuccess(encoded)) encoded.success // => ["first", "second"]
  * ```
  *
  * @category utilities
@@ -163,7 +175,7 @@ export const RpcMutableArray = <Item extends S.Constraint>(item: Item) =>
   );
 
 /**
- * Describes Rpc Undefined ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RpcUndefined}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

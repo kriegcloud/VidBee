@@ -20,16 +20,16 @@ interface Waiter {
   readonly retention?: import("./ElectronRpc.model.js").RetentionLease;
 }
 /**
- * Local application gates never send an application receipt to main.
+ * Creates local renderer completion gates; consuming an observation advances its token watermark, while ending the registration fails any later unsatisfied cuts without sending application receipts to main.
  *
- * **Example** (Use makeDeliveryGate at its owning boundary)
+ * **Example** (Use makeDeliveryGate with its owner)
  *
  * ```ts
  * import { makeDeliveryGate } from "./DocumentDelivery.service.js"
- * const gate = makeDeliveryGate();
- * const ready = gate.awaitCuts([]);
- * void ready;
- * gate.disconnect();
+ * export const gate = makeDeliveryGate();
+ * export const ready = gate.awaitCuts([]); // Succeeds immediately when run, because no dependencies exist.
+ * // Disconnect only after awaiting ready, during document teardown.
+ * export const disconnect = () => gate.disconnect();
  * ```
  *
  * @category utilities
@@ -154,15 +154,14 @@ export const makeDeliveryGate = ({
   };
 };
 /**
- * Supplies Document Delivery through the owning application or document scope.
+ * Provides the renderer’s token registrations and inclusive observation watermarks; disconnect fails pending gates and closes admission for new dependent calls.
  *
- * **Example** (Use DocumentDelivery at its owning boundary)
+ * **Example** (Use DocumentDelivery with its owner)
  *
  * ```ts
  * import { DocumentDelivery } from "./DocumentDelivery.service.js"
- * import * as Effect from "effect/Effect"
- * const access = DocumentDelivery.use(Effect.succeed);
- * void access;
+ * export const noDependencies = DocumentDelivery.use((gate) => gate.awaitCuts([]));
+ * // Provide the document gate; this succeeds immediately because there are no cuts.
  * ```
  *
  * @category services

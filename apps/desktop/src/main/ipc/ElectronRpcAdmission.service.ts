@@ -13,16 +13,20 @@ import type { DeliveryError } from "../../renderer/src/transport/DocumentDeliver
 const $TransportId = $DesktopId.create("main/ipc/ElectronRpcAdmission.service");
 
 /**
- * Validates Limits at the desktop transport boundary before dispatch.
+ * Validates the per-document, per-window and application ceilings used before admitting RPC work; byte ceilings include retained copies and native work has its own slot limit.
  *
- * **Example** (Use Limits at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Limits } from "./ElectronRpcAdmission.service.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Limits);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Limits)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -44,21 +48,21 @@ export const Limits = S.Struct({
   appNative: S.Int,
 }).pipe($TransportId.annoteSchema("Limits", { description: "Limits boundary in the desktop transport contract." }));
 /**
- * Describes Limits ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Limits}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Limits = typeof Limits.Type;
 /**
- * Admission ceilings, pending payload/heap measurement before capability cutover.
+ * Provides the frozen admission ceilings for concurrent RPC work, serialized frames and retained storage; these are outstanding-ownership limits rather than lifetime traffic quotas.
  *
- * **Example** (Use limits at its owning boundary)
+ * **Example** (Use limits with its owner)
  *
  * ```ts
  * import { limits } from "./ElectronRpcAdmission.service.js"
- * const largestFrame = limits.frameBytes;
- * void largestFrame;
+ * export const largestFrame = limits.frameBytes;
+ * largestFrame // => 67108864
  * ```
  *
  * @category utilities
@@ -80,16 +84,20 @@ export const limits: Limits = {
   appNative: 1024,
 };
 /**
- * Validates Request at the desktop transport boundary before dispatch.
+ * Identifies one logical RPC attempt by document session, client and request ID, including whether it reserves a stream slot or discards its response.
  *
- * **Example** (Use Request at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Request } from "./ElectronRpcAdmission.service.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Request);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Request)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -103,14 +111,14 @@ export const Request = S.Struct({
   discard: S.Boolean,
 }).pipe($TransportId.annoteSchema("Request", { description: "Request boundary in the desktop transport contract." }));
 /**
- * Describes Request ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Request}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Request = typeof Request.Type;
 /**
- * Describes Lease ownership at the desktop transport boundary.
+ * Owns an admitted request and its document resource budget; finalized settles after the request, retained frames and native completion release their independent ownership.
  *
  * @category type-level
  * @since 0.0.0
@@ -123,7 +131,7 @@ export interface Lease {
   readonly terminal: Effect.Effect<void>;
 }
 /**
- * Describes Native Lease ownership at the desktop transport boundary.
+ * Keeps native work charged to its origin after document departure; resize must succeed before growth and complete releases the native reservation exactly once.
  *
  * @category type-level
  * @since 0.0.0
@@ -152,16 +160,16 @@ interface Document {
 }
 
 /**
- * One application owner survives document generations and disconnected native work.
+ * Creates the application admission ledger shared by document generations. Disconnecting a renderer closes its admission while native work retains its origin account until cleanup completes.
  *
- * **Example** (Use makeAdmission at its owning boundary)
+ * **Example** (Use makeAdmission with its owner)
  *
  * ```ts
  * import { makeAdmission } from "./ElectronRpcAdmission.service.js"
- * const admission = makeAdmission();
+ * export const admission = makeAdmission();
  * admission.connectNow("document", "window");
- * const active = admission.stats();
- * void active;
+ * export const active = admission.stats();
+ * // active reports the connected document and outstanding admission counters.
  * ```
  *
  * @category utilities
@@ -425,15 +433,15 @@ export const makeAdmission = (bounds: Limits = limits) => {
   };
 };
 /**
- * Supplies Electron Rpc Admission through the owning application or document scope.
+ * Provides the application-wide RPC admission owner; bootstrap supplies one instance so window and document limits aggregate across all clients.
  *
- * **Example** (Use ElectronRpcAdmission at its owning boundary)
+ * **Example** (Use ElectronRpcAdmission with its owner)
  *
  * ```ts
  * import { ElectronRpcAdmission } from "./ElectronRpcAdmission.service.js"
  * import * as Effect from "effect/Effect"
- * const access = ElectronRpcAdmission.use(Effect.succeed);
- * void access;
+ * export const inspect = ElectronRpcAdmission.use((admission) => Effect.sync(() => admission.stats()));
+ * // Provide the application admission layer to observe current outstanding ownership.
  * ```
  *
  * @category services

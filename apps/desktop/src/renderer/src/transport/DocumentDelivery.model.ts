@@ -4,16 +4,20 @@ import * as S from "effect/Schema";
 const $TransportId = $DesktopId.create("renderer/src/transport/DocumentDelivery.model");
 
 /**
- * Counters never wrap or accept fractional, negative or unsafe values.
+ * Validates a nonnegative safe integer used for generations, serials and sequence watermarks; overflow requires document disposal rather than wrapping.
  *
- * **Example** (Use Counter at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Counter } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Counter);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Counter)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -23,23 +27,27 @@ export const Counter = S.Int.check(S.isGreaterThanOrEqualTo(0), S.isLessThanOrEq
   $TransportId.annoteSchema("Counter", { description: "Counter boundary in the desktop transport contract." })
 );
 /**
- * Describes Counter ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Counter}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Counter = typeof Counter.Type;
 /**
- * Validates Token at the desktop transport boundary before dispatch.
+ * Identifies one immutable subscription incarnation across document, logical client, family, generation and serial; replacement registrations cannot satisfy an older token.
  *
- * **Example** (Use Token at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Token } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Token);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Token)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -53,23 +61,27 @@ export const Token = S.Struct({
   serial: Counter,
 }).pipe($TransportId.annoteSchema("Token", { description: "Token boundary in the desktop transport contract." }));
 /**
- * Describes Token ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Token}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Token = typeof Token.Type;
 /**
- * Validates Registered at the desktop transport boundary before dispatch.
+ * Acknowledges that a subscription token and source epoch are installed before observations or completion cuts depend on them.
  *
- * **Example** (Use Registered at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Registered } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Registered);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Registered)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -79,23 +91,27 @@ export const Registered = S.TaggedStruct("Registered", { token: Token, epoch: S.
   $TransportId.annoteSchema("Registered", { description: "Registered boundary in the desktop transport contract." })
 );
 /**
- * Describes Registered ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Registered}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Registered = typeof Registered.Type;
 /**
- * Validates Cut at the desktop transport boundary before dispatch.
+ * Requires consumption through an inclusive sequence in a specific token and epoch; a later registration or a different epoch cannot satisfy it.
  *
- * **Example** (Use Cut at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Cut } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Cut);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Cut)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -105,22 +121,25 @@ export const Cut = S.Struct({ token: Token, epoch: S.String, through: Counter })
   $TransportId.annoteSchema("Cut", { description: "Cut boundary in the desktop transport contract." })
 );
 /**
- * Describes Cut ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link Cut}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type Cut = typeof Cut.Type;
 /**
- * Constructs Subscription with explicit lifetime and failure ownership.
+ * Builds the Registered-or-Observation stream schema for a source value; observations carry the exact installed token, epoch and increasing sequence required by dependent cuts.
  *
- * **Example** (Use Subscription at its owning boundary)
+ * **Example** (Use Subscription with its owner)
  *
  * ```ts
  * import { Subscription } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const events = Subscription(S.String);
- * void S.decodeUnknownEffect(events)({ _tag: "Registered" });
+ * import * as Result from "effect/Result"
+ * export const events = Subscription(S.String);
+ * export const token = { document: "d", client: "c", generation: 1, family: "events", serial: 1 };
+ * export const decoded = S.decodeResult(events)({ _tag: "Registered", token, epoch: "epoch" });
+ * if (Result.isSuccess(decoded)) decoded.success._tag // => "Registered"
  * ```
  *
  * @category utilities
@@ -129,15 +148,17 @@ export type Cut = typeof Cut.Type;
 export const Subscription = <A extends S.Constraint>(value: A) =>
   S.Union([Registered, S.TaggedStruct("Observation", { token: Token, epoch: S.String, sequence: Counter, value })]);
 /**
- * Constructs Completion with explicit lifetime and failure ownership.
+ * Builds an operation result paired with inclusive delivery cuts; consumers must await the cuts before exposing the success or failure to callers.
  *
- * **Example** (Use Completion at its owning boundary)
+ * **Example** (Use Completion with its owner)
  *
  * ```ts
  * import { Completion } from "./DocumentDelivery.model.js"
  * import * as S from "effect/Schema"
- * const reply = Completion({ success: S.String, error: S.String });
- * void S.encodeEffect(reply)({ exit: { _tag: "Success", value: "done" }, cuts: [] });
+ * import * as Result from "effect/Result"
+ * export const reply = Completion({ success: S.String, error: S.String });
+ * export const encoded = S.encodeResult(reply)({ exit: { _tag: "Success", value: "done" }, cuts: [] });
+ * if (Result.isSuccess(encoded)) encoded.success.cuts.length // => 0
  * ```
  *
  * @category utilities
@@ -155,15 +176,15 @@ export const Completion = <A extends S.Constraint, E extends S.Constraint>({
     cuts: S.Array(Cut),
   });
 /**
- * Constructs same Token with explicit lifetime and failure ownership.
+ * Compares all five subscription identity fields, so a replaced registration with the same source family never satisfies a cut for the departed incarnation.
  *
- * **Example** (Use sameToken at its owning boundary)
+ * **Example** (Use sameToken with its owner)
  *
  * ```ts
  * import { sameToken } from "./DocumentDelivery.model.js"
- * const token = { document: "d", client: "c", generation: 1, family: "events", serial: 1 };
- * const same = sameToken({ left: token, right: token });
- * void same;
+ * export const token = { document: "d", client: "c", generation: 1, family: "events", serial: 1 };
+ * export const same = sameToken({ left: token, right: token });
+ * same // => true
  * ```
  *
  * @category utilities

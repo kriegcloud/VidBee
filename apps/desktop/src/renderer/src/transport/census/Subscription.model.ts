@@ -8,16 +8,20 @@ import { RpcObserved } from "../RpcObservation.model.js";
 
 const $I = $DesktopId.create("shared/subscriptions/Subscription.model");
 /**
- * Validates Rpc Finite at the desktop capability boundary before dispatch.
+ * Restricts renderer-authored numeric input to finite values before native command dispatch.
  *
- * **Example** (Use RpcFinite at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { RpcFinite } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(RpcFinite);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(RpcFinite)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -27,7 +31,7 @@ export const RpcFinite = RpcObserved(S.Finite).pipe(
   $I.annoteSchema("RpcFinite", { description: "Rpc Finite boundary in the desktop transport contract." })
 );
 /**
- * Describes Rpc Finite ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RpcFinite}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
@@ -35,16 +39,20 @@ export const RpcFinite = RpcObserved(S.Finite).pipe(
 export type RpcFinite = typeof RpcFinite.Type;
 
 /**
- * Validates Desktop Subscription Item at the desktop capability boundary before dispatch.
+ * Projects a feed item with publication time and its queued download association.
  *
- * **Example** (Use DesktopSubscriptionItem at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopSubscriptionItem } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopSubscriptionItem);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopSubscriptionItem)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -63,15 +71,17 @@ export class DesktopSubscriptionItem extends S.Opaque<DesktopSubscriptionItem, {
 ) {}
 const f = Stored.StoredSubscriptionRule.fields;
 /**
- * Validates desktop Fields at the desktop capability boundary before dispatch.
+ * Defines the projected desktop feed subscription fields reused by full reads and mutations; observation codecs preserve the native values beyond this projection.
  *
- * **Example** (Use desktopFields at its owning boundary)
+ * **Example** (Use desktopFields with its owner)
  *
  * ```ts
  * import { desktopFields } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const schema = S.Struct(desktopFields);
- * void S.decodeUnknownEffect(schema)({});
+ * import * as Result from "effect/Result"
+ * export const codec = S.Struct(desktopFields);
+ * export const decoded = S.decodeUnknownResult(codec)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -110,16 +120,20 @@ export const desktopFields = {
   downloadContainer: RpcOptional(S.String),
 };
 /**
- * Validates Desktop Subscription at the desktop capability boundary before dispatch.
+ * Preserves the desktop feed subscription view and its observed item collection.
  *
- * **Example** (Use DesktopSubscription at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopSubscription } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopSubscription);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopSubscription)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -131,16 +145,20 @@ export class DesktopSubscription extends S.Opaque<DesktopSubscription, { readonl
   )
 ) {}
 /**
- * Validates Desktop Subscription Mutation at the desktop capability boundary before dispatch.
+ * Preserves the native subscription mutation result, including omitted and explicitly undefined fields.
  *
- * **Example** (Use DesktopSubscriptionMutation at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopSubscriptionMutation } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopSubscriptionMutation);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopSubscriptionMutation)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -162,16 +180,20 @@ const preferences = {
   downloadContainer: RpcOptional(OneClickContainerOption),
 };
 /**
- * Validates Create Subscription at the desktop capability boundary before dispatch.
+ * Validates authored feed subscription settings, source URL and initial download policy.
  *
- * **Example** (Use CreateSubscription at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CreateSubscription } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CreateSubscription);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CreateSubscription)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -193,16 +215,20 @@ export class CreateSubscription extends S.Opaque<CreateSubscription, { readonly 
   }).pipe($I.annoteSchema("CreateSubscription", { description: "Desktop create before defaults." }))
 ) {}
 /**
- * Validates Update Subscription at the desktop capability boundary before dispatch.
+ * Validates a partial feed subscription edit; omitted fields retain their existing values.
  *
- * **Example** (Use UpdateSubscription at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { UpdateSubscription } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(UpdateSubscription);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(UpdateSubscription)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -230,16 +256,20 @@ export class UpdateSubscription extends S.Opaque<UpdateSubscription, { readonly 
   }).pipe($I.annoteSchema("UpdateSubscription", { description: "Presence-preserving desktop patch." }))
 ) {}
 /**
- * Validates Desktop Subscription List at the desktop capability boundary before dispatch.
+ * Preserves the observed list of desktop feed subscriptions.
  *
- * **Example** (Use DesktopSubscriptionList at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopSubscriptionList } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopSubscriptionList);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopSubscriptionList)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -251,23 +281,27 @@ export const DesktopSubscriptionList = RpcMutableArray(DesktopSubscription).pipe
   })
 );
 /**
- * Describes Desktop Subscription List ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link DesktopSubscriptionList}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type DesktopSubscriptionList = typeof DesktopSubscriptionList.Type;
 /**
- * Validates Desktop Subscription View at the desktop capability boundary before dispatch.
+ * Preserves a desktop subscription read without discarding additional native fields.
  *
- * **Example** (Use DesktopSubscriptionView at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopSubscriptionView } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopSubscriptionView);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopSubscriptionView)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -279,23 +313,27 @@ export const DesktopSubscriptionView = S.Union([DesktopSubscription, DesktopSubs
   })
 );
 /**
- * Describes Desktop Subscription View ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link DesktopSubscriptionView}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type DesktopSubscriptionView = typeof DesktopSubscriptionView.Type;
 /**
- * Validates Subscription Id at the desktop capability boundary before dispatch.
+ * Identifies the feed subscription targeted by a command.
  *
- * **Example** (Use SubscriptionId at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { SubscriptionId } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(SubscriptionId);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(SubscriptionId)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -305,23 +343,27 @@ export const SubscriptionId = S.Struct({ id: S.String }).pipe(
   $I.annoteSchema("SubscriptionId", { description: "Subscription Id boundary in the desktop transport contract." })
 );
 /**
- * Describes Subscription Id ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link SubscriptionId}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type SubscriptionId = typeof SubscriptionId.Type;
 /**
- * Validates Resolve Subscription at the desktop capability boundary before dispatch.
+ * Selects a source URL for feed discovery.
  *
- * **Example** (Use ResolveSubscription at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ResolveSubscription } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ResolveSubscription);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ResolveSubscription)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -333,23 +375,27 @@ export const ResolveSubscription = S.Struct({ url: S.String }).pipe(
   })
 );
 /**
- * Describes Resolve Subscription ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ResolveSubscription}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ResolveSubscription = typeof ResolveSubscription.Type;
 /**
- * Validates Update Subscription Request at the desktop capability boundary before dispatch.
+ * Pairs a subscription ID with the validated partial settings edit.
  *
- * **Example** (Use UpdateSubscriptionRequest at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { UpdateSubscriptionRequest } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(UpdateSubscriptionRequest);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(UpdateSubscriptionRequest)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -361,23 +407,27 @@ export const UpdateSubscriptionRequest = S.Struct({ id: S.String, updates: Updat
   })
 );
 /**
- * Describes Update Subscription Request ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link UpdateSubscriptionRequest}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type UpdateSubscriptionRequest = typeof UpdateSubscriptionRequest.Type;
 /**
- * Validates Refresh Subscription at the desktop capability boundary before dispatch.
+ * Identifies the subscription whose feed should be refreshed.
  *
- * **Example** (Use RefreshSubscription at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { RefreshSubscription } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(RefreshSubscription);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(RefreshSubscription)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -389,23 +439,27 @@ export const RefreshSubscription = S.Struct({ id: RpcOptional(S.String) }).pipe(
   })
 );
 /**
- * Describes Refresh Subscription ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link RefreshSubscription}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type RefreshSubscription = typeof RefreshSubscription.Type;
 /**
- * Validates Queue Subscription Item at the desktop capability boundary before dispatch.
+ * Identifies a feed item within its subscription for download queue admission.
  *
- * **Example** (Use QueueSubscriptionItem at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { QueueSubscriptionItem } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(QueueSubscriptionItem);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(QueueSubscriptionItem)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -417,23 +471,27 @@ export const QueueSubscriptionItem = S.Struct({ id: S.String, itemId: S.String }
   })
 );
 /**
- * Describes Queue Subscription Item ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link QueueSubscriptionItem}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type QueueSubscriptionItem = typeof QueueSubscriptionItem.Type;
 /**
- * Validates Resolved Feed at the desktop capability boundary before dispatch.
+ * Preserves feed discovery results, including the observed profile owner.
  *
- * **Example** (Use ResolvedFeed at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ResolvedFeed } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ResolvedFeed);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ResolvedFeed)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -443,23 +501,27 @@ export const ResolvedFeed = S.Struct({ ...Core.ResolvedFeed.fields, profileOwner
   $I.annoteSchema("ResolvedFeed", { description: "Resolved Feed boundary in the desktop transport contract." })
 );
 /**
- * Describes Resolved Feed ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ResolvedFeed}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ResolvedFeed = typeof ResolvedFeed.Type;
 /**
- * Validates Desktop Legacy Mutation at the desktop capability boundary before dispatch.
+ * Projects legacy mutation results while preserving the observed item payload.
  *
- * **Example** (Use DesktopLegacyMutation at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DesktopLegacyMutation } from "./Subscription.model.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DesktopLegacyMutation);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DesktopLegacyMutation)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -474,7 +536,7 @@ export const DesktopLegacyMutation = S.Struct({
   })
 );
 /**
- * Describes Desktop Legacy Mutation ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link DesktopLegacyMutation}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0

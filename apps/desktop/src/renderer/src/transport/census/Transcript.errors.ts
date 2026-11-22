@@ -5,16 +5,20 @@ import { RpcOptional } from "../RpcField.model.js";
 const $I = $DesktopId.create("shared/Transcript.errors");
 
 /**
- * Validates Transcript Operation Error at the desktop capability boundary before dispatch.
+ * Carries a transcription operation failure separately from document transport or delivery failure.
  *
- * **Example** (Use TranscriptOperationError at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { TranscriptOperationError } from "./Transcript.errors.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(TranscriptOperationError);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(TranscriptOperationError)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas

@@ -6,14 +6,17 @@ import type { DesktopRpcBridge } from "./ElectronRpc.model.js";
 import type { DesktopRpcConnection } from "./ElectronRpcClient.layer.js";
 
 /**
- * Listener acquisition precedes connect; its lifetime is the document scope.
+ * Acquires the preload listener before invoking the connection handshake and ties both to the document scope; malformed handshakes release the listener instead of leaving a half-connected document.
  *
- * **Example** (Use makeBridgeConnection at its owning boundary)
+ * **Example** (Use makeBridgeConnection with its owner)
  *
  * ```ts
  * import { makeBridgeConnection } from "./DesktopRpcConnection.driver.js"
- * const compose = (options: Parameters<typeof makeBridgeConnection>[0]) => makeBridgeConnection(options);
- * void compose;
+ * import * as Effect from "effect/Effect"
+ * export const inspect = (bridge: Parameters<typeof makeBridgeConnection>[0]) => Effect.scoped(
+ *   Effect.map(makeBridgeConnection(bridge), (connection) => connection.session)
+ * );
+ * // Running inspect subscribes before connecting, then releases the connection after reading its session.
  * ```
  *
  * @category utilities

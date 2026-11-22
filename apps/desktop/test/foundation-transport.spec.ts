@@ -42,6 +42,7 @@ import { makeRecovery } from "../src/renderer/src/runtime/StreamRecovery.atoms.j
 import {
   DeliveryError,
   ElectronRpcCapacityError,
+  ElectronRpcTransportError,
   failure,
 } from "../src/renderer/src/transport/DocumentDelivery.errors.js";
 import { layer as deliveryLayer } from "../src/renderer/src/transport/DocumentDelivery.layer.js";
@@ -50,6 +51,7 @@ import { DocumentDelivery, makeDeliveryGate } from "../src/renderer/src/transpor
 import {
   DocumentResources,
   Input,
+  makeCodecOwnership,
   makeResourceBudget,
   makeRetentionLedger,
   measureFrame,
@@ -107,6 +109,10 @@ const pair = Effect.fn("Test.pair")(function* ({
   let acks = 0;
   let largestChunk = 0;
   let terminalEncodes = 0;
+  let storageReleases: ReadonlyArray<number> = [];
+  let chunkStorage: number | undefined;
+  let exitStorage: number | undefined;
+  let sentMainFrames = 0;
   let observeActive = () => false;
   let lastRequest: { readonly client: number; readonly requestId: string | number } = { client: 0, requestId: 0 };
   let admissionAttempts = 0;
@@ -159,16 +165,21 @@ const pair = Effect.fn("Test.pair")(function* ({
           }
           const parsed = S.decodeResult(S.fromJsonString(Output))(frame);
           if (Result.isSuccess(parsed) && parsed.success.message._tag === "Chunk") {
+            chunkStorage = parsed.success.storageId;
             largestChunk = Math.max(largestChunk, parsed.success.message.values.length);
             Deferred.doneUnsafe(chunk, Exit.void);
           }
+          if (Result.isSuccess(parsed) && parsed.success.message._tag === "Exit")
+            exitStorage = parsed.success.storageId;
           receiveRenderer(frame);
         }),
     })
   );
+  const rendererLedger = makeRetentionLedger();
+  rendererLedger.connect("document", "renderer-window");
   const renderer = yield* makeClientProtocol().pipe(
     Effect.provideService(DesktopRpcConnection, {
-      retention: admission.ledger.document("document") ?? admission.ledger.forWindow("window"),
+      retention: rendererLedger.document("document") ?? rendererLedger.forWindow("renderer-window"),
       session: "document",
       listen: (receive) =>
         Effect.sync(() => {
@@ -184,9 +195,14 @@ const pair = Effect.fn("Test.pair")(function* ({
               acks++;
               Deferred.doneUnsafe(firstAck, Exit.void);
             }
+            if (parsed.success.message._tag === "StorageReleased")
+              storageReleases = A.append(storageReleases, parsed.success.message.storageId);
             if (holdAck && parsed.success.message._tag === "Ack") return;
           }
-          if (documentLive) receiveMain(frame, "document", "window");
+          if (documentLive) {
+            sentMainFrames++;
+            receiveMain(frame, "document", "window");
+          }
         }),
     })
   );
@@ -279,9 +295,11 @@ const pair = Effect.fn("Test.pair")(function* ({
       ),
     main,
     renderer,
+    rendererLedger,
     firstChunk: Deferred.await(chunk),
     firstAck: Deferred.await(firstAck),
     wireStats: () => ({ acks, largestChunk }),
+    storageStats: () => ({ released: storageReleases, chunkStorage, exitStorage, sentMainFrames }),
     terminalEncodes: () => terminalEncodes,
     observeActive: () => observeActive(),
     boundaryStats: () => ({ admissionAttempts, dispatchedRequests }),
@@ -770,13 +788,15 @@ it.effect("review2 finding 4: operation factory defect settles logical failure a
           bytes -= amount;
         },
       });
+      const original = failure("FactoryDefect");
       const handle = yield* owner.accept({
         originAccount: "window",
         reserveBytes: 20,
-        run: () => Result.getOrThrowWith(Result.fail(failure("FactoryDefect")), (error) => error),
+        run: () => Result.getOrThrowWith(Result.fail(original), (error) => error),
       });
       const logical = yield* handle.logical;
       expect(Exit.isFailure(logical)).toBe(true);
+      if (Exit.isFailure(logical)) expect(Cause.squash(logical.cause)).toBe(original);
       yield* handle.released;
       expect(bytes).toBe(0);
     })
@@ -1295,6 +1315,15 @@ it.effect("transport reload: queued old-session ingress cannot recreate a client
       // Authentication succeeded before departure; the physical drain has not run yet.
       transport.rawIngress(queued);
       transport.disconnectMain();
+      const departed = yield* S.encodeEffect(S.fromJsonString(Output))({
+        session: "document",
+        client: 0,
+        message: { _tag: "DocumentClosed" },
+      });
+      transport.rawResponse(departed);
+      yield* Effect.gen(function* () {
+        while (transport.renderer.stats().clients !== 0) yield* Effect.yieldNow;
+      }).pipe(Effect.timeout("300 millis"));
       const stale = yield* Effect.exit(
         transport.renderer.protocol.send(original.client, {
           _tag: "Request",
@@ -2424,6 +2453,350 @@ it.effect("fix3 R1: authenticated role policy refuses procedures before admissio
       expect(owner.boundaryStats()).toEqual({ admissionAttempts: 0, dispatchedRequests: 0 });
       const alive = yield* other.Echo({ text: "visible" });
       expect(alive).toBe("visible");
+    })
+  )
+);
+
+it.effect("fix4 R1: DocumentClosed irreversibly rejects fresh calls with separate process ledgers", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const first = yield* owner.client.Echo({ text: "before" });
+      expect(first).toBe("before");
+      owner.rawIngress("malformed main input");
+      yield* Effect.yieldNow;
+      for (const call of [
+        owner.client.Echo({ text: "existing" }),
+        owner.nextClient.pipe(Effect.flatMap((client) => client.Echo({ text: "fresh" }))),
+      ]) {
+        const running = yield* call.pipe(Effect.exit, Effect.forkScoped);
+        for (let turn = 0; turn < 16; turn++) yield* Effect.yieldNow;
+        expect(running.pollUnsafe()).toBeDefined();
+        const exit = yield* Fiber.join(running);
+        expect(Exit.isFailure(exit)).toBe(true);
+        if (Exit.isFailure(exit))
+          expect(
+            S.is(S.Struct({ reason: S.Struct({ cause: ElectronRpcTransportError }) }))(Cause.squash(exit.cause))
+          ).toBe(true);
+      }
+      for (
+        let turn = 0;
+        turn < 128 && (owner.renderer.stats().workers !== 0 || owner.renderer.stats().clients !== 0);
+        turn++
+      )
+        yield* Effect.yieldNow;
+      expect(owner.renderer.stats().workers).toBe(0);
+      expect(owner.renderer.stats().clients).toBe(0);
+      expect(owner.renderer.delivery.stats()).toEqual({ tokens: 0, pending: 0 });
+      expect(owner.rendererLedger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("fix4 R2: accepted but never-started operation settles on immediate application closure", () =>
+  Effect.gen(function* () {
+    const scope = yield* Scope.make();
+    let bytes = 0;
+    let entered = 0;
+    const owner = yield* makeOperations({
+      reserve: (_, amount) => {
+        bytes += amount;
+        return true;
+      },
+      release: (_, amount) => {
+        bytes -= amount;
+      },
+    }).pipe(Effect.provideService(Scope.Scope, scope));
+    const handle = yield* owner.accept({
+      originAccount: "window",
+      reserveBytes: 1,
+      run: () =>
+        Effect.sync(() => {
+          entered++;
+        }),
+    });
+    yield* Scope.close(scope, Exit.void);
+    expect(entered).toBe(0);
+    expect(bytes).toBe(0);
+    const logical = yield* handle.logical.pipe(Effect.timeout("200 millis"));
+    expect(Exit.isFailure(logical)).toBe(true);
+    yield* handle.released.pipe(Effect.timeout("200 millis"));
+  })
+);
+
+it.effect("fix4 R3: source chunks keep every queued and borrowed charge through blocked consumption and closure", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      const owner = makeSubscriptions({
+        identity: { document: "d", client: "c", generation: 1, epoch: "e" },
+        resources: makeResourceBudget(ledger.forWindow("window")),
+        onTerminal: () => {},
+      });
+      const sub = yield* owner.acquire<string>(
+        "events",
+        (publish) => {
+          publish(Str.repeat(1000)("a"));
+          publish(Str.repeat(1000)("b"));
+          publish(Str.repeat(1000)("c"));
+        },
+        (value) => ({ value, bytes: 1 })
+      );
+      const all = owner.stats().bytes;
+      const entered = yield* Deferred.make<void>();
+      const resume = yield* Deferred.make<void>();
+      let during = 0;
+      let borrowed = 0;
+      const consumer = yield* owner.watch(sub).pipe(
+        Stream.filter((event) => event._tag === "Observation"),
+        Stream.take(1),
+        Stream.runForEach(() =>
+          Effect.gen(function* () {
+            during = owner.stats().bytes;
+            yield* Deferred.succeed(entered, undefined);
+            yield* Deferred.await(resume);
+          })
+        ),
+        Effect.forkScoped
+      );
+      yield* Deferred.await(entered);
+      expect(during).toBe(all);
+      yield* sub.close;
+      borrowed = owner.stats().bytes;
+      expect(borrowed).toBeGreaterThan(0);
+      expect(borrowed).toBe(all / 3);
+      expect(ledger.stats().data).toBeGreaterThanOrEqual(borrowed);
+      yield* Deferred.succeed(resume, undefined);
+      yield* Fiber.join(consumer);
+      expect(owner.stats().bytes).toBe(0);
+      expect(ledger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("fix4 R4: cleanup reported after synchronous departure is released or retained with its actual cause", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const managed = yield* runtime;
+      for (const fails of [false, true]) {
+        let releases = 0;
+        const original = failure("LateCleanupFailed");
+        const owner = makeSubscriptions({
+          identity: { document: "d", client: "c", generation: 1, epoch: "e" },
+          onTerminal: () => {},
+        });
+        const acquired = yield* Effect.exit(
+          owner.acquire<number>(
+            "events",
+            (_publish, own) => {
+              managed.runSync(owner.disconnect);
+              own(() => {
+                releases++;
+                if (fails) Result.getOrThrowWith(Result.fail(original), (error) => error);
+              });
+            },
+            (value) => ({ value, bytes: 8 })
+          )
+        );
+        expect(Exit.isFailure(acquired)).toBe(true);
+        expect(releases).toBe(1);
+        expect(owner.stats().failedReleases).toBe(fails ? 1 : 0);
+        expect(owner.stats().bytes).toBe(fails ? 256 : 0);
+        expect(owner.stats().cleanupCauses.length).toBe(fails ? 1 : 0);
+        for (const cause of owner.stats().cleanupCauses) {
+          expect(Cause.isCause(cause)).toBe(true);
+          if (Cause.isCause(cause)) expect(Cause.squash(cause)).toBe(original);
+        }
+      }
+    })
+  )
+);
+
+it.effect("fix4 survivor: frame transfer and chunk ownership outlive the last blocked consumer", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const last = yield* Deferred.make<void>();
+      const resume = yield* Deferred.make<void>();
+      const consumer = yield* owner.client.Flood().pipe(
+        Stream.runForEach((value) =>
+          value === 1023 ? Effect.andThen(Deferred.succeed(last, undefined), Deferred.await(resume)) : Effect.void
+        ),
+        Effect.forkScoped
+      );
+      yield* Deferred.await(last);
+      yield* Effect.gen(function* () {
+        while (
+          owner.renderer.stats().workers !== 0 ||
+          owner.main.stats().executions !== 0 ||
+          owner.storageStats().exitStorage === undefined
+        )
+          yield* Effect.yieldNow;
+        const exit = owner.storageStats().exitStorage;
+        while (
+          !A.some(owner.storageStats().released, (id) => id === exit) ||
+          owner.main.stats().completedFrames < owner.storageStats().sentMainFrames
+        )
+          yield* Effect.yieldNow;
+      }).pipe(Effect.timeout("500 millis"));
+      expect(owner.renderer.stats().bytes).toBe(0);
+      const chunk = owner.storageStats().chunkStorage;
+      expect(chunk).toBeDefined();
+      expect(A.some(owner.storageStats().released, (id) => id === chunk)).toBe(false);
+      expect(owner.rendererLedger.stats().data).toBeGreaterThan(0);
+      expect(owner.main.stats().admission.appBytes).toBeGreaterThan(0);
+      yield* Deferred.succeed(resume, undefined);
+      yield* Fiber.join(consumer);
+      yield* Effect.gen(function* () {
+        while (!A.some(owner.storageStats().released, (id) => id === chunk)) yield* Effect.yieldNow;
+      }).pipe(Effect.timeout("500 millis"));
+      expect(A.filter(owner.storageStats().released, (id) => id === chunk).length).toBe(1);
+      expect(owner.rendererLedger.stats().data).toBe(0);
+    })
+  )
+);
+
+it.effect("fix4 survivor: ordinary Exit ends registration and fails a later unsatisfied cut", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const ready =
+        yield* Deferred.make<import("../src/renderer/src/transport/DocumentDelivery.model.js").Registered>();
+      yield* owner.client.Observe().pipe(
+        Stream.tap((event) => (event._tag === "Registered" ? Deferred.succeed(ready, event) : Effect.void)),
+        Stream.runDrain
+      );
+      const registered = yield* Deferred.await(ready);
+      const waiting = yield* owner.renderer.delivery
+        .awaitCuts([{ ...registered, through: 3 }])
+        .pipe(Effect.exit, Effect.forkScoped);
+      yield* Effect.yieldNow;
+      expect(owner.renderer.delivery.stats().pending).toBe(0);
+      expect(waiting.pollUnsafe()).toBeDefined();
+      const exit = yield* Fiber.join(waiting);
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) {
+        const error = Cause.squash(exit.cause);
+        expect(S.is(DeliveryError)(error)).toBe(true);
+        if (S.is(DeliveryError)(error)) expect(error.reason).toBe("DeliveryLost");
+      }
+      expect(owner.renderer.delivery.stats().pending).toBe(0);
+    })
+  )
+);
+
+it.effect("fix4 survivor: abandoned encoded staging is released by fiber exit without owner close", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      const owner = makeCodecOwnership({ account: () => ledger.forWindow("w") });
+      let during = 0;
+      const encoded = S.encodeEffect(owner.codecFor(S.String))(Str.repeat(4096)("x"));
+      const worker = yield* encoded.pipe(
+        Effect.tap(() =>
+          Effect.sync(() => {
+            during = ledger.stats().data;
+          })
+        ),
+        Effect.asVoid,
+        Effect.forkScoped
+      );
+      yield* Fiber.join(worker);
+      yield* Effect.yieldNow;
+      expect(during).toBeGreaterThan(0);
+      expect(ledger.stats().data).toBe(0);
+      expect(ledger.stats().leases).toBe(0);
+      owner.close();
+    })
+  )
+);
+
+it.effect("fix4 survivor: operation is sealed during cleanup and remains sealed after release", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      let bytes = 0;
+      const operations = yield* makeOperations({
+        reserve: (_, amount) => {
+          bytes += amount;
+          return true;
+        },
+        release: (_, amount) => {
+          bytes -= amount;
+        },
+      });
+      const checked = yield* Deferred.make<ReadonlyArray<Exit.Exit<void, DeliveryError>>>();
+      const handle = yield* operations.accept<string, never>({
+        originAccount: "w",
+        reserveBytes: 1,
+        run: Effect.fn("Fix4.sealing")(function* (handle: OperationHandle<string, never>) {
+          yield* handle.registerCleanup(
+            Effect.gen(function* () {
+              const grow = yield* Effect.exit(handle.grow(1));
+              const register = yield* Effect.exit(handle.registerCleanup(Effect.void));
+              const complete = yield* Effect.exit(handle.complete(Exit.succeed("late")));
+              yield* Deferred.succeed(checked, [grow, register, complete]);
+            })
+          );
+          yield* handle.complete(Exit.succeed("first"));
+        }, Effect.orDie),
+      });
+      const during = yield* Deferred.await(checked);
+      expect(A.every(during, Exit.isFailure)).toBe(true);
+      yield* handle.released;
+      for (const effect of [
+        handle.grow(1),
+        handle.registerCleanup(Effect.void),
+        handle.complete(Exit.succeed("late")),
+      ]) {
+        const exit = yield* Effect.exit(effect);
+        expect(Exit.isFailure(exit)).toBe(true);
+      }
+      expect(bytes).toBe(0);
+    })
+  )
+);
+
+it.effect("fix4 R2: application closure during suspended cleanup waits for native release", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make();
+      let bytes = 0;
+      let released = 0;
+      const entered = yield* Deferred.make<void>();
+      const resume = yield* Deferred.make<void>();
+      const owner = yield* makeOperations({
+        reserve: (_, amount) => {
+          bytes += amount;
+          return true;
+        },
+        release: (_, amount) => {
+          bytes -= amount;
+        },
+      }).pipe(Effect.provideService(Scope.Scope, scope));
+      const handle = yield* owner.accept({
+        originAccount: "window",
+        reserveBytes: 1,
+        run: Effect.fn("Fix4.suspendedCleanup")(function* (handle: OperationHandle<unknown, unknown>) {
+          yield* handle.registerCleanup(
+            Effect.gen(function* () {
+              yield* Deferred.succeed(entered, undefined);
+              yield* Deferred.await(resume);
+              released++;
+            })
+          );
+          yield* handle.complete(Exit.succeed("done"));
+        }, Effect.orDie),
+      });
+      yield* Deferred.await(entered);
+      const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkScoped);
+      yield* Effect.yieldNow;
+      expect(bytes).toBeGreaterThan(0);
+      expect(released).toBe(0);
+      yield* Deferred.succeed(resume, undefined);
+      yield* Fiber.join(closing);
+      expect(released).toBe(1);
+      expect(bytes).toBe(0);
+      yield* handle.released;
     })
   )
 );

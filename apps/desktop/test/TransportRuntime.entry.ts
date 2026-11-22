@@ -3,15 +3,20 @@ import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
 
 /**
- * Real runtime fixture for assertions about the entrypoint's execution/teardown semantics.
+ * Acquires a real empty managed runtime for entrypoint lifecycle tests and disposes it at scope exit; execute test fibers before leaving the acquisition scope.
  *
- * **Example** (Use runtime at its owning boundary)
+ * **Example** (Use runtime with its owner)
  *
  * ```ts
  * import { runtime } from "./TransportRuntime.entry.js"
  * import * as Effect from "effect/Effect"
- * const isolated = Effect.scoped(runtime);
- * void isolated;
+ * import * as Fiber from "effect/Fiber"
+ * export const observed = Effect.scoped(Effect.gen(function* () {
+ *   const owned = yield* runtime;
+ *   const fiber = owned.runFork(Effect.succeed(42));
+ *   return yield* Fiber.join(fiber);
+ * }));
+ * Effect.runSync(observed) // => 42
  * ```
  *
  * @category utilities

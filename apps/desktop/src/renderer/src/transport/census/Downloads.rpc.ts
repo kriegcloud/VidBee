@@ -20,16 +20,20 @@ import { ObservedValue, RpcObserved } from "../RpcObservation.model.js";
 const $I = $DesktopId.create("shared/Downloads.model");
 
 /**
- * Validates Download Status at the desktop capability boundary before dispatch.
+ * Defines the download states exposed to renderer clients, including cancellation and processing.
  *
- * **Example** (Use DownloadStatus at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadStatus } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadStatus);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadStatus)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -44,23 +48,27 @@ export const DownloadStatus = LiteralKit([
   "cancelled",
 ]).pipe($I.annoteSchema("DownloadStatus", { description: "Desktop projected status." }));
 /**
- * Describes Download Status ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link DownloadStatus}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type DownloadStatus = typeof DownloadStatus.Type;
 /**
- * Validates Video Format at the desktop capability boundary before dispatch.
+ * Describes a selectable media format and its codec, size, resolution and language metadata.
  *
- * **Example** (Use VideoFormat at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { VideoFormat } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(VideoFormat);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(VideoFormat)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -90,16 +98,20 @@ export class VideoFormat extends S.Opaque<VideoFormat, { readonly brand: unique 
   ).pipe(RpcObserved, $I.annoteSchema("VideoFormat", { description: "Desktop VideoFormat boundary value." }))
 ) {}
 /**
- * Validates Video Info at the desktop capability boundary before dispatch.
+ * Preserves extracted video metadata and available formats used to construct a download request.
  *
- * **Example** (Use VideoInfo at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { VideoInfo } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(VideoInfo);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(VideoInfo)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -123,16 +135,20 @@ export class VideoInfo extends S.Opaque<VideoInfo, { readonly brand: unique symb
   ).pipe(RpcObserved, $I.annoteSchema("VideoInfo", { description: "Desktop VideoInfo boundary value." }))
 ) {}
 /**
- * Validates Download Options at the desktop capability boundary before dispatch.
+ * Validates an authored download command, including URL, output choices and optional batch or subscription context.
  *
- * **Example** (Use DownloadOptions at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadOptions } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadOptions);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadOptions)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -170,16 +186,20 @@ export class DownloadOptions extends S.Opaque<DownloadOptions, { readonly brand:
   }).pipe($I.annoteSchema("DownloadOptions", { description: "Desktop DownloadOptions boundary value." }))
 ) {}
 /**
- * Validates Playlist Entry at the desktop capability boundary before dispatch.
+ * Describes a selectable playlist member with its source URL and playlist position.
  *
- * **Example** (Use PlaylistEntry at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlaylistEntry } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlaylistEntry);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlaylistEntry)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -196,16 +216,20 @@ export class PlaylistEntry extends S.Opaque<PlaylistEntry, { readonly brand: uni
   }).pipe($I.annoteSchema("PlaylistEntry", { description: "Desktop PlaylistEntry boundary value." }))
 ) {}
 /**
- * Validates Playlist Info at the desktop capability boundary before dispatch.
+ * Describes a playlist and its entries before a batch download is admitted.
  *
- * **Example** (Use PlaylistInfo at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlaylistInfo } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlaylistInfo);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlaylistInfo)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -220,16 +244,20 @@ export class PlaylistInfo extends S.Opaque<PlaylistInfo, { readonly brand: uniqu
   }).pipe($I.annoteSchema("PlaylistInfo", { description: "Desktop PlaylistInfo boundary value." }))
 ) {}
 /**
- * Validates Playlist Download Options at the desktop capability boundary before dispatch.
+ * Validates playlist selection, range and output naming choices for a batch download.
  *
- * **Example** (Use PlaylistDownloadOptions at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlaylistDownloadOptions } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlaylistDownloadOptions);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlaylistDownloadOptions)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -252,16 +280,20 @@ export class PlaylistDownloadOptions extends S.Opaque<PlaylistDownloadOptions, {
   )
 ) {}
 /**
- * Validates Playlist Download Entry at the desktop capability boundary before dispatch.
+ * Relates a created download to its originating playlist entry and position.
  *
- * **Example** (Use PlaylistDownloadEntry at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlaylistDownloadEntry } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlaylistDownloadEntry);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlaylistDownloadEntry)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -277,16 +309,20 @@ export class PlaylistDownloadEntry extends S.Opaque<PlaylistDownloadEntry, { rea
   }).pipe($I.annoteSchema("PlaylistDownloadEntry", { description: "Desktop PlaylistDownloadEntry boundary value." }))
 ) {}
 /**
- * Validates Playlist Download Result at the desktop capability boundary before dispatch.
+ * Describes the batch created from a playlist, including the selected range and resulting downloads.
  *
- * **Example** (Use PlaylistDownloadResult at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlaylistDownloadResult } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlaylistDownloadResult);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlaylistDownloadResult)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -305,16 +341,20 @@ export class PlaylistDownloadResult extends S.Opaque<PlaylistDownloadResult, { r
   }).pipe($I.annoteSchema("PlaylistDownloadResult", { description: "Desktop PlaylistDownloadResult boundary value." }))
 ) {}
 /**
- * Validates Observed Number at the desktop capability boundary before dispatch.
+ * Preserves observed numeric download metadata, including exceptional numeric values that plain JSON would alter.
  *
- * **Example** (Use ObservedNumber at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ObservedNumber } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ObservedNumber);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ObservedNumber)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -325,23 +365,27 @@ export const ObservedNumber = S.declare(P.isNumber).pipe(
   $I.annoteSchema("ObservedNumber", { description: "A retained numeric projector observation, including NaN." })
 );
 /**
- * Describes Observed Number ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link ObservedNumber}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type ObservedNumber = typeof ObservedNumber.Type;
 /**
- * Validates Download Progress at the desktop capability boundary before dispatch.
+ * Preserves current transfer progress, speed, estimated time and observed byte counts.
  *
- * **Example** (Use DownloadProgress at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadProgress } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadProgress);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadProgress)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -360,16 +404,20 @@ export class DownloadProgress extends S.Opaque<DownloadProgress, { readonly bran
   )
 ) {}
 /**
- * Validates Download Item at the desktop capability boundary before dispatch.
+ * Preserves the live download task view, including progress, retry state, output metadata and source context.
  *
- * **Example** (Use DownloadItem at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadItem } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadItem);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadItem)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -441,16 +489,20 @@ export class DownloadItem extends S.Opaque<DownloadItem, { readonly brand: uniqu
   }).pipe($I.annoteSchema("DownloadItem", { description: "Desktop DownloadItem boundary value." }))
 ) {}
 /**
- * Validates Download History Item at the desktop capability boundary before dispatch.
+ * Preserves a persisted download history row with output paths, source metadata and task relationships.
  *
- * **Example** (Use DownloadHistoryItem at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadHistoryItem } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadHistoryItem);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadHistoryItem)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -515,16 +567,20 @@ export class DownloadHistoryItem extends S.Opaque<DownloadHistoryItem, { readonl
   }).pipe($I.annoteSchema("DownloadHistoryItem", { description: "Desktop DownloadHistoryItem boundary value." }))
 ) {}
 /**
- * Validates Video Info Command Result at the desktop capability boundary before dispatch.
+ * Returns extracted video information together with the yt-dlp command or extraction error.
  *
- * **Example** (Use VideoInfoCommandResult at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { VideoInfoCommandResult } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(VideoInfoCommandResult);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(VideoInfoCommandResult)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -538,16 +594,20 @@ export class VideoInfoCommandResult extends S.Opaque<VideoInfoCommandResult, { r
   }).pipe($I.annoteSchema("VideoInfoCommandResult", { description: "Desktop VideoInfoCommandResult boundary value." }))
 ) {}
 /**
- * Validates Local Poster Request at the desktop capability boundary before dispatch.
+ * Selects a local media file and optional output directory for poster generation.
  *
- * **Example** (Use LocalPosterRequest at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { LocalPosterRequest } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(LocalPosterRequest);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(LocalPosterRequest)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -560,16 +620,20 @@ export class LocalPosterRequest extends S.Opaque<LocalPosterRequest, { readonly 
   }).pipe($I.annoteSchema("LocalPosterRequest", { description: "Desktop LocalPosterRequest boundary value." }))
 ) {}
 /**
- * Validates Player Attach Input at the desktop capability boundary before dispatch.
+ * Selects the local file to attach to the player.
  *
- * **Example** (Use PlayerAttachInput at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlayerAttachInput } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlayerAttachInput);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlayerAttachInput)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -581,16 +645,20 @@ export class PlayerAttachInput extends S.Opaque<PlayerAttachInput, { readonly br
   }).pipe($I.annoteSchema("PlayerAttachInput", { description: "Desktop PlayerAttachInput boundary value." }))
 ) {}
 /**
- * Validates Player Attach Result at the desktop capability boundary before dispatch.
+ * Reports a playable local path or the reason the player could not attach the file.
  *
- * **Example** (Use PlayerAttachResult at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PlayerAttachResult } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PlayerAttachResult);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PlayerAttachResult)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -603,16 +671,20 @@ export class PlayerAttachResult extends S.Opaque<PlayerAttachResult, { readonly 
   }).pipe($I.annoteSchema("PlayerAttachResult", { description: "Desktop PlayerAttachResult boundary value." }))
 ) {}
 /**
- * Validates App Icon Menu State at the desktop capability boundary before dispatch.
+ * Describes available player actions and playback state for the application icon menu.
  *
- * **Example** (Use AppIconMenuState at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AppIconMenuState } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AppIconMenuState);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AppIconMenuState)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -627,16 +699,20 @@ export class AppIconMenuState extends S.Opaque<AppIconMenuState, { readonly bran
   }).pipe($I.annoteSchema("AppIconMenuState", { description: "Desktop AppIconMenuState boundary value." }))
 ) {}
 /**
- * Validates Path Result at the desktop capability boundary before dispatch.
+ * Wraps a native path result without treating the path as a URI.
  *
- * **Example** (Use PathResult at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { PathResult } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(PathResult);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(PathResult)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -648,16 +724,20 @@ export class PathResult extends S.Opaque<PathResult, { readonly brand: unique sy
   }).pipe($I.annoteSchema("PathResult", { description: "Desktop PathResult boundary value." }))
 ) {}
 /**
- * Validates Count Result at the desktop capability boundary before dispatch.
+ * Returns a numeric count from a native capability operation.
  *
- * **Example** (Use CountResult at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { CountResult } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(CountResult);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(CountResult)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -669,16 +749,20 @@ export class CountResult extends S.Opaque<CountResult, { readonly brand: unique 
   }).pipe($I.annoteSchema("CountResult", { description: "Desktop CountResult boundary value." }))
 ) {}
 /**
- * Validates Extension Source at the desktop capability boundary before dispatch.
+ * Describes one browser-extension source, its connection timestamps and supported sites.
  *
- * **Example** (Use ExtensionSource at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ExtensionSource } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ExtensionSource);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ExtensionSource)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -697,16 +781,20 @@ export class ExtensionSource extends S.Opaque<ExtensionSource, { readonly brand:
   }).pipe($I.annoteSchema("ExtensionSource", { description: "Desktop ExtensionSource boundary value." }))
 ) {}
 /**
- * Validates Extension Connection at the desktop capability boundary before dispatch.
+ * Preserves aggregate extension connectivity and the active and known browser sources.
  *
- * **Example** (Use ExtensionConnection at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ExtensionConnection } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ExtensionConnection);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ExtensionConnection)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -723,16 +811,20 @@ export class ExtensionConnection extends S.Opaque<ExtensionConnection, { readonl
   }).pipe($I.annoteSchema("ExtensionConnection", { description: "Desktop ExtensionConnection boundary value." }))
 ) {}
 /**
- * Validates Validation at the desktop capability boundary before dispatch.
+ * Returns a validation decision with an optional explanation for rejection.
  *
- * **Example** (Use Validation at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { Validation } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(Validation);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(Validation)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -745,16 +837,20 @@ export class Validation extends S.Opaque<Validation, { readonly brand: unique sy
   }).pipe($I.annoteSchema("Validation", { description: "Desktop Validation boundary value." }))
 ) {}
 /**
- * Validates Export Video Source at the desktop capability boundary before dispatch.
+ * Pairs a video source URL with a display label for export selection.
  *
- * **Example** (Use ExportVideoSource at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ExportVideoSource } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ExportVideoSource);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ExportVideoSource)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -767,16 +863,20 @@ export class ExportVideoSource extends S.Opaque<ExportVideoSource, { readonly br
   }).pipe($I.annoteSchema("ExportVideoSource", { description: "Desktop ExportVideoSource boundary value." }))
 ) {}
 /**
- * Validates Agent Artifact at the desktop capability boundary before dispatch.
+ * Describes an image or video artifact produced by an agent run, including its path and media dimensions.
  *
- * **Example** (Use AgentArtifact at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AgentArtifact } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AgentArtifact);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AgentArtifact)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -799,16 +899,20 @@ export class AgentArtifact extends S.Opaque<AgentArtifact, { readonly brand: uni
   }).pipe($I.annoteSchema("AgentArtifact", { description: "Existing share artifact links." }))
 ) {}
 /**
- * Validates Agent Skill Label at the desktop capability boundary before dispatch.
+ * Pairs an agent skill identifier with its display label.
  *
- * **Example** (Use AgentSkillLabel at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { AgentSkillLabel } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(AgentSkillLabel);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(AgentSkillLabel)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -820,16 +924,20 @@ export class AgentSkillLabel extends S.Opaque<AgentSkillLabel, { readonly brand:
   )
 ) {}
 /**
- * Validates Share Payload at the desktop capability boundary before dispatch.
+ * Describes the source content and attribution rendered in a share capture.
  *
- * **Example** (Use SharePayload at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { SharePayload } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(SharePayload);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(SharePayload)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -864,23 +972,27 @@ export const SharePayload = S.Union([
   $I.annoteSchema("SharePayload", { description: "Existing caption or prompt share request." })
 );
 /**
- * Describes Share Payload ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link SharePayload}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type SharePayload = typeof SharePayload.Type;
 /**
- * Validates Mermaid Payload at the desktop capability boundary before dispatch.
+ * Validates a diagram source, export format and optional theme before rendering.
  *
- * **Example** (Use MermaidPayload at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { MermaidPayload } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(MermaidPayload);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(MermaidPayload)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -892,16 +1004,20 @@ export class MermaidPayload extends S.Opaque<MermaidPayload, { readonly brand: u
   )
 ) {}
 /**
- * Validates Mermaid Image at the desktop capability boundary before dispatch.
+ * Returns rendered diagram image data and dimensions.
  *
- * **Example** (Use MermaidImage at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { MermaidImage } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(MermaidImage);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(MermaidImage)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -913,16 +1029,20 @@ export class MermaidImage extends S.Opaque<MermaidImage, { readonly brand: uniqu
   )
 ) {}
 /**
- * Validates Share Ready at the desktop capability boundary before dispatch.
+ * Acknowledges a share capture request with dimensions, layout or a capture error.
  *
- * **Example** (Use ShareReady at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { ShareReady } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(ShareReady);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(ShareReady)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -946,16 +1066,20 @@ export class ShareReady extends S.Opaque<ShareReady, { readonly brand: unique sy
   }).pipe($I.annoteSchema("ShareReady", { description: "Hidden renderer layout or diagram completion." }))
 ) {}
 /**
- * Validates Failure Kind at the desktop capability boundary before dispatch.
+ * Classifies download capability failures by the native stage that failed.
  *
- * **Example** (Use FailureKind at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { FailureKind } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(FailureKind);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(FailureKind)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -972,23 +1096,27 @@ export const FailureKind = LiteralKit([
   "capture",
 ]).pipe($I.annoteSchema("FailureKind", { description: "Failure Kind boundary in the desktop transport contract." }));
 /**
- * Describes Failure Kind ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link FailureKind}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type FailureKind = typeof FailureKind.Type;
 /**
- * Validates Downloads Failure at the desktop capability boundary before dispatch.
+ * Carries a classified download operation failure while preserving the declared legacy failure data.
  *
- * **Example** (Use DownloadsFailure at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadsFailure } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadsFailure);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadsFailure)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -1002,16 +1130,20 @@ export class DownloadsFailure extends S.TaggedError<DownloadsFailure, { readonly
   $I.annoteError("DownloadsFailure", { description: "Serializable desktop failure; original cause remains main-only." })
 ) {}
 /**
- * Validates Download Event at the desktop capability boundary before dispatch.
+ * Preserves the download event variants consumed by the live task subscription.
  *
- * **Example** (Use DownloadEvent at its owning boundary)
+ * **Details**
+ *
+ * The example handles a non-JSON value at the boundary; decoding fails before a capability handler receives a value.
+ *
+ * **Example** (Handle invalid boundary input)
  *
  * ```ts
  * import { DownloadEvent } from "./Downloads.rpc.js"
  * import * as S from "effect/Schema"
- * const decode = S.decodeUnknownEffect(DownloadEvent);
- * const validated = decode({});
- * void validated;
+ * import * as Result from "effect/Result"
+ * export const decoded = S.decodeUnknownResult(DownloadEvent)(Symbol("not-wire-data"));
+ * Result.isFailure(decoded) // => true
  * ```
  *
  * @category schemas
@@ -1029,22 +1161,23 @@ export const DownloadEvent = S.TaggedUnion({
   Removed: { id: S.String },
 }).pipe($I.annoteSchema("DownloadEvent", { description: "Ordered live application download notifications." }));
 /**
- * Describes Download Event ownership at the desktop transport boundary.
+ * Decoded representation validated by {@link DownloadEvent}; use the runtime codec at untrusted boundaries before passing values to typed consumers.
  *
  * @category type-level
  * @since 0.0.0
  */
 export type DownloadEvent = typeof DownloadEvent.Type;
 /**
- * Validates Downloads Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for download commands and live task observations; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use DownloadsRpcs at its owning boundary)
+ * **Example** (Use DownloadsRpcs with its owner)
  *
  * ```ts
  * import { DownloadsRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(DownloadsRpcs);
- * void client;
+ * export const make = RpcClient.make(DownloadsRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1253,15 +1386,16 @@ export const DownloadsRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates History Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for download history reads and mutations; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use HistoryRpcs at its owning boundary)
+ * **Example** (Use HistoryRpcs with its owner)
  *
  * ```ts
  * import { HistoryRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(HistoryRpcs);
- * void client;
+ * export const make = RpcClient.make(HistoryRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1317,15 +1451,16 @@ export const HistoryRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Thumbnail Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for thumbnail and poster lookup; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use ThumbnailRpcs at its owning boundary)
+ * **Example** (Use ThumbnailRpcs with its owner)
  *
  * ```ts
  * import { ThumbnailRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(ThumbnailRpcs);
- * void client;
+ * export const make = RpcClient.make(ThumbnailRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1344,15 +1479,16 @@ export const ThumbnailRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Player Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for player attachment and controls; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use PlayerRpcs at its owning boundary)
+ * **Example** (Use PlayerRpcs with its owner)
  *
  * ```ts
  * import { PlayerRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(PlayerRpcs);
- * void client;
+ * export const make = RpcClient.make(PlayerRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1380,15 +1516,16 @@ export const PlayerRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Files Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for clipboard, path and export operations; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use FilesRpcs at its owning boundary)
+ * **Example** (Use FilesRpcs with its owner)
  *
  * ```ts
  * import { FilesRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(FilesRpcs);
- * void client;
+ * export const make = RpcClient.make(FilesRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1508,15 +1645,16 @@ export const FilesRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Browser Cookies Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for installed browser and cookie-source operations; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use BrowserCookiesRpcs at its owning boundary)
+ * **Example** (Use BrowserCookiesRpcs with its owner)
  *
  * ```ts
  * import { BrowserCookiesRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(BrowserCookiesRpcs);
- * void client;
+ * export const make = RpcClient.make(BrowserCookiesRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas
@@ -1558,15 +1696,16 @@ export const BrowserCookiesRpcs = RpcGroup.make(
   })
 );
 /**
- * Validates Share Capture Rpcs at the desktop capability boundary before dispatch.
+ * Declares the frozen RPC surface for share capture registration and acknowledgements; share this group between handler layers and clients to keep payload, completion and stream contracts aligned.
  *
- * **Example** (Use ShareCaptureRpcs at its owning boundary)
+ * **Example** (Use ShareCaptureRpcs with its owner)
  *
  * ```ts
  * import { ShareCaptureRpcs } from "./Downloads.rpc.js"
  * import * as RpcClient from "effect/rpc/RpcClient"
- * const client = RpcClient.make(ShareCaptureRpcs);
- * void client;
+ * export const make = RpcClient.make(ShareCaptureRpcs);
+ * // Provide the document-owned RpcClient.Protocol and run make in the client scope.
+ * // The resulting typed client exposes only this capability group's declared commands.
  * ```
  *
  * @category schemas

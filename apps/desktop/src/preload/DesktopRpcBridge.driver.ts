@@ -4,14 +4,19 @@ import type { IpcRenderer } from "electron";
 import type { DesktopRpcBridge } from "../renderer/src/transport/ElectronRpc.model.js";
 
 /**
- * Fixed channels only; native event objects never leave preload.
+ * Exposes only fixed RPC channels to the renderer and strips native event objects from deliveries; subscriptions return an idempotent listener release callback.
  *
- * **Example** (Use makePreloadBridge at its owning boundary)
+ * **Example** (Use makePreloadBridge with its owner)
  *
  * ```ts
  * import { makePreloadBridge } from "./DesktopRpcBridge.driver.js"
- * const compose = (options: Parameters<typeof makePreloadBridge>[0]) => makePreloadBridge(options);
- * void compose;
+ * export const listen = (ipc: Parameters<typeof makePreloadBridge>[0]) => {
+ *   const bridge = makePreloadBridge(ipc);
+ *   const frames: unknown[] = [];
+ *   const unsubscribe = bridge.subscribe((frame) => { frames.push(frame); });
+ *   return { unsubscribe, frames };
+ * };
+ * // Pass preload ipcRenderer; invoke the returned release callback when the document leaves.
  * ```
  *
  * @category utilities

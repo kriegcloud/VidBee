@@ -33,15 +33,14 @@ import type { DeliveryError } from "../../renderer/src/transport/DocumentDeliver
 import type { Lease } from "./ElectronRpcAdmission.service.js";
 
 /**
- * Electron driver authenticates the document before invoking receive.
+ * Provides authenticated Electron framing and document departure notifications; the driver owns native listeners and removes only the handlers it installed.
  *
- * **Example** (Use ElectronRpcWire at its owning boundary)
+ * **Example** (Use ElectronRpcWire with its owner)
  *
  * ```ts
  * import { ElectronRpcWire } from "./ElectronRpcServer.layer.js"
- * import * as Effect from "effect/Effect"
- * const access = ElectronRpcWire.use(Effect.succeed);
- * void access;
+ * export const inspect = ElectronRpcWire.use((wire) => wire.listen(() => {}, () => {}));
+ * // Run with the native driver in the application scope; leaving it removes only these acquired handlers.
  * ```
  *
  * @category services
@@ -95,15 +94,15 @@ interface ClientState {
   storage: HashMap.HashMap<number, import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease>;
 }
 /**
- * Main adapter exposes its forced-terminal control only to owned subscriptions.
+ * Builds the scoped main RPC protocol with bounded per-client dispatch and reserved terminal delivery; admission and encoded-storage ownership are settled independently of logical completion.
  *
- * **Example** (Use makeServerProtocol at its owning boundary)
+ * **Example** (Use makeServerProtocol with its owner)
  *
  * ```ts
  * import { makeServerProtocol } from "./ElectronRpcServer.layer.js"
  * import * as Effect from "effect/Effect"
- * const acquire = makeServerProtocol({ isStream: () => false, encodeFailure: () => Effect.succeed({ _tag: "Success", value: null }) });
- * void Effect.scoped(acquire);
+ * export const acquire = makeServerProtocol({ isStream: () => false, encodeFailure: () => Effect.succeed({ _tag: "Success", value: null }) });
+ * export const inspect = Effect.scoped(Effect.map(acquire, (server) => server.stats()));
  * ```
  *
  * @category utilities
@@ -721,15 +720,15 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
 });
 
 /**
- * Supplies Electron Rpc Server through the owning application or document scope.
+ * Provides the main protocol and forced subscription termination control; terminating a registration fails its unsatisfied completion cuts and ends its owned delivery worker.
  *
- * **Example** (Use ElectronRpcServer at its owning boundary)
+ * **Example** (Use ElectronRpcServer with its owner)
  *
  * ```ts
  * import { ElectronRpcServer } from "./ElectronRpcServer.layer.js"
  * import * as Effect from "effect/Effect"
- * const access = ElectronRpcServer.use(Effect.succeed);
- * void access;
+ * export const inspect = ElectronRpcServer.use((server) => Effect.sync(() => server.stats()));
+ * // Provide the server layer to inspect outstanding workers, frames and admission ownership.
  * ```
  *
  * @category services
@@ -741,15 +740,16 @@ export class ElectronRpcServer extends Context.Service<
 >()("vidbee/main/ipc/ElectronRpcServer.layer/ElectronRpcServer") {}
 
 /**
- * Constructs layer with explicit lifetime and failure ownership.
+ * Provides the scoped main RPC protocol from injected stream classification and failure encoding; the enclosing scope owns every worker and native listener.
  *
- * **Example** (Use layer at its owning boundary)
+ * **Example** (Use layer with its owner)
  *
  * ```ts
  * import { layer } from "./ElectronRpcServer.layer.js"
+ * import * as Effect from "effect/Effect"
  * import * as Layer from "effect/Layer"
- * const provide = (options: Parameters<typeof layer>[0]) => Layer.build(layer(options));
- * void provide;
+ * export const acquire = Layer.build(layer({ isStream: () => false, encodeFailure: () => Effect.succeed({ _tag: "Success", value: null }) }));
+ * // Provide admission and native framing, then build in the application scope.
  * ```
  *
  * @category layers
@@ -759,14 +759,21 @@ export const layer = (options: Parameters<typeof makeServerProtocol>[0]) =>
   Layer.effect(ElectronRpcServer)(makeServerProtocol(options));
 
 /**
- * Mount once at bootstrap, before opening a renderer. Handler Layers are supplied by composition.
+ * Mounts a declared RPC group on the authenticated server protocol at bootstrap; handler layers must be provided before renderer windows can invoke it.
  *
- * **Example** (Use mount at its owning boundary)
+ * **Example** (Use mount with its owner)
  *
  * ```ts
  * import { mount } from "./ElectronRpcServer.layer.js"
- * const compose = (options: Parameters<typeof mount>[0]) => mount(options);
- * void compose;
+ * import * as S from "effect/Schema"
+ * import * as Effect from "effect/Effect"
+ * import * as Layer from "effect/Layer"
+ * import * as Rpc from "effect/rpc/Rpc"
+ * import * as RpcGroup from "effect/rpc/RpcGroup"
+ * export const group = RpcGroup.make(Rpc.make("Echo", { payload: { value: S.String }, success: S.String }));
+ * export const handlers = group.toLayer({ Echo: ({ value }) => Effect.succeed(value) });
+ * export const mounted = mount(group).pipe(Layer.provide(handlers));
+ * // Provide ElectronRpcServer and build mounted once at bootstrap.
  * ```
  *
  * @category layers
