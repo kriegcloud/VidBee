@@ -16,6 +16,17 @@ bun run test:golden --build apps/desktop/dist/linux-unpacked
 bun run test:golden apps/desktop/dist/linux-unpacked --scratch "$HOME/.cache/vidbee-goldens"
 ```
 
+The complete command also compares the admitted current-extension browser
+records and the separate browser-capture-unavailable host configuration. Build
+the current extension first with `bun run build:extension`. Set
+`VIDBEE_REQUIRE_REAL_BROWSER=1` to require actual unpacked-load/action-popup
+capability; a capability skip then fails the command. With supplied models and
+all local prerequisites, the complete suite compares all 506 committed documents:
+480 primary, four restart, 21 transcription and one unavailable-host document.
+The extended CLI SQLite case establishes its own CLI namespace; callers need no
+outer isolation wrapper. Paired old/new browser characterization and its reviewed
+unstable observations remain available through `--extension-browser-only`.
+
 The default build is `apps/desktop/dist/linux-unpacked`. An existing unpacked
 baseline can be supplied read-only. Node must support `node:sqlite`; the host also
 needs Linux user and network namespaces, `unshare`, `nsenter`, Python, and the
@@ -485,3 +496,121 @@ requested scenarios, for 21 transcription documents and 400 total with models.
 Twenty isolated and five complete supplied-model comparisons passed; both
 nominal labels occurred. No scenario was removed. See the report's part 3 for
 exact counts, per-run receipts and the remaining narrower coverage gaps.
+
+## Phase 8 extension and CLI pre-port cases
+
+Before recording, the additional named normalization is
+`extension-format-user-agent`: only
+`response.body.formats[*].http_headers["User-Agent"]` in the new extension
+metadata documents becomes `<user-agent>`. Vendored `random_user_agent` chooses
+a random Chrome major version; downloader defaults and yt-dlp format processing
+copy that header into format objects forwarded by Desktop. The fixture does not
+pin a User-Agent. Sibling headers, format order and all other metadata remain
+literal under the existing approved normalizations. A direct test verifies that
+a non-User-Agent difference still fails comparison.
+
+Phase 8 uses `--phase8-only` (both families), `--extension-api-only`, and
+`--cli-additions-only`. Each is an independent scenario on an isolated packaged
+app; full runs append both families after existing observations. Raw request,
+response, process and SSE receipts remain under `run/phase8/`.
+
+The accepted phase-8 set adds **38 documents** (35 CLI, three extension), bringing
+the ordinary complete comparison to **463 documents**. Twenty independent
+phase-8 comparisons and five complete comparisons passed. Four initially
+recorded documents were disqualified for unstable values; their scenarios still
+execute with full raw receipts but never record or compare an expected answer.
+The excluded names are `extension-api/request-sequence`,
+`extension-api/metadata-failure`, `cli-additions/probe-loopback` and
+`cli-additions/descriptor-autostart`. See [the phase-8 report](reports/8-goldens.md)
+and [both differing values](reports/8-goldens-exclusions.json). The second
+admitted-origin token-binding scenario is unavailable on this packaged build;
+the unadmitted-origin rejection is recorded. Existing ASR model prerequisites
+and the separate Chromium extension-browser lane retain their own proof limits.
+
+Process capture is bounded through child `close` and stdout/stderr closure,
+records exit status and termination signal separately, and rejects spawn/stream
+failures or held-pipe timeouts. CLI invocations receive scratch HOME/XDG,
+automation and MCP configuration, explicit bundled media tools, and an owned fake
+launcher for autostart. SQLite reopen uses the public local-client seam with an
+explicit run-owned path, not an invented executable flag. Missing build, CLI,
+bundled media-tool or optional seam-module prerequisites produce one clear skip.
+Every suite's DNS audit checks readiness/self-test and the exact full-suite
+hostname union documented in phase 6b; DNS A answers and all interfaces remain
+loopback-only. Raw evidence is never committed.
+
+## Real Chromium extension worker
+
+The independent `--extension-browser-only` selector launches one disposable
+Chromium at a time inside the fixture application's offline namespace. Supply a
+pre-port output built from an untouched `git archive main` and a current Chrome
+MV3 build:
+
+```sh
+bun run build:extension
+VIDBEE_EXTENSION_BEFORE=/path/to/archive/apps/extension/.output/chrome-mv3 \
+  bun run test:golden --extension-browser-only --build /path/to/linux-unpacked \
+  --scratch /path/to/disk-backed/lane-scratch
+```
+
+`VIDBEE_EXTENSION_CHROMIUM` explicitly selects the executable; otherwise the
+worker tries host Chromium candidates. It records the version actually launched,
+manifest-derived identity, API invocation and separate unpacked-load/action-popup
+results. It uses an owned Xvfb display when available, and headless Chromium
+otherwise. Missing capabilities print exactly one of:
+
+```text
+SKIP extension browser proof: no available Chromium loads the unpacked extension
+SKIP extension browser proof: available Chromium cannot open the extension action popup
+```
+
+A capability skip is missing integration proof. Missing extension build inputs
+and failures after popup capability passes fail the selector. Both labels are
+attempted and independently reported. There is no substitution of old bytes for
+a missing new build. A failed selector still stops its fixture and audits DNS.
+
+Receipts are under `run/extension-browser/{old,new}/`: capability, raw network
+requests/responses, browser exceptions, per-step storage/DOM/accessibility,
+screenshots and listener/timer diagnostics. The worker observes the popup's own
+`tabs.query` result and requires the namespace-local fixture URL. It never clicks
+Open Client or a Download control and checks isolated handler discovery before
+launch. Scratch HOME/XDG and the short disposable temporary alias prevent real
+profile use and Chromium Unix socket path overflow.
+
+The final matrix completes 20 observations old/new in each of five consecutive
+runs, with actual rendered 180p rows. Only keyboard focus and the instrumented
+cleanup counters are stable; their two `extension-browser--*.json` documents
+are admitted. Eighteen observations stay in receipts with both differing values
+listed in [the exclusions](reports/8-extension-browser-exclusions.json). Cleanup
+counters cover post-attachment registrations, not an absolute initial-listener
+count or a heap/GC proof.
+
+Strict old/new comparison still fails on `X-VidBee-Extension` versus
+`x-vidbee-extension`. The admission helper accepts a complete digest-bound
+classification of declared section 9 changes, reported defects and observed
+instability; characterization admission does not waive that parity failure.
+The initial new build also exposed an ignored `Extension.logging.ts` source
+missing from HEAD; a reproducible clean checkout still needs that source.
+See [the browser report](reports/8-extension-browser.md) for the complete proof
+and the separate full-suite CLI failures.
+
+The browser selector alone annotates its disposable HTML5 source with dimensions
+and an `180p` label consumed by the vendored extractor. This enables an actual
+format table without changing shared fixtures, existing API goldens or the
+fixture's User-Agent configuration.
+
+After collecting five complete consecutive suite directories, inspect strict
+old/new parity and the stability receipt before admitting any new document:
+
+```sh
+node apps/desktop/scripts/port/golden/extension-browser-admit.mjs /scratch/suite-1 /scratch/suite-2 /scratch/suite-3 /scratch/suite-4 /scratch/suite-5
+```
+
+Adding `--update` writes only stable `extension-browser--*.json` documents. It
+refuses partial runs and unresolved parity differences. A design-section-9
+change still requires an explicit row and both recordings; the helper has no
+blanket malformed-data waiver. Raw CDP transport IDs/timings stay in receipts.
+The browser projection keeps wire headers, request order/body, response body,
+storage, rendered body DOM, AX names/properties and screenshot hashes. It
+normalizes stored `fetchedAt` and token query values. Encoded fixture ports remain
+literal, matching the phase-8 request-sequence exclusion. These browser-specific
+rules do not change any existing golden normalizer.

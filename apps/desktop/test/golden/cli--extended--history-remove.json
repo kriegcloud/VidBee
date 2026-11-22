@@ -1,0 +1,609 @@
+{
+  "removals": [
+    {
+      "code": 0,
+      "signal": null,
+      "stdout": {
+        "ok": true,
+        "mode": "subcommand",
+        "subcommand": "history",
+        "result": {
+          "removed": ["<id:1>"]
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "code": 0,
+      "signal": null,
+      "stdout": {
+        "ok": true,
+        "mode": "subcommand",
+        "subcommand": "history",
+        "result": {
+          "removed": ["<id:2>"]
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "code": 0,
+      "signal": null,
+      "stdout": {
+        "ok": true,
+        "mode": "subcommand",
+        "subcommand": "history",
+        "result": {
+          "removed": ["<id:3>"]
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "code": 0,
+      "signal": null,
+      "stdout": {
+        "ok": true,
+        "mode": "subcommand",
+        "subcommand": "history",
+        "result": {
+          "removed": ["<id:4>"]
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "code": 0,
+      "signal": null,
+      "stdout": {
+        "ok": true,
+        "mode": "subcommand",
+        "subcommand": "history",
+        "result": {
+          "removed": ["<id:5>"]
+        }
+      },
+      "stderr": ""
+    }
+  ],
+  "history": {
+    "code": 0,
+    "signal": null,
+    "stdout": {
+      "ok": true,
+      "mode": "subcommand",
+      "subcommand": "history",
+      "result": {
+        "items": [
+          {
+            "id": "golden-audio",
+            "kind": "audio",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/audio",
+              "kind": "audio",
+              "title": "Golden audio archive",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "audio",
+                "title": "Golden audio archive",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "completed",
+            "prevStatus": null,
+            "statusReason": null,
+            "enteredStatusAt": 1735689600000,
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689599000,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-completed",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-completed",
+              "kind": "video",
+              "title": "Golden renamed media",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden completed field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "completed",
+            "prevStatus": null,
+            "statusReason": null,
+            "enteredStatusAt": 1735689600000,
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": {
+              "filePath": "<run>/userdata/golden-media/Golden field recording/Golden field recording.wav",
+              "size": 120044,
+              "durationMs": 3750,
+              "sha256": null,
+              "formatId": "synthetic-wav",
+              "subtitleStatus": "downloaded",
+              "subtitleLanguages": ["en"]
+            },
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600000,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-paused",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-paused",
+              "kind": "video",
+              "title": "Golden paused field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden paused field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "cancelled",
+            "prevStatus": "paused",
+            "statusReason": "user",
+            "enteredStatusAt": "<timestamp>",
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600001,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-failed",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-failed",
+              "kind": "video",
+              "title": "Golden failed field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden failed field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "failed",
+            "prevStatus": null,
+            "statusReason": null,
+            "enteredStatusAt": 1735689600002,
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": {
+              "category": "not-found",
+              "exitCode": 1,
+              "rawMessage": "Synthetic media is unavailable.",
+              "uiMessageKey": "download.error.notFound",
+              "uiActionHints": [],
+              "retryable": false,
+              "suggestedRetryAfterMs": null
+            },
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600002,
+            "updatedAt": 1735689600002
+          },
+          {
+            "id": "golden-cancelled",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-cancelled",
+              "kind": "video",
+              "title": "Golden cancelled field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden cancelled field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "cancelled",
+            "prevStatus": null,
+            "statusReason": null,
+            "enteredStatusAt": 1735689600003,
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600003,
+            "updatedAt": 1735689600003
+          },
+          {
+            "id": "golden-queued",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-queued",
+              "kind": "video",
+              "title": "Golden queued field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden queued field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "failed",
+            "prevStatus": "running",
+            "statusReason": "unknown",
+            "enteredStatusAt": "<timestamp>",
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-queued: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600004,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-running",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-running",
+              "kind": "video",
+              "title": "Golden running field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden running field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "failed",
+            "prevStatus": "running",
+            "statusReason": "unknown",
+            "enteredStatusAt": "<timestamp>",
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-running: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600005,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-processing",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-processing",
+              "kind": "video",
+              "title": "Golden processing field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden processing field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "failed",
+            "prevStatus": "running",
+            "statusReason": "unknown",
+            "enteredStatusAt": "<timestamp>",
+            "attempt": 1,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": {
+              "category": "unknown",
+              "exitCode": null,
+              "rawMessage": "ERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n\n\nError code: 1\n\nStderr:\nERROR: [generic] golden-processing: Unable to download webpage: HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused (caused by TransportError(\"HTTPSConnection(host='example.invalid', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))\n",
+              "uiMessageKey": "task.error.unknown",
+              "uiActionHints": ["retry", "report-bug"],
+              "retryable": true,
+              "suggestedRetryAfterMs": null
+            },
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600006,
+            "updatedAt": "<timestamp>"
+          },
+          {
+            "id": "golden-retry",
+            "kind": "video",
+            "parentId": null,
+            "input": {
+              "url": "https://example.invalid/media/golden-retry",
+              "kind": "video",
+              "title": "Golden retry-scheduled field notes",
+              "thumbnail": "file://<run>/userdata/golden-media/thumbnail.png",
+              "options": {
+                "type": "video",
+                "title": "Golden retry-scheduled field notes",
+                "description": "An invented recording for deterministic offline tests.",
+                "channel": "Synthetic Observatory",
+                "uploader": "Fixture narrator",
+                "viewCount": 1234,
+                "tags": ["field-notes", "synthetic"],
+                "duration": 3.75,
+                "customDownloadPath": "<run>/userdata/golden-media",
+                "fileSize": 120044,
+                "completedAt": 1735689600000,
+                "startedAt": 1735689595000
+              }
+            },
+            "priority": 10,
+            "groupKey": "example.invalid",
+            "status": "retry-scheduled",
+            "prevStatus": null,
+            "statusReason": null,
+            "enteredStatusAt": 1735689600007,
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": 4102444800000,
+            "progress": {
+              "percent": 0.25,
+              "bytesDownloaded": 800,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 4
+            },
+            "output": null,
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": 1735689600007,
+            "updatedAt": 1735689600007
+          },
+          {
+            "id": "<id:6>",
+            "kind": "audio",
+            "parentId": null,
+            "input": {
+              "url": "file://<run>/userdata/golden-media/import-sample.wav",
+              "kind": "audio",
+              "title": "import-sample.wav",
+              "options": {
+                "type": "audio",
+                "origin": "manual",
+                "downloadPath": "<run>/userdata/golden-media",
+                "savedFileName": "import-sample.wav",
+                "source": "local-import"
+              }
+            },
+            "priority": 0,
+            "groupKey": "unknown",
+            "status": "completed",
+            "prevStatus": null,
+            "statusReason": "local-import",
+            "enteredStatusAt": "<timestamp>",
+            "attempt": 0,
+            "maxAttempts": 0,
+            "nextRetryAt": null,
+            "progress": {
+              "percent": 1,
+              "bytesDownloaded": 120044,
+              "bytesTotal": 120044,
+              "speedBps": null,
+              "etaMs": null,
+              "ticks": 1
+            },
+            "output": {
+              "filePath": "<run>/userdata/golden-media/import-sample.wav",
+              "size": 120044,
+              "durationMs": null,
+              "sha256": null
+            },
+            "lastError": null,
+            "pid": null,
+            "pidStartedAt": null,
+            "createdAt": "<timestamp>",
+            "updatedAt": "<timestamp>"
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "stderr": ""
+  }
+}

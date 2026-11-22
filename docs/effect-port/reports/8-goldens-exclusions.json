@@ -1,0 +1,62 @@
+[
+  {
+    "case": "extension-api/request-sequence",
+    "recording": "suite-AXCKr8",
+    "comparison": "suite-vTqe9j",
+    "differences": {
+      "requests.2.path": {
+        "recorded": "/video-info?url=http%3A%2F%2F127.0.0.1%3A37499%2Fphase8%2Fpage.html&token=<token>",
+        "compared": "/video-info?url=http%3A%2F%2F127.0.0.1%3A41811%2Fphase8%2Fpage.html&token=<token>"
+      }
+    }
+  },
+  {
+    "case": "cli-additions/probe-loopback",
+    "recording": "suite-BCXUyo",
+    "comparison": "suite-vTqe9j",
+    "differences": {
+      "epoch": {
+        "recorded": 1795086590,
+        "compared": 1795086667
+      },
+      "webpage_url_domain": {
+        "recorded": "127.0.0.1:46517",
+        "compared": "127.0.0.1:41811"
+      },
+      "formats.0.http_headers.User-Agent": {
+        "recorded": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "compared": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    }
+  },
+  {
+    "case": "cli-additions/descriptor-autostart",
+    "recording": "suite-BCXUyo",
+    "comparison": "suite-vTqe9j",
+    "differences": {
+      "stdout.result.perGroup": {
+        "recorded": {
+          "example.invalid": 9,
+          "127.0.0.1:46517": 7,
+          "unknown": 1
+        },
+        "compared": {
+          "example.invalid": 9,
+          "127.0.0.1:41811": 7,
+          "unknown": 1
+        }
+      }
+    }
+  },
+  {
+    "case": "extension-api/metadata-failure",
+    "recording": "suite-AXCKr8",
+    "comparison": "suite-svdhod",
+    "differences": {
+      "response.body.details": {
+        "recorded": "Error: ERROR: [generic] 404-phase8: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n    at ChildProcess.<anonymous> (<build>/resources/app.asar/out/main/index.js:4016:9)\n    at ChildProcess.wrapper (node:events:639:12)\n    at ChildProcess.emit (node:events:514:28)\n    at maybeClose (node:internal/child_process:1172:16)\n    at Socket.<anonymous> (node:internal/child_process:527:11)\n    at Socket.emit (node:events:514:28)\n    at Pipe.<anonymous> (node:net:362:12)",
+        "compared": "Error: ERROR: [generic] 404-phase8: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n    at ChildProcess.<anonymous> (<build>/resources/app.asar/out/main/index.js:4016:9)\n    at ChildProcess.wrapper (node:events:639:12)\n    at ChildProcess.emit (node:events:514:28)\n    at maybeClose (node:internal/child_process:1172:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:335:5)"
+      }
+    }
+  }
+]

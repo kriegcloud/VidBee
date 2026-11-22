@@ -1,0 +1,10 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "UNKNOWN_ERROR",
+    "message": "task <id:1> not found"
+  },
+  "stderr": ""
+}

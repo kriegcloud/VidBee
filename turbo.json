@@ -15,7 +15,10 @@
       ],
       "outputs": [],
       "env": [
-        "DB_TEST_CLIENT"
+        "DB_TEST_CLIENT",
+        "VIDBEE_CLI_PORTED",
+        "TZ",
+        "TMPDIR"
       ]
     },
     "build": {
@@ -24,6 +27,35 @@
       ],
       "outputs": [
         "dist/**"
+      ]
+    },
+    "vidbee-extension#check": {
+      "outputs": [
+        "dist/**",
+        ".wxt/**"
+      ],
+      "dependsOn": [
+        "^check"
+      ]
+    },
+    "vidbee-extension#test": {
+      "outputs": [
+        ".wxt/**"
+      ],
+      "env": [
+        "TZ"
+      ],
+      "dependsOn": [
+        "^check"
+      ]
+    },
+    "vidbee-extension#build": {
+      "outputs": [
+        ".output/**",
+        ".wxt/**"
+      ],
+      "dependsOn": [
+        "^build"
       ]
     }
   },
@@ -34,7 +66,9 @@
   "globalDependencies": [
     "tsconfig.base.json",
     "biome.jsonc",
-    "standards/effect-allowlist.jsonc"
+    "standards/effect-allowlist.jsonc",
+    "fixtures/cli-pre-port/**",
+    "scripts/cli/**"
   ],
   "cacheDir": ".turbo/cache"
 }

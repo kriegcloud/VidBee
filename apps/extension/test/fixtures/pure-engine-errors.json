@@ -1,0 +1,110 @@
+[
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": true,\n    \"message\": \"size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": \"1\",\n    \"message\": \"size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": \"60\",\n    \"message\": \"size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": \"x\",\n    \"message\": \"size.toFixed is not a function. (In 'size.toFixed(size >= 100 || unitIndex === 0 ? 0 : 1)', 'size.toFixed' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": true,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": -1,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 59.49,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 59.5,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 3599.5,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1023,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1024,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1099511627776,\n    \"message\": \"value.startsWith is not a function. (In 'value.startsWith(\"http://\")', 'value.startsWith' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": undefined,\n    \"message\": \"undefined is not an object (evaluating 'error.toLowerCase')\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": null,\n    \"message\": \"null is not an object (evaluating 'error.toLowerCase')\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": false,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": true,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 0,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": -1,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": NaN,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 59.49,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 59.5,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 3599.5,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1023,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1024,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  },
+  {
+    "engine": true,
+    "historicalSnapshotFields": "    \"engine\": true,\n    \"input\": 1099511627776,\n    \"message\": \"error.toLowerCase is not a function. (In 'error.toLowerCase()', 'error.toLowerCase' is undefined)\",\n    \"name\": \"TypeError\","
+  }
+]

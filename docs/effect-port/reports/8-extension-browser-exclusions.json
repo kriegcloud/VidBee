@@ -1,0 +1,428 @@
+{
+  "accepted": [
+    "keyboard",
+    "document-worker-cleanup"
+  ],
+  "excluded": [
+    {
+      "name": "metadata-success",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 6,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "cache-reopen",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 6,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "layout-light",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 6,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "layout-dark",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 6,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "metadata-failure",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/404-phase8.mp4"
+        ],
+        "before": {
+          "error": "ERROR: [generic] 404-phase8: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n\nError: ERROR: [generic] 404-phase8: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)\n\n    at ChildProcess.<anonymous> (<build>/resources/app.asar/out/main/index.js:4016:9)\n    at ChildProcess.wrapper (node:events:639:12)\n    at ChildProcess.emit (node:events:514:28)\n    at maybeClose (node:internal/child_process:1172:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:335:5)",
+          "fetchedAt": "<timestamp>",
+          "status": "error",
+          "url": "http://127.0.0.1:<port>/404-phase8.mp4"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "connection-failure",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "error": "VidBeep app not found on localhost.",
+          "fetchedAt": "<timestamp>",
+          "status": "error",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "stored-error",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "error": "Synthetic recoverable error",
+          "fetchedAt": "<timestamp>",
+          "status": "error",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "retry-recovery",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 9,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-null",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "screenshotSha256"
+        ],
+        "before": "7332d810f11485483d7bd26a3adb2066f83d4ed49ada9a0719d6ffe99b94d8e4",
+        "after": "dd6192f3731d5d23ed952af40af1a0e0e660ab6af51a008d70357e193f200150"
+      },
+      "differenceCount": 8,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-false",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "screenshotSha256"
+        ],
+        "before": "dd6192f3731d5d23ed952af40af1a0e0e660ab6af51a008d70357e193f200150",
+        "after": "689b875e1f4aea563496847b3b62e36d204892c7ba298bdf197e90ac0b8a21c1"
+      },
+      "differenceCount": 8,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-zero",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-empty-string",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-number",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-true",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-string",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "screenshotSha256"
+        ],
+        "before": "dd6192f3731d5d23ed952af40af1a0e0e660ab6af51a008d70357e193f200150",
+        "after": "689b875e1f4aea563496847b3b62e36d204892c7ba298bdf197e90ac0b8a21c1"
+      },
+      "differenceCount": 8,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-array",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "root-null-array",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "requests",
+          "2",
+          "url"
+        ],
+        "before": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A39849%2Fphase8%2Fpage.html&token=%3Ctoken%3E",
+        "after": "http://127.0.0.1:<port>/video-info?url=http%3A%2F%2F127.0.0.1%3A46073%2Fphase8%2Fpage.html&token=%3Ctoken%3E"
+      },
+      "differenceCount": 7,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    },
+    {
+      "name": "worker-restart",
+      "reason": "Not identical across five consecutive new-build runs. Complete differing values remain in the stability receipt.",
+      "firstDifference": {
+        "path": [
+          "storage",
+          "videoInfoCacheByUrl",
+          "http://127.0.0.1:39849/phase8/page.html"
+        ],
+        "before": {
+          "fetchedAt": "<timestamp>",
+          "info": {
+            "formats": [
+              {
+                "ext": "mp4",
+                "format_id": "180p",
+                "height": 180,
+                "resolution": "320x180",
+                "width": 320
+              }
+            ],
+            "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+            "title": "Golden extension media (1)"
+          },
+          "status": "ready",
+          "url": "http://127.0.0.1:<port>/phase8/page.html"
+        },
+        "after": {
+          "absent": true
+        }
+      },
+      "differenceCount": 11,
+      "receipt": "final-five-formats/run-5/suite-qZQ961/browser-stability.json"
+    }
+  ],
+  "metadataFailureVariability": {
+    "oldWidths": [
+      360,
+      360,
+      360,
+      375,
+      375
+    ],
+    "newWidths": [
+      360,
+      360,
+      375,
+      360,
+      360
+    ],
+    "screenshotSha256": {
+      "width360": "f5311cef9849247e135a31dce0a5cde6f796685cee188e9c11e522c5d3eb3e90",
+      "width375": "93f61c09ade0cbfdb825cd2831fdd49ff0b7f9a12697261cc4fe29d60278d087"
+    },
+    "note": "Both frozen builds vary between these widths/hashes. Light/dark reduced-motion success layouts remain 360 pixels in every run."
+  }
+}

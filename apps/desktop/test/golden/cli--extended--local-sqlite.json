@@ -1,0 +1,15 @@
+{
+  "status": "queued",
+  "input": {
+    "url": "https://example.invalid/v",
+    "kind": "yt-dlp-forward",
+    "rawArgs": ["--fixture"],
+    "options": {
+      "foreign": {
+        "nested": true
+      }
+    }
+  },
+  "pathPreserved": true,
+  "temporaryDirectoriesCleaned": true
+}

@@ -1,0 +1,16 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "download",
+    "task": {
+      "id": "<id:1>",
+      "status": "running",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "command": "yt-dlp -o <run>/phase8/downloads/local-false.%(ext)s http://127.0.0.1:<port>/local-false.mp4"
+    }
+  },
+  "stderr": ""
+}

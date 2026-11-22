@@ -1,0 +1,37 @@
+{
+  "response": {
+    "status": 200,
+    "body": {
+      "title": "Golden extension media (1)",
+      "thumbnail": "http://127.0.0.1:<port>/phase8/thumbnail.png",
+      "formats": [
+        {
+          "ext": "mp4",
+          "width": null,
+          "height": null,
+          "tbr": null,
+          "format_id": "0",
+          "url": "http://127.0.0.1:<port>/phase8/video.mp4",
+          "vcodec": null,
+          "http_headers": {
+            "User-Agent": "<user-agent>",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-us,en;q=0.5",
+            "Sec-Fetch-Mode": "navigate",
+            "Referer": "http://127.0.0.1:<port>/phase8/page.html"
+          },
+          "protocol": "http",
+          "video_ext": "mp4",
+          "audio_ext": "none",
+          "vbr": null,
+          "abr": null,
+          "resolution": null,
+          "dynamic_range": "SDR",
+          "aspect_ratio": null,
+          "filesize_approx": null,
+          "format": "0 - unknown"
+        }
+      ]
+    }
+  }
+}

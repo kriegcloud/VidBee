@@ -30,7 +30,7 @@ export const layer = Layer.effect(
     const scope = yield* Effect.scope;
     return DownloadProcess.of({
       start: Effect.fn("DownloadProcess.start")(function* (spec, sink, suppliedOwner) {
-        const owner = spec.extendedLifecycle === true ? (suppliedOwner ?? scope) : scope;
+        const owner = suppliedOwner ?? scope;
         const attemptScope = yield* Scope.fork(owner);
         const abort = spec.abortSignal;
         const abortFiber =

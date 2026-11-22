@@ -1,0 +1,14 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "subcommand",
+    "subcommand": "download",
+    "result": {
+      "id": "<id:1>",
+      "status": "pause-requested"
+    }
+  },
+  "stderr": ""
+}

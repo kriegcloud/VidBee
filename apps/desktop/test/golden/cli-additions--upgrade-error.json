@@ -1,0 +1,13 @@
+{
+  "code": 3,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "API_UNREACHABLE",
+    "message": "registry responded 503",
+    "details": {
+      "registry": "https://registry.npmjs.org/@vidbee/cli/latest"
+    }
+  },
+  "stderr": ""
+}

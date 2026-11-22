@@ -1,0 +1,6 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": "{\"ok\":false,\"code\":\"UNKNOWN_VIDBEE_FLAG\",\"message\":\"unknown VidBeep flag: --vidbee-typo\"}\n",
+  "stderr": ""
+}

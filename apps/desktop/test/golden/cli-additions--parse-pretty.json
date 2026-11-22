@@ -1,0 +1,10 @@
+{
+  "code": 2,
+  "signal": null,
+  "stdout": {
+    "ok": false,
+    "code": "INVALID_TIMEOUT",
+    "message": "--vidbee-timeout must be a positive integer (ms); got invalid"
+  },
+  "stderr": ""
+}

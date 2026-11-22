@@ -1,0 +1,79 @@
+{
+  "code": 0,
+  "signal": null,
+  "stdout": {
+    "ok": true,
+    "mode": "download",
+    "task": {
+      "id": "<id:1>",
+      "kind": "yt-dlp-forward",
+      "parentId": null,
+      "input": {
+        "url": "http://127.0.0.1:<port>/cli-wait.mp4",
+        "kind": "yt-dlp-forward",
+        "rawArgs": [
+          "-o",
+          "<run>/phase8/downloads/cli-wait.%(ext)s",
+          "http://127.0.0.1:<port>/cli-wait.mp4"
+        ],
+        "options": {
+          "source": "cli",
+          "sanitizedArgs": [
+            "-o",
+            "<run>/phase8/downloads/cli-wait.%(ext)s",
+            "http://127.0.0.1:<port>/cli-wait.mp4"
+          ],
+          "commandPreview": "yt-dlp -o <run>/phase8/downloads/cli-wait.%(ext)s http://127.0.0.1:<port>/cli-wait.mp4",
+          "outputHints": {
+            "outputTemplate": "<run>/phase8/downloads/cli-wait.%(ext)s"
+          },
+          "vidbee": {
+            "wait": true,
+            "maxAttempts": 0
+          },
+          "startedAt": "<timestamp>"
+        }
+      },
+      "priority": 0,
+      "groupKey": "127.0.0.1:<port>",
+      "status": "completed",
+      "prevStatus": "running",
+      "statusReason": null,
+      "enteredStatusAt": "<timestamp>",
+      "attempt": 1,
+      "maxAttempts": 0,
+      "nextRetryAt": null,
+      "output": {
+        "filePath": "<run>/phase8/downloads/cli-wait.mp4",
+        "size": 35476,
+        "durationMs": null,
+        "sha256": null,
+        "formatId": "mp4",
+        "cookieSources": [
+          {
+            "type": "config"
+          }
+        ]
+      },
+      "lastError": null,
+      "pid": null,
+      "pidStartedAt": null,
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>",
+      "progressFields": [
+        "percent",
+        "bytesDownloaded",
+        "bytesTotal",
+        "speedBps",
+        "etaMs",
+        "ticks"
+      ]
+    },
+    "ytDlp": {
+      "exitCode": 0,
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  },
+  "stderr": ""
+}

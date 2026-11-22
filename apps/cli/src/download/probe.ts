@@ -1,161 +1,126 @@
-/**
- * Probe-mode execution. Reference:
- *   docs/vidbee-desktop-first-cli-ytdlp-rss-design.md §4.3, §4.5, §8.3
- *
- * Probes do NOT enter the queue. They spawn yt-dlp directly with the raw
- * argv, capture stdout/stderr, and surface the result wrapped in the §4.4
- * envelope. The 32MB stdout cap is enforced; stderr is best-effort capped
- * so a runaway log can't blow our memory budget either.
- *
- * The CLI bundles a yt-dlp binary path discovery — Desktop's
- * `node_modules/yt-dlp-wrap-plus` ships one, but for the standalone
- * `--vidbee-local` / `npx @vidbee/cli` flows we accept `YTDLP_PATH` from
- * env or fall back to `yt-dlp` on PATH.
- */
+import * as Deferred from "effect/Deferred";
+import * as Effect from "effect/Effect";
+import * as Str from "effect/String";
+import { CliHost } from "../CliHost.service.js";
+import { CliProbe } from "../CliProbe.service.js";
+import { CliProbeProcess } from "../CliProbeProcess.service.js";
+import { errorEnvelope } from "../envelope/index.js";
+import { originalMessage } from "../transport/descriptor.js";
+import type { ProcessRun } from "@vidbee/downloader-core/DownloadProcess.service";
+import type { ProbeOptions, ProbeResult } from "../Probe.model.js";
 
-import { spawn } from 'node:child_process'
+export type { ProbeOptions, ProbeResult } from "../Probe.model.js";
 
-import { errorEnvelope, type ErrorEnvelope } from '../envelope'
-
-export interface ProbeOptions {
-  argv: readonly string[]
-  ytDlpPath?: string
-  /** Test seam — overrides spawn. */
-  spawner?: ProbeSpawner
-  /** Max stdout bytes; design = 32MB. */
-  stdoutMaxBytes?: number
-  /** stderr tail (default 64KB; same as attempts.stderr_tail). */
-  stderrTailBytes?: number
-}
-
-export interface ProbeSpawnHandle {
-  stdout: NodeJS.ReadableStream
-  stderr: NodeJS.ReadableStream
-  on(event: 'close', listener: (code: number | null) => void): void
-  on(event: 'error', listener: (err: Error) => void): void
-  kill: (signal?: NodeJS.Signals) => void
-}
-
-export type ProbeSpawner = (binary: string, args: readonly string[]) => ProbeSpawnHandle
-
-export type ProbeResult =
-  | { kind: 'success'; stdout: string; stderr: string; exitCode: number; binary: string }
-  | { kind: 'error'; envelope: ErrorEnvelope }
-
-const DEFAULT_STDOUT_MAX = 32 * 1024 * 1024
-const DEFAULT_STDERR_TAIL = 64 * 1024
-
-export async function runProbe(opts: ProbeOptions): Promise<ProbeResult> {
-  const binary = opts.ytDlpPath ?? resolveYtDlpBinary()
-  const stdoutMax = opts.stdoutMaxBytes ?? DEFAULT_STDOUT_MAX
-  const stderrTail = opts.stderrTailBytes ?? DEFAULT_STDERR_TAIL
-  const spawner = opts.spawner ?? defaultSpawner
-
-  let handle: ProbeSpawnHandle
-  try {
-    handle = spawner(binary, opts.argv)
-  } catch (err) {
-    return {
-      kind: 'error',
-      envelope: errorEnvelope(
-        'NOT_IMPLEMENTED',
-        `failed to spawn yt-dlp at ${binary}: ${err instanceof Error ? err.message : err}`
-      )
-    }
+function concat(chunks: ReadonlyArray<Uint8Array>): Uint8Array {
+  let length = 0;
+  for (const chunk of chunks) length += chunk.byteLength;
+  const result = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.byteLength;
   }
-
-  let stdoutBytes = 0
-  let stdoutOverflow = false
-  const stdoutChunks: Buffer[] = []
-  const stderrTailBuf = createTailBuffer(stderrTail)
-
-  handle.stdout.on('data', (chunk: Buffer) => {
-    if (stdoutOverflow) return
-    if (stdoutBytes + chunk.byteLength > stdoutMax) {
-      stdoutOverflow = true
-      handle.kill('SIGTERM')
-      return
-    }
-    stdoutBytes += chunk.byteLength
-    stdoutChunks.push(chunk)
-  })
-  handle.stderr.on('data', (chunk: Buffer) => {
-    stderrTailBuf.push(chunk)
-  })
-
-  return new Promise<ProbeResult>((resolve) => {
-    let settled = false
-    handle.on('error', (err) => {
-      if (settled) return
-      settled = true
-      resolve({
-        kind: 'error',
-        envelope: errorEnvelope(
-          'NOT_IMPLEMENTED',
-          `yt-dlp spawn error: ${err.message}`
-        )
-      })
-    })
-    handle.on('close', (code) => {
-      if (settled) return
-      settled = true
-      if (stdoutOverflow) {
-        resolve({
-          kind: 'error',
-          envelope: errorEnvelope(
-            'PROBE_OUTPUT_TOO_LARGE',
-            `probe stdout exceeded ${stdoutMax} bytes`
-          )
-        })
-        return
-      }
-      const stdout = Buffer.concat(stdoutChunks).toString('utf-8')
-      resolve({
-        kind: 'success',
-        stdout,
-        stderr: stderrTailBuf.read().toString('utf-8'),
-        exitCode: code ?? -1,
-        binary
-      })
-    })
-  })
+  return result;
 }
-
-function resolveYtDlpBinary(): string {
-  const env = process.env.YTDLP_PATH?.trim()
-  return env && env.length > 0 ? env : 'yt-dlp'
-}
-
-function defaultSpawner(binary: string, args: readonly string[]): ProbeSpawnHandle {
-  const child = spawn(binary, [...args], { stdio: ['ignore', 'pipe', 'pipe'] })
-  return {
-    stdout: child.stdout,
-    stderr: child.stderr,
-    on: (ev, l) => {
-      child.on(ev as 'close' | 'error', l as never)
-    },
-    kill: (signal) => {
-      try {
-        child.kill(signal)
-      } catch {
-        /* noop */
-      }
-    }
-  }
-}
-
-interface TailBuffer {
-  push: (chunk: Buffer) => void
-  read: () => Buffer
-}
-
-function createTailBuffer(maxBytes: number): TailBuffer {
-  let buf = Buffer.alloc(0)
-  return {
-    push(chunk: Buffer) {
-      const merged = Buffer.concat([buf, chunk])
-      buf = merged.byteLength > maxBytes ? merged.subarray(merged.byteLength - maxBytes) : merged
-    },
-    read: () => buf
-  }
-}
+export const runProbeNative = Effect.fn("runProbeNative")(function* (options: ProbeOptions) {
+  const owner = yield* Effect.scope;
+  const process = yield* CliProbeProcess;
+  const host = yield* CliHost;
+  const env = Str.trim((yield* host.environment("YTDLP_PATH")) ?? "");
+  const binary = options.ytDlpPath ?? (env.length > 0 ? env : "yt-dlp");
+  const maximum = options.stdoutMaxBytes ?? 32 * 1024 * 1024;
+  const tailLimit = options.stderrTailBytes ?? 64 * 1024;
+  const done = yield* Deferred.make<ProbeResult>();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  let overflow = false;
+  let tail: Uint8Array = new Uint8Array(0);
+  let run: ProcessRun | undefined;
+  const error = (message: string): ProbeResult => ({
+    kind: "error",
+    envelope: errorEnvelope("NOT_IMPLEMENTED", message),
+  });
+  const start = yield* process
+    .start(
+      {
+        command: binary,
+        argv: options.argv,
+        env: undefined,
+        extendEnv: true,
+        cwd: undefined,
+        detached: false,
+        windowsHide: false,
+        stdin: "ignore",
+        stdout: "pipe",
+        stderr: "pipe",
+        rawSpawnObservation: "omit",
+        rawExitObservation: "omit",
+      },
+      {
+        abort: Effect.void,
+        emit: Effect.fn("CliProbe.emit")(function* (event) {
+          switch (event._tag) {
+            case "stdout":
+              if (overflow) return;
+              if (bytes + event.chunk.byteLength > maximum) {
+                overflow = true;
+                if (run !== undefined) yield* run.signalChild("SIGTERM").pipe(Effect.ignore);
+                return;
+              }
+              bytes += event.chunk.byteLength;
+              chunks.push(event.chunk);
+              return;
+            case "stderr": {
+              const merged = concat([tail, event.chunk]);
+              tail = merged.byteLength > tailLimit ? merged.subarray(merged.byteLength - tailLimit) : merged;
+              return;
+            }
+            case "rawError":
+              yield* Deferred.succeed(done, error(`yt-dlp spawn error: ${originalMessage(event.error)}`));
+              return;
+            case "complete": {
+              if (overflow) {
+                yield* Deferred.succeed(done, {
+                  kind: "error",
+                  envelope: errorEnvelope("PROBE_OUTPUT_TOO_LARGE", `probe stdout exceeded ${maximum} bytes`),
+                });
+                return;
+              }
+              const outcome = event.outcome;
+              if (outcome._tag === "Native" && outcome.result._tag === "Failure") {
+                yield* Deferred.succeed(done, error(`yt-dlp spawn error: ${originalMessage(outcome.result.error)}`));
+                return;
+              }
+              const code =
+                outcome._tag === "Raw"
+                  ? (outcome.code ?? -1)
+                  : outcome.result._tag === "ExitCode"
+                    ? outcome.result.code
+                    : -1;
+              const decoder = new TextDecoder("utf-8", { ignoreBOM: true });
+              yield* Deferred.succeed(done, {
+                kind: "success",
+                stdout: decoder.decode(concat(chunks)),
+                stderr: decoder.decode(tail),
+                exitCode: code,
+                binary,
+              });
+              return;
+            }
+          }
+        }),
+      },
+      owner
+    )
+    .pipe(Effect.result);
+  if (start._tag === "Failure")
+    return error(`failed to spawn yt-dlp at ${binary}: ${originalMessage(start.failure.cause ?? start.failure)}`);
+  if (start.success._tag === "NativeSpawnFailure")
+    return error(`failed to spawn yt-dlp at ${binary}: ${originalMessage(start.success.error)}`);
+  run = start.success.run;
+  if (overflow) yield* run.signalChild("SIGTERM").pipe(Effect.ignore);
+  return yield* Deferred.await(done);
+}, Effect.scoped);
+export const runProbe = Effect.fn("runProbe")(function* (options: ProbeOptions) {
+  return yield* (yield* CliProbe).run(options);
+});

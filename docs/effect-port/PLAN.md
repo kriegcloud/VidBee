@@ -199,7 +199,7 @@ Modules this plan relies on, confirmed present in effect 4.1.4: `effect/rpc` (`R
 | 6b | `browser-capture` | 4.8k | | | 6a, 6c | merged ([report](reports/6b.md), [design](design/browser-capture.md)) |
 | 6c | `transcription` | 13.2k | yes | unit | 6a, 6b | merged ([report](reports/6c.md), [design](design/transcription.md)) |
 | 7 | `ui` | 28.2k | | | 8 | not started |
-| 8 | `cli`, `extension` | 3.2k, 1k | | | 7 | not started |
+| 8 | `cli`, `extension` | 3.2k, 1k | | | 7 | merged ([report](reports/8.md), [CLI report](reports/8-cli.md), [extension report](reports/8-extension.md), [browser proof](reports/8-extension-browser.md)) |
 | 9.0 | Desktop foundation | | yes | goldens | | not started |
 | 9.1 | Desktop: downloads | | | goldens | | not started |
 | 9.2 | Desktop: subscriptions | | | goldens | 9.3 | not started |

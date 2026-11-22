@@ -1,0 +1,19 @@
+{
+  "name": "document-worker-cleanup",
+  "before": {
+    "listeners": {
+      "storage": 0,
+      "message": 0
+    },
+    "timeouts": 0,
+    "intervals": 0
+  },
+  "after": {
+    "listeners": {
+      "storage": 0,
+      "message": 0
+    },
+    "timeouts": 0,
+    "intervals": 0
+  }
+}
