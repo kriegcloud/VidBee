@@ -5,9 +5,11 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { sourcePolicy } from './source-policy.mjs'
-import { scratchIO } from './scratch-io.mjs'
+import { scratchIO, readinessAbsent } from './scratch-io.mjs'
 import { containedLaunch } from './containment.mjs'
 import { behavior } from './behavior.mjs'
+import { locateLifecycleState } from './lifecycle-locators.mjs'
+import { lifecycleObservations } from './renderer-lifecycle.mjs'
 import { captureOwned } from './owned-process.mjs'
 
 test('outer source policy covers every availability/host/explicit/require combination without observations', () => {
@@ -74,4 +76,59 @@ test('capture deadline handles an exited leader with retained output without gro
   const result=await captureOwned(process.execPath,['-e',`const{spawn}=require('node:child_process');spawn(process.execPath,['-e','setTimeout(()=>{},1000)'],{stdio:['ignore',process.stdout,process.stderr]});process.exit(0)`],{timeoutMs:100,stop:async()=>{stopped++}})
   assert.equal(stopped,1)
   assert.equal(result.timedOut,true)
+})
+
+
+test('readiness absence distinguishes planted present entries from missing entries and inspection refusal', async () => {
+  const parent=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-readiness-')),work=path.join(parent,'foundation-io')
+  fs.mkdirSync(work)
+  try {
+    const io=scratchIO(work), file=path.join(work,'mcp.json')
+    fs.writeFileSync(file,'{}');fs.linkSync(file,path.join(work,'second-link'))
+    assert.equal(await readinessAbsent(io,file),false,'An existing hardlinked readiness entry is present')
+    fs.unlinkSync(file);fs.symlinkSync('/outside/not-mounted',file)
+    assert.equal(await readinessAbsent(io,file),false,'A symlink entry is present without following it')
+    fs.unlinkSync(file)
+    assert.equal(await readinessAbsent(io,file),true)
+    const refused=Error('inspection refused')
+    await assert.rejects(readinessAbsent({access:async()=>{throw refused},exists:async()=>{throw refused}},file),error=>error===refused)
+    fs.symlinkSync('/outside',path.join(work,'directory'))
+    await assert.rejects(readinessAbsent(io,path.join(work,'directory/mcp.json')))
+  } finally {fs.rmSync(parent,{recursive:true,force:true})}
+})
+
+test('readiness inspection refusal propagates', async () => {
+  const refused=Error('inspection refused')
+  await assert.rejects(readinessAbsent({access:async()=>{throw refused},exists:async()=>{throw refused}},'mcp.json'),error=>error===refused)
+})
+
+test('capture timeout remains failure when asynchronous stop releases retained output after zero exit', async () => {
+  const work=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-timeout-')),release=path.join(work,'release')
+  let stopped=0
+  try {
+    const result=await captureOwned(process.execPath,['-e',`const{spawn}=require('node:child_process');spawn(process.execPath,['-e',${JSON.stringify(`const fs=require('node:fs');const poll=setInterval(()=>{if(fs.existsSync(${JSON.stringify(release)})){clearInterval(poll)}},10);setTimeout(()=>process.exit(2),5000).unref()`)}],{stdio:['ignore',process.stdout,process.stderr]});process.exit(0)`],{
+      timeoutMs:200,stop:async()=>{stopped++;await new Promise(resolve=>setTimeout(resolve,100));fs.writeFileSync(release,'release');await new Promise(resolve=>setTimeout(resolve,200))}
+    })
+    assert.equal(stopped,1)
+    assert.equal(result.timedOut,true)
+    assert.equal(result.code,null)
+  } finally {fs.rmSync(work,{recursive:true,force:true})}
+})
+
+test('actual lifecycle observer rejects the same value sequence redirected to unused state', async () => {
+  const expected=behavior(JSON.parse(fs.readFileSync(new URL('./audit.expected.json',import.meta.url),'utf8')))
+  const changed=await lifecycleObservations((source,file)=>file.endsWith('/TranscriptShareImageDialog.tsx') ? source.replace('  useEffect(() => {','  const [unused, setUnused] = useState(null)\n  useEffect(() => {').replace('setPlatform(value)','setUnused(value)') : source)
+  const actual=behavior({...expected,lifecycle:changed})
+  assert.notDeepEqual(actual.lifecycle.share,expected.lifecycle.share)
+  assert.equal(changed.share.find(item=>item.mode==='success').updates[0][1],'linux')
+})
+
+test('lifecycle adapter admits a useRef insertion and rejects missing or ambiguous state bindings', async () => {
+  const expected=behavior(JSON.parse(fs.readFileSync(new URL('./audit.expected.json',import.meta.url),'utf8')))
+  const changed=await lifecycleObservations((source,file)=>file.endsWith('/title-bar.tsx') ? source.replace('useEffect, useState','useEffect, useState, useRef').replace('  const [isMaximized','  useRef(null)\n  const [isMaximized') : source)
+  assert.deepEqual(behavior({...expected,lifecycle:changed}).lifecycle,expected.lifecycle)
+  const file='apps/desktop/src/renderer/src/components/ui/title-bar.tsx'
+  const source=fs.readFileSync(file,'utf8')
+  assert.throws(()=>locateLifecycleState(source.replace('[isMaximized, setIsMaximized]','[renamed, setRenamed]'),file),/adapter needs updating/)
+  assert.throws(()=>locateLifecycleState(source+'\nfunction duplicate() { const [isMaximized, setIsMaximized] = useState(false) }',file),/adapter needs updating/)
 })

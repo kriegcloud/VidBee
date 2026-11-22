@@ -19,6 +19,9 @@ export function scratchIO(work) {
     readFile: async (file, encoding) => { const bytes = Buffer.from(call('read', file), 'base64'); return encoding ? bytes.toString(encoding) : bytes },
     writeFile: async (file, data, options = {}) => { call('write', file, {data: Buffer.from(data).toString('base64'), mode: options.mode ?? 0o600}) },
     mkdir: async file => { call('mkdir', file) },
+    exists: async file => JSON.parse(call('exists', file)),
     access: async file => { call('access', file) }
   }
 }
+
+export const readinessAbsent = (io, file) => io.exists(file).then(present => !present)

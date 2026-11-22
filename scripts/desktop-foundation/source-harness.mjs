@@ -39,7 +39,8 @@ export function sourceLoader(overrides = {}) {
       if (id.startsWith('@shared/')) { const base=path.join(root,'apps/desktop/src/shared',id.slice(8));return load(fs.existsSync(base+'.ts')?base+'.ts':path.join(base,'index.ts')) }
       return nativeRequire(id)
     }
-    const source = fs.readFileSync(filename, 'utf8')
+    const original = fs.readFileSync(filename, 'utf8')
+    const source = overrides.$transform ? overrides.$transform(original, path.relative(root, filename)) : original
     const code = compiled[filename]?.source === source ? compiled[filename].code : transformSync(source, {
       loader: filename.endsWith('.tsx') ? 'tsx' : filename.endsWith('.ts') ? 'ts' : 'js',
       format: 'cjs', target: 'node22', jsx: 'automatic', define: { 'import.meta.dirname': JSON.stringify(path.dirname(filename)), 'import.meta.glob': '__glob' }, tsconfigRaw: { compilerOptions: { experimentalDecorators: true } }

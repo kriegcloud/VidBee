@@ -15,7 +15,15 @@ for part in parts[:-1]:
     os.close(fd)
     fd = next_fd
 name = parts[-1]
-if operation == 'mkdir':
+if operation == 'exists':
+    # lstat of the final entry does not follow symlinks or open FIFOs. Only
+    # ENOENT here proves absence; ancestor/refusal errors remain failures.
+    try:
+        os.stat(name, dir_fd=fd, follow_symlinks=False)
+        sys.stdout.write('true')
+    except FileNotFoundError:
+        sys.stdout.write('false')
+elif operation == 'mkdir':
     os.mkdir(name, dir_fd=fd)
 elif operation == 'read' or operation == 'access':
     item = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)

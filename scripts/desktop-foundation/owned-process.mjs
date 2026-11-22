@@ -35,9 +35,10 @@ export async function descendantPid(child, inner) {
 export function captureOwned(command, args, { timeoutMs = 20000, env, stop = async () => {} } = {}) {
   return new Promise(resolve => {
     const child = spawn(command, args, { env: env ?? process.env, stdio: ['ignore', 'pipe', 'pipe'] })
-    let stdout = '', stderr = '', settled = false
+    let stdout = '', stderr = '', settled = false, timedOut = false
     const finish = result => { if (settled) return; settled = true; clearTimeout(timer); resolve({ stdout, stderr, ...result }) }
     const timer = setTimeout(async () => {
+      timedOut = true
       let error
       try { await stop() } catch (failure) { error = failure }
       child.kill('SIGKILL')
@@ -48,7 +49,7 @@ export function captureOwned(command, args, { timeoutMs = 20000, env, stop = asy
     child.stderr.on('data', data => { stderr += data })
     child.stdout.on('error', error => { stderr += error.message })
     child.stderr.on('error', error => { stderr += error.message })
-    child.once('error', error => finish({code:null,signal:null,error}))
-    child.once('close', (code, signal) => finish({code,signal}))
+    child.once('error', error => { if (!timedOut) finish({code:null,signal:null,error}) })
+    child.once('close', (code, signal) => { if (!timedOut) finish({code,signal}) })
   })
 }

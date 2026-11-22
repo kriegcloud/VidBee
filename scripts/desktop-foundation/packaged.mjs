@@ -12,7 +12,7 @@ import { spawn } from 'node:child_process'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { captureOwned as capture } from './owned-process.mjs'
-import { scratchIO } from './scratch-io.mjs'
+import { scratchIO, readinessAbsent } from './scratch-io.mjs'
 import { browserCaptureCdp } from '../../apps/desktop/scripts/port/golden/browser-capture-cdp.mjs'
 
 const args = process.argv.slice(2)
@@ -37,6 +37,7 @@ if (args.includes('--worker')) {
         XDG_DATA_HOME: path.join(run, 'home/.local/share'), VIDBEE_AUTOMATION_DESCRIPTOR: path.join(run, 'second-automation.json'),
         VIDBEE_MCP_CONFIG: path.join(run, 'second-mcp.json'), LANG: 'en_US.UTF-8', TZ: process.env.TZ ?? 'UTC' } })
     await fs.writeFile(path.join(run, 'second-instance.json'), JSON.stringify(result, null, 2))
+    assert(!result.timedOut && !result.error, `Capture failed: ${result.error?.message ?? (result.timedOut ? 'timeout' : result.stderr)}`)
     assert.equal(result.code, 0, result.stderr)
     secondInstance = { code: result.code, signal: result.signal,
       importLogger: result.stdout.includes('Log file location:'), readyApi: result.stdout.includes('Extension API listening on') }
@@ -326,7 +327,7 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
       while(Date.now()<deadline){try{log=await io.readFile(path.join(run,'stdout.log'),'utf8')}catch{};if(log.includes('SyntaxError')||log.includes('Unexpected end of JSON')||log.includes('JSON'))break;if(launcher.exitCode!==null)break;await delay(100)}
       assert.match(log,/SyntaxError|JSON/,'Missing malformed startup failure')
       assert.equal(await io.readFile(path.join(run,'userdata/config.json'),'utf8'),config,'Startup damaged invalid settings bytes')
-      const failedBeforeReadiness=await io.access(path.join(run,'mcp.json')).then(()=>false,()=>true)
+      const failedBeforeReadiness=await readinessAbsent(io, path.join(run,'mcp.json'))
       assert(failedBeforeReadiness,'Malformed settings unexpectedly reached MCP readiness')
       observations[name]={failedBeforeReadiness,retainedBytes:config,configExists:true,syntaxFailure:/SyntaxError|JSON/.test(log)}
       await verify();continue
@@ -359,6 +360,7 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
     const result = await capture('nsenter', ['-t', namespaceHostPid, '-U', '-n', '-m', '-p', '-i', '-u', '--preserve-credentials', process.execPath,
       fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
       ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000, stop: () => stopOwned(launcher) })
+    assert(!result.timedOut && !result.error, `Capture failed: ${result.error?.message ?? (result.timedOut ? 'timeout' : result.stderr)}`)
     assert.equal(result.code, 0, result.stderr)
     await verify()
     const raw = JSON.parse(await io.readFile(output, 'utf8'))
