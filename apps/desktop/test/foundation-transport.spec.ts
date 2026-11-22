@@ -2493,35 +2493,38 @@ it.effect("fix4 R1: DocumentClosed irreversibly rejects fresh calls with separat
   )
 );
 
-it.effect("fix4 R2: accepted but never-started operation settles on immediate application closure", () =>
-  Effect.gen(function* () {
-    const scope = yield* Scope.make();
-    let bytes = 0;
-    let entered = 0;
-    const owner = yield* makeOperations({
-      reserve: (_, amount) => {
-        bytes += amount;
-        return true;
-      },
-      release: (_, amount) => {
-        bytes -= amount;
-      },
-    }).pipe(Effect.provideService(Scope.Scope, scope));
-    const handle = yield* owner.accept({
-      originAccount: "window",
-      reserveBytes: 1,
-      run: () =>
-        Effect.sync(() => {
-          entered++;
-        }),
-    });
-    yield* Scope.close(scope, Exit.void);
-    expect(entered).toBe(0);
-    expect(bytes).toBe(0);
-    const logical = yield* handle.logical.pipe(Effect.timeout("200 millis"));
-    expect(Exit.isFailure(logical)).toBe(true);
-    yield* handle.released.pipe(Effect.timeout("200 millis"));
-  })
+it.effect(
+  "fix4 R2: accepted but never-started operation settles on immediate application closure (fix5 review3 fallback logical cause)",
+  () =>
+    Effect.gen(function* () {
+      const scope = yield* Scope.make();
+      let bytes = 0;
+      let entered = 0;
+      const owner = yield* makeOperations({
+        reserve: (_, amount) => {
+          bytes += amount;
+          return true;
+        },
+        release: (_, amount) => {
+          bytes -= amount;
+        },
+      }).pipe(Effect.provideService(Scope.Scope, scope));
+      const handle = yield* owner.accept({
+        originAccount: "window",
+        reserveBytes: 1,
+        run: () =>
+          Effect.sync(() => {
+            entered++;
+          }),
+      });
+      yield* Scope.close(scope, Exit.void);
+      expect(entered).toBe(0);
+      expect(bytes).toBe(0);
+      const logical = yield* handle.logical.pipe(Effect.timeout("200 millis"));
+      expect(Exit.isFailure(logical)).toBe(true);
+      if (Exit.isFailure(logical)) expect(Cause.hasInterrupts(logical.cause)).toBe(true);
+      yield* handle.released.pipe(Effect.timeout("200 millis"));
+    })
 );
 
 it.effect("fix4 R3: source chunks keep every queued and borrowed charge through blocked consumption and closure", () =>
@@ -2574,42 +2577,47 @@ it.effect("fix4 R3: source chunks keep every queued and borrowed charge through 
   )
 );
 
-it.effect("fix4 R4: cleanup reported after synchronous departure is released or retained with its actual cause", () =>
-  Effect.scoped(
-    Effect.gen(function* () {
-      const managed = yield* runtime;
-      for (const fails of [false, true]) {
-        let releases = 0;
-        const original = failure("LateCleanupFailed");
-        const owner = makeSubscriptions({
-          identity: { document: "d", client: "c", generation: 1, epoch: "e" },
-          onTerminal: () => {},
-        });
-        const acquired = yield* Effect.exit(
-          owner.acquire<number>(
-            "events",
-            (_publish, own) => {
-              managed.runSync(owner.disconnect);
-              own(() => {
-                releases++;
-                if (fails) Result.getOrThrowWith(Result.fail(original), (error) => error);
-              });
-            },
-            (value) => ({ value, bytes: 8 })
-          )
-        );
-        expect(Exit.isFailure(acquired)).toBe(true);
-        expect(releases).toBe(1);
-        expect(owner.stats().failedReleases).toBe(fails ? 1 : 0);
-        expect(owner.stats().bytes).toBe(fails ? 256 : 0);
-        expect(owner.stats().cleanupCauses.length).toBe(fails ? 1 : 0);
-        for (const cause of owner.stats().cleanupCauses) {
-          expect(Cause.isCause(cause)).toBe(true);
-          if (Cause.isCause(cause)) expect(Cause.squash(cause)).toBe(original);
+it.effect(
+  "fix4 R4: cleanup reported after synchronous departure is released or retained with its actual cause (fix5 review3 late-failure ownership)",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const managed = yield* runtime;
+        for (const fails of [false, true]) {
+          let releases = 0;
+          const original = failure("LateCleanupFailed");
+          const ledger = makeRetentionLedger();
+          const owner = makeSubscriptions({
+            resources: makeResourceBudget(ledger.forWindow("w")),
+            identity: { document: "d", client: "c", generation: 1, epoch: "e" },
+            onTerminal: () => {},
+          });
+          const acquired = yield* Effect.exit(
+            owner.acquire<number>(
+              "events",
+              (_publish, own) => {
+                managed.runSync(owner.disconnect);
+                own(() => {
+                  releases++;
+                  if (fails) Result.getOrThrowWith(Result.fail(original), (error) => error);
+                });
+              },
+              (value) => ({ value, bytes: 8 })
+            )
+          );
+          expect(Exit.isFailure(acquired)).toBe(true);
+          expect(releases).toBe(1);
+          expect(owner.stats().failedReleases).toBe(fails ? 1 : 0);
+          expect(owner.stats().bytes).toBe(fails ? 256 : 0);
+          expect(ledger.stats().data).toBe(fails ? 256 : 0);
+          expect(owner.stats().cleanupCauses.length).toBe(fails ? 1 : 0);
+          for (const cause of owner.stats().cleanupCauses) {
+            expect(Cause.isCause(cause)).toBe(true);
+            if (Cause.isCause(cause)) expect(Cause.squash(cause)).toBe(original);
+          }
         }
-      }
-    })
-  )
+      })
+    )
 );
 
 it.effect("fix4 survivor: frame transfer and chunk ownership outlive the last blocked consumer", () =>
@@ -2797,6 +2805,197 @@ it.effect("fix4 R2: application closure during suspended cleanup waits for nativ
       expect(released).toBe(1);
       expect(bytes).toBe(0);
       yield* handle.released;
+    })
+  )
+);
+
+for (const strategy of ["sequential", "parallel"] as const) {
+  it.effect(`fix5 review3 finding 1: ${strategy} parent waits for body termination before cleanup and release`, () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const application = yield* Scope.make(strategy);
+        const entered = yield* Deferred.make<void>();
+        const finalizing = yield* Deferred.make<void>();
+        const resume = yield* Deferred.make<void>();
+        let bytes = 0;
+        let cleanups = 0;
+        let finished = false;
+        let cleanupBeforeBodyFinished = false;
+        const owner = yield* makeOperations({
+          reserve: (_, amount) => {
+            bytes += amount;
+            return true;
+          },
+          release: (_, amount) => {
+            bytes -= amount;
+          },
+        }).pipe(Effect.provideService(Scope.Scope, application));
+        const handle = yield* owner.accept({
+          originAccount: "origin",
+          reserveBytes: 1,
+          run: Effect.fn("Fix5.blockedBody")(function* (handle: OperationHandle<unknown, unknown>) {
+            yield* handle.registerCleanup(
+              Effect.sync(() => {
+                cleanups++;
+                cleanupBeforeBodyFinished = !finished;
+              })
+            );
+            yield* Deferred.succeed(entered, undefined);
+            return yield* Effect.never.pipe(
+              Effect.ensuring(
+                Effect.gen(function* () {
+                  yield* Deferred.succeed(finalizing, undefined);
+                  yield* Deferred.await(resume);
+                  finished = true;
+                })
+              )
+            );
+          }, Effect.orDie),
+        });
+        yield* Deferred.await(entered);
+        const released = yield* handle.released.pipe(Effect.exit, Effect.forkScoped);
+        const closing = yield* Scope.close(application, Exit.void).pipe(Effect.forkScoped);
+        yield* Deferred.await(finalizing);
+        for (let turn = 0; turn < 16; turn++) yield* Effect.yieldNow;
+        const whileBlocked = { bytes, cleanups, finished, released: released.pollUnsafe() };
+        yield* Deferred.succeed(resume, undefined);
+        yield* Fiber.join(closing);
+        const releaseExit = yield* Fiber.join(released);
+        expect(whileBlocked).toEqual({ bytes: 257, cleanups: 0, finished: false, released: undefined });
+        expect(cleanupBeforeBodyFinished).toBe(false);
+        expect(cleanups).toBe(1);
+        expect(bytes).toBe(0);
+        expect(Exit.isSuccess(releaseExit)).toBe(true);
+        const logical = yield* handle.logical;
+        expect(Exit.isFailure(logical)).toBe(true);
+        if (Exit.isFailure(logical)) expect(Cause.hasInterrupts(logical.cause)).toBe(true);
+      })
+    )
+  );
+}
+
+it.effect(
+  "fix5 review3 finding 2: common ledger retains installed callbacks after consumption and through cleanup",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const ledger = makeRetentionLedger();
+        const owner = makeSubscriptions({
+          identity: { document: "d", client: "c", generation: 1, epoch: "e" },
+          resources: makeResourceBudget(ledger.forWindow("w")),
+          onTerminal: () => {},
+        });
+        let cleanups = 0;
+        const cleanupCharges: number[] = [];
+        const original = failure("CleanupFailed");
+        let emit: (value: string) => void = () => {};
+        const sub = yield* owner.acquire<string>(
+          "events",
+          (publish, own) => {
+            emit = publish;
+            for (let index = 0; index < 16; index++)
+              own(() => {
+                cleanupCharges.push(ledger.stats().data);
+                cleanups++;
+                if (index === 15) Result.getOrThrowWith(Result.fail(original), (error) => error);
+              });
+          },
+          (value) => ({ value, bytes: 1 })
+        );
+        emit(Str.repeat(1000)("x"));
+        expect(ledger.stats().data).toBe(4096 + owner.stats().bytes);
+        yield* owner.watch(sub).pipe(Stream.take(2), Stream.runDrain);
+        expect(cleanups).toBe(0);
+        expect(sub.releases.length).toBe(16);
+        expect(owner.stats().bytes).toBe(4096);
+        expect(ledger.stats().data).toBe(8192);
+        yield* sub.close;
+        expect(cleanups).toBe(16);
+        // During each callback, every uncompleted callback plus the already-failed one remains charged.
+        for (let index = 0; index < cleanupCharges.length; index++)
+          expect(cleanupCharges[index]).toBeGreaterThanOrEqual((16 - index + (index === 0 ? 0 : 1)) * 256);
+        expect(owner.stats().bytes).toBe(256);
+        expect(owner.stats().failedReleases).toBe(1);
+        expect(ledger.stats().data).toBe(256);
+        yield* sub.close;
+        expect(cleanups).toBe(16);
+        expect(ledger.stats().data).toBe(256);
+      })
+    )
+);
+
+it.effect("fix5 review3 receive-queue mutation: document death terminates the actual receive fiber", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      const account = ledger.forWindow("w");
+      let receive: (raw: unknown) => void = () => {};
+      let receiveFiber: Fiber.Fiber<unknown, unknown> | undefined;
+      const owner = yield* makeClientProtocol().pipe(
+        Effect.provideService(DesktopRpcConnection, {
+          session: "d",
+          send: () => Effect.void,
+          listen: (callback) =>
+            Effect.sync(() => {
+              receive = callback;
+            }),
+          retention: {
+            reserve: (bytes, control) => {
+              const lease = account.reserve(bytes, control);
+              return lease === undefined
+                ? undefined
+                : {
+                    ...lease,
+                    release: () => {
+                      receiveFiber = Fiber.getCurrent();
+                      lease.release();
+                    },
+                  };
+            },
+          },
+        })
+      );
+      const frame = yield* S.encodeEffect(S.fromJsonString(Output))({
+        session: "d",
+        client: 0,
+        message: { _tag: "DocumentClosed" },
+      });
+      receive(frame);
+      for (let turn = 0; turn < 16; turn++) yield* Effect.yieldNow;
+      expect(receiveFiber).toBeDefined();
+      expect(receiveFiber?.pollUnsafe()).toBeDefined();
+      expect(owner.stats().workers).toBe(0);
+      expect(ledger.stats().data).toBe(0);
+      expect(ledger.stats().control).toBe(0);
+    })
+  )
+);
+
+it.effect("fix5 review3 finding 2: callback reservation refusal rolls back installed cleanup ownership", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger({ windowBytes: 4096 });
+      const owner = makeSubscriptions({
+        identity: { document: "d", client: "c", generation: 1, epoch: "e" },
+        resources: makeResourceBudget(ledger.forWindow("w")),
+        onTerminal: () => {},
+      });
+      let releases = 0;
+      const acquired = yield* Effect.exit(
+        owner.acquire<number>(
+          "events",
+          (_publish, own) =>
+            own(() => {
+              releases++;
+            }),
+          (value) => ({ value, bytes: 1 })
+        )
+      );
+      expect(Exit.isFailure(acquired)).toBe(true);
+      expect(releases).toBe(1);
+      expect(owner.stats().registrations).toBe(0);
+      expect(owner.stats().bytes).toBe(0);
+      expect(ledger.stats().data).toBe(0);
     })
   )
 );

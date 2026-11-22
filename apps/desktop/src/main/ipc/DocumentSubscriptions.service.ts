@@ -94,13 +94,22 @@ export const makeSubscriptions = ({
   let states = HashMap.empty<number, { installing: boolean; borrowed: HashSet.HashSet<number>; failed: number }>();
   const failedReleases: Array<() => void> = [];
   const cleanupCauses: Array<unknown> = [];
-  const retain = <A>(sub: Registration<A>) => {
+  const retain = <A>(sub: Registration<A>, additionalBytes = 0) => {
     const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
-    if (state === undefined) return;
-    if (!sub.active && !state.installing && sub.bytes === 0 && state.failed === 0) {
+    if (state === undefined) return false;
+    if (!sub.active && !state.installing && sub.bytes === 0 && sub.releases.length === 0 && state.failed === 0) {
       sub.retention?.release();
       states = HashMap.remove(states, sub.token.serial);
-    } else sub.retention?.resize((sub.active || state.installing ? 4096 : 0) + sub.bytes + state.failed * 256);
+      return true;
+    }
+    return (
+      sub.retention?.resize(
+        (sub.active || state.installing ? 4096 : 0) +
+          sub.bytes +
+          additionalBytes +
+          (sub.releases.length + state.failed) * 256
+      ) ?? true
+    );
   };
   const releaseValue = <A>(sub: Registration<A>, sequence: number) => {
     const amount = O.getOrElse(HashMap.get(sub.charges, sequence), () => 0);
@@ -120,8 +129,11 @@ export const makeSubscriptions = ({
       live = false;
       cleanupCauses.push(terminal.cause);
     }
-    for (const release of A.reverse(sub.releases)) {
+    while (sub.releases.length > 0) {
+      const release = A.getUnsafe(sub.releases, sub.releases.length - 1);
       const exit = yield* Effect.exit(Effect.sync(release));
+      // Keep the executing callback installed until its attempt ends, then transfer failures atomically.
+      sub.releases.pop();
       if (Exit.isFailure(exit)) {
         const state = O.getOrUndefined(HashMap.get(states, sub.token.serial));
         if (state !== undefined) state.failed++;
@@ -129,6 +141,7 @@ export const makeSubscriptions = ({
         cleanupCauses.push(exit.cause);
         live = false;
       } else bytes -= 256;
+      retain(sub);
     }
     sub.releases = [];
     while (Queue.takeUnsafe(sub.queue) !== undefined) {
@@ -224,7 +237,7 @@ export const makeSubscriptions = ({
               sub.sequence >= Number.MAX_SAFE_INTEGER ||
               sub.bytes + retained.bytes > byteLimit ||
               bytes + retained.bytes > byteLimit ||
-              (sub.retention !== undefined && !sub.retention.resize(4096 + sub.bytes + retained.bytes))
+              !retain(sub, retained.bytes)
             ) {
               retained.release();
               overflow = true;
@@ -269,12 +282,16 @@ export const makeSubscriptions = ({
             if (sub.releases.length >= 16) {
               sub.releases.push(release);
               bytes += 256;
-              sub.retention?.resize(4096 + sub.releases.length * 256 + sub.bytes);
+              retain(sub);
               overflow = true;
               return Result.getOrThrowWith(Result.fail(failure("RegistrationCapacity")), (error) => error);
             }
             sub.releases.push(release);
             bytes += 256;
+            if (!retain(sub)) {
+              overflow = true;
+              return Result.getOrThrowWith(Result.fail(failure("RegistrationCapacity")), (error) => error);
+            }
             if (sub.releases.length > 16 || bytes > byteLimit) {
               overflow = true;
               Queue.offerUnsafe(terminals, "RegistrationCapacity");
@@ -284,7 +301,7 @@ export const makeSubscriptions = ({
       )
     );
     state.installing = false;
-    retain(sub);
+    if (!retain(sub)) overflow = true;
     if (
       Exit.isFailure(installed) ||
       overflow ||
