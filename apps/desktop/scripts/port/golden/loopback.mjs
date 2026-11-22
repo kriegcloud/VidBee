@@ -41,6 +41,10 @@ export async function startLoopback(runDir, { subscriptions = false, phase8 = fa
       response.writeHead(404, { 'Content-Length': 0 }).end()
       return
     }
+    if (url.pathname === '/429-cli.mp4') {
+      response.writeHead(429, { 'Content-Length': 0 }).end()
+      return
+    }
     if (url.pathname.startsWith('/500')) {
       response.writeHead(500, { 'Content-Length': 0 }).end()
       return

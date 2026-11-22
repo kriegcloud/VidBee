@@ -9,21 +9,21 @@
       "kind": "yt-dlp-forward",
       "parentId": null,
       "input": {
-        "url": "http://127.0.0.1:<port>/500-cli.mp4",
+        "url": "http://127.0.0.1:<port>/429-cli.mp4",
         "kind": "yt-dlp-forward",
         "rawArgs": [
           "-o",
           "<run>/phase8/downloads/cli-retry-scheduled.%(ext)s",
-          "http://127.0.0.1:<port>/500-cli.mp4"
+          "http://127.0.0.1:<port>/429-cli.mp4"
         ],
         "options": {
           "source": "cli",
           "sanitizedArgs": [
             "-o",
             "<run>/phase8/downloads/cli-retry-scheduled.%(ext)s",
-            "http://127.0.0.1:<port>/500-cli.mp4"
+            "http://127.0.0.1:<port>/429-cli.mp4"
           ],
-          "commandPreview": "yt-dlp -o <run>/phase8/downloads/cli-retry-scheduled.%(ext)s http://127.0.0.1:<port>/500-cli.mp4",
+          "commandPreview": "yt-dlp -o <run>/phase8/downloads/cli-retry-scheduled.%(ext)s http://127.0.0.1:<port>/429-cli.mp4",
           "outputHints": {
             "outputTemplate": "<run>/phase8/downloads/cli-retry-scheduled.%(ext)s"
           },
@@ -38,20 +38,20 @@
       "groupKey": "127.0.0.1:<port>",
       "status": "retry-scheduled",
       "prevStatus": "running",
-      "statusReason": "network-transient",
+      "statusReason": "http-429",
       "enteredStatusAt": "<timestamp>",
       "attempt": 1,
       "maxAttempts": 3,
       "nextRetryAt": "<timestamp>",
       "output": null,
       "lastError": {
-        "category": "network-transient",
+        "category": "http-429",
         "exitCode": null,
-        "rawMessage": "ERROR: [generic] 500-cli: Unable to download webpage: HTTP Error 500: Internal Server Error (caused by <HTTPError 500: Internal Server Error>)\n\n\nError code: 1\n\nStderr:\nERROR: [generic] 500-cli: Unable to download webpage: HTTP Error 500: Internal Server Error (caused by <HTTPError 500: Internal Server Error>)\n",
-        "uiMessageKey": "task.error.networkTransient",
-        "uiActionHints": ["retry"],
+        "rawMessage": "ERROR: [generic] 429-cli: Unable to download webpage: HTTP Error 429: Too Many Requests (caused by <HTTPError 429: Too Many Requests>)\n\n\nError code: 1\n\nStderr:\nERROR: [generic] 429-cli: Unable to download webpage: HTTP Error 429: Too Many Requests (caused by <HTTPError 429: Too Many Requests>)\n",
+        "uiMessageKey": "task.error.http429",
+        "uiActionHints": ["retry-later"],
         "retryable": true,
-        "suggestedRetryAfterMs": null
+        "suggestedRetryAfterMs": 30000
       },
       "pid": null,
       "pidStartedAt": null,
