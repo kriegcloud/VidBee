@@ -14,6 +14,8 @@ import * as Runtime from "effect/Runtime";
 import * as S from "effect/Schema";
 import * as Str from "effect/String";
 import { parseArguments } from "./Arguments.js";
+import { CompilerHostLive } from "./compiler/CompilerHost.layer.js";
+import { LawScan, LawScanLive } from "./LawScan.service.js";
 import { Policy, PolicyLive } from "./Policy.service.js";
 import { InvalidInput } from "./Standards.errors.js";
 import { CheckReport } from "./Standards.model.js";
@@ -31,7 +33,10 @@ const inputLayer = Layer.unwrap(
       Layer.succeed(Input, options),
       ToolchainLive,
       PolicyLive,
-      sourceInventoryLayer(root).pipe(Layer.provide(WorkspaceLive))
+      LawScanLive.pipe(
+        Layer.provideMerge(sourceInventoryLayer(root).pipe(Layer.provideMerge(WorkspaceLive))),
+        Layer.provide(CompilerHostLive)
+      )
     ).pipe(Layer.provideMerge(Layer.mergeAll(NodeServices.layer, NodeCrypto.layerDigest)));
   })
 );
@@ -51,14 +56,16 @@ NodeRuntime.runMain(
     const inventory = yield* SourceInventory;
     yield* inventory.collect(root);
     const scope = yield* inventory.select(options.packages, files);
+    const laws = yield* LawScan;
+    const findings = options.command === "check" ? yield* laws.run(root, scope) : [];
     const report = CheckReport.make({
       version: 1,
       scope,
       coverage: [],
-      findings: [],
-      stages: ["tools", "policy", "inventory", "scope"],
+      findings,
+      stages: ["tools", "policy", "inventory", "scope", "partial-laws"],
       incomplete: [
-        "Compiler coverage, law rules, documentation, identity parity, reviews and ratchet are not activated by the infrastructure CLI.",
+        "Law recognition is partial. Compiler acceptance coverage, remaining rule predicates, documentation, identity parity, reviews and ratchet are incomplete.",
       ],
     });
     if (options.json) {

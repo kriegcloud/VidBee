@@ -39,6 +39,7 @@ it.layer(NodeServices.layer)("Node compiler runtime", (it) => {
         closed: true,
         failed: true,
         reacquired: true,
+        interrupted: true,
       });
     })
   );

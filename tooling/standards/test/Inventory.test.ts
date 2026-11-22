@@ -17,7 +17,9 @@ import { SourceInventory } from "../src/Workspace.service.js";
 
 const $I = $StandardsId.create("test/Inventory.test");
 class TestTree extends Context.Service<TestTree, { readonly root: string }>()($I`TestTree`) {}
-const Scope = S.Struct({ version: S.Literal(1), files: S.Array(InventoryFile) });
+const Scope = S.Struct({ version: S.Literal(1), files: S.Array(InventoryFile) }).pipe(
+  $StandardsId.create("test/Inventory.test").annoteSchema("Scope", { description: "Validated Scope fixture data." })
+);
 const treeLayer = Layer.effect(
   TestTree,
   Effect.gen(function* () {

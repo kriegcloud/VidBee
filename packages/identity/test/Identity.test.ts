@@ -38,7 +38,9 @@ describe("deterministic composers", () => {
       expect(() => $I.annote("Name", { description: "invalid", identifier: "override" })).toThrow(
         IdentityInvariantError
       );
-      const source = S.String.annotate({ identifier: "frozen" });
+      const source = S.String.annotate({ identifier: "frozen" }).pipe(
+        $I.annoteSchema("Source", { description: "Frozen identifier fixture." })
+      );
       const result = source.pipe($I.annoteSchema("Name", { description: "Retained identity." }));
       expect(SchemaAST.resolveIdentifier(result.ast)).toBe("frozen");
       expect(
@@ -48,9 +50,13 @@ describe("deterministic composers", () => {
   );
   it.effect("refuse a failed descriptor installation", () =>
     Effect.sync(() => {
-      const source = S.String.annotate({});
+      const source = S.String.annotate({}).pipe(
+        $IdentityId.create("test/Identity.test").annoteSchema("Source", { description: "Descriptor source fixture." })
+      );
       Reflect.defineProperty(source, "custom", { value: 1 });
-      const target = S.String.annotate({});
+      const target = S.String.annotate({}).pipe(
+        $IdentityId.create("test/Identity.test").annoteSchema("Target", { description: "Descriptor target fixture." })
+      );
       Reflect.preventExtensions(target);
       expect(() => preserve(source, target)).toThrow(IdentityInvariantError);
     })

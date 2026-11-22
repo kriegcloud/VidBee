@@ -2,6 +2,7 @@ import { $StandardsId } from "@vidbee/identity/packages";
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 import type * as Scope from "effect/Scope";
+import type { LawFact } from "../Law.model.js";
 import type { InfrastructureFailure } from "../Standards.errors.js";
 import type { CompilerDiagnostic, NodeView, SemanticQuery, SemanticView } from "../Standards.model.js";
 
@@ -15,6 +16,7 @@ export interface CompilerSession {
   readonly exports: (file: string) => Effect.Effect<ReadonlyArray<SemanticView>, InfrastructureFailure>;
   readonly files: ReadonlyArray<string>;
   readonly inspect: (file: string) => Effect.Effect<ReadonlyArray<NodeView>, InfrastructureFailure>;
+  readonly laws: (file: string) => Effect.Effect<ReadonlyArray<LawFact>, InfrastructureFailure>;
   readonly resolve: (query: SemanticQuery) => Effect.Effect<SemanticView, InfrastructureFailure>;
 }
 /**

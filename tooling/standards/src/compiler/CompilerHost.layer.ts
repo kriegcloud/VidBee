@@ -7,6 +7,7 @@ import { API, SymbolFlags } from "typescript/unstable/sync";
 import { InfrastructureFailure } from "../Standards.errors.js";
 import { CompilerDiagnostic, DeclarationView, NodeView, SemanticView } from "../Standards.model.js";
 import { CompilerHost } from "./CompilerHost.service.js";
+import { collectLawFacts } from "./LawFacts.js";
 import type { Node } from "typescript/unstable/ast";
 import type { Symbol as CompilerSymbol, NodeHandle } from "typescript/unstable/sync";
 import type { SemanticQuery } from "../Standards.model.js";
@@ -96,6 +97,17 @@ export const CompilerHostLive = Layer.succeed(CompilerHost, {
       });
     };
     return {
+      laws: Effect.fn("CompilerHost.laws")(function* (file: string) {
+        return yield* Effect.try({
+          try: () => {
+            assertLive();
+            const source = project.program.getSourceFile(file);
+            if (source === undefined) throw failure("Law source is absent from project.");
+            return collectLawFacts(project, source);
+          },
+          catch: failure,
+        });
+      }),
       exports: Effect.fn("CompilerHost.exports")(function* (file: string) {
         return yield* Effect.try({
           try: () => {

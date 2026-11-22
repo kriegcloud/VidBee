@@ -43,3 +43,42 @@ it.layer(Layer.mergeAll(PolicyLive, ToolchainLive).pipe(Layer.provideMerge(depen
     );
   }
 );
+
+it.layer(ToolchainLive.pipe(Layer.provideMerge(NodeServices.layer)))("tool version refusal", (it) => {
+  it.effect("rejects a mismatched first tool before inspecting later tools", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const tools = yield* Toolchain;
+      const temporary = path.resolve(import.meta.dirname, "../.cache/version-fixtures");
+      yield* fs.makeDirectory(temporary, { recursive: true });
+      const root = yield* fs.makeTempDirectoryScoped({ directory: temporary, prefix: "version-" });
+      yield* fs.makeDirectory(path.join(root, "node_modules/effect"), { recursive: true });
+      yield* fs.writeFileString(path.join(root, "node_modules/effect/package.json"), '{"version":"0.0.0"}');
+      const result = yield* tools.validate(root).pipe(Effect.result);
+      expect(result._tag).toBe("Failure");
+      if (result._tag === "Failure") {
+        expect(result.failure._tag).toBe("InvalidInput");
+        expect(result.failure.message).toBe("Tool version mismatch: effect; expected 4.1.4, found 0.0.0");
+      }
+    })
+  );
+  it.effect("reports malformed and missing manifests without inventing a version", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const tools = yield* Toolchain;
+      const temporary = path.resolve(import.meta.dirname, "../.cache/version-fixtures");
+      yield* fs.makeDirectory(temporary, { recursive: true });
+      const root = yield* fs.makeTempDirectoryScoped({ directory: temporary, prefix: "missing-" });
+      const missing = yield* tools.validate(root).pipe(Effect.result);
+      expect(missing._tag).toBe("Failure");
+      if (missing._tag === "Failure") expect(missing.failure._tag).toBe("InfrastructureFailure");
+      yield* fs.makeDirectory(path.join(root, "node_modules/effect"), { recursive: true });
+      yield* fs.writeFileString(path.join(root, "node_modules/effect/package.json"), "{}");
+      const malformed = yield* tools.validate(root).pipe(Effect.result);
+      expect(malformed._tag).toBe("Failure");
+      if (malformed._tag === "Failure") expect(malformed.failure.message).toBe("Invalid tool manifest: effect");
+    })
+  );
+});

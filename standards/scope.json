@@ -23795,6 +23795,27 @@
       "executable": true
     },
     {
+      "file": "tooling/standards/src/Law.model.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
+      "file": "tooling/standards/src/LawRules.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
+      "file": "tooling/standards/src/LawScan.service.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
       "file": "tooling/standards/src/Policy.service.ts",
       "package": "@vidbee/standards",
       "classification": "active",
@@ -23886,6 +23907,13 @@
       "executable": true
     },
     {
+      "file": "tooling/standards/src/compiler/LawFacts.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
       "file": "tooling/standards/src/index.ts",
       "package": "@vidbee/standards",
       "classification": "active",
@@ -23935,6 +23963,20 @@
       "executable": true
     },
     {
+      "file": "tooling/standards/test/LawProbe.entry.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
+      "file": "tooling/standards/test/LawRules.test.ts",
+      "package": "@vidbee/standards",
+      "classification": "active",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": true
+    },
+    {
       "file": "tooling/standards/test/Models.test.ts",
       "package": "@vidbee/standards",
       "classification": "active",
@@ -23961,6 +24003,13 @@
       "classification": "active",
       "reason": "Executable source subject to applicable compiler and standards stages.",
       "executable": true
+    },
+    {
+      "file": "tooling/standards/test/fixtures/laws.txt",
+      "package": "@vidbee/standards",
+      "classification": "data",
+      "reason": "Owned checker law implementation and adversarial fixture data.",
+      "executable": false
     },
     {
       "file": "tooling/standards/tsconfig.json",

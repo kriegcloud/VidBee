@@ -1,9 +1,11 @@
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { $IdentityId } from "@vidbee/identity/packages";
+import { $IdentityId, $StandardsId } from "@vidbee/identity/packages";
 import * as A from "effect/Array";
 import * as Console from "effect/Console";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
+import * as Fiber from "effect/Fiber";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
@@ -22,7 +24,11 @@ const FixtureConfig = S.Struct({
     strict: S.Boolean,
   }),
   files: S.Array(S.String),
-});
+}).pipe(
+  $StandardsId
+    .create("test/CompilerProbe.entry")
+    .annoteSchema("FixtureConfig", { description: "Validated FixtureConfig fixture data." })
+);
 NodeRuntime.runMain(
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
@@ -84,6 +90,16 @@ NodeRuntime.runMain(
       })
     );
 
+    const ready = yield* Deferred.make<import("../src/compiler/CompilerHost.service.js").CompilerSession>();
+    const child = yield* Effect.gen(function* () {
+      const session = yield* host.open(config);
+      yield* Deferred.succeed(ready, session);
+      return yield* Effect.never;
+    }).pipe(Effect.scoped, Effect.forkChild);
+    const interruptedSession = yield* Deferred.await(ready);
+    yield* Fiber.interrupt(child);
+    const interrupted = yield* interruptedSession.laws(file).pipe(Effect.result);
+
     const mirroredRoot = path.join(directory, "packages/identity");
     yield* fs.makeDirectory(path.join(mirroredRoot, "src/nested"), { recursive: true });
     yield* fs.writeFileString(path.join(mirroredRoot, "package.json"), '{"name":"@vidbee/identity","type":"module"}');
@@ -107,6 +123,7 @@ NodeRuntime.runMain(
       closed: closed._tag === "Failure",
       failed: failed._tag === "Failure",
       reacquired,
+      interrupted: interrupted._tag === "Failure",
     });
     const json = yield* S.encodeEffect(S.fromJsonString(ProbeReport))(report);
     yield* Console.log(json);

@@ -26,7 +26,11 @@ const Config = S.Struct({
   compilerOptions: S.Struct({ rootDir: S.String, noEmit: S.Boolean, composite: S.Boolean, incremental: S.Boolean }),
   files: S.Array(S.String),
   include: S.Array(S.String),
-});
+}).pipe(
+  $StandardsId
+    .create("test/CoverageProbe.entry")
+    .annoteSchema("Config", { description: "Validated Config fixture data." })
+);
 const fixture = Layer.unwrap(
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
