@@ -79,9 +79,18 @@ test('capture deadline handles an exited leader with retained output without gro
 })
 
 
-test('readiness absence distinguishes planted present entries from missing entries and inspection refusal', async () => {
+test('readiness absence distinguishes planted present entries from missing entries and inspection refusal', async t => {
   const parent=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-readiness-')),work=path.join(parent,'foundation-io')
   fs.mkdirSync(work)
+  // The helper always runs inside Bubblewrap. Without it only the authorized diagnostic mode may continue;
+  // required containment fails. The mocked refusal case below has its own unconditional test.
+  const probe=spawnSync('bwrap',containedLaunch(work,['/usr/bin/true']),{encoding:'utf8',timeout:10_000})
+  if(probe.status!==0){
+    fs.rmSync(parent,{recursive:true,force:true})
+    const reason=`Bubblewrap unavailable: ${probe.error?.message ?? probe.stderr.trim()}`
+    if(process.env.VIDBEE_REQUIRE_CONTAINMENT==='1')throw new Error(reason)
+    t.skip(reason);return
+  }
   try {
     const io=scratchIO(work), file=path.join(work,'mcp.json')
     fs.writeFileSync(file,'{}');fs.linkSync(file,path.join(work,'second-link'))
