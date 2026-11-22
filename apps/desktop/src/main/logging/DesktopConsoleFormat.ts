@@ -6,7 +6,9 @@ import * as Str from "effect/String";
  * Preserves argument identity, first-string joining, scope trim/padding and empty output.
  * **Example** (Render a prefix)
  * ```ts
- * desktopConsoleFormat({ data: ["ready"], date, scope: "main" })
+ * import { desktopConsoleFormat } from "./DesktopConsoleFormat.js"
+ * const format = (date: Date) => desktopConsoleFormat({ data: ["ready"], date, scope: "main" })
+ * void format
  * ```
  * @category formatting
  * @since 0.0.0

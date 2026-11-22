@@ -12,7 +12,6 @@ import {
   protocol,
   shell
 } from 'electron'
-import log from 'electron-log/main'
 import appIcon from '../../build/icon.png?asset'
 import {
   buildAudioFormatPreference,
@@ -64,6 +63,7 @@ import { startVideoLibraryFiles } from './lib/video-library-host'
 import { getMainWindowState, rememberMainWindowState } from './lib/window-state'
 import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdlp-kernel-host'
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
+import { electronLog as log } from './logging/ElectronLog.driver'
 import { isPortableMode } from './portable'
 import { settingsManager } from './settings'
 import { createTray, destroyTray } from './tray'

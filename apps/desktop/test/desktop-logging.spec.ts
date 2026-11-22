@@ -42,7 +42,7 @@ const fake = vi.hoisted(() => {
 });
 vi.mock("electron-log/main", () => ({ default: fake.log }));
 
-const allLevels = Effect.fnUntraced(function* () {
+const allLevels = Effect.fnUntraced(function* (identity: boolean) {
   const error = new Error("original");
   const details = { count: 3 };
   yield* Effect.forEach(
@@ -57,8 +57,10 @@ const allLevels = Effect.fnUntraced(function* () {
     expect(call.scope).toBe(" foundation ");
     expect(call.args).toHaveLength(4);
     expect(call.args[0]).toBe("message");
-    expect(call.args[1]).toBe(details);
-    expect(call.args[2]).toBe(error);
+    if (identity) expect(call.args[1]).toBe(details);
+    else expect(call.args[1]).toEqual(details);
+    if (identity) expect(call.args[2]).toBe(error);
+    else expect(call.args[2]).toEqual(error);
     expect(call.args[3]).toBe("tail");
   });
 });
@@ -76,7 +78,7 @@ for (const environment of ["development", "production"]) {
             expect(minimum).toBe("All");
             const loggers = yield* Logger.CurrentLoggers;
             expect(loggers.size).toBe(1);
-            yield* allLevels();
+            yield* allLevels(process === "main");
           })
         );
         test.effect(
@@ -90,7 +92,16 @@ for (const environment of ["development", "production"]) {
             yield* Effect.logDebug("debug");
             yield* Effect.logTrace("trace");
             expect(A.map(fake.calls, (call) => call.level)).toEqual(["error", "warn", "info", "debug", "debug"]);
-            expect(fake.calls[0]?.args).toEqual(["fatal", { cause: Cause.pretty(cause) }]);
+            expect(fake.calls[0]?.args[0]).toBe("fatal");
+            expect(fake.calls[0]?.args[1]).toEqual({ cause: Cause.pretty(cause) });
+            expect(fake.calls[0]?.args[2]).toMatchObject({
+              effect: {
+                reasons: [
+                  { kind: "Fail", error: "first failure" },
+                  { kind: "Die", defect: "second defect" },
+                ],
+              },
+            });
             expect(Cause.pretty(cause)).toContain("first failure");
             expect(Cause.pretty(cause)).toContain("second defect");
           })
@@ -116,8 +127,10 @@ it("rejects malformed bridge envelopes before touching the sink", () => {
   expect(S.is(DesktopLogEntry)({ level: "debug", scope: "", args: [1, null] })).toBe(true);
 });
 
+let failedSendAttempts = 0;
 it.layer(
   forwardingLogger(() => {
+    failedSendAttempts++;
     throw new Error("closed bridge");
   })
 )((test) => {
@@ -125,7 +138,9 @@ it.layer(
     "does not recurse or retry a failed forwarding send",
     Effect.fnUntraced(function* () {
       fake.calls.length = 0;
+      failedSendAttempts = 0;
       yield* desktopLog(DesktopLogEntry.make({ level: "warn", scope: "", args: ["lost"] }));
+      expect(failedSendAttempts).toBe(1);
       expect(fake.calls).toEqual([]);
     })
   );
@@ -194,4 +209,53 @@ it.prop("the severity schema generates valid bridge severities", [Arbitrary.sche
 
 it.prop("the entry schema generates valid ordered envelopes", [Arbitrary.schema(DesktopLogEntry)], ([entry]) => {
   expect(S.is(DesktopLogEntry)(entry)).toBe(true);
+});
+
+it.layer(DesktopMainLoggerLive)((test) => {
+  test.effect(
+    "retains mixed reasons, every annotated stack frame and log context",
+    Effect.fnUntraced(function* () {
+      fake.calls.length = 0;
+      const chain: References.StackFrame = A.reduce<number, References.StackFrame>(
+        A.range(1, 14),
+        { name: "root", stack: () => "root-stack", parent: undefined },
+        (parent, n) => ({ name: `frame-${n}`, stack: () => `full-stack-${n}`, parent })
+      );
+      const cause = Cause.combine(
+        Cause.combine(Cause.fail("failure"), Cause.die("defect")),
+        Cause.interrupt(424242)
+      ).pipe(
+        Cause.annotate(Context.make(Cause.StackTrace, chain).pipe(Context.add(Cause.InterruptorStackTrace, chain)))
+      );
+      yield* Effect.logError("context", cause).pipe(
+        Effect.annotateLogs({ requestId: "request-1" }),
+        Effect.withLogSpan("request-span")
+      );
+      expect(fake.calls).toHaveLength(1);
+      expect(fake.calls[0]?.args[0]).toBe("context");
+      expect(fake.calls[0]?.args[1]).toEqual({ cause: Cause.pretty(cause) });
+      expect(fake.calls[0]?.args[2]).toMatchObject({
+        effect: {
+          annotations: { requestId: "request-1" },
+          spans: [["request-span", expect.any(Number)]],
+          reasons: [
+            {
+              kind: "Fail",
+              error: "failure",
+              stack: expect.arrayContaining([
+                { name: "frame-14", stack: "full-stack-14" },
+                { name: "frame-1", stack: "full-stack-1" },
+              ]),
+            },
+            { kind: "Die", defect: "defect" },
+            {
+              kind: "Interrupt",
+              fiberId: 424242,
+              interruptorStack: expect.arrayContaining([{ name: "frame-14", stack: "full-stack-14" }]),
+            },
+          ],
+        },
+      });
+    })
+  );
 });

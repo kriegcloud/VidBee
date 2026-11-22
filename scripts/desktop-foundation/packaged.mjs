@@ -1,3 +1,4 @@
+import { packagedLogging } from './packaged-logging.mjs'
 import { launchOwned, stopOwned, descendantPid } from './owned-process.mjs'
 import { packagedControls } from './packaged-controls.mjs'
 import { packagedEvents } from './packaged-events.mjs'
@@ -67,6 +68,11 @@ if (args.includes('--worker')) {
     control.send(JSON.stringify({ id, method, params }))
   })
   const cdp = await browserCaptureCdp()
+  if (args.includes('--logging-enabled')) {
+    try { await fs.writeFile(option('--output'), JSON.stringify(await packagedLogging(owned, cdp, command))) }
+    finally { cdp.close(); control.close() }
+    process.exit(0)
+  }
   const rawPath = path.join(owned.run, args.includes('--portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')
   const readRaw = async () => JSON.parse(await fs.readFile(rawPath, 'utf8'))
   const storage = { constructor: await readRaw() }
@@ -293,6 +299,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => {
   process.exit(1)
 })
 const observations = {}
+let loggingVerified = false
 const quote = (value) => String.fromCharCode(39) + value.replaceAll(String.fromCharCode(39), String.fromCharCode(39, 92, 39, 39)) + String.fromCharCode(39)
 const inspectedBuild=path.join(work,'inspected-build');await fs.mkdir(inspectedBuild);await fs.symlink(path.join(build,'resources'),path.join(inspectedBuild,'resources'));await fs.writeFile(path.join(inspectedBuild,'vidbee'),`#!/bin/sh\nexec ${quote(path.join(build,'vidbee'))} --inspect=127.0.0.1:9231 \"$@\"\n`,{mode:0o755})
 const backgroundBuild = path.join(work, 'background-build')
@@ -300,7 +307,7 @@ await fs.mkdir(backgroundBuild)
 await fs.symlink(path.join(build, 'resources'), path.join(backgroundBuild, 'resources'))
 const quotedBinary = quote(path.join(build, 'vidbee'))
 await fs.writeFile(path.join(backgroundBuild, 'vidbee'), `#!/bin/sh\nexec ${quotedBinary} --inspect=127.0.0.1:9231 --background "$@"\n`, { mode: 0o755 })
-for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '', invalidJson: '{', portableFresh: undefined, portableExternal: {downloadPath:'<external-media>'}, portableMarkerFailure: {downloadPath:'<external-media>'}, fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
+for (const [name, config] of Object.entries({ ...(args.includes('--record') ? {} : {loggingEnabled: undefined}), emptyDocument: {}, invalidEmpty: '', invalidJson: '{', portableFresh: undefined, portableExternal: {downloadPath:'<external-media>'}, portableMarkerFailure: {downloadPath:'<external-media>'}, fresh: undefined, controlledQuit: undefined, singleInstance: undefined, background: undefined, returning: { language: 'fr', lastSeenWhatsNew: 'old',
   future: { keep: 9 }, extensionCookieSources: [{ id: 'fixture', browser: 'test', extra: 'keep' }] },
   restart: 'reuse',
   current: { language: 'en', lastSeenWhatsNew: 'ai-transcripts' },
@@ -317,7 +324,12 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
     await io.writeFile(path.join(seed, 'config.json'), typeof config==='string'?config:JSON.stringify(config).replace('<external-media>',path.join(run,'home/external-media')))
   }
   const launchSetup = path.join(work, `${name}-launch.sh`)
-  await io.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}`)
+  await io.writeFile(launchSetup, `mount -o remount,bind,ro "$(readlink -f /etc/resolv.conf)"\nmount -o remount,bind,ro /etc/nsswitch.conf\nexport LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\nunset VIDBEE_LANGUAGE\ncd ${quote(run)}\nexport TZ=${quote(process.env.TZ ?? 'UTC')}\n${name.startsWith('portable') ? `export VIDBEE_PORTABLE_DIR=${quote(path.join(run,'portable'))}\nmkdir -p \"$VIDBEE_PORTABLE_DIR/Data/UserData\"\nprintf '/portable/old' > \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nif [ -f ${quote(path.join(run,'userdata/config.json'))} ]; then cp ${quote(path.join(run,'userdata/config.json'))} \"$VIDBEE_PORTABLE_DIR/Data/UserData/config.json\"; fi\n${name==='portableMarkerFailure'?`rm \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\nmkdir \"$VIDBEE_PORTABLE_DIR/Data/.portable-root\"\n`:''}` : ''}${name === 'singleInstance' ? 'unset VIDBEE_ALLOW_MULTIPLE_INSTANCES\n' : ''}${name === 'loggingEnabled' ? `
+${quote(process.execPath)} ${quote(path.join(here,'otlp-collector.mjs'))} ${quote(path.join(run,'otlp.json'))} ${quote(path.join(run,'otlp.ready'))} &
+for attempt in {1..200}; do if [ -f ${quote(path.join(run,'otlp.ready'))} ]; then break; fi; sleep 0.05; done
+test -f ${quote(path.join(run,'otlp.ready'))}
+export VIDBEE_OTLP_ENABLED=1 VIDBEE_OTLP_ENDPOINT=http://127.0.0.1:43180/v1/traces
+` : ''}`)
   const launcher = launchOwned(work, ['bash', path.resolve(here, '../../apps/desktop/scripts/port/offline-launch.sh'), name === 'background' ? backgroundBuild : inspectedBuild, run, '180', seed, '', launchSetup], [build,path.join(laneRoot,'BRIEF.md')], { cwd: scratch })
   active = launcher
   let stderr = ''; launcher.stderr.on('data', (data) => { stderr += data })
@@ -358,12 +370,17 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
       manifest: selected, executable: createHash('sha256').update(await fs.readFile(path.join(build, 'vidbee'))).digest('hex') }), { mode: 0o600 })
     const output = path.join(work, `${name}.json`)
     const result = await capture('nsenter', ['-t', namespaceHostPid, '-U', '-n', '-m', '-p', '-i', '-u', '--preserve-credentials', process.execPath,
-      fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
+      fileURLToPath(import.meta.url), '--worker', '--output', output, '--run', run, '--identity', identity, ...(name === 'loggingEnabled' ? ['--logging-enabled'] : []), ...(name.startsWith('portable') ? ['--portable'] : []), ...(name === 'controlledQuit' ? ['--quit'] : []),
       ...(name === 'singleInstance' ? ['--second-instance', '--build', build, '--sha256', expectedHash] : [])], { timeoutMs: 100_000, stop: () => stopOwned(launcher) })
     assert(!result.timedOut && !result.error, `Capture failed: ${result.error?.message ?? (result.timedOut ? 'timeout' : result.stderr)}`)
     assert.equal(result.code, 0, result.stderr)
     await verify()
     const raw = JSON.parse(await io.readFile(output, 'utf8'))
+    if (name === 'loggingEnabled') {
+      await io.writeFile(path.join(work, 'logging-proof.json'), JSON.stringify(raw, null, 2))
+      loggingVerified = true
+      continue
+    }
     // Only the exact throwaway HOME/download root varies. No generic string/clock/error filtering.
     let normalized = JSON.stringify(raw).split(path.join(run, 'home')).join('<home>').split(path.join(run, 'portable')).join('<portable>')
     if (name === 'restart') normalized = normalized.split(path.join(work, 'returning/home')).join('<previous-home>')
@@ -385,5 +402,5 @@ for (const [name, config] of Object.entries({ emptyDocument: {}, invalidEmpty: '
 await io.writeFile(path.join(work, 'build.json'), JSON.stringify({ appAsarSha256: await verify(), build, node: process.version, timezone: process.env.TZ ?? 'UTC' }))
 await io.writeFile(path.join(work, 'actual.json'), JSON.stringify(observations, null, 2))
 if (args.includes('--record')) await fs.writeFile(expected, JSON.stringify(observations, null, 2) + '\n')
-else {const oracle=JSON.parse(await fs.readFile(expected,'utf8'));assert.deepEqual(observations,option('--only-profile')?{[option('--only-profile')]:oracle[option('--only-profile')]}:oracle)}
-process.stdout.write(`Packaged foundation: ${Object.keys(observations).length} profiles passed; evidence ${work}\n`)
+else if(option('--only-profile')!=='loggingEnabled') {const oracle=JSON.parse(await fs.readFile(expected,'utf8'));assert.deepEqual(observations,option('--only-profile')?{[option('--only-profile')]:oracle[option('--only-profile')]}:oracle)}
+process.stdout.write(`Packaged foundation: ${Object.keys(observations).length} profiles passed${loggingVerified ? '; Electron logging and enabled OTLP passed' : ''}; evidence ${work}\n`)

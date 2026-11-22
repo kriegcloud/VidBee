@@ -242,3 +242,15 @@ Compare new RPC channels separately with their own payload/order/count contract.
 Do not filter by a broad prefix or remove unknown channels: an unclassified
 registration must fail admission. Until such an explicit set and oracle exist,
 all registration rows remain in the frozen comparison.
+
+The logging FIX1 comparison adds a separate `loggingEnabled` profile, without
+changing the fifteen legacy expected profiles. Its namespace-local collector binds
+IPv4 loopback, decodes protobuf and checks resource and span fields. The profile
+captures the actual compiled graph encoder at the renderer entrypoint, traverses
+the real context bridge and logging ingress, and counts native delivery. It also
+counts two real quit cleanup listeners and confirms process exit after releasing
+its inspector client. `--only-profile loggingEnabled` selects this additional
+probe. Source runtime tests independently cover failed sends, real development
+and production thresholds, acquisition failure and rejected/timed-out disposal.
+The boot mock follows the native singleton through `ElectronLog.driver`; its
+original assertions and expected observations are unchanged.

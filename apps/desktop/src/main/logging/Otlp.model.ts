@@ -6,21 +6,24 @@ const $I = $DesktopId.create("main/logging/Otlp.model");
 /** Captured environment; endpoint discovery is deferred until enabled.
  * **Example** (Default-off configuration)
  * ```ts
- * OtlpConfiguration.make({ enabled: false, endpoint: "http://127.0.0.1:4318/v1/traces", version: "2.4.0" })
+ * import { OtlpConfiguration } from "./Otlp.model.js"
+ * OtlpConfiguration.make({ enabled: false, endpoint: "", version: "2.4.0" })
  * ```
  * @category models
  * @since 0.0.0
  */
-export const OtlpConfiguration = S.Struct({ enabled: S.Boolean, endpoint: S.String, version: S.String }).pipe(
-  $I.annoteSchema("OtlpConfiguration", {
-    description: "Captured explicit tracing switch, collector endpoint and application version.",
-  })
-);
-export type OtlpConfiguration = typeof OtlpConfiguration.Type;
+export class OtlpConfiguration extends S.Opaque<OtlpConfiguration, { readonly brand: unique symbol }>()(
+  S.Struct({ enabled: S.Boolean, endpoint: S.String, version: S.String }).pipe(
+    $I.annoteSchema("OtlpConfiguration", {
+      description: "Captured explicit tracing switch, collector endpoint and application version.",
+    })
+  )
+) {}
 
 /** Only the exact environment value 1 enables export.
  * **Example** (Remain off for other truthy text)
  * ```ts
+ * import { otlpEnabled } from "./Otlp.model.js"
  * otlpEnabled("true") // false
  * ```
  * @category configuration

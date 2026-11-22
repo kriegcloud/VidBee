@@ -14,7 +14,9 @@
     "src/shared/logging/DesktopLogger.layer.ts",
     "src/shared/logging/ForwardLogger.layer.ts",
     "test/desktop-logging.spec.ts",
-    "test/desktop-otlp.spec.ts"
+    "test/desktop-otlp.spec.ts",
+    "src/shared/logging/DesktopLogWire.model.ts",
+    "src/shared/logging/DesktopLogWire.driver.ts"
   ],
   "include": [],
   "compilerOptions": {

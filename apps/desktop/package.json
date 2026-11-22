@@ -154,6 +154,8 @@
     "react-dom": "catalog:",
     "typescript": "catalog:",
     "unplugin-icons": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "@effect/platform-bun": "catalog:",
+    "protobufjs": "catalog:"
   }
 }

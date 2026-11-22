@@ -2,9 +2,10 @@ import { initVidbeeLogger } from '@vidbee/logger/legacy'
 import { app, ipcMain } from 'electron'
 import { DesktopLogChannel } from '../../shared/logging/DesktopLog.model'
 import { formatDesktopConsoleLog } from '../lib/desktop-console-format'
+import { registerTelemetryDisposal } from '../lib/telemetry-disposal'
 import { createDesktopLogging } from '../logging/DesktopLogging.entry'
 import { electronLog as log, receiveDesktopLog } from '../logging/ElectronLog.driver'
-import { otlpEnabled } from '../logging/Otlp.model'
+import { OtlpConfiguration, otlpEnabled } from '../logging/Otlp.model'
 
 /**
  * Configure electron-log
@@ -46,20 +47,16 @@ export function configureLogger() {
     ipcMain.on(DesktopLogChannel, (_event, input: unknown) => receiveDesktopLog(input))
   }
   const enabled = otlpEnabled(process.env.VIDBEE_OTLP_ENABLED)
-  const runtime = createDesktopLogging({
-    enabled,
-    endpoint: enabled
-      ? (process.env.VIDBEE_OTLP_ENDPOINT ?? 'http://127.0.0.1:4318/v1/traces')
-      : '',
-    version: enabled ? app.getVersion() : ''
-  })
-  if (enabled) {
-    app.once('will-quit', (event) => {
-      event.preventDefault()
-      void runtime.dispose().then(
-        () => app.quit(),
-        () => app.quit()
-      )
+  const runtime = createDesktopLogging(
+    OtlpConfiguration.make({
+      enabled,
+      endpoint: enabled
+        ? (process.env.VIDBEE_OTLP_ENDPOINT ?? 'http://127.0.0.1:4318/v1/traces')
+        : '',
+      version: enabled ? app.getVersion() : ''
     })
+  )
+  if (enabled) {
+    registerTelemetryDisposal(runtime.dispose)
   }
 }

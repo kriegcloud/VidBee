@@ -5,7 +5,9 @@
     "src/shared/logging/DesktopLog.model.ts",
     "src/shared/logging/DesktopLog.service.ts",
     "src/shared/logging/DesktopLogger.layer.ts",
-    "src/shared/logging/ForwardLogger.layer.ts"
+    "src/shared/logging/ForwardLogger.layer.ts",
+    "src/shared/logging/DesktopLogWire.model.ts",
+    "src/shared/logging/DesktopLogWire.driver.ts"
   ],
   "include": [],
   "compilerOptions": {

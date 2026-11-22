@@ -5,7 +5,9 @@ import { ElectronLogLive } from "./ElectronLog.driver.js";
 /** Main logger composition, shared by the main runtime and its compatibility runner.
  * **Example** (Use the replacing sink)
  * ```ts
- * const Logging = DesktopMainLoggerLive
+ * import { DesktopMainLoggerLive } from "./DesktopLogger.layer.js"
+ * const logging = DesktopMainLoggerLive
+ * void logging
  * ```
  * @category layers
  * @since 0.0.0
