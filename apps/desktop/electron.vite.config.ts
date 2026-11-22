@@ -23,6 +23,8 @@ const bundledWorkspacePackages = [
   '@vidbee/i18n',
   '@vidbee/ui',
   '@vidbee/logger',
+  '@vidbee/schema',
+  '@vidbee/identity',
   '@vidbee/task-queue',
   '@vidbee/task-queue-legacy',
   '@vidbee/subscriptions-core',

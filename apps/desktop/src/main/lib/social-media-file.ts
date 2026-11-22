@@ -6,7 +6,7 @@ import {
 } from '@vidbee/downloader-core/social-media'
 import type { Task } from '@vidbee/task-queue-legacy'
 import DatabaseConstructor from 'better-sqlite3'
-import log from 'electron-log/main'
+import { electronLog as log } from '../logging/ElectronLog.driver'
 
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'heic'])
 const AUDIO_EXTENSIONS = new Set(['m4a', 'mp3', 'aac', 'opus', 'ogg', 'wav', 'flac'])

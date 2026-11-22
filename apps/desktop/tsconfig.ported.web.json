@@ -1,6 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
+  "files": [
+    "src/renderer/src/logging/RendererLogger.entry.ts",
+    "src/shared/logging/DesktopLog.model.ts",
+    "src/shared/logging/DesktopLog.service.ts",
+    "src/shared/logging/DesktopLogger.layer.ts",
+    "src/shared/logging/ForwardLogger.layer.ts"
+  ],
   "include": [],
   "compilerOptions": {
     "module": "esnext",
