@@ -1318,6 +1318,20 @@
       "executable": false
     },
     {
+      "file": "apps/desktop/port-units.baseline.json",
+      "package": "vidbee",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
+      "file": "apps/desktop/port-units.json",
+      "package": "vidbee",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
       "file": "apps/desktop/renderer-react-resolve.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -9375,6 +9389,27 @@
       "executable": false
     },
     {
+      "file": "apps/desktop/tsconfig.ported.node.json",
+      "package": "vidbee",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
+      "file": "apps/desktop/tsconfig.ported.test.json",
+      "package": "vidbee",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
+      "file": "apps/desktop/tsconfig.ported.web.json",
+      "package": "vidbee",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
       "file": "apps/desktop/tsconfig.web.json",
       "package": "vidbee",
       "classification": "data",
@@ -10300,6 +10335,13 @@
     },
     {
       "file": "docs/effect-port/reports/8.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/reports/9.0-ratchet.md",
       "package": "vidbee-workspace",
       "classification": "data",
       "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
@@ -23411,6 +23453,20 @@
     },
     {
       "file": "scripts/port-check.test.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable source subject to applicable compiler and standards stages.",
+      "executable": true
+    },
+    {
+      "file": "scripts/port-desktop.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable source subject to applicable compiler and standards stages.",
+      "executable": true
+    },
+    {
+      "file": "scripts/port-desktop.test.mjs",
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable source subject to applicable compiler and standards stages.",
