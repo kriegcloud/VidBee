@@ -1,8 +1,8 @@
 import { Button } from '@renderer/components/ui/button'
 import type { AgentChatRun } from '@shared/agent-chat'
-import { classifyAiPromptError } from '@shared/ai-run'
 import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { classifyAiPromptError } from '../../../../compatibility/shared/ai-run'
 import { TranscriptPromptGuidance } from './TranscriptPromptGuidance'
 
 /** Keep live progress and terminal feedback below the reply, outside reasoning. */

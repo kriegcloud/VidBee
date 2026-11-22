@@ -54,7 +54,7 @@ import { toast } from 'sonner'
 import {
   buildFilePathCandidates,
   normalizeSavedFileName
-} from '../../../../shared/utils/download-file'
+} from '../../../../compatibility/shared/utils/download-file'
 import { useDownloadOriginContexts } from '../../hooks/use-download-origin-contexts'
 import { useDownloadSelection } from '../../hooks/use-download-selection'
 import { useExtensionCookieConnection } from '../../hooks/use-extension-cookie-connection'

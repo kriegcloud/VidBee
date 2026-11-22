@@ -1,470 +1,111 @@
-import type { FilenameStyle } from '@vidbee/downloader-core/filename-style'
-import type { OneClickContainerOption } from '@vidbee/downloader-core/format-preferences'
-import type { SocialMediaOptions } from '@vidbee/downloader-core/social-media'
-import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
-import { defaultLanguageCode, type LanguageCode } from '@vidbee/i18n/languages'
-import type { SubscriptionDownloadPreferences } from '@vidbee/subscriptions-core/types'
-import type {
-  DownloadCookieSource,
-  TaskCreationMetadata,
-  TaskKind
-} from '@vidbee/task-queue-legacy'
-import type { SocialCollectionSummary } from '@vidbee/task-queue-legacy/types'
-import type { AsrTierId } from '@vidbee/transcription/asr'
+import type { AppSettings } from './Desktop.model.js'
 import {
-  DEFAULT_CLOUD_TRANSCRIPTION_MODEL,
-  type TranscriptionProvider
-} from '@vidbee/transcription/cloud'
-import type { DownloadMirror } from '@vidbee/transcription/download-mirrors'
-import { type AgentPermissionMode, DEFAULT_AGENT_PERMISSION_MODE } from '../agent-permissions'
-import type { ExtensionCookieSourcePreference } from '../extension-cookies'
-import { DEFAULT_TTS_MODEL_ID, type TtsModelId } from '../tts-models'
+  AppSettings as ReexportAppSettings,
+  DownloadHistoryItem as ReexportDownloadHistoryItem,
+  DownloadItem as ReexportDownloadItem,
+  DownloadOptions as ReexportDownloadOptions,
+  DownloadProgress as ReexportDownloadProgress,
+  DownloadStatus as ReexportDownloadStatus,
+  OneClickQualityPreset as ReexportOneClickQualityPreset,
+  PlaylistDownloadEntry as ReexportPlaylistDownloadEntry,
+  PlaylistDownloadOptions as ReexportPlaylistDownloadOptions,
+  PlaylistDownloadResult as ReexportPlaylistDownloadResult,
+  PlaylistEntry as ReexportPlaylistEntry,
+  PlaylistInfo as ReexportPlaylistInfo,
+  SubscriptionCreatePayload as ReexportSubscriptionCreatePayload,
+  SubscriptionFeedItem as ReexportSubscriptionFeedItem,
+  SubscriptionResolvedFeed as ReexportSubscriptionResolvedFeed,
+  SubscriptionRule as ReexportSubscriptionRule,
+  SubscriptionUpdatePayload as ReexportSubscriptionUpdatePayload,
+  VideoFormat as ReexportVideoFormat,
+  VideoInfo as ReexportVideoInfo,
+  VideoInfoCommandResult as ReexportVideoInfoCommandResult
+} from './Desktop.model.js'
 
-export type {
-  YtDlpKernelPreparationStep,
-  YtDlpKernelState,
-  YtDlpKernelStatus
+export {
+  ReexportAppSettings as AppSettings,
+  ReexportDownloadHistoryItem as DownloadHistoryItem,
+  ReexportDownloadItem as DownloadItem,
+  ReexportDownloadOptions as DownloadOptions,
+  ReexportDownloadProgress as DownloadProgress,
+  ReexportDownloadStatus as DownloadStatus,
+  ReexportOneClickQualityPreset as OneClickQualityPreset,
+  ReexportPlaylistDownloadEntry as PlaylistDownloadEntry,
+  ReexportPlaylistDownloadOptions as PlaylistDownloadOptions,
+  ReexportPlaylistDownloadResult as PlaylistDownloadResult,
+  ReexportPlaylistEntry as PlaylistEntry,
+  ReexportPlaylistInfo as PlaylistInfo,
+  ReexportSubscriptionCreatePayload as SubscriptionCreatePayload,
+  ReexportSubscriptionFeedItem as SubscriptionFeedItem,
+  ReexportSubscriptionResolvedFeed as SubscriptionResolvedFeed,
+  ReexportSubscriptionRule as SubscriptionRule,
+  ReexportSubscriptionUpdatePayload as SubscriptionUpdatePayload,
+  ReexportVideoFormat as VideoFormat,
+  ReexportVideoInfo as VideoInfo,
+  ReexportVideoInfoCommandResult as VideoInfoCommandResult
+}
+
+import type { FilenameStyle as ReexportFilenameStyle } from '@vidbee/downloader-core/filename-style'
+import { DEFAULT_SUBTITLE_LANGUAGES } from '@vidbee/downloader-core/subtitle-languages'
+import { defaultLanguageCode } from '@vidbee/i18n/languages'
+import { DEFAULT_CLOUD_TRANSCRIPTION_MODEL } from '@vidbee/transcription/cloud'
+import { DEFAULT_AGENT_PERMISSION_MODE } from '../agent-permissions'
+import { DEFAULT_TTS_MODEL_ID } from '../Tts.model.js'
+
+export type { ReexportFilenameStyle as FilenameStyle }
+
+import type { OneClickContainerOption as ReexportOneClickContainerOption } from '@vidbee/downloader-core/format-preferences'
+
+export type { ReexportOneClickContainerOption as OneClickContainerOption }
+
+import type { DownloadMirror as ReexportDownloadMirror } from '@vidbee/transcription/Mirror.model'
+
+export type { ReexportDownloadMirror as DownloadMirror }
+
+import type {
+  YtDlpKernelPreparationStep as ReexportYtDlpKernelPreparationStep,
+  YtDlpKernelState as ReexportYtDlpKernelState,
+  YtDlpKernelStatus as ReexportYtDlpKernelStatus
 } from './ytdlp-kernel'
 
-export type { DownloadMirror, FilenameStyle, OneClickContainerOption }
-
-// Download related types
-export interface VideoFormat {
-  format_id: string
-  ext: string
-  height?: number
-  width?: number
-  fps?: number
-  vcodec?: string
-  acodec?: string
-  filesize?: number
-  filesize_approx?: number
-  format_note?: string
-  video_ext?: string
-  audio_ext?: string
-  tbr?: number
-  quality?: number
-  protocol?: string // http, https, m3u8, m3u8_native, etc.
-  language?: string
-}
-
-export interface VideoInfo {
-  id: string
-  title: string
-  thumbnail?: string
-  duration?: number
-  formats: VideoFormat[]
-  extractor_key?: string
-  webpage_url?: string
-  description?: string
-  view_count?: number
-  uploader?: string
-}
-
-export interface VideoInfoCommandResult {
-  info?: VideoInfo
-  ytDlpCommand: string
-  error?: string
-}
-
-export interface DownloadProgress {
-  percent: number
-  indeterminate?: boolean
-  currentSpeed?: string
-  eta?: string
-  downloaded?: string
-  total?: string
-}
-
-export type DownloadStatus =
-  | 'pending'
-  | 'downloading'
-  | 'processing'
-  | 'completed'
-  | 'error'
-  | 'cancelled'
-
-export interface DownloadItem {
-  sourceMediaKind?: 'image' | 'video' | 'mixed'
-  collectionSummary?: SocialCollectionSummary
-  cookieSources?: DownloadCookieSource[]
-  /** Historical admission settings, never evidence of the actual executed source. */
-  configuredCookieSources?: DownloadCookieSource[]
-  id: string
-  url: string
-  title: string
-  thumbnail?: string
-  type: 'video' | 'audio'
-  status: DownloadStatus
-  progress?: DownloadProgress
-  error?: string
-  speed?: string
-  ytDlpCommand?: string
-  ytDlpLog?: string
-  // Enhanced video information
-  duration?: number
-  fileSize?: number
-  savedFileName?: string
-  /** Absolute path of the saved media; preferred over `downloadPath` + `savedFileName`. */
-  filePath?: string
-  // Timestamps
-  createdAt: number
-  startedAt?: number
-  completedAt?: number
-  // Additional metadata
-  description?: string
-  channel?: string
-  uploader?: string
-  viewCount?: number
-  tags?: string[]
-  origin?: TaskCreationMetadata['origin']
-  agentConversation?: TaskCreationMetadata['agentConversation']
-  parentId?: string
-  taskKind?: TaskKind
-  subscriptionId?: string
-  // Download-specific format info
-  selectedFormat?: VideoFormat
-  /**
-   * yt-dlp's resolved format id (e.g. `30080+30280`). Differs from
-   * `selectedFormat.format_id` when the chain fell back to best-available;
-   * the row uses this to render a "fell back" hint.
-   */
-  resolvedFormatId?: string
-  subtitleStatus?: 'downloaded' | 'unavailable' | 'skipped-auth' | 'failed'
-  subtitleLanguages?: string[]
-  // Playlist context (optional)
-  playlistId?: string
-  playlistTitle?: string
-  playlistIndex?: number
-  playlistSize?: number
-  mediaKind?: 'photo' | 'video' | 'recording'
-  batchId?: string
-  batchKind?: 'instagram-profile' | 'social-media'
-  batchTitle?: string
-  batchCategory?: string
-  batchOrder?: number
-  batchSourceCount?: number
-  batchAssetCount?: number
-  outputDirectory?: string
-  fileCount?: number
-  downloadedCount?: number
-  skippedCount?: number
-  failedCount?: number
-  totalSize?: number
-  // NEX-131 §10.A.5 projection passthrough fields. Optional so renderer
-  // components that haven't opted in keep working unchanged. internalStatus
-  // is the underlying 8-state TaskStatus; subStatus carries 'paused' or
-  // 'retry-scheduled' (mapped onto pending in the legacy enum); statusReason
-  // distinguishes 'crash-recovery' / 'user' / etc.
-  internalStatus?: string
-  subStatus?: string
-  statusReason?: string | null
-  nextRetryAt?: number | null
-  attempt?: number
-  maxAttempts?: number
-  errorCategory?: string
-}
-
-export interface SubscriptionFeedItem {
-  id: string
-  url: string
-  title: string
-  publishedAt: number
-  thumbnail?: string
-  addedToQueue: boolean
-  downloadId?: string
-}
-
-export interface DownloadHistoryItem {
-  sourceMediaKind?: 'image' | 'video' | 'mixed'
-  collectionSummary?: SocialCollectionSummary
-  cookieSources?: DownloadCookieSource[]
-  /** Historical admission settings, never evidence of the actual executed source. */
-  configuredCookieSources?: DownloadCookieSource[]
-  id: string
-  url: string
-  title: string
-  thumbnail?: string
-  type: 'video' | 'audio'
-  status: DownloadStatus
-  downloadPath?: string
-  savedFileName?: string
-  /** Absolute path of the saved media; preferred over `downloadPath` + `savedFileName`. */
-  filePath?: string
-  resolvedFormatId?: string
-  subtitleStatus?: 'downloaded' | 'unavailable' | 'skipped-auth' | 'failed'
-  subtitleLanguages?: string[]
-  fileSize?: number
-  duration?: number
-  downloadedAt: number
-  createdAt?: number
-  startedAt?: number
-  completedAt?: number
-  error?: string
-  ytDlpCommand?: string
-  ytDlpLog?: string
-  // Additional metadata
-  description?: string
-  channel?: string
-  uploader?: string
-  viewCount?: number
-  tags?: string[]
-  origin?: TaskCreationMetadata['origin']
-  agentConversation?: TaskCreationMetadata['agentConversation']
-  parentId?: string
-  taskKind?: TaskKind
-  subscriptionId?: string
-  // Download-specific format info
-  selectedFormat?: VideoFormat
-  // Playlist context (optional)
-  playlistId?: string
-  playlistTitle?: string
-  playlistIndex?: number
-  playlistSize?: number
-  mediaKind?: 'photo' | 'video' | 'recording'
-  batchId?: string
-  batchKind?: 'instagram-profile' | 'social-media'
-  batchTitle?: string
-  batchCategory?: string
-  batchOrder?: number
-  batchSourceCount?: number
-  batchAssetCount?: number
-  outputDirectory?: string
-  fileCount?: number
-  downloadedCount?: number
-  skippedCount?: number
-  failedCount?: number
-  totalSize?: number
-}
-
-export interface DownloadOptions {
-  batchId?: string
-  batchTitle?: string
-  batchOrder?: number
-  socialMedia?: SocialMediaOptions
-  singleVideo?: boolean
-  url: string
-  type: 'video' | 'audio'
-  format?: string
-  audioFormat?: string
-  audioFormatIds?: string[]
-  startTime?: string
-  endTime?: string
-  downloadSubs?: boolean
-  customDownloadPath?: string
-  customFilenameTemplate?: string
-  containerFormat?: OneClickContainerOption
-  tags?: string[]
-  origin?: TaskCreationMetadata['origin']
-  subscriptionId?: string
-  /**
-   * Pre-fetched videoInfo metadata so the renderer's optimistic row
-   * survives the kernel's snapshot-changed → download:updated round-trip.
-   * Without these, the projection re-derives `title` from the URL and
-   * `thumbnail`/`description`/etc. arrive as undefined, which spreads
-   * over the optimistic row and wipes its metadata on the first tick.
-   */
-  title?: string
-  thumbnail?: string
-  description?: string
-  channel?: string
-  uploader?: string
-  viewCount?: number
-  duration?: number
-  selectedFormat?: VideoFormat
-}
-
-export interface PlaylistEntry {
-  id: string
-  title: string
-  url: string
-  index: number
-  thumbnail?: string
-  mediaKind?: 'photo' | 'video' | 'recording'
-}
-
-export interface PlaylistInfo {
-  id: string
-  title: string
-  entries: PlaylistEntry[]
-  entryCount: number
-}
-
-export interface PlaylistDownloadOptions {
-  url: string
-  type: 'video' | 'audio'
-  format?: string
-  entryIds?: string[]
-  startIndex?: number
-  endIndex?: number
-  filenameFormat?: string
-  folderFormat?: string
-  customDownloadPath?: string
-  containerFormat?: OneClickContainerOption
-}
-
-export interface PlaylistDownloadEntry {
-  downloadId: string
-  entryId: string
-  title: string
-  url: string
-  index: number
-}
-
-export interface PlaylistDownloadResult {
-  groupId: string
-  playlistId: string
-  playlistTitle: string
-  type: 'video' | 'audio'
-  totalCount: number
-  startIndex: number
-  endIndex: number
-  entries: PlaylistDownloadEntry[]
-}
-
-// Subscription types
 export type {
-  SubscriptionPlatform,
-  SubscriptionSourceKind,
-  SubscriptionStatus
-} from '@vidbee/subscriptions-core/types'
+  ReexportYtDlpKernelPreparationStep as YtDlpKernelPreparationStep,
+  ReexportYtDlpKernelState as YtDlpKernelState,
+  ReexportYtDlpKernelStatus as YtDlpKernelStatus
+}
 
 import type {
-  SubscriptionPlatform,
-  SubscriptionSourceKind,
-  SubscriptionStatus
+  SubscriptionPlatform as ReexportSubscriptionPlatform,
+  SubscriptionSourceKind as ReexportSubscriptionSourceKind,
+  SubscriptionStatus as ReexportSubscriptionStatus
 } from '@vidbee/subscriptions-core/types'
 
+export type {
+  ReexportSubscriptionPlatform as SubscriptionPlatform,
+  ReexportSubscriptionSourceKind as SubscriptionSourceKind,
+  ReexportSubscriptionStatus as SubscriptionStatus
+}
+/** SUBSCRIPTION_DUPLICATE_FEED_ERROR shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example SUBSCRIPTION_DUPLICATE_FEED_ERROR
+ */
 export const SUBSCRIPTION_DUPLICATE_FEED_ERROR = 'SUBSCRIPTION_DUPLICATE_FEED_URL'
 
-export interface SubscriptionRule extends SubscriptionDownloadPreferences {
-  id: string
-  title: string
-  sourceUrl: string
-  feedUrl: string
-  platform: SubscriptionPlatform
-  keywords: string[]
-  tags: string[]
-  onlyDownloadLatest: boolean
-  /** When false, feed items are listed but not queued automatically. */
-  autoDownload: boolean
-  enabled: boolean
-  coverUrl?: string
-  latestVideoTitle?: string
-  latestVideoPublishedAt?: number
-  lastCheckedAt?: number
-  lastSuccessAt?: number
-  status: SubscriptionStatus
-  lastError?: string
-  createdAt: number
-  updatedAt: number
-  downloadDirectory?: string
-  namingTemplate?: string
-  sourceKind: SubscriptionSourceKind
-  profileOwner?: string
-  categories: string[]
-  checkIntervalMs?: number
-  nextCheckAt?: number
-  items: SubscriptionFeedItem[]
-}
-
-export interface SubscriptionResolvedFeed {
-  sourceUrl: string
-  feedUrl: string
-  platform: SubscriptionPlatform
-  sourceKind: SubscriptionSourceKind
-  profileOwner?: string
-  availableCategories: string[]
-}
-
-export interface SubscriptionCreatePayload extends SubscriptionDownloadPreferences {
-  sourceUrl: string
-  feedUrl: string
-  platform: SubscriptionPlatform
-  keywords?: string[]
-  tags?: string[]
-  onlyDownloadLatest?: boolean
-  autoDownload?: boolean
-  downloadDirectory?: string
-  namingTemplate?: string
-  enabled?: boolean
-  sourceKind?: SubscriptionSourceKind
-  profileOwner?: string
-  categories?: string[]
-  checkIntervalMs?: number
-}
-
-export interface SubscriptionUpdatePayload extends SubscriptionDownloadPreferences {
-  title?: string
-  sourceUrl?: string
-  feedUrl?: string
-  platform?: SubscriptionPlatform
-  keywords?: string[]
-  tags?: string[]
-  onlyDownloadLatest?: boolean
-  autoDownload?: boolean
-  enabled?: boolean
-  downloadDirectory?: string
-  namingTemplate?: string
-  categories?: string[]
-  /** Null clears the override back to the default interval. */
-  checkIntervalMs?: number | null
-  items?: SubscriptionFeedItem[]
-}
-
 // Settings types
-export type OneClickQualityPreset = 'best' | 'good' | 'normal' | 'bad' | 'worst'
 
-export interface AppSettings {
-  downloadPath: string
-  maxConcurrentDownloads: number
-  downloadWithoutChannelSubfolders: boolean
-  browserForCookies: string
-  cookiesPath: string
-  /** Remember extension profiles in cookie priority order, including offline sources. */
-  extensionCookieSources: ExtensionCookieSourcePreference[]
-  proxy: string
-  configPath: string
-  language: LanguageCode
-  theme: string
-  oneClickDownload: boolean
-  oneClickDownloadType: 'video' | 'audio'
-  oneClickQuality: OneClickQualityPreset
-  oneClickContainer: OneClickContainerOption
-  closeToTray: boolean
-  hideDockIcon: boolean
-  launchAtLogin: boolean
-  subscriptionOnlyLatestDefault: boolean
-  enableDownloadNotifications: boolean
-  rememberLastAudioLanguage: boolean
-  preferredAudioLanguage: string
-  downloadSubtitles: boolean
-  subtitleLanguages: string[]
-  embedSubs: boolean
-  writeAutoSubs: boolean
-  embedThumbnail: boolean
-  embedMetadata: boolean
-  embedChapters: boolean
-  filenameStyle: FilenameStyle
-  filenameViaVidBee: boolean
-  shareWatermark: boolean
-  /** Assign the next free numeric filename in the destination directory. */
-  sequentialFilenames: boolean
-  autoTranscribeAfterDownload: boolean
-  maxConcurrentTranscriptions: number
-  asrTier: AsrTierId
-  ttsModelId: TtsModelId
-  transcriptionProvider: TranscriptionProvider
-  cloudTranscriptionModelId: string
-  /** Prefer ModelScope / GitHub proxies when GitHub is blocked or auto-detected as China. */
-  downloadMirror: DownloadMirror
-  lastSeenWhatsNew: string
-  /** Whether tool operations use manual approval, model review, or full access. */
-  agentManagementTools: AgentPermissionMode
-}
-
+/** DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE
+ */
 export const DEFAULT_SUBSCRIPTION_FILENAME_TEMPLATE = '%(uploader)s/%(title)s.%(ext)s'
 
+/** defaultSettings shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example defaultSettings
+ */
 export const defaultSettings: AppSettings = {
   downloadPath: '',
   maxConcurrentDownloads: 5,

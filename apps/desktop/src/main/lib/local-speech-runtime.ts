@@ -5,7 +5,7 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import type { ModelManagerOptions } from '@vidbee/transcription-legacy'
 import { ModelManager, sherpaWorkerEnv } from '@vidbee/transcription-legacy'
-import { DEFAULT_TTS_MODEL_ID, type TtsModelId } from '../../shared/tts-models'
+import { DEFAULT_TTS_MODEL_ID, type TtsModelId } from '../../compatibility/shared/tts-models'
 import { runAgentMediaProcess } from './agent-media'
 import {
   installedSpeechInfo,

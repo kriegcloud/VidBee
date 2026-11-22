@@ -43,11 +43,11 @@ export async function remainingObservations() {
   }
   class Clock extends Date { static now(){return 1700000000123} }
   const shared=sourceLoader({$Date:Clock,$glob:()=>documents})
-  const prompts=shared('apps/desktop/src/shared/ai-prompts.ts')
-  const runs=shared('apps/desktop/src/shared/ai-run.ts')
-  const pending=shared('apps/desktop/src/shared/utils/pending-download.ts')
+  const prompts=shared('apps/desktop/src/compatibility/shared/ai-prompts.ts')
+  const runs=shared('apps/desktop/src/compatibility/shared/ai-run.ts')
+  const pending=shared('apps/desktop/src/compatibility/shared/utils/pending-download.ts')
   const groups=shared('apps/desktop/src/shared/ai-provider-groups.ts')
-  const files=shared('apps/desktop/src/shared/utils/download-file.ts')
+  const files=shared('apps/desktop/src/compatibility/shared/utils/download-file.ts')
   const providers=[['z','First','m1','one'],['a','Second','m2','two'],['b','First','m3','one']].map(([id,name,modelId,groupId])=>({id,name,modelId,groupId,presetId:'fixture',baseUrl:'https://fixture.invalid/'}))
   out.shared={groups:groups.groupAiProviders(providers),fileNames:files.buildFileNameCandidates(' Title ','mp4','Title.f123.mp4'),filePaths:files.buildFilePathCandidates('/fixture','Title','mp4','Title.mp4','/fixture/Title.mp4'),chat:prompts.agentChatPrompt(),chatExplicit:prompts.agentChatPrompt(7,false),presetOrder:prompts.AI_PROMPT_PRESETS,
     idle:runs.idlePromptRunSnapshot('download','prompt'),idleExplicit:runs.idlePromptRunSnapshot('download','prompt',7),

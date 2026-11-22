@@ -1,5 +1,6 @@
 import { shell } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
+import { AI_PROVIDER_PRESETS } from '../../../compatibility/shared/ai-presets'
 import type {
   AgentChatInput,
   AgentImageUpload,
@@ -7,7 +8,6 @@ import type {
   AgentThread,
   AgentThreadSummary
 } from '../../../shared/agent-chat'
-import { AI_PROVIDER_PRESETS } from '../../../shared/ai-presets'
 import type {
   AiPrompt,
   AiPromptRunInput,

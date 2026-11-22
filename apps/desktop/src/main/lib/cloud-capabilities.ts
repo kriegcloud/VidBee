@@ -1,4 +1,4 @@
-import { AgentUserError } from '../../shared/agent-errors'
+import { AgentUserError } from '../../compatibility/shared/agent-errors'
 import {
   type AgentModelProfile,
   cloudProfileRequestHeaders,

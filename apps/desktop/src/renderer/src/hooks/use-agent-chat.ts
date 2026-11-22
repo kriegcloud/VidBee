@@ -7,6 +7,8 @@ import type {
   AgentThread
 } from '@shared/agent-chat'
 import { AGENT_WORKSPACE_ID } from '@shared/agent-chat'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   type AgentGapRecovery,
   acceptAgentThread,
@@ -17,9 +19,7 @@ import {
   requestAgentRecovery,
   resetAgentRecovery,
   settleAgentRecovery
-} from '@shared/agent-thread-patch'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+} from '../../../compatibility/shared/agent-thread-patch'
 
 /**
  * Keep an older seq from replacing the thread already accepted for this identity.

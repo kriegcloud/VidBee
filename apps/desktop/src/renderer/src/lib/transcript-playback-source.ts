@@ -1,4 +1,4 @@
-import { sourceMediaKind } from '@shared/source-media-kind'
+import { sourceMediaKind } from '../../../compatibility/shared/source-media-kind'
 import type { DownloadRecord } from '../store/downloads'
 import type { EnsurePlaybackSessionInput } from '../store/transcript-playback'
 import type { TranscriptSnapshotView } from '../store/transcripts'

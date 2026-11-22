@@ -1,8 +1,12 @@
 import type { AgentMessage, AgentTool } from '@earendil-works/pi-agent-core'
 import type { Api, AssistantMessage, Context, FetchFunction, Model } from '@earendil-works/pi-ai'
 import { streamSimple } from '@earendil-works/pi-ai/compat'
+import {
+  AgentUserError,
+  parseAgentError,
+  toSdkRetryMessage
+} from '../../compatibility/shared/agent-errors'
 import type { AgentThinkingLevel, AgentThread } from '../../shared/agent-chat'
-import { AgentUserError, parseAgentError, toSdkRetryMessage } from '../../shared/agent-errors'
 import { VideoAgentSession } from './agent-durable-session'
 import type { AgentHarnessTuning } from './agent-model-profile'
 import type { AgentPermissionOptions } from './agent-permissions'

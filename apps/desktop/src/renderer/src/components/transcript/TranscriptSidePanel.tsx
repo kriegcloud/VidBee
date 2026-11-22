@@ -19,19 +19,7 @@ import type {
   TranscriptSpeakerView
 } from '@renderer/store/transcripts'
 import { AGENT_WORKSPACE_ID, type AgentRunEvent, type AgentThreadSummary } from '@shared/agent-chat'
-import {
-  type CatalogMemoryEntry,
-  mergeCatalogList,
-  rememberCatalog
-} from '@shared/agent-thread-patch'
 import { buildOverviewPromptTranscriptText } from '@shared/ai-prompt-text'
-import {
-  AI_CHAT_PROMPT_ID,
-  AI_OVERVIEW_PROMPT_ID,
-  agentChatPrompt,
-  isTranscriptSkillVisible,
-  partitionTranscriptPromptTabs
-} from '@shared/ai-prompts'
 import type { AiSettingsSnapshot } from '@shared/ai-types'
 import { useNavigate } from '@tanstack/react-router'
 import { AgentWorkspaceTabs } from '@vidbee/ui/components/agent-workspace'
@@ -39,6 +27,18 @@ import { useAtom } from 'jotai'
 import { Captions } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  type CatalogMemoryEntry,
+  mergeCatalogList,
+  rememberCatalog
+} from '../../../../compatibility/shared/agent-thread-patch'
+import {
+  AI_CHAT_PROMPT_ID,
+  AI_OVERVIEW_PROMPT_ID,
+  agentChatPrompt,
+  isTranscriptSkillVisible,
+  partitionTranscriptPromptTabs
+} from '../../../../compatibility/shared/ai-prompts'
 
 interface TranscriptSidePanelProps {
   collapsed: boolean

@@ -1,5 +1,11 @@
 import type { Database } from 'better-sqlite3'
 import {
+  agentThreadIsRunning,
+  agentThreadLatestRun,
+  agentThreadNeedsApproval,
+  agentThreadUpdatedAt
+} from '../../compatibility/shared/agent-history'
+import {
   type AgentChatMessage,
   type AgentChatRun,
   type AgentImageAttachment,
@@ -7,12 +13,6 @@ import {
   type AgentThread,
   selectedAgentMessages
 } from '../../shared/agent-chat'
-import {
-  agentThreadIsRunning,
-  agentThreadLatestRun,
-  agentThreadNeedsApproval,
-  agentThreadUpdatedAt
-} from '../../shared/agent-history'
 
 /** Small header stored on the thread row so directory lists do not parse runs. */
 interface AgentDirectoryMeta {

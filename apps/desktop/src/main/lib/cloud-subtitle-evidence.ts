@@ -1,4 +1,4 @@
-import { AGENT_SUBTITLE_MODEL_VERSION } from '../../shared/agent-subtitles'
+import { AGENT_SUBTITLE_MODEL_VERSION } from '../../compatibility/shared/agent-subtitles'
 import { getDesktopTaskQueueRef } from './queue-ref'
 import { getTranscriptSnapshot } from './transcript-host'
 

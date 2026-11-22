@@ -1,4 +1,4 @@
-import type { AgentFailure } from '../../shared/agent-errors'
+import type { AgentFailure } from '../../compatibility/shared/agent-errors'
 import {
   type AgentTurnLike,
   assistantDeliveredArticle,

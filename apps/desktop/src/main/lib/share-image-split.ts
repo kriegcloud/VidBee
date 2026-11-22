@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type { ShareImageLayout } from '@shared/types/share-card'
 import { nativeImage } from 'electron'
+import type { ShareImageLayout } from '../../compatibility/shared/types/share-card'
 
 /** Target a maximum page height of two widths, including padding and the footer. */
 export const SHARE_IMAGE_MAX_ASPECT_RATIO = 2

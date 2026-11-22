@@ -1,11 +1,17 @@
 import type { AgentMessage, AgentTool, AgentToolResult } from '@earendil-works/pi-agent-core'
 import { type Static, type TSchema, Type } from 'typebox'
 import { z } from 'zod'
+import { sanitizeAgentConversationTitle } from '../../compatibility/shared/agent-history'
+import {
+  type AgentSubtitleInput,
+  agentSubtitleInputSchema
+} from '../../compatibility/shared/agent-subtitles'
+import {
+  dubbingInputSchema,
+  subtitleExportInputSchema
+} from '../../compatibility/shared/video-localization'
 import type { AgentArtifact } from '../../shared/agent-chat'
-import { sanitizeAgentConversationTitle } from '../../shared/agent-history'
-import { type AgentSubtitleInput, agentSubtitleInputSchema } from '../../shared/agent-subtitles'
 import type { AgentUiSpec } from '../../shared/agent-ui'
-import { dubbingInputSchema, subtitleExportInputSchema } from '../../shared/video-localization'
 import { OVERHEAD } from './agent-budget'
 import { documentPageBudget, MIN_DOCUMENT_RESULT_BYTES, readAgentDocument } from './agent-document'
 import type { AgentEvidence } from './agent-evidence'

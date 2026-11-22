@@ -1,42 +1,26 @@
+import { $DesktopId } from '@vidbee/identity/packages'
+import * as A from 'effect/Array'
+import * as O from 'effect/Option'
+import * as S from 'effect/Schema'
+import * as Str from 'effect/String'
 import { parsePromptClock } from './ai-prompt-text'
+import { recordFunction } from './RecordFunction.js'
 
+const $I = $DesktopId.create('shared/overview-result')
 const LIST_ITEM = /^(?:[-*]|\d+[.)])\s+(?:\*\*)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\*\*)?\s+(.*)$/u
 const HEADING = /^(#{1,3})\s+(.+?)\s*$/u
 const FENCE = /^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/u
-
-export interface OverviewChapter {
-  clock: string
-  seconds: number
-  summary: string
-  title: string
-}
-
-export interface OverviewQuote {
-  clock: string
-  seconds: number
-  quote: string
-}
-
-export interface ParsedOverview {
-  chapters: OverviewChapter[]
-  quotes: OverviewQuote[]
-  takeaway: string
-}
 
 /**
  * True when the model returned at least one Overview field we can lay out.
  *
  * @param parsed Structured Overview.
+ * @example hasOverviewStructure
+ * @category utilities
+ * @since 0.0.0
  */
 export const hasOverviewStructure = (parsed: ParsedOverview): boolean =>
   parsed.chapters.length > 0 || parsed.quotes.length > 0
-
-export interface OverviewPlayhead {
-  /** Chapter index that contains playback, or -1 before the first chapter. */
-  index: number
-  /** 0-1 progress through that chapter. */
-  progress: number
-}
 
 /**
  * Locate the chapter that contains playback and how far that chapter has run.
@@ -45,13 +29,16 @@ export interface OverviewPlayhead {
  * @param currentSeconds Player current time.
  * @param durationSeconds Media duration when known; ends the last chapter.
  */
-export const overviewPlayhead = (
+function overviewPlayheadBody(
   chapters: readonly OverviewChapter[],
   currentSeconds: number,
   durationSeconds = 0
-): OverviewPlayhead => {
+): OverviewPlayhead {
   if (chapters.length === 0) {
-    return { index: -1, progress: 0 }
+    return {
+      index: -1,
+      progress: 0
+    }
   }
   let index = -1
   for (const [i, chapter] of chapters.entries()) {
@@ -62,17 +49,26 @@ export const overviewPlayhead = (
     break
   }
   if (index < 0) {
-    return { index: -1, progress: 0 }
+    return {
+      index: -1,
+      progress: 0
+    }
   }
   const start = chapters[index]?.seconds ?? 0
   const next = chapters[index + 1]?.seconds
   if (next === undefined && durationSeconds <= start) {
-    return { index, progress: 0 }
+    return {
+      index,
+      progress: 0
+    }
   }
   const end = next ?? durationSeconds
   const span = end - start
   if (span <= 0) {
-    return { index, progress: currentSeconds >= start ? 1 : 0 }
+    return {
+      index,
+      progress: currentSeconds >= start ? 1 : 0
+    }
   }
   return {
     index,
@@ -86,7 +82,7 @@ export const overviewPlayhead = (
  * @param heading Markdown heading text.
  */
 const classifyOverviewHeading = (heading: string): 'chapters' | 'quotes' | 'other' => {
-  const text = heading.trim()
+  const text = Str.trim(heading)
   if (/quote|金句|引言|引用|名言|zitat|citation|cita/i.test(text)) {
     return 'quotes'
   }
@@ -101,11 +97,19 @@ const classifyOverviewHeading = (heading: string): 'chapters' | 'quotes' | 'othe
  *
  * @param rest Text after the clock token.
  */
-const splitChapterCopy = (rest: string): { summary: string; title: string } => {
-  const parts = rest.split(/\s+[—–]\s+/)
-  const title = (parts[0] ?? '').trim()
-  const summary = parts.slice(1).join(' — ').trim()
-  return { summary, title }
+const splitChapterCopy = (
+  rest: string
+): {
+  summary: string
+  title: string
+} => {
+  const parts = Str.split(/\s+[—–]\s+/)(rest)
+  const title = Str.trim(parts[0] ?? '')
+  const summary = Str.trim(A.join(parts.slice(1), ' — '))
+  return {
+    summary,
+    title
+  }
 }
 
 /**
@@ -114,11 +118,9 @@ const splitChapterCopy = (rest: string): { summary: string; title: string } => {
  * @param value Quote body from the model.
  */
 const unwrapQuote = (value: string): string =>
-  value
-    .trim()
-    .replace(/^(?:["“«「『]|'{2})/, '')
-    .replace(/(?:["”»」』]|'{2})$/, '')
-    .trim()
+  Str.trim(
+    Str.replace(/(?:["”»」』]|'{2})$/, '')(Str.replace(/^(?:["“«「『]|'{2})/, '')(Str.trim(value)))
+  )
 
 /**
  * True when the remainder of a list item looks like a spoken quote.
@@ -131,21 +133,33 @@ const looksLikeQuote = (rest: string): boolean => /^\s*["“«「『]/.test(rest
  * Parse Overview markdown into a takeaway, chapters, and key quotes.
  *
  * @param markdown Raw prompt result, possibly still streaming.
+ * @example parseOverviewMarkdown
+ * @category utilities
+ * @since 0.0.0
  */
 export const parseOverviewMarkdown = (markdown: string): ParsedOverview => {
-  const source = markdown.trim().replace(FENCE, '$1')
-  const parsed: ParsedOverview = { chapters: [], quotes: [], takeaway: '' }
+  const source = Str.replace(FENCE, '$1')(Str.trim(markdown))
+  const parsed: ParsedOverview = {
+    chapters: [],
+    quotes: [],
+    takeaway: ''
+  }
   let section: 'lead' | 'chapters' | 'quotes' = 'lead'
-  for (const rawLine of source.split(/\r?\n/)) {
-    const line = rawLine.trim()
-    if (!line) {
+  for (const rawLine of Str.split(/\r?\n/)(source)) {
+    const line = Str.trim(rawLine)
+    if (line.length === 0) {
       continue
     }
-    const heading = line.match(HEADING)
-    if (heading) {
+    const heading = O.getOrNull(Str.match(HEADING)(line))
+    if (heading !== null) {
       const depth = heading[1]?.length ?? 0
-      const title = heading[2]?.trim() ?? ''
-      if (depth === 1 && !parsed.takeaway && classifyOverviewHeading(title) === 'other') {
+      const title =
+        (heading[2] === undefined || heading[2] === null ? undefined : Str.trim(heading[2])) ?? ''
+      if (
+        depth === 1 &&
+        parsed.takeaway.length === 0 &&
+        classifyOverviewHeading(title) === 'other'
+      ) {
         parsed.takeaway = title
       }
       const kind = classifyOverviewHeading(title)
@@ -154,8 +168,8 @@ export const parseOverviewMarkdown = (markdown: string): ParsedOverview => {
       }
       continue
     }
-    const item = line.match(LIST_ITEM)
-    if (!item) {
+    const item = O.getOrNull(Str.match(LIST_ITEM)(line))
+    if (item === null) {
       continue
     }
     const clock = item[1] ?? ''
@@ -163,23 +177,175 @@ export const parseOverviewMarkdown = (markdown: string): ParsedOverview => {
     if (seconds === null) {
       continue
     }
-    const rest = (item[2] ?? '').trim()
-    if (!rest) {
+    const rest = Str.trim(item[2] ?? '')
+    if (rest.length === 0) {
       continue
     }
     const asQuote = section === 'quotes' || (section === 'lead' && looksLikeQuote(rest))
     if (asQuote) {
-      parsed.quotes.push({ clock, quote: unwrapQuote(rest), seconds })
+      parsed.quotes.push({
+        clock,
+        quote: unwrapQuote(rest),
+        seconds
+      })
       continue
     }
     const { summary, title } = splitChapterCopy(rest)
-    if (!title) {
+    if (title.length === 0) {
       continue
     }
-    parsed.chapters.push({ clock, seconds, summary, title })
+    parsed.chapters.push({
+      clock,
+      seconds,
+      summary,
+      title
+    })
     if (section === 'lead') {
       section = 'chapters'
     }
   }
   return parsed
 }
+
+/** OverviewChapter shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid OverviewChapter input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { OverviewChapter } from './overview-result.js'
+ * strictEqual(S.is(OverviewChapter)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const OverviewChapter = S.Struct({
+  clock: S.String.pipe(S.mutableKey),
+  seconds: S.Finite.pipe(S.mutableKey),
+  summary: S.String.pipe(S.mutableKey),
+  title: S.String.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('OverviewChapter', {
+    description: 'OverviewChapter shared boundary data.'
+  })
+)
+/** Decoded mutable OverviewChapter data.
+ * @category type-level
+ * @since 0.0.0
+ * @example OverviewChapter
+ */
+export type OverviewChapter = typeof OverviewChapter.Type
+
+/** OverviewQuote shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid OverviewQuote input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { OverviewQuote } from './overview-result.js'
+ * strictEqual(S.is(OverviewQuote)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const OverviewQuote = S.Struct({
+  clock: S.String.pipe(S.mutableKey),
+  seconds: S.Finite.pipe(S.mutableKey),
+  quote: S.String.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('OverviewQuote', {
+    description: 'OverviewQuote shared boundary data.'
+  })
+)
+/** Decoded mutable OverviewQuote data.
+ * @category type-level
+ * @since 0.0.0
+ * @example OverviewQuote
+ */
+export type OverviewQuote = typeof OverviewQuote.Type
+
+/** ParsedOverview shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ParsedOverview input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ParsedOverview } from './overview-result.js'
+ * strictEqual(S.is(ParsedOverview)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ParsedOverview = S.Struct({
+  chapters: S.Array(OverviewChapter).pipe(S.mutable, S.mutableKey),
+  quotes: S.Array(OverviewQuote).pipe(S.mutable, S.mutableKey),
+  takeaway: S.String.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ParsedOverview', {
+    description: 'ParsedOverview shared boundary data.'
+  })
+)
+/** Decoded mutable ParsedOverview data.
+ * @category type-level
+ * @since 0.0.0
+ * @example ParsedOverview
+ */
+export type ParsedOverview = typeof ParsedOverview.Type
+
+/** OverviewPlayhead shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid OverviewPlayhead input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { OverviewPlayhead } from './overview-result.js'
+ * strictEqual(S.is(OverviewPlayhead)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const OverviewPlayhead = S.Struct({
+  index: S.Finite.pipe(S.mutableKey),
+  progress: S.Finite.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('OverviewPlayhead', {
+    description: 'OverviewPlayhead shared boundary data.'
+  })
+)
+/** Decoded mutable OverviewPlayhead data.
+ * @category type-level
+ * @since 0.0.0
+ * @example OverviewPlayhead
+ */
+export type OverviewPlayhead = typeof OverviewPlayhead.Type
+
+/** Record contract for overviewPlayhead.
+ * @category ports
+ * @since 0.0.0
+ * @example OverviewPlayheadInput
+ */
+export interface OverviewPlayheadInput {
+  chapters: readonly OverviewChapter[]
+  currentSeconds: number
+  durationSeconds?: number | undefined
+}
+/** overviewPlayhead with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ * @example overviewPlayhead
+ */
+export const overviewPlayhead: {
+  (): (input: OverviewPlayheadInput) => OverviewPlayhead
+  (input: OverviewPlayheadInput): OverviewPlayhead
+} = recordFunction(
+  (input: OverviewPlayheadInput): OverviewPlayhead =>
+    overviewPlayheadBody(input.chapters, input.currentSeconds, input.durationSeconds)
+)

@@ -1,5 +1,17 @@
+import { $DesktopId } from '@vidbee/identity/packages'
+import { LiteralKit } from '@vidbee/schema/LiteralKit'
+import * as HM from 'effect/HashMap'
+import * as O from 'effect/Option'
+import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
+import * as Str from 'effect/String'
+import * as Sparse from './ArrayHelpers'
+import { recordFunction } from './RecordFunction.js'
+
+const $I = $DesktopId.create('shared/agent-history')
+
+import { AI_CHAT_PROMPT_ID } from './AiPromptIds'
 import type { AgentChatRun, AgentThread, AgentThreadSummary } from './agent-chat'
-import { AI_CHAT_PROMPT_ID } from './ai-prompts'
 
 const DAY_MS = 86_400_000
 const TITLE_MAX = 80
@@ -9,6 +21,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
  * True when the value is a canonical 8-4-4-4-12 hex UUID.
  *
  * @param value Candidate identifier.
+ * @example isUuid
+ * @category utilities
+ * @since 0.0.0
  */
 export function isUuid(value: string): boolean {
   return UUID.test(value)
@@ -18,48 +33,107 @@ export function isUuid(value: string): boolean {
  * Collapse whitespace and cap length for a conversation tab title.
  *
  * @param value Raw title from the Agent or the user.
+ * @example sanitizeAgentConversationTitle
+ * @category utilities
+ * @since 0.0.0
  */
 export function sanitizeAgentConversationTitle(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').slice(0, TITLE_MAX)
+  return Str.slice(0, TITLE_MAX)(Str.replace(/\s+/g, ' ')(Str.trim(value)))
 }
 
-export type AgentHistoryGroupKind = 'today' | 'yesterday' | 'weekday' | 'date'
+/** History bucket names; structural for legacy construction.
+ * **Example** (Reject invalid AgentHistoryGroupKind input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AgentHistoryGroupKind } from './agent-history.js'
+ * strictEqual(S.is(AgentHistoryGroupKind)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AgentHistoryGroupKind = LiteralKit(['today', 'yesterday', 'weekday', 'date']).pipe(
+  $I.annoteSchema('AgentHistoryGroupKind', {
+    description: 'Local calendar bucket.'
+  })
+)
+/** AgentHistoryGroupKind shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example AgentHistoryGroupKind
+ */
+export type AgentHistoryGroupKind = typeof AgentHistoryGroupKind.Type
 
-export interface AgentHistoryGroup<T> {
-  key: string
-  kind: AgentHistoryGroupKind
-  /** Intl weekday or date label when `kind` is weekday or date. */
-  label?: string
-  items: T[]
+/** Calendar projection, structural for legacy construction.
+ * @example AgentHistoryGroup(S.String)
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AgentHistoryGroup = <Item extends S.Constraint>(item: Item) =>
+  S.Struct({
+    key: S.String.pipe(S.mutableKey),
+    kind: AgentHistoryGroupKind.pipe(S.mutableKey),
+    label: S.String.pipe(S.optional, S.mutableKey),
+    items: S.Array(item).pipe(S.mutable, S.mutableKey)
+  }).pipe(
+    $I.annoteSchema('AgentHistoryGroup', {
+      description: 'Ordered calendar group.'
+    })
+  )
+/** AgentHistoryGroup shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example AgentHistoryGroup
+ */
+export type AgentHistoryGroup<T> = ReturnType<typeof AgentHistoryGroup<S.Schema<T>>>['Type']
+/** Injected local calendar operations; the compatibility entrypoint supplies Date and Intl.
+ * @category ports
+ * @since 0.0.0
+ * @example AgentHistoryCalendar
+ */
+export interface AgentHistoryCalendar {
+  startOfLocalDay: (ms: number) => number
+  format: (input: { ms: number; locale: string; kind: 'weekday' | 'date' }) => string
 }
 
 /**
  * Local midnight for a timestamp so history groups follow the user's calendar day.
  *
  * @param ms Epoch milliseconds.
+ * @example startOfLocalDay
+ * @category utilities
+ * @since 0.0.0
  */
-export function startOfLocalDay(ms: number): number {
-  const date = new Date(ms)
-  date.setHours(0, 0, 0, 0)
-  return date.getTime()
+export function startOfLocalDay(input: { ms: number; calendar: AgentHistoryCalendar }): number {
+  return input.calendar.startOfLocalDay(input.ms)
 }
 
 /**
  * One-line preview of the first user message on a conversation.
  *
  * @param thread Persisted agent thread.
+ * @example agentThreadUserPreview
+ * @category utilities
+ * @since 0.0.0
  */
 export function agentThreadUserPreview(thread: AgentThread): string {
   for (const message of thread.messages) {
     if (message.role !== 'user') {
       continue
     }
-    const line = message.text.trim().split('\n')[0]?.trim() ?? ''
-    if (line) {
-      return line.slice(0, 80)
+    const line =
+      (Str.split('\n')(Str.trim(message.text))[0] === undefined ||
+      Str.split('\n')(Str.trim(message.text))[0] === null
+        ? undefined
+        : Str.trim(Str.split('\n')(Str.trim(message.text))[0])) ?? ''
+    if (P.isTruthy(line)) {
+      return Str.slice(0, 80)(line)
     }
   }
-  return thread.images?.[0]?.name.slice(0, 80) ?? ''
+  const image = thread.images?.[0]
+  return image === undefined || image === null ? '' : Str.slice(0, 80)(image.name)
 }
 
 /**
@@ -68,13 +142,13 @@ export function agentThreadUserPreview(thread: AgentThread): string {
  * @param thread Persisted agent thread.
  * @param videoTitle Title of the source video, if known.
  */
-export function agentConversationTitle(thread: AgentThread, videoTitle: string): string {
+function agentConversationTitleBody(thread: AgentThread, videoTitle: string): string {
   const named = sanitizeAgentConversationTitle(thread.title ?? '')
-  if (named) {
+  if (P.isTruthy(named)) {
     return named
   }
   const userTitle = agentThreadUserPreview(thread)
-  const video = videoTitle.trim()
+  const video = Str.trim(videoTitle)
   if (thread.promptId === AI_CHAT_PROMPT_ID) {
     return userTitle
   }
@@ -85,23 +159,34 @@ export function agentConversationTitle(thread: AgentThread, videoTitle: string):
  * True when the conversation still has a live model run.
  *
  * @param thread Persisted agent thread.
+ * @example agentThreadIsRunning
+ * @category utilities
+ * @since 0.0.0
  */
 export function agentThreadIsRunning(thread: AgentThread): boolean {
-  return thread.runs.some((run) => run.status === 'running')
+  return Sparse.some({ items: thread.runs, predicate: (run) => run.status === 'running' })
 }
 
-/** True while any live run in the conversation is waiting for manual permission. */
+/** True while any live run in the conversation is waiting for manual permission.  * @example agentThreadNeedsApproval
+ * @category utilities
+ * @since 0.0.0
+ */
 export function agentThreadNeedsApproval(thread: AgentThread): boolean {
-  return thread.runs.some(
-    (run) =>
-      run.status === 'running' && run.tools.some((tool) => tool.status === 'pending-approval')
-  )
+  return Sparse.some({
+    items: thread.runs,
+    predicate: (run) =>
+      run.status === 'running' &&
+      Sparse.some({ items: run.tools, predicate: (tool) => tool.status === 'pending-approval' })
+  })
 }
 
 /**
  * The run the download list reports: a live run first, otherwise the most recently updated.
  *
  * @param thread Persisted agent thread.
+ * @example agentThreadLatestRun
+ * @category utilities
+ * @since 0.0.0
  */
 export function agentThreadLatestRun(thread: AgentThread): AgentChatRun | undefined {
   let latest: AgentChatRun | undefined
@@ -109,7 +194,7 @@ export function agentThreadLatestRun(thread: AgentThread): AgentChatRun | undefi
     if (run.status === 'running') {
       return run
     }
-    if (!latest || run.updatedAt > latest.updatedAt) {
+    if (latest === undefined || run.updatedAt > latest.updatedAt) {
       latest = run
     }
   }
@@ -120,6 +205,9 @@ export function agentThreadLatestRun(thread: AgentThread): AgentChatRun | undefi
  * Latest product timestamp on a thread, ignoring empty conversations.
  *
  * @param thread Persisted agent thread.
+ * @example agentThreadUpdatedAt
+ * @category utilities
+ * @since 0.0.0
  */
 export function agentThreadUpdatedAt(thread: AgentThread): number {
   let latest = 0
@@ -148,29 +236,28 @@ export function agentThreadUpdatedAt(thread: AgentThread): number {
  * @param now Epoch milliseconds used as "today".
  * @param locale BCP 47 tag for weekday and date labels.
  */
-export function groupAgentHistory<T extends { id: string; updatedAt: number }>(
-  items: T[],
-  now: number,
-  locale: string
-): AgentHistoryGroup<T>[] {
+function groupAgentHistoryBody<
+  T extends {
+    id: string
+    updatedAt: number
+  }
+>(items: T[], now: number, locale: string, calendar: AgentHistoryCalendar): AgentHistoryGroup<T>[] {
   const byUpdated = (left: T, right: T): number => right.updatedAt - left.updatedAt
   const rest = [...items].sort(byUpdated)
-  const today = startOfLocalDay(now)
-  const groups = new Map<string, AgentHistoryGroup<T>>()
+  const today = calendar.startOfLocalDay(now)
+  let groups = HM.empty<string, AgentHistoryGroup<T>>()
   const order: string[] = []
-
   const ensure = (key: string, group: AgentHistoryGroup<T>): AgentHistoryGroup<T> => {
-    const existing = groups.get(key)
-    if (existing) {
+    const existing = O.getOrUndefined(HM.get(groups, key))
+    if (existing !== undefined) {
       return existing
     }
-    groups.set(key, group)
+    groups = HM.set(groups, key, group)
     order.push(key)
     return group
   }
-
   for (const item of rest) {
-    const start = startOfLocalDay(item.updatedAt)
+    const start = calendar.startOfLocalDay(item.updatedAt)
     const diff = Math.round((today - start) / DAY_MS)
     let key: string
     let kind: AgentHistoryGroupKind
@@ -184,20 +271,35 @@ export function groupAgentHistory<T extends { id: string; updatedAt: number }>(
     } else if (diff < 7) {
       key = `weekday:${start}`
       kind = 'weekday'
-      label = new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(new Date(item.updatedAt))
+      label = calendar.format({
+        locale,
+        ms: item.updatedAt,
+        kind: 'weekday'
+      })
     } else {
       key = `date:${start}`
       kind = 'date'
-      label = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
-        new Date(item.updatedAt)
-      )
+      label = calendar.format({
+        locale,
+        ms: item.updatedAt,
+        kind: 'date'
+      })
     }
-    ensure(key, { key, kind, label, items: [] }).items.push(item)
+    ensure(key, {
+      key,
+      kind,
+      label,
+      items: []
+    }).items.push(item)
   }
-
-  return order
-    .map((key) => groups.get(key))
-    .filter((group): group is AgentHistoryGroup<T> => Boolean(group))
+  const result: AgentHistoryGroup<T>[] = []
+  for (const key of order) {
+    const group = O.getOrUndefined(HM.get(groups, key))
+    if (group !== undefined) {
+      result.push(group)
+    }
+  }
+  return result
 }
 
 /**
@@ -207,15 +309,109 @@ export function groupAgentHistory<T extends { id: string; updatedAt: number }>(
  * @param untitled Fallback when the video has no title.
  * @param promptLabel Translated prompt or Chat label.
  */
-export function agentHistoryDisplayTitle(
+function agentHistoryDisplayTitleBody(
   item: AgentThreadSummary,
   untitled: string,
   promptLabel: string
 ): string {
-  const title = item.title.trim()
+  const title = Str.trim(item.title)
   if (item.promptId === AI_CHAT_PROMPT_ID) {
     return title || promptLabel || untitled
   }
   const video = title || untitled
-  return promptLabel ? `${promptLabel} · ${video}` : video
+  return P.isTruthy(promptLabel) ? `${promptLabel} · ${video}` : video
 }
+
+/** Sort and group history using an explicit calendar.
+ * @example groupAgentHistory({items:[],now:0,locale:'en',calendar})
+ * @category rules
+ * @since 0.0.0
+ */
+export function groupAgentHistory<
+  T extends {
+    id: string
+    updatedAt: number
+  }
+>(): (input: {
+  items: T[]
+  now: number
+  locale: string
+  calendar: AgentHistoryCalendar
+}) => AgentHistoryGroup<T>[]
+/** groupAgentHistory shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example groupAgentHistory
+ */
+export function groupAgentHistory<
+  T extends {
+    id: string
+    updatedAt: number
+  }
+>(input: {
+  items: T[]
+  now: number
+  locale: string
+  calendar: AgentHistoryCalendar
+}): AgentHistoryGroup<T>[]
+/** groupAgentHistory shared contract.
+ * @category utilities
+ * @since 0.0.0
+ * @example groupAgentHistory
+ */
+export function groupAgentHistory<
+  T extends {
+    id: string
+    updatedAt: number
+  }
+>(input?: { items: T[]; now: number; locale: string; calendar: AgentHistoryCalendar }) {
+  const apply = (value: {
+    items: T[]
+    now: number
+    locale: string
+    calendar: AgentHistoryCalendar
+  }) => groupAgentHistoryBody(value.items, value.now, value.locale, value.calendar)
+  return input === undefined ? apply : apply(input)
+}
+
+/** Record contract for agentConversationTitle.
+ * @category ports
+ * @since 0.0.0
+ * @example AgentConversationTitleInput
+ */
+export interface AgentConversationTitleInput {
+  thread: AgentThread
+  videoTitle: string
+}
+/** agentConversationTitle with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ * @example agentConversationTitle
+ */
+export const agentConversationTitle: {
+  (): (input: AgentConversationTitleInput) => string
+  (input: AgentConversationTitleInput): string
+} = recordFunction((input: AgentConversationTitleInput): string =>
+  agentConversationTitleBody(input.thread, input.videoTitle)
+)
+/** Record contract for agentHistoryDisplayTitle.
+ * @category ports
+ * @since 0.0.0
+ * @example AgentHistoryDisplayTitleInput
+ */
+export interface AgentHistoryDisplayTitleInput {
+  item: AgentThreadSummary
+  untitled: string
+  promptLabel: string
+}
+/** agentHistoryDisplayTitle with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ * @example agentHistoryDisplayTitle
+ */
+export const agentHistoryDisplayTitle: {
+  (): (input: AgentHistoryDisplayTitleInput) => string
+  (input: AgentHistoryDisplayTitleInput): string
+} = recordFunction((input: AgentHistoryDisplayTitleInput): string =>
+  agentHistoryDisplayTitleBody(input.item, input.untitled, input.promptLabel)
+)

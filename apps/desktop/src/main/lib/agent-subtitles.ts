@@ -6,7 +6,7 @@ import {
 import {
   AGENT_SUBTITLE_MODEL_VERSION,
   agentSubtitleInputSchema
-} from '../../shared/agent-subtitles'
+} from '../../compatibility/shared/agent-subtitles'
 import { getDesktopTaskQueueRef } from './queue-ref'
 import { broadcastTranscript, getTranscriptStore, readTranscriptDetail } from './transcript-host'
 

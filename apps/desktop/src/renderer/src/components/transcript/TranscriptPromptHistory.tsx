@@ -19,20 +19,20 @@ import { ipcEvents, ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { transcriptMapAtom } from '@renderer/store/transcripts'
 import type { AgentRunEvent, AgentThreadSummary } from '@shared/agent-chat'
-import {
-  type AgentHistoryGroup,
-  agentHistoryDisplayTitle,
-  groupAgentHistory
-} from '@shared/agent-history'
-import {
-  type CatalogMemoryEntry,
-  mergeCatalogList,
-  rememberCatalog
-} from '@shared/agent-thread-patch'
 import { AgentHistoryList } from '@vidbee/ui/components/agent-workspace'
 import { useAtomValue } from 'jotai'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  type AgentHistoryGroup,
+  agentHistoryDisplayTitle,
+  groupAgentHistory
+} from '../../../../compatibility/shared/agent-history'
+import {
+  type CatalogMemoryEntry,
+  mergeCatalogList,
+  rememberCatalog
+} from '../../../../compatibility/shared/agent-thread-patch'
 
 interface TranscriptPromptHistoryProps {
   currentDownloadId: string

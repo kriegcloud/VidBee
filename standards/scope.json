@@ -1976,6 +1976,174 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/compatibility/shared/agent-errors.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-history.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-markdown.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-settings.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-subtitles.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-task.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-thread-patch.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-presets.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-prompts.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-run.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-chat-state.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-overview-reuse.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-transcript.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/live-log.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/media-transform.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/overview-result.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/source-media-kind.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/transcript-export.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/tts-models.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/types/share-card.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/download-file.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/pending-download.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/video-localization.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact shared legacy API/Zod boundary. Retire in phase 10 after its final consumer; no directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/drivers/shared/BuiltinSkill.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-deletion",
+      "reason": "D1: exact eager legacy YAML initializer and retained original assertion/Error boundary. Strict decoder is separately available; retire this facade in phase 10.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/main/assets.d.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -5273,6 +5441,83 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentFailure.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentUi.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/AiPromptIds.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/ArrayHelpers.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/BuiltinSkill.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/RecordFunction.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/StrictObject.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Phase 9.0 shared foundation port; strict scratch compilation proves source until the ratchet lane admits it.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Tts.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/shared/agent-chat.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -5553,6 +5798,13 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/shared/types/auth.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -5569,8 +5821,8 @@
     {
       "file": "apps/desktop/src/shared/types/ipc.ts",
       "package": "vidbee",
-      "classification": "pending-port",
-      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "classification": "pending-deletion",
+      "reason": "D1: exact browser-safe transitional IPC declaration facade; delete in phase 10 after the final compatibility consumer. Strict scratch compilation still covers this file.",
       "executable": true
     },
     {
@@ -10303,6 +10555,13 @@
       "package": "vidbee-workspace",
       "classification": "data",
       "reason": "Non-executable tracked or locally added asset/configuration/guidance; metadata checks remain applicable.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/reports/9.0-shared-ledger.json",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
       "executable": false
     },
     {
@@ -23400,6 +23659,412 @@
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable source subject to applicable compiler and standards stages.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/README.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": false
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-chat.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-errors.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-export.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-history.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-markdown.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-notifications.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-permissions.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-progress.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-settings.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-subtitles.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-task.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-thread-patch.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-ui.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-presets.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-prompt-text.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-prompts.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-provider-groups.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-run.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-thinking.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-types.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/app-icon-menu.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/builtin-skills.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/constants.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-chat-state.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-chat.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-cookies.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-identity.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-overview-reuse.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-overview.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-source-url.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-transcript.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/live-log.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/mcp.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/media-transform.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/overview-result.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/skill-install.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/source-media-kind.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/subtitle-export.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/transcript-export.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/tts-models.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/auth.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/index.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/ipc.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/mermaid-export.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/player.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/share-card.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/ytdlp-kernel.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/download-file.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/format-preferences.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/native-playable.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/pending-download.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/video-info-metadata.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/video-identity.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/video-localization.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/whats-new.ts",
+      "package": "vidbee-workspace",
+      "classification": "pending-deletion",
+      "reason": "D1: exact immutable aeb83777 executable characterization oracle; retained legacy source, phase-10 retirement with compatibility. Fixture SHA-256 is frozen in README.md.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-complete.test.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/shared-port.test.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
       "executable": true
     },
     {

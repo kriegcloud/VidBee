@@ -5,6 +5,7 @@ import {
   type MermaidExportImage,
   type MermaidExportPayload
 } from '@shared/types/mermaid-export'
+import { BrowserWindow, clipboard, ipcMain, nativeImage } from 'electron'
 import {
   SHARE_CAPTURE_HASH,
   SHARE_CAPTURE_READY_CHANNEL,
@@ -13,8 +14,7 @@ import {
   type ShareCaptureReadyMessage,
   type ShareCaptureRenderMessage,
   type ShareCardPayload
-} from '@shared/types/share-card'
-import { BrowserWindow, clipboard, ipcMain, nativeImage } from 'electron'
+} from '../../compatibility/shared/types/share-card'
 import { scopedLoggers } from '../utils/logger'
 import { splitShareImage } from './share-image-split'
 

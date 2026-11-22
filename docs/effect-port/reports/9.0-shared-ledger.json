@@ -1,0 +1,3336 @@
+{
+  "sourceRevision": "aeb83777",
+  "architectureApproval": "User-carried architect answers 2, 3, 4, 5 in this implementation continuation",
+  "reviewStatus": "Independent implementation review is arranged by the orchestrator; this is not an attestation of that review.",
+  "structuralCount": 188,
+  "structuralSubjects": [
+    {
+      "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
+      "declaration": "AgentArtifact",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7b2caa16b011f3e4b371f513543989f5f1ebb9849fcf76c23f079e0f2be1532a"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentFailure.model.ts",
+      "declaration": "AgentErrorCode",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "deaa524b99a0aa99b343d51109ac4991a20a77580b0150aee90722b1037dce05"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentFailure.model.ts",
+      "declaration": "AgentFailure",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "deaa524b99a0aa99b343d51109ac4991a20a77580b0150aee90722b1037dce05"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "declaration": "AgentPersistScope",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a9ec30a751090f50e58495f47bdbb435a08ba7e5064c003388a238c29d79f9f3"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "declaration": "AgentRouteIdentity",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a9ec30a751090f50e58495f47bdbb435a08ba7e5064c003388a238c29d79f9f3"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "declaration": "AgentEventApplyResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a9ec30a751090f50e58495f47bdbb435a08ba7e5064c003388a238c29d79f9f3"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "declaration": "AgentGapRecovery",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a9ec30a751090f50e58495f47bdbb435a08ba7e5064c003388a238c29d79f9f3"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "declaration": "CatalogMemory",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a9ec30a751090f50e58495f47bdbb435a08ba7e5064c003388a238c29d79f9f3"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentUi.model.ts",
+      "declaration": "AgentUiSpec",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "12a6cc102eef560894f06ba6a53af29faa694c25a762de0ec0b6a8e7f213b517"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentUi.model.ts",
+      "declaration": "AgentUiResponse",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "12a6cc102eef560894f06ba6a53af29faa694c25a762de0ec0b6a8e7f213b517"
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentUi.model.ts",
+      "declaration": "AgentActivity",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "12a6cc102eef560894f06ba6a53af29faa694c25a762de0ec0b6a8e7f213b517"
+    },
+    {
+      "file": "apps/desktop/src/shared/BuiltinSkill.model.ts",
+      "declaration": "BuiltinSkill",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "cd425a55a9eeb0a439d1284db9487decc5d66ba8288c83d2b0949e9b14e5f4fa"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "TextContent",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ThinkingContent",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ImageContent",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ToolCall",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "Usage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "DeferredHandle",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "UserMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "NestedToolCallRecord",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "NestedToolCalls",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ToolResultMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ConstrainedSamplingConfig",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "Tool",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "ToolReference",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "DiagnosticErrorInfo",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "AssistantMessageDiagnostic",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "SdkCustomMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "SystemMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "AssistantMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "declaration": "AgentMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "96d59b3039c84b8f1811c9134ad0e7dfb6a25b544df254e4fd6d74087c241dcf"
+    },
+    {
+      "file": "apps/desktop/src/shared/Tts.model.ts",
+      "declaration": "TtsModelId",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "52b6abec753161911e06526e786e71c59a7f421a04b267d30a80f376c031e625"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentThinkingLevel",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "ProviderThinkingEffortLevel",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "ProviderDefaultThinkingLevel",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentThinkingOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentImageUpload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentImageAttachment",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentRunStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentToolCallStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentApprovalAction",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentApprovalRequest",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentChatMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentContextCheckpoint",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentChatRun",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentThread",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentThreadSummary",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentThreadPatch",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentCatalogNotice",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentRunEvent",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "declaration": "AgentChatInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bf0db2ccdec44408b6bdd914c1d7e432009ebd350293bf969e107dcfe2f81cd1"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-history.ts",
+      "declaration": "AgentHistoryGroupKind",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bda0c516ef05450483671723a10a1c82cceb396cd51711f062aef42356dbfa02"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-history.ts",
+      "declaration": "AgentHistoryGroup",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bda0c516ef05450483671723a10a1c82cceb396cd51711f062aef42356dbfa02"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-markdown.ts",
+      "declaration": "AgentResponsePart",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "c699b1790ac99b732326eddeaf1b2129787989814aa4515fef3eb5e9b9d2926a"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-notifications.ts",
+      "declaration": "AgentNotificationTarget",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "9c7493f59e92537c68cc573295f5a23d4abeb3ba976a48a9c882e7b7fee611df"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-permissions.ts",
+      "declaration": "AgentPermissionMode",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "689e16f0eaeedfa2d9c8282c7ade46150281bd8de65730cc09d3c3c0ebd14c0a"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-settings.ts",
+      "declaration": "AgentSettingsPatch",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "732b709fca454f1012dd882faf1fadb73d72003bf144d49add5295ca2f2959c6"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-settings.ts",
+      "declaration": "AgentTtsModelInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "732b709fca454f1012dd882faf1fadb73d72003bf144d49add5295ca2f2959c6"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-settings.ts",
+      "declaration": "AgentAiSettingsInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "732b709fca454f1012dd882faf1fadb73d72003bf144d49add5295ca2f2959c6"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-subtitles.ts",
+      "declaration": "AgentSubtitleCue",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7c968bb4792d6313f0f67ea6c1569912cd949acf97087ae11a7b5ff87529033c"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-subtitles.ts",
+      "declaration": "AgentSubtitleInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7c968bb4792d6313f0f67ea6c1569912cd949acf97087ae11a7b5ff87529033c"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-task.ts",
+      "declaration": "AgentTaskInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "673e80d3a142c2a651bf0f7166cbda5c6e44c4b1e8f396bf286ededfa1e77118"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-task.ts",
+      "declaration": "AgentTaskParameters",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "673e80d3a142c2a651bf0f7166cbda5c6e44c4b1e8f396bf286ededfa1e77118"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-ui.ts",
+      "declaration": "AgentUiTask",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7c8e2ab61191dbc58c986a10116c31dee0d623df7cd63d7fa3a0a57c9b3be4d0"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-provider-groups.ts",
+      "declaration": "AiProviderGroup",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f0c67784ba7d05d613d4bbfd2da4388706d63fc9c82100a47c9a807a1bbcc95c"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-run.ts",
+      "declaration": "PromptTabIndicator",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "41a8443f4b5a6da0f867b9452d0df2475a6d8ebfd7e396d6b864e64fcb7353db"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-thinking.ts",
+      "declaration": "PromptThinkingStep",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ce8941674566fbdc37a0abffa039b3ed6e6a57aad4acda3f3f98e10304723384"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiProviderPresetId",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiProviderPreset",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiProviderConfig",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiProviderWriteInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPrompt",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPromptWriteInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPromptRunStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPromptErrorCode",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiProviderTestResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPromptRunSnapshot",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiPromptRunInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "CloudModelOption",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "declaration": "AiSettingsSnapshot",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "180e030d41243ccf1b8d6c568b7fb8909be7b29ace054004c35f89ec58ccf46e"
+    },
+    {
+      "file": "apps/desktop/src/shared/app-icon-menu.ts",
+      "declaration": "AppIconMenuCommand",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "e63b44d1fedbe8be9dd7653e500b09332d0cdf1ee1a9327dbcc43beebca25517"
+    },
+    {
+      "file": "apps/desktop/src/shared/app-icon-menu.ts",
+      "declaration": "AppIconMenuState",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "e63b44d1fedbe8be9dd7653e500b09332d0cdf1ee1a9327dbcc43beebca25517"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatSource",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatSession",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatCommand",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatVideo",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "AgentComposerOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatExport",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatFile",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatVideos",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatCatalog",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatState",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "declaration": "ExtensionChatEvent",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1ac99cbc6ec42147443da5a8980f688179594626ffdda3eed91f0219aa670c6f"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "declaration": "ExtensionCookieSourcePreference",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "72a697f2be6dcd9c4acdc780f19fd970a672ad42fba9e8777065b86b62181e8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "declaration": "ExtensionCookieSource",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "72a697f2be6dcd9c4acdc780f19fd970a672ad42fba9e8777065b86b62181e8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "declaration": "ExtensionCookieConnection",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "72a697f2be6dcd9c4acdc780f19fd970a672ad42fba9e8777065b86b62181e8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "declaration": "ExtensionCookieRow",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "72a697f2be6dcd9c4acdc780f19fd970a672ad42fba9e8777065b86b62181e8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
+      "declaration": "OverviewDownloadMatch",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b2c0b09dcf2b62e7b1749f824a218da7c2fb2aebb7b17b6c530b26b7f1854ca4"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
+      "declaration": "ExtensionOverviewTarget",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b2c0b09dcf2b62e7b1749f824a218da7c2fb2aebb7b17b6c530b26b7f1854ca4"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview.ts",
+      "declaration": "ExtensionOverviewInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8e66fc7f06758ec9397a5a3520d24bad0c705fca77e5bb24ab378352ff8be549"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview.ts",
+      "declaration": "ExtensionOverviewSnapshot",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8e66fc7f06758ec9397a5a3520d24bad0c705fca77e5bb24ab378352ff8be549"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview.ts",
+      "declaration": "ExtensionOverviewJob",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8e66fc7f06758ec9397a5a3520d24bad0c705fca77e5bb24ab378352ff8be549"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptErrorCode",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptSegment",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptTrack",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptSnapshot",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "ExtensionTranscriptJob",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "declaration": "CaptionSidecarFormat",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "d8cde79efefacfe3363a8a8f1f2fc02fdc826e25c183292766c2e3c4ef04ef8d"
+    },
+    {
+      "file": "apps/desktop/src/shared/live-log.ts",
+      "declaration": "DownloadLogIpcPayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "4268fdb261c2b29ef192225b83768363d9a36286bb889b6a34900a4faf6d9d7d"
+    },
+    {
+      "file": "apps/desktop/src/shared/mcp.ts",
+      "declaration": "DesktopMcpStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8aeec16ca2ee9797f6caf5cb0906d261aa5f5ba4ad9e7b4070a2c10373102ee0"
+    },
+    {
+      "file": "apps/desktop/src/shared/mcp.ts",
+      "declaration": "DesktopMcpCapability",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8aeec16ca2ee9797f6caf5cb0906d261aa5f5ba4ad9e7b4070a2c10373102ee0"
+    },
+    {
+      "file": "apps/desktop/src/shared/mcp.ts",
+      "declaration": "DesktopMcpCapabilityGroup",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8aeec16ca2ee9797f6caf5cb0906d261aa5f5ba4ad9e7b4070a2c10373102ee0"
+    },
+    {
+      "file": "apps/desktop/src/shared/media-transform.ts",
+      "declaration": "MediaTransformInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8a3bb54b908be5b334846534b5d74718be38ed3ee9f2612b2996fdb7089374b3"
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "declaration": "OverviewChapter",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "354174815e714f1d444f28ad9be8a31a57349a14b461b8229e443f630c841467"
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "declaration": "OverviewQuote",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "354174815e714f1d444f28ad9be8a31a57349a14b461b8229e443f630c841467"
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "declaration": "ParsedOverview",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "354174815e714f1d444f28ad9be8a31a57349a14b461b8229e443f630c841467"
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "declaration": "OverviewPlayhead",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "354174815e714f1d444f28ad9be8a31a57349a14b461b8229e443f630c841467"
+    },
+    {
+      "file": "apps/desktop/src/shared/skill-install.ts",
+      "declaration": "GitHubSkillSource",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "31dc77696bf5b64038cfe903d4cffb91e4914b1ed407c967b357561f14e6e050"
+    },
+    {
+      "file": "apps/desktop/src/shared/skill-install.ts",
+      "declaration": "GitHubSkillInstallInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "31dc77696bf5b64038cfe903d4cffb91e4914b1ed407c967b357561f14e6e050"
+    },
+    {
+      "file": "apps/desktop/src/shared/source-media-kind.ts",
+      "declaration": "SourceMediaKind",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "6c5f1f3f632f2c4159d84bfc627aed7043747c0d9545c85c5e4d8af145bba915"
+    },
+    {
+      "file": "apps/desktop/src/shared/source-media-kind.ts",
+      "declaration": "SourceMediaFailure",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "6c5f1f3f632f2c4159d84bfc627aed7043747c0d9545c85c5e4d8af145bba915"
+    },
+    {
+      "file": "apps/desktop/src/shared/subtitle-export.ts",
+      "declaration": "SubtitleCue",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "352f8900da9acf39b5d06d6ca0d7a0357caa261e87a3ecda49faa7199ba7080a"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportStyle",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportFormat",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptVideoEncode",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportGrouping",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportFileExtension",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportSegment",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "declaration": "TranscriptExportUnit",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "b749bc11f6ce4627ba570c5be14242ce2a6e2ec4cd8f05a369625d6d9725f630"
+    },
+    {
+      "file": "apps/desktop/src/shared/tts-models.ts",
+      "declaration": "TtsFamily",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1be110855ed6d6bf7b231a5b9d0f7db4f331af5c82a14159feae4c9ceb2c2801"
+    },
+    {
+      "file": "apps/desktop/src/shared/tts-models.ts",
+      "declaration": "TtsModelDefinition",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "1be110855ed6d6bf7b231a5b9d0f7db4f331af5c82a14159feae4c9ceb2c2801"
+    },
+    {
+      "file": "apps/desktop/src/shared/video-localization.ts",
+      "declaration": "SubtitleExportInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "3548954c678d4171ef7149e4b07fe46aedfe1118838d9b5d722a3a9d13b0cd7c"
+    },
+    {
+      "file": "apps/desktop/src/shared/video-localization.ts",
+      "declaration": "DubbingInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "3548954c678d4171ef7149e4b07fe46aedfe1118838d9b5d722a3a9d13b0cd7c"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "VideoFormat",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "VideoInfo",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "VideoInfoCommandResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "DownloadProgress",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "DownloadStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "DownloadItem",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "SubscriptionFeedItem",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "DownloadHistoryItem",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "DownloadOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "PlaylistEntry",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "PlaylistInfo",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "PlaylistDownloadOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "PlaylistDownloadEntry",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "PlaylistDownloadResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "SubscriptionRule",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "SubscriptionResolvedFeed",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "SubscriptionCreatePayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "SubscriptionUpdatePayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "OneClickQualityPreset",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "declaration": "AppSettings",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7145413645e605704bd3ee1545e1147f4d9a35f955f50a79b742ffdf6f27674a"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopPaginatedResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAuthUser",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditSourceUsage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditUsage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopInvitationOverview",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopInvitedUser",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopGiftedCreditRecord",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopCloudCacheStats",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiReservation",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditHistoryCursor",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditReceipt",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditHistory",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAiCreditSnapshot",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "declaration": "DesktopAccountOverview",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f426a2b8a3de00f66c6dddd9556060d79e451e13690d90c2e5b6cd641047f534"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/mermaid-export.ts",
+      "declaration": "MermaidExportPayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f43ceb7ae20415e2f4e41be1de05be389246c91cf1372aea9896437504b5bd9c"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/mermaid-export.ts",
+      "declaration": "MermaidExportImage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "f43ceb7ae20415e2f4e41be1de05be389246c91cf1372aea9896437504b5bd9c"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/player.ts",
+      "declaration": "PlayerAttachInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7eb07a1d56155796351b67171cf777e1ed61cd21f905814c82405582534f6951"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/player.ts",
+      "declaration": "PlayerAttachResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "7eb07a1d56155796351b67171cf777e1ed61cd21f905814c82405582534f6951"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareCaptionQuote",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "SharePromptCardPayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareCaptionCardPayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareCardPayload",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareBylineInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "SharePromptUserInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareCaptureRenderMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareImageLayout",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "declaration": "ShareCaptureReadyMessage",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "ff38f51f90b19fab509ccf2b869c6c9667226ff00d61192adde0d0bd254266d1"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+      "declaration": "YtDlpKernelState",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a1fcd1a3fd0807bf40df64ecea3c1c054d23ce11e9711aecbab3370021501d9e"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+      "declaration": "YtDlpKernelPreparationStep",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a1fcd1a3fd0807bf40df64ecea3c1c054d23ce11e9711aecbab3370021501d9e"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+      "declaration": "YtDlpKernelStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "a1fcd1a3fd0807bf40df64ecea3c1c054d23ce11e9711aecbab3370021501d9e"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/download-file.ts",
+      "declaration": "FileNameOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "c805c9ae90531236c66de97488b51bcffc74ddae01ae7063aa82b2a73c1de690"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/download-file.ts",
+      "declaration": "FilePathOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "c805c9ae90531236c66de97488b51bcffc74ddae01ae7063aa82b2a73c1de690"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/pending-download.ts",
+      "declaration": "PendingDownloadInput",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "8fd6c0e2e670b2f9e0aacc4e1b207d5e4e7a9a1fe1daae30efc53e236eb4031c"
+    }
+  ],
+  "standardsAccounting": {
+    "structuralRule": "R11",
+    "currentPlainStructRecognizer": "The current LawRules.ts R11 implementation checks model classes for missing brand; it has no plain Struct finding. No invented mechanical finding or allowlist admission is asserted.",
+    "structuralObservations": 0,
+    "d5Rule": "If a later integrated checker flags an exact accepted structural subject, admit that exact predicate as parity-frozen with maximum 1 and the linked construction proof. Never add an allowlist or widen a file exclusion."
+  },
+  "compatibility": [
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-errors.ts",
+      "exports": [
+        "AgentErrorCode",
+        "AgentFailure",
+        "encodeAgentError",
+        "isRetryableAgentError",
+        "parseAgentError",
+        "toSdkRetryMessage",
+        "AgentUserError",
+        "agentFailureFromCloudReason"
+      ],
+      "digest": "6f1c1e4e6027745d0d34a7e1aee13c0c8a826a8c8280049e77aaf6aa39153ec0",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-chat-runner.ts",
+        "apps/desktop/src/main/lib/agent-cloud-budget.ts",
+        "apps/desktop/src/main/lib/agent-cloud-request.ts",
+        "apps/desktop/src/main/lib/agent-durable-session.ts",
+        "apps/desktop/src/main/lib/agent-durable-tasks.ts",
+        "apps/desktop/src/main/lib/agent-progress.ts",
+        "apps/desktop/src/main/lib/agent-run-machine.ts",
+        "apps/desktop/src/main/lib/agent-run-timers.ts",
+        "apps/desktop/src/main/lib/agent-session.ts",
+        "apps/desktop/src/main/lib/cloud-capabilities.ts"
+      ],
+      "originalSignatures": [
+        "function agentFailureFromCloudReason(envelope: {\n  reason?: string | null\n  retryable?: boolean | null\n  message?: string | null\n}): AgentFailure | undefined",
+        "function encodeAgentError(failure: AgentFailure): string",
+        "function isRetryableAgentError(code: AgentErrorCode): boolean",
+        "function parseAgentError(text: string | undefined): AgentFailure",
+        "function toSdkRetryMessage(failure: AgentFailure): string | undefined",
+        "class AgentUserError extends Error (original constructor retained)"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-history.ts",
+      "exports": [
+        "AgentConversationTitleInput",
+        "AgentHistoryCalendar",
+        "AgentHistoryDisplayTitleInput",
+        "AgentHistoryGroup",
+        "AgentHistoryGroupKind",
+        "agentThreadIsRunning",
+        "agentThreadLatestRun",
+        "agentThreadNeedsApproval",
+        "agentThreadUpdatedAt",
+        "agentThreadUserPreview",
+        "isUuid",
+        "sanitizeAgentConversationTitle",
+        "agentConversationTitle",
+        "agentHistoryDisplayTitle",
+        "startOfLocalDay",
+        "groupAgentHistory"
+      ],
+      "digest": "73b06f71d74f18aea4603203c714cbb907ac2ec5397998b14931d027df69fd1b",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-chat-runner.ts",
+        "apps/desktop/src/main/lib/agent-chat-store.ts",
+        "apps/desktop/src/main/lib/agent-directory.ts",
+        "apps/desktop/src/main/lib/agent-run-event.ts",
+        "apps/desktop/src/main/lib/agent-tools.ts",
+        "apps/desktop/src/main/lib/extension-chat-actions.ts",
+        "apps/desktop/src/main/lib/extension-chat.ts",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptHistory.tsx"
+      ],
+      "originalSignatures": [
+        "function isUuid(value: string): boolean",
+        "function sanitizeAgentConversationTitle(value: string): string",
+        "function startOfLocalDay(ms: number): number",
+        "function agentThreadUserPreview(thread: AgentThread): string",
+        "function agentConversationTitle(thread: AgentThread, videoTitle: string): string",
+        "function agentThreadIsRunning(thread: AgentThread): boolean",
+        "function agentThreadNeedsApproval(thread: AgentThread): boolean",
+        "function agentThreadLatestRun(thread: AgentThread): AgentChatRun | undefined",
+        "function agentThreadUpdatedAt(thread: AgentThread): number",
+        "function groupAgentHistory<T extends { id: string; updatedAt: number }>(\n  items: T[],\n  now: number,\n  locale: string\n): AgentHistoryGroup<T>[]",
+        "function agentHistoryDisplayTitle(\n  item: AgentThreadSummary,\n  untitled: string,\n  promptLabel: string\n): string"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-markdown.ts",
+      "exports": [
+        "AGENT_MARKDOWN_MEDIA",
+        "AgentResponsePart",
+        "ARTIFACT_REFERENCE",
+        "ArtifactIdFromUrlInput",
+        "ArtifactsForMessageInput",
+        "artifactImageMime",
+        "BindArticleImageArtifactsInput",
+        "CitedArtifactIdsInput",
+        "ClockFromImageInput",
+        "EmbedArtifactDataUrisInput",
+        "ImageReader",
+        "MatchArtifactByClockInput",
+        "SplitAgentResponseMediaInput",
+        "UnboundArticleImageTimesInput",
+        "artifactIdFromUrl",
+        "clockFromImage",
+        "matchArtifactByClock",
+        "bindArticleImageArtifacts",
+        "unboundArticleImageTimes",
+        "citedArtifactIds",
+        "embedArtifactDataUris",
+        "artifactsForMessage",
+        "splitAgentResponseMedia",
+        "embedArtifactImages"
+      ],
+      "digest": "3877ba57b4fdbf76db0fb76d9edb2089e357b8537c2d4745de543bccd093693d",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-article-images.ts",
+        "apps/desktop/src/main/lib/agent-chat-runner.ts",
+        "apps/desktop/src/main/lib/extension-chat-actions.ts",
+        "apps/desktop/src/main/lib/markdown-export.ts",
+        "apps/desktop/src/main/mcp/export-tools.ts",
+        "apps/desktop/src/renderer/src/components/agent/AgentChat.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/AgentChatMessageView.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/AgentResponseContent.tsx"
+      ],
+      "originalSignatures": [
+        "function artifactIdFromUrl(\n  url: string,\n  artifacts: AgentArtifact[] = []\n): string | undefined",
+        "function clockFromImage(alt: string, url: string): number | null",
+        "function matchArtifactByClock(\n  artifacts: AgentArtifact[],\n  used: Set<string>,\n  time: number | null,\n  runId?: string,\n  returnedIds?: ReadonlySet<string>\n): AgentArtifact | undefined",
+        "function bindArticleImageArtifacts(\n  text: string,\n  artifacts: AgentArtifact[],\n  runId: string,\n  returnedIds?: ReadonlySet<string>\n): string",
+        "function unboundArticleImageTimes(\n  text: string,\n  artifacts: AgentArtifact[],\n  runId?: string,\n  returnedIds?: ReadonlySet<string>\n): number[]",
+        "function citedArtifactIds(text: string, artifacts: AgentArtifact[] = []): string[]",
+        "function artifactImageMime(artifact: AgentArtifact): string",
+        "function embedArtifactDataUris(\n  markdown: string,\n  dataUrisById: ReadonlyMap<string, string>,\n  artifacts: AgentArtifact[] = []\n): string",
+        "async function embedArtifactImages(\n  markdown: string,\n  artifacts: AgentArtifact[],\n  readImage: (artifact: AgentArtifact) => Promise<string>\n): Promise<string>",
+        "function artifactsForMessage(\n  artifacts: AgentArtifact[],\n  text: string,\n  branchRunIds: Iterable<string | null | undefined>\n): AgentArtifact[]",
+        "function splitAgentResponseMedia(\n  text: string,\n  artifacts: AgentArtifact[],\n  ownRunId?: string,\n  includeUncited = true\n): AgentResponsePart[]"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-settings.ts",
+      "exports": [
+        "agentSettingsSchema",
+        "agentTtsModelSchema",
+        "agentAiSettingsSchema"
+      ],
+      "digest": "ee289b41311c549cb7f6dbdd567d9d19eca33afc80fc3b5f0c843875463c686a",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-capability-host.ts",
+        "apps/desktop/src/main/lib/agent-capability-tools.ts",
+        "apps/desktop/src/main/mcp/settings-tools.ts",
+        "apps/desktop/src/main/mcp/task-tools.ts"
+      ],
+      "originalSignatures": [],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-subtitles.ts",
+      "exports": [
+        "AGENT_SUBTITLE_MODEL_VERSION",
+        "MAX_AGENT_SUBTITLE_CUES",
+        "agentSubtitleInputSchema",
+        "AgentSubtitleInput"
+      ],
+      "digest": "99e322a6ce7763590964283aa62a76ca99ea09f25ece539edda66f089465a9c7",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-run-context.ts",
+        "apps/desktop/src/main/lib/agent-subtitles.ts",
+        "apps/desktop/src/main/lib/agent-tools.ts",
+        "apps/desktop/src/main/lib/cloud-subtitle-evidence.ts"
+      ],
+      "originalSignatures": [],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-task.ts",
+      "exports": [
+        "agentTaskSchema",
+        "agentTaskParameters"
+      ],
+      "digest": "6d5ad53c3593cfcd7a66c3b66926c309324ba11a32c817ae9dde9f89361feda7",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-management-host.ts",
+        "apps/desktop/src/main/lib/agent-management-tools.ts",
+        "apps/desktop/src/main/mcp/task-tools.ts"
+      ],
+      "originalSignatures": [],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-thread-patch.ts",
+      "exports": [
+        "AcceptAgentThreadInput",
+        "AgentEventApplyResult",
+        "AgentEventMatchesInput",
+        "AgentGapRecovery",
+        "AgentPersistScope",
+        "AgentRouteIdentity",
+        "ApplyAgentRunEventInput",
+        "ApplyAgentThreadPatchInput",
+        "agentEventRoute",
+        "CatalogMemoryEntry",
+        "createAgentGapRecovery",
+        "durableAgentEvent",
+        "MergeCatalogListInput",
+        "ObserveAgentSeqInput",
+        "ProjectAgentPatchInput",
+        "ProjectAgentRunInput",
+        "ProjectAgentThreadInput",
+        "projectAgentArtifact",
+        "projectAgentImage",
+        "RememberCatalogInput",
+        "RequestAgentRecoveryInput",
+        "resetAgentRecovery",
+        "SettleAgentRecoveryInput",
+        "selectedAgentRunView",
+        "observeAgentSeq",
+        "requestAgentRecovery",
+        "settleAgentRecovery",
+        "projectAgentRun",
+        "projectAgentThread",
+        "projectAgentPatch",
+        "agentEventMatches",
+        "applyAgentThreadPatch",
+        "acceptAgentThread",
+        "applyAgentRunEvent",
+        "rememberCatalog",
+        "mergeCatalogList"
+      ],
+      "digest": "d6f14b1f62e3134dc82cb5ed753e83f179def802e135924e187c6ecc744c3035",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-chat-store.ts",
+        "apps/desktop/src/main/lib/agent-run-event.ts",
+        "apps/desktop/src/main/lib/extension-chat.ts",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptHistory.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptSidePanel.tsx",
+        "apps/desktop/src/renderer/src/hooks/use-agent-chat.ts"
+      ],
+      "originalSignatures": [
+        "function createAgentGapRecovery(): AgentGapRecovery",
+        "function observeAgentSeq(recovery: AgentGapRecovery, seq: number): AgentGapRecovery",
+        "function requestAgentRecovery(\n  recovery: AgentGapRecovery,\n  reason: 'gap' | 'refresh' = 'gap'\n): { recovery: AgentGapRecovery; action: 'start' | 'busy' | 'wait' }",
+        "function settleAgentRecovery(\n  recovery: AgentGapRecovery,\n  appliedSeq: number\n): { recovery: AgentGapRecovery; action: 'settled' | 'follow-up' | 'wait' }",
+        "function resetAgentRecovery(recovery: AgentGapRecovery): AgentGapRecovery",
+        "function projectAgentArtifact(artifact: AgentArtifact): AgentArtifact",
+        "function projectAgentImage(image: AgentImageAttachment): AgentImageAttachment",
+        "function projectAgentRun(run: AgentChatRun, activity: AgentActivity[]): AgentChatRun",
+        "function projectAgentThread(\n  thread: AgentThread,\n  activityFor: (run: AgentChatRun) => AgentActivity[]\n): AgentThread",
+        "function projectAgentPatch(\n  thread: AgentThread,\n  scope: AgentPersistScope,\n  activityFor: (run: AgentChatRun) => AgentActivity[]\n): AgentThreadPatch",
+        "function durableAgentEvent(\n  event: AgentRunEvent\n): Pick<AgentRunEvent, 'threadId' | 'runId' | 'messageId' | 'seq' | 'type' | 'createdAt'>",
+        "function agentEventRoute(\n  event: AgentRunEvent\n): { downloadId: string; promptId: string; threadId: string } | null",
+        "function agentEventMatches(event: AgentRunEvent, identity: AgentRouteIdentity): boolean",
+        "function applyAgentThreadPatch(\n  current: AgentThread,\n  patch: AgentThreadPatch,\n  seq: number\n): AgentThread",
+        "function acceptAgentThread(current: AgentThread | null, incoming: AgentThread): AgentThread",
+        "function applyAgentRunEvent(\n  current: AgentThread | null,\n  event: AgentRunEvent,\n  identity: AgentRouteIdentity\n): AgentEventApplyResult",
+        "function selectedAgentRunView(thread: AgentThread): {\n  status: AgentRunStatus | 'idle'\n  updatedAt: number\n}",
+        "function rememberCatalog(\n  memory: ReadonlyMap<string, CatalogMemoryEntry>,\n  notice: AgentCatalogNotice\n): { memory: Map<string, CatalogMemoryEntry>; applied: boolean }",
+        "function mergeCatalogList(\n  rows: readonly AgentThreadSummary[],\n  memory: ReadonlyMap<string, CatalogMemoryEntry>,\n  requestedRevision: number,\n  options?: { downloadId?: string; historyOnly?: boolean }\n): AgentThreadSummary[]"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-presets.ts",
+      "exports": [
+        "AI_PROVIDER_PRESETS",
+        "aiProviderNeedsApiKey",
+        "aiProviderRequiresBaseUrl",
+        "CLIPROXY_BLOCKED_MODEL_ERROR",
+        "getAiProviderPreset",
+        "IsAiProviderModelBlockedInput",
+        "ResolveAiProviderBaseUrlInput",
+        "resolveAiProviderBaseUrl",
+        "isAiProviderModelBlocked"
+      ],
+      "digest": "8a4e21f85a5018a081c68510d1e3165f55bf52a755020d54c15915d0a9176189",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-capability-host.ts",
+        "apps/desktop/src/main/lib/ai-model.ts",
+        "apps/desktop/src/main/lib/ai-prompt-runner.ts",
+        "apps/desktop/src/main/lib/ai-provider-test.ts",
+        "apps/desktop/src/main/lib/ai-remote-models.ts",
+        "apps/desktop/src/main/lib/ai-store.ts",
+        "apps/desktop/src/renderer/src/components/settings/AiProviderDialog.tsx",
+        "apps/desktop/src/renderer/src/components/settings/AiProvidersPanel.tsx",
+        "apps/desktop/test/cliproxy.test.ts"
+      ],
+      "originalSignatures": [
+        "getAiProviderPreset (id: string): AiProviderPreset | undefined =>",
+        "resolveAiProviderBaseUrl (\n  presetId: AiProviderPresetId,\n  userBaseUrl?: string\n): string =>",
+        "aiProviderRequiresBaseUrl (presetId: AiProviderPresetId): boolean =>",
+        "aiProviderNeedsApiKey (presetId: AiProviderPresetId): boolean =>",
+        "isAiProviderModelBlocked (presetId: AiProviderPresetId, modelId: string): boolean =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-prompts.ts",
+      "exports": [
+        "AgentChatPromptInput",
+        "AI_CHAT_PROMPT_ID",
+        "AI_OVERVIEW_PROMPT_ID",
+        "AI_PROMPT_PRESETS",
+        "AI_PROMPT_UI_LANGUAGE_TOKEN",
+        "AiPromptDescriptionInput",
+        "AiPromptLabelInput",
+        "aiPromptUiLanguageName",
+        "CanonicalizeAiPromptContentInput",
+        "isAiPromptPresetName",
+        "isTranscriptSkillSidebarEnabled",
+        "isTranscriptSkillVisible",
+        "MergeDefaultAiPromptsInput",
+        "partitionTranscriptPromptTabs",
+        "ResolveAiPromptContentInput",
+        "agentChatPrompt",
+        "resolveAiPromptContent",
+        "canonicalizeAiPromptContent",
+        "aiPromptLabel",
+        "aiPromptDescription",
+        "mergeDefaultAiPrompts",
+        "createDefaultAiPrompts"
+      ],
+      "digest": "ec278c17ad5a415d19441e1bd7b1a46998b022ad96458b074561ffad664599ce",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-chat-runner.ts",
+        "apps/desktop/src/main/lib/agent-run-context.ts",
+        "apps/desktop/src/main/lib/agent-skill-migration.ts",
+        "apps/desktop/src/main/lib/agent-skills.ts",
+        "apps/desktop/src/main/lib/ai-prompt-runner.ts",
+        "apps/desktop/src/main/lib/ai-skill-auto-run.ts",
+        "apps/desktop/src/main/lib/ai-store.ts",
+        "apps/desktop/src/main/lib/extension-chat-actions.ts",
+        "apps/desktop/src/main/lib/extension-chat.ts",
+        "apps/desktop/src/main/lib/extension-overview.ts",
+        "apps/desktop/src/main/mcp/export-tools.ts",
+        "apps/desktop/src/renderer/src/components/agent/AgentChat.tsx",
+        "apps/desktop/src/renderer/src/components/download/AgentTaskIndicator.tsx",
+        "apps/desktop/src/renderer/src/components/download/DownloadTroubleshootButton.tsx",
+        "apps/desktop/src/renderer/src/components/settings/AiPromptsPanel.tsx",
+        "apps/desktop/src/renderer/src/components/settings/SkillDetailsDialog.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptSidePanel.tsx",
+        "apps/desktop/src/renderer/src/lib/ai-prompt-label.ts",
+        "apps/desktop/src/renderer/src/pages/Chat.tsx"
+      ],
+      "originalSignatures": [
+        "agentChatPrompt (now: number = Date.now(), hasSource = true): AiPrompt => (",
+        "aiPromptUiLanguageName (languageCode: string): string =>",
+        "resolveAiPromptContent (content: string, languageCode: string): string =>",
+        "canonicalizeAiPromptContent (promptId: string, content: string): string =>",
+        "isAiPromptPresetName (name: string): boolean =>",
+        "function aiPromptLabel(\n  prompt: Pick<AiPrompt, 'name' | 'isPreset' | 'description'>,\n  translate?: (key: string) => string\n): string",
+        "function aiPromptDescription(\n  prompt: Pick<AiPrompt, 'name' | 'isPreset' | 'description'>,\n  translate?: (key: string) => string\n): string",
+        "createDefaultAiPrompts (now: number = Date.now()): AiPrompt[] =>",
+        "function isTranscriptSkillSidebarEnabled(prompt: AiPrompt): boolean",
+        "function isTranscriptSkillVisible(prompt: AiPrompt): boolean",
+        "partitionTranscriptPromptTabs (\n  prompts: readonly AiPrompt[]\n): { overview: AiPrompt | null; rest: AiPrompt[] } =>",
+        "mergeDefaultAiPrompts (\n  existing: AiPrompt[],\n  now: number = Date.now()\n): AiPrompt[] =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/remaining-observe.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-run.ts",
+      "exports": [
+        "AI_PROMPT_RECOVERY_DELAYS_MS",
+        "aiPromptErrorNeedsProviderSettings",
+        "ClassifyAiPromptErrorInput",
+        "FormatAiPromptErrorInput",
+        "flattenErrorMessage",
+        "IdlePromptRunSnapshotInput",
+        "isEphemeralPromptRunDownloadId",
+        "isIncompleteAiStreamError",
+        "isRecoverableAiFailure",
+        "isRecoverableAiPromptError",
+        "isTerminalPromptRunStatus",
+        "PromptTabIndicator",
+        "PromptTabIndicatorInput",
+        "idlePromptRunSnapshot",
+        "promptTabIndicator",
+        "formatAiPromptError",
+        "classifyAiPromptError"
+      ],
+      "digest": "af083429706684ed55347d1ffa0859290e463c31bba3f2dff7f7b603636da828",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-compaction.ts",
+        "apps/desktop/src/main/lib/ai-prompt-runner.ts",
+        "apps/desktop/src/main/lib/ai-prompt-store.ts",
+        "apps/desktop/src/main/lib/ai-provider-test.ts",
+        "apps/desktop/src/renderer/src/components/transcript/AgentChatRunFeedback.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptGuidance.tsx",
+        "apps/desktop/src/renderer/src/hooks/use-prompt-run.ts"
+      ],
+      "originalSignatures": [
+        "idlePromptRunSnapshot (\n  downloadId: string,\n  promptId: string,\n  now: number = Date.now()\n): AiPromptRunSnapshot => (",
+        "isEphemeralPromptRunDownloadId (downloadId: string): boolean =>",
+        "isTerminalPromptRunStatus (status: AiPromptRunStatus): boolean =>",
+        "promptTabIndicator (\n  status: AiPromptRunStatus,\n  viewed = false\n): PromptTabIndicator | null =>",
+        "flattenErrorMessage (error: unknown): string =>",
+        "formatAiPromptError (message: string, viaCloud = false): string =>",
+        "isIncompleteAiStreamError (message: string): boolean =>",
+        "isRecoverableAiFailure (failure: {\n  reason?: string | null\n  retryable?: boolean | null\n  message?: string | null\n}): boolean =>",
+        "isRecoverableAiPromptError (message: string): boolean =>",
+        "classifyAiPromptError (\n  message: string | null | undefined,\n  emptyText = false\n): AiPromptErrorCode =>",
+        "aiPromptErrorNeedsProviderSettings (code: AiPromptErrorCode | null): boolean =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/remaining-observe.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-chat-state.ts",
+      "exports": [
+        "applyExtensionChatEvent"
+      ],
+      "digest": "e2f4798b4165e9c653bb39433bd30902fe60e9b535b52540fad169c94502e9e9",
+      "consumers": [],
+      "originalSignatures": [
+        "function applyExtensionChatEvent(\n  current: ExtensionChatState,\n  incoming: ExtensionChatEvent\n): { state: ExtensionChatState; gap: boolean }"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-overview-reuse.ts",
+      "exports": [
+        "ExtensionOverviewTarget",
+        "isReusableOverviewSnapshot",
+        "OverviewDownloadMatch",
+        "OverviewSourceLookup",
+        "resolveExtensionOverviewTarget",
+        "snapshotFromOverviewThread",
+        "findDownloadIdForSourceUrl"
+      ],
+      "digest": "a1c7bcf547a7a87c99ed3447bccdf32e72afadfab0e923b17d86251589cb599a",
+      "consumers": [
+        "apps/desktop/src/main/lib/extension-overview.ts"
+      ],
+      "originalSignatures": [
+        "function isReusableOverviewSnapshot(snapshot: AiPromptRunSnapshot): boolean",
+        "function snapshotFromOverviewThread(thread: AgentThread): AiPromptRunSnapshot | null",
+        "function findDownloadIdForSourceUrl(\n  sourceUrl: string,\n  tasks: readonly OverviewDownloadMatch[],\n  hasReusableOverview: (downloadId: string) => boolean = () => false\n): string | null",
+        "function resolveExtensionOverviewTarget(input: {\n  forceRegenerate: boolean\n  sourceUrl: string\n  ephemeralDownloadId: string\n  tasks: readonly OverviewDownloadMatch[]\n  overviewFor: (downloadId: string) => AiPromptRunSnapshot | null\n}): ExtensionOverviewTarget"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-transcript.ts",
+      "exports": [
+        "CaptionSidecarFormat",
+        "captionCuesFromPayload",
+        "classifyCaptionExtractError",
+        "ExtensionTranscriptErrorCode",
+        "ExtensionTranscriptInput",
+        "ExtensionTranscriptJob",
+        "ExtensionTranscriptSegment",
+        "ExtensionTranscriptSnapshot",
+        "ExtensionTranscriptStatus",
+        "ExtensionTranscriptTrack",
+        "parseCaptionSidecarName",
+        "pickExtensionCaptionTrack"
+      ],
+      "digest": "b56ce1c21b74ebe7362b45fb33e771343406391e36d959924fb8a4c8efc9c1a3",
+      "consumers": [
+        "apps/desktop/src/main/lib/extension-transcript.ts",
+        "apps/desktop/src/main/lib/remote-captions.ts"
+      ],
+      "originalSignatures": [
+        "function parseCaptionSidecarName(\n  fileName: string\n): { auto: boolean; format: CaptionSidecarFormat; language: string } | null",
+        "function captionCuesFromPayload(\n  text: string,\n  format: CaptionSidecarFormat\n): Array<{ endMs: number; startMs: number; text: string }>",
+        "function pickExtensionCaptionTrack<\n  T extends { auto: boolean; id: string; language: string }\n>(tracks: T[], requested?: string): T | undefined",
+        "function classifyCaptionExtractError(stderr: string): ExtensionTranscriptErrorCode"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/live-log.ts",
+      "exports": [
+        "AppendCappedLogInput",
+        "DownloadLogIpcPayload",
+        "LIVE_LOG_CHAR_CAP",
+        "appendCappedLog"
+      ],
+      "digest": "b85c2015212f60749a5e7a0d50ae0f3623f4910ce8d0700187ca63aa11f77b06",
+      "consumers": [
+        "apps/desktop/src/main/lib/download-facade.ts",
+        "apps/desktop/src/preload/index.d.ts",
+        "apps/desktop/src/renderer/src/hooks/use-download-events.ts"
+      ],
+      "originalSignatures": [
+        "function appendCappedLog(\n  current: string,\n  chunk: string,\n  cap: number = LIVE_LOG_CHAR_CAP\n): string"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/media-transform.ts",
+      "exports": [
+        "mediaTransformSchema",
+        "MediaTransformInput",
+        "buildMediaTransformArgs"
+      ],
+      "digest": "177e0834518fe86ae5c83a19d4bad34650c5ec36679d50ff8e269310d4ae5c20",
+      "consumers": [
+        "apps/desktop/src/compatibility/shared/agent-task.ts",
+        "apps/desktop/src/main/lib/agent-capability-host.ts",
+        "apps/desktop/src/main/lib/media-transform-executor.ts"
+      ],
+      "originalSignatures": [
+        "function buildMediaTransformArgs(\n  input: MediaTransformInput,\n  source: string,\n  output: string\n): string[]"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/overview-result.ts",
+      "exports": [
+        "hasOverviewStructure",
+        "OverviewChapter",
+        "OverviewPlayhead",
+        "OverviewPlayheadInput",
+        "OverviewQuote",
+        "ParsedOverview",
+        "parseOverviewMarkdown",
+        "overviewPlayhead"
+      ],
+      "digest": "e050325f38dc5253b1bcd79b6a0241265458fea2e8e7ac9346bb991f0b18cd60",
+      "consumers": [
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptOverviewResult.tsx"
+      ],
+      "originalSignatures": [
+        "hasOverviewStructure (parsed: ParsedOverview): boolean =>",
+        "overviewPlayhead (\n  chapters: readonly OverviewChapter[],\n  currentSeconds: number,\n  durationSeconds = 0\n): OverviewPlayhead =>",
+        "parseOverviewMarkdown (markdown: string): ParsedOverview =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/source-media-kind.ts",
+      "exports": [
+        "SourceMediaKind",
+        "sourceMediaKind",
+        "agentUnusableVideoError"
+      ],
+      "digest": "e76fd5c0d3541ae5dee6fa34a4bd5cef4b4ba688ebb48dfb40a32b36d27e7a64",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-media.ts",
+        "apps/desktop/src/renderer/src/components/download/download-contents.ts",
+        "apps/desktop/src/renderer/src/lib/transcript-playback-source.ts"
+      ],
+      "originalSignatures": [
+        "function sourceMediaKind(input: {\n  type?: string | null\n  filePath?: string | null\n  savedFileName?: string | null\n  url?: string | null\n}): SourceMediaKind",
+        "function agentUnusableVideoError(error: unknown): Error"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/transcript-export.ts",
+      "exports": [
+        "BuildExportUnitsInput",
+        "BuildTranscriptExportFileNameInput",
+        "BuildTranscriptExportInput",
+        "BuildVideoSubtitleExportFileNameInput",
+        "buildTranscriptExportText",
+        "formatExportClock",
+        "TranscriptExportFileExtension",
+        "TranscriptExportFormat",
+        "TranscriptExportGrouping",
+        "TranscriptExportSegment",
+        "TranscriptExportStyle",
+        "TranscriptExportUnit",
+        "TranscriptVideoEncode",
+        "videoEncodeExtension",
+        "buildExportUnits",
+        "buildTranscriptExportFileName",
+        "buildVideoSubtitleExportFileName"
+      ],
+      "digest": "f22da1cf5872a4a3a5144301730e56a34749a1d43a277f72bfdb6544f9acc1ec",
+      "consumers": [
+        "apps/desktop/src/main/mcp/transcript-tools.ts",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptExportDialog.tsx",
+        "apps/desktop/src/renderer/src/lib/transcript-vtt.ts"
+      ],
+      "originalSignatures": [
+        "formatExportClock (ms: number): string =>",
+        "buildExportUnits (\n  segments: TranscriptExportSegment[],\n  grouping: TranscriptExportGrouping\n): TranscriptExportUnit[] =>",
+        "buildTranscriptExportText (input: BuildTranscriptExportInput): string =>",
+        "videoEncodeExtension (mode: TranscriptVideoEncode): 'mkv' | 'mp4' =>",
+        "buildTranscriptExportFileName (\n  title: string,\n  format: TranscriptExportFileExtension = 'txt',\n  viaVidBee = false\n): string =>",
+        "buildVideoSubtitleExportFileName (\n  title: string,\n  mode: TranscriptVideoEncode\n): string =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/tts-models.ts",
+      "exports": [
+        "TtsFamily",
+        "TtsModelDefinition",
+        "TtsModelId",
+        "DEFAULT_TTS_MODEL_ID",
+        "parseTtsModelId",
+        "TTS_FAMILIES",
+        "ttsModelFamily",
+        "ttsModelIdSchema",
+        "getTtsModel",
+        "resolveTtsSpeaker"
+      ],
+      "digest": "6673ee6c31ffbe214f248a19d5abfce4d10d571ab0675e884799645ab03108ad",
+      "consumers": [
+        "apps/desktop/src/compatibility/shared/agent-settings.ts",
+        "apps/desktop/src/compatibility/shared/video-localization.ts",
+        "apps/desktop/src/main/lib/local-speech-catalog.ts",
+        "apps/desktop/src/main/lib/local-speech-config.ts",
+        "apps/desktop/src/main/lib/local-speech-runtime.ts",
+        "apps/desktop/src/main/lib/local-speech-worker.ts",
+        "apps/desktop/src/main/lib/video-dubbing.ts",
+        "apps/desktop/src/main/settings.ts"
+      ],
+      "originalSignatures": [
+        "function ttsModelFamily(id: string): TtsFamily | null",
+        "function getTtsModel(id: unknown): TtsModelDefinition",
+        "function parseTtsModelId(value: unknown): TtsModelId",
+        "function resolveTtsSpeaker(\n  modelOrId: TtsModelDefinition | TtsModelId,\n  language: string,\n  voice?: number\n)"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/video-localization.ts",
+      "exports": [
+        "subtitleExportInputSchema",
+        "dubbingInputSchema",
+        "SubtitleExportInput",
+        "DubbingInput"
+      ],
+      "digest": "b1eb352702c8cf7fc5659bae1c0865d38b46c3279924df296859ecb70b03eeaa",
+      "consumers": [
+        "apps/desktop/src/main/lib/agent-tools.ts",
+        "apps/desktop/src/main/lib/dubbing-text.ts",
+        "apps/desktop/src/main/lib/video-dubbing.ts",
+        "apps/desktop/src/main/lib/video-localization.ts"
+      ],
+      "originalSignatures": [],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/types/share-card.ts",
+      "exports": [
+        "isShareCaptureHash",
+        "SHARE_CAPTURE_HASH",
+        "SHARE_CAPTURE_READY_CHANNEL",
+        "SHARE_CAPTURE_RENDER_CHANNEL",
+        "SHARE_CARD_WIDTH",
+        "ShareBylineInput",
+        "ShareCaptionCardPayload",
+        "ShareCaptionQuote",
+        "ShareCaptureReadyMessage",
+        "ShareCaptureRenderMessage",
+        "ShareCardPayload",
+        "ShareImageLayout",
+        "SharePromptCardPayload",
+        "SharePromptUserInput",
+        "shareCardSourceByline",
+        "sharePromptUserText"
+      ],
+      "digest": "09ce3063c1447af1f4702b394b917bd43ca948dec707766aa28560ee9bf74f30",
+      "consumers": [
+        "apps/desktop/src/main/lib/extension-chat-actions.ts",
+        "apps/desktop/src/main/lib/share-capture-window.ts",
+        "apps/desktop/src/main/lib/share-image-split.ts",
+        "apps/desktop/src/main/mcp/export-tools.ts",
+        "apps/desktop/src/renderer/src/components/agent/AgentChat.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/AgentResponseShareCard.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptShareCardChrome.tsx",
+        "apps/desktop/src/renderer/src/components/transcript/TranscriptShareImageDialog.tsx",
+        "apps/desktop/src/renderer/src/lib/capture-prompt-share.ts",
+        "apps/desktop/src/renderer/src/lib/share-image-layout.ts",
+        "apps/desktop/src/renderer/src/main.tsx",
+        "apps/desktop/src/renderer/src/pages/ShareCapture.tsx",
+        "apps/desktop/src/renderer/src/pages/Transcript.tsx"
+      ],
+      "originalSignatures": [
+        "shareCardSourceByline (\n  platform?: string | null,\n  channel?: string | null\n): string =>",
+        "sharePromptUserText (\n  messages: Array<{ id: string; parentId: string | null; role: string; text: string }>,\n  assistantId: string,\n  promptTitle?: string | null,\n  promptName?: string | null\n): string | undefined =>",
+        "isShareCaptureHash (hash: string): boolean =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/download-file.ts",
+      "exports": [
+        "normalizeSavedFileName",
+        "normalizeFilenameKey",
+        "buildFilenameKey",
+        "buildFileNameCandidates",
+        "buildFilePathCandidates"
+      ],
+      "digest": "d80fa325cf3ad360f4a041f17bc33469dffb0be1c2677dcb1256b0c60ef267e5",
+      "consumers": [
+        "apps/desktop/src/renderer/src/components/download/DownloadItem.tsx",
+        "apps/desktop/src/renderer/src/components/download/UnifiedDownloadHistory.tsx",
+        "apps/desktop/src/renderer/src/hooks/use-download-events.ts"
+      ],
+      "originalSignatures": [
+        "normalizeSavedFileName (fileName?: string): string | undefined =>",
+        "buildFileNameCandidates (\n  title: string,\n  format: string,\n  savedFileName?: string\n): string[] =>",
+        "buildFilePathCandidates (\n  downloadPath: string,\n  title: string,\n  format: string,\n  savedFileName?: string,\n  filePath?: string\n): string[] =>",
+        "normalizeFilenameKey (value: string): string =>",
+        "buildFilenameKey (value?: string): string =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/shared-matrix.mjs",
+        "scripts/desktop-foundation/remaining-observe.mjs"
+      ]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/pending-download.ts",
+      "exports": [
+        "hasDisplayMetadata",
+        "buildPendingDownloadItem"
+      ],
+      "digest": "5492f65a6fe85d9dd0065a7b1f508031e08a6e7150b36fb85c98da2b795c1478",
+      "consumers": [
+        "apps/desktop/src/main/lib/download-facade.ts",
+        "apps/desktop/src/main/lib/download-metadata.ts"
+      ],
+      "originalSignatures": [
+        "hasDisplayMetadata (\n  options: Pick<DownloadOptions, 'title' | 'thumbnail'>\n): boolean =>",
+        "buildPendingDownloadItem (id: string, options: DownloadOptions): DownloadItem =>"
+      ],
+      "characterizationConsumers": [
+        "scripts/desktop-foundation/shared-complete.test.mjs",
+        "scripts/desktop-foundation/remaining-observe.mjs"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "apps/desktop/src/shared/types/index.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ipc.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/player.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/types/mermaid-export.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-errors.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-export.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-history.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-markdown.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-notifications.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-permissions.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-progress.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-settings.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-subtitles.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-task.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-ui.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-presets.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-prompt-text.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-prompts.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-provider-groups.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-run.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-thinking.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/app-icon-menu.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/builtin-skills.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/constants.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat-state.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-identity.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-source-url.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/live-log.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/mcp.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/media-transform.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/skill-install.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/source-media-kind.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/subtitle-export.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/tts-models.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/video-identity.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/video-localization.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/whats-new.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/download-file.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/format-preferences.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/native-playable.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/pending-download.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/video-info-metadata.ts",
+      "status": "done",
+      "disposition": "docs/effect-port/design/desktop-foundation.md section 3"
+    }
+  ],
+  "conflicts": [
+    {
+      "file": "apps/desktop/src/drivers/shared/BuiltinSkill.driver.ts",
+      "subject": "parseBuiltinSkill metadata construction",
+      "status": "legacy path preserved",
+      "reason": "The old eager module casts YAML metadata, so wrong/missing field types can pass through. Applying the new decoder to that in-process legacy path changes acceptance. The strict decoder is separately exposed; the eager legacy driver retains its original assertion and error construction. This is pending deletion, not a compiler exemption."
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-errors.ts",
+      "subject": "agentFailureFromCloudReason prototype-named reason lookup",
+      "status": "legacy path preserved",
+      "reason": "A historical Record lookup inherits Object.prototype. The compatibility boundary preserves the original constructor/__proto__ results and explicit retryable override. Strict lookup uses own keys and produces schema-valid failure codes; no decoder is inserted into legacy calls."
+    }
+  ],
+  "pendingDeletion": [
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-errors.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-history.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-markdown.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-settings.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-subtitles.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-task.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-thread-patch.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-presets.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-prompts.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-run.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-chat-state.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-overview-reuse.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-transcript.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/live-log.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/media-transform.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/overview-result.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/source-media-kind.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/transcript-export.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/tts-models.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/types/share-card.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/download-file.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/pending-download.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/video-localization.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/drivers/shared/BuiltinSkill.driver.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ipc.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-chat.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-errors.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-export.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-history.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-markdown.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-notifications.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-permissions.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-progress.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-settings.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-subtitles.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-task.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-thread-patch.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/agent-ui.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-presets.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-prompt-text.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-prompts.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-provider-groups.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-run.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-thinking.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/ai-types.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/app-icon-menu.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/builtin-skills.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/constants.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-chat-state.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-chat.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-cookies.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-identity.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-overview-reuse.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-overview.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-source-url.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/extension-transcript.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/live-log.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/mcp.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/media-transform.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/overview-result.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/skill-install.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/source-media-kind.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/subtitle-export.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/transcript-export.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/tts-models.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/auth.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/index.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/ipc.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/mermaid-export.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/player.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/share-card.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/types/ytdlp-kernel.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/download-file.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/format-preferences.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/native-playable.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/pending-download.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/utils/video-info-metadata.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/video-identity.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/video-localization.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/shared-port/whats-new.ts",
+      "classification": "pending-deletion",
+      "decision": "D1",
+      "deletionPhase": 10,
+      "executable": true
+    }
+  ]
+}

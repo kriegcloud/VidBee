@@ -2,19 +2,22 @@ import { randomUUID } from 'node:crypto'
 import { join, resolve } from 'node:path'
 import { app, BrowserWindow, safeStorage } from 'electron'
 import {
-  AGENT_THINKING_LEVELS,
-  type AgentThinkingLevel,
-  PROVIDER_THINKING_EFFORT_LEVELS,
-  type ProviderDefaultThinkingLevel
-} from '../../shared/agent-chat'
-import {
   aiProviderNeedsApiKey,
   CLIPROXY_BLOCKED_MODEL_ERROR,
   getAiProviderPreset,
   isAiProviderModelBlocked,
   resolveAiProviderBaseUrl
-} from '../../shared/ai-presets'
-import { createDefaultAiPrompts, mergeDefaultAiPrompts } from '../../shared/ai-prompts'
+} from '../../compatibility/shared/ai-presets'
+import {
+  createDefaultAiPrompts,
+  mergeDefaultAiPrompts
+} from '../../compatibility/shared/ai-prompts'
+import {
+  AGENT_THINKING_LEVELS,
+  type AgentThinkingLevel,
+  PROVIDER_THINKING_EFFORT_LEVELS,
+  type ProviderDefaultThinkingLevel
+} from '../../shared/agent-chat'
 import type {
   AiPrompt,
   AiPromptWriteInput,

@@ -1,206 +1,497 @@
-import type { AgentThinkingLevel, ProviderDefaultThinkingLevel } from './agent-chat'
+import { $DesktopId } from '@vidbee/identity/packages'
+import { LiteralKit } from '@vidbee/schema/LiteralKit'
+import * as S from 'effect/Schema'
+import { AgentThinkingLevel, ProviderDefaultThinkingLevel } from './agent-chat.js'
+
+const $I = $DesktopId.create('shared/ai-types')
 
 /** Built-in LLM provider ids shown on the settings catalog. */
-export type AiProviderPresetId =
-  | 'alibaba'
-  | 'anthropic'
-  | 'azure'
-  | 'cliproxy'
-  | 'custom'
-  | 'deepseek'
-  | 'fireworks'
-  | 'google'
-  | 'groq'
-  | 'huggingface'
-  | 'lmstudio'
-  | 'minimax'
-  | 'mistral'
-  | 'moonshot'
-  | 'novita'
-  | 'ollama'
-  | 'openai'
-  | 'openrouter'
-  | 'ppio'
-  | 'siliconflow'
-  | 'stepfun'
-  | 'together'
-  | 'volcengine'
-  | 'xai'
-  | 'zhipu'
 
 /** Catalog entry for a built-in provider. */
-export interface AiProviderPreset {
-  id: AiProviderPresetId
-  defaultModel: string
-  needsApiKey: boolean
-  requiresBaseUrl: boolean
-  baseUrl?: string
-  /** Public site shown on the catalog card, not the API host. */
-  website?: string
-}
 
 /** Persisted provider configuration. The API key never leaves the main process. */
-export interface AiProviderConfig {
-  /** Stable identity shared by all model records configured for one provider. */
-  groupId?: string
-  contextWindow?: number
-  vision?: boolean
-  /** When false, Agent chat does not send tools to this model. */
-  tools?: boolean
-  /** When false, the model does not expose thinking controls. */
-  reasoning?: boolean
-  /** When true, the composer shows only a thinking on/off switch. */
-  thinkingOnly?: boolean
-  /** When false, thinking cannot be turned off. */
-  allowDisableThinking?: boolean
-  /** Effort levels this model accepts. Empty or omitted keeps catalog defaults. */
-  thinkingLevels?: AgentThinkingLevel[]
-  /** Composer default. `auto` follows the request-layer default. */
-  defaultThinkingLevel?: ProviderDefaultThinkingLevel
-  /** Optional output cap. Omitted uses the provider or catalog default. */
-  maxTokens?: number
-  id: string
-  presetId: AiProviderPresetId
-  name: string
-  baseUrl: string
-  modelId: string
-  hasApiKey: boolean
-  createdAt: number
-  updatedAt: number
-}
 
 /** Payload used to create or update a provider from the renderer. */
-export interface AiProviderWriteInput {
-  groupId?: string
-  contextWindow?: number
-  vision?: boolean
-  tools?: boolean
-  reasoning?: boolean
-  thinkingOnly?: boolean
-  allowDisableThinking?: boolean
-  thinkingLevels?: AgentThinkingLevel[]
-  defaultThinkingLevel?: ProviderDefaultThinkingLevel
-  maxTokens?: number
-  id?: string
-  presetId: AiProviderPresetId
-  name?: string
-  baseUrl?: string
-  modelId: string
-  apiKey?: string
-  /** When creating another model on the same endpoint, reuse this provider's saved key. */
-  copyApiKeyFromId?: string
-}
 
 /** User-editable prompt used with a transcript. */
-export interface AiPrompt {
-  /** The standard SKILL.md name is the sole skill identifier. */
-  name: string
-  /** Personal storage folder when it differs from the authored invocation name. */
-  directoryName?: string
-  description?: string
-  /** Legacy workflow marker, also used as the sidebar visibility default for custom skills. */
-  workflowOnly?: boolean
-  /** Invalid files stay visible in Settings but cannot be invoked. */
-  skillError?: string
-  content: string
-  /** Run once for each completed download when a transcript is available. Defaults to false. */
-  autoRun?: boolean
-  /** Override sidebar visibility; built-ins default to Overview, Generate FAQ and Mindmap. */
-  showInTranscript?: boolean
-  isPreset: boolean
-  /** Explicitly created or imported personal skills are excluded from legacy duplicate repair. */
-  userCreated?: boolean
-  sortOrder: number
-  createdAt: number
-  updatedAt: number
-}
 
 /** Payload used to create or update a managed skill. */
-export interface AiPromptWriteInput {
-  /** A rename operation refers to the previous standard name, never an opaque ID. */
-  previousName?: string
-  name: string
-  description?: string
-  content: string
-  /** Ignored legacy field; installed skills are always available for manual use. */
-  enabled?: boolean
-  autoRun?: boolean
-  showInTranscript?: boolean
-  /** Original YAML metadata when importing a portable skill document. */
-  frontmatter?: Record<string, unknown>
-}
 
 /** Lifecycle of a prompt run that lives in the main process. */
-export type AiPromptRunStatus = 'idle' | 'running' | 'completed' | 'aborted' | 'error'
 
 /** Why a prompt run failed, used to pick setup guidance in the UI. */
-export type AiPromptErrorCode =
-  | 'sign-in-required'
-  | 'credits-exhausted'
-  | 'no-provider'
-  | 'missing-api-key'
-  | 'missing-model'
-  | 'unknown-prompt'
-  | 'empty-transcript'
-  | 'auth'
-  | 'network'
-  | 'empty-output'
-  | 'unknown'
 
 /** Result of a one-shot ping that checks whether a provider can run. */
-export interface AiProviderTestResult {
-  ok: boolean
-  text: string
-  error: string | null
-  errorCode: AiPromptErrorCode | null
-}
 
 /** Snapshot a renderer can restore after navigating away. */
-export interface AiPromptRunSnapshot {
-  /** Provider category only; no provider credentials or model identifiers. */
-  providerType?: 'cloud' | 'byok'
-  cloudResultId?: string
-  /** Latest transient failure, visible until fresh model output arrives. */
-  recovery?: { attempt: number; maxAttempts: number; error: string }
-  downloadId: string
-  promptId: string
-  status: AiPromptRunStatus
-  text: string
-  /** Model reasoning, shown in ThinkingSteps instead of Streamdown. */
-  thinking: string
-  /** Milliseconds spent reasoning, so the header keeps its duration on reload. */
-  thinkingMs: number
-  error: string | null
-  errorCode: AiPromptErrorCode | null
-  updatedAt: number
-}
 
 /** Input required to start a prompt run. */
-export interface AiPromptRunInput {
-  forceRegenerate?: boolean
-  downloadId: string
-  promptId: string
-  transcriptText: string
-  /** UI language tag; built-in translate prompts resolve {{uiLanguage}} from this. */
-  uiLanguage?: string
-  /** Public video URL used as the Cloud cache identity. */
-  sourceUrl?: string
-  /** ISO 639 / BCP-47 language of the captions being sent. */
-  transcriptLanguage?: string
-  /** Whether these captions came from ASR / platform-auto or a human track. */
-  transcriptOrigin?: 'ai' | 'human'
-}
 
 /** Providers and prompts returned together for settings pages. */
-export interface CloudModelOption {
-  id: string
-  name: string
-  multiplier: number
-}
 
-export interface AiSettingsSnapshot {
-  cloudModelId?: string | null
-  activeProviderId: string | null
-  providers: AiProviderConfig[]
-  prompts: AiPrompt[]
-}
+/** AiProviderPresetId shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderPresetId input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderPresetId } from './ai-types.js'
+ * strictEqual(S.is(AiProviderPresetId)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderPresetId = LiteralKit([
+  'alibaba',
+  'anthropic',
+  'azure',
+  'cliproxy',
+  'custom',
+  'deepseek',
+  'fireworks',
+  'google',
+  'groq',
+  'huggingface',
+  'lmstudio',
+  'minimax',
+  'mistral',
+  'moonshot',
+  'novita',
+  'ollama',
+  'openai',
+  'openrouter',
+  'ppio',
+  'siliconflow',
+  'stepfun',
+  'together',
+  'volcengine',
+  'xai',
+  'zhipu'
+]).pipe(
+  $I.annoteSchema('AiProviderPresetId', { description: 'AiProviderPresetId shared boundary data.' })
+)
+/** Decoded mutable AiProviderPresetId data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderPresetId
+ */
+export type AiProviderPresetId = typeof AiProviderPresetId.Type
+
+/** AiProviderPreset shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderPreset input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderPreset } from './ai-types.js'
+ * strictEqual(S.is(AiProviderPreset)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderPreset = S.Struct({
+  id: AiProviderPresetId.pipe(S.mutableKey),
+  defaultModel: S.String.pipe(S.mutableKey),
+  needsApiKey: S.Boolean.pipe(S.mutableKey),
+  requiresBaseUrl: S.Boolean.pipe(S.mutableKey),
+  baseUrl: S.String.pipe(S.optional, S.mutableKey),
+  website: S.String.pipe(S.optional, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiProviderPreset', { description: 'AiProviderPreset shared boundary data.' })
+)
+/** Decoded mutable AiProviderPreset data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderPreset
+ */
+export type AiProviderPreset = typeof AiProviderPreset.Type
+
+/** AiProviderConfig shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderConfig input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderConfig } from './ai-types.js'
+ * strictEqual(S.is(AiProviderConfig)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderConfig = S.Struct({
+  groupId: S.String.pipe(S.optional, S.mutableKey),
+  contextWindow: S.Finite.pipe(S.optional, S.mutableKey),
+  vision: S.Boolean.pipe(S.optional, S.mutableKey),
+  tools: S.Boolean.pipe(S.optional, S.mutableKey),
+  reasoning: S.Boolean.pipe(S.optional, S.mutableKey),
+  thinkingOnly: S.Boolean.pipe(S.optional, S.mutableKey),
+  allowDisableThinking: S.Boolean.pipe(S.optional, S.mutableKey),
+  thinkingLevels: S.Array(AgentThinkingLevel).pipe(S.mutable, S.optional, S.mutableKey),
+  defaultThinkingLevel: ProviderDefaultThinkingLevel.pipe(S.optional, S.mutableKey),
+  maxTokens: S.Finite.pipe(S.optional, S.mutableKey),
+  id: S.String.pipe(S.mutableKey),
+  presetId: AiProviderPresetId.pipe(S.mutableKey),
+  name: S.String.pipe(S.mutableKey),
+  baseUrl: S.String.pipe(S.mutableKey),
+  modelId: S.String.pipe(S.mutableKey),
+  hasApiKey: S.Boolean.pipe(S.mutableKey),
+  createdAt: S.Finite.pipe(S.mutableKey),
+  updatedAt: S.Finite.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiProviderConfig', { description: 'AiProviderConfig shared boundary data.' })
+)
+/** Decoded mutable AiProviderConfig data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderConfig
+ */
+export type AiProviderConfig = typeof AiProviderConfig.Type
+
+/** AiProviderWriteInput shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderWriteInput input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderWriteInput } from './ai-types.js'
+ * strictEqual(S.is(AiProviderWriteInput)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderWriteInput = S.Struct({
+  groupId: S.String.pipe(S.optional, S.mutableKey),
+  contextWindow: S.Finite.pipe(S.optional, S.mutableKey),
+  vision: S.Boolean.pipe(S.optional, S.mutableKey),
+  tools: S.Boolean.pipe(S.optional, S.mutableKey),
+  reasoning: S.Boolean.pipe(S.optional, S.mutableKey),
+  thinkingOnly: S.Boolean.pipe(S.optional, S.mutableKey),
+  allowDisableThinking: S.Boolean.pipe(S.optional, S.mutableKey),
+  thinkingLevels: S.Array(AgentThinkingLevel).pipe(S.mutable, S.optional, S.mutableKey),
+  defaultThinkingLevel: ProviderDefaultThinkingLevel.pipe(S.optional, S.mutableKey),
+  maxTokens: S.Finite.pipe(S.optional, S.mutableKey),
+  id: S.String.pipe(S.optional, S.mutableKey),
+  presetId: AiProviderPresetId.pipe(S.mutableKey),
+  name: S.String.pipe(S.optional, S.mutableKey),
+  baseUrl: S.String.pipe(S.optional, S.mutableKey),
+  modelId: S.String.pipe(S.mutableKey),
+  apiKey: S.String.pipe(S.optional, S.mutableKey),
+  copyApiKeyFromId: S.String.pipe(S.optional, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiProviderWriteInput', {
+    description: 'AiProviderWriteInput shared boundary data.'
+  })
+)
+/** Decoded mutable AiProviderWriteInput data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderWriteInput
+ */
+export type AiProviderWriteInput = typeof AiProviderWriteInput.Type
+
+/** AiPrompt shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPrompt input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPrompt } from './ai-types.js'
+ * strictEqual(S.is(AiPrompt)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPrompt = S.Struct({
+  name: S.String.pipe(S.mutableKey),
+  directoryName: S.String.pipe(S.optional, S.mutableKey),
+  description: S.String.pipe(S.optional, S.mutableKey),
+  workflowOnly: S.Boolean.pipe(S.optional, S.mutableKey),
+  skillError: S.String.pipe(S.optional, S.mutableKey),
+  content: S.String.pipe(S.mutableKey),
+  autoRun: S.Boolean.pipe(S.optional, S.mutableKey),
+  showInTranscript: S.Boolean.pipe(S.optional, S.mutableKey),
+  isPreset: S.Boolean.pipe(S.mutableKey),
+  userCreated: S.Boolean.pipe(S.optional, S.mutableKey),
+  sortOrder: S.Finite.pipe(S.mutableKey),
+  createdAt: S.Finite.pipe(S.mutableKey),
+  updatedAt: S.Finite.pipe(S.mutableKey)
+}).pipe($I.annoteSchema('AiPrompt', { description: 'AiPrompt shared boundary data.' }))
+/** Decoded mutable AiPrompt data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPrompt
+ */
+export type AiPrompt = typeof AiPrompt.Type
+
+/** AiPromptWriteInput shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPromptWriteInput input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPromptWriteInput } from './ai-types.js'
+ * strictEqual(S.is(AiPromptWriteInput)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPromptWriteInput = S.Struct({
+  previousName: S.String.pipe(S.optional, S.mutableKey),
+  name: S.String.pipe(S.mutableKey),
+  description: S.String.pipe(S.optional, S.mutableKey),
+  content: S.String.pipe(S.mutableKey),
+  enabled: S.Boolean.pipe(S.optional, S.mutableKey),
+  autoRun: S.Boolean.pipe(S.optional, S.mutableKey),
+  showInTranscript: S.Boolean.pipe(S.optional, S.mutableKey),
+  frontmatter: S.Record(S.String, S.Unknown.pipe(S.mutableKey)).pipe(S.optional, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiPromptWriteInput', { description: 'AiPromptWriteInput shared boundary data.' })
+)
+/** Decoded mutable AiPromptWriteInput data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPromptWriteInput
+ */
+export type AiPromptWriteInput = typeof AiPromptWriteInput.Type
+
+/** AiPromptRunStatus shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPromptRunStatus input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPromptRunStatus } from './ai-types.js'
+ * strictEqual(S.is(AiPromptRunStatus)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPromptRunStatus = LiteralKit([
+  'idle',
+  'running',
+  'completed',
+  'aborted',
+  'error'
+]).pipe(
+  $I.annoteSchema('AiPromptRunStatus', { description: 'AiPromptRunStatus shared boundary data.' })
+)
+/** Decoded mutable AiPromptRunStatus data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPromptRunStatus
+ */
+export type AiPromptRunStatus = typeof AiPromptRunStatus.Type
+
+/** AiPromptErrorCode shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPromptErrorCode input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPromptErrorCode } from './ai-types.js'
+ * strictEqual(S.is(AiPromptErrorCode)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPromptErrorCode = LiteralKit([
+  'sign-in-required',
+  'credits-exhausted',
+  'no-provider',
+  'missing-api-key',
+  'missing-model',
+  'unknown-prompt',
+  'empty-transcript',
+  'auth',
+  'network',
+  'empty-output',
+  'unknown'
+]).pipe(
+  $I.annoteSchema('AiPromptErrorCode', { description: 'AiPromptErrorCode shared boundary data.' })
+)
+/** Decoded mutable AiPromptErrorCode data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPromptErrorCode
+ */
+export type AiPromptErrorCode = typeof AiPromptErrorCode.Type
+
+/** AiProviderTestResult shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderTestResult input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderTestResult } from './ai-types.js'
+ * strictEqual(S.is(AiProviderTestResult)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderTestResult = S.Struct({
+  ok: S.Boolean.pipe(S.mutableKey),
+  text: S.String.pipe(S.mutableKey),
+  error: S.Union([S.String, S.Null]).pipe(S.mutableKey),
+  errorCode: S.Union([AiPromptErrorCode, S.Null]).pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiProviderTestResult', {
+    description: 'AiProviderTestResult shared boundary data.'
+  })
+)
+/** Decoded mutable AiProviderTestResult data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderTestResult
+ */
+export type AiProviderTestResult = typeof AiProviderTestResult.Type
+
+/** AiPromptRunSnapshot shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPromptRunSnapshot input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPromptRunSnapshot } from './ai-types.js'
+ * strictEqual(S.is(AiPromptRunSnapshot)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPromptRunSnapshot = S.Struct({
+  providerType: LiteralKit(['cloud', 'byok']).pipe(S.optional, S.mutableKey),
+  cloudResultId: S.String.pipe(S.optional, S.mutableKey),
+  recovery: S.Struct({
+    attempt: S.Finite.pipe(S.mutableKey),
+    maxAttempts: S.Finite.pipe(S.mutableKey),
+    error: S.String.pipe(S.mutableKey)
+  }).pipe(S.optional, S.mutableKey),
+  downloadId: S.String.pipe(S.mutableKey),
+  promptId: S.String.pipe(S.mutableKey),
+  status: AiPromptRunStatus.pipe(S.mutableKey),
+  text: S.String.pipe(S.mutableKey),
+  thinking: S.String.pipe(S.mutableKey),
+  thinkingMs: S.Finite.pipe(S.mutableKey),
+  error: S.Union([S.String, S.Null]).pipe(S.mutableKey),
+  errorCode: S.Union([AiPromptErrorCode, S.Null]).pipe(S.mutableKey),
+  updatedAt: S.Finite.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiPromptRunSnapshot', {
+    description: 'AiPromptRunSnapshot shared boundary data.'
+  })
+)
+/** Decoded mutable AiPromptRunSnapshot data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPromptRunSnapshot
+ */
+export type AiPromptRunSnapshot = typeof AiPromptRunSnapshot.Type
+
+/** AiPromptRunInput shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiPromptRunInput input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiPromptRunInput } from './ai-types.js'
+ * strictEqual(S.is(AiPromptRunInput)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiPromptRunInput = S.Struct({
+  forceRegenerate: S.Boolean.pipe(S.optional, S.mutableKey),
+  downloadId: S.String.pipe(S.mutableKey),
+  promptId: S.String.pipe(S.mutableKey),
+  transcriptText: S.String.pipe(S.mutableKey),
+  uiLanguage: S.String.pipe(S.optional, S.mutableKey),
+  sourceUrl: S.String.pipe(S.optional, S.mutableKey),
+  transcriptLanguage: S.String.pipe(S.optional, S.mutableKey),
+  transcriptOrigin: LiteralKit(['ai', 'human']).pipe(S.optional, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiPromptRunInput', { description: 'AiPromptRunInput shared boundary data.' })
+)
+/** Decoded mutable AiPromptRunInput data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiPromptRunInput
+ */
+export type AiPromptRunInput = typeof AiPromptRunInput.Type
+
+/** CloudModelOption shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid CloudModelOption input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { CloudModelOption } from './ai-types.js'
+ * strictEqual(S.is(CloudModelOption)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const CloudModelOption = S.Struct({
+  id: S.String.pipe(S.mutableKey),
+  name: S.String.pipe(S.mutableKey),
+  multiplier: S.Finite.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('CloudModelOption', { description: 'CloudModelOption shared boundary data.' })
+)
+/** Decoded mutable CloudModelOption data.
+ * @category type-level
+ * @since 0.0.0
+ * @example CloudModelOption
+ */
+export type CloudModelOption = typeof CloudModelOption.Type
+
+/** AiSettingsSnapshot shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiSettingsSnapshot input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiSettingsSnapshot } from './ai-types.js'
+ * strictEqual(S.is(AiSettingsSnapshot)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiSettingsSnapshot = S.Struct({
+  cloudModelId: S.Union([S.String, S.Null]).pipe(S.optional, S.mutableKey),
+  activeProviderId: S.Union([S.String, S.Null]).pipe(S.mutableKey),
+  providers: S.Array(AiProviderConfig).pipe(S.mutable, S.mutableKey),
+  prompts: S.Array(AiPrompt).pipe(S.mutable, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiSettingsSnapshot', { description: 'AiSettingsSnapshot shared boundary data.' })
+)
+/** Decoded mutable AiSettingsSnapshot data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiSettingsSnapshot
+ */
+export type AiSettingsSnapshot = typeof AiSettingsSnapshot.Type

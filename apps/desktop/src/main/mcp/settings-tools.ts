@@ -1,6 +1,9 @@
 import { app } from 'electron'
 import { z } from 'zod'
-import { agentAiSettingsSchema, agentSettingsSchema } from '../../shared/agent-settings'
+import {
+  agentAiSettingsSchema,
+  agentSettingsSchema
+} from '../../compatibility/shared/agent-settings'
 import { getAgentSettings, manageAgentAi, updateAgentSettings } from '../lib/agent-capability-host'
 import { getExtensionCookieConnection } from '../lib/extension-cookies'
 import { getDesktopTaskQueue } from '../lib/task-queue-host'

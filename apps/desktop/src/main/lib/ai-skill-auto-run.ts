@@ -1,5 +1,5 @@
 import { TRANSCRIBABLE_TASK_KINDS } from '@vidbee/task-queue-legacy'
-import { AI_CHAT_PROMPT_ID } from '../../shared/ai-prompts'
+import { AI_CHAT_PROMPT_ID } from '../../compatibility/shared/ai-prompts'
 import { settingsManager } from '../settings'
 import { scopedLoggers } from '../utils/logger'
 import { openAgentThread, sendAgentMessage } from './agent-chat-runner'

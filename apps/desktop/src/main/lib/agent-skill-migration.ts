@@ -7,7 +7,7 @@ import {
   FEEDBACK_REPORT_FILENAME
 } from '@vidbee/ui/lib/feedback-diagnostics'
 import type { Database } from 'better-sqlite3'
-import { isAiPromptPresetName } from '../../shared/ai-prompts'
+import { isAiPromptPresetName } from '../../compatibility/shared/ai-prompts'
 import type { AiPrompt } from '../../shared/ai-types'
 import { BUILTIN_SKILLS } from '../../shared/builtin-skills'
 import { parseAgentSkill } from './agent-skill-document'

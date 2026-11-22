@@ -1,5 +1,5 @@
 import { ipcServices } from '@renderer/lib/ipc'
-import type { ShareCardPayload } from '@shared/types/share-card'
+import type { ShareCardPayload } from '../../../compatibility/shared/types/share-card'
 
 // biome-ignore lint/performance/noBarrelFile: Preserve existing imports while sharing native and browser export naming.
 export { exportBaseFileName, exportFileName, shareImageFileName } from '@shared/agent-export'

@@ -1,6 +1,6 @@
-import type { ShareCardPayload } from '@shared/types/share-card'
 import { BrowserWindow } from 'electron'
 import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
+import type { ShareCardPayload } from '../../../compatibility/shared/types/share-card'
 import { captureShareCardPng, writeShareImagePng } from '../../lib/share-capture-window'
 
 class WindowService extends IpcService {

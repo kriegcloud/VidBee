@@ -4,12 +4,12 @@ import {
   aiProviderRequiresBaseUrl,
   CLIPROXY_BLOCKED_MODEL_ERROR,
   isAiProviderModelBlocked
-} from '../../shared/ai-presets'
+} from '../../compatibility/shared/ai-presets'
 import {
   classifyAiPromptError,
   flattenErrorMessage,
   formatAiPromptError
-} from '../../shared/ai-run'
+} from '../../compatibility/shared/ai-run'
 import type {
   AiPromptErrorCode,
   AiProviderTestResult,

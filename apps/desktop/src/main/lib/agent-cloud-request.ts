@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { setTimeout as delay } from 'node:timers/promises'
-import { agentFailureFromCloudReason, encodeAgentError } from '../../shared/agent-errors'
+import {
+  agentFailureFromCloudReason,
+  encodeAgentError
+} from '../../compatibility/shared/agent-errors'
 import { normalizeCloudContextError } from './agent-cloud-budget'
 
 interface CloudRequestOptions {

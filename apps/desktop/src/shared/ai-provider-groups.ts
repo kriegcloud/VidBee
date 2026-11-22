@@ -1,40 +1,93 @@
-import type { AiProviderConfig } from './ai-types'
+import { $DesktopId } from '@vidbee/identity/packages'
+import * as HM from 'effect/HashMap'
+import * as O from 'effect/Option'
+import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
+import * as Str from 'effect/String'
+import { AiProviderConfig } from './ai-types.js'
+
+const $I = $DesktopId.create('shared/ai-provider-groups')
 
 /** One settings entry containing all models configured for the same provider. */
-export interface AiProviderGroup {
-  id: string
-  name: string
-  providers: AiProviderConfig[]
-}
 
-/** Recover the provider name from model suffixes added by the legacy dialog. */
+/** Recover the provider name from model suffixes added by the legacy dialog.  * @example aiProviderName
+ * @category utilities
+ * @since 0.0.0
+ */
 export function aiProviderName(provider: AiProviderConfig): string {
-  if (provider.groupId) {
+  if (P.isTruthy(provider.groupId)) {
     return provider.name
   }
   if (provider.name === provider.modelId) {
     return ''
   }
-  if (provider.name.endsWith(` · ${provider.modelId}`)) {
-    return provider.name.split(' · ')[0]
+  if (Str.endsWith(` · ${provider.modelId}`)(provider.name)) {
+    return Str.split(' · ')(provider.name)[0]
   }
   return provider.name
 }
 
-/** Group models by stable identity, with a name and endpoint fallback for old settings. */
+/** Group models by stable identity, with a name and endpoint fallback for old settings.  * @example groupAiProviders
+ * @category utilities
+ * @since 0.0.0
+ */
 export function groupAiProviders(providers: AiProviderConfig[]): AiProviderGroup[] {
-  const groups = new Map<string, AiProviderGroup>()
+  let groups = HM.empty<string, AiProviderGroup>()
+  const ordered: AiProviderGroup[] = []
   for (const provider of providers) {
     const name = aiProviderName(provider)
-    const key = provider.groupId
+    const key = P.isTruthy(provider.groupId)
       ? `group:${provider.groupId}`
-      : JSON.stringify([provider.presetId, provider.baseUrl.replace(/\/+$/, ''), name])
-    const group = groups.get(key)
-    if (group) {
-      group.providers.push(provider)
+      : O.getOrElse(
+          S.encodeOption(S.fromJsonString(S.Unknown))([
+            provider.presetId,
+            Str.replace(/\/+$/, '')(provider.baseUrl),
+            name
+          ]),
+          () => ''
+        )
+    const group = O.getOrUndefined(HM.get(groups, key))
+    if (group === undefined) {
+      const next = {
+        id: provider.groupId ?? provider.id,
+        name,
+        providers: [provider]
+      }
+      groups = HM.set(groups, key, next)
+      ordered.push(next)
     } else {
-      groups.set(key, { id: provider.groupId ?? provider.id, name, providers: [provider] })
+      group.providers.push(provider)
     }
   }
-  return [...groups.values()]
+  return ordered
 }
+
+/** AiProviderGroup shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid AiProviderGroup input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { AiProviderGroup } from './ai-provider-groups.js'
+ * strictEqual(S.is(AiProviderGroup)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const AiProviderGroup = S.Struct({
+  id: S.String.pipe(S.mutableKey),
+  name: S.String.pipe(S.mutableKey),
+  providers: S.Array(AiProviderConfig).pipe(S.mutable, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('AiProviderGroup', {
+    description: 'AiProviderGroup shared boundary data.'
+  })
+)
+/** Decoded mutable AiProviderGroup data.
+ * @category type-level
+ * @since 0.0.0
+ * @example AiProviderGroup
+ */
+export type AiProviderGroup = typeof AiProviderGroup.Type

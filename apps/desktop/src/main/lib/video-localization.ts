@@ -1,6 +1,7 @@
 import { link, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { captionLanguageKey } from '@vidbee/transcription'
+import { subtitleExportInputSchema } from '../../compatibility/shared/video-localization'
 import {
   alignSubtitleCues,
   buildAssDocument,
@@ -8,7 +9,6 @@ import {
   buildVttDocument,
   type SubtitleCue
 } from '../../shared/subtitle-export'
-import { subtitleExportInputSchema } from '../../shared/video-localization'
 import { agentSourceOffset } from './agent-media'
 import type { IndexedSubtitleCue } from './dubbing-text'
 import { exportVideoWithSubtitles } from './export-video-subtitles'

@@ -6,12 +6,12 @@ import { aiPromptLabel } from '@renderer/lib/ai-prompt-label'
 import { agentChatLaunchDraftAtom } from '@renderer/store/agent-chat-launch'
 import { agentTaskAiSnapshotAtom } from '@renderer/store/agent-tasks'
 import { AGENT_WORKSPACE_ID, type AgentThreadSummary } from '@shared/agent-chat'
-import { AI_CHAT_PROMPT_ID } from '@shared/ai-prompts'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import { History, Plus, Puzzle } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AI_CHAT_PROMPT_ID } from '../../../compatibility/shared/ai-prompts'
 
 const CHAT_TOOLBAR_BUTTON_CLASS =
   'no-drag pointer-events-auto size-8 rounded-xl bg-transparent p-0 text-muted-foreground shadow-none hover:bg-hover hover:text-foreground aria-expanded:bg-hover aria-expanded:text-foreground [&_svg]:size-4'
