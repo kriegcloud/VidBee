@@ -1,0 +1,22 @@
+{
+  "name": "@vidbee/identity",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./packages": "./src/packages.ts"
+  },
+  "dependencies": {
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:"
+  },
+  "scripts": {
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
+  }
+}

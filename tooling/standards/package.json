@@ -1,0 +1,31 @@
+{
+  "name": "@vidbee/standards",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "effect": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@vidbee/identity": "workspace:^",
+    "@vidbee/schema": "workspace:^",
+    "@effect/doctest": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/vitest": "catalog:",
+    "vitest": "catalog:",
+    "typescript": "catalog:",
+    "tsrs": "catalog:",
+    "@effect/tsgo": "catalog:",
+    "@vidbee/logger": "workspace:^",
+    "@vidbee/i18n": "workspace:^",
+    "@vidbee/db": "workspace:^"
+  },
+  "scripts": {
+    "check": "tsrs -p tsconfig.json --emitDeclarationOnly && tsrs -p tsconfig.test.json && biome check .",
+    "test": "bunx --bun vitest run",
+    "build": "tsrs -p tsconfig.json"
+  }
+}

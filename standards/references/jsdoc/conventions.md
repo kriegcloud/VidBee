@@ -1,0 +1,189 @@
+> VidBee edition. Authority: repository instructions, PLAN A1/A2, and the approved
+> [standards tooling design](../../../docs/effect-port/design/standards-tooling.md) precede this edition. D1 deletes existing
+> facades in phase 10; D2 uses deterministic scoped ownership; D3 preserves emitted
+> error bytes with tagged failures and boundary formatting; D4 adjudicates encoded
+> causes per field; D5 requires an exact independently approved parity contract.
+> No classification changes a compiler diagnostic, port check, or empty allowlist.
+> Adaptations: VidBee branding, package aliases, runtime owners, commands and graph.
+> Local enforcement: R01–R22, T01–T08 and RV obligations in the approved design.
+> Attribution: adapted from beep-effect `.claude/skills/jsdoc-annotation-specialist/references/conventions.md` at `71d246dc5a49d3f41222308b866d42c220cf1ee4`.
+
+# JSDoc Authoring Conventions
+
+## Authoring posture
+
+Start from the reader's decision: what does this symbol help them do, and what
+would the TypeScript signature fail to tell them? Write one lead paragraph, add
+only useful sections, then add tags. Do not turn the block into a signature echo.
+
+The section grammar is:
+
+1. `**When to use**`
+2. `**Details**`
+3. `**Gotchas**`
+4. `**Example** (Title)` blocks last
+
+Sections are optional except for Examples required by the kind split. Each present
+section is non-empty and unique, apart from multiple Examples. When-to-use text
+opens with `Use to`, `Use when`, `Use as`, or `Use with`. Every Example title is
+non-empty and unique, contains exactly one `ts` fence, and no loose `ts` fence
+appears outside an Example.
+
+## Carrier and kind split
+
+Use titled Example sections everywhere. The legacy `@example` and `@remarks`
+carriers are retired repo-wide. The default zero-legacy scan covers
+non-generated `{packages,apps}/**/src`; pass `--include-generated` to prove
+generator output too. Move `@remarks` content into Details or Gotchas.
+
+Examples are required for value-level exports: functions, constants, classes,
+schemas, services, layers, and other runtime values. Pure type-level exports need
+good prose but not an Example: aliases, interfaces, namespaces, `.Encoded`
+companions, and same-name schema type companions.
+
+## Worked upgrade
+
+Before:
+
+````ts
+/**
+ * Decodes a user name.
+ *
+ * @remarks Returns `None` instead of throwing.
+ *
+ * @example
+ * ```ts
+ * const value = decodeUserName("Ada")
+ * ```
+ *
+ * @category decoding
+ * @since 0.0.0
+ */
+````
+
+After:
+
+````ts
+/**
+ * Decodes an unknown value as a non-empty user name without throwing.
+ *
+ * **When to use**
+ *
+ * Use when invalid boundary input should become `O.none()`.
+ *
+ * **Details**
+ *
+ * Successful decoding returns a validated, already-trimmed string; surrounding
+ * whitespace is rejected rather than removed.
+ *
+ * **Example** (Inspect both outcomes)
+ *
+ * ```ts import.meta.vitest name="Inspect both outcomes"
+ * import * as O from "effect/Option"
+ * import * as S from "effect/Schema"
+ *
+ * const decodeUserName = S.decodeUnknownOption(S.Trimmed.check(S.isNonEmpty()))
+ *
+ * O.isSome(decodeUserName("Ada")) // => true
+ * O.isNone(decodeUserName("")) // => true
+ * O.isNone(decodeUserName(" Ada ")) // => true
+ * ```
+ *
+ * @see {@link S.decodeUnknownOption} for the underlying decoding operation.
+ * @category decoding
+ * @since 0.0.0
+ */
+````
+
+The After block follows the Option/none teaching style: it shows the meaningful
+success and absence cases and makes the result observable.
+
+## Tag order
+
+After body sections, order applicable tags as follows:
+
+1. `@typeParam`
+2. `@param`
+3. `@returns`
+4. `@throws`
+5. `@effects`
+6. `@precondition`, `@postcondition`, `@invariant`
+7. `@deprecated`
+8. `@defaultValue`
+9. `@see`
+10. `@public`, `@beta`, `@alpha`, `@internal`, `@experimental`
+11. `@category`
+12. `@since`
+
+Omit conditional tags that restate the signature. Every `@see` has a purpose
+phrase, for example:
+
+```text
+@see {@link UserName} for the runtime schema and decoded representation.
+```
+
+Every deprecation includes a linked replacement and migration instruction.
+`@since` stays exactly `0.0.0` until v1.0; tooling checks its format, not inferred
+history.
+
+## Example quality and imports
+
+Examples must compile and show an observable result, assertion, decoded value,
+Effect execution, or meaningful inferred type. Never use `void result` merely to
+satisfy compilation.
+
+Use namespace imports for helper modules:
+
+| Module | Required form |
+| --- | --- |
+| `effect/Schema` | `import * as S from "effect/Schema"` |
+| `effect/Array` | `import * as A from "effect/Array"` |
+| `effect/Option` | `import * as O from "effect/Option"` |
+| `effect/Predicate` | `import * as P from "effect/Predicate"` |
+| `effect/Record` | `import * as R from "effect/Record"` |
+
+Import core modules from their `effect/<Module>` paths; import `pipe` and `flow`
+from `effect/Function`. Never import
+from `@effect/schema`.
+
+## Categories
+
+The source of truth is
+`tooling/standards/`. Choose the
+most specific canonical kebab-case semantic role, not a file or layer name.
+
+Canonical groups:
+
+- Core: `models`, `schemas`, `type-level`, `constructors`, `factories`,
+  `destructors`, `combinators`, `predicates`, `guards`, `refinements`,
+  `assertions`, `getters`, `setters`, `mapping`, `filtering`, `folding`,
+  `sequencing`, `concurrency`, `resource-management`, `error-handling`,
+  `utilities`, `layers`.
+- Domain: `aggregates`, `entities`, `value-objects`, `domain-events`, `policies`,
+  `specifications`, `identifiers`, `entity-ids`, `type-ids`, `symbols`, `errors`.
+- Application and ports: `use-cases`, `commands`, `queries`, `events`,
+  `workflows`, `processes`, `schedulers`, `protocols`, `ports`, `services`,
+  `handlers`, `endpoints`, `clients`, `adapters`, `repositories`, `projections`,
+  `read-models`, `tables`.
+- Data boundaries: `validation`, `parsing`, `encoding`, `decoding`,
+  `serialization`, `codecs`, `formatting`, `normalization`, `dtos`, `mappers`.
+- UI and client: `components`, `hooks`, `providers`, `themes`, `tokens`, `forms`,
+  `atoms`.
+- Tooling: `tools`, `tool-schemas`, `cli-commands`, `configuration`, `constants`,
+  `observability`, `diagnostics`, `fixtures`, `testing`, `streams`, `resources`,
+  `interop`.
+
+Legacy aliases are for untouched docs only. New and touched blocks use canonical
+slugs.
+
+## Forbidden patterns
+
+- `@example` or `@remarks` anywhere; `@module` or `@template` in new or touched blocks.
+- `{type}` blobs in tags or a hyphen after `@returns`/`@throws`.
+- Bare `@see` links without a purpose phrase.
+- Empty, duplicate, or out-of-order sections; a section after an Example.
+- Untitled or duplicate Example titles, multiple fences per Example, or loose
+  `ts` fences.
+- `any`, type assertions, `declare`, empty generators, or non-compiling Examples.
+- Named Schema/Array/Option/Predicate/Record imports or `@effect/schema`.
+- Removing an Example to hide a compilation failure.

@@ -5,7 +5,7 @@ import type { RcFile } from 'syncpack'
 // `workspace:^`. Add a dependency by putting its range in the catalog, then
 // `"name": "catalog:"` in the consuming package; `bun run deps:check` enforces it.
 const config = {
-  source: ['package.json', 'apps/*/package.json', 'packages/*/package.json'],
+  source: ['package.json', 'apps/*/package.json', 'packages/*/package.json', 'tooling/*/package.json'],
   customTypes: {
     catalog: {
       path: 'catalog',
