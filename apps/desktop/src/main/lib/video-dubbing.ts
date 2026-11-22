@@ -7,7 +7,7 @@ import {
   dubbingInputSchema
 } from '../../compatibility/shared/video-localization'
 import { buildAssDocument } from '../../shared/subtitle-export'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { runAgentMediaProcess, withAgentMedia } from './agent-media'
 import { type IndexedSubtitleCue, resolveSpokenCues } from './dubbing-text'
 import { escapeFfmpegSubtitlePath } from './export-video-subtitles-args'

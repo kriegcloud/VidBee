@@ -5,8 +5,8 @@ import type { YtDlpKernelStatus } from '@shared/types'
 import { AlertCircle, Copy, Github } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { buildKernelErrorReport, buildKernelIssueUrl } from '../../legacy/kernel-error-report'
 import { logger } from '../../lib/logger'
-import { buildKernelErrorReport, buildKernelIssueUrl } from './kernel-error-report'
 
 interface KernelPreparationScreenProps {
   onRetry: () => Promise<void> | void

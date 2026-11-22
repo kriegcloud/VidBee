@@ -9,7 +9,8 @@ import {
 import { type TranslationDictionary, translationResources } from '@vidbee/i18n'
 import { normalizeLanguageCode } from '@vidbee/i18n/languages'
 import { app, BrowserWindow, Menu, type MenuItemConstructorOptions } from 'electron'
-import { settingsManager } from '../settings'
+import { publishFoundationHome } from '../legacy/foundation-events'
+import { settingsManager } from '../settings.compatibility'
 import { applyDockMenu } from '../utils/dock'
 import { isAppWindow } from './share-capture-window'
 
@@ -92,6 +93,7 @@ const showHomeWindow = async (): Promise<void> => {
     return
   }
   mainWindow.webContents.send(APP_ICON_SHOW_HOME_CHANNEL)
+  publishFoundationHome(mainWindow.webContents)
 }
 
 /**

@@ -19,6 +19,9 @@ import {
 } from '../shared/utils/format-preferences'
 import { configureLogger } from './config/logger-config'
 import { services } from './ipc'
+import { startFoundationTransport } from './legacy/foundation-boot'
+import { publishFoundationKernel } from './legacy/foundation-events'
+import { registerFoundationWindow } from './legacy/foundation-windows'
 import { registerAgentArtifactProtocol } from './lib/agent-artifacts'
 import { isAppQuitPrepared, isAppQuitting, prepareAppQuit } from './lib/app-quit'
 import {
@@ -65,7 +68,8 @@ import { initializeYtDlpKernelService, stopYtDlpKernelService } from './lib/ytdl
 import { startExtensionApiServer, stopExtensionApiServer } from './local-api'
 import { electronLog as log } from './logging/ElectronLog.driver'
 import { isPortableMode } from './portable'
-import { settingsManager } from './settings'
+import './settings'
+import { settingsManager } from './settings.compatibility'
 import { createTray, destroyTray } from './tray'
 import { applyAutoLaunchSetting } from './utils/auto-launch'
 import { applyDockVisibility } from './utils/dock'
@@ -235,6 +239,9 @@ const sendToRenderer = (channel: string, ...args: unknown[]): void => {
   }
   try {
     window.webContents.send(channel, ...args)
+    if (channel === 'ytdlp-kernel:status') {
+      publishFoundationKernel(window.webContents, args[0])
+    }
   } catch (error) {
     log.warn('Failed to send message to renderer:', channel, error)
   }
@@ -553,6 +560,7 @@ export function createWindow(): void {
 
   // Create the browser window
   mainWindow = new BrowserWindow(windowOptions)
+  registerFoundationWindow(mainWindow.webContents, 'visible')
   rememberMainWindowState(mainWindow, maximized)
 
   mainWindow.on('close', (event) => {
@@ -1077,6 +1085,8 @@ app.whenReady().then(async () => {
 
   // IPC services are automatically registered by electron-ipc-decorator when imported
   log.info('IPC services available:', Object.keys(services))
+
+  startFoundationTransport()
 
   const ffmpegInitialization = initializeOptionalTool({
     initialize: () => ffmpegManager.initialize(),

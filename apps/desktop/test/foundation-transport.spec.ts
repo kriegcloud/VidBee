@@ -211,7 +211,7 @@ const pair = Effect.fn("Test.pair")(function* ({
     Echo: Effect.fn("Test.Echo")(function* ({ text }, options) {
       if (text === "saturate codec arena") {
         const lease = yield* main.requestLease(options.headers);
-        const held = lease.resources.account.reserve(64 * 1024 * 1024);
+        const held = lease.resources.account.reserve(limits.windowBytes / 2);
         if (held === undefined) return yield* failure("TestCapacity");
         yield* Effect.addFinalizer(() => Effect.sync(held.release));
       }

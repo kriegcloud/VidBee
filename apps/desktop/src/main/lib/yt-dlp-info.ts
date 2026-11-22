@@ -10,7 +10,7 @@
 import { mapPlaylistInfo } from '@vidbee/downloader-core'
 import { retryTransientYtDlpNetworkError } from '@vidbee/downloader-core-legacy'
 import type { PlaylistInfo, VideoInfo, VideoInfoCommandResult } from '../../shared/types'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { probeConfiguredBrowserCookieAccess } from './browser-cookie-access'
 import { buildPlaylistInfoArgs, buildVideoInfoArgs, formatYtDlpCommand } from './command-utils'

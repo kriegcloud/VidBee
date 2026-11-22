@@ -1,23 +1,23 @@
-import { $DesktopId } from '@vidbee/identity/packages'
-import * as A from 'effect/Array'
-import { pipe } from 'effect/Function'
-import * as HashSet from 'effect/HashSet'
-import * as O from 'effect/Option'
-import * as S from 'effect/Schema'
-import * as Str from 'effect/String'
-import { AgentArtifact } from '../AgentAttachment.model.js'
-import { recordFunction } from '../RecordFunction.js'
-import { MermaidExportImage } from './mermaid-export.js'
+import { $DesktopId } from "@vidbee/identity/packages";
+import * as A from "effect/Array";
+import { pipe } from "effect/Function";
+import * as HashSet from "effect/HashSet";
+import * as O from "effect/Option";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { AgentArtifact } from "../AgentAttachment.model.js";
+import { recordFunction } from "../RecordFunction.js";
+import { MermaidExportImage } from "./mermaid-export.js";
 
-const $I = $DesktopId.create('shared/types/share-card')
+const $I = $DesktopId.create("shared/types/share-card");
 const AgentSkillLabel = S.Struct({
   name: S.String.pipe(S.mutableKey),
-  label: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+  label: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
 }).pipe(
-  $I.annoteSchema('AgentSkillLabel', {
-    description: 'Shared AgentSkillLabel schema used by the boundary models.'
+  $I.annoteSchema("AgentSkillLabel", {
+    description: "Shared AgentSkillLabel schema used by the boundary models.",
   })
-)
+);
 /** CSS width of the branded share poster.
  *
  * **Example** (Access the SHARE_CARD_WIDTH contract)
@@ -30,7 +30,7 @@ const AgentSkillLabel = S.Struct({
  * @category utilities
  * @since 0.0.0
  */
-export const SHARE_CARD_WIDTH = 540
+export const SHARE_CARD_WIDTH = 540;
 
 /** Hash route that mounts the hidden capture page instead of the app shell.
  *
@@ -44,7 +44,7 @@ export const SHARE_CARD_WIDTH = 540
  * @category utilities
  * @since 0.0.0
  */
-export const SHARE_CAPTURE_HASH = '/share-capture'
+export const SHARE_CAPTURE_HASH = "/share-capture";
 
 /** Main → hidden renderer: paint this card.
  *
@@ -58,7 +58,7 @@ export const SHARE_CAPTURE_HASH = '/share-capture'
  * @category utilities
  * @since 0.0.0
  */
-export const SHARE_CAPTURE_RENDER_CHANNEL = 'share-capture:render'
+export const SHARE_CAPTURE_RENDER_CHANNEL = "share-capture:render";
 
 /** Hidden renderer → main: card box is stable.
  *
@@ -72,7 +72,7 @@ export const SHARE_CAPTURE_RENDER_CHANNEL = 'share-capture:render'
  * @category utilities
  * @since 0.0.0
  */
-export const SHARE_CAPTURE_READY_CHANNEL = 'share-capture:ready'
+export const SHARE_CAPTURE_READY_CHANNEL = "share-capture:ready";
 
 /** ShareCaptionQuote shared data; structural for legacy construction.
  *
@@ -93,10 +93,8 @@ export const ShareCaptionQuote = S.Struct({
   before: S.String.pipe(S.mutableKey),
   endMs: S.Finite.pipe(S.mutableKey),
   quote: S.String.pipe(S.mutableKey),
-  startMs: S.Finite.pipe(S.mutableKey)
-}).pipe(
-  $I.annoteSchema('ShareCaptionQuote', { description: 'ShareCaptionQuote shared boundary data.' })
-)
+  startMs: S.Finite.pipe(S.mutableKey),
+}).pipe($I.annoteSchema("ShareCaptionQuote", { description: "ShareCaptionQuote shared boundary data." }));
 /** Decoded mutable ShareCaptionQuote data.
  * @category type-level
  * @since 0.0.0
@@ -109,7 +107,7 @@ export const ShareCaptionQuote = S.Struct({
  * ```
  *
  */
-export type ShareCaptionQuote = typeof ShareCaptionQuote.Type
+export type ShareCaptionQuote = typeof ShareCaptionQuote.Type;
 
 /** SharePromptCardPayload shared data; structural for legacy construction.
  *
@@ -129,7 +127,7 @@ export const SharePromptCardPayload = S.Struct({
   artifacts: S.Array(AgentArtifact).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
   runId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   coverSrc: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  kind: S.Literal('prompt').pipe(S.mutableKey),
+  kind: S.Literal("prompt").pipe(S.mutableKey),
   markdown: S.String.pipe(S.mutableKey),
   promptTitle: S.String.pipe(S.mutableKey),
   sourceByline: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
@@ -137,12 +135,12 @@ export const SharePromptCardPayload = S.Struct({
   tagline: S.String.pipe(S.mutableKey),
   thinkingLabel: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   userText: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  userSkills: S.Array(AgentSkillLabel).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey)
+  userSkills: S.Array(AgentSkillLabel).pipe(S.mutable, S.UndefinedOr, S.optionalKey, S.mutableKey),
 }).pipe(
-  $I.annoteSchema('SharePromptCardPayload', {
-    description: 'SharePromptCardPayload shared boundary data.'
+  $I.annoteSchema("SharePromptCardPayload", {
+    description: "SharePromptCardPayload shared boundary data.",
   })
-)
+);
 /** Decoded mutable SharePromptCardPayload data.
  * @category type-level
  * @since 0.0.0
@@ -155,7 +153,7 @@ export const SharePromptCardPayload = S.Struct({
  * ```
  *
  */
-export type SharePromptCardPayload = typeof SharePromptCardPayload.Type
+export type SharePromptCardPayload = typeof SharePromptCardPayload.Type;
 
 /** ShareCaptionCardPayload shared data; structural for legacy construction.
  *
@@ -174,16 +172,16 @@ export type SharePromptCardPayload = typeof SharePromptCardPayload.Type
 export const ShareCaptionCardPayload = S.Struct({
   coverSrc: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   durationMs: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  kind: S.Literal('caption').pipe(S.mutableKey),
+  kind: S.Literal("caption").pipe(S.mutableKey),
   quote: ShareCaptionQuote.pipe(S.mutableKey),
   sourceByline: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   sourceTitle: S.Union([S.String, S.Null]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  tagline: S.String.pipe(S.mutableKey)
+  tagline: S.String.pipe(S.mutableKey),
 }).pipe(
-  $I.annoteSchema('ShareCaptionCardPayload', {
-    description: 'ShareCaptionCardPayload shared boundary data.'
+  $I.annoteSchema("ShareCaptionCardPayload", {
+    description: "ShareCaptionCardPayload shared boundary data.",
   })
-)
+);
 /** Decoded mutable ShareCaptionCardPayload data.
  * @category type-level
  * @since 0.0.0
@@ -196,7 +194,7 @@ export const ShareCaptionCardPayload = S.Struct({
  * ```
  *
  */
-export type ShareCaptionCardPayload = typeof ShareCaptionCardPayload.Type
+export type ShareCaptionCardPayload = typeof ShareCaptionCardPayload.Type;
 
 /** ShareCardPayload shared data; structural for legacy construction.
  *
@@ -213,8 +211,8 @@ export type ShareCaptionCardPayload = typeof ShareCaptionCardPayload.Type
  * @since 0.0.0
  */
 export const ShareCardPayload = S.Union([ShareCaptionCardPayload, SharePromptCardPayload]).pipe(
-  $I.annoteSchema('ShareCardPayload', { description: 'ShareCardPayload shared boundary data.' })
-)
+  $I.annoteSchema("ShareCardPayload", { description: "ShareCardPayload shared boundary data." })
+);
 /** Decoded mutable ShareCardPayload data.
  * @category type-level
  * @since 0.0.0
@@ -227,7 +225,7 @@ export const ShareCardPayload = S.Union([ShareCaptionCardPayload, SharePromptCar
  * ```
  *
  */
-export type ShareCardPayload = typeof ShareCardPayload.Type
+export type ShareCardPayload = typeof ShareCardPayload.Type;
 
 /**
  * Join platform and channel for the line under the share-card title.
@@ -249,12 +247,12 @@ export type ShareCardPayload = typeof ShareCardPayload.Type
  */
 export const ShareBylineInput = S.Struct({
   platform: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
-  channel: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey)
+  channel: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
 }).pipe(
-  $I.annoteSchema('ShareBylineInput', {
-    description: 'Source labels; structural for legacy construction.'
+  $I.annoteSchema("ShareBylineInput", {
+    description: "Source labels; structural for legacy construction.",
   })
-)
+);
 /** ShareBylineInput shared contract.
  * @category utilities
  * @since 0.0.0
@@ -267,7 +265,7 @@ export const ShareBylineInput = S.Struct({
  * ```
  *
  */
-export type ShareBylineInput = typeof ShareBylineInput.Type
+export type ShareBylineInput = typeof ShareBylineInput.Type;
 /** shareCardSourceByline shared contract.
  * @category utilities
  * @since 0.0.0
@@ -281,17 +279,17 @@ export type ShareBylineInput = typeof ShareBylineInput.Type
  *
  */
 export const shareCardSourceByline: {
-  (): (input: ShareBylineInput) => string
-  (input: ShareBylineInput): string
+  (): (input: ShareBylineInput) => string;
+  (input: ShareBylineInput): string;
 } = recordFunction(({ platform, channel }: ShareBylineInput): string => {
-  const platformLabel = platform === undefined || platform === null ? '' : Str.trim(platform)
-  const channelLabel = channel === undefined || channel === null ? '' : Str.trim(channel)
-  const both = Boolean(platformLabel && channelLabel)
+  const platformLabel = platform === undefined || platform === null ? "" : Str.trim(platform);
+  const channelLabel = channel === undefined || channel === null ? "" : Str.trim(channel);
+  const both = Boolean(platformLabel && channelLabel);
   if (both && Str.toLowerCase(platformLabel) !== Str.toLowerCase(channelLabel)) {
-    return `${platformLabel} · ${channelLabel}`
+    return `${platformLabel} · ${channelLabel}`;
   }
-  return platformLabel || channelLabel
-})
+  return platformLabel || channelLabel;
+});
 
 /**
  * User instruction printed on a prompt share card.
@@ -317,17 +315,17 @@ export const shareCardSourceByline: {
  * @since 0.0.0
  */
 export const SharePromptUserInput = S.Struct({
-  messages: S.Array(
-    S.Struct({ id: S.String, parentId: S.NullOr(S.String), role: S.String, text: S.String })
-  ).pipe(S.mutable),
+  messages: S.Array(S.Struct({ id: S.String, parentId: S.NullOr(S.String), role: S.String, text: S.String })).pipe(
+    S.mutable
+  ),
   assistantId: S.String,
   promptTitle: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
-  promptName: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey)
+  promptName: S.String.pipe(S.NullOr, S.UndefinedOr, S.optionalKey),
 }).pipe(
-  $I.annoteSchema('SharePromptUserInput', {
-    description: 'Instruction projection; structural for legacy construction.'
+  $I.annoteSchema("SharePromptUserInput", {
+    description: "Instruction projection; structural for legacy construction.",
   })
-)
+);
 /** SharePromptUserInput shared contract.
  * @category utilities
  * @since 0.0.0
@@ -340,7 +338,7 @@ export const SharePromptUserInput = S.Struct({
  * ```
  *
  */
-export type SharePromptUserInput = typeof SharePromptUserInput.Type
+export type SharePromptUserInput = typeof SharePromptUserInput.Type;
 /** sharePromptUserText shared contract.
  * @category utilities
  * @since 0.0.0
@@ -354,43 +352,34 @@ export type SharePromptUserInput = typeof SharePromptUserInput.Type
  *
  */
 export const sharePromptUserText: {
-  (): (input: SharePromptUserInput) => string | undefined
-  (input: SharePromptUserInput): string | undefined
-} = recordFunction(
-  ({
+  (): (input: SharePromptUserInput) => string | undefined;
+  (input: SharePromptUserInput): string | undefined;
+} = recordFunction(({ messages, assistantId, promptTitle, promptName }: SharePromptUserInput): string | undefined => {
+  const assistant = pipe(
     messages,
-    assistantId,
-    promptTitle,
-    promptName
-  }: SharePromptUserInput): string | undefined => {
-    const assistant = pipe(
-      messages,
-      A.findFirst((message) => message.id === assistantId),
-      O.getOrUndefined
-    )
-    const user = pipe(
-      messages,
-      A.findFirst((message) => message.id === assistant?.parentId && message.role === 'user'),
-      O.getOrUndefined
-    )
-    const text = user === undefined ? '' : Str.trim(user.text)
-    if (text.length === 0) {
-      return undefined
-    }
-    const aliases = HashSet.fromIterable(
-      A.filter(
-        A.map([promptTitle, promptName], (item) =>
-          item === undefined || item === null ? undefined : Str.trim(item)
-        ),
-        (item): item is string => Boolean(item)
-      )
-    )
-    if (HashSet.has(aliases, text)) {
-      return undefined
-    }
-    return text
+    A.findFirst((message) => message.id === assistantId),
+    O.getOrUndefined
+  );
+  const user = pipe(
+    messages,
+    A.findFirst((message) => message.id === assistant?.parentId && message.role === "user"),
+    O.getOrUndefined
+  );
+  const text = user === undefined ? "" : Str.trim(user.text);
+  if (text.length === 0) {
+    return undefined;
   }
-)
+  const aliases = HashSet.fromIterable(
+    A.filter(
+      A.map([promptTitle, promptName], (item) => (item === undefined || item === null ? undefined : Str.trim(item))),
+      (item): item is string => Boolean(item)
+    )
+  );
+  if (HashSet.has(aliases, text)) {
+    return undefined;
+  }
+  return text;
+});
 
 /** ShareCaptureRenderMessage shared data; structural for legacy construction.
  *
@@ -408,12 +397,12 @@ export const sharePromptUserText: {
  */
 export const ShareCaptureRenderMessage = S.Struct({
   payload: ShareCardPayload.pipe(S.mutableKey),
-  requestId: S.Finite.pipe(S.mutableKey)
+  requestId: S.Finite.pipe(S.mutableKey),
 }).pipe(
-  $I.annoteSchema('ShareCaptureRenderMessage', {
-    description: 'ShareCaptureRenderMessage shared boundary data.'
+  $I.annoteSchema("ShareCaptureRenderMessage", {
+    description: "ShareCaptureRenderMessage shared boundary data.",
   })
-)
+);
 /** Decoded mutable ShareCaptureRenderMessage data.
  * @category type-level
  * @since 0.0.0
@@ -426,7 +415,7 @@ export const ShareCaptureRenderMessage = S.Struct({
  * ```
  *
  */
-export type ShareCaptureRenderMessage = typeof ShareCaptureRenderMessage.Type
+export type ShareCaptureRenderMessage = typeof ShareCaptureRenderMessage.Type;
 
 /** ShareImageLayout shared data; structural for legacy construction.
  *
@@ -448,10 +437,8 @@ export const ShareImageLayout = S.Struct({
   padding: S.Finite.pipe(S.mutableKey),
   footerTop: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   safeBreaks: S.Array(S.Finite).pipe(S.mutable, S.mutableKey),
-  preferredBreaks: S.Array(S.Finite).pipe(S.mutable, S.mutableKey)
-}).pipe(
-  $I.annoteSchema('ShareImageLayout', { description: 'ShareImageLayout shared boundary data.' })
-)
+  preferredBreaks: S.Array(S.Finite).pipe(S.mutable, S.mutableKey),
+}).pipe($I.annoteSchema("ShareImageLayout", { description: "ShareImageLayout shared boundary data." }));
 /** Decoded mutable ShareImageLayout data.
  * @category type-level
  * @since 0.0.0
@@ -464,7 +451,7 @@ export const ShareImageLayout = S.Struct({
  * ```
  *
  */
-export type ShareImageLayout = typeof ShareImageLayout.Type
+export type ShareImageLayout = typeof ShareImageLayout.Type;
 
 /** ShareCaptureReadyMessage shared data; structural for legacy construction.
  *
@@ -486,12 +473,12 @@ export const ShareCaptureReadyMessage = S.Struct({
   layout: ShareImageLayout.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   height: S.Finite.pipe(S.mutableKey),
   requestId: S.Finite.pipe(S.mutableKey),
-  width: S.Finite.pipe(S.mutableKey)
+  width: S.Finite.pipe(S.mutableKey),
 }).pipe(
-  $I.annoteSchema('ShareCaptureReadyMessage', {
-    description: 'ShareCaptureReadyMessage shared boundary data.'
+  $I.annoteSchema("ShareCaptureReadyMessage", {
+    description: "ShareCaptureReadyMessage shared boundary data.",
   })
-)
+);
 /** Decoded mutable ShareCaptureReadyMessage data.
  * @category type-level
  * @since 0.0.0
@@ -504,7 +491,7 @@ export const ShareCaptureReadyMessage = S.Struct({
  * ```
  *
  */
-export type ShareCaptureReadyMessage = typeof ShareCaptureReadyMessage.Type
+export type ShareCaptureReadyMessage = typeof ShareCaptureReadyMessage.Type;
 
 /**
  * True when the renderer URL is the hidden share-capture page.
@@ -522,4 +509,4 @@ export type ShareCaptureReadyMessage = typeof ShareCaptureReadyMessage.Type
  * @since 0.0.0
  */
 export const isShareCaptureHash = (hash: string): boolean =>
-  pipe(hash, Str.replace(/^#/, ''), Str.split('?'))[0] === SHARE_CAPTURE_HASH
+  pipe(hash, Str.replace(/^#/, ""), Str.split("?"))[0] === SHARE_CAPTURE_HASH;

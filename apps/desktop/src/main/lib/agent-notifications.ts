@@ -7,7 +7,7 @@ import {
   type AgentNotificationTarget
 } from '../../shared/agent-notifications'
 import { agentUiNeedsResponse } from '../../shared/agent-ui'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 
 const notifications = new Map<string, Map<string, Notification>>()

@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Aktiviere den Ein-Klick-Download, um mehrere Links gleichzeitig hinzuzufügen",
     "clickToCopy": "Klicken, um Details zu kopieren",
     "clipboardEmpty": "Zwischenablage ist leer",
+    "desktopConnectionLost": "Die Verbindung zur Desktop-App wurde unterbrochen. Lade dieses Fenster neu, um die Verbindung wiederherzustellen.",
     "downloadFailed": "Download fehlgeschlagen",
     "downloadNecessaryFilesFailed": "Herunterladen der erforderlichen Dateien fehlgeschlagen. Bitte überprüfen Sie Ihr Netzwerk und versuchen Sie es erneut",
     "emptyUrl": "Bitte geben Sie eine URL ein",

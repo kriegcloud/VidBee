@@ -9,7 +9,9 @@ const directory=fs.mkdtempSync(path.join(parent,'shared-examples-'))
 try {
  const files=[]
  const visit=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?visit(path.join(dir,entry.name)):entry.name.endsWith('.ts')?[path.join(dir,entry.name)]:[])
- for(const file of visit('apps/desktop/src/shared')){
+ const foundation=JSON.parse(fs.readFileSync('apps/desktop/port-units.json','utf8')).files
+   .filter(row=>row.partition==='strict' && (row.file.endsWith('/components/kernel/kernel-error-report.ts') || /^apps\/desktop\/src\/main\/(?:Settings|App|Window|Foundation|NativeFoundation|settings\.ts$|ipc\/services\/(?:app|settings|window)-service\.ts$|runtime\/LegacyEffect\.entry\.ts$)/.test(row.file) || /^apps\/desktop\/src\/renderer\/src\/runtime\/(?:Foundation|DesktopAtom|About|Preferences|PreferenceHost|Settings)/.test(row.file))).map(row=>row.file)
+ for(const file of [...visit('apps/desktop/src/shared'),...foundation]){
   if(file.endsWith('/types/ipc.ts'))continue
   const source=fs.readFileSync(file,'utf8')
   if(/@(?:example|remarks)\b/.test(source))throw new Error(`Legacy documentation carrier in ${file}`)
@@ -27,5 +29,5 @@ try {
  fs.writeFileSync(config,JSON.stringify({extends:path.join(root,'tsconfig.base.json'),compilerOptions:{module:'esnext',moduleResolution:'bundler',rootDir:root,noEmit:true,composite:false,incremental:false,lib:['ESNext','DOM'],typeRoots:[path.join(root,'node_modules/@types')],types:['node']},files:[...files,path.join(root,'node_modules/vite/client.d.ts')],include:[]}))
  const result=spawnSync('bunx',['--bun','tsc','--noEmit','-p',config],{stdio:'inherit'})
  if(result.status!==0)throw new Error(`Shared documentation examples failed (${result.status})`)
- console.log(`Compiled ${files.length} titled shared examples`)
+ console.log(`Compiled ${files.length} titled shared and foundation examples`)
 } finally {fs.rmSync(directory,{recursive:true,force:true})}

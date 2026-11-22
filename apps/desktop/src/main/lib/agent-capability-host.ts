@@ -11,7 +11,7 @@ import {
 } from '../../compatibility/shared/agent-settings'
 import { AI_PROVIDER_PRESETS, getAiProviderPreset } from '../../compatibility/shared/ai-presets'
 import { mediaTransformSchema } from '../../compatibility/shared/media-transform'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { isOutsideDownloadPath } from './agent-tool-approval'
 import { ffmpegManager } from './ffmpeg-manager'
 import { probeLocalMedia } from './media-probe'

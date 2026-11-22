@@ -1,6 +1,6 @@
-import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { foundationClients } from '../../lib/foundation'
 import { type ErrorInfo as ErrorInfoType, ErrorPage } from './ErrorPage'
 
 interface Props {
@@ -61,8 +61,8 @@ export class ErrorBoundary extends Component<Props, State> {
     // Get app version if available
     let appVersion: string | undefined
     try {
-      if (window?.api && ipcServices?.app) {
-        appVersion = await ipcServices.app.getVersion()
+      if (window?.api && foundationClients.app) {
+        appVersion = await foundationClients.app.getVersion()
         logger.info('ErrorBoundary: App version retrieved', { appVersion })
       }
     } catch (err) {

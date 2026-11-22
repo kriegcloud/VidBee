@@ -86,13 +86,16 @@ it('frozen Ai complete declaration and real producer codec census', async () => 
     ],
     custom: { a: undefined, b: Number.POSITIVE_INFINITY }
   }
-  const thread = projectAgentThread(stored, () => [])
-  const blank = projectAgentThread({ ...stored, messages: [], runs: [], artifacts: [] }, () => [])
-  const patch = projectAgentPatch(
-    stored,
-    { thread: true, messageIds: ['m'], runIds: ['r'], artifactIds: ['a'] },
-    () => []
-  )
+  const thread = projectAgentThread({ thread: stored, activityFor: () => [] })
+  const blank = projectAgentThread({
+    thread: { ...stored, messages: [], runs: [], artifacts: [] },
+    activityFor: () => []
+  })
+  const patch = projectAgentPatch({
+    thread: stored,
+    scope: { thread: true, messageIds: ['m'], runIds: ['r'], artifactIds: ['a'] },
+    activityFor: () => []
+  })
   const summary = {
     id: 't',
     downloadId: 'workspace',

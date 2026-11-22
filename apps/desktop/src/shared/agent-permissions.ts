@@ -1,7 +1,7 @@
-import { $DesktopId } from '@vidbee/identity/packages'
-import { LiteralKit } from '@vidbee/schema/LiteralKit'
+import { $DesktopId } from "@vidbee/identity/packages";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
 
-const $I = $DesktopId.create('shared/agent-permissions')
+const $I = $DesktopId.create("shared/agent-permissions");
 
 /** Permission settings retain the missing-versus-invalid parser below.
  *
@@ -17,9 +17,9 @@ const $I = $DesktopId.create('shared/agent-permissions')
  * @since 0.0.0
  * structural for legacy construction.
  */
-export const AgentPermissionMode = LiteralKit(['ask', 'auto', 'full']).pipe(
-  $I.annoteSchema('AgentPermissionMode', { description: 'Agent management permission mode.' })
-)
+export const AgentPermissionMode = LiteralKit(["ask", "auto", "full"]).pipe(
+  $I.annoteSchema("AgentPermissionMode", { description: "Agent management permission mode." })
+);
 /** AGENT_PERMISSION_MODES shared contract.
  * @category utilities
  * @since 0.0.0
@@ -32,7 +32,7 @@ export const AgentPermissionMode = LiteralKit(['ask', 'auto', 'full']).pipe(
  * ```
  *
  */
-export const AGENT_PERMISSION_MODES = AgentPermissionMode.literals
+export const AGENT_PERMISSION_MODES = AgentPermissionMode.literals;
 
 /** AgentPermissionMode shared contract.
  * @category utilities
@@ -46,7 +46,7 @@ export const AGENT_PERMISSION_MODES = AgentPermissionMode.literals
  * ```
  *
  */
-export type AgentPermissionMode = typeof AgentPermissionMode.Type
+export type AgentPermissionMode = typeof AgentPermissionMode.Type;
 
 /** DEFAULT_AGENT_PERMISSION_MODE shared contract.
  * @category utilities
@@ -60,7 +60,7 @@ export type AgentPermissionMode = typeof AgentPermissionMode.Type
  * ```
  *
  */
-export const DEFAULT_AGENT_PERMISSION_MODE: AgentPermissionMode = 'auto'
+export const DEFAULT_AGENT_PERMISSION_MODE: AgentPermissionMode = "auto";
 
 /** Default missing settings to review while keeping legacy and invalid values manual.
  *
@@ -76,7 +76,7 @@ export const DEFAULT_AGENT_PERMISSION_MODE: AgentPermissionMode = 'auto'
  */
 export function parseAgentPermissionMode(value: unknown): AgentPermissionMode {
   if (value === undefined) {
-    return DEFAULT_AGENT_PERMISSION_MODE
+    return DEFAULT_AGENT_PERMISSION_MODE;
   }
-  return value === 'auto' || value === 'full' ? value : 'ask'
+  return value === "auto" || value === "full" ? value : "ask";
 }

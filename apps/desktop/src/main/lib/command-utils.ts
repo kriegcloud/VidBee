@@ -9,7 +9,7 @@ import {
   resolveFfmpegLocationFromPath
 } from '@vidbee/downloader-core-legacy/yt-dlp-args'
 import { toSharedSettings } from '../download-engine/args-builder'
-import type { settingsManager } from '../settings'
+import type { settingsManager } from '../settings.compatibility'
 import { ytdlpManager } from './ytdlp-manager'
 
 export { formatYtDlpCommand, toSharedSettings }

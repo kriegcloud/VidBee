@@ -78,7 +78,7 @@ export const limits: Limits = {
   appUnary: 16384,
   appStreams: 4096,
   frameBytes: 64 * 1024 * 1024,
-  windowBytes: 128 * 1024 * 1024,
+  windowBytes: 256 * 1024 * 1024,
   appBytes: 2 * 1024 * 1024 * 1024,
   native: 64,
   appNative: 1024,

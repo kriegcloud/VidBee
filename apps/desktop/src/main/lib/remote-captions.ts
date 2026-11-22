@@ -17,7 +17,7 @@ import {
   parseCaptionSidecarName,
   pickExtensionCaptionTrack
 } from '../../compatibility/shared/extension-transcript'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { createBoundedTextBuffer } from './bounded-output-buffer'
 import { buildCaptionExtractArgs } from './command-utils'
 import { applyExtensionCookieSettings } from './extension-cookies'

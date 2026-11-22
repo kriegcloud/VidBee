@@ -15,7 +15,6 @@ import {
   ItemMedia,
   ItemTitle
 } from '@renderer/components/ui/item'
-import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { transcriptMapAtom } from '@renderer/store/transcripts'
 import {
@@ -28,6 +27,7 @@ import { useAtomValue } from 'jotai'
 import { AudioLines, FileAudio, Sparkles, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { foundationClients } from '../../lib/foundation'
 
 const FEATURE_ICONS: Record<WhatsNewFeatureId, typeof AudioLines> = {
   localFiles: FileAudio,
@@ -95,7 +95,7 @@ export function WhatsNewHost() {
     let cancelled = false
     const check = async () => {
       try {
-        const shouldShow = await ipcServices.settings.shouldPromptWhatsNew()
+        const shouldShow = await foundationClients.settings.shouldPromptWhatsNew()
         if (!cancelled && shouldShow) {
           setOpen(true)
         }
@@ -115,7 +115,7 @@ export function WhatsNewHost() {
    */
   const dismiss = () => {
     setOpen(false)
-    void ipcServices.settings.markWhatsNewSeen().catch((error: unknown) => {
+    void foundationClients.settings.markWhatsNewSeen().catch((error: unknown) => {
       logger.error('Failed to mark Whats New as seen', error)
     })
   }

@@ -4044,7 +4044,7 @@
       "file": "apps/desktop/src/renderer/src/components/kernel/kernel-error-report.ts",
       "package": "vidbee",
       "classification": "pending-port",
-      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
       "executable": true
     },
     {
@@ -4828,7 +4828,7 @@
       "file": "apps/desktop/src/renderer/src/env.d.ts",
       "package": "vidbee",
       "classification": "pending-port",
-      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
       "executable": true
     },
     {
@@ -5521,7 +5521,7 @@
       "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
       "package": "vidbee",
       "classification": "pending-port",
-      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
       "executable": true
     },
     {
@@ -5591,7 +5591,7 @@
       "file": "apps/desktop/src/shared/Tts.model.ts",
       "package": "vidbee",
       "classification": "pending-port",
-      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
       "executable": true
     },
     {
@@ -5920,7 +5920,7 @@
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
       "package": "vidbee",
       "classification": "pending-port",
-      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
       "executable": true
     },
     {
@@ -34201,6 +34201,461 @@
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/settings-model.spec.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.errors.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.rpc.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/settings-codec.spec.mjs",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsEnvironment.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsStore.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsStore.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/Settings.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/Settings.layer.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsApplication.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/App.rpc.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/DesktopOperation.errors.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Window.rpc.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/LegacyEffect.entry.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/App.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/Window.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/AppHost.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/AppHost.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/WindowHost.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/WindowHost.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationHosts.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/settings.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/registrar.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/app-service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/window-service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/settings-service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-runtime.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationEvents.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Desktop.rpc.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationStreams.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationHandlers.layer.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationServer.entry.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-boot.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/lib/foundation-disposal.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationClient.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Foundation.atoms.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/DesktopAtomRuntime.entry.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationCalls.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/DesktopAtomProvider.tsx",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/document.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/foundation.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/foundation-state.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-events.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-windows.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/settings.compatibility.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/NativeFoundation.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/PreferenceHost.errors.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Preferences.driver.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Settings.atoms.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationStorage.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/About.atoms.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/SettingsScreen.tsx",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/SettingsPanels.tsx",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/SettingsPanels.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationFailures.service.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact phase-9.0 strict foundation graph; compiler, law and documentation gates run independently of the remaining desktop partition.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/ownership.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/preload.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/production.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/provider.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged-services.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable new-path packaged foundation probes under the existing owned isolation and build-admission harness.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/kernel-error-report.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Legacy synchronous clock compatibility adapter; pure report formatting belongs to the strict foundation helper.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/services-corpus/review.spec.mjs",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Native foundation integration fixture in the explicit partial desktop unit; executes scoped production modules through @effect/vitest.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/services-mutations.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Executable new-path packaged foundation probes under the existing owned isolation and build-admission harness.",
       "executable": true
     }
   ]

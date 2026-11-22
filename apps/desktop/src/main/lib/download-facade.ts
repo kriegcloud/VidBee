@@ -62,7 +62,7 @@ import type {
   VideoInfo,
   VideoInfoCommandResult
 } from '../../shared/types'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { cancelledPartTargets, deleteCancelledDownloadParts } from './cancelled-download-parts'
 import { toSharedSettings } from './command-utils'

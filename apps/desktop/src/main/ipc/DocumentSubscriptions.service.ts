@@ -374,6 +374,11 @@ export const makeSubscriptions = ({
     acquire,
     bind,
     requireActive,
+    bindOptional: (family: string) =>
+      Effect.suspend(() => {
+        const sub = O.getOrUndefined(HashMap.get(slots, family));
+        return bind(sub === undefined ? [] : [sub.token]);
+      }),
     close,
     watch,
     disconnect: Effect.gen(function* () {

@@ -30,7 +30,7 @@ import {
   SubscriptionsApi
 } from '@vidbee/subscriptions-core-legacy'
 import type { SubscriptionFeedItem, SubscriptionRule } from '../../shared/types'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { toSharedSettings } from './command-utils'
 import { getDatabaseConnection } from './database'

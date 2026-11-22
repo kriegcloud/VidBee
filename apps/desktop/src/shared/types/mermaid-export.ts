@@ -1,8 +1,8 @@
-import { $DesktopId } from '@vidbee/identity/packages'
-import { LiteralKit } from '@vidbee/schema/LiteralKit'
-import * as S from 'effect/Schema'
+import { $DesktopId } from "@vidbee/identity/packages";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as S from "effect/Schema";
 
-const $I = $DesktopId.create('shared/types/mermaid-export')
+const $I = $DesktopId.create("shared/types/mermaid-export");
 
 /** Main → hidden share renderer: export one saved Mermaid diagram.
  *
@@ -16,7 +16,7 @@ const $I = $DesktopId.create('shared/types/mermaid-export')
  * @category utilities
  * @since 0.0.0
  */
-export const MERMAID_EXPORT_CHANNEL = 'share-capture:mermaid'
+export const MERMAID_EXPORT_CHANNEL = "share-capture:mermaid";
 
 /**
  * Runtime model for MermaidExportPayload shared values.
@@ -36,13 +36,13 @@ export const MERMAID_EXPORT_CHANNEL = 'share-capture:mermaid'
  */
 export const MermaidExportPayload = S.Struct({
   source: S.mutableKey(S.String),
-  format: S.mutableKey(LiteralKit(['svg', 'png', 'jpg'])),
-  theme: S.mutableKey(LiteralKit(['light', 'dark']))
+  format: S.mutableKey(LiteralKit(["svg", "png", "jpg"])),
+  theme: S.mutableKey(LiteralKit(["light", "dark"])),
 }).pipe(
-  $I.annoteSchema('MermaidExportPayload', {
-    description: 'MermaidExportPayload shared boundary data.'
+  $I.annoteSchema("MermaidExportPayload", {
+    description: "MermaidExportPayload shared boundary data.",
   })
-)
+);
 /** Decoded MermaidExportPayload data.
  * @category type-level
  * @since 0.0.0
@@ -55,7 +55,7 @@ export const MermaidExportPayload = S.Struct({
  * ```
  *
  */
-export type MermaidExportPayload = typeof MermaidExportPayload.Type
+export type MermaidExportPayload = typeof MermaidExportPayload.Type;
 
 /**
  * Runtime model for MermaidExportImage shared values.
@@ -76,10 +76,8 @@ export type MermaidExportPayload = typeof MermaidExportPayload.Type
 export const MermaidExportImage = S.Struct({
   data: S.mutableKey(S.Uint8Array),
   width: S.mutableKey(S.Finite),
-  height: S.mutableKey(S.Finite)
-}).pipe(
-  $I.annoteSchema('MermaidExportImage', { description: 'MermaidExportImage shared boundary data.' })
-)
+  height: S.mutableKey(S.Finite),
+}).pipe($I.annoteSchema("MermaidExportImage", { description: "MermaidExportImage shared boundary data." }));
 /** Decoded MermaidExportImage data.
  * @category type-level
  * @since 0.0.0
@@ -92,4 +90,4 @@ export const MermaidExportImage = S.Struct({
  * ```
  *
  */
-export type MermaidExportImage = typeof MermaidExportImage.Type
+export type MermaidExportImage = typeof MermaidExportImage.Type;

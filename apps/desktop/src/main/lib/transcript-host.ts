@@ -56,7 +56,7 @@ import {
 } from '@vidbee/transcription-legacy'
 import { preferChinaMirrors } from '@vidbee/transcription-legacy/download-mirrors'
 import { app, BrowserWindow } from 'electron'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { stopPromptRunsForDownload } from './ai-prompt-runner'
 import { deletePersistedPromptRunsForDownload } from './ai-prompt-store'

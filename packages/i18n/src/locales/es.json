@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Activa la descarga con un clic para añadir varios enlaces a la vez",
     "clickToCopy": "Haz clic para copiar los detalles",
     "clipboardEmpty": "El portapapeles está vacío",
+    "desktopConnectionLost": "Se perdió la conexión con la aplicación de escritorio. Recarga esta ventana para volver a conectarte.",
     "downloadFailed": "Error en la descarga",
     "downloadNecessaryFilesFailed": "Error al descargar archivos necesarios. Por favor, verifica tu red e intenta de nuevo",
     "emptyUrl": "Por favor, ingresa una URL",

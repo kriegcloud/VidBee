@@ -42,6 +42,7 @@ import { AlertTriangle } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { foundationClients } from '../../lib/foundation'
 import { ExtensionCookieSources } from './ExtensionCookieSources'
 
 interface CookiesSetupPanelProps {
@@ -274,7 +275,7 @@ export function CookiesSetupPanel({
     }
     const fetchPlatform = async () => {
       try {
-        setPlatform(await ipcServices.app.getPlatform())
+        setPlatform(await foundationClients.app.getPlatform())
       } catch (error) {
         logger.error('[CookiesSetup] Failed to get platform info:', error)
       }

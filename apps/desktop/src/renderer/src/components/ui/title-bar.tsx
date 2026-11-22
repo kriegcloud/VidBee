@@ -4,7 +4,8 @@ import IconFluentDismiss20Regular from '~icons/fluent/dismiss-20-regular'
 import IconFluentMaximize20Regular from '~icons/fluent/maximize-20-regular'
 import IconFluentSquareMultiple20Regular from '~icons/fluent/square-multiple-20-regular'
 import IconFluentSubtract20Regular from '~icons/fluent/subtract-20-regular'
-import { ipcEvents, ipcServices } from '../../lib/ipc'
+import { foundationClients } from '../../lib/foundation'
+import { ipcEvents } from '../../lib/ipc'
 import '../../assets/title-bar.css'
 
 interface TitleBarProps {
@@ -44,9 +45,9 @@ export function TitleBar({ children, className, platform }: TitleBarProps) {
         restore: IconFluentSquareMultiple20Regular
       }}
       isMaximized={isMaximized}
-      onClose={() => ipcServices.window.close()}
-      onMaximize={() => ipcServices.window.maximize()}
-      onMinimize={() => ipcServices.window.minimize()}
+      onClose={() => foundationClients.window.close()}
+      onMaximize={() => foundationClients.window.maximize()}
+      onMinimize={() => foundationClients.window.minimize()}
       platform={platform}
     >
       {children}

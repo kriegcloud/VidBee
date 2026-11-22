@@ -14,7 +14,7 @@ import {
   sourceMediaKind
 } from '../../compatibility/shared/source-media-kind'
 import type { AgentArtifact } from '../../shared/agent-chat'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { applyExtensionCookieSettings } from './extension-cookies'
 import { ffmpegManager } from './ffmpeg-manager'
 import { getDesktopTaskQueueRef } from './queue-ref'

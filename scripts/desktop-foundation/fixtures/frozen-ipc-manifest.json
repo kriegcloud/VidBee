@@ -17,7 +17,7 @@
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/ai-service.ts",
       "source": "apps/desktop/src/main/ipc/services/ai-service.ts",
       "sourceDigest": "0b1ada4448f6a7ca2c288f834a387577f6a378a96cf8a6602e5d8a594b415caa",
-      "digest": "224c0f39977e499873a27748566ae1112a14d26ad008b338331a7f204416b18c"
+      "digest": "be671e0d6a17653e9431f6325c43c7e9020f948e11181eba4cf806ae725d0e73"
     },
     {
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/app-service.ts",
@@ -65,7 +65,7 @@
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/settings-service.ts",
       "source": "apps/desktop/src/main/ipc/services/settings-service.ts",
       "sourceDigest": "f40be279e89512f311ce58d78639f70d4410bef3f66eae31d05a69aaca4bf0a1",
-      "digest": "0a261c93eb4c7e6ffbdb7de5e19db500958edde2c56537b738347ab14cb0e276"
+      "digest": "18d207ce013669657eae23b6bb4e6ced0ea16e80c4ad6b31987ac1e2e5693eb6"
     },
     {
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/site-icon-url.ts",
@@ -77,7 +77,7 @@
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/subscription-service.ts",
       "source": "apps/desktop/src/main/ipc/services/subscription-service.ts",
       "sourceDigest": "44db7584437c9587989fcbbef3fec9dc770b25fd8b2144c8f3be9f8f28bddc5c",
-      "digest": "79875025240efa6b5603e795e3732e1971ae6a9ab2b0cd8494625a4e2cf147e6"
+      "digest": "2b610f13245bf1960a4d34da2bbc647441d30327bac7e7b50b0613db0c92f863"
     },
     {
       "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/thumbnail-service.ts",

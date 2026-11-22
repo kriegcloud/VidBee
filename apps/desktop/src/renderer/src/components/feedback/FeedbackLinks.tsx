@@ -1,10 +1,9 @@
-import { ipcServices } from '@renderer/lib/ipc'
 import { settingsAtom } from '@renderer/store/settings'
 import { ytdlpKernelStatusAtom } from '@renderer/store/ytdlp-kernel'
 import type { FeedbackAppInfo } from '@vidbee/ui/components/ui/feedback-link-buttons'
 import { useAtomValue } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
-import { logger } from '../../lib/logger'
+import { loadFoundationAppInfo } from '../../lib/foundation'
 
 interface AppInfo extends FeedbackAppInfo {
   appVersion: string
@@ -12,34 +11,8 @@ interface AppInfo extends FeedbackAppInfo {
 }
 
 const DEFAULT_APP_INFO: AppInfo = { appVersion: '', osVersion: '' }
-let cachedAppInfo: AppInfo | null = null
-let appInfoPromise: Promise<AppInfo> | null = null
-
-/** Cache the stable application and operating system versions. */
-const loadAppInfo = async (): Promise<AppInfo> => {
-  if (cachedAppInfo) {
-    return cachedAppInfo
-  }
-  if (appInfoPromise) {
-    return appInfoPromise
-  }
-
-  appInfoPromise = (async () => {
-    try {
-      const [version, osRelease] = await Promise.all([
-        ipcServices.app.getVersion(),
-        ipcServices.app.getOsVersion()
-      ])
-      cachedAppInfo = { appVersion: version, osVersion: osRelease }
-    } catch (error) {
-      logger.error('Failed to load app info for feedback links:', error)
-      cachedAppInfo = DEFAULT_APP_INFO
-    }
-    return cachedAppInfo
-  })()
-
-  return appInfoPromise
-}
+/** Read stable metadata owned by the strict document cache. */
+const loadAppInfo = loadFoundationAppInfo
 
 /** Add current kernel versions and non-secret download settings to feedback diagnostics. */
 export const useAppInfo = (): AppInfo => {

@@ -10,7 +10,7 @@ export async function packagedControls(owned,cdp) {
   const row=key=>key==='language'?`document.querySelectorAll('[role="combobox"]')[1].closest('[data-slot="item"]')`:`[...document.querySelectorAll('[data-slot="item"]')].find(n=>n.querySelector('[data-slot="item-title"]')?.textContent===${JSON.stringify(labels[key])})`
   const snapshot=async()=>view(`window.electron.ipcRenderer.invoke('settings.getAll')`)
   try {
-    await run(`globalThis.__foundationIpc=process.mainModule.require('electron').ipcMain;globalThis.__foundationWrites=[];globalThis.__foundationSet=__foundationIpc._invokeHandlers.get('settings.set');__foundationIpc.removeHandler('settings.set');__foundationIpc.handle('settings.set',(event,...args)=>{__foundationWrites.push(args);return __foundationSet(event,...args)});true`)
+    await run(`globalThis.__foundationIpc=process.mainModule.require('electron').ipcMain;globalThis.__foundationWrites=[];globalThis.__foundationStoreModule=process.mainModule.require(process.resourcesPath+'/app.asar/node_modules/electron-store');globalThis.__foundationStore=(__foundationStoreModule.default??__foundationStoreModule).prototype;globalThis.__foundationSet=__foundationStore.set;__foundationStore.set=function(...args){__foundationWrites.push(args);return Reflect.apply(__foundationSet,this,args)};true`)
     for(const [tab,key,kind,value] of [['general','theme','select','Light'],['general','language','select','Français'],['metadata','subtitleLanguages','subtitle','Français'],['metadata','embedThumbnail','switch'],['advanced','maxConcurrentDownloads','select','3'],['advanced','proxy','input','http://fixture.invalid']]) {
       await view(`location.hash='/settings?tab=${tab}';true`);await delay(400)
       const before=await snapshot(),start=await run('__foundationWrites.length')
@@ -54,7 +54,7 @@ export async function packagedControls(owned,cdp) {
       }
       await run(`__foundationIpc.removeHandler(${JSON.stringify(channel)});__foundationIpc.handle(${JSON.stringify(channel)},__foundationPicker);true`)
     }
-    await run(`__foundationIpc.removeHandler('settings.set');__foundationIpc.handle('settings.set',__foundationSet);true`)
+    await run(`__foundationStore.set=__foundationSet;true`)
     // Restore fixture mutations after the isolated screen probes.
     await view(`window.electron.ipcRenderer.invoke('settings.setAll',{proxy:'',language:'en'})`)
     return out

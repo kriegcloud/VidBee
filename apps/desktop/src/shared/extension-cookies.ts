@@ -1,21 +1,21 @@
-import { CookieSiteMatch, NetscapeCookieInput } from '@vidbee/downloader-core/Cookie.model'
-import { $DesktopId } from '@vidbee/identity/packages'
-import { LiteralKit } from '@vidbee/schema/LiteralKit'
-import * as S from 'effect/Schema'
+import { CookieSiteMatch, NetscapeCookieInput } from "@vidbee/downloader-core/Cookie.model";
+import { $DesktopId } from "@vidbee/identity/packages";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as S from "effect/Schema";
 
-const $I = $DesktopId.create('shared/extension-cookies')
+const $I = $DesktopId.create("shared/extension-cookies");
 
 /** Remembered browser profiles in cookie priority order, without credentials. */
 const ExtensionCookieSourcePreferenceFields = S.Struct({
   id: S.String.pipe(S.mutableKey),
   browser: S.String.pipe(S.mutableKey),
-  variant: LiteralKit(['dev', 'store']).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  lastConnectedAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+  variant: LiteralKit(["dev", "store"]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  lastConnectedAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
 }).pipe(
-  $I.annoteSchema('ExtensionCookieSourcePreferenceFields', {
-    description: 'Shared ExtensionCookieSourcePreferenceFields schema used by the boundary models.'
+  $I.annoteSchema("ExtensionCookieSourcePreferenceFields", {
+    description: "Shared ExtensionCookieSourcePreferenceFields schema used by the boundary models.",
   })
-)
+);
 
 /** ExtensionCookieSourcePreference shared data; structural for legacy construction.
  *
@@ -35,10 +35,10 @@ export const ExtensionCookieSourcePreference: S.Codec<
   typeof ExtensionCookieSourcePreferenceFields.Type,
   typeof ExtensionCookieSourcePreferenceFields.Encoded
 > = S.StructWithRest(ExtensionCookieSourcePreferenceFields, [S.Record(S.String, S.Unknown)]).pipe(
-  $I.annoteSchema('ExtensionCookieSourcePreference', {
-    description: 'ExtensionCookieSourcePreference shared boundary data.'
+  $I.annoteSchema("ExtensionCookieSourcePreference", {
+    description: "ExtensionCookieSourcePreference shared boundary data.",
   })
-)
+);
 /** Decoded mutable ExtensionCookieSourcePreference data.
  * @category type-level
  * @since 0.0.0
@@ -51,7 +51,7 @@ export const ExtensionCookieSourcePreference: S.Codec<
  * ```
  *
  */
-export type ExtensionCookieSourcePreference = typeof ExtensionCookieSourcePreference.Type
+export type ExtensionCookieSourcePreference = typeof ExtensionCookieSourcePreference.Type;
 
 /** One remembered extension, retained in Settings even while it is offline. */
 /** ExtensionCookieSource shared data; structural for legacy construction.
@@ -74,13 +74,13 @@ export const ExtensionCookieSource = S.Struct({
     legacy: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
     connected: S.Boolean.pipe(S.mutableKey),
     lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-    sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey)
-  }).fields
+    sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey),
+  }).fields,
 }).pipe(
-  $I.annoteSchema('ExtensionCookieSource', {
-    description: 'ExtensionCookieSource shared boundary data.'
+  $I.annoteSchema("ExtensionCookieSource", {
+    description: "ExtensionCookieSource shared boundary data.",
   })
-)
+);
 /** Decoded mutable ExtensionCookieSource data.
  * @category type-level
  * @since 0.0.0
@@ -93,7 +93,7 @@ export const ExtensionCookieSource = S.Struct({
  * ```
  *
  */
-export type ExtensionCookieSource = typeof ExtensionCookieSource.Type
+export type ExtensionCookieSource = typeof ExtensionCookieSource.Type;
 
 /** Live browser-extension cookie bridge shown on the cookies settings page. */
 /** ExtensionCookieConnection shared data; structural for legacy construction.
@@ -116,12 +116,12 @@ export const ExtensionCookieConnection = S.Struct({
   lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
   sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey),
   activeSourceId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
-  sources: S.Array(ExtensionCookieSource).pipe(S.mutable, S.mutableKey)
+  sources: S.Array(ExtensionCookieSource).pipe(S.mutable, S.mutableKey),
 }).pipe(
-  $I.annoteSchema('ExtensionCookieConnection', {
-    description: 'ExtensionCookieConnection shared boundary data.'
+  $I.annoteSchema("ExtensionCookieConnection", {
+    description: "ExtensionCookieConnection shared boundary data.",
   })
-)
+);
 /** Decoded mutable ExtensionCookieConnection data.
  * @category type-level
  * @since 0.0.0
@@ -134,7 +134,7 @@ export const ExtensionCookieConnection = S.Struct({
  * ```
  *
  */
-export type ExtensionCookieConnection = typeof ExtensionCookieConnection.Type
+export type ExtensionCookieConnection = typeof ExtensionCookieConnection.Type;
 
 /** Cookie rows the extension posts back for one download URL. */
 /** ExtensionCookieRow shared data; structural for legacy construction.
@@ -152,8 +152,8 @@ export type ExtensionCookieConnection = typeof ExtensionCookieConnection.Type
  * @since 0.0.0
  */
 export const ExtensionCookieRow = NetscapeCookieInput.pipe(
-  $I.annoteSchema('ExtensionCookieRow', { description: 'ExtensionCookieRow shared boundary data.' })
-)
+  $I.annoteSchema("ExtensionCookieRow", { description: "ExtensionCookieRow shared boundary data." })
+);
 /** Decoded mutable ExtensionCookieRow data.
  * @category type-level
  * @since 0.0.0
@@ -166,4 +166,4 @@ export const ExtensionCookieRow = NetscapeCookieInput.pipe(
  * ```
  *
  */
-export type ExtensionCookieRow = typeof ExtensionCookieRow.Type
+export type ExtensionCookieRow = typeof ExtensionCookieRow.Type;

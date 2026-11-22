@@ -58,7 +58,7 @@ import { type AiRemoteModelsInput, listRemoteProviderModels } from '../../../../
 import { aiStore } from '../../../../../apps/desktop/src/main/lib/ai-store'
 import { dislikeCloudResult } from '../../../../../apps/desktop/src/main/lib/cloud-device'
 import { loadCloudModels } from '../../../../../apps/desktop/src/main/lib/cloud-models'
-import { settingsManager } from '../../../../../apps/desktop/src/main/settings'
+import { settingsManager } from '../../../../../apps/desktop/src/main/legacy/settings'
 
 /** Conversations with messages, newest first. */
 function listHistorySummaries(): AgentThreadSummary[] {

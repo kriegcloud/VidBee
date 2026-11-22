@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 
 /** Allocate a filesystem-safe unique export name without overwriting existing library files. */
 export async function libraryExportPath(

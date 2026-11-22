@@ -1,8 +1,8 @@
-import { $DesktopId } from '@vidbee/identity/packages'
-import { LiteralKit } from '@vidbee/schema/LiteralKit'
-import * as S from 'effect/Schema'
+import { $DesktopId } from "@vidbee/identity/packages";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
+import * as S from "effect/Schema";
 
-const $I = $DesktopId.create('shared/types/ytdlp-kernel')
+const $I = $DesktopId.create("shared/types/ytdlp-kernel");
 
 /**
  * Runtime model for YtDlpKernelState shared values.
@@ -21,14 +21,14 @@ const $I = $DesktopId.create('shared/types/ytdlp-kernel')
  * structural for legacy construction.
  */
 export const YtDlpKernelState = LiteralKit([
-  'preparing',
-  'checking',
-  'installing',
-  'up-to-date',
-  'retry-scheduled',
-  'bundled-fallback',
-  'unavailable'
-]).pipe($I.annoteSchema('YtDlpKernelState', { description: 'yt-dlp kernel preparation state.' }))
+  "preparing",
+  "checking",
+  "installing",
+  "up-to-date",
+  "retry-scheduled",
+  "bundled-fallback",
+  "unavailable",
+]).pipe($I.annoteSchema("YtDlpKernelState", { description: "yt-dlp kernel preparation state." }));
 /** Decoded YtDlpKernelState data.
  * @category type-level
  * @since 0.0.0
@@ -41,7 +41,7 @@ export const YtDlpKernelState = LiteralKit([
  * ```
  *
  */
-export type YtDlpKernelState = typeof YtDlpKernelState.Type
+export type YtDlpKernelState = typeof YtDlpKernelState.Type;
 
 /**
  * Runtime model for YtDlpKernelPreparationStep shared values.
@@ -59,13 +59,11 @@ export type YtDlpKernelState = typeof YtDlpKernelState.Type
  * @since 0.0.0
  * structural for legacy construction.
  */
-export const YtDlpKernelPreparationStep = S.NullOr(
-  LiteralKit(['copying', 'validating', 'finalizing'])
-).pipe(
-  $I.annoteSchema('YtDlpKernelPreparationStep', {
-    description: 'Shared YtDlpKernelPreparationStep schema used by the boundary models.'
+export const YtDlpKernelPreparationStep = S.NullOr(LiteralKit(["copying", "validating", "finalizing"])).pipe(
+  $I.annoteSchema("YtDlpKernelPreparationStep", {
+    description: "Shared YtDlpKernelPreparationStep schema used by the boundary models.",
   })
-)
+);
 /** Decoded YtDlpKernelPreparationStep data.
  * @category type-level
  * @since 0.0.0
@@ -78,7 +76,7 @@ export const YtDlpKernelPreparationStep = S.NullOr(
  * ```
  *
  */
-export type YtDlpKernelPreparationStep = typeof YtDlpKernelPreparationStep.Type
+export type YtDlpKernelPreparationStep = typeof YtDlpKernelPreparationStep.Type;
 
 /**
  * Runtime model for YtDlpKernelStatus shared values.
@@ -99,15 +97,13 @@ export type YtDlpKernelPreparationStep = typeof YtDlpKernelPreparationStep.Type
 export const YtDlpKernelStatus = S.Struct({
   ready: S.mutableKey(S.Boolean),
   state: S.mutableKey(YtDlpKernelState),
-  source: LiteralKit(['managed', 'bundled']).pipe(S.NullOr, S.mutableKey),
+  source: LiteralKit(["managed", "bundled"]).pipe(S.NullOr, S.mutableKey),
   ytDlpVersion: S.String.pipe(S.NullOr, S.mutableKey),
   nodeVersion: S.String.pipe(S.NullOr, S.mutableKey),
   progress: S.Finite.pipe(S.NullOr, S.mutableKey),
   preparationStep: S.mutableKey(YtDlpKernelPreparationStep),
-  error: S.String.pipe(S.NullOr, S.mutableKey)
-}).pipe(
-  $I.annoteSchema('YtDlpKernelStatus', { description: 'YtDlpKernelStatus shared boundary data.' })
-)
+  error: S.String.pipe(S.NullOr, S.mutableKey),
+}).pipe($I.annoteSchema("YtDlpKernelStatus", { description: "YtDlpKernelStatus shared boundary data." }));
 /** Decoded YtDlpKernelStatus data.
  * @category type-level
  * @since 0.0.0
@@ -120,4 +116,4 @@ export const YtDlpKernelStatus = S.Struct({
  * ```
  *
  */
-export type YtDlpKernelStatus = typeof YtDlpKernelStatus.Type
+export type YtDlpKernelStatus = typeof YtDlpKernelStatus.Type;

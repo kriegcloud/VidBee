@@ -26,7 +26,7 @@ import {
 import { saveSplitShareImageFiles } from '../lib/share-image-split'
 import { getDesktopTaskQueue } from '../lib/task-queue-host'
 import { readTranscriptDetail } from '../lib/transcript-host'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { defineMcpTool, mcpId, mcpLimit, mcpOffset, mcpPage } from './tool'
 
 const imageOptions = {
