@@ -1,11 +1,47 @@
+import { $DesktopId } from "@vidbee/identity/packages";
+import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as Context from "effect/Context";
+import * as Effect from "effect/Effect";
+import * as Fiber from "effect/Fiber";
 import * as HashMap from "effect/HashMap";
+import * as HashSet from "effect/HashSet";
+import * as Match from "effect/Match";
 import * as O from "effect/Option";
+import * as P from "effect/Predicate";
+import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as S from "effect/Schema";
+import * as Getter from "effect/SchemaGetter";
+import * as Issue from "effect/SchemaIssue";
 import * as Str from "effect/String";
-import { Counter } from "./DocumentDelivery.model.js";
+import { Counter, Registered } from "./DocumentDelivery.model.js";
 
-export const RequestId = S.Union([S.String, S.Finite]);
+const $TransportId = $DesktopId.create("renderer/src/transport/ElectronRpc.model");
+
+/**
+ * Validates Request Id at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use RequestId at its owning boundary)
+ *
+ * ```ts
+ * import { RequestId } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(RequestId);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const RequestId = S.Union([S.String, S.Finite]).pipe(
+  $TransportId.annoteSchema("RequestId", { description: "Request Id boundary in the desktop transport contract." })
+);
+/**
+ * Describes Request Id ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type RequestId = typeof RequestId.Type;
 const Request = S.TaggedStruct("Request", {
   id: RequestId,
@@ -17,14 +53,38 @@ const Request = S.TaggedStruct("Request", {
   traceId: S.optionalKey(S.String),
   spanId: S.optionalKey(S.String),
   sampled: S.optionalKey(S.Boolean),
-});
+}).pipe($TransportId.annoteSchema("Request", { description: "Request boundary in the desktop transport contract." }));
+/**
+ * Validates From Client at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use FromClient at its owning boundary)
+ *
+ * ```ts
+ * import { FromClient } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(FromClient);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const FromClient = S.Union([
   Request,
   S.TaggedStruct("Ack", { requestId: RequestId }),
   S.TaggedStruct("Interrupt", { requestId: RequestId }),
   S.TaggedStruct("Ping", {}),
   S.TaggedStruct("Eof", {}),
-]);
+]).pipe(
+  $TransportId.annoteSchema("FromClient", { description: "From Client boundary in the desktop transport contract." })
+);
+/**
+ * Describes From Client ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type FromClient = typeof FromClient.Type;
 const EncodedExit = S.Union([
   S.TaggedStruct("Success", { value: S.Unknown }),
@@ -37,42 +97,182 @@ const EncodedExit = S.Union([
       ])
     ),
   }),
-]);
-export const ResponseExit = S.TaggedStruct("Exit", { requestId: RequestId, exit: EncodedExit });
+]).pipe(
+  $TransportId.annoteSchema("EncodedExit", { description: "Encoded Exit boundary in the desktop transport contract." })
+);
+/**
+ * Validates Response Exit at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use ResponseExit at its owning boundary)
+ *
+ * ```ts
+ * import { ResponseExit } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ResponseExit);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ResponseExit = S.TaggedStruct("Exit", { requestId: RequestId, exit: EncodedExit }).pipe(
+  $TransportId.annoteSchema("ResponseExit", {
+    description: "Response Exit boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Response Exit ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type ResponseExit = typeof ResponseExit.Type;
+/**
+ * Validates From Server at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use FromServer at its owning boundary)
+ *
+ * ```ts
+ * import { FromServer } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(FromServer);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const FromServer = S.Union([
   ResponseExit,
   S.TaggedStruct("Chunk", { requestId: RequestId, values: S.NonEmptyArray(S.Unknown) }),
   S.TaggedStruct("Defect", { defect: S.Unknown }),
   S.TaggedStruct("Pong", {}),
-]);
+]).pipe(
+  $TransportId.annoteSchema("FromServer", { description: "From Server boundary in the desktop transport contract." })
+);
+/**
+ * Describes From Server ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type FromServer = typeof FromServer.Type;
+/**
+ * Validates Input at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use Input at its owning boundary)
+ *
+ * ```ts
+ * import { Input } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Input);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const Input = S.Struct({
   version: S.optionalKey(S.Literal(1)),
   session: S.String,
   client: Counter,
-  message: FromClient,
-});
+  message: S.Union([FromClient, S.TaggedStruct("StorageReleased", { storageId: Counter })]),
+}).pipe($TransportId.annoteSchema("Input", { description: "Input boundary in the desktop transport contract." }));
+/**
+ * Describes Input ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type Input = typeof Input.Type;
+/**
+ * Validates Output at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use Output at its owning boundary)
+ *
+ * ```ts
+ * import { Output } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Output);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const Output = S.Struct({
   version: S.optionalKey(S.Literal(1)),
   session: S.String,
   client: Counter,
+  storageId: S.optionalKey(Counter),
   message: S.Union([
     FromServer,
-    S.TaggedStruct("Terminal", { response: ResponseExit }),
+    S.TaggedStruct("Terminal", { response: ResponseExit, subscription: S.optionalKey(Registered) }),
     S.TaggedStruct("DocumentClosed", {}),
   ]),
-});
+}).pipe($TransportId.annoteSchema("Output", { description: "Output boundary in the desktop transport contract." }));
+/**
+ * Describes Output ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type Output = typeof Output.Type;
-export const Connect = S.Struct({ session: S.String, generation: Counter, version: S.Literal(1) });
+/**
+ * Validates Connect at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use Connect at its owning boundary)
+ *
+ * ```ts
+ * import { Connect } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Connect);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const Connect = S.Struct({ session: S.String, generation: Counter, version: S.Literal(1) }).pipe(
+  $TransportId.annoteSchema("Connect", { description: "Connect boundary in the desktop transport contract." })
+);
+/**
+ * Describes Connect ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type Connect = typeof Connect.Type;
+/**
+ * Constructs channels with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use channels at its owning boundary)
+ *
+ * ```ts
+ * import { channels } from "./ElectronRpc.model.js"
+ * const messageChannel = channels.message;
+ * void messageChannel;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const channels = {
   connect: "vidbee:rpc:connect:v1",
   message: "vidbee:rpc:message:v1",
   end: "vidbee:rpc:end:v1",
 };
-/** Narrow, browser-safe preload surface. Registration must precede connect. */
+/**
+ * Narrow, browser-safe preload surface. Registration must precede connect.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface DesktopRpcBridge {
   readonly connect: () => Promise<unknown>;
   readonly disconnect: (session: string) => void;
@@ -80,17 +280,42 @@ export interface DesktopRpcBridge {
   readonly subscribe: (receive: (frame: unknown) => void) => () => void;
 }
 
-/** Logical retention ownership. A transfer reserves its destination before releasing its source. */
+/**
+ * Logical retention ownership. A transfer reserves its destination before releasing its source.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface RetentionLease {
   readonly bytes: () => number;
   readonly control: boolean;
   readonly release: () => void;
   readonly resize: (bytes: number) => boolean;
 }
+/**
+ * Describes Retention Account ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface RetentionAccount {
   readonly reserve: (bytes: number, control?: boolean) => RetentionLease | undefined;
 }
-/** No encoded byte buffer is allocated merely to measure incoming JSON. */
+/**
+ * No encoded byte buffer is allocated merely to measure incoming JSON.
+ *
+ * **Example** (Use measureFrame at its owning boundary)
+ *
+ * ```ts
+ * import { measureFrame } from "./ElectronRpc.model.js"
+ * const size = measureFrame("hello");
+ * const fits = size.utf8 < 64 * 1024 * 1024;
+ * void fits;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const measureFrame = (text: string) => {
   let utf8 = 0;
   let structure = 1;
@@ -120,7 +345,23 @@ export const measureFrame = (text: string) => {
   return { utf8, retained: 4 * text.length + utf8 + 128 * structure };
 };
 
-/** Shared by all transport and amendment owners in a process; window accounts survive reload. */
+/**
+ * Shared by all transport and amendment owners in a process; window accounts survive reload.
+ *
+ * **Example** (Use makeRetentionLedger at its owning boundary)
+ *
+ * ```ts
+ * import { makeRetentionLedger } from "./ElectronRpc.model.js"
+ * const ledger = makeRetentionLedger();
+ * ledger.connect("document", "window");
+ * const lease = ledger.document("document")?.reserve(4096);
+ * lease?.release();
+ * ledger.disconnect("document");
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeRetentionLedger = ({
   windowBytes = 128 * 1024 * 1024,
   appBytes = 2 * 1024 * 1024 * 1024,
@@ -238,12 +479,26 @@ export const makeRetentionLedger = ({
   };
 };
 
-/** Upper bound for JSON serialization and retained plain-data traversal, before stringify. */
+/**
+ * Upper bound for JSON serialization and retained plain-data traversal, before stringify.
+ *
+ * **Example** (Use measureValue at its owning boundary)
+ *
+ * ```ts
+ * import { measureValue } from "./ElectronRpc.model.js"
+ * const reservation = measureValue({ name: "hello" });
+ * if (reservation !== undefined) { const requiredBytes = reservation; void requiredBytes; }
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const measureValue = (input: unknown): number | undefined => {
   let nodes = 0;
   const visit = (value: unknown, ancestors: ReadonlyArray<object>, depth: number): number | undefined => {
+    if (S.is(S.Uint8Array)(value)) return 256 + value.byteLength * 2;
     if (++nodes > 65536 || depth > 64) return undefined;
-    if (typeof value === "string") {
+    if (P.isString(value)) {
       let escapes = 0;
       for (let index = 0; index < value.length; index++) {
         const code = O.getOrElse(Str.charCodeAt(index)(value), () => 0);
@@ -257,14 +512,14 @@ export const measureValue = (input: unknown): number | undefined => {
       }
       return 128 + 4 * (value.length + escapes + 2) + measureFrame(value).utf8 + escapes + 2;
     }
-    if (value === null || value === undefined || typeof value === "boolean" || typeof value === "number") return 128;
-    if (typeof value !== "object" || ancestors.includes(value)) return undefined;
+    if (value === null || value === undefined || P.isBoolean(value) || P.isNumber(value)) return 128;
+    if (!P.isObjectOrArray(value) || ancestors.includes(value)) return undefined;
     let size = 256;
     const next = [...ancestors, value];
     for (const key of Reflect.ownKeys(value)) {
       const descriptor = Reflect.getOwnPropertyDescriptor(value, key);
       if (descriptor?.enumerable !== true) continue;
-      if (typeof key !== "string" || !("value" in descriptor)) return undefined;
+      if (!P.isString(key) || !("value" in descriptor)) return undefined;
       const child: unknown = descriptor.value;
       const amount = visit(child, next, depth + 1);
       if (amount === undefined) return undefined;
@@ -276,7 +531,23 @@ export const measureValue = (input: unknown): number | undefined => {
   return visit(input, [], 0);
 };
 
-export const ResourceDomain = S.Literals([
+/**
+ * Validates Resource Domain at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use ResourceDomain at its owning boundary)
+ *
+ * ```ts
+ * import { ResourceDomain } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ResourceDomain);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ResourceDomain = LiteralKit([
   "registration",
   "cut",
   "watermark",
@@ -284,29 +555,46 @@ export const ResourceDomain = S.Literals([
   "repairEntry",
   "invocation",
   "auth",
-]);
+]).pipe(
+  $TransportId.annoteSchema("ResourceDomain", {
+    description: "Resource Domain boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Resource Domain ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type ResourceDomain = typeof ResourceDomain.Type;
-/** One instance per document, passed to every subordinate owner. */
+/**
+ * One instance per document, passed to every subordinate owner.
+ *
+ * **Example** (Use makeResourceBudget at its owning boundary)
+ *
+ * ```ts
+ * import { makeResourceBudget } from "./ElectronRpc.model.js"
+ * import { makeRetentionLedger } from "./ElectronRpc.model.js";
+ * const resources = makeResourceBudget(makeRetentionLedger().forWindow("window"));
+ * const invocation = resources.claim("invocation", 256);
+ * invocation?.release();
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeResourceBudget = (account: RetentionAccount) => {
   let held = HashMap.empty<ResourceDomain, { count: number; bytes: number }>();
-  const bounds = (domain: ResourceDomain): readonly [number, number] => {
-    switch (domain) {
-      case "registration":
-        return [1024, 128 * 1024 * 1024];
-      case "cut":
-        return [1024, 4 * 1024 * 1024];
-      case "watermark":
-        return [4096, 2 * 1024 * 1024];
-      case "repair":
-        return [16, 4096];
-      case "repairEntry":
-        return [32768, 4 * 1024 * 1024];
-      case "invocation":
-        return [1024, 4 * 1024 * 1024];
-      case "auth":
-        return [256, 256 * 1024];
-    }
-  };
+  const bounds = Match.type<ResourceDomain>().pipe(
+    Match.when("registration", () => [1024, 128 * 1024 * 1024] as const),
+    Match.when("cut", () => [1024, 4 * 1024 * 1024] as const),
+    Match.when("watermark", () => [4096, 2 * 1024 * 1024] as const),
+    Match.when("repair", () => [16, 4096] as const),
+    Match.when("repairEntry", () => [32768, 4 * 1024 * 1024] as const),
+    Match.when("invocation", () => [1024, 4 * 1024 * 1024] as const),
+    Match.when("auth", () => [256, 256 * 1024] as const),
+    Match.exhaustive
+  );
   return {
     account,
     claim: (domain: ResourceDomain, initial: number): RetentionLease | undefined => {
@@ -342,8 +630,131 @@ export const makeResourceBudget = (account: RetentionAccount) => {
     stats: () => held,
   };
 };
+/**
+ * Describes Resource Budget ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type ResourceBudget = ReturnType<typeof makeResourceBudget>;
 
+/**
+ * Supplies Document Resources through the owning application or document scope.
+ *
+ * **Example** (Use DocumentResources at its owning boundary)
+ *
+ * ```ts
+ * import { DocumentResources } from "./ElectronRpc.model.js"
+ * import * as Effect from "effect/Effect"
+ * const access = DocumentResources.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class DocumentResources extends Context.Service<DocumentResources, ResourceBudget>()(
   "vidbee/renderer/src/transport/ElectronRpc.model/DocumentResources"
 ) {}
+
+/**
+ * Reserves the entire admitted transformation arena before invoking an arbitrary RPC codec.
+ *
+ * **Example** (Use makeCodecOwnership at its owning boundary)
+ *
+ * ```ts
+ * import { makeCodecOwnership } from "./ElectronRpc.model.js"
+ * import * as S from "effect/Schema"
+ * import * as Effect from "effect/Effect"
+ * import { makeRetentionLedger } from "./ElectronRpc.model.js";
+ * const ledger = makeRetentionLedger();
+ * const owner = makeCodecOwnership({ account: () => ledger.forWindow("window") });
+ * const encoded = S.encodeEffect(owner.codecFor(S.String))("hello");
+ * void encoded.pipe(Effect.ensuring(Effect.sync(owner.close)));
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
+export const makeCodecOwnership = ({
+  account,
+  ceiling = 64 * 1024 * 1024,
+  decoded,
+  refused,
+}: {
+  readonly account: () => RetentionAccount | undefined;
+  readonly refused?: () => void;
+  readonly ceiling?: number;
+  readonly decoded?: (value: unknown, lease: RetentionLease) => boolean;
+}) => {
+  let pending = HashMap.empty<number, ReadonlyArray<RetentionLease>>();
+  let observing = HashSet.empty<number>();
+  const releaseFor = (id: number) => {
+    for (const lease of O.getOrElse(HashMap.get(pending, id), () => [])) lease.release();
+    pending = HashMap.remove(pending, id);
+  };
+  const release = () => releaseFor(Fiber.getCurrent()?.id ?? -1);
+  const codecFor: RpcSerialization.CodecFor = <Schema extends S.Top>(schema: Schema) => {
+    const codec = RpcSerialization.json
+      .codecFor(schema)
+      .pipe($TransportId.annoteSchema("codec", { description: "codec boundary in the desktop transport contract." }));
+    const transform = Effect.fn("ElectronRpc.codec")(function* <A, R>(
+      input: unknown,
+      run: () => Effect.Effect<A, S.SchemaError, R>,
+      decode: boolean
+    ) {
+      const lease = account()?.reserve(ceiling);
+      if (lease === undefined) {
+        refused?.();
+        return yield* Effect.fail(new Issue.InvalidValue({ message: "CodecCapacity" }, input));
+      }
+      let transferred = false;
+      return yield* Effect.gen(function* () {
+        const value = yield* Effect.suspend(run).pipe(Effect.mapError((error) => error.issue));
+        const size = measureValue(value);
+        if (size === undefined || size > ceiling || !lease.resize(size)) {
+          refused?.();
+          return yield* Effect.fail(new Issue.InvalidValue({ message: "CodecCapacity" }, input));
+        }
+        if (decode && decoded?.(value, lease) === true) transferred = true;
+        else {
+          const id = Fiber.getCurrent()?.id ?? -1;
+          pending = HashMap.set(pending, id, [...O.getOrElse(HashMap.get(pending, id), () => []), lease]);
+          const fiber = Fiber.getCurrent();
+          if (fiber !== undefined && !HashSet.has(observing, id)) {
+            observing = HashSet.add(observing, id);
+            fiber.addObserver(() => {
+              releaseFor(id);
+              observing = HashSet.remove(observing, id);
+            });
+          }
+          transferred = true;
+        }
+        return value;
+      }).pipe(
+        Effect.ensuring(
+          Effect.sync(() => {
+            if (!transferred) lease.release();
+          })
+        )
+      );
+    });
+    return S.Unknown.pipe(
+      S.decodeTo(
+        S.declare((value: unknown): value is Schema["Type"] => S.is(S.toType(schema))(value)),
+        {
+          decode: Getter.transformEffect((input) => transform(input, () => S.decodeUnknownEffect(codec)(input), true)),
+          encode: Getter.transformEffect((input) => transform(input, () => S.encodeUnknownEffect(codec)(input), false)),
+        }
+      )
+    );
+  };
+  return {
+    codecFor,
+    release,
+    close: () => {
+      for (const leases of HashMap.values(pending)) for (const lease of leases) lease.release();
+      pending = HashMap.empty();
+    },
+  };
+};

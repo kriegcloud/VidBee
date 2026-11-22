@@ -1,16 +1,32 @@
 import * as Effect from "effect/Effect";
+import * as HashSet from "effect/HashSet";
 import * as S from "effect/Schema";
 import { app, BrowserWindow, ipcMain } from "electron";
 import { makeElectronWire } from "../src/main/ipc/ElectronRpcServer.driver.js";
 import { originalFailure } from "../src/main/lib/OriginalFailure.errors.js";
 import { Connect, channels, Input, Output } from "../src/renderer/src/transport/ElectronRpc.model.js";
 
-/** Native APIs confined to this fixture driver; caller runs only an isolated packaged runtime. */
+/**
+ * Native APIs confined to this fixture driver; caller runs only an isolated packaged runtime.
+ *
+ * **Example** (Use nativeHarness at its owning boundary)
+ *
+ * ```ts
+ * import { nativeHarness } from "./ElectronLifecycle.driver.js"
+ * import * as Effect from "effect/Effect"
+ * const fixture = Effect.scoped(nativeHarness());
+ * void fixture;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const nativeHarness = Effect.fn("ElectronLifecycle.native")(function* () {
   yield* Effect.tryPromise({
     try: () => app.whenReady(),
     catch: (original) => originalFailure({ operation: "ready", legacyMessage: "ready", original }),
   });
+  let registered = HashSet.empty<number>();
   const open = Effect.fn("ElectronLifecycle.open")(function* () {
     const window = yield* Effect.acquireRelease(
       Effect.sync(
@@ -22,6 +38,7 @@ export const nativeHarness = Effect.fn("ElectronLifecycle.native")(function* () 
       ),
       (window) => Effect.sync(() => window.destroy())
     );
+    registered = HashSet.add(registered, window.webContents.id);
     const execute = (source: string) =>
       Effect.tryPromise({
         try: (): Promise<unknown> => window.webContents.executeJavaScript(source),
@@ -58,5 +75,16 @@ export const nativeHarness = Effect.fn("ElectronLifecycle.native")(function* () 
       }).pipe(Effect.andThen(execute("globalThis.transportReactProof()"))),
     };
   });
-  return { wire: makeElectronWire(ipcMain), open };
+  return {
+    wire: makeElectronWire({
+      ipc: ipcMain,
+      authority: {
+        registeredRole: (contents) => (HashSet.has(registered, contents.id) ? "visible" : undefined),
+        packagedRendererUrl: `file://${app.getAppPath()}/react.html`,
+        developmentRendererUrl: "data:text/html,<title>transport fixture</title>",
+        allowsProcedure: (role, tag) => role === "visible" && (tag === "Echo" || tag === "Watch"),
+      },
+    }),
+    open,
+  };
 });

@@ -12,18 +12,25 @@ it('native driver partial listener installation releases exact acquired handlers
   const handlers = new Map()
   const original = new Error('native callback registration failed after installation')
   const wire = makeElectronWire({
-    handle: (channel, listener) => handlers.set(channel, listener),
-    removeHandler: (channel) => handlers.delete(channel),
-    on: (channel, listener) => {
-      listeners.set(channel, listener)
-      if (channel === channels.end) {
-        throw original
+    ipc: {
+      handle: (channel, listener) => handlers.set(channel, listener),
+      removeHandler: (channel) => handlers.delete(channel),
+      on: (channel, listener) => {
+        listeners.set(channel, listener)
+        if (channel === channels.end) {
+          throw original
+        }
+      },
+      removeListener: (channel, listener) => {
+        if (listeners.get(channel) === listener) {
+          listeners.delete(channel)
+        }
       }
     },
-    removeListener: (channel, listener) => {
-      if (listeners.get(channel) === listener) {
-        listeners.delete(channel)
-      }
+    authority: {
+      registeredRole: () => undefined,
+      packagedRendererUrl: 'file:///denied',
+      allowsProcedure: () => false
     }
   })
   const result = await Effect.runPromise(
@@ -80,4 +87,68 @@ it('preload connection has no unaccounted startup queue and releases listener an
   assert.equal(deliveries, 1)
   assert.equal(removals, 1)
   assert.equal(disconnects, 1)
+})
+
+it('fix3 R1: application authority rejects unregistered, wrong URL, subframe, stale and wrong-role senders', async () => {
+  const handlers = new Map()
+  const listeners = new Map()
+  const frame = { url: 'https://untrusted.invalid/', send() {} }
+  const contents = {
+    id: 99,
+    mainFrame: frame,
+    isDestroyed: () => false,
+    on() {},
+    removeListener() {}
+  }
+  let role
+  const wire = makeElectronWire({
+    ipc: {
+      handle: (channel, callback) => handlers.set(channel, callback),
+      removeHandler: (channel) => handlers.delete(channel),
+      on: (channel, callback) => listeners.set(channel, callback),
+      removeListener: (channel) => listeners.delete(channel)
+    },
+    authority: {
+      registeredRole: (sender) => (sender === contents ? role : undefined),
+      packagedRendererUrl: 'file:///app/renderer/index.html',
+      developmentRendererUrl: 'http://localhost:5173/',
+      allowsProcedure: (role, tag) => role === 'visible' || tag === 'Capture.Result'
+    }
+  })
+  await Effect.runPromise(
+    Effect.scoped(
+      Effect.gen(function* () {
+        let received = 0
+        yield* wire.listen(
+          () => {
+            received++
+          },
+          () => {}
+        )
+        const connect = handlers.get(channels.connect)
+        const event = { sender: contents, senderFrame: frame }
+        assert.throws(() => connect(event), 'unregistered remote document must be refused')
+        frame.url = 'file:///app/renderer/index.html'
+        assert.throws(() => connect(event), 'unregistered packaged document must be refused')
+        frame.url = 'https://untrusted.invalid/'
+        role = 'visible'
+        assert.throws(() => connect(event), 'registered remote document must be refused')
+        frame.url = 'file:///app/renderer/evil.html'
+        assert.throws(() => connect(event))
+        frame.url = 'http://localhost:5173/'
+        assert.throws(() => connect({ ...event, senderFrame: {} }))
+        const session = connect(event).session
+        assert.equal(yield* wire.authorize(session, 'Settings.Read'), true)
+        role = 'capture'
+        assert.equal(yield* wire.authorize(session, 'Settings.Read'), false)
+        const capture = connect(event).session
+        assert.equal(yield* wire.authorize(capture, 'Settings.Read'), false)
+        assert.equal(yield* wire.authorize(capture, 'Capture.Result'), true)
+        contents.mainFrame = { ...frame }
+        listeners.get(channels.message)(event, 'stale')
+        assert.equal(received, 0)
+        assert.equal(yield* wire.authorize(capture, 'Capture.Result'), false)
+      })
+    )
+  )
 })

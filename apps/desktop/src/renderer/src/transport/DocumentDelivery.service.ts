@@ -19,7 +19,22 @@ interface Waiter {
   readonly resume: (effect: Effect.Effect<void, DeliveryError>) => void;
   readonly retention?: import("./ElectronRpc.model.js").RetentionLease;
 }
-/** Local application gates never send an application receipt to main. */
+/**
+ * Local application gates never send an application receipt to main.
+ *
+ * **Example** (Use makeDeliveryGate at its owning boundary)
+ *
+ * ```ts
+ * import { makeDeliveryGate } from "./DocumentDelivery.service.js"
+ * const gate = makeDeliveryGate();
+ * const ready = gate.awaitCuts([]);
+ * void ready;
+ * gate.disconnect();
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeDeliveryGate = ({
   maxCalls = 1024,
   resources,
@@ -77,6 +92,7 @@ export const makeDeliveryGate = ({
       (A.filter(HashMap.values(records), (entry) => entry.client === cut.token.client).length >= 1024 ||
         (resources !== undefined && retention === undefined))
     ) {
+      retention?.release();
       retireClient(cut.token.client);
       return;
     }
@@ -137,6 +153,21 @@ export const makeDeliveryGate = ({
     stats: () => ({ tokens: HashMap.size(records), pending: pending.length }),
   };
 };
+/**
+ * Supplies Document Delivery through the owning application or document scope.
+ *
+ * **Example** (Use DocumentDelivery at its owning boundary)
+ *
+ * ```ts
+ * import { DocumentDelivery } from "./DocumentDelivery.service.js"
+ * import * as Effect from "effect/Effect"
+ * const access = DocumentDelivery.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class DocumentDelivery extends Context.Service<DocumentDelivery, ReturnType<typeof makeDeliveryGate>>()(
   "vidbee/renderer/src/transport/DocumentDelivery.service/DocumentDelivery"
 ) {}

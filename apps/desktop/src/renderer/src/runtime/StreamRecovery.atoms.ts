@@ -1,7 +1,20 @@
 import * as HashMap from "effect/HashMap";
 import * as HashSet from "effect/HashSet";
 
-/** Identity governs transport repair only; existing consumer hydration races are unchanged. */
+/**
+ * Identity governs transport repair only; existing consumer hydration races are unchanged.
+ *
+ * **Example** (Use makeRecovery at its owning boundary)
+ *
+ * ```ts
+ * import { makeRecovery } from "./StreamRecovery.atoms.js"
+ * const repair = makeRecovery();
+ * repair.dispose();
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeRecovery = ({
   count = 4096,
   resources,

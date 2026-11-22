@@ -17,7 +17,20 @@ import type * as AtomRegistry from "effect/reactivity/AtomRegistry";
 import type { DeliveryError, TransportFailure } from "../transport/DocumentDelivery.errors.js";
 import type { ResourceBudget, RetentionLease } from "../transport/ElectronRpc.model.js";
 
-/** One owner per document, closed before registry disposal on HMR/permanent departure. */
+/**
+ * One owner per document, closed before registry disposal on HMR/permanent departure.
+ *
+ * **Example** (Use makeInvocationOwner at its owning boundary)
+ *
+ * ```ts
+ * import { makeInvocationOwner } from "./RendererInvocation.entry.js"
+ * const compose = (options: Parameters<typeof makeInvocationOwner>[0]) => makeInvocationOwner(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeInvocationOwner = ({
   runtime,
   resources,
@@ -186,10 +199,40 @@ export const makeInvocationOwner = ({
   };
 };
 
+/**
+ * Constructs make Invocation Entry with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use makeInvocationEntry at its owning boundary)
+ *
+ * ```ts
+ * import { makeInvocationEntry } from "./RendererInvocation.entry.js"
+ * const compose = (options: Parameters<typeof makeInvocationEntry>[0]) => makeInvocationEntry(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeInvocationEntry = (runtime: ManagedRuntime.ManagedRuntime<never, never>) =>
   makeInvocationOwner({ runtime });
 
-/** Public AtomRegistry API; composition passes report to DesktopRpcConnection.onFailure. */
+/**
+ * Public AtomRegistry API; composition passes report to DesktopRpcConnection.onFailure.
+ *
+ * **Example** (Use makeTransportFailureOwner at its owning boundary)
+ *
+ * ```ts
+ * import { makeTransportFailureOwner } from "./RendererInvocation.entry.js"
+ * import * as AtomRegistry from "effect/reactivity/AtomRegistry";
+ * const registry = AtomRegistry.make();
+ * const owner = makeTransportFailureOwner(registry);
+ * owner.close();
+ * registry.dispose();
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeTransportFailureOwner = (registry: AtomRegistry.AtomRegistry) => {
   const atom = Atom.make<O.Option<TransportFailure>>(O.none());
   let live = true;
@@ -204,17 +247,33 @@ export const makeTransportFailureOwner = (registry: AtomRegistry.AtomRegistry) =
   };
 };
 
-/** Borrow the document runtime; own every subordinate gate/repair before permanent disposal. */
+/**
+ * Borrow the document runtime; own every subordinate gate/repair before permanent disposal.
+ *
+ * **Example** (Use makeRendererDocumentOwner at its owning boundary)
+ *
+ * ```ts
+ * import { makeRendererDocumentOwner } from "./RendererInvocation.entry.js"
+ * const compose = (options: Parameters<typeof makeRendererDocumentOwner>[0]) => makeRendererDocumentOwner(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeRendererDocumentOwner = ({
   runtime,
   resources,
+  disposeRegistry,
 }: {
   readonly runtime: ManagedRuntime.ManagedRuntime<never, never>;
   readonly resources: ResourceBudget;
+  readonly disposeRegistry: () => void;
 }) => {
   const invocation = makeInvocationOwner({ runtime, resources });
   const delivery = makeDeliveryGate({ resources });
   let closed = false;
+  let registryDisposed = false;
   let retired = HashSet.empty<string>();
   let retirementExhausted = false;
   let repairs = HashMap.empty<
@@ -228,6 +287,17 @@ export const makeRendererDocumentOwner = ({
         record.retained.release();
         repairs = HashMap.remove(repairs, key);
       }
+  };
+  const disposeDocument = (dispose = disposeRegistry) => {
+    if (!closed) {
+      closed = true;
+      invocation.close(() => {});
+      delivery.disconnect();
+      retireRepairs();
+    }
+    if (registryDisposed) return;
+    registryDisposed = true;
+    dispose();
   };
   return {
     invoke: invocation.invoke,
@@ -254,15 +324,8 @@ export const makeRendererDocumentOwner = ({
       invocation.retireClient(id);
       delivery.retireClient(tokenClient);
       retireRepairs(tokenClient);
+      if (retirementExhausted) disposeDocument();
     },
-    close: (disposeRegistry: () => void) => {
-      if (closed) return;
-      closed = true;
-      invocation.close(() => {
-        delivery.disconnect();
-        retireRepairs();
-        disposeRegistry();
-      });
-    },
+    close: disposeDocument,
   };
 };

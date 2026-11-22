@@ -1,10 +1,26 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as A from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as P from "effect/Predicate";
 import * as S from "effect/Schema";
 import { failure } from "./DocumentDelivery.errors.js";
 
-/** Independent of schema keys: own-key order, array identity/length and Object.is leaves. */
+const $TransportId = $DesktopId.create("renderer/src/transport/RpcCensus.model");
+
+/**
+ * Independent of schema keys: own-key order, array identity/length and Object.is leaves.
+ *
+ * **Example** (Use sameObservation at its owning boundary)
+ *
+ * ```ts
+ * import { sameObservation } from "./RpcCensus.model.js"
+ * const preserved = sameObservation({ left: { value: undefined }, right: { value: undefined } });
+ * void preserved;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const sameObservation = ({ left, right }: { readonly left: unknown; readonly right: unknown }): boolean => {
   if (Object.is(left, right)) return true;
   if (!P.isObjectOrArray(left) || !P.isObjectOrArray(right) || A.isArray(left) !== A.isArray(right)) return false;
@@ -25,7 +41,21 @@ export const sameObservation = ({ left, right }: { readonly left: unknown; reado
   }
   return true;
 };
-/** Supply the complete selected declaration's payload/success schema, including envelopes. */
+/**
+ * Supply the complete selected declaration's payload/success schema, including envelopes.
+ *
+ * **Example** (Use census at its owning boundary)
+ *
+ * ```ts
+ * import { census } from "./RpcCensus.model.js"
+ * import * as S from "effect/Schema"
+ * const roundTrip = census({ schema: S.String, value: "hello" });
+ * void roundTrip;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const census = Effect.fn("RpcCensus.roundTrip")(function* <A, I, RD, RE>({
   schema,
   value,
@@ -33,7 +63,11 @@ export const census = Effect.fn("RpcCensus.roundTrip")(function* <A, I, RD, RE>(
   readonly schema: S.Codec<A, I, RD, RE>;
   readonly value: A;
 }) {
-  const codec = schema.pipe(S.toCodecJson, S.fromJsonString);
+  const codec = schema.pipe(
+    S.toCodecJson,
+    S.fromJsonString,
+    $TransportId.annoteSchema("codec", { description: "codec boundary in the desktop transport contract." })
+  );
   const encoded = yield* S.encodeEffect(codec)(value);
   const decoded = yield* S.decodeEffect(codec)(encoded);
   if (!sameObservation({ left: value, right: decoded })) return yield* failure("CensusMismatch");

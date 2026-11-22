@@ -25,7 +25,7 @@ globalThis.transportReactProof = async () => {
   await runtime.context()
   const ledger = makeRetentionLedger()
   const resources = makeResourceBudget(ledger.forWindow('window'))
-  const owner = makeRendererDocumentOwner({ runtime, resources })
+  const owner = makeRendererDocumentOwner({ runtime, resources, disposeRegistry: () => {} })
   const repair = owner.recovery({ client: 'renderer', family: 'history' }).success
   repair.begin('epoch')
   repair.touch('task')
@@ -142,7 +142,7 @@ globalThis.transportReactProof = async () => {
   unsubscribe()
   listener({}, 'late')
   check(removals === 1 && deliveries === 1, 'HMR unsubscribe retained preload delivery')
-  const nextOwner = makeRendererDocumentOwner({ runtime, resources })
+  const nextOwner = makeRendererDocumentOwner({ runtime, resources, disposeRegistry: () => {} })
   check(
     (await nextOwner.invokePromise(Effect.succeed('fresh'))) === 'fresh',
     'replacement owner failed'

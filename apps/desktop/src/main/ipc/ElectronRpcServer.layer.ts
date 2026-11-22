@@ -4,11 +4,13 @@ import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import * as Fiber from "effect/Fiber";
 import * as HashMap from "effect/HashMap";
 import * as HashSet from "effect/HashSet";
 import * as Layer from "effect/Layer";
 import * as O from "effect/Option";
 import * as Queue from "effect/Queue";
+import * as Result from "effect/Result";
 import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as RpcServer from "effect/rpc/RpcServer";
 import * as S from "effect/Schema";
@@ -17,6 +19,7 @@ import * as Str from "effect/String";
 import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 import {
   Input,
+  makeCodecOwnership,
   measureFrame,
   measureValue,
   Output,
@@ -29,7 +32,21 @@ import type * as RpcMessage from "effect/rpc/RpcMessage";
 import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 import type { Lease } from "./ElectronRpcAdmission.service.js";
 
-/** Electron driver authenticates the document before invoking receive. */
+/**
+ * Electron driver authenticates the document before invoking receive.
+ *
+ * **Example** (Use ElectronRpcWire at its owning boundary)
+ *
+ * ```ts
+ * import { ElectronRpcWire } from "./ElectronRpcServer.layer.js"
+ * import * as Effect from "effect/Effect"
+ * const access = ElectronRpcWire.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class ElectronRpcWire extends Context.Service<
   ElectronRpcWire,
   {
@@ -37,6 +54,7 @@ export class ElectronRpcWire extends Context.Service<
       receive: (frame: unknown, session: string, account: string) => void,
       close: (session: string) => void
     ) => Effect.Effect<void, never, import("effect/Scope").Scope>;
+    readonly authorize: (session: string, tag: string) => Effect.Effect<boolean>;
     readonly account: (session: string) => Effect.Effect<string, DeliveryError>;
     readonly send: (session: string, frame: string) => Effect.Effect<void, DeliveryError>;
   }
@@ -52,6 +70,10 @@ interface RequestState {
   readonly lease: Lease;
   readonly retained: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
   started: boolean;
+  subscription?: {
+    readonly registered: import("../../renderer/src/transport/DocumentDelivery.model.js").Registered;
+    readonly close: Effect.Effect<void>;
+  };
   readonly tag: string;
   terminal: boolean;
 }
@@ -70,8 +92,23 @@ interface ClientState {
   readonly outbound: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease;
   requests: HashMap.HashMap<string | number, RequestState>;
   readonly session: string;
+  storage: HashMap.HashMap<number, import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease>;
 }
-/** Main adapter exposes its forced-terminal control only to owned subscriptions. */
+/**
+ * Main adapter exposes its forced-terminal control only to owned subscriptions.
+ *
+ * **Example** (Use makeServerProtocol at its owning boundary)
+ *
+ * ```ts
+ * import { makeServerProtocol } from "./ElectronRpcServer.layer.js"
+ * import * as Effect from "effect/Effect"
+ * const acquire = makeServerProtocol({ isStream: () => false, encodeFailure: () => Effect.succeed({ _tag: "Success", value: null }) });
+ * void Effect.scoped(acquire);
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* ({
   encodeFailure,
   isStream,
@@ -82,6 +119,52 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
   const wire = yield* ElectronRpcWire;
   const admissionOwner = yield* ElectronRpcAdmission;
   const scope = yield* Scope.Scope;
+  let codecAccounts = HashMap.empty<
+    number,
+    import("../../renderer/src/transport/ElectronRpc.model.js").RetentionAccount
+  >();
+  let decodeTargets = HashMap.empty<
+    number,
+    import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease
+  >();
+  let codecClients = HashMap.empty<number, ClientState>();
+  const codecs = makeCodecOwnership({
+    refused: () => {
+      const client = O.getOrUndefined(HashMap.get(codecClients, Fiber.getCurrent()?.id ?? -1));
+      if (client !== undefined) Queue.failCauseUnsafe(client.controls, Cause.die(failure("CodecCapacity")));
+    },
+    decoded: (_value, lease) => {
+      const target = O.getOrUndefined(HashMap.get(decodeTargets, Fiber.getCurrent()?.id ?? -1));
+      if (target === undefined) return false;
+      if (!target.resize(target.bytes() + lease.bytes()))
+        return Result.getOrThrowWith(Result.fail(failure("BufferedCapacity")), (error) => error);
+      lease.release();
+      return true;
+    },
+    account: () => O.getOrUndefined(HashMap.get(codecAccounts, Fiber.getCurrent()?.id ?? -1)),
+  });
+  const withCodecs = <A, E, R>(
+    effect: Effect.Effect<A, E, R>,
+    session: string,
+    target?: import("../../renderer/src/transport/ElectronRpc.model.js").RetentionLease,
+    client?: ClientState
+  ) =>
+    Effect.withFiber((fiber) => {
+      if (client !== undefined) codecClients = HashMap.set(codecClients, fiber.id, client);
+      const account = admissionOwner.ledger.document(session);
+      if (target !== undefined) decodeTargets = HashMap.set(decodeTargets, fiber.id, target);
+      if (account !== undefined) codecAccounts = HashMap.set(codecAccounts, fiber.id, account);
+      return effect.pipe(
+        Effect.ensuring(
+          Effect.sync(() => {
+            codecs.release();
+            codecAccounts = HashMap.remove(codecAccounts, fiber.id);
+            decodeTargets = HashMap.remove(decodeTargets, fiber.id);
+            codecClients = HashMap.remove(codecClients, fiber.id);
+          })
+        )
+      );
+    });
   const ready = Deferred.makeUnsafe<(id: number, message: RpcMessage.FromClientEncoded) => Effect.Effect<void>>();
   let documents = HashMap.empty<string, Queue.Queue<Ingress>>();
   const ingress = yield* Queue.bounded<Ingress>(1024);
@@ -89,6 +172,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
   let clients = HashMap.empty<string, ClientState>();
   let nextId = 0;
   let requestSerial = 0;
+  let storageSerial = 0;
   let completedFrames = 0;
   let executions = HashMap.empty<string, { readonly client: ClientState; readonly state: RequestState }>();
   let dead = HashMap.empty<string, HashSet.HashSet<number>>();
@@ -102,6 +186,8 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
     client.closed = true;
     client.controlLease.release();
     client.outbound.release();
+    for (const retained of HashMap.values(client.storage)) retained.release();
+    client.storage = HashMap.empty();
     const history = O.getOrElse(HashMap.get(dead, client.session), HashSet.empty<number>);
     dead = HashMap.set(dead, client.session, HashSet.add(history, client.local));
     let command = Queue.takeUnsafe(client.controls);
@@ -120,16 +206,23 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         executions = HashMap.remove(executions, state.admission);
       }
     Queue.offerUnsafe(disconnects, client.id);
-    const defect = yield* S.encodeEffect(RpcSerialization.json.codecFor(S.Defect()))(failure("TransportClosed")).pipe(
-      Effect.orDie
-    );
+    const defect = yield* S.encodeEffect(RpcSerialization.json.codecFor(S.Defect({ includeStack: true })))(
+      failure("TransportClosed")
+    ).pipe(Effect.orDie);
     yield* send(client, { _tag: "Defect", defect }).pipe(Effect.ignoreCause);
   });
   const send = Effect.fn("ElectronRpcServer.send")(function* (
-    client: Pick<ClientState, "session" | "local"> & { readonly outbound?: ClientState["outbound"] },
+    client: Pick<ClientState, "session" | "local"> & { storage?: ClientState["storage"] },
     message: Output["message"]
   ) {
-    const value = { version: 1, session: client.session, client: client.local, message } as const;
+    const storageId = message._tag === "Chunk" || message._tag === "Exit" ? ++storageSerial : undefined;
+    const value = {
+      version: 1,
+      session: client.session,
+      client: client.local,
+      message,
+      ...(storageId === undefined ? {} : { storageId }),
+    } as const;
     const amount = measureValue(value);
     const control =
       message._tag === "Terminal" ||
@@ -144,24 +237,29 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         Effect.mapError(() => failure("EncodingFailed"))
       );
       if (measureFrame(frame).utf8 > admissionOwner.bounds.frameBytes) return yield* failure("FrameCapacity");
-      // Conservatively retain delivered values for the logical-client lifetime. RpcClient's
-      // queue-admission Ack does not prove that its consumer released a decoded value.
-      if (
-        !control &&
-        (client.outbound === undefined || !client.outbound.resize(client.outbound.bytes() + retained.bytes()))
-      )
-        return yield* failure("BufferedCapacity");
+      if (storageId !== undefined && client.storage !== undefined) {
+        if (HashMap.size(client.storage) >= 4096) return yield* failure("BufferedCapacity");
+        client.storage = HashMap.set(client.storage, storageId, retained);
+      }
       yield* wire.send(client.session, frame).pipe(Effect.onError(() => closePhysical(client.session)));
-    }).pipe(Effect.ensuring(Effect.sync(retained.release)));
+    }).pipe(
+      Effect.ensuring(
+        Effect.sync(() => {
+          codecs.release();
+          if (storageId === undefined || client.storage === undefined || !HashMap.has(client.storage, storageId))
+            retained.release();
+        })
+      )
+    );
   });
   const reject = Effect.fn("ElectronRpcServer.reject")(function* (session: string, local: number) {
     const history = O.getOrElse(HashMap.get(dead, session), HashSet.empty<number>);
     const live = A.filter(HashMap.values(clients), (entry) => entry.session === session).length;
     if (live + HashSet.size(history) >= 64) return yield* Effect.die(failure("ClientCapacity"));
     dead = HashMap.set(dead, session, HashSet.add(history, local));
-    const defect = yield* S.encodeEffect(RpcSerialization.json.codecFor(S.Defect()))(failure("TransportClosed")).pipe(
-      Effect.orDie
-    );
+    const defect = yield* S.encodeEffect(RpcSerialization.json.codecFor(S.Defect({ includeStack: true })))(
+      failure("TransportClosed")
+    ).pipe(Effect.orDie);
     yield* send({ session, local }, { _tag: "Defect", defect }).pipe(Effect.ignoreCause);
   });
   let protocolInput: (id: number, message: RpcMessage.FromClientEncoded) => Effect.Effect<void> = () => Effect.void;
@@ -208,6 +306,15 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
               const history = O.getOrElse(HashMap.get(dead, parsed.session), HashSet.empty<number>);
               if (HashSet.has(history, parsed.client)) return;
               let client = O.getOrUndefined(HashMap.get(clients, k));
+              if (parsed.message._tag === "StorageReleased") {
+                if (client !== undefined) {
+                  const storageId = parsed.message.storageId;
+                  const retained = HashMap.get(client.storage, storageId);
+                  if (O.isSome(retained)) retained.value.release();
+                  client.storage = HashMap.remove(client.storage, storageId);
+                }
+                return;
+              }
               if (client === undefined && parsed.message._tag !== "Request") return;
               const message = parsed.message;
               if (packet.lease.control && message._tag === "Request") {
@@ -216,6 +323,11 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
                 return;
               }
               if (message._tag === "Request") {
+                if (!(yield* wire.authorize(session, message.tag))) {
+                  if (client !== undefined) yield* drop(client);
+                  else yield* reject(session, parsed.client);
+                  return;
+                }
                 if (requestSerial >= Number.MAX_SAFE_INTEGER) {
                   if (client !== undefined) yield* drop(client);
                   else yield* reject(session, parsed.client);
@@ -278,6 +390,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
                     controls,
                     controlLease,
                     outbound,
+                    storage: HashMap.empty(),
                     id: nextId++,
                     session: parsed.session,
                     local: parsed.client,
@@ -331,7 +444,12 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
                   : message;
               if (client === undefined) return;
               const selected = client;
-              yield* write(selected.id, dispatched).pipe(Effect.onError(() => drop(selected)));
+              yield* withCodecs(
+                Effect.suspend(() => write(selected.id, dispatched)),
+                selected.session,
+                packet.lease,
+                selected
+              ).pipe(Effect.onError(() => drop(selected)));
             }).pipe(
               Effect.ensuring(
                 Effect.sync(() => {
@@ -426,7 +544,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         supportsTransferables: false,
         supportsSpanPropagation: true,
         supportsNotifications: false,
-        codecFor: RpcSerialization.json.codecFor,
+        codecFor: codecs.codecFor,
       };
     }))((id, message) => Effect.suspend(() => protocolInput(id, message)));
   const protocol: RpcServer.Protocol["Service"] = {
@@ -479,6 +597,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
     const state = HashMap.get(client.requests, input.requestId);
     if (client.closed || O.isNone(state) || state.value.terminal) return;
     state.value.terminal = true;
+    if (state.value.subscription !== undefined) yield* state.value.subscription.close;
     yield* state.value.lease.terminal;
     const estimate = measureValue({
       reason: input.error.reason,
@@ -498,7 +617,11 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
         requestId: input.requestId,
         exit: encoded,
       });
-      yield* send(client, { _tag: "Terminal", response });
+      yield* send(client, {
+        _tag: "Terminal",
+        response,
+        ...(state.value.subscription === undefined ? {} : { subscription: state.value.subscription.registered }),
+      });
       yield* protocolInput(client.id, { _tag: "Interrupt", requestId: input.requestId });
     }).pipe(
       Effect.catchCause(() => drop(client)),
@@ -531,6 +654,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
   });
   yield* Effect.addFinalizer(() =>
     Effect.sync(() => {
+      codecs.close();
       let packet = Queue.takeUnsafe(ingress);
       while (packet !== undefined && Exit.isSuccess(packet)) {
         packet.value.lease.release();
@@ -546,7 +670,7 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
     if (O.isNone(entry)) return effect;
     const { client, state } = entry.value;
     state.started = true;
-    return effect.pipe(
+    return withCodecs(effect, client.session, undefined, client).pipe(
       Effect.ensuring(
         Effect.andThen(
           state.lease.finalized,
@@ -564,6 +688,22 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
     terminate,
     submitTermination,
     onRequest,
+    ownSubscription: (
+      headers: Readonly<Record<string, string>>,
+      subscription: NonNullable<RequestState["subscription"]>
+    ) =>
+      Effect.suspend(() => {
+        const entry = HashMap.get(executions, headers["x-vidbee-admission"] ?? "");
+        if (
+          O.isNone(entry) ||
+          entry.value.state.terminal ||
+          entry.value.state.subscription !== undefined ||
+          subscription.registered.token.document !== entry.value.client.session
+        )
+          return Effect.fail(failure("RegistrationClosed"));
+        entry.value.state.subscription = subscription;
+        return Effect.void;
+      }),
     requestLease: (headers: Readonly<Record<string, string>>) =>
       Effect.suspend(() => {
         const entry = HashMap.get(executions, headers["x-vidbee-admission"] ?? "");
@@ -580,15 +720,58 @@ export const makeServerProtocol = Effect.fn("ElectronRpcServer.make")(function* 
   };
 });
 
+/**
+ * Supplies Electron Rpc Server through the owning application or document scope.
+ *
+ * **Example** (Use ElectronRpcServer at its owning boundary)
+ *
+ * ```ts
+ * import { ElectronRpcServer } from "./ElectronRpcServer.layer.js"
+ * import * as Effect from "effect/Effect"
+ * const access = ElectronRpcServer.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class ElectronRpcServer extends Context.Service<
   ElectronRpcServer,
   Effect.Success<ReturnType<typeof makeServerProtocol>>
 >()("vidbee/main/ipc/ElectronRpcServer.layer/ElectronRpcServer") {}
 
+/**
+ * Constructs layer with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use layer at its owning boundary)
+ *
+ * ```ts
+ * import { layer } from "./ElectronRpcServer.layer.js"
+ * import * as Layer from "effect/Layer"
+ * const provide = (options: Parameters<typeof layer>[0]) => Layer.build(layer(options));
+ * void provide;
+ * ```
+ *
+ * @category layers
+ * @since 0.0.0
+ */
 export const layer = (options: Parameters<typeof makeServerProtocol>[0]) =>
   Layer.effect(ElectronRpcServer)(makeServerProtocol(options));
 
-/** Mount once at bootstrap, before opening a renderer. Handler Layers are supplied by composition. */
+/**
+ * Mount once at bootstrap, before opening a renderer. Handler Layers are supplied by composition.
+ *
+ * **Example** (Use mount at its owning boundary)
+ *
+ * ```ts
+ * import { mount } from "./ElectronRpcServer.layer.js"
+ * const compose = (options: Parameters<typeof mount>[0]) => mount(options);
+ * void compose;
+ * ```
+ *
+ * @category layers
+ * @since 0.0.0
+ */
 export const mount = <Rpcs extends Rpc.Any>(group: RpcGroup.RpcGroup<Rpcs>) =>
   Layer.effectDiscard(
     Effect.gen(function* () {

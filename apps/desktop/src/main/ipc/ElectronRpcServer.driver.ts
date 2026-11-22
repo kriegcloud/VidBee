@@ -9,17 +9,71 @@ import { channels } from "../../renderer/src/transport/ElectronRpc.model.js";
 import type { IpcMain, IpcMainEvent, WebContents, WebFrameMain } from "electron";
 import type { ElectronRpcWire } from "./ElectronRpcServer.layer.js";
 
+/**
+ * Describes Application Authority ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export interface ApplicationAuthority {
+  readonly allowsProcedure: (role: "visible" | "capture", tag: string) => boolean;
+  readonly developmentRendererUrl?: string;
+  readonly packagedRendererUrl: string;
+  readonly registeredRole: (contents: WebContents) => "visible" | "capture" | undefined;
+}
 interface Document {
   readonly contents: WebContents;
   readonly dispose: () => void;
   readonly frame: WebFrameMain;
+  readonly role: "visible" | "capture";
   readonly session: string;
 }
-/** Acquisition registers only owned handlers. Main bootstrap supplies its existing ipcMain. */
-export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
+/**
+ * Acquisition registers only owned handlers. Main bootstrap supplies its existing ipcMain.
+ *
+ * **Example** (Use makeElectronWire at its owning boundary)
+ *
+ * ```ts
+ * import { makeElectronWire } from "./ElectronRpcServer.driver.js"
+ * const compose = (options: Parameters<typeof makeElectronWire>[0]) => makeElectronWire(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
+export const makeElectronWire = ({
+  ipc,
+  authority,
+}: {
+  readonly ipc: IpcMain;
+  readonly authority: ApplicationAuthority;
+}): ElectronRpcWire["Service"] => {
   let documents = HashMap.empty<string, Document>();
   let byWindow = HashMap.empty<number, string>();
   let generation = 0;
+  const permittedUrl = (url: string) => {
+    const candidate = new URL(url);
+    const permitted = (configured: string) => {
+      const expected = new URL(configured);
+      return (
+        candidate.protocol === expected.protocol &&
+        candidate.host === expected.host &&
+        candidate.pathname === expected.pathname &&
+        candidate.username === "" &&
+        candidate.password === ""
+      );
+    };
+    return (
+      permitted(authority.packagedRendererUrl) ||
+      (authority.developmentRendererUrl !== undefined && permitted(authority.developmentRendererUrl))
+    );
+  };
+  const authorized = (document: Document) =>
+    !document.contents.isDestroyed() &&
+    document.contents.mainFrame === document.frame &&
+    authority.registeredRole(document.contents) === document.role &&
+    permittedUrl(document.frame.url);
   return {
     listen: (receive, closed) =>
       Effect.acquireRelease(
@@ -49,11 +103,14 @@ export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
             ownChannel(
               () =>
                 ipc.handle(channels.connect, (event) => {
+                  const role = authority.registeredRole(event.sender);
                   if (
-                    event.senderFrame !== event.sender.mainFrame ||
-                    generation >= Number.MAX_SAFE_INTEGER ||
-                    HashMap.size(documents) >= 16
+                    role === undefined ||
+                    !permittedUrl(event.sender.mainFrame.url) ||
+                    event.senderFrame !== event.sender.mainFrame
                   )
+                    return Result.getOrThrowWith(Result.fail(failure("UnauthorizedDocument")), (error) => error);
+                  if (generation >= Number.MAX_SAFE_INTEGER || HashMap.size(documents) >= 16)
                     return Result.getOrThrowWith(Result.fail(failure("SessionCapacity")), (error) => error);
                   const previous = HashMap.get(byWindow, event.sender.id);
                   if (O.isSome(previous)) close(previous.value);
@@ -70,6 +127,7 @@ export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
                   const document: Document = {
                     contents,
                     frame,
+                    role,
                     session,
                     dispose: () => {
                       contents.removeListener("did-start-navigation", navigation);
@@ -87,7 +145,13 @@ export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
               const session = HashMap.get(byWindow, event.sender.id);
               if (O.isNone(session)) return;
               const doc = HashMap.get(documents, session.value);
-              if (O.isNone(doc) || doc.value.contents !== event.sender || doc.value.frame !== event.senderFrame) return;
+              if (
+                O.isNone(doc) ||
+                doc.value.contents !== event.sender ||
+                doc.value.frame !== event.senderFrame ||
+                !authorized(doc.value)
+              )
+                return;
               receive(raw, session.value, event.sender.id.toString());
             };
             const end = (event: IpcMainEvent, session: unknown) => {
@@ -120,6 +184,13 @@ export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
         }),
         (dispose) => Effect.sync(dispose)
       ).pipe(Effect.asVoid),
+    authorize: (session, tag) =>
+      Effect.sync(() =>
+        O.exists(
+          HashMap.get(documents, session),
+          (document) => authorized(document) && authority.allowsProcedure(document.role, tag)
+        )
+      ),
     account: (session) =>
       Effect.suspend(() =>
         O.match(HashMap.get(documents, session), {
@@ -131,12 +202,7 @@ export const makeElectronWire = (ipc: IpcMain): ElectronRpcWire["Service"] => {
       Effect.try({
         try: () => {
           const document = O.getOrUndefined(HashMap.get(documents, session));
-          if (
-            document !== undefined &&
-            !document.contents.isDestroyed() &&
-            document.frame === document.contents.mainFrame
-          )
-            document.frame.send(channels.message, frame);
+          if (document !== undefined && authorized(document)) document.frame.send(channels.message, frame);
           else return Result.getOrThrowWith(Result.fail(failure("Disconnected")), (error) => error);
         },
         catch: () => failure("PhysicalSendFailed"),

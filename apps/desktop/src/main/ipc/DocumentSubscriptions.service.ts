@@ -22,9 +22,16 @@ interface Lifecycle {
   sequence: number;
   readonly token: Token;
 }
+/**
+ * Describes Registration ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface Registration<A> extends Lifecycle {
   active: boolean;
   bytes: number;
+  charges: HashMap.HashMap<number, number>;
   readonly epoch: string;
   readonly queue: Queue.Queue<
     {
@@ -41,7 +48,20 @@ export interface Registration<A> extends Lifecycle {
   sequence: number;
   readonly token: Token;
 }
-/** A separate owner is constructed for each authenticated logical client. */
+/**
+ * A separate owner is constructed for each authenticated logical client.
+ *
+ * **Example** (Use makeSubscriptions at its owning boundary)
+ *
+ * ```ts
+ * import { makeSubscriptions } from "./DocumentSubscriptions.service.js"
+ * const compose = (options: Parameters<typeof makeSubscriptions>[0]) => makeSubscriptions(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeSubscriptions = ({
   identity,
   resources,
@@ -91,6 +111,7 @@ export const makeSubscriptions = ({
     }
     bytes -= sub.bytes;
     sub.bytes = 0;
+    sub.charges = HashMap.empty();
     if (failedReleases.length === 0) sub.retention?.release();
     else sub.retention?.resize(Math.max(256, failedReleases.length * 256));
     Queue.failCauseUnsafe(sub.queue, Cause.fail(failure(reason)));
@@ -124,6 +145,7 @@ export const makeSubscriptions = ({
       active: true,
       bytes: 0,
       releases: [],
+      charges: HashMap.empty(),
       close: Effect.void,
     };
     sub.close = close(sub, "RegistrationClosed");
@@ -199,6 +221,7 @@ export const makeSubscriptions = ({
               return;
             }
             retained.release();
+            sub.charges = HashMap.set(sub.charges, sequence, retained.bytes);
             sub.sequence = sequence;
             bytes += retained.bytes;
             sub.bytes += retained.bytes;
@@ -206,7 +229,10 @@ export const makeSubscriptions = ({
           (release) => {
             // The installer reports ownership immediately after acquisition. Retain even if capacity is exceeded so teardown can release it.
             if (sub.releases.length >= 16) {
-              release();
+              sub.releases.push(release);
+              bytes += 256;
+              sub.retention?.resize(4096 + sub.releases.length * 256 + sub.bytes);
+              overflow = true;
               return Result.getOrThrowWith(Result.fail(failure("RegistrationCapacity")), (error) => error);
             }
             sub.releases.push(release);
@@ -219,7 +245,13 @@ export const makeSubscriptions = ({
         )
       )
     );
-    if (Exit.isFailure(installed) || overflow) {
+    if (
+      Exit.isFailure(installed) ||
+      overflow ||
+      !live ||
+      !sub.active ||
+      !O.exists(HashMap.get(slots, family), (current) => current === sub)
+    ) {
       yield* close(sub, Exit.isFailure(installed) ? "AcquisitionFailed" : "StreamOverflow");
       return yield* failure("AcquisitionFailed");
     }
@@ -251,13 +283,32 @@ export const makeSubscriptions = ({
     };
   });
   const watch = <A>(sub: Registration<A>) =>
-    Stream.concat(
-      Stream.succeed({
-        _tag: "Registered",
-        token: sub.token,
-        epoch: sub.epoch,
-      } satisfies import("../../renderer/src/transport/DocumentDelivery.model.ts").Registered),
-      Stream.fromQueue(sub.queue)
+    Stream.unwrap(
+      Effect.map(requireActive(sub.token), () => {
+        let current = 0;
+        const release = () => {
+          const amount = Math.min(current, sub.bytes);
+          bytes -= amount;
+          sub.bytes -= amount;
+          current = 0;
+          sub.retention?.resize(4096 + sub.bytes + sub.releases.length * 256);
+        };
+        return Stream.concat(
+          Stream.succeed({
+            _tag: "Registered",
+            token: sub.token,
+            epoch: sub.epoch,
+          } satisfies import("../../renderer/src/transport/DocumentDelivery.model.ts").Registered),
+          Stream.fromQueue(sub.queue).pipe(
+            Stream.map((observation) => {
+              release();
+              current = O.getOrElse(HashMap.get(sub.charges, observation.sequence), () => 0);
+              sub.charges = HashMap.remove(sub.charges, observation.sequence);
+              return observation;
+            })
+          )
+        ).pipe(Stream.ensuring(Effect.sync(release)));
+      })
     );
   return {
     acquire,
@@ -272,6 +323,21 @@ export const makeSubscriptions = ({
     stats: () => ({ bytes, registrations: HashMap.size(slots), failedReleases: failedReleases.length, cleanupCauses }),
   };
 };
+/**
+ * Supplies Document Subscriptions through the owning application or document scope.
+ *
+ * **Example** (Use DocumentSubscriptions at its owning boundary)
+ *
+ * ```ts
+ * import { DocumentSubscriptions } from "./DocumentSubscriptions.service.js"
+ * import * as Effect from "effect/Effect"
+ * const access = DocumentSubscriptions.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class DocumentSubscriptions extends Context.Service<
   DocumentSubscriptions,
   { readonly make: typeof makeSubscriptions }

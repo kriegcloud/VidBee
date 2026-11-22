@@ -1,4 +1,5 @@
 import { it } from "@effect/vitest";
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as A from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
@@ -18,6 +19,8 @@ import * as RpcMessage from "effect/rpc/RpcMessage";
 import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as RpcServer from "effect/rpc/RpcServer";
 import * as S from "effect/Schema";
+import * as Getter from "effect/SchemaGetter";
+import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as Str from "effect/String";
 import { expect } from "vitest";
@@ -60,6 +63,8 @@ import { ObservedValue, pack } from "../src/renderer/src/transport/RpcObservatio
 import { runtime } from "./TransportRuntime.entry.js";
 import type { OperationHandle } from "../src/main/runtime/ApplicationOperations.service.js";
 
+const $TransportId = $DesktopId.create("test/foundation-transport.spec");
+
 const Binary = Rpc.make("Binary", {
   payload: { bytes: S.Uint8ArrayFromBase64 },
   success: S.Uint8ArrayFromBase64,
@@ -72,13 +77,18 @@ const Defect = Rpc.make("Defect", { success: S.Void, error: DeliveryError });
 const Never = Rpc.make("Never", { success: S.Int, error: DeliveryError, stream: true });
 const Observe = Rpc.make("Observe", { success: Subscription(S.Int), error: DeliveryError, stream: true });
 const Native = Rpc.make("Native", { success: S.Boolean, error: DeliveryError });
+const Traffic = Rpc.make("Traffic", { success: S.String, error: DeliveryError, stream: true });
 const Flood = Rpc.make("Flood", { success: S.Int, error: DeliveryError, stream: true });
-const Rpcs = RpcGroup.make(Binary, Echo, Watch, Fail, Defect, Never, Observe, Native, Flood);
+const Rpcs = RpcGroup.make(Binary, Echo, Watch, Fail, Defect, Never, Observe, Native, Flood, Traffic);
 const pair = Effect.fn("Test.pair")(function* ({
   holdAck = false,
   failTerminalEncoding = false,
   requestIds,
+  observeHeld = false,
+  permit = () => true,
 }: {
+  readonly permit?: (tag: string) => boolean;
+  readonly observeHeld?: boolean;
   readonly holdAck?: boolean;
   readonly failTerminalEncoding?: boolean;
   readonly requestIds?: ReadonlyArray<string | number>;
@@ -97,15 +107,31 @@ const pair = Effect.fn("Test.pair")(function* ({
   let acks = 0;
   let largestChunk = 0;
   let terminalEncodes = 0;
+  let observeActive = () => false;
   let lastRequest: { readonly client: number; readonly requestId: string | number } = { client: 0, requestId: 0 };
-  const admission = makeAdmission();
+  let admissionAttempts = 0;
+  let dispatchedRequests = 0;
+  const baseAdmission = makeAdmission();
+  const admission = {
+    ...baseAdmission,
+    admit: (request: Parameters<typeof baseAdmission.admit>[0]) =>
+      Effect.suspend(() => {
+        admissionAttempts++;
+        return baseAdmission.admit(request);
+      }),
+  };
   admission.connectNow("document", "window");
   const main = yield* makeServerProtocol({
-    isStream: (tag) => tag === "Watch" || tag === "Never" || tag === "Observe" || tag === "Flood",
+    isStream: (tag) => tag === "Watch" || tag === "Never" || tag === "Observe" || tag === "Flood" || tag === "Traffic",
     encodeFailure: (tag, error) => {
       terminalEncodes++;
       if (failTerminalEncoding) return Effect.fail(failure("InjectedEncodingFailure"));
-      const schema = tag === "Watch" || tag === "Never" ? Rpc.exitSchema(Watch) : Rpc.exitSchema(Echo);
+      const schema =
+        tag === "Watch" || tag === "Never"
+          ? Rpc.exitSchema(Watch)
+          : Rpc.exitSchema(Echo).pipe(
+              $TransportId.annoteSchema("schema", { description: "schema boundary in the desktop transport contract." })
+            );
       return S.encodeEffect(RpcSerialization.json.codecFor(schema))(error.pipe(Exit.fail)).pipe(
         Effect.mapError(() => failure("EncodeFailed"))
       );
@@ -113,6 +139,7 @@ const pair = Effect.fn("Test.pair")(function* ({
   }).pipe(
     Effect.provideService(ElectronRpcAdmission, admission),
     Effect.provideService(ElectronRpcWire, {
+      authorize: (session, tag) => Effect.succeed(session === "other" || permit(tag)),
       listen: (receive, close) =>
         Effect.sync(() => {
           receiveMain = receive;
@@ -165,7 +192,15 @@ const pair = Effect.fn("Test.pair")(function* ({
   );
   const handlers = Rpcs.toLayer({
     Binary: ({ bytes }) => Effect.succeed(bytes),
-    Echo: ({ text }) => Effect.succeed(text),
+    Echo: Effect.fn("Test.Echo")(function* ({ text }, options) {
+      if (text === "saturate codec arena") {
+        const lease = yield* main.requestLease(options.headers);
+        const held = lease.resources.account.reserve(64 * 1024 * 1024);
+        if (held === undefined) return yield* failure("TestCapacity");
+        yield* Effect.addFinalizer(() => Effect.sync(held.release));
+      }
+      return text;
+    }),
     Native: Effect.fn("Test.Native")(
       function* (_payload: void, options: { readonly headers: Readonly<Record<string, string>> }) {
         const lease = yield* main.requestLease(options.headers);
@@ -178,7 +213,12 @@ const pair = Effect.fn("Test.pair")(function* ({
     ),
     Watch: () => Stream.make(1, 2, 3),
     Flood: () => Stream.make(...A.range(0, 1023)),
-    Observe: () =>
+    Traffic: () =>
+      Stream.range(1, 256).pipe(
+        Stream.map(() => Str.repeat(64 * 1024)("x")),
+        Stream.rechunk(1)
+      ),
+    Observe: (_payload, options) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const subscriptions = makeSubscriptions({
@@ -193,7 +233,13 @@ const pair = Effect.fn("Test.pair")(function* ({
             },
             (value) => ({ value, bytes: 8 })
           );
-          return subscriptions.watch(sub).pipe(Stream.take(3));
+          observeActive = () => sub.active;
+          if (observeHeld)
+            yield* main.ownSubscription(options.headers, {
+              registered: { _tag: "Registered", token: sub.token, epoch: sub.epoch },
+              close: sub.close,
+            });
+          return observeHeld ? subscriptions.watch(sub) : subscriptions.watch(sub).pipe(Stream.take(3));
         })
       ),
     Never: () =>
@@ -205,21 +251,28 @@ const pair = Effect.fn("Test.pair")(function* ({
   yield* Effect.forkScoped(
     RpcServer.make(Rpcs, { disableFatalDefects: true, onRequest: main.onRequest }).pipe(
       Effect.provideContext(handlerContext),
-      Effect.provideService(RpcServer.Protocol, main.protocol)
+      Effect.provideService(RpcServer.Protocol, {
+        ...main.protocol,
+        run: (write) =>
+          main.protocol.run((id, message) => {
+            if (message._tag === "Request") dispatchedRequests++;
+            return write(id, message);
+          }),
+      })
     )
   );
   let serial = 0;
-  const client = yield* RpcClient.make(Rpcs, {
+  const client = yield* renderer.makeClient(Rpcs, {
     generateRequestId:
       requestIds === undefined ? undefined : () => RpcMessage.RequestId(requestIds[serial++] ?? serial + 1000),
-  }).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol));
+  });
   return {
     client,
     rawIngress: (raw: unknown) => receiveMain(raw, "document", "window"),
     rawResponse: (raw: unknown) => receiveRenderer(raw),
-    unknownClient: RpcClient.make(
+    unknownClient: renderer.makeClient(
       Rpc.make("Missing", { success: S.Void, error: DeliveryError }).pipe(RpcGroup.make)
-    ).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol)),
+    ),
     ingress: (input: Input) =>
       S.encodeEffect(S.fromJsonString(Input))(input).pipe(
         Effect.map((frame) => receiveMain(frame, input.session, input.session === "other" ? "other-window" : "window"))
@@ -230,7 +283,9 @@ const pair = Effect.fn("Test.pair")(function* ({
     firstAck: Deferred.await(firstAck),
     wireStats: () => ({ acks, largestChunk }),
     terminalEncodes: () => terminalEncodes,
-    nextClient: RpcClient.make(Rpcs).pipe(Effect.provideService(RpcClient.Protocol, renderer.protocol)),
+    observeActive: () => observeActive(),
+    boundaryStats: () => ({ admissionAttempts, dispatchedRequests }),
+    nextClient: renderer.makeClient(Rpcs),
     request: () => lastRequest,
     disconnectMain: () => {
       documentLive = false;
@@ -247,7 +302,7 @@ const pair = Effect.fn("Test.pair")(function* ({
           send: (frame) => Effect.sync(() => receiveMain(frame, "other", "other-window")),
         })
       );
-      return yield* RpcClient.make(Rpcs).pipe(Effect.provideService(RpcClient.Protocol, other.protocol));
+      return yield* other.makeClient(Rpcs);
     }),
     nativeStarted: Deferred.await(nativeStarted),
     nativeEnded: Deferred.await(nativeEnded),
@@ -424,16 +479,26 @@ it.effect(
         },
       };
       yield* pack(value.retained);
-      const success = S.Struct({ retained: ObservedValue });
-      const completion = Completion({ success, error: DeliveryError });
+      const success = S.Struct({ retained: ObservedValue }).pipe(
+        $TransportId.annoteSchema("success", { description: "success boundary in the desktop transport contract." })
+      );
+      const completion = Completion({ success, error: DeliveryError }).pipe(
+        $TransportId.annoteSchema("completion", {
+          description: "completion boundary in the desktop transport contract.",
+        })
+      );
       const selected = { exit: { _tag: "Success", value }, cuts: [] } satisfies typeof completion.Type;
       yield* census({ schema: completion, value: selected });
-      const mutation = Completion({ success: S.Struct({ retained: S.Struct({}) }), error: DeliveryError });
+      const mutation = Completion({ success: S.Struct({ retained: S.Struct({}) }), error: DeliveryError }).pipe(
+        $TransportId.annoteSchema("mutation", { description: "mutation boundary in the desktop transport contract." })
+      );
       const result = yield* Effect.exit(census({ schema: mutation, value: selected }));
       expect(Exit.isFailure(result)).toBe(true);
       expect(sameObservation({ left: [], right: {} })).toBe(false);
       expect(sameObservation({ left: A.allocate(2), right: [] })).toBe(false);
-      const defined = RpcValue(S.Unknown);
+      const defined = RpcValue(S.Unknown).pipe(
+        $TransportId.annoteSchema("defined", { description: "defined boundary in the desktop transport contract." })
+      );
       const invalidDefined = yield* Effect.exit(S.encodeEffect(defined)(undefined));
       expect(Exit.isFailure(invalidDefined)).toBe(true);
       const invalidJsonDefined = yield* Effect.exit(
@@ -444,7 +509,9 @@ it.effect(
         omitted: RpcOptional(S.Unknown),
         own: RpcOptional(S.Unknown),
         nullable: S.String.pipe(S.NullOr, RpcOptional),
-      });
+      }).pipe(
+        $TransportId.annoteSchema("presence", { description: "presence boundary in the desktop transport contract." })
+      );
       yield* census({ schema: presence, value: { own: undefined, nullable: null } });
     })
 );
@@ -1316,7 +1383,11 @@ it.effect("adapter ownership: closed-client history has a document ceiling and r
         });
         yield* Effect.yieldNow;
       }
-      while (owner.main.stats().documents > 1 && owner.main.stats().completedFrames < 131) yield* Effect.yieldNow;
+      const barrier = yield* Effect.exit(
+        owner.client.Echo({ text: "history barrier" }).pipe(Effect.timeout("500 millis"))
+      );
+      expect(Exit.isFailure(barrier)).toBe(true);
+      if (Exit.isFailure(barrier)) expect(Cause.pretty(barrier.cause)).not.toContain("Timeout");
       expect(owner.main.stats().closedClients).toBeLessThanOrEqual(64);
       const isolated = yield* other.Echo({ text: "isolated" });
       expect(isolated).toBe("isolated");
@@ -1669,7 +1740,7 @@ it.effect("publication ownership: registration snapshots are immutable and share
         expect(item.value.nested.value).toBe(1);
         expect(Object.isFrozen(item.value.nested)).toBe(true);
       }
-      expect(ledger.stats().data).toBeGreaterThan(4096);
+      expect(ledger.stats().data).toBe(4096);
       yield* sub.close;
       expect(ledger.stats().data).toBe(0);
     })
@@ -1780,6 +1851,7 @@ it.effect(
         const ledger = makeRetentionLedger();
         const owner = makeRendererDocumentOwner({
           runtime: managed,
+          disposeRegistry: () => {},
           resources: makeResourceBudget(ledger.forWindow("window")),
         });
         const recovery = Result.getOrThrowWith(owner.recovery({ client: "c", family: "history" }), (error) => error);
@@ -1918,6 +1990,440 @@ it.effect("terminal accounting: nonenumerable Error.message is reserved before t
       expect(owner.terminalEncodes()).toBe(0);
       const result = yield* other.Echo({ text: "survives refusal" });
       expect(result).toBe("survives refusal");
+    })
+  )
+);
+
+it.effect("fix3 R3: idle malformed receive closes admission and fails subsequent calls", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const before = yield* owner.client.Echo({ text: "before" });
+      expect(before).toBe("before");
+      owner.rawResponse("malformed JSON");
+      yield* Effect.yieldNow;
+      const exit = yield* Effect.exit(owner.client.Echo({ text: "after" }).pipe(Effect.timeout("500 millis")));
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) expect(Cause.pretty(exit.cause)).not.toContain("Timeout");
+      const next = yield* Effect.exit(
+        owner.nextClient.pipe(
+          Effect.flatMap((client) => client.Echo({ text: "new" })),
+          Effect.timeout("500 millis")
+        )
+      );
+      expect(Exit.isFailure(next)).toBe(true);
+      if (Exit.isFailure(next)) expect(Cause.pretty(next.cause)).not.toContain("Timeout");
+      expect(owner.renderer.stats().workers).toBe(0);
+    })
+  )
+);
+
+it.effect("fix3 R2: registered forced terminal ends dependent cut before typed Exit and Eof drainage", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ holdAck: true, observeHeld: true });
+      const registration =
+        yield* Deferred.make<import("../src/renderer/src/transport/DocumentDelivery.model.js").Registered>();
+      const watching = yield* owner.client.Observe().pipe(
+        Stream.tap((event) => (event._tag === "Registered" ? Deferred.succeed(registration, event) : Effect.void)),
+        Stream.runDrain,
+        Effect.forkScoped
+      );
+      const registered = yield* Deferred.await(registration);
+      owner.renderer.delivery.applied({ ...registered, through: 0 });
+      const waiting = yield* owner.renderer.delivery.awaitCuts([{ ...registered, through: 1 }]).pipe(Effect.forkScoped);
+      yield* owner.firstAck;
+      const request = owner.request();
+      yield* owner.ingress({ session: "document", client: request.client, message: { _tag: "Eof" } });
+      yield* owner.main.terminate({ session: "document", ...request, error: failure("StreamOverflow") });
+      const stream = yield* Fiber.await(watching);
+      expect(Exit.isFailure(stream)).toBe(true);
+      if (Exit.isFailure(stream)) {
+        const error = Cause.squash(stream.cause);
+        expect(S.is(DeliveryError)(error)).toBe(true);
+        if (S.is(DeliveryError)(error)) expect(error.reason).toBe("StreamOverflow");
+      }
+      expect(owner.observeActive()).toBe(false);
+      const cut = yield* Fiber.await(waiting).pipe(Effect.timeout("500 millis"));
+      expect(Exit.isFailure(cut)).toBe(true);
+      expect(owner.renderer.delivery.stats().pending).toBe(0);
+      yield* owner.renderer.retired(request);
+      expect(owner.renderer.stats().workers).toBe(0);
+      yield* Effect.gen(function* () {
+        while (owner.main.stats().clients !== 0) yield* Effect.yieldNow;
+      }).pipe(Effect.timeout("500 millis"));
+      expect(owner.main.stats().admission.appStreams).toBe(0);
+    })
+  )
+);
+
+it.effect("fix3 R4: application-scope interruption runs cleanup and settles both lifecycle signals", () =>
+  Effect.gen(function* () {
+    const scope = yield* Scope.make();
+    let bytes = 0;
+    let cleanup = 0;
+    const entered = yield* Deferred.make<void>();
+    const operations = yield* makeOperations({
+      reserve: (_, amount) => {
+        bytes += amount;
+        return true;
+      },
+      release: (_, amount) => {
+        bytes -= amount;
+      },
+    }).pipe(Effect.provideService(Scope.Scope, scope));
+    const handle = yield* operations.accept({
+      originAccount: "window",
+      reserveBytes: 1,
+      run: Effect.fn("Fix3.interruptedOperation")(function* (handle: OperationHandle<unknown, unknown>) {
+        yield* handle
+          .registerCleanup(
+            Effect.sync(() => {
+              cleanup++;
+            })
+          )
+          .pipe(Effect.orDie);
+        yield* Deferred.succeed(entered, undefined);
+        return yield* Effect.never;
+      }),
+    });
+    yield* Deferred.await(entered);
+    yield* Scope.close(scope, Exit.void);
+    expect(cleanup).toBe(1);
+    expect(bytes).toBe(0);
+    yield* handle.released.pipe(Effect.timeout("200 millis"));
+    const logical = yield* handle.logical;
+    expect(Exit.isFailure(logical)).toBe(true);
+  })
+);
+
+it.effect("fix3 R7: synchronous departure refuses acquisition and failed seventeenth release remains owned", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const managed = yield* runtime;
+      const make = () =>
+        makeSubscriptions({
+          identity: { document: "doc", client: "c", generation: 0, epoch: "e" },
+          onTerminal: () => {},
+        });
+      const owner = make();
+      const departed = yield* Effect.exit(
+        owner.acquire(
+          "events",
+          () => managed.runSync(owner.disconnect),
+          (value: number) => ({ value, bytes: 8 })
+        )
+      );
+      expect(Exit.isFailure(departed)).toBe(true);
+      const overflow = make();
+      const failed = yield* Effect.exit(
+        overflow.acquire(
+          "events",
+          (_publish, own) => {
+            for (let index = 0; index < 17; index++)
+              own(
+                index === 16 ? () => Result.getOrThrowWith(Result.fail(failure("CleanupFailed")), (e) => e) : () => {}
+              );
+          },
+          (value: number) => ({ value, bytes: 8 })
+        )
+      );
+      expect(Exit.isFailure(failed)).toBe(true);
+      expect(overflow.stats().failedReleases).toBe(1);
+      expect(overflow.stats().bytes).toBeGreaterThanOrEqual(256);
+      expect(overflow.stats().cleanupCauses.length).toBeGreaterThan(0);
+    })
+  )
+);
+
+it.effect("fix3 R8: migrated construction and reporting defects cannot suppress later legacy recipients", () =>
+  Effect.gen(function* () {
+    for (const construction of [false, true]) {
+      const trace: Array<number> = [];
+      for (const value of [1, 2])
+        yield* publishRecipient({
+          value,
+          legacy: (value) => {
+            trace.push(value);
+          },
+          migrated: () =>
+            construction
+              ? Result.getOrThrowWith(Result.fail(failure("Construction")), (e) => e)
+              : Effect.die("migrated"),
+          report: () => Result.getOrThrowWith(Result.fail(failure("Reporter")), (e) => e),
+        });
+      expect(trace).toEqual([1, 2]);
+    }
+  })
+);
+
+it.effect(
+  "fix3 R10: watermark exhaustion releases every lease and invocation closure cannot consume document disposal",
+  () =>
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger();
+      const resources = makeResourceBudget(ledger.forWindow("window"));
+      const gate = makeDeliveryGate({ resources });
+      for (let serial = 0; serial < 1025; serial++)
+        gate.applied({
+          token: { document: "d", client: "c", generation: 0, family: "f", serial },
+          epoch: "e",
+          through: 0,
+        });
+      gate.disconnect();
+      expect(ledger.stats().data).toBe(0);
+      const managed = yield* runtime;
+      let disposed = 0;
+      const owner = makeRendererDocumentOwner({
+        runtime: managed,
+        resources,
+        disposeRegistry: () => {
+          disposed++;
+        },
+      });
+      const repair = owner.recovery({ client: "live", family: "f" });
+      expect(Result.isSuccess(repair)).toBe(true);
+      for (let id = 0; id < 65; id++) owner.retireClient({ id, tokenClient: `c${id}` });
+      expect(disposed).toBe(1);
+      owner.close(() => {
+        disposed++;
+      });
+      owner.close(() => {
+        disposed++;
+      });
+      expect(disposed).toBe(1);
+      expect(ledger.stats().data).toBe(0);
+    })
+);
+
+it.effect("fix3 R5: installed RpcClient never enters an expanding payload codec before allocation admission", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const ledger = makeRetentionLedger({ windowBytes: 2000, appBytes: 2000 });
+      let encodes = 0;
+      const Expanded = S.String.pipe(
+        S.decodeTo(S.String, {
+          decode: Getter.passthrough(),
+          encode: Getter.transform(() => {
+            encodes++;
+            return Str.repeat(4096)("x");
+          }),
+        }),
+        $TransportId.annoteSchema("Expanded", { description: "Expanded boundary in the desktop transport contract." })
+      );
+      const group = RpcGroup.make(Rpc.make("Expand", { payload: { value: Expanded }, success: S.String }));
+      const owner = yield* makeClientProtocol().pipe(
+        Effect.provideService(DesktopRpcConnection, {
+          session: "tiny",
+          retention: ledger.forWindow("window"),
+          listen: () => Effect.void,
+          send: () => Effect.void,
+        })
+      );
+      const client = yield* RpcClient.make(group).pipe(Effect.provideService(RpcClient.Protocol, owner.protocol));
+      const exit = yield* Effect.exit(client.Expand({ value: "short" }).pipe(Effect.timeout("200 millis")));
+      expect(Exit.isFailure(exit)).toBe(true);
+      expect(encodes).toBe(0);
+      expect(owner.stats().workers).toBe(0);
+    })
+  )
+);
+
+it.effect("fix3 R6: promptly drained subscriptions release observations instead of exhausting lifetime traffic", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      let publish: (value: number) => void = () => {};
+      const owner = makeSubscriptions({
+        identity: { document: "doc", client: "c", generation: 0, epoch: "e" },
+        byteLimit: 12000,
+        onTerminal: () => {},
+      });
+      const sub = yield* owner.acquire<number>(
+        "events",
+        (emit) => {
+          publish = emit;
+        },
+        (value) => ({ value, bytes: 8 })
+      );
+      let received = 0;
+      yield* owner.watch(sub).pipe(
+        Stream.take(101),
+        Stream.runForEach((_event) =>
+          Effect.sync(() => {
+            received++;
+            if (received <= 100) publish(received);
+          })
+        )
+      );
+      expect(received).toBe(101);
+      expect(owner.stats().bytes).toBe(0);
+      yield* sub.close;
+    })
+  )
+);
+
+it.effect(
+  "fix3 R6: consumed RPC values release physical and decoded storage under sustained traffic",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const owner = yield* pair();
+        const text = Str.repeat(128 * 1024)("x");
+        for (let index = 0; index < 128; index++) {
+          const result = yield* owner.client.Echo({ text });
+          expect(result).toBe(text);
+        }
+        let count = 0;
+        yield* owner.renderer.consume(owner.client.Flood(), () =>
+          Effect.sync(() => {
+            count++;
+          })
+        );
+        expect(count).toBe(1024);
+        yield* Effect.yieldNow;
+        expect(owner.main.stats().admission.appBytes).toBeLessThan(1024 * 1024);
+      })
+    ),
+  { timeout: 20000 }
+);
+
+it.effect(
+  "fix3 reviewer survivors: adapter Eof, duplicate and reserved guards precede admission and installed dispatch",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        for (const violation of ["eof", "duplicate", "reserved"]) {
+          const owner = yield* pair();
+          const watching = yield* owner.client.Never().pipe(Stream.runDrain, Effect.forkScoped);
+          yield* owner.firstAck;
+          const request = owner.request();
+          if (violation === "eof") {
+            yield* owner.ingress({ session: "document", client: request.client, message: { _tag: "Eof" } });
+            yield* Effect.yieldNow;
+          }
+          const before = owner.boundaryStats();
+          yield* owner.ingress({
+            session: "document",
+            client: request.client,
+            message: {
+              _tag: "Request",
+              id:
+                violation === "duplicate"
+                  ? request.requestId
+                  : violation === "reserved"
+                    ? "@effect/rpc/notification/probe"
+                    : "late",
+              tag: "Echo",
+              payload: { text: "forbidden" },
+              headers: [],
+            },
+          });
+          yield* Fiber.await(watching);
+          expect(owner.boundaryStats()).toEqual(before);
+        }
+      })
+    )
+);
+
+it.effect("fix3 reviewer survivors: application byte cap aggregates independent window accounts", () =>
+  Effect.sync(() => {
+    const ledger = makeRetentionLedger({ windowBytes: 4096, appBytes: 6000 });
+    const first = ledger.forWindow("first").reserve(3500);
+    expect(first).toBeDefined();
+    expect(ledger.forWindow("second").reserve(3500)).toBeUndefined();
+    expect(ledger.stats().data).toBe(3500);
+    first?.release();
+    const second = ledger.forWindow("second").reserve(3500);
+    expect(second).toBeDefined();
+    second?.release();
+    expect(ledger.stats().data).toBe(0);
+  })
+);
+
+it.effect("fix3 reviewer survivors: duplicate logical completion is refused without replacing the first result", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const attempted = yield* Deferred.make<Exit.Exit<void, DeliveryError>>();
+      const operations = yield* makeOperations({ reserve: () => true, release: () => {} });
+      const handle = yield* operations.accept<string, never>({
+        originAccount: "window",
+        reserveBytes: 1,
+        run: Effect.fn("Fix3.duplicateCompletion")(function* (handle: OperationHandle<string, never>) {
+          yield* handle.complete(Exit.succeed("first")).pipe(Effect.orDie);
+          const duplicate = yield* Effect.exit(handle.complete(Exit.succeed("second")));
+          yield* Deferred.succeed(attempted, duplicate);
+        }),
+      });
+      const duplicate = yield* Deferred.await(attempted);
+      expect(Exit.isFailure(duplicate)).toBe(true);
+      yield* handle.released;
+      const logical = yield* handle.logical;
+      expect(logical).toEqual(Exit.succeed("first"));
+    })
+  )
+);
+
+it.effect("fix3 reviewer survivors: bigint wire text must be canonical", () =>
+  Effect.gen(function* () {
+    for (const v of ["01", "+1", "-0", "1.0", "1e0", " 1"]) {
+      const decoded = yield* Effect.exit(S.decodeEffect(ObservedValue)({ t: "i", v }));
+      expect(Exit.isFailure(decoded)).toBe(true);
+    }
+    const canonical = yield* S.decodeEffect(ObservedValue)({ t: "i", v: "1" });
+    expect(canonical).toBe(1n);
+  })
+);
+
+it.effect("fix3 R5: server codec refusal closes the owned client and never strands its caller", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair();
+      const other = yield* owner.nextWindow;
+      const stopped = yield* Effect.exit(
+        owner.client.Echo({ text: "saturate codec arena" }).pipe(Effect.timeout("500 millis"))
+      );
+      expect(Exit.isFailure(stopped)).toBe(true);
+      if (Exit.isFailure(stopped)) expect(Cause.pretty(stopped.cause)).not.toContain("Timeout");
+      const alive = yield* other.Echo({ text: "other window" });
+      expect(alive).toBe("other window");
+    })
+  )
+);
+
+it.effect(
+  "fix3 R6: public client streams sustain traffic beyond the retention cap and release on drain",
+  () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const owner = yield* pair();
+        let received = 0;
+        yield* owner.client.Traffic().pipe(
+          Stream.runForEach((value) =>
+            Effect.sync(() => {
+              expect(value.length).toBe(64 * 1024);
+              received++;
+            })
+          )
+        );
+        expect(received).toBe(256);
+        yield* Effect.yieldNow;
+        expect(owner.main.stats().admission.appBytes).toBeLessThan(1024 * 1024);
+        expect(owner.renderer.stats().workers).toBe(0);
+      })
+    ),
+  { timeout: 20000 }
+);
+
+it.effect("fix3 R1: authenticated role policy refuses procedures before admission or handler dispatch", () =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const owner = yield* pair({ permit: (tag) => tag !== "Echo" });
+      const other = yield* owner.nextWindow;
+      const refused = yield* Effect.exit(owner.client.Echo({ text: "capture cannot invoke visible procedure" }));
+      expect(Exit.isFailure(refused)).toBe(true);
+      expect(owner.boundaryStats()).toEqual({ admissionAttempts: 0, dispatchedRequests: 0 });
+      const alive = yield* other.Echo({ text: "visible" });
+      expect(alive).toBe("visible");
     })
   )
 );

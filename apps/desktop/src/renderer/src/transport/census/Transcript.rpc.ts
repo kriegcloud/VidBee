@@ -1,3 +1,4 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as L from "@vidbee/transcription/Literal.model";
 import * as B from "@vidbee/transcription/Model.model";
 import * as Rpc from "effect/rpc/Rpc";
@@ -5,10 +6,29 @@ import * as RpcGroup from "effect/rpc/RpcGroup";
 import * as S from "effect/Schema";
 import { DeliveryError } from "../DocumentDelivery.errors.js";
 import { Completion, Subscription, Token } from "../DocumentDelivery.model.js";
-import { RpcOptional } from "../RpcField.model.js";
+import { RpcArray, RpcOptional } from "../RpcField.model.js";
 import { RpcObserved } from "../RpcObservation.model.js";
 import { TranscriptOperationError } from "./Transcript.errors.js";
 import * as M from "./Transcript.model.js";
+
+const $TransportId = $DesktopId.create("renderer/src/transport/census/Transcript.rpc");
+
+/**
+ * Validates Dependencies at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use Dependencies at its owning boundary)
+ *
+ * ```ts
+ * import { Dependencies } from "./Transcript.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Dependencies);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const Dependencies = S.Struct({
   changes: RpcOptional(Token),
   models: RpcOptional(Token),
@@ -17,10 +37,59 @@ export const Dependencies = S.Struct({
   account: RpcOptional(Token),
   agent: RpcOptional(Token),
   exportProgress: RpcOptional(Token),
-});
-export const Initial = S.Struct({ token: Token });
+}).pipe(
+  $TransportId.annoteSchema("Dependencies", { description: "Dependencies boundary in the desktop transport contract." })
+);
+/**
+ * Describes Dependencies ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type Dependencies = typeof Dependencies.Type;
+/**
+ * Validates Initial at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use Initial at its owning boundary)
+ *
+ * ```ts
+ * import { Initial } from "./Transcript.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Initial);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const Initial = S.Struct({ token: Token }).pipe(
+  $TransportId.annoteSchema("Initial", { description: "Initial boundary in the desktop transport contract." })
+);
+/**
+ * Describes Initial ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type Initial = typeof Initial.Type;
 const done = <A, I, RD, RE>(success: S.Codec<A, I, RD, RE>) =>
   Completion({ success: RpcObserved(success), error: TranscriptOperationError });
+/**
+ * Validates Transcript Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use TranscriptRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { TranscriptRpcs } from "./Transcript.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(TranscriptRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const TranscriptRpcs = RpcGroup.make(
   Rpc.make("Transcript.GetCloudModels", {
     payload: S.Struct({ dependencies: Dependencies }).pipe(RpcObserved),
@@ -55,7 +124,7 @@ export const TranscriptRpcs = RpcGroup.make(
     error: DeliveryError,
   }),
   Rpc.make("Transcript.ImportLocal", {
-    payload: S.Struct({ dependencies: Dependencies, paths: S.Array(S.String) }).pipe(RpcObserved),
+    payload: S.Struct({ dependencies: Dependencies, paths: RpcArray(S.String) }).pipe(RpcObserved),
     success: done(M.ImportResult),
     error: DeliveryError,
   }),
@@ -142,7 +211,7 @@ export const TranscriptRpcs = RpcGroup.make(
     error: DeliveryError,
   }),
   Rpc.make("Transcript.DeleteSegments", {
-    payload: S.Struct({ dependencies: Dependencies, downloadId: S.String, segmentIds: S.Array(S.String) }).pipe(
+    payload: S.Struct({ dependencies: Dependencies, downloadId: S.String, segmentIds: RpcArray(S.String) }).pipe(
       RpcObserved
     ),
     success: done(M.Detail),

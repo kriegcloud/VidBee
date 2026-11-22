@@ -9,7 +9,20 @@ import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js
 import type * as ManagedRuntime from "effect/ManagedRuntime";
 import type { SynchronousCall } from "../lib/SynchronousHost.service.js";
 
-/** Warmed compatibility runner; reservations survive uninterruptible accidental suspension. */
+/**
+ * Warmed compatibility runner; reservations survive uninterruptible accidental suspension.
+ *
+ * **Example** (Use makeSynchronousHost at its owning boundary)
+ *
+ * ```ts
+ * import { makeSynchronousHost } from "./SynchronousHost.entry.js"
+ * const compose = (options: Parameters<typeof makeSynchronousHost>[0]) => makeSynchronousHost(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeSynchronousHost = ({
   runtime,
   native,

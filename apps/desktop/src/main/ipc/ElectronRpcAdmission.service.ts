@@ -1,3 +1,4 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as HashMap from "effect/HashMap";
@@ -9,6 +10,24 @@ import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js
 import { makeResourceBudget, makeRetentionLedger } from "../../renderer/src/transport/ElectronRpc.model.js";
 import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 
+const $TransportId = $DesktopId.create("main/ipc/ElectronRpcAdmission.service");
+
+/**
+ * Validates Limits at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use Limits at its owning boundary)
+ *
+ * ```ts
+ * import { Limits } from "./ElectronRpcAdmission.service.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Limits);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const Limits = S.Struct({
   sessions: S.Int,
   clients: S.Int,
@@ -23,9 +42,28 @@ export const Limits = S.Struct({
   appBytes: S.Int,
   native: S.Int,
   appNative: S.Int,
-});
+}).pipe($TransportId.annoteSchema("Limits", { description: "Limits boundary in the desktop transport contract." }));
+/**
+ * Describes Limits ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type Limits = typeof Limits.Type;
-/** Admission ceilings, pending payload/heap measurement before capability cutover. */
+/**
+ * Admission ceilings, pending payload/heap measurement before capability cutover.
+ *
+ * **Example** (Use limits at its owning boundary)
+ *
+ * ```ts
+ * import { limits } from "./ElectronRpcAdmission.service.js"
+ * const largestFrame = limits.frameBytes;
+ * void largestFrame;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const limits: Limits = {
   sessions: 16,
   clients: 64,
@@ -41,14 +79,42 @@ export const limits: Limits = {
   native: 64,
   appNative: 1024,
 };
+/**
+ * Validates Request at the desktop transport boundary before dispatch.
+ *
+ * **Example** (Use Request at its owning boundary)
+ *
+ * ```ts
+ * import { Request } from "./ElectronRpcAdmission.service.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Request);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const Request = S.Struct({
   session: S.String,
   client: S.Int,
   id: S.Union([S.String, S.Finite]),
   stream: S.Boolean,
   discard: S.Boolean,
-});
+}).pipe($TransportId.annoteSchema("Request", { description: "Request boundary in the desktop transport contract." }));
+/**
+ * Describes Request ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type Request = typeof Request.Type;
+/**
+ * Describes Lease ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface Lease {
   readonly finalized: Effect.Effect<void>;
   readonly request: Request;
@@ -56,6 +122,12 @@ export interface Lease {
   readonly retainNative: (bytes: number) => Effect.Effect<NativeLease, DeliveryError>;
   readonly terminal: Effect.Effect<void>;
 }
+/**
+ * Describes Native Lease ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface NativeLease {
   readonly complete: Effect.Effect<void>;
   readonly resize: (bytes: number) => Effect.Effect<void, DeliveryError>;
@@ -79,7 +151,22 @@ interface Document {
   unary: number;
 }
 
-/** One application owner survives document generations and disconnected native work. */
+/**
+ * One application owner survives document generations and disconnected native work.
+ *
+ * **Example** (Use makeAdmission at its owning boundary)
+ *
+ * ```ts
+ * import { makeAdmission } from "./ElectronRpcAdmission.service.js"
+ * const admission = makeAdmission();
+ * admission.connectNow("document", "window");
+ * const active = admission.stats();
+ * void active;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeAdmission = (bounds: Limits = limits) => {
   let accounts = HashMap.empty<string, Account>();
   let documents = HashMap.empty<string, Document>();
@@ -337,6 +424,21 @@ export const makeAdmission = (bounds: Limits = limits) => {
     }),
   };
 };
+/**
+ * Supplies Electron Rpc Admission through the owning application or document scope.
+ *
+ * **Example** (Use ElectronRpcAdmission at its owning boundary)
+ *
+ * ```ts
+ * import { ElectronRpcAdmission } from "./ElectronRpcAdmission.service.js"
+ * import * as Effect from "effect/Effect"
+ * const access = ElectronRpcAdmission.use(Effect.succeed);
+ * void access;
+ * ```
+ *
+ * @category services
+ * @since 0.0.0
+ */
 export class ElectronRpcAdmission extends Context.Service<ElectronRpcAdmission, ReturnType<typeof makeAdmission>>()(
   "vidbee/main/ipc/ElectronRpcAdmission.service/ElectronRpcAdmission"
 ) {}

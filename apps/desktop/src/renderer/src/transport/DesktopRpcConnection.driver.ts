@@ -5,7 +5,20 @@ import { Connect } from "./ElectronRpc.model.js";
 import type { DesktopRpcBridge } from "./ElectronRpc.model.js";
 import type { DesktopRpcConnection } from "./ElectronRpcClient.layer.js";
 
-/** Listener acquisition precedes connect; its lifetime is the document scope. */
+/**
+ * Listener acquisition precedes connect; its lifetime is the document scope.
+ *
+ * **Example** (Use makeBridgeConnection at its owning boundary)
+ *
+ * ```ts
+ * import { makeBridgeConnection } from "./DesktopRpcConnection.driver.js"
+ * const compose = (options: Parameters<typeof makeBridgeConnection>[0]) => makeBridgeConnection(options);
+ * void compose;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeBridgeConnection = Effect.fn("DesktopRpcConnection.make")(function* (bridge: DesktopRpcBridge) {
   let receiver: ((frame: unknown) => void) | undefined;
   yield* Effect.acquireRelease(

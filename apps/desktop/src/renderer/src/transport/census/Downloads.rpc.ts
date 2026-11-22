@@ -1,22 +1,40 @@
 import * as C from "@vidbee/downloader-core/Cookie.model";
 import * as D from "@vidbee/downloader-core/Download.model";
+import { FanslyCommandSchema as NativeFanslyCommand } from "@vidbee/downloader-core/fansly-profile";
 import * as OF from "@vidbee/downloader-core/onlyfans-profile";
-import * as P from "@vidbee/downloader-core/Profile.model";
+import * as Profile from "@vidbee/downloader-core/Profile.model";
 import * as Inventory from "@vidbee/downloader-core/ProfilePersistence.model";
 import * as Social from "@vidbee/downloader-core/social-media";
 import { $DesktopId } from "@vidbee/identity/packages";
 import { LiteralKit } from "@vidbee/schema/LiteralKit";
 import * as Q from "@vidbee/task-queue/Task.model";
-import * as Predicate from "effect/Predicate";
+import * as P from "effect/Predicate";
 import * as Rpc from "effect/rpc/Rpc";
 import * as RpcGroup from "effect/rpc/RpcGroup";
 import * as S from "effect/Schema";
 import { DeliveryError } from "../DocumentDelivery.errors.js";
 import { Completion, Subscription, Token } from "../DocumentDelivery.model.js";
-import { RpcArray, RpcOptional } from "../RpcField.model.js";
+import { RpcArray, RpcMutableArray, RpcOptional } from "../RpcField.model.js";
 import { ObservedValue, RpcObserved } from "../RpcObservation.model.js";
 
 const $I = $DesktopId.create("shared/Downloads.model");
+
+/**
+ * Validates Download Status at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadStatus at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadStatus } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadStatus);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const DownloadStatus = LiteralKit([
   "pending",
   "downloading",
@@ -25,6 +43,29 @@ export const DownloadStatus = LiteralKit([
   "error",
   "cancelled",
 ]).pipe($I.annoteSchema("DownloadStatus", { description: "Desktop projected status." }));
+/**
+ * Describes Download Status ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type DownloadStatus = typeof DownloadStatus.Type;
+/**
+ * Validates Video Format at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use VideoFormat at its owning boundary)
+ *
+ * ```ts
+ * import { VideoFormat } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(VideoFormat);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class VideoFormat extends S.Opaque<VideoFormat, { readonly brand: unique symbol }>()(
   S.StructWithRest(
     S.Struct({
@@ -48,6 +89,22 @@ export class VideoFormat extends S.Opaque<VideoFormat, { readonly brand: unique 
     [S.Record(S.String, S.Unknown)]
   ).pipe(RpcObserved, $I.annoteSchema("VideoFormat", { description: "Desktop VideoFormat boundary value." }))
 ) {}
+/**
+ * Validates Video Info at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use VideoInfo at its owning boundary)
+ *
+ * ```ts
+ * import { VideoInfo } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(VideoInfo);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class VideoInfo extends S.Opaque<VideoInfo, { readonly brand: unique symbol }>()(
   S.StructWithRest(
     S.Struct({
@@ -55,7 +112,7 @@ export class VideoInfo extends S.Opaque<VideoInfo, { readonly brand: unique symb
       title: S.String.pipe(S.mutableKey),
       thumbnail: ObservedValue.pipe(RpcOptional),
       duration: ObservedValue.pipe(RpcOptional),
-      formats: RpcArray(VideoFormat).pipe(S.mutable, S.mutableKey),
+      formats: RpcMutableArray(VideoFormat).pipe(S.mutableKey),
       extractor_key: ObservedValue.pipe(RpcOptional),
       webpage_url: ObservedValue.pipe(RpcOptional),
       description: ObservedValue.pipe(RpcOptional),
@@ -65,6 +122,22 @@ export class VideoInfo extends S.Opaque<VideoInfo, { readonly brand: unique symb
     [S.Record(S.String, S.Unknown)]
   ).pipe(RpcObserved, $I.annoteSchema("VideoInfo", { description: "Desktop VideoInfo boundary value." }))
 ) {}
+/**
+ * Validates Download Options at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadOptions at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadOptions } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadOptions);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class DownloadOptions extends S.Opaque<DownloadOptions, { readonly brand: unique symbol }>()(
   S.Struct({
     batchId: S.String.pipe(RpcOptional),
@@ -76,14 +149,14 @@ export class DownloadOptions extends S.Opaque<DownloadOptions, { readonly brand:
     type: D.DownloadType.pipe(S.mutableKey),
     format: S.String.pipe(RpcOptional),
     audioFormat: S.String.pipe(RpcOptional),
-    audioFormatIds: RpcArray(S.String).pipe(S.mutable, RpcOptional),
+    audioFormatIds: RpcMutableArray(S.String).pipe(RpcOptional),
     startTime: S.String.pipe(RpcOptional),
     endTime: S.String.pipe(RpcOptional),
     downloadSubs: S.Boolean.pipe(RpcOptional),
     customDownloadPath: S.String.pipe(RpcOptional),
     customFilenameTemplate: S.String.pipe(RpcOptional),
     containerFormat: S.Literals(["auto", "mp4", "mkv", "webm", "mov"]).pipe(RpcOptional),
-    tags: RpcArray(S.String).pipe(S.mutable, RpcOptional),
+    tags: RpcMutableArray(S.String).pipe(RpcOptional),
     origin: Q.TaskOrigin.pipe(RpcOptional),
     subscriptionId: S.String.pipe(RpcOptional),
     title: ObservedValue.pipe(RpcOptional),
@@ -96,6 +169,22 @@ export class DownloadOptions extends S.Opaque<DownloadOptions, { readonly brand:
     selectedFormat: ObservedValue.pipe(RpcOptional),
   }).pipe($I.annoteSchema("DownloadOptions", { description: "Desktop DownloadOptions boundary value." }))
 ) {}
+/**
+ * Validates Playlist Entry at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlaylistEntry at its owning boundary)
+ *
+ * ```ts
+ * import { PlaylistEntry } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlaylistEntry);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlaylistEntry extends S.Opaque<PlaylistEntry, { readonly brand: unique symbol }>()(
   S.Struct({
     id: S.String.pipe(S.mutableKey),
@@ -106,20 +195,52 @@ export class PlaylistEntry extends S.Opaque<PlaylistEntry, { readonly brand: uni
     mediaKind: D.PlaylistMediaKind.pipe(RpcOptional),
   }).pipe($I.annoteSchema("PlaylistEntry", { description: "Desktop PlaylistEntry boundary value." }))
 ) {}
+/**
+ * Validates Playlist Info at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlaylistInfo at its owning boundary)
+ *
+ * ```ts
+ * import { PlaylistInfo } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlaylistInfo);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlaylistInfo extends S.Opaque<PlaylistInfo, { readonly brand: unique symbol }>()(
   S.Struct({
     id: S.String.pipe(S.mutableKey),
     title: S.String.pipe(S.mutableKey),
-    entries: RpcArray(PlaylistEntry).pipe(S.mutable, S.mutableKey),
+    entries: RpcMutableArray(PlaylistEntry).pipe(S.mutableKey),
     entryCount: S.Finite.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("PlaylistInfo", { description: "Desktop PlaylistInfo boundary value." }))
 ) {}
+/**
+ * Validates Playlist Download Options at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlaylistDownloadOptions at its owning boundary)
+ *
+ * ```ts
+ * import { PlaylistDownloadOptions } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlaylistDownloadOptions);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlaylistDownloadOptions extends S.Opaque<PlaylistDownloadOptions, { readonly brand: unique symbol }>()(
   S.Struct({
     url: S.String.pipe(S.mutableKey),
     type: D.DownloadType.pipe(S.mutableKey),
     format: S.String.pipe(RpcOptional),
-    entryIds: RpcArray(S.String).pipe(S.mutable, RpcOptional),
+    entryIds: RpcMutableArray(S.String).pipe(RpcOptional),
     startIndex: S.Finite.pipe(RpcOptional),
     endIndex: S.Finite.pipe(RpcOptional),
     filenameFormat: S.String.pipe(RpcOptional),
@@ -130,6 +251,22 @@ export class PlaylistDownloadOptions extends S.Opaque<PlaylistDownloadOptions, {
     $I.annoteSchema("PlaylistDownloadOptions", { description: "Desktop PlaylistDownloadOptions boundary value." })
   )
 ) {}
+/**
+ * Validates Playlist Download Entry at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlaylistDownloadEntry at its owning boundary)
+ *
+ * ```ts
+ * import { PlaylistDownloadEntry } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlaylistDownloadEntry);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlaylistDownloadEntry extends S.Opaque<PlaylistDownloadEntry, { readonly brand: unique symbol }>()(
   S.Struct({
     downloadId: S.String.pipe(S.mutableKey),
@@ -139,6 +276,22 @@ export class PlaylistDownloadEntry extends S.Opaque<PlaylistDownloadEntry, { rea
     index: S.Finite.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("PlaylistDownloadEntry", { description: "Desktop PlaylistDownloadEntry boundary value." }))
 ) {}
+/**
+ * Validates Playlist Download Result at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlaylistDownloadResult at its owning boundary)
+ *
+ * ```ts
+ * import { PlaylistDownloadResult } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlaylistDownloadResult);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlaylistDownloadResult extends S.Opaque<PlaylistDownloadResult, { readonly brand: unique symbol }>()(
   S.Struct({
     groupId: S.String.pipe(S.mutableKey),
@@ -148,13 +301,52 @@ export class PlaylistDownloadResult extends S.Opaque<PlaylistDownloadResult, { r
     totalCount: S.Finite.pipe(S.mutableKey),
     startIndex: S.Finite.pipe(S.mutableKey),
     endIndex: S.Finite.pipe(S.mutableKey),
-    entries: RpcArray(PlaylistDownloadEntry).pipe(S.mutable, S.mutableKey),
+    entries: RpcMutableArray(PlaylistDownloadEntry).pipe(S.mutableKey),
   }).pipe($I.annoteSchema("PlaylistDownloadResult", { description: "Desktop PlaylistDownloadResult boundary value." }))
 ) {}
-export const ObservedNumber = S.declare(Predicate.isNumber).pipe(
+/**
+ * Validates Observed Number at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ObservedNumber at its owning boundary)
+ *
+ * ```ts
+ * import { ObservedNumber } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ObservedNumber);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ObservedNumber = S.declare(P.isNumber).pipe(
   RpcObserved,
   $I.annoteSchema("ObservedNumber", { description: "A retained numeric projector observation, including NaN." })
 );
+/**
+ * Describes Observed Number ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ObservedNumber = typeof ObservedNumber.Type;
+/**
+ * Validates Download Progress at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadProgress at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadProgress } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadProgress);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class DownloadProgress extends S.Opaque<DownloadProgress, { readonly brand: unique symbol }>()(
   S.Struct({
     percent: ObservedNumber.pipe(S.mutableKey),
@@ -167,6 +359,22 @@ export class DownloadProgress extends S.Opaque<DownloadProgress, { readonly bran
     $I.annoteSchema("DownloadProgress", { description: "Renderer progress with original optional property presence." })
   )
 ) {}
+/**
+ * Validates Download Item at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadItem at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadItem } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadItem);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class DownloadItem extends S.Opaque<DownloadItem, { readonly brand: unique symbol }>()(
   S.Struct({
     sourceMediaKind: ObservedValue.pipe(RpcOptional),
@@ -232,6 +440,22 @@ export class DownloadItem extends S.Opaque<DownloadItem, { readonly brand: uniqu
     errorCategory: Q.ErrorCategory.pipe(RpcOptional),
   }).pipe($I.annoteSchema("DownloadItem", { description: "Desktop DownloadItem boundary value." }))
 ) {}
+/**
+ * Validates Download History Item at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadHistoryItem at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadHistoryItem } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadHistoryItem);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class DownloadHistoryItem extends S.Opaque<DownloadHistoryItem, { readonly brand: unique symbol }>()(
   S.Struct({
     sourceMediaKind: ObservedValue.pipe(RpcOptional),
@@ -290,6 +514,22 @@ export class DownloadHistoryItem extends S.Opaque<DownloadHistoryItem, { readonl
     downloadPath: ObservedValue.pipe(RpcOptional),
   }).pipe($I.annoteSchema("DownloadHistoryItem", { description: "Desktop DownloadHistoryItem boundary value." }))
 ) {}
+/**
+ * Validates Video Info Command Result at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use VideoInfoCommandResult at its owning boundary)
+ *
+ * ```ts
+ * import { VideoInfoCommandResult } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(VideoInfoCommandResult);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class VideoInfoCommandResult extends S.Opaque<VideoInfoCommandResult, { readonly brand: unique symbol }>()(
   S.Struct({
     info: ObservedValue.pipe(RpcOptional),
@@ -297,23 +537,87 @@ export class VideoInfoCommandResult extends S.Opaque<VideoInfoCommandResult, { r
     error: S.String.pipe(RpcOptional),
   }).pipe($I.annoteSchema("VideoInfoCommandResult", { description: "Desktop VideoInfoCommandResult boundary value." }))
 ) {}
+/**
+ * Validates Local Poster Request at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use LocalPosterRequest at its owning boundary)
+ *
+ * ```ts
+ * import { LocalPosterRequest } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(LocalPosterRequest);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class LocalPosterRequest extends S.Opaque<LocalPosterRequest, { readonly brand: unique symbol }>()(
   S.Struct({
     filePath: S.NullOr(S.String).pipe(RpcOptional),
     directory: S.NullOr(S.String).pipe(RpcOptional),
   }).pipe($I.annoteSchema("LocalPosterRequest", { description: "Desktop LocalPosterRequest boundary value." }))
 ) {}
+/**
+ * Validates Player Attach Input at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlayerAttachInput at its owning boundary)
+ *
+ * ```ts
+ * import { PlayerAttachInput } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlayerAttachInput);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlayerAttachInput extends S.Opaque<PlayerAttachInput, { readonly brand: unique symbol }>()(
   S.Struct({
     filePath: S.String.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("PlayerAttachInput", { description: "Desktop PlayerAttachInput boundary value." }))
 ) {}
+/**
+ * Validates Player Attach Result at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlayerAttachResult at its owning boundary)
+ *
+ * ```ts
+ * import { PlayerAttachResult } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PlayerAttachResult);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PlayerAttachResult extends S.Opaque<PlayerAttachResult, { readonly brand: unique symbol }>()(
   S.Struct({
     playablePath: S.String.pipe(S.mutableKey),
     reason: S.String.pipe(RpcOptional),
   }).pipe($I.annoteSchema("PlayerAttachResult", { description: "Desktop PlayerAttachResult boundary value." }))
 ) {}
+/**
+ * Validates App Icon Menu State at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use AppIconMenuState at its owning boundary)
+ *
+ * ```ts
+ * import { AppIconMenuState } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(AppIconMenuState);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class AppIconMenuState extends S.Opaque<AppIconMenuState, { readonly brand: unique symbol }>()(
   S.Struct({
     canNext: S.Boolean.pipe(S.mutableKey),
@@ -322,16 +626,64 @@ export class AppIconMenuState extends S.Opaque<AppIconMenuState, { readonly bran
     playing: S.Boolean.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("AppIconMenuState", { description: "Desktop AppIconMenuState boundary value." }))
 ) {}
+/**
+ * Validates Path Result at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PathResult at its owning boundary)
+ *
+ * ```ts
+ * import { PathResult } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(PathResult);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class PathResult extends S.Opaque<PathResult, { readonly brand: unique symbol }>()(
   S.Struct({
     path: S.String.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("PathResult", { description: "Desktop PathResult boundary value." }))
 ) {}
+/**
+ * Validates Count Result at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use CountResult at its owning boundary)
+ *
+ * ```ts
+ * import { CountResult } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(CountResult);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class CountResult extends S.Opaque<CountResult, { readonly brand: unique symbol }>()(
   S.Struct({
     count: S.Finite.pipe(S.mutableKey),
   }).pipe($I.annoteSchema("CountResult", { description: "Desktop CountResult boundary value." }))
 ) {}
+/**
+ * Validates Extension Source at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ExtensionSource at its owning boundary)
+ *
+ * ```ts
+ * import { ExtensionSource } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ExtensionSource);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class ExtensionSource extends S.Opaque<ExtensionSource, { readonly brand: unique symbol }>()(
   S.Struct({
     id: S.String.pipe(S.mutableKey),
@@ -341,31 +693,95 @@ export class ExtensionSource extends S.Opaque<ExtensionSource, { readonly brand:
     legacy: S.Boolean.pipe(RpcOptional),
     connected: S.Boolean.pipe(S.mutableKey),
     lastSeenAt: S.Finite.pipe(RpcOptional),
-    sites: RpcArray(C.CookieSiteMatch).pipe(S.mutable, S.mutableKey),
+    sites: RpcMutableArray(C.CookieSiteMatch).pipe(S.mutableKey),
   }).pipe($I.annoteSchema("ExtensionSource", { description: "Desktop ExtensionSource boundary value." }))
 ) {}
+/**
+ * Validates Extension Connection at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ExtensionConnection at its owning boundary)
+ *
+ * ```ts
+ * import { ExtensionConnection } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ExtensionConnection);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class ExtensionConnection extends S.Opaque<ExtensionConnection, { readonly brand: unique symbol }>()(
   S.Struct({
     connected: S.Boolean.pipe(S.mutableKey),
     browser: S.String.pipe(RpcOptional),
     lastSeenAt: S.Finite.pipe(RpcOptional),
-    sites: RpcArray(C.CookieSiteMatch).pipe(S.mutable, S.mutableKey),
+    sites: RpcMutableArray(C.CookieSiteMatch).pipe(S.mutableKey),
     activeSourceId: S.String.pipe(RpcOptional),
-    sources: RpcArray(ExtensionSource).pipe(S.mutable, S.mutableKey),
+    sources: RpcMutableArray(ExtensionSource).pipe(S.mutableKey),
   }).pipe($I.annoteSchema("ExtensionConnection", { description: "Desktop ExtensionConnection boundary value." }))
 ) {}
+/**
+ * Validates Validation at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use Validation at its owning boundary)
+ *
+ * ```ts
+ * import { Validation } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(Validation);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class Validation extends S.Opaque<Validation, { readonly brand: unique symbol }>()(
   S.Struct({
     valid: S.Boolean.pipe(S.mutableKey),
     reason: S.String.pipe(RpcOptional),
   }).pipe($I.annoteSchema("Validation", { description: "Desktop Validation boundary value." }))
 ) {}
+/**
+ * Validates Export Video Source at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ExportVideoSource at its owning boundary)
+ *
+ * ```ts
+ * import { ExportVideoSource } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ExportVideoSource);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class ExportVideoSource extends S.Opaque<ExportVideoSource, { readonly brand: unique symbol }>()(
   S.Struct({
     url: S.String,
     label: S.String.pipe(RpcOptional),
   }).pipe($I.annoteSchema("ExportVideoSource", { description: "Desktop ExportVideoSource boundary value." }))
 ) {}
+/**
+ * Validates Agent Artifact at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use AgentArtifact at its owning boundary)
+ *
+ * ```ts
+ * import { AgentArtifact } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(AgentArtifact);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class AgentArtifact extends S.Opaque<AgentArtifact, { readonly brand: unique symbol }>()(
   S.Struct({
     id: S.String,
@@ -382,11 +798,43 @@ export class AgentArtifact extends S.Opaque<AgentArtifact, { readonly brand: uni
     height: S.Finite.pipe(RpcOptional),
   }).pipe($I.annoteSchema("AgentArtifact", { description: "Existing share artifact links." }))
 ) {}
+/**
+ * Validates Agent Skill Label at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use AgentSkillLabel at its owning boundary)
+ *
+ * ```ts
+ * import { AgentSkillLabel } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(AgentSkillLabel);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class AgentSkillLabel extends S.Opaque<AgentSkillLabel, { readonly brand: unique symbol }>()(
   S.Struct({ name: S.String, label: S.String.pipe(RpcOptional) }).pipe(
     $I.annoteSchema("AgentSkillLabel", { description: "Saved skill label." })
   )
 ) {}
+/**
+ * Validates Share Payload at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use SharePayload at its owning boundary)
+ *
+ * ```ts
+ * import { SharePayload } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(SharePayload);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const SharePayload = S.Union([
   S.Struct({
     kind: S.tag("caption"),
@@ -415,17 +863,71 @@ export const SharePayload = S.Union([
   S.toTaggedUnion("kind"),
   $I.annoteSchema("SharePayload", { description: "Existing caption or prompt share request." })
 );
+/**
+ * Describes Share Payload ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type SharePayload = typeof SharePayload.Type;
+/**
+ * Validates Mermaid Payload at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use MermaidPayload at its owning boundary)
+ *
+ * ```ts
+ * import { MermaidPayload } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(MermaidPayload);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class MermaidPayload extends S.Opaque<MermaidPayload, { readonly brand: unique symbol }>()(
   S.Struct({ source: S.String, format: S.Literals(["svg", "png", "jpg"]), theme: S.Literals(["light", "dark"]) }).pipe(
     $I.annoteSchema("MermaidPayload", { description: "Existing diagram export." })
   )
 ) {}
+/**
+ * Validates Mermaid Image at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use MermaidImage at its owning boundary)
+ *
+ * ```ts
+ * import { MermaidImage } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(MermaidImage);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class MermaidImage extends S.Opaque<MermaidImage, { readonly brand: unique symbol }>()(
   S.Struct({ data: S.Uint8ArrayFromBase64, width: S.Finite, height: S.Finite }).pipe(
     $I.annoteSchema("MermaidImage", { description: "Rendered diagram bytes and dimensions." })
   )
 ) {}
+/**
+ * Validates Share Ready at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ShareReady at its owning boundary)
+ *
+ * ```ts
+ * import { ShareReady } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(ShareReady);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class ShareReady extends S.Opaque<ShareReady, { readonly brand: unique symbol }>()(
   S.Struct({
     requestId: S.Finite,
@@ -443,6 +945,22 @@ export class ShareReady extends S.Opaque<ShareReady, { readonly brand: unique sy
     diagram: MermaidImage.pipe(RpcOptional),
   }).pipe($I.annoteSchema("ShareReady", { description: "Hidden renderer layout or diagram completion." }))
 ) {}
+/**
+ * Validates Failure Kind at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use FailureKind at its owning boundary)
+ *
+ * ```ts
+ * import { FailureKind } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(FailureKind);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const FailureKind = LiteralKit([
   "validation",
   "metadata",
@@ -452,14 +970,53 @@ export const FailureKind = LiteralKit([
   "process",
   "persistence",
   "capture",
-]);
+]).pipe($I.annoteSchema("FailureKind", { description: "Failure Kind boundary in the desktop transport contract." }));
+/**
+ * Describes Failure Kind ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type FailureKind = typeof FailureKind.Type;
+/**
+ * Validates Downloads Failure at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadsFailure at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadsFailure } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadsFailure);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export class DownloadsFailure extends S.TaggedError<DownloadsFailure, { readonly brand: unique symbol }>(
   $I`DownloadsFailure`
 )(
   "DownloadsFailure",
   { operation: S.String, message: S.String, kind: FailureKind },
-  $I.annote("DownloadsFailure", { description: "Serializable desktop failure; original cause remains main-only." })
+  $I.annoteError("DownloadsFailure", { description: "Serializable desktop failure; original cause remains main-only." })
 ) {}
+/**
+ * Validates Download Event at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadEvent at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadEvent } from "./Downloads.rpc.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(DownloadEvent);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const DownloadEvent = S.TaggedUnion({
   Queued: { item: DownloadItem },
   Updated: { id: S.String, updates: S.Record(S.String, ObservedValue) },
@@ -471,7 +1028,28 @@ export const DownloadEvent = S.TaggedUnion({
   Cancelled: { id: S.String },
   Removed: { id: S.String },
 }).pipe($I.annoteSchema("DownloadEvent", { description: "Ordered live application download notifications." }));
+/**
+ * Describes Download Event ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type DownloadEvent = typeof DownloadEvent.Type;
+/**
+ * Validates Downloads Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use DownloadsRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { DownloadsRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(DownloadsRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const DownloadsRpcs = RpcGroup.make(
   Rpc.make("Downloads.WatchDeeplink", {
     success: S.Struct({ url: S.String, type: S.Literals(["single", "playlist"]) }).pipe(RpcObserved, Subscription),
@@ -479,7 +1057,7 @@ export const DownloadsRpcs = RpcGroup.make(
     stream: true,
   }),
   Rpc.make("Downloads.FanslyProfileCommand", {
-    payload: { input: OF.OnlyFansCommandSchema.pipe(S.toEncoded, RpcObserved) },
+    payload: { input: NativeFanslyCommand.pipe(S.toEncoded, RpcObserved) },
     success: Completion({ success: OF.OnlyFansProfileSchema.pipe(RpcObserved), error: DownloadsFailure }),
     error: DeliveryError,
   }),
@@ -593,11 +1171,11 @@ export const DownloadsRpcs = RpcGroup.make(
     success: Completion({
       success: RpcArray(
         S.Struct({
-          inspectionId: P.InstagramProfileInspection.fields.inspectionId,
-          profile: P.InstagramProfileInspection.fields.profile,
+          inspectionId: Profile.InstagramProfileInspection.fields.inspectionId,
+          profile: Profile.InstagramProfileInspection.fields.profile,
           totalSourceCount: S.Finite,
           totalAssetCount: S.Finite,
-          mapping: P.InstagramProfileInspection.fields.mapping,
+          mapping: Profile.InstagramProfileInspection.fields.mapping,
         })
       ).pipe(RpcObserved),
       error: DownloadsFailure,
@@ -605,8 +1183,8 @@ export const DownloadsRpcs = RpcGroup.make(
     error: DeliveryError,
   }),
   Rpc.make("Downloads.InspectInstagramProfile", {
-    payload: { url: S.String, categories: RpcArray(P.InstagramProfileCategory).pipe(RpcOptional) },
-    success: Completion({ success: P.InstagramProfileInspection.pipe(RpcObserved), error: DownloadsFailure }),
+    payload: { url: S.String, categories: RpcArray(Profile.InstagramProfileCategory).pipe(RpcOptional) },
+    success: Completion({ success: Profile.InstagramProfileInspection.pipe(RpcObserved), error: DownloadsFailure }),
     error: DeliveryError,
   }),
   Rpc.make("Downloads.StartDownload", {
@@ -674,6 +1252,21 @@ export const DownloadsRpcs = RpcGroup.make(
     stream: true,
   })
 );
+/**
+ * Validates History Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use HistoryRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { HistoryRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(HistoryRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const HistoryRpcs = RpcGroup.make(
   Rpc.make("History.GetHistory", {
     payload: { token: Token },
@@ -723,6 +1316,21 @@ export const HistoryRpcs = RpcGroup.make(
     error: DeliveryError,
   })
 );
+/**
+ * Validates Thumbnail Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ThumbnailRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { ThumbnailRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(ThumbnailRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const ThumbnailRpcs = RpcGroup.make(
   Rpc.make("Thumbnail.GetThumbnailPath", {
     payload: { url: S.NullOr(S.String).pipe(RpcOptional) },
@@ -735,6 +1343,21 @@ export const ThumbnailRpcs = RpcGroup.make(
     error: DeliveryError,
   })
 );
+/**
+ * Validates Player Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use PlayerRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { PlayerRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(PlayerRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const PlayerRpcs = RpcGroup.make(
   Rpc.make("Player.Attach", {
     payload: { input: PlayerAttachInput },
@@ -756,6 +1379,21 @@ export const PlayerRpcs = RpcGroup.make(
     stream: true,
   })
 );
+/**
+ * Validates Files Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use FilesRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { FilesRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(FilesRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const FilesRpcs = RpcGroup.make(
   Rpc.make("Files.ReadClipboardFilePaths", {
     success: Completion({ success: RpcArray(S.String).pipe(RpcObserved), error: DownloadsFailure }),
@@ -869,6 +1507,21 @@ export const FilesRpcs = RpcGroup.make(
     error: DeliveryError,
   })
 );
+/**
+ * Validates Browser Cookies Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use BrowserCookiesRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { BrowserCookiesRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(BrowserCookiesRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const BrowserCookiesRpcs = RpcGroup.make(
   Rpc.make("BrowserCookies.ListInstalledBrowsers", {
     success: Completion({ success: RpcArray(C.InstalledCookieBrowser).pipe(RpcObserved), error: DownloadsFailure }),
@@ -904,6 +1557,21 @@ export const BrowserCookiesRpcs = RpcGroup.make(
     error: DeliveryError,
   })
 );
+/**
+ * Validates Share Capture Rpcs at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use ShareCaptureRpcs at its owning boundary)
+ *
+ * ```ts
+ * import { ShareCaptureRpcs } from "./Downloads.rpc.js"
+ * import * as RpcClient from "effect/rpc/RpcClient"
+ * const client = RpcClient.make(ShareCaptureRpcs);
+ * void client;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const ShareCaptureRpcs = RpcGroup.make(
   Rpc.make("ShareCapture.Watch", {
     success: S.Struct({ requestId: S.Finite, payload: SharePayload }).pipe(RpcObserved, Subscription),

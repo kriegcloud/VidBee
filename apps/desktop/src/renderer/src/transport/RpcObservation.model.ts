@@ -1,3 +1,4 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as A from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as P from "effect/Predicate";
@@ -7,7 +8,14 @@ import * as Getter from "effect/SchemaGetter";
 import * as Issue from "effect/SchemaIssue";
 import { failure } from "./DocumentDelivery.errors.js";
 
-/** Recursive tagged wire tree; marker-shaped application objects stay ordinary objects. */
+const $TransportId = $DesktopId.create("renderer/src/transport/RpcObservation.model");
+
+/**
+ * Recursive tagged wire tree; marker-shaped application objects stay ordinary objects.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type WireValue =
   | { readonly t: "u" }
   | { readonly t: "null" }
@@ -17,6 +25,21 @@ export type WireValue =
   | { readonly t: "i"; readonly v: string }
   | { readonly t: "a"; readonly v: ReadonlyArray<WireValue> }
   | { readonly t: "o"; readonly v: ReadonlyArray<readonly [string, WireValue]> };
+/**
+ * Constructs Wire Value with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use WireValue at its owning boundary)
+ *
+ * ```ts
+ * import { WireValue } from "./RpcObservation.model.js"
+ * import * as S from "effect/Schema"
+ * const validate = S.decodeUnknownEffect(WireValue);
+ * void validate({});
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const WireValue: S.Codec<WireValue> = S.suspend(() =>
   S.Union([
     S.Struct({ t: S.Literal("u") }),
@@ -28,6 +51,8 @@ export const WireValue: S.Codec<WireValue> = S.suspend(() =>
     S.Struct({ t: S.Literal("a"), v: S.Array(WireValue) }),
     S.Struct({ t: S.Literal("o"), v: S.Array(S.Tuple([S.String, WireValue])) }),
   ])
+).pipe(
+  $TransportId.annoteSchema("WireValue", { description: "Wire Value boundary in the desktop transport contract." })
 );
 const numericToken = (value: number) => (Object.is(value, -0) ? "-0" : value.toString());
 const makeBudget = () => {
@@ -39,6 +64,20 @@ const makeBudget = () => {
     return depth <= 64 && nodes <= 65536 && bytes <= 64 * 1024 * 1024;
   };
 };
+/**
+ * Constructs pack with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use pack at its owning boundary)
+ *
+ * ```ts
+ * import { pack } from "./RpcObservation.model.js"
+ * const encoded = pack({ value: undefined, count: -0 });
+ * void encoded;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const pack = Effect.fn("RpcObservation.pack")(function* (input: unknown) {
   const budget = makeBudget();
   const visit = Effect.fn("RpcObservation.packNode")(function* (
@@ -82,6 +121,20 @@ export const pack = Effect.fn("RpcObservation.pack")(function* (input: unknown) 
   });
   return yield* visit(input, [], 0);
 });
+/**
+ * Constructs unpack with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use unpack at its owning boundary)
+ *
+ * ```ts
+ * import { unpack } from "./RpcObservation.model.js"
+ * const decoded = unpack({ t: "u" });
+ * void decoded;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const unpack = Effect.fn("RpcObservation.unpack")(function* (input: WireValue) {
   const budget = makeBudget();
   const visit = Effect.fn("RpcObservation.unpackNode")(function* (
@@ -123,6 +176,21 @@ export const unpack = Effect.fn("RpcObservation.unpack")(function* (input: WireV
   });
   return yield* visit(input, 0);
 });
+/**
+ * Constructs Observed Value with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use ObservedValue at its owning boundary)
+ *
+ * ```ts
+ * import { ObservedValue } from "./RpcObservation.model.js"
+ * import * as S from "effect/Schema"
+ * const validate = S.decodeUnknownEffect(ObservedValue);
+ * void validate({});
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const ObservedValue: S.Codec<unknown, WireValue> = WireValue.pipe(
   S.decodeTo(S.Unknown, {
     decode: Getter.transformEffect((input, options) =>
@@ -135,8 +203,32 @@ export const ObservedValue: S.Codec<unknown, WireValue> = WireValue.pipe(
         Effect.mapError(() => new Issue.InvalidValue({ expected: "supported bounded observation" }, input, options))
       )
     ),
+  }),
+  $TransportId.annoteSchema("ObservedValue", {
+    description: "Observed Value boundary in the desktop transport contract.",
   })
 );
+/**
+ * Describes Observed Value ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type ObservedValue = typeof ObservedValue.Type;
+/**
+ * Constructs Rpc Observed with explicit lifetime and failure ownership.
+ *
+ * **Example** (Use RpcObserved at its owning boundary)
+ *
+ * ```ts
+ * import { RpcObserved } from "./RpcObservation.model.js"
+ * import * as S from "effect/Schema"
+ * const retained = RpcObserved(S.Struct({ name: S.String }));
+ * void S.encodeEffect(retained)({ name: "ready" });
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const RpcObserved = <A, I, RD, RE>(view: S.Codec<A, I, RD, RE>) =>
   ObservedValue.pipe(S.decodeTo(S.declare((input: unknown): input is A => S.is(S.toType(view))(input))));

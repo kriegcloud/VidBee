@@ -1,4 +1,6 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as Effect from "effect/Effect";
+import * as P from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as RpcSerialization from "effect/rpc/RpcSerialization";
 import * as S from "effect/Schema";
@@ -8,7 +10,23 @@ import { sameObservation } from "../../renderer/src/transport/RpcCensus.model.js
 import { ObservedValue } from "../../renderer/src/transport/RpcObservation.model.js";
 import type { RetentionAccount, RetentionLease } from "../../renderer/src/transport/ElectronRpc.model.js";
 
-/** Invoke at one existing recipient-send point. Listener traversal stays with its source owner. */
+const $TransportId = $DesktopId.create("main/ipc/Publication.service");
+
+/**
+ * Invoke at one existing recipient-send point. Listener traversal stays with its source owner.
+ *
+ * **Example** (Use publishRecipient at its owning boundary)
+ *
+ * ```ts
+ * import { publishRecipient } from "./Publication.service.js"
+ * import * as Effect from "effect/Effect"
+ * const publish = publishRecipient({ value: "update", legacy: () => {}, migrated: () => Effect.void, report: () => Effect.void });
+ * void publish;
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const publishRecipient = Effect.fn("Publication.recipient")(function* <A>(input: {
   readonly value: A;
   readonly legacy?: (value: A) => void;
@@ -17,10 +35,27 @@ export const publishRecipient = Effect.fn("Publication.recipient")(function* <A>
 }) {
   // The original exception still stops the original publisher at this point.
   if (input.legacy !== undefined) yield* Effect.sync(() => input.legacy?.(input.value));
-  if (input.migrated !== undefined) yield* input.migrated(input.value).pipe(Effect.catchCause(input.report));
+  if (input.migrated !== undefined)
+    yield* Effect.suspend(() => input.migrated?.(input.value) ?? Effect.void).pipe(
+      Effect.catchCause((cause) => Effect.suspend(() => input.report(cause)).pipe(Effect.ignoreCause))
+    );
 });
 
-/** Called synchronously at the source's existing recipient-send point, before later listeners. */
+/**
+ * Called synchronously at the source's existing recipient-send point, before later listeners.
+ *
+ * **Example** (Use snapshotPublication at its owning boundary)
+ *
+ * ```ts
+ * import { snapshotPublication } from "./Publication.service.js"
+ * import { makeRetentionLedger } from "../../renderer/src/transport/ElectronRpc.model.js";
+ * const captured = snapshotPublication({ value: { state: "ready" }, account: makeRetentionLedger().forWindow("window") });
+ * if (captured._tag === "Success") captured.success.release();
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const snapshotPublication = <A>({
   value,
   account,
@@ -35,17 +70,20 @@ export const snapshotPublication = <A>({
     staging ??
     account.reserve(estimated === undefined ? 64 * 1024 * 1024 : Math.min(64 * 1024 * 1024, estimated * 4 + 4096));
   if (retained === undefined) return Result.fail(failure("ObservationCapacity"));
-  const codec = RpcSerialization.json.codecFor(ObservedValue);
+  const codec = RpcSerialization.json
+    .codecFor(ObservedValue)
+    .pipe($TransportId.annoteSchema("codec", { description: "codec boundary in the desktop transport contract." }));
   const freeze = (value: unknown): void => {
-    if (value === null || typeof value !== "object") return;
+    if (!P.isObjectOrArray(value)) return;
     for (const key of Reflect.ownKeys(value)) {
       const descriptor = Reflect.getOwnPropertyDescriptor(value, key);
       if (descriptor !== undefined && "value" in descriptor) {
         const child: unknown = descriptor.value;
         freeze(child);
+        Reflect.defineProperty(value, key, { ...descriptor, writable: false, configurable: false });
       }
     }
-    Object.freeze(value);
+    Reflect.preventExtensions(value);
   };
   const result = S.encodeUnknownResult(codec)(value).pipe(
     Result.flatMap((wire) => S.decodeUnknownResult(codec)(wire).pipe(Result.map((copy) => ({ wire, copy })))),

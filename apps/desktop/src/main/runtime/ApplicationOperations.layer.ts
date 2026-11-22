@@ -9,12 +9,32 @@ import { failure } from "../../renderer/src/transport/DocumentDelivery.errors.js
 import type { DeliveryError } from "../../renderer/src/transport/DocumentDelivery.errors.js";
 import type { OperationHandle, OperationOwner } from "./ApplicationOperations.service.js";
 
+/**
+ * Describes Operation Account ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export interface OperationAccount {
   readonly begin?: (origin: string) => (() => void) | undefined;
   readonly release: (origin: string, bytes: number) => void;
   readonly reserve: (origin: string, bytes: number) => boolean;
 }
-/** The caller supplies the application scope, never an individual request scope. */
+/**
+ * The caller supplies the application scope, never an individual request scope.
+ *
+ * **Example** (Use makeOperations at its owning boundary)
+ *
+ * ```ts
+ * import { makeOperations } from "./ApplicationOperations.layer.js"
+ * import * as Effect from "effect/Effect"
+ * const acquire = makeOperations({ reserve: () => true, release: () => {} });
+ * void Effect.scoped(acquire);
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
+ */
 export const makeOperations = Effect.fn("ApplicationOperations.make")(function* (
   account: OperationAccount,
   maxWork = 1024
@@ -32,6 +52,7 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
     if (
       (account.begin !== undefined && releaseNative === undefined) ||
       !accepting ||
+      scope.state._tag === "Closed" ||
       HashSet.size(active) >= maxWork ||
       !Number.isSafeInteger(options.reserveBytes) ||
       options.reserveBytes < 0 ||
@@ -74,29 +95,31 @@ export const makeOperations = Effect.fn("ApplicationOperations.make")(function* 
         }),
     };
     active = HashSet.add(active, handle.released);
-    const work = Effect.gen(function* () {
-      const exit = yield* Effect.exit(Effect.suspend(() => options.run(handle)));
-      if (!completed) {
-        completed = true;
-        Deferred.doneUnsafe(
-          logical,
-          Exit.succeed(Exit.isFailure(exit) ? Exit.failCause(exit.cause) : Exit.die("OperationIncomplete"))
-        );
-      } else if (Exit.isFailure(exit))
-        yield* Effect.logError("Application operation failed after logical completion", exit.cause);
-      sealed = true;
-      const exits = yield* Effect.forEach(cleanups, Effect.exit, { concurrency: 1 });
-      if (A.some(exits, Exit.isFailure)) {
-        failedCleanupTasks = HashMap.set(failedCleanupTasks, handle.released, cleanups);
-        Deferred.doneUnsafe(released, Exit.fail(failure("CleanupFailed")));
-        return;
-      }
-      account.release(options.originAccount, bytes);
-      releaseNative?.();
-      bytes = 0;
-      active = HashSet.remove(active, handle.released);
-      Deferred.doneUnsafe(released, Exit.void);
-    });
+    const work = Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
+        const exit = yield* Effect.exit(restore(Effect.suspend(() => options.run(handle))));
+        if (!completed) {
+          completed = true;
+          Deferred.doneUnsafe(
+            logical,
+            Exit.succeed(Exit.isFailure(exit) ? Exit.failCause(exit.cause) : Exit.die("OperationIncomplete"))
+          );
+        } else if (Exit.isFailure(exit))
+          yield* Effect.logError("Application operation failed after logical completion", exit.cause);
+        sealed = true;
+        const exits = yield* Effect.forEach(cleanups, Effect.exit, { concurrency: 1 });
+        if (A.some(exits, Exit.isFailure)) {
+          failedCleanupTasks = HashMap.set(failedCleanupTasks, handle.released, cleanups);
+          Deferred.doneUnsafe(released, Exit.fail(failure("CleanupFailed")));
+          return;
+        }
+        account.release(options.originAccount, bytes);
+        releaseNative?.();
+        bytes = 0;
+        active = HashSet.remove(active, handle.released);
+        Deferred.doneUnsafe(released, Exit.void);
+      })
+    );
     yield* Effect.forkIn(work, scope);
     return handle;
   });

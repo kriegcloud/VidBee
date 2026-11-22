@@ -1,10 +1,30 @@
+import { $DesktopId } from "@vidbee/identity/packages";
 import * as S from "effect/Schema";
+import { RpcMutableArray } from "../RpcField.model.js";
 import { Approval, ErrorCode, RunStatus, Thinking, ToolStatus, UiResponse, UiSpec } from "./Ai.rpc.js";
 
+const $TransportId = $DesktopId.create("renderer/src/transport/census/StoredThread.model");
+
 const optional = <F extends S.Constraint>(field: F) => S.optionalKey(S.UndefinedOr(field));
-const array = <F extends S.Constraint>(field: F) => S.mutable(S.Array(field));
+const array = <F extends S.Constraint>(field: F) => RpcMutableArray(field);
 const internal = <F extends S.Struct.Fields>(fields: F) =>
   S.StructWithRest(S.Struct(fields), [S.Record(S.String, S.mutableKey(S.Unknown))]);
+/**
+ * Validates Stored Message at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredMessage at its owning boundary)
+ *
+ * ```ts
+ * import { StoredMessage } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredMessage);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredMessage = internal({
   id: S.mutableKey(S.String),
   parentId: S.String.pipe(S.NullOr, S.mutableKey),
@@ -17,7 +37,34 @@ export const StoredMessage = internal({
   imageIds: S.mutableKey(S.String.pipe(array, optional)),
   thinkingMs: S.Finite.pipe(optional, S.mutableKey),
   legacy: S.Boolean.pipe(optional, S.mutableKey),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredMessage", {
+    description: "Stored Message boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Stored Message ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredMessage = typeof StoredMessage.Type;
+/**
+ * Validates Stored Artifact at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredArtifact at its owning boundary)
+ *
+ * ```ts
+ * import { StoredArtifact } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredArtifact);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredArtifact = internal({
   id: S.mutableKey(S.String),
   threadId: S.mutableKey(S.String),
@@ -31,7 +78,34 @@ export const StoredArtifact = internal({
   end: S.Finite.pipe(optional, S.mutableKey),
   width: S.Finite.pipe(optional, S.mutableKey),
   height: S.Finite.pipe(optional, S.mutableKey),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredArtifact", {
+    description: "Stored Artifact boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Stored Artifact ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredArtifact = typeof StoredArtifact.Type;
+/**
+ * Validates Stored Image at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredImage at its owning boundary)
+ *
+ * ```ts
+ * import { StoredImage } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredImage);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredImage = internal({
   id: S.mutableKey(S.String),
   threadId: S.mutableKey(S.String),
@@ -41,7 +115,32 @@ export const StoredImage = internal({
   createdAt: S.mutableKey(S.Finite),
   width: S.mutableKey(S.Finite),
   height: S.mutableKey(S.Finite),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredImage", { description: "Stored Image boundary in the desktop transport contract." })
+);
+/**
+ * Describes Stored Image ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredImage = typeof StoredImage.Type;
+/**
+ * Validates Stored Tool at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredTool at its owning boundary)
+ *
+ * ```ts
+ * import { StoredTool } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredTool);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredTool = internal({
   id: S.mutableKey(S.String),
   name: S.mutableKey(S.String),
@@ -57,7 +156,32 @@ export const StoredTool = internal({
       resource: S.mutableKey(S.String),
     }).pipe(array, optional)
   ),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredTool", { description: "Stored Tool boundary in the desktop transport contract." })
+);
+/**
+ * Describes Stored Tool ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredTool = typeof StoredTool.Type;
+/**
+ * Validates Stored Activity at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredActivity at its owning boundary)
+ *
+ * ```ts
+ * import { StoredActivity } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredActivity);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredActivity = S.Union([
   internal({
     id: S.mutableKey(S.String),
@@ -77,7 +201,34 @@ export const StoredActivity = S.Union([
     count: S.Finite.pipe(optional, S.mutableKey),
     artifactIds: S.String.pipe(array, S.mutableKey),
   }),
-]);
+]).pipe(
+  $TransportId.annoteSchema("StoredActivity", {
+    description: "Stored Activity boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Stored Activity ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredActivity = typeof StoredActivity.Type;
+/**
+ * Validates Stored Run at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredRun at its owning boundary)
+ *
+ * ```ts
+ * import { StoredRun } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredRun);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredRun = internal({
   id: S.mutableKey(S.String),
   messageId: S.mutableKey(S.String),
@@ -135,7 +286,32 @@ export const StoredRun = internal({
   workingNotes: S.String.pipe(optional, S.mutableKey),
   contextStatus: S.Literals(["compacting", "recovering", "reviewing", "writing"]).pipe(optional, S.mutableKey),
   cloudResultId: S.String.pipe(optional, S.mutableKey),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredRun", { description: "Stored Run boundary in the desktop transport contract." })
+);
+/**
+ * Describes Stored Run ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
+export type StoredRun = typeof StoredRun.Type;
+/**
+ * Validates Stored Thread at the desktop capability boundary before dispatch.
+ *
+ * **Example** (Use StoredThread at its owning boundary)
+ *
+ * ```ts
+ * import { StoredThread } from "./StoredThread.model.js"
+ * import * as S from "effect/Schema"
+ * const decode = S.decodeUnknownEffect(StoredThread);
+ * const validated = decode({});
+ * void validated;
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
 export const StoredThread = internal({
   id: S.mutableKey(S.String),
   downloadId: S.mutableKey(S.String),
@@ -149,5 +325,15 @@ export const StoredThread = internal({
   artifacts: StoredArtifact.pipe(array, S.mutableKey),
   images: S.mutableKey(StoredImage.pipe(array, optional)),
   toolGrants: S.mutableKey(S.String.pipe(array, optional)),
-});
+}).pipe(
+  $TransportId.annoteSchema("StoredThread", {
+    description: "Stored Thread boundary in the desktop transport contract.",
+  })
+);
+/**
+ * Describes Stored Thread ownership at the desktop transport boundary.
+ *
+ * @category type-level
+ * @since 0.0.0
+ */
 export type StoredThread = typeof StoredThread.Type;
