@@ -3,12 +3,12 @@ import { EventEmitter } from 'node:events'
 import { sourceLoader } from './source-harness.mjs'
 const turns=async()=>{for(let i=0;i<30;i++)await Promise.resolve()}
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return{promise,resolve,reject}}
-function hooks() {
+function hooks(stateIdentity) {
   let cursor=0
   const slots=[],effects=[],updates=[]
   return {effects,updates,render:fn=>{cursor=0;effects.length=0;return fn()},react:{
     useEffect:fn=>effects.push(fn),useMemo:fn=>fn(),useCallback:fn=>fn,
-    useState:initial=>{const i=cursor++;if(!(i in slots))slots[i]=typeof initial==='function'?initial():initial;return[slots[i],value=>{slots[i]=value;updates.push([i,value])}]},
+    useState:initial=>{const i=cursor++;if(!(i in slots))slots[i]=typeof initial==='function'?initial():initial;return[slots[i],value=>{slots[i]=value;updates.push([stateIdentity ?? `unidentified-state`,value,i])}]},
     useRef:initial=>{const i=cursor++;return slots[i]??=( {current:initial} )}
   }}
 }
@@ -50,7 +50,7 @@ export async function lifecycleObservations() {
   emit();next.ipcRenderer.emit('app:show-home',{});newCleanup()
   out.home={deliveries,deliveriesBeforeAbsence,afterReloadMount,newNavigation,before,slow,atHome,resubscribe,oldDocument,oldListeners:b.ipcRenderer.listenerCount('app:show-home'),newListeners:next.ipcRenderer.listenerCount('app:show-home')}
   // Actual TitleBar cleanup supplies original callbacks to a wrapper-based API.
-  const titleHooks=hooks(),titleBridge=bridge()
+  const titleHooks=hooks('window.isMaximized'),titleBridge=bridge()
   const Title=sourceLoader({react:titleHooks.react,'react/jsx-runtime':{jsx:(_type,props)=>props},'../../lib/ipc':{ipcEvents:titleBridge.ipcEvents,ipcServices:{window:{}}},
     $require:id=>id.endsWith('.css')||id.startsWith('~icons/')||id.startsWith('@vidbee/ui/')?auto:undefined
   })('apps/desktop/src/renderer/src/components/ui/title-bar.tsx').TitleBar
@@ -68,7 +68,7 @@ export async function lifecycleObservations() {
   }
   out.appInfo=[]
   for(const metadataMode of ['failure','success','unmounted']) {
-  const infoHooks=hooks(),requests=[],errors=[],settings={...sourceLoader()('apps/desktop/src/shared/types/index.ts').defaultSettings,browserForCookies:'firefox',cookiesPath:'/fixture/cookies',proxy:'http://fixture.invalid',configPath:'/fixture/config',maxConcurrentDownloads:3,oneClickQuality:'720p',oneClickContainer:'mkv',downloadSubtitles:true,subtitleLanguages:['fr','de']},kernel={state:'preparing',ready:false,source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-runtime',error:null,progress:7,preparationStep:'copying'},version=deferred(),os=deferred()
+  const infoHooks=hooks('app.metadata'),requests=[],errors=[],settings={...sourceLoader()('apps/desktop/src/shared/types/index.ts').defaultSettings,browserForCookies:'firefox',cookiesPath:'/fixture/cookies',proxy:'http://fixture.invalid',configPath:'/fixture/config',maxConcurrentDownloads:3,oneClickQuality:'720p',oneClickContainer:'mkv',downloadSubtitles:true,subtitleLanguages:['fr','de']},kernel={state:'preparing',ready:false,source:'bundled',ytDlpVersion:'fixture-ytdlp',nodeVersion:'fixture-runtime',error:null,progress:7,preparationStep:'copying'},version=deferred(),os=deferred()
   const info=sourceLoader({react:infoHooks.react,$window:{electron:{process:{platform:'linux',versions:{electron:'fixture-electron',chrome:'fixture-chrome',node:'fixture-node'}}}},
     jotai:{useAtomValue:atom=>atom==='settings'?settings:kernel},'@renderer/store/settings':{settingsAtom:'settings'},'@renderer/store/ytdlp-kernel':{ytdlpKernelStatusAtom:'kernel'},
     '@renderer/lib/ipc':{ipcServices:{app:{getVersion:()=>{requests.push('version');return version.promise},getOsVersion:()=>{requests.push('os');return os.promise}}}},
@@ -82,7 +82,7 @@ export async function lifecycleObservations() {
   }
   out.share=[]
   for(const mode of ['closed','success','late','rejection']) {
-    const hooksApi=hooks(),platform=deferred(),requests=[]
+    const hooksApi=hooks('share.platform'),platform=deferred(),requests=[]
     const Component=sourceLoader({react:hooksApi.react,$navigator:{userAgent:'Mac fixture'},
       'react/jsx-runtime':{jsx:(_type,props)=>props},jotai:{useAtomValue:()=>null},'react-i18next':{useTranslation:()=>({t:x=>x})},
       '@renderer/lib/ipc':{ipcServices:{app:{getPlatform:()=>{requests.push('platform');return platform.promise}}}},

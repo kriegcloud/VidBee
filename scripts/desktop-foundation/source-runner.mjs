@@ -2,6 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { containedLaunch } from './containment.mjs'
+import { sourcePolicy } from './source-policy.mjs'
+import { scratchIO } from './scratch-io.mjs'
 
 const files = fs.readdirSync('scripts/desktop-foundation').filter(name => name.endsWith('.node.ts')).map(name => `scripts/desktop-foundation/${name}`)
 const commands = [[process.execPath, '--import', 'tsx', '--test', ...files], ['bun', 'x', '--bun', 'vitest', 'run', 'scripts/desktop-foundation/foundation.test.mjs']]
@@ -14,7 +16,8 @@ const bun=fs.realpathSync(bunProbe.stdout.trim()),runtimes=[path.dirname(bun)]
 const runtimePath=[path.dirname(process.execPath),path.dirname(bun),'/usr/bin','/bin'].join(path.delimiter)
 const probe = spawnSync('bwrap', containedLaunch(work, ['/usr/bin/true']), { encoding: 'utf8' })
 const available = probe.status === 0
-if (!available) console.log(`Source containment unavailable; negative tests may skip: ${probe.error?.message ?? probe.stderr.trim()}`)
+const mode = sourcePolicy(available, process.env)
+if (mode === 'uncontained') console.error(`UNCONTAINED DIAGNOSTIC: not containment acceptance. ${probe.error?.message ?? probe.stderr.trim()}`)
 try {
   for (const command of commands) {
     const result = available
@@ -26,5 +29,14 @@ try {
 } finally {
   const trace=path.join(work,'tmp/foundation-import-trace.json')
   // The full import trace is a diagnostic, kept only on request.
-  if(process.env.VIDBEE_FOUNDATION_TRACE&&fs.existsSync(trace))fs.copyFileSync(trace,process.env.VIDBEE_FOUNDATION_TRACE)
-  fs.rmSync(work, { recursive: true, force: true }) }
+  if (process.env.VIDBEE_FOUNDATION_TRACE) {
+    try { fs.writeFileSync(process.env.VIDBEE_FOUNDATION_TRACE, await scratchIO(work).readFile(trace)) }
+    catch (error) { console.error(`Trace export refused: ${error.message}`); process.exitCode = 1 }
+  }
+  // Cleanup resolves candidate entries only inside the same boundary. Keep the
+  // directory for diagnosis when no boundary is available.
+  if (available) {
+    const cleanup = spawnSync('bwrap', containedLaunch(work, ['/usr/bin/find', work, '-mindepth', '1', '-delete']), {encoding:'utf8'})
+    if (cleanup.status !== 0) { console.error(cleanup.stderr); process.exitCode = 1 }
+    else fs.rmdirSync(work)
+  } }
