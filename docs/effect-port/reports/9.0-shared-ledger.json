@@ -2,7 +2,7 @@
   "sourceRevision": "aeb83777",
   "architectureApproval": "User-carried architect answers 2, 3, 4, 5 in this implementation continuation",
   "reviewStatus": "Independent implementation review is arranged by the orchestrator; this is not an attestation of that review.",
-  "structuralCount": 229,
+  "structuralCount": 232,
   "structuralSubjects": [
     {
       "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
@@ -1326,6 +1326,33 @@
       "count": 1,
       "maximum": 1,
       "digest": "1a6921e8896f781704bc8887f24f4c733af421a0ab096368e7eb4d02974bcff9"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
+      "declaration": "DesktopLogLevel",
+      "construction": "structural logging domain",
+      "architectureDecision": "Foundation section 8; new logging domains have no pre-port shared DTO",
+      "count": 1,
+      "maximum": 1,
+      "digest": "45e90353fc28ec4d2d5754a52ca84ce96f7405ce3b529b2e7b133e2fe2b5e5fb"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "declaration": "DesktopWireNode",
+      "construction": "structural logging domain",
+      "architectureDecision": "Foundation section 8; new logging domains have no pre-port shared DTO",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bb1c9ecaa7b528f90d8e091bdfbc16c34f2913be18e0a7cd6ebd6dadc5e22968"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "declaration": "DesktopWireValue",
+      "construction": "structural logging domain",
+      "architectureDecision": "Foundation section 8; new logging domains have no pre-port shared DTO",
+      "count": 1,
+      "maximum": 1,
+      "digest": "bb1c9ecaa7b528f90d8e091bdfbc16c34f2913be18e0a7cd6ebd6dadc5e22968"
     },
     {
       "file": "apps/desktop/src/shared/mcp.ts",
@@ -4953,9 +4980,141 @@
   ],
   "interfaceClassification": "docs/effect-port/reports/9.0-shared-interface-classification.json",
   "typeParity": {
-    "pairs": 231,
+    "pairs": 232,
     "proof": "scripts/desktop-foundation/shared-type-parity.ts",
     "requiredCheck": "check:shared"
   },
-  "retirementCount": 97
+  "retirementCount": 97,
+  "loggingFiles": [
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
+      "digest": "45e90353fc28ec4d2d5754a52ca84ce96f7405ce3b529b2e7b133e2fe2b5e5fb",
+      "consumers": [
+        "apps/desktop/src/main/config/logger-config.ts",
+        "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+        "apps/desktop/src/preload/index.ts",
+        "apps/desktop/src/renderer/src/main.tsx",
+        "apps/desktop/src/shared/logging/DesktopLog.service.ts",
+        "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+        "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+        "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs",
+        "scripts/desktop-foundation/shared-type-parity.ts"
+      ],
+      "declarations": [
+        "DesktopLogChannel",
+        "DesktopLogContext",
+        "DesktopLogEntry",
+        "DesktopLogLevel"
+      ],
+      "parity": "DesktopLogLevel equals installed electron-log LogLevel in shared-type-parity.ts; opaque entry/context are new",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.service.ts",
+      "digest": "57ae4445ed74b6036420923c0c5be9cbc62afdb5eae496d7e6ea3da6106236cd",
+      "consumers": [
+        "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+        "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+        "apps/desktop/src/shared/logging/ForwardLogger.layer.ts"
+      ],
+      "declarations": [
+        "DesktopLogSink"
+      ],
+      "parity": "New phase-9.0 implementation; no pre-port shared counterpart",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+      "digest": "e829646ad6d88746ae07436a7bddb93f065b7bda5588cb8c2dab478c63a1023f",
+      "consumers": [
+        "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+        "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "declarations": [
+        "DesktopLogTruncation",
+        "decodeDesktopLog",
+        "encodeDesktopLog",
+        "inspectDesktopLog"
+      ],
+      "parity": "New phase-9.0 implementation; no pre-port shared counterpart",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "digest": "bb1c9ecaa7b528f90d8e091bdfbc16c34f2913be18e0a7cd6ebd6dadc5e22968",
+      "consumers": [
+        "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
+        "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+        "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+        "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "declarations": [
+        "DesktopLogAdmission",
+        "DesktopLogBudgets",
+        "DesktopLogWire",
+        "DesktopLogWireWork",
+        "DesktopWireNode",
+        "DesktopWireValue"
+      ],
+      "parity": "New phase-9.0 implementation; no pre-port shared counterpart",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+      "digest": "bd52fc10938ef4b5b0a518a3a2763abca6372a32352e5c345a18e747a58d0533",
+      "consumers": [
+        "apps/desktop/src/main/logging/DesktopLogger.layer.ts",
+        "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+        "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "declarations": [
+        "DesktopLoggerLive",
+        "DesktopMinimumLogLevelLive",
+        "desktopLog"
+      ],
+      "parity": "New phase-9.0 implementation; no pre-port shared counterpart",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+      "digest": "5f3d7a11ea7215c3eed59c4967e45604435383dd4809f3a7e346537e32c06df4",
+      "consumers": [
+        "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
+        "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts"
+      ],
+      "declarations": [
+        "forwardingLogger"
+      ],
+      "parity": "New phase-9.0 implementation; no pre-port shared counterpart",
+      "tests": [
+        "apps/desktop/test/desktop-logging.spec.ts",
+        "scripts/desktop-foundation/logging-fix.test.mjs"
+      ],
+      "documentation": "All titled examples compile through shared-doc-examples.mjs"
+    }
+  ]
 }

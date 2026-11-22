@@ -1150,3 +1150,11 @@ export type ExactSdkParity16 = Assert<DeepExact<FrozenSupplemental16,Supplementa
 export type ExactSdkParity17 = Assert<DeepExact<FrozenSupplemental17,Supplemental17>>;
 export type ExactSdkParity18 = Assert<DeepExact<FrozenSupplemental18,Supplemental18>>;
 export type ExactSdkParity19 = Assert<DeepExact<FrozenSupplemental19,Supplemental19>>;
+
+// Logging is new in phase 9.0. Its native severity domain has an installed
+// electron-log counterpart; wire graphs and Effect context have no legacy DTO.
+import type { LogLevel as NativeLogLevel } from 'electron-log';
+import type { DesktopLogLevel } from '../../apps/desktop/src/shared/logging/DesktopLog.model';
+export const forwardLoggingLevel=(value:NativeLogLevel):DesktopLogLevel=>value;
+export const reverseLoggingLevel=(value:DesktopLogLevel):NativeLogLevel=>value;
+export type ExactLoggingLevel=Assert<Equal<DesktopLogLevel,NativeLogLevel>>;

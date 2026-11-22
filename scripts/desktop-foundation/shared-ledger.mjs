@@ -20,7 +20,7 @@ const declarations=file=>{
 }
 const compatibilityFiles=walk('apps/desktop/src/compatibility/shared').sort()
 const frozenFiles=walk('scripts/desktop-foundation/fixtures/shared-port').sort()
-const structuralSubjects=shared.flatMap(file=>declarations(file).map(declaration=>({file,declaration,construction:'structural for legacy construction',architectureDecision:'User-carried architect answer 2; foundation section 3 plain object APIs use structs',count:1,maximum:1,digest:digest(file)})))
+const structuralSubjects=shared.flatMap(file=>declarations(file).map(declaration=>({file,declaration,construction:file.includes('/logging/')?'structural logging domain':'structural for legacy construction',architectureDecision:file.includes('/logging/')?'Foundation section 8; new logging domains have no pre-port shared DTO':'User-carried architect answer 2; foundation section 3 plain object APIs use structs',count:1,maximum:1,digest:digest(file)})))
 const imports=file=>{
  const result=[]
  for(const [consumer,source]of text){if(consumer===file)continue
@@ -43,11 +43,21 @@ const own=file=>{
 const old=JSON.parse(fs.readFileSync(ledgerFile,'utf8'))
 const compatibility=old.compatibility.map(row=>({...row,digest:digest(row.file),consumers:imports(row.file)}))
 const pendingDeletion=scope.filter(row=>row.classification==='pending-deletion'&&(row.file.startsWith('apps/desktop/src/compatibility/shared/')||row.file==='apps/desktop/src/drivers/shared/BuiltinSkill.driver.ts'||row.file==='apps/desktop/src/shared/types/ipc.ts'||row.file.startsWith('scripts/desktop-foundation/fixtures/shared-port/')||row.file.startsWith('scripts/desktop-foundation/fixtures/frozen-ipc/')||row.file==='scripts/desktop-foundation/fixtures/frozen-helper-inputs.d.ts')).map(row=>({file:row.file,classification:row.classification,decision:'D1',deletionPhase:10,executable:row.executable,digest:digest(row.file),...own(row.file)})).sort((a,b)=>a.file.localeCompare(b.file))
-const expected={...old,structuralCount:structuralSubjects.length,structuralSubjects,compatibility,pendingDeletion,interfaceClassification:'docs/effect-port/reports/9.0-shared-interface-classification.json',typeParity:{pairs:[...fs.readFileSync('scripts/desktop-foundation/shared-type-parity.ts','utf8').matchAll(/^export const (?:forward\w+|inputForward\w+|supplementalForward\w+)=/gm)].length,proof:'scripts/desktop-foundation/shared-type-parity.ts',requiredCheck:'check:shared'},retirementCount:pendingDeletion.length}
+const loggingFiles=shared.filter(file=>file.includes('/logging/')).map(file=>({
+ file,digest:digest(file),consumers:imports(file),
+ declarations:[...fs.readFileSync(file,'utf8').matchAll(/^export (?:const|class) (\w+)\b/gm)].map(match=>match[1]).sort(),
+ parity:file.endsWith('/DesktopLog.model.ts')?'DesktopLogLevel equals installed electron-log LogLevel in shared-type-parity.ts; opaque entry/context are new':'New phase-9.0 implementation; no pre-port shared counterpart',
+ tests:['apps/desktop/test/desktop-logging.spec.ts','scripts/desktop-foundation/logging-fix.test.mjs'],
+ documentation:'All titled examples compile through shared-doc-examples.mjs',
+}))
+const expected={...old,loggingFiles,structuralCount:structuralSubjects.length,structuralSubjects,compatibility,pendingDeletion,interfaceClassification:'docs/effect-port/reports/9.0-shared-interface-classification.json',typeParity:{pairs:[...fs.readFileSync('scripts/desktop-foundation/shared-type-parity.ts','utf8').matchAll(/^export const (?:forward\w+|inputForward\w+|supplementalForward\w+)=/gm)].length,proof:'scripts/desktop-foundation/shared-type-parity.ts',requiredCheck:'check:shared'},retirementCount:pendingDeletion.length}
 export function validateLedger(candidate=old){
  assert.deepEqual(candidate.compatibility.map(row=>row.file).sort(),compatibilityFiles,'all compatibility declarations have ledger rows')
  assert.deepEqual(candidate.files.map(row=>row.file).sort(),frozenFiles.map(file=>file.replace('scripts/desktop-foundation/fixtures/shared-port/','apps/desktop/src/shared/')).sort(),'all frozen disposition files have ledger rows')
 
+ assert.deepEqual(candidate.loggingFiles,loggingFiles,'all logging files, declarations, consumers and digests')
+ const strictConfig=JSON.parse(fs.readFileSync('scripts/desktop-foundation/tsconfig.strict-shared.json','utf8'))
+ assert.deepEqual(strictConfig.files.filter(file=>file.includes('/apps/desktop/src/shared/')).map(file=>path.normalize(path.join('scripts/desktop-foundation',file))).sort(),shared,'all shared files must participate in strict compilation and laws')
  assert.equal(candidate.structuralCount,structuralSubjects.length,'ledger schema count')
  assert.deepEqual(candidate.structuralSubjects,structuralSubjects,'ledger declarations and digests')
  assert.deepEqual(candidate.compatibility,compatibility,'ledger compatibility consumers and digests')

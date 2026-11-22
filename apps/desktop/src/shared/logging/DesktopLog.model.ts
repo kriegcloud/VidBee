@@ -66,7 +66,7 @@ export class DesktopLogEntry extends S.Opaque<DesktopLogEntry, { readonly brand:
     level: DesktopLogLevel,
     scope: S.String,
     args: S.Array(S.Unknown),
-    context: S.optional(DesktopLogContext),
+    context: DesktopLogContext.pipe(S.UndefinedOr, S.optionalKey),
   }).pipe(
     $I.annoteSchema("DesktopLogEntry", {
       description: "A process logging entry with ordered opaque arguments and original scope.",

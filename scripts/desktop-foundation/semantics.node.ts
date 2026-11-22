@@ -268,7 +268,7 @@ test('logger config retains production/development thresholds, error catching an
     const log = { transports: { console: {}, ipc: {}, file: { getFile: () => ({ path: '/synthetic/log' }) } },
       errorHandler: { startCatching: (options) => calls.push(options) }, info: (...args) => calls.push(args) }
     sourceLoader({ $process: { env: { NODE_ENV: development ? 'development' : 'production' } },
-      '@vidbee/logger/legacy': { initVidbeeLogger: () => {} }, 'electron-log/main': log })
+      electron: {}, '@vidbee/logger/legacy': { initVidbeeLogger: () => {} }, 'electron-log/main': log })
       ('apps/desktop/src/main/config/logger-config.ts').configureLogger()
     assert.equal(log.transports.console.level, development ? 'silly' : 'info')
     assert.equal(log.transports.file.level, development ? 'silly' : 'info')
@@ -359,7 +359,7 @@ test('installed electron-log dispatches six scoped levels with original argument
     const log = new Logger({ logId: `foundation-${development}`, transportFactories: factories })
     log.errorHandler = { startCatching() {} }
     sourceLoader({ $process: { env: { NODE_ENV: development ? 'development' : 'production' } },
-      '@vidbee/logger/legacy': { initVidbeeLogger() {} }, 'electron-log/main': log })
+      electron: {}, '@vidbee/logger/legacy': { initVidbeeLogger() {} }, 'electron-log/main': log })
       ('apps/desktop/src/main/config/logger-config.ts').configureLogger()
     for (const sink of Object.values(sinks)) sink.length = 0
     const argument = { identity: true }, error = new Error('fixture')

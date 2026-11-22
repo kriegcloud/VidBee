@@ -22,7 +22,7 @@ export function loggingObservations() {
     log.transports.console.useStyles=false
     log.transports.console.writeFn=({message})=>consoleOutput.push(message)
     log.errorHandler={startCatching(options){catching=options}}
-    sourceLoader({$process:{env:{NODE_ENV:development?'development':'production'}},'@vidbee/logger/legacy':{initVidbeeLogger(){}},'electron-log/main':log})('apps/desktop/src/main/config/logger-config.ts').configureLogger()
+    sourceLoader({$process:{env:{NODE_ENV:development?'development':'production'}},electron:{},'@vidbee/logger/legacy':{initVidbeeLogger(){}},'electron-log/main':log})('apps/desktop/src/main/config/logger-config.ts').configureLogger()
     const configuration=fsTrace.slice()
     fsTrace.length=0;consoleOutput.length=0;ipcOutput.length=0
     const error=new Error('fixture');error.stack='Error: fixture'

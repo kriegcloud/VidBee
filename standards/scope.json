@@ -3432,6 +3432,13 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/main/lib/telemetry-disposal.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/main/lib/thumbnail-cache.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -3586,6 +3593,48 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/main/logging/DesktopConsoleFormat.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogger.layer.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogging.entry.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.layer.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.model.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/main/mcp/ai-tools.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -3716,6 +3765,13 @@
       "package": "vidbee",
       "classification": "pending-port",
       "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -5273,6 +5329,13 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/renderer/src/main.tsx",
       "package": "vidbee",
       "classification": "pending-port",
@@ -5756,6 +5819,48 @@
       "executable": true
     },
     {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.service.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "apps/desktop/src/shared/mcp.ts",
       "package": "vidbee",
       "classification": "pending-port",
@@ -5963,6 +6068,20 @@
       "package": "vidbee",
       "classification": "pending-port",
       "reason": "Existing unported workspace membership; no admission or dependency growth is authorized.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/desktop-logging.spec.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/desktop-otlp.spec.ts",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -10369,10 +10488,52 @@
       "executable": false
     },
     {
+      "file": "docs/effect-port/design/desktop-ai-chat.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/design/desktop-downloads.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/design/desktop-foundation-amendment.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": false
+    },
+    {
       "file": "docs/effect-port/design/desktop-foundation.md",
       "package": "vidbee-workspace",
       "classification": "data",
       "reason": "Non-executable architecture/report metadata; inherited inventory omission or new shared correction evidence.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/design/desktop-integrations.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/design/desktop-subscriptions.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": false
+    },
+    {
+      "file": "docs/effect-port/design/desktop-transcription.md",
+      "package": "vidbee-workspace",
+      "classification": "data",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": false
     },
     {
@@ -15182,6 +15343,13 @@
       "package": "@vidbee/logger",
       "classification": "active",
       "reason": "Executable source subject to applicable compiler and standards stages.",
+      "executable": true
+    },
+    {
+      "file": "packages/logger/src/LogArguments.ts",
+      "package": "@vidbee/logger",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -24376,10 +24544,24 @@
       "executable": true
     },
     {
+      "file": "scripts/desktop-foundation/lifecycle-locators.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "scripts/desktop-foundation/log-observe.mjs",
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/logging-fix.test.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -24394,6 +24576,13 @@
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/otlp-collector.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -24415,6 +24604,13 @@
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/packaged-logging.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -24453,10 +24649,31 @@
       "executable": true
     },
     {
+      "file": "scripts/desktop-foundation/repairs.node.ts",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
       "file": "scripts/desktop-foundation/safety.node.ts",
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/scratch-io.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/scratch-io.py",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -24541,6 +24758,13 @@
       "package": "vidbee-workspace",
       "classification": "active",
       "reason": "Executable foundation characterization infrastructure; subject to applicable standards.",
+      "executable": true
+    },
+    {
+      "file": "scripts/desktop-foundation/source-policy.mjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
     },
     {
@@ -33971,6 +34195,13 @@
       "classification": "plan-exclusion",
       "reason": "PLAN D7 desktop JavaScript build/harness scripts or A9 vendored Python.",
       "executable": false
+    },
+    {
+      "file": "vitest.config.cjs",
+      "package": "vidbee-workspace",
+      "classification": "active",
+      "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
+      "executable": true
     }
   ]
 }

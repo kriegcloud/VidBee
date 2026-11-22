@@ -14,7 +14,7 @@ import {
 } from "./DesktopLogWire.model.js";
 
 // Conservative payload accounting, not an estimate of an exact engine heap layout.
-const charge = Object.freeze({
+const charge = {
   scalarBytes: 16,
   stringUnitBytes: 4,
   objectBytes: 64,
@@ -22,7 +22,7 @@ const charge = Object.freeze({
   arraySlotBytes: 8,
   dateBytes: 8,
   bitsPerByte: 8,
-});
+} as const;
 const bigintLimit = 2n ** BigInt(B.maxBigIntBits);
 const plain = (value: object): boolean => {
   const prototype: object | null = Reflect.getPrototypeOf(value);
@@ -72,7 +72,11 @@ const properties = (value: object, schemaFields = false): Array<string> => {
 };
 // Chromium exposes Error.stack through one realm-owned native accessor. Capture
 // its identity from a foreign Error instance; never whitelist application getters.
-const nativeStackGetter = Reflect.getOwnPropertyDescriptor(new Error(), "stack")?.get;
+// Decode foreign Error data with Effect's native Error codec. These values are
+// transported diagnostics, never application/domain failures.
+const foreignError = (input: { readonly message: string }): Error =>
+  S.decodeOption(S.toCodecJson(S.ErrorInstance()))(input).pipe(O.getOrThrow);
+const nativeStackGetter = Reflect.getOwnPropertyDescriptor(foreignError({ message: "" }), "stack")?.get;
 const data = (value: object, key: string): O.Option<unknown> => {
   const descriptor = Reflect.getOwnPropertyDescriptor(value, key);
   if (descriptor !== undefined && "value" in descriptor) return O.some(descriptor.value);
@@ -351,7 +355,7 @@ const decode = (input: unknown, report: (work: DesktopLogWireWork) => void): O.O
         return A.allocate<unknown>(node.length);
       }
       if (node._tag === "Record") return {};
-      const error = new Error(node.message); // Reconstruct a foreign Error, not a domain failure.
+      const error = foreignError({ message: node.message }); // Reconstruct a foreign Error, not a domain failure.
       return error;
     });
     const valueOf = (value: DesktopWireValue): unknown => (value._tag === "Value" ? value.value : values[value.index]);

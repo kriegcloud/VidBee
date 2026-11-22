@@ -20,7 +20,7 @@ const $I = $DesktopId.create("shared/logging/DesktopLogWire.model");
  * @category configuration
  * @since 0.0.0
  */
-export const DesktopLogBudgets = Object.freeze({
+export const DesktopLogBudgets = {
   maxArguments: 64,
   maxArrayLength: 1024,
   maxArraySlots: 4096,
@@ -31,7 +31,7 @@ export const DesktopLogBudgets = Object.freeze({
   maxDepth: 32,
   maxInspectedValues: 16384,
   maxBigIntBits: 4096,
-});
+} as const;
 
 /** Bounded admission and reconstruction work, observable without logging payloads.
  * **Example** (Observe a rejected packet's allocation count)
