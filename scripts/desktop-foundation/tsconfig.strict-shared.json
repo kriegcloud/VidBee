@@ -86,6 +86,9 @@
     "../../apps/desktop/src/shared/video-identity.ts",
     "../../apps/desktop/src/shared/video-localization.ts",
     "../../apps/desktop/src/shared/whats-new.ts",
-    "../../node_modules/vite/client.d.ts"
+    "../../node_modules/vite/client.d.ts",
+    "../../apps/desktop/src/shared/Settings.model.ts",
+    "../../apps/desktop/src/shared/Settings.errors.ts",
+    "../../apps/desktop/src/shared/Settings.rpc.ts"
   ]
 }

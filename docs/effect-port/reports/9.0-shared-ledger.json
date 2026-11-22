@@ -2,7 +2,7 @@
   "sourceRevision": "aeb83777",
   "architectureApproval": "User-carried architect answers 2, 3, 4, 5 in this implementation continuation",
   "reviewStatus": "Independent implementation review is arranged by the orchestrator; this is not an attestation of that review.",
-  "structuralCount": 232,
+  "structuralCount": 239,
   "structuralSubjects": [
     {
       "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
@@ -320,13 +320,76 @@
       "digest": "53c77eaacebcb2a4c6fdfcf090ce4edcf736bc2a9f37b8be32d6e922e75b16a2"
     },
     {
+      "file": "apps/desktop/src/shared/Settings.errors.ts",
+      "declaration": "SettingsError",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "14aa480a3c2ff2b36d26ca02f6a90352b7f1688629f4ca94bfd349bd3dd23d28"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingKey",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingUpdate",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingValue",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingsDocument",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingsPatch",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "declaration": "SettingsView",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "473445f9597de80d70f29b3ecfeb27494601e975080a70c5503c6e1ac912f718"
+    },
+    {
       "file": "apps/desktop/src/shared/Tts.model.ts",
       "declaration": "TtsModelId",
       "construction": "structural for legacy construction",
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "24dddb5688ac8e7659fed8bd44f3c3ffe969fa0fd8fa225fdafa101a89feebe3"
+      "digest": "1add8ba6f8ba5ce15abccb2dbb36caee1a24282c2d9d3c8bc1c3f5b1c90f7ca9"
     },
     {
       "file": "apps/desktop/src/shared/agent-chat.ts",
@@ -632,7 +695,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "27879abfea03ea6b87d95e4e00d38de39da2baccefdc1ad95814e4132ff2012d"
+      "digest": "8048ed13a4887f7d117de851ad09a8b0d7f64befbb44b9a409f4826e0eb0eeb7"
     },
     {
       "file": "apps/desktop/src/shared/agent-settings.ts",
@@ -1163,7 +1226,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a72cc7151b201622770987b27686d3eabde0e3ed5d2a160ce38beb5586752447"
+      "digest": "d19efb90366efe5c3c4de308f4771002fecc271603f5dcb28224946770c0a838"
     },
     {
       "file": "apps/desktop/src/shared/extension-cookies.ts",
@@ -1172,7 +1235,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a72cc7151b201622770987b27686d3eabde0e3ed5d2a160ce38beb5586752447"
+      "digest": "d19efb90366efe5c3c4de308f4771002fecc271603f5dcb28224946770c0a838"
     },
     {
       "file": "apps/desktop/src/shared/extension-cookies.ts",
@@ -1181,7 +1244,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a72cc7151b201622770987b27686d3eabde0e3ed5d2a160ce38beb5586752447"
+      "digest": "d19efb90366efe5c3c4de308f4771002fecc271603f5dcb28224946770c0a838"
     },
     {
       "file": "apps/desktop/src/shared/extension-cookies.ts",
@@ -1190,7 +1253,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a72cc7151b201622770987b27686d3eabde0e3ed5d2a160ce38beb5586752447"
+      "digest": "d19efb90366efe5c3c4de308f4771002fecc271603f5dcb28224946770c0a838"
     },
     {
       "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
@@ -1604,7 +1667,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1613,7 +1676,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1622,7 +1685,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1631,7 +1694,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1640,7 +1703,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1649,7 +1712,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1658,7 +1721,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1667,7 +1730,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1676,7 +1739,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1685,7 +1748,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1694,7 +1757,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1703,7 +1766,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1712,7 +1775,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1721,7 +1784,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1730,7 +1793,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1739,7 +1802,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1748,7 +1811,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1757,7 +1820,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1766,7 +1829,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
@@ -1775,7 +1838,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "2e9773e05f711bdc870f07aa3b4c3aea62cbb53bb2d8ece82380fcfc8bcf0a16"
+      "digest": "04be954212e987723df6067ebefd49c93e1f08fef7a81e90bca6e8462793ae45"
     },
     {
       "file": "apps/desktop/src/shared/types/auth.ts",
@@ -2027,7 +2090,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "67aa4b19bb9e436f794a34bcf575e6f6bdcee657de2094764ed4c8846705b113"
+      "digest": "cefd902315cfa119684a0f7995021293d53f17558e423e866e26e5cbbf08a3c2"
     },
     {
       "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
@@ -2036,7 +2099,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "67aa4b19bb9e436f794a34bcf575e6f6bdcee657de2094764ed4c8846705b113"
+      "digest": "cefd902315cfa119684a0f7995021293d53f17558e423e866e26e5cbbf08a3c2"
     },
     {
       "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
@@ -2045,7 +2108,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "67aa4b19bb9e436f794a34bcf575e6f6bdcee657de2094764ed4c8846705b113"
+      "digest": "cefd902315cfa119684a0f7995021293d53f17558e423e866e26e5cbbf08a3c2"
     },
     {
       "file": "apps/desktop/src/shared/utils/download-file.ts",

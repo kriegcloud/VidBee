@@ -1,7 +1,7 @@
-import { $DesktopId } from '@vidbee/identity/packages'
-import * as S from 'effect/Schema'
+import { $DesktopId } from "@vidbee/identity/packages";
+import * as S from "effect/Schema";
 
-const $I = $DesktopId.create('shared/Tts.model')
+const $I = $DesktopId.create("shared/Tts.model");
 /** Syntactically valid sherpa model identifier, including unknown families.
  * **Example** (Reject invalid TtsModelId input)
  *
@@ -17,10 +17,10 @@ const $I = $DesktopId.create('shared/Tts.model')
  * structural for legacy construction.
  */
 export const TtsModelId = S.String.check(S.isPattern(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}$/)).pipe(
-  $I.annoteSchema('TtsModelId', {
-    description: 'Sherpa model identifier without a selectable-model whitelist.'
+  $I.annoteSchema("TtsModelId", {
+    description: "Sherpa model identifier without a selectable-model whitelist.",
   })
-)
+);
 /** Decoded model identifier.
  * @category type-level
  * @since 0.0.0
@@ -33,7 +33,7 @@ export const TtsModelId = S.String.check(S.isPattern(/^[a-zA-Z0-9][a-zA-Z0-9._-]
  * ```
  *
  */
-export type TtsModelId = typeof TtsModelId.Type
+export type TtsModelId = typeof TtsModelId.Type;
 /** Original provisional speech model default.
  * @category constants
  * @since 0.0.0
@@ -46,4 +46,4 @@ export type TtsModelId = typeof TtsModelId.Type
  * ```
  *
  */
-export const DEFAULT_TTS_MODEL_ID: TtsModelId = 'kokoro-multi-lang-v1_0'
+export const DEFAULT_TTS_MODEL_ID: TtsModelId = "kokoro-multi-lang-v1_0";

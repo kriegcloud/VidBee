@@ -3075,9 +3075,9 @@
     },
     {
       "file": "apps/desktop/src/shared/agent-permissions.ts",
-      "partition": "legacy",
-      "capability": "9.4-ai",
-      "environments": ["node", "web"]
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/agent-progress.ts",
@@ -3189,9 +3189,9 @@
     },
     {
       "file": "apps/desktop/src/shared/extension-cookies.ts",
-      "partition": "legacy",
-      "capability": "9.1-downloads",
-      "environments": ["node", "web"]
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/extension-identity.ts",
@@ -3285,9 +3285,9 @@
     },
     {
       "file": "apps/desktop/src/shared/types/index.ts",
-      "partition": "legacy",
+      "partition": "strict",
       "capability": "9.0-foundation",
-      "environments": ["node", "web"]
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/types/ipc.ts",
@@ -3315,9 +3315,9 @@
     },
     {
       "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
-      "partition": "legacy",
+      "partition": "strict",
       "capability": "9.0-foundation",
-      "environments": ["node", "web"]
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/utils/download-file.ts",
@@ -3777,15 +3777,39 @@
     },
     {
       "file": "apps/desktop/src/shared/Tts.model.ts",
-      "partition": "legacy",
+      "partition": "strict",
       "capability": "9.0-foundation",
-      "environments": ["node", "web"]
+      "environments": ["node", "web", "test"]
     },
     {
       "file": "apps/desktop/src/shared/types/Desktop.model.ts",
-      "partition": "legacy",
+      "partition": "strict",
       "capability": "9.0-foundation",
-      "environments": ["node", "web"]
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/test/settings-model.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
     }
   ],
   "renames": []

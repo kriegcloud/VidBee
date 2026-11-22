@@ -34202,6 +34202,41 @@
       "classification": "active",
       "reason": "Phase 9.0 merged foundation source, verification or documentation; existing package and law checks apply.",
       "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/settings-model.spec.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.errors.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.rpc.ts",
+      "package": "vidbee",
+      "classification": "pending-port",
+      "reason": "Exact foundation shared source/independent differential fixture admission. No directory exclusion.",
+      "executable": true
+    },
+    {
+      "file": "apps/desktop/test/settings-codec.spec.mjs",
+      "package": "vidbee",
+      "classification": "active",
+      "reason": "Phase 9.0 shared differential evidence and counted disposition ledger.",
+      "executable": true
     }
   ]
 }

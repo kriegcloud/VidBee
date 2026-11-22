@@ -8,6 +8,17 @@
   "root": true,
   "files": {
     "includes": [
+      "apps/desktop/src/shared/agent-permissions.ts",
+      "apps/desktop/src/shared/extension-cookies.ts",
+      "apps/desktop/src/shared/Tts.model.ts",
+      "apps/desktop/src/shared/types/Desktop.model.ts",
+      "apps/desktop/src/shared/types/index.ts",
+      "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+
+      "apps/desktop/src/shared/Settings.errors.ts",
+      "apps/desktop/src/shared/Settings.rpc.ts",
+      "apps/desktop/src/shared/Settings.model.ts",
+      "apps/desktop/test/settings-model.spec.ts",
       "apps/desktop/src/**/logging/**",
       "apps/desktop/test/desktop-logging.spec.ts",
       "apps/desktop/test/desktop-otlp.spec.ts",

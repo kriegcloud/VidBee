@@ -62,7 +62,17 @@
     "test/ElectronLifecycle.driver.ts",
     "test/ElectronLifecycle.entry.ts",
     "test/TransportRuntime.entry.ts",
-    "test/foundation-transport.spec.ts"
+    "test/foundation-transport.spec.ts",
+    "src/shared/agent-permissions.ts",
+    "src/shared/extension-cookies.ts",
+    "src/shared/Tts.model.ts",
+    "src/shared/types/Desktop.model.ts",
+    "src/shared/Settings.model.ts",
+    "test/settings-model.spec.ts",
+    "src/shared/types/ytdlp-kernel.ts",
+    "src/shared/types/index.ts",
+    "src/shared/Settings.errors.ts",
+    "src/shared/Settings.rpc.ts"
   ],
   "include": [],
   "compilerOptions": {
