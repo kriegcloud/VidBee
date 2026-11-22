@@ -1,65 +1,83 @@
+import { $DesktopId } from '@vidbee/identity/packages'
+import * as A from 'effect/Array'
+import { pipe } from 'effect/Function'
+import * as HashMap from 'effect/HashMap'
+import * as HashSet from 'effect/HashSet'
+import * as O from 'effect/Option'
+import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
 import {
-  type AgentActivity,
+  type AgentEventApplyResult,
+  AgentGapRecovery,
+  type AgentPersistScope,
+  AgentRouteIdentity,
+  CatalogMemory,
+  AgentEventApplyResult as ReexportAgentEventApplyResult,
+  AgentGapRecovery as ReexportAgentGapRecovery,
+  AgentPersistScope as ReexportAgentPersistScope,
+  AgentRouteIdentity as ReexportAgentRouteIdentity,
+  CatalogMemoryEntry as ReexportCatalogMemoryEntry
+} from './AgentPatch.model.js'
+import * as Sparse from './ArrayHelpers.js'
+
+const $I = $DesktopId.create('shared/agent-thread-patch')
+
+export {
+  ReexportAgentEventApplyResult as AgentEventApplyResult,
+  ReexportAgentGapRecovery as AgentGapRecovery,
+  ReexportAgentPersistScope as AgentPersistScope,
+  ReexportAgentRouteIdentity as AgentRouteIdentity,
+  ReexportCatalogMemoryEntry as CatalogMemoryEntry
+}
+
+import {
+  AgentActivity,
   type AgentArtifact,
-  type AgentCatalogNotice,
-  type AgentChatRun,
+  AgentCatalogNotice,
+  AgentChatRun,
   type AgentImageAttachment,
-  type AgentRunEvent,
+  AgentRunEvent,
   type AgentRunStatus,
-  type AgentThread,
-  type AgentThreadPatch,
-  type AgentThreadSummary,
+  AgentThread,
+  AgentThreadPatch,
+  AgentThreadSummary,
   selectedAgentMessages
 } from './agent-chat'
+import { recordFunction } from './RecordFunction.js'
 
 /** Dirty rows a streaming commit may publish without rewriting the conversation. */
-export interface AgentPersistScope {
-  thread?: boolean
-  messageIds?: string[]
-  runIds?: string[]
-  artifactIds?: string[]
-}
 
 /** Video, prompt, or pinned thread that a renderer is allowed to apply. */
-export interface AgentRouteIdentity {
-  downloadId: string
-  promptId: string
-  threadId?: string | null
-}
 
 /** Result of comparing one event with the authoritative thread. */
-export type AgentEventApplyResult =
-  | { kind: 'ignored' }
-  | { kind: 'unchanged'; thread: AgentThread }
-  | { kind: 'applied'; thread: AgentThread }
-  | { kind: 'gap'; thread: AgentThread | null; observedSeq: number }
 
 /**
  * In-flight gap repair for one identity.
  * One episode is a single RPC plus one follow-up. A newer seq may open another episode.
  */
-export interface AgentGapRecovery {
-  inflight: boolean
-  observedSeq: number
-  /** Highest seq already covered by a finished episode. Newer seqs may repair again. */
-  coveredSeq: number
-  followUpUsed: boolean
-}
 
 /** Remembered catalog notice so a late list cannot undo a newer rename or delete. */
-export interface CatalogMemoryEntry {
-  revision: number
-  removed: boolean
-  history: boolean
-  downloadId: string
-  summary?: AgentThreadSummary
-}
 
 /**
  * Start a gap-repair record with no request outstanding.
+ *
+ * **Example** (Access the createAgentGapRecovery contract)
+ *
+ * ```ts
+ * import { createAgentGapRecovery } from './agent-thread-patch.js'
+ * void createAgentGapRecovery
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function createAgentGapRecovery(): AgentGapRecovery {
-  return { inflight: false, observedSeq: 0, coveredSeq: 0, followUpUsed: false }
+  return {
+    inflight: false,
+    observedSeq: 0,
+    coveredSeq: 0,
+    followUpUsed: false
+  }
 }
 
 /**
@@ -67,11 +85,14 @@ export function createAgentGapRecovery(): AgentGapRecovery {
  * @param recovery Current repair record.
  * @param seq Seq observed on an event or accepted snapshot.
  */
-export function observeAgentSeq(recovery: AgentGapRecovery, seq: number): AgentGapRecovery {
+function observeAgentSeqBody(recovery: AgentGapRecovery, seq: number): AgentGapRecovery {
   if (!Number.isFinite(seq) || seq <= recovery.observedSeq) {
     return recovery
   }
-  return { ...recovery, observedSeq: seq }
+  return {
+    ...recovery,
+    observedSeq: seq
+  }
 }
 
 /**
@@ -81,17 +102,33 @@ export function observeAgentSeq(recovery: AgentGapRecovery, seq: number): AgentG
  * @param recovery Current repair record.
  * @param reason Why this repair was requested.
  */
-export function requestAgentRecovery(
+function requestAgentRecoveryBody(
   recovery: AgentGapRecovery,
   reason: 'gap' | 'refresh' = 'gap'
-): { recovery: AgentGapRecovery; action: 'start' | 'busy' | 'wait' } {
+): {
+  recovery: AgentGapRecovery
+  action: 'start' | 'busy' | 'wait'
+} {
   if (recovery.inflight) {
-    return { recovery, action: 'busy' }
+    return {
+      recovery,
+      action: 'busy'
+    }
   }
   if (reason === 'gap' && recovery.observedSeq <= recovery.coveredSeq) {
-    return { recovery, action: 'wait' }
+    return {
+      recovery,
+      action: 'wait'
+    }
   }
-  return { recovery: { ...recovery, inflight: true, followUpUsed: false }, action: 'start' }
+  return {
+    recovery: {
+      ...recovery,
+      inflight: true,
+      followUpUsed: false
+    },
+    action: 'start'
+  }
 }
 
 /**
@@ -100,25 +137,43 @@ export function requestAgentRecovery(
  * @param recovery Record that owns the RPC just finished.
  * @param appliedSeq Seq now held for this identity, or 0 when none was accepted.
  */
-export function settleAgentRecovery(
+function settleAgentRecoveryBody(
   recovery: AgentGapRecovery,
   appliedSeq: number
-): { recovery: AgentGapRecovery; action: 'settled' | 'follow-up' | 'wait' } {
-  const idle = { ...recovery, inflight: false }
+): {
+  recovery: AgentGapRecovery
+  action: 'settled' | 'follow-up' | 'wait'
+} {
+  const idle = {
+    ...recovery,
+    inflight: false
+  }
   if (appliedSeq >= idle.observedSeq) {
     return {
-      recovery: { ...idle, followUpUsed: false, coveredSeq: idle.observedSeq },
+      recovery: {
+        ...idle,
+        followUpUsed: false,
+        coveredSeq: idle.observedSeq
+      },
       action: 'settled'
     }
   }
   if (!idle.followUpUsed) {
     return {
-      recovery: { ...idle, followUpUsed: true, inflight: true },
+      recovery: {
+        ...idle,
+        followUpUsed: true,
+        inflight: true
+      },
       action: 'follow-up'
     }
   }
   return {
-    recovery: { ...idle, followUpUsed: false, coveredSeq: idle.observedSeq },
+    recovery: {
+      ...idle,
+      followUpUsed: false,
+      coveredSeq: idle.observedSeq
+    },
     action: 'wait'
   }
 }
@@ -126,28 +181,69 @@ export function settleAgentRecovery(
 /**
  * Allow a focus repair to read again. Does not cancel an RPC already in flight.
  * @param recovery Current repair record.
+ *
+ * **Example** (Access the resetAgentRecovery contract)
+ *
+ * ```ts
+ * import { resetAgentRecovery } from './agent-thread-patch.js'
+ * void resetAgentRecovery
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function resetAgentRecovery(recovery: AgentGapRecovery): AgentGapRecovery {
   if (recovery.coveredSeq === 0 && !recovery.followUpUsed) {
     return recovery
   }
-  return { ...recovery, followUpUsed: false, coveredSeq: 0 }
+  return {
+    ...recovery,
+    followUpUsed: false,
+    coveredSeq: 0
+  }
 }
 
 /**
  * Keep a public artifact without its local filesystem path.
  * @param artifact Stored artifact.
+ *
+ * **Example** (Access the projectAgentArtifact contract)
+ *
+ * ```ts
+ * import { projectAgentArtifact } from './agent-thread-patch.js'
+ * void projectAgentArtifact
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function projectAgentArtifact(artifact: AgentArtifact): AgentArtifact {
-  return { ...artifact, path: '', posterPath: undefined }
+  return {
+    ...artifact,
+    path: '',
+    posterPath: undefined
+  }
 }
 
 /**
  * Keep a public image without its local filesystem path.
  * @param image Stored image attachment.
+ *
+ * **Example** (Access the projectAgentImage contract)
+ *
+ * ```ts
+ * import { projectAgentImage } from './agent-thread-patch.js'
+ * void projectAgentImage
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function projectAgentImage(image: AgentImageAttachment): AgentImageAttachment {
-  return { ...image, path: '' }
+  return {
+    ...image,
+    path: ''
+  }
 }
 
 /**
@@ -155,7 +251,7 @@ export function projectAgentImage(image: AgentImageAttachment): AgentImageAttach
  * @param run Stored run. Its private arrays are not reused.
  * @param activity Public activity already projected for this run only.
  */
-export function projectAgentRun(run: AgentChatRun, activity: AgentActivity[]): AgentChatRun {
+function projectAgentRunBody(run: AgentChatRun, activity: AgentActivity[]): AgentChatRun {
   return {
     ...run,
     activity,
@@ -168,11 +264,27 @@ export function projectAgentRun(run: AgentChatRun, activity: AgentActivity[]): A
     articleSections: undefined,
     contextCheckpoint: undefined,
     contextSummary: undefined,
-    tools: run.tools.map((tool) => ({
-      ...tool,
-      skills: tool.skills?.map((skill) => ({ ...skill })),
-      approval: tool.approval ? { ...tool.approval } : undefined
-    }))
+    tools: Sparse.map({
+      items: run.tools,
+      map: (tool) => ({
+        ...tool,
+        skills:
+          tool.skills === undefined || tool.skills === null
+            ? undefined
+            : Sparse.map({
+                items: tool.skills,
+                map: (skill) => ({
+                  ...skill
+                })
+              }),
+        approval:
+          tool.approval === undefined
+            ? undefined
+            : {
+                ...tool.approval
+              }
+      })
+    })
   }
 }
 
@@ -181,16 +293,33 @@ export function projectAgentRun(run: AgentChatRun, activity: AgentActivity[]): A
  * @param thread Stored thread.
  * @param activityFor Called once per run. Pass `agentActivity` from main.
  */
-export function projectAgentThread(
+function projectAgentThreadBody(
   thread: AgentThread,
   activityFor: (run: AgentChatRun) => AgentActivity[]
 ): AgentThread {
   return {
     ...thread,
-    messages: thread.messages.map((message) => ({ ...message })),
-    runs: thread.runs.map((run) => projectAgentRun(run, activityFor(run))),
-    artifacts: thread.artifacts.map(projectAgentArtifact),
-    images: thread.images?.map(projectAgentImage)
+    messages: Sparse.map({
+      items: thread.messages,
+      map: (message) => ({
+        ...message
+      })
+    }),
+    runs: Sparse.map({
+      items: thread.runs,
+      map: (run) => projectAgentRunBody(run, activityFor(run))
+    }),
+    artifacts: Sparse.map({
+      items: thread.artifacts,
+      map: projectAgentArtifact
+    }),
+    images:
+      thread.images === undefined || thread.images === null
+        ? undefined
+        : Sparse.map({
+            items: thread.images,
+            map: projectAgentImage
+          })
   }
 }
 
@@ -200,7 +329,7 @@ export function projectAgentThread(
  * @param scope Rows touched by this commit.
  * @param activityFor Public activity for one run.
  */
-export function projectAgentPatch(
+function projectAgentPatchBody(
   thread: AgentThread,
   scope: AgentPersistScope,
   activityFor: (run: AgentChatRun) => AgentActivity[]
@@ -210,40 +339,53 @@ export function projectAgentPatch(
     promptId: thread.promptId,
     threadId: thread.id
   }
-  if (scope.thread) {
+  if (P.isTruthy(scope.thread)) {
     patch.leafId = thread.leafId
     if (thread.title !== undefined) {
       patch.title = thread.title
     }
-    if (thread.toolGrants) {
+    if (thread.toolGrants !== undefined) {
       patch.toolGrants = [...thread.toolGrants]
     }
-    if (thread.images) {
-      patch.images = thread.images.map(projectAgentImage)
+    if (thread.images !== undefined) {
+      patch.images = Sparse.map({
+        items: thread.images,
+        map: projectAgentImage
+      })
     }
   }
-  if (scope.messageIds?.length) {
-    const ids = new Set(scope.messageIds)
-    patch.messages = thread.messages
-      .filter((message) => ids.has(message.id))
-      .map((message) => ({ ...message }))
+  if (scope.messageIds !== undefined && scope.messageIds.length > 0) {
+    const ids = HashSet.fromIterable(scope.messageIds)
+    patch.messages = Sparse.map({
+      items: Sparse.filter({
+        items: thread.messages,
+        predicate: (message) => HashSet.has(ids, message.id)
+      }),
+      map: (message) => ({
+        ...message
+      })
+    })
   }
-  if (scope.runIds?.length) {
-    const ids = new Set(scope.runIds)
+  if (scope.runIds !== undefined && scope.runIds.length > 0) {
+    const ids = HashSet.fromIterable(scope.runIds)
     const runs: AgentChatRun[] = []
     for (const run of thread.runs) {
-      if (!ids.has(run.id)) {
+      if (!HashSet.has(ids, run.id)) {
         continue
       }
-      runs.push(projectAgentRun(run, activityFor(run)))
+      runs.push(projectAgentRunBody(run, activityFor(run)))
     }
     patch.runs = runs
   }
-  if (scope.artifactIds?.length) {
-    const ids = new Set(scope.artifactIds)
-    patch.artifacts = thread.artifacts
-      .filter((artifact) => ids.has(artifact.id))
-      .map(projectAgentArtifact)
+  if (scope.artifactIds !== undefined && scope.artifactIds.length > 0) {
+    const ids = HashSet.fromIterable(scope.artifactIds)
+    patch.artifacts = Sparse.map({
+      items: Sparse.filter({
+        items: thread.artifacts,
+        predicate: (artifact) => HashSet.has(ids, artifact.id)
+      }),
+      map: projectAgentArtifact
+    })
   }
   return patch
 }
@@ -251,6 +393,16 @@ export function projectAgentPatch(
 /**
  * Event header safe to store. Snapshot, patch, and catalog payloads stay off the row.
  * @param event Event about to be broadcast.
+ *
+ * **Example** (Access the durableAgentEvent contract)
+ *
+ * ```ts
+ * import { durableAgentEvent } from './agent-thread-patch.js'
+ * void durableAgentEvent
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function durableAgentEvent(
   event: AgentRunEvent
@@ -268,18 +420,30 @@ export function durableAgentEvent(
 /**
  * Route a snapshot or patch. Catalog-only notices have no thread route.
  * @param event Broadcast event.
+ *
+ * **Example** (Access the agentEventRoute contract)
+ *
+ * ```ts
+ * import { agentEventRoute } from './agent-thread-patch.js'
+ * void agentEventRoute
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
-export function agentEventRoute(
-  event: AgentRunEvent
-): { downloadId: string; promptId: string; threadId: string } | null {
-  if (event.patch) {
+export function agentEventRoute(event: AgentRunEvent): {
+  downloadId: string
+  promptId: string
+  threadId: string
+} | null {
+  if (event.patch !== undefined) {
     return {
       downloadId: event.patch.downloadId,
       promptId: event.patch.promptId,
       threadId: event.patch.threadId
     }
   }
-  if (event.snapshot) {
+  if (event.snapshot !== undefined) {
     return {
       downloadId: event.snapshot.downloadId,
       promptId: event.snapshot.promptId,
@@ -294,12 +458,16 @@ export function agentEventRoute(
  * @param event Broadcast event.
  * @param identity Tab identity. `threadId` pins one conversation.
  */
-export function agentEventMatches(event: AgentRunEvent, identity: AgentRouteIdentity): boolean {
+function agentEventMatchesBody(event: AgentRunEvent, identity: AgentRouteIdentity): boolean {
   const route = agentEventRoute(event)
-  if (!route || route.downloadId !== identity.downloadId) {
+  if (route === null || !P.isTruthy(route) || route.downloadId !== identity.downloadId) {
     return false
   }
-  if (identity.threadId) {
+  if (
+    identity.threadId !== undefined &&
+    identity.threadId !== null &&
+    P.isTruthy(identity.threadId)
+  ) {
     return route.threadId === identity.threadId
   }
   return route.promptId === identity.promptId
@@ -310,16 +478,21 @@ export function agentEventMatches(event: AgentRunEvent, identity: AgentRouteIden
  * @param current Current array. It is not mutated.
  * @param updates Replacement or new rows.
  */
-function replaceById<T extends { id: string }>(
-  current: readonly T[],
-  updates: readonly T[] | undefined
-): T[] {
-  if (!updates?.length) {
-    return current as T[]
+function replaceById<
+  T extends {
+    id: string
   }
-  const next = current.slice()
+>(current: T[], updates: readonly T[] | undefined): T[] {
+  if (updates === undefined || !P.isTruthy(updates.length)) {
+    return current
+  }
+  const next = A.copy(current)
   for (const item of updates) {
-    const index = next.findIndex((row) => row.id === item.id)
+    const index = pipe(
+      next,
+      A.findFirstIndex((row) => row.id === item.id),
+      O.getOrElse(() => -1)
+    )
     if (index === -1) {
       next.push(item)
     } else {
@@ -335,7 +508,7 @@ function replaceById<T extends { id: string }>(
  * @param patch Dirty public entities.
  * @param seq Committed seq of the patch event.
  */
-export function applyAgentThreadPatch(
+function applyAgentThreadPatchBody(
   current: AgentThread,
   patch: AgentThreadPatch,
   seq: number
@@ -350,7 +523,14 @@ export function applyAgentThreadPatch(
     runs: replaceById(current.runs, patch.runs),
     artifacts: replaceById(current.artifacts, patch.artifacts),
     images:
-      patch.images === undefined ? current.images : patch.images.map((image) => ({ ...image }))
+      patch.images === undefined
+        ? current.images
+        : Sparse.map({
+            items: patch.images,
+            map: (image) => ({
+              ...image
+            })
+          })
   }
 }
 
@@ -359,8 +539,8 @@ export function applyAgentThreadPatch(
  * @param current Authoritative thread, or null before hydration.
  * @param incoming Snapshot from IPC or an applied patch.
  */
-export function acceptAgentThread(current: AgentThread | null, incoming: AgentThread): AgentThread {
-  if (current && current.id === incoming.id && current.seq >= incoming.seq) {
+function acceptAgentThreadBody(current: AgentThread | null, incoming: AgentThread): AgentThread {
+  if (current !== null && current.id === incoming.id && current.seq >= incoming.seq) {
     return current
   }
   return incoming
@@ -373,45 +553,82 @@ export function acceptAgentThread(current: AgentThread | null, incoming: AgentTh
  * @param event Broadcast event.
  * @param identity Current video, prompt, and optional pinned thread.
  */
-export function applyAgentRunEvent(
+function applyAgentRunEventBody(
   current: AgentThread | null,
   event: AgentRunEvent,
   identity: AgentRouteIdentity
 ): AgentEventApplyResult {
-  if (!agentEventMatches(event, identity)) {
-    return { kind: 'ignored' }
-  }
-  if (event.snapshot) {
-    if (current && current.id === event.snapshot.id && current.seq >= event.snapshot.seq) {
-      return { kind: 'unchanged', thread: current }
+  if (!agentEventMatchesBody(event, identity)) {
+    return {
+      kind: 'ignored'
     }
-    return { kind: 'applied', thread: event.snapshot }
   }
-  if (!event.patch) {
-    return { kind: 'ignored' }
+  if (event.snapshot !== undefined) {
+    if (current !== null && current.id === event.snapshot.id && current.seq >= event.snapshot.seq) {
+      return {
+        kind: 'unchanged',
+        thread: current
+      }
+    }
+    return {
+      kind: 'applied',
+      thread: event.snapshot
+    }
   }
-  if (!current || current.id !== event.patch.threadId) {
-    return { kind: 'gap', thread: current, observedSeq: event.seq }
+  if (event.patch === undefined || !P.isTruthy(event.patch)) {
+    return {
+      kind: 'ignored'
+    }
+  }
+  if (current === null || !P.isTruthy(current) || current.id !== event.patch.threadId) {
+    return {
+      kind: 'gap',
+      thread: current,
+      observedSeq: event.seq
+    }
   }
   if (event.seq <= current.seq) {
-    return { kind: 'unchanged', thread: current }
+    return {
+      kind: 'unchanged',
+      thread: current
+    }
   }
   if (event.seq !== current.seq + 1) {
-    return { kind: 'gap', thread: current, observedSeq: event.seq }
+    return {
+      kind: 'gap',
+      thread: current,
+      observedSeq: event.seq
+    }
   }
-  return { kind: 'applied', thread: applyAgentThreadPatch(current, event.patch, event.seq) }
+  return {
+    kind: 'applied',
+    thread: applyAgentThreadPatchBody(current, event.patch, event.seq)
+  }
 }
 
 /**
  * Status of the selected branch. Branch changes this even when the title does not.
  * @param thread Public or stored thread.
+ *
+ * **Example** (Access the selectedAgentRunView contract)
+ *
+ * ```ts
+ * import { selectedAgentRunView } from './agent-thread-patch.js'
+ * void selectedAgentRunView
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function selectedAgentRunView(thread: AgentThread): {
   status: AgentRunStatus | 'idle'
   updatedAt: number
 } {
   const latest = selectedAgentMessages(thread).at(-1)
-  const run = latest ? thread.runs.find((item) => item.messageId === latest.id) : undefined
+  const run =
+    latest === undefined
+      ? undefined
+      : O.getOrUndefined(A.findFirst(thread.runs, (item) => item.messageId === latest.id))
   return {
     status: run?.status ?? 'idle',
     updatedAt: run?.updatedAt ?? latest?.createdAt ?? 0
@@ -423,29 +640,49 @@ export function selectedAgentRunView(thread: AgentThread): {
  * @param memory Notices already applied.
  * @param notice Directory notice from main.
  */
-export function rememberCatalog(
-  memory: ReadonlyMap<string, CatalogMemoryEntry>,
+function rememberCatalogBody(
+  memory: CatalogMemory,
   notice: AgentCatalogNotice
-): { memory: Map<string, CatalogMemoryEntry>; applied: boolean } {
+): {
+  memory: CatalogMemory
+  applied: boolean
+} {
   const id = notice.kind === 'remove' ? notice.id : notice.summary.id
   const downloadId = notice.kind === 'remove' ? notice.downloadId : notice.summary.downloadId
-  const previous = memory.get(id)
-  if (previous && notice.revision <= previous.revision) {
-    return { memory: memory as Map<string, CatalogMemoryEntry>, applied: false }
+  const previous = pipe(memory.entries, HashMap.get(id), O.getOrUndefined)
+  if (previous !== undefined && notice.revision <= previous.revision) {
+    return {
+      memory,
+      applied: false
+    }
   }
-  const next = new Map(memory)
+  const next: CatalogMemory = {
+    entries: memory.entries,
+    keys: HashMap.has(memory.entries, id) ? memory.keys : [...memory.keys, id]
+  }
   if (notice.kind === 'remove') {
-    next.set(id, { revision: notice.revision, removed: true, history: false, downloadId })
-    return { memory: next, applied: true }
+    next.entries = HashMap.set(next.entries, id, {
+      revision: notice.revision,
+      removed: true,
+      history: false,
+      downloadId
+    })
+    return {
+      memory: next,
+      applied: true
+    }
   }
-  next.set(id, {
+  next.entries = HashMap.set(next.entries, id, {
     revision: notice.revision,
     removed: false,
     history: notice.history,
     downloadId,
     summary: notice.summary
   })
-  return { memory: next, applied: true }
+  return {
+    memory: next,
+    applied: true
+  }
 }
 
 /**
@@ -455,33 +692,621 @@ export function rememberCatalog(
  * @param requestedRevision Highest revision already applied when the RPC started.
  * @param options Limit to one video, or to history membership.
  */
-export function mergeCatalogList(
+function mergeCatalogListBody(
   rows: readonly AgentThreadSummary[],
-  memory: ReadonlyMap<string, CatalogMemoryEntry>,
+  memory: CatalogMemory,
   requestedRevision: number,
-  options?: { downloadId?: string; historyOnly?: boolean }
+  options?: {
+    downloadId?: string | undefined
+    historyOnly?: boolean | undefined
+  }
 ): AgentThreadSummary[] {
-  const next = new Map<string, AgentThreadSummary>()
+  let entries = HashMap.empty<string, AgentThreadSummary>()
+  let keys: string[] = []
   for (const row of rows) {
-    if (options?.downloadId && row.downloadId !== options.downloadId) {
+    if (P.isTruthy(options?.downloadId) && row.downloadId !== options?.downloadId) {
       continue
     }
-    next.set(row.id, row)
+    if (!HashMap.has(entries, row.id)) {
+      keys.push(row.id)
+    }
+    entries = HashMap.set(entries, row.id, row)
   }
-  for (const [id, state] of memory) {
-    if (state.revision <= requestedRevision) {
+  for (const id of memory.keys) {
+    const state = pipe(memory.entries, HashMap.get(id), O.getOrUndefined)
+    if (state === undefined || state.revision <= requestedRevision) {
       continue
     }
-    if (options?.downloadId && state.downloadId !== options.downloadId) {
+    if (P.isTruthy(options?.downloadId) && state.downloadId !== options?.downloadId) {
       continue
     }
-    if (state.removed || (options?.historyOnly && !state.history)) {
-      next.delete(id)
+    if (
+      P.isTruthy(state.removed) ||
+      (P.isTruthy(options?.historyOnly) && !P.isTruthy(state.history))
+    ) {
+      entries = HashMap.remove(entries, id)
+      keys = A.filter(keys, (key) => key !== id)
       continue
     }
-    if (state.summary) {
-      next.set(id, state.summary)
+    if (state.summary !== undefined) {
+      if (!HashMap.has(entries, id)) {
+        keys.push(id)
+      }
+      entries = HashMap.set(entries, id, state.summary)
     }
   }
-  return [...next.values()]
+  const result: AgentThreadSummary[] = []
+  for (const key of keys) {
+    const value = HashMap.get(entries, key)
+    if (O.isSome(value)) {
+      result.push(value.value)
+    }
+  }
+  return result
 }
+
+/** Record contract for observeAgentSeq. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the ObserveAgentSeqInput contract)
+ *
+ * ```ts
+ * import { ObserveAgentSeqInput } from './agent-thread-patch.js'
+ * void ObserveAgentSeqInput
+ * ```
+ *
+ */
+export const ObserveAgentSeqInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  seq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('ObserveAgentSeqInput', {
+    description:
+      'Explicit input record for ObserveAgentSeqInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ObserveAgentSeqInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ObserveAgentSeqInput = typeof ObserveAgentSeqInput.Type
+/** observeAgentSeq with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the observeAgentSeq contract)
+ *
+ * ```ts
+ * import { observeAgentSeq } from './agent-thread-patch.js'
+ * void observeAgentSeq
+ * ```
+ *
+ */
+export const observeAgentSeq: {
+  (): (input: ObserveAgentSeqInput) => AgentGapRecovery
+  (input: ObserveAgentSeqInput): AgentGapRecovery
+} = recordFunction(
+  (input: ObserveAgentSeqInput): AgentGapRecovery => observeAgentSeqBody(input.recovery, input.seq)
+)
+/** Record contract for requestAgentRecovery. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the RequestAgentRecoveryInput contract)
+ *
+ * ```ts
+ * import { RequestAgentRecoveryInput } from './agent-thread-patch.js'
+ * void RequestAgentRecoveryInput
+ * ```
+ *
+ */
+export const RequestAgentRecoveryInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  reason: S.Union([S.Literal('gap'), S.Literal('refresh'), S.Undefined]).pipe(
+    S.UndefinedOr,
+    S.optionalKey,
+    S.mutableKey
+  )
+}).pipe(
+  $I.annoteSchema('RequestAgentRecoveryInput', {
+    description:
+      'Explicit input record for RequestAgentRecoveryInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived RequestAgentRecoveryInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type RequestAgentRecoveryInput = typeof RequestAgentRecoveryInput.Type
+/** requestAgentRecovery with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the requestAgentRecovery contract)
+ *
+ * ```ts
+ * import { requestAgentRecovery } from './agent-thread-patch.js'
+ * void requestAgentRecovery
+ * ```
+ *
+ */
+export const requestAgentRecovery: {
+  (): (input: RequestAgentRecoveryInput) => {
+    recovery: AgentGapRecovery
+    action: 'start' | 'busy' | 'wait'
+  }
+  (
+    input: RequestAgentRecoveryInput
+  ): {
+    recovery: AgentGapRecovery
+    action: 'start' | 'busy' | 'wait'
+  }
+} = recordFunction(
+  (
+    input: RequestAgentRecoveryInput
+  ): {
+    recovery: AgentGapRecovery
+    action: 'start' | 'busy' | 'wait'
+  } => requestAgentRecoveryBody(input.recovery, input.reason)
+)
+/** Record contract for settleAgentRecovery. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the SettleAgentRecoveryInput contract)
+ *
+ * ```ts
+ * import { SettleAgentRecoveryInput } from './agent-thread-patch.js'
+ * void SettleAgentRecoveryInput
+ * ```
+ *
+ */
+export const SettleAgentRecoveryInput = S.Struct({
+  recovery: S.mutableKey(AgentGapRecovery),
+  appliedSeq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('SettleAgentRecoveryInput', {
+    description:
+      'Explicit input record for SettleAgentRecoveryInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived SettleAgentRecoveryInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type SettleAgentRecoveryInput = typeof SettleAgentRecoveryInput.Type
+/** settleAgentRecovery with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the settleAgentRecovery contract)
+ *
+ * ```ts
+ * import { settleAgentRecovery } from './agent-thread-patch.js'
+ * void settleAgentRecovery
+ * ```
+ *
+ */
+export const settleAgentRecovery: {
+  (): (input: SettleAgentRecoveryInput) => {
+    recovery: AgentGapRecovery
+    action: 'settled' | 'follow-up' | 'wait'
+  }
+  (
+    input: SettleAgentRecoveryInput
+  ): {
+    recovery: AgentGapRecovery
+    action: 'settled' | 'follow-up' | 'wait'
+  }
+} = recordFunction(
+  (
+    input: SettleAgentRecoveryInput
+  ): {
+    recovery: AgentGapRecovery
+    action: 'settled' | 'follow-up' | 'wait'
+  } => settleAgentRecoveryBody(input.recovery, input.appliedSeq)
+)
+/** Record contract for projectAgentRun. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the ProjectAgentRunInput contract)
+ *
+ * ```ts
+ * import { ProjectAgentRunInput } from './agent-thread-patch.js'
+ * void ProjectAgentRunInput
+ * ```
+ *
+ */
+export const ProjectAgentRunInput = S.Struct({
+  run: S.mutableKey(AgentChatRun),
+  activity: AgentActivity.pipe(S.Array, S.mutable, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ProjectAgentRunInput', {
+    description:
+      'Explicit input record for ProjectAgentRunInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ProjectAgentRunInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ProjectAgentRunInput = typeof ProjectAgentRunInput.Type
+/** projectAgentRun with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the projectAgentRun contract)
+ *
+ * ```ts
+ * import { projectAgentRun } from './agent-thread-patch.js'
+ * void projectAgentRun
+ * ```
+ *
+ */
+export const projectAgentRun: {
+  (): (input: ProjectAgentRunInput) => AgentChatRun
+  (input: ProjectAgentRunInput): AgentChatRun
+} = recordFunction(
+  (input: ProjectAgentRunInput): AgentChatRun => projectAgentRunBody(input.run, input.activity)
+)
+/** Record contract for projectAgentThread.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Import the ProjectAgentThreadInput contract)
+ *
+ * ```ts
+ * export type { ProjectAgentThreadInput } from './agent-thread-patch.js'
+ * ```
+ *
+ */
+export interface ProjectAgentThreadInput {
+  thread: AgentThread
+  activityFor: (run: AgentChatRun) => AgentActivity[]
+}
+/** projectAgentThread with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the projectAgentThread contract)
+ *
+ * ```ts
+ * import { projectAgentThread } from './agent-thread-patch.js'
+ * void projectAgentThread
+ * ```
+ *
+ */
+export const projectAgentThread: {
+  (): (input: ProjectAgentThreadInput) => AgentThread
+  (input: ProjectAgentThreadInput): AgentThread
+} = recordFunction(
+  (input: ProjectAgentThreadInput): AgentThread =>
+    projectAgentThreadBody(input.thread, input.activityFor)
+)
+/** Record contract for projectAgentPatch.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Import the ProjectAgentPatchInput contract)
+ *
+ * ```ts
+ * export type { ProjectAgentPatchInput } from './agent-thread-patch.js'
+ * ```
+ *
+ */
+export interface ProjectAgentPatchInput {
+  thread: AgentThread
+  scope: AgentPersistScope
+  activityFor: (run: AgentChatRun) => AgentActivity[]
+}
+/** projectAgentPatch with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the projectAgentPatch contract)
+ *
+ * ```ts
+ * import { projectAgentPatch } from './agent-thread-patch.js'
+ * void projectAgentPatch
+ * ```
+ *
+ */
+export const projectAgentPatch: {
+  (): (input: ProjectAgentPatchInput) => AgentThreadPatch
+  (input: ProjectAgentPatchInput): AgentThreadPatch
+} = recordFunction(
+  (input: ProjectAgentPatchInput): AgentThreadPatch =>
+    projectAgentPatchBody(input.thread, input.scope, input.activityFor)
+)
+/** Record contract for agentEventMatches. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the AgentEventMatchesInput contract)
+ *
+ * ```ts
+ * import { AgentEventMatchesInput } from './agent-thread-patch.js'
+ * void AgentEventMatchesInput
+ * ```
+ *
+ */
+export const AgentEventMatchesInput = S.Struct({
+  event: S.mutableKey(AgentRunEvent),
+  identity: S.mutableKey(AgentRouteIdentity)
+}).pipe(
+  $I.annoteSchema('AgentEventMatchesInput', {
+    description:
+      'Explicit input record for AgentEventMatchesInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AgentEventMatchesInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AgentEventMatchesInput = typeof AgentEventMatchesInput.Type
+/** agentEventMatches with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the agentEventMatches contract)
+ *
+ * ```ts
+ * import { agentEventMatches } from './agent-thread-patch.js'
+ * void agentEventMatches
+ * ```
+ *
+ */
+export const agentEventMatches: {
+  (): (input: AgentEventMatchesInput) => boolean
+  (input: AgentEventMatchesInput): boolean
+} = recordFunction((input: AgentEventMatchesInput): boolean =>
+  agentEventMatchesBody(input.event, input.identity)
+)
+/** Record contract for applyAgentThreadPatch. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the ApplyAgentThreadPatchInput contract)
+ *
+ * ```ts
+ * import { ApplyAgentThreadPatchInput } from './agent-thread-patch.js'
+ * void ApplyAgentThreadPatchInput
+ * ```
+ *
+ */
+export const ApplyAgentThreadPatchInput = S.Struct({
+  current: S.mutableKey(AgentThread),
+  patch: S.mutableKey(AgentThreadPatch),
+  seq: S.mutableKey(S.Finite)
+}).pipe(
+  $I.annoteSchema('ApplyAgentThreadPatchInput', {
+    description:
+      'Explicit input record for ApplyAgentThreadPatchInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ApplyAgentThreadPatchInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ApplyAgentThreadPatchInput = typeof ApplyAgentThreadPatchInput.Type
+/** applyAgentThreadPatch with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the applyAgentThreadPatch contract)
+ *
+ * ```ts
+ * import { applyAgentThreadPatch } from './agent-thread-patch.js'
+ * void applyAgentThreadPatch
+ * ```
+ *
+ */
+export const applyAgentThreadPatch: {
+  (): (input: ApplyAgentThreadPatchInput) => AgentThread
+  (input: ApplyAgentThreadPatchInput): AgentThread
+} = recordFunction(
+  (input: ApplyAgentThreadPatchInput): AgentThread =>
+    applyAgentThreadPatchBody(input.current, input.patch, input.seq)
+)
+/** Record contract for acceptAgentThread. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the AcceptAgentThreadInput contract)
+ *
+ * ```ts
+ * import { AcceptAgentThreadInput } from './agent-thread-patch.js'
+ * void AcceptAgentThreadInput
+ * ```
+ *
+ */
+export const AcceptAgentThreadInput = S.Struct({
+  current: S.mutableKey(S.Union([AgentThread, S.Null])),
+  incoming: S.mutableKey(AgentThread)
+}).pipe(
+  $I.annoteSchema('AcceptAgentThreadInput', {
+    description:
+      'Explicit input record for AcceptAgentThreadInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived AcceptAgentThreadInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type AcceptAgentThreadInput = typeof AcceptAgentThreadInput.Type
+/** acceptAgentThread with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the acceptAgentThread contract)
+ *
+ * ```ts
+ * import { acceptAgentThread } from './agent-thread-patch.js'
+ * void acceptAgentThread
+ * ```
+ *
+ */
+export const acceptAgentThread: {
+  (): (input: AcceptAgentThreadInput) => AgentThread
+  (input: AcceptAgentThreadInput): AgentThread
+} = recordFunction(
+  (input: AcceptAgentThreadInput): AgentThread =>
+    acceptAgentThreadBody(input.current, input.incoming)
+)
+/** Record contract for applyAgentRunEvent. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the ApplyAgentRunEventInput contract)
+ *
+ * ```ts
+ * import { ApplyAgentRunEventInput } from './agent-thread-patch.js'
+ * void ApplyAgentRunEventInput
+ * ```
+ *
+ */
+export const ApplyAgentRunEventInput = S.Struct({
+  current: S.mutableKey(S.Union([AgentThread, S.Null])),
+  event: S.mutableKey(AgentRunEvent),
+  identity: S.mutableKey(AgentRouteIdentity)
+}).pipe(
+  $I.annoteSchema('ApplyAgentRunEventInput', {
+    description:
+      'Explicit input record for ApplyAgentRunEventInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ApplyAgentRunEventInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ApplyAgentRunEventInput = typeof ApplyAgentRunEventInput.Type
+/** applyAgentRunEvent with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the applyAgentRunEvent contract)
+ *
+ * ```ts
+ * import { applyAgentRunEvent } from './agent-thread-patch.js'
+ * void applyAgentRunEvent
+ * ```
+ *
+ */
+export const applyAgentRunEvent: {
+  (): (input: ApplyAgentRunEventInput) => AgentEventApplyResult
+  (input: ApplyAgentRunEventInput): AgentEventApplyResult
+} = recordFunction(
+  (input: ApplyAgentRunEventInput): AgentEventApplyResult =>
+    applyAgentRunEventBody(input.current, input.event, input.identity)
+)
+/** Record contract for rememberCatalog. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the RememberCatalogInput contract)
+ *
+ * ```ts
+ * import { RememberCatalogInput } from './agent-thread-patch.js'
+ * void RememberCatalogInput
+ * ```
+ *
+ */
+export const RememberCatalogInput = S.Struct({
+  memory: S.mutableKey(CatalogMemory),
+  notice: S.mutableKey(AgentCatalogNotice)
+}).pipe(
+  $I.annoteSchema('RememberCatalogInput', {
+    description:
+      'Explicit input record for RememberCatalogInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived RememberCatalogInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type RememberCatalogInput = typeof RememberCatalogInput.Type
+/** rememberCatalog with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the rememberCatalog contract)
+ *
+ * ```ts
+ * import { rememberCatalog } from './agent-thread-patch.js'
+ * void rememberCatalog
+ * ```
+ *
+ */
+export const rememberCatalog: {
+  (): (input: RememberCatalogInput) => {
+    memory: CatalogMemory
+    applied: boolean
+  }
+  (
+    input: RememberCatalogInput
+  ): {
+    memory: CatalogMemory
+    applied: boolean
+  }
+} = recordFunction(
+  (
+    input: RememberCatalogInput
+  ): {
+    memory: CatalogMemory
+    applied: boolean
+  } => rememberCatalogBody(input.memory, input.notice)
+)
+/** Record contract for mergeCatalogList. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the MergeCatalogListInput contract)
+ *
+ * ```ts
+ * import { MergeCatalogListInput } from './agent-thread-patch.js'
+ * void MergeCatalogListInput
+ * ```
+ *
+ */
+export const MergeCatalogListInput = S.Struct({
+  rows: AgentThreadSummary.pipe(S.Array, S.mutableKey),
+  memory: S.mutableKey(CatalogMemory),
+  requestedRevision: S.mutableKey(S.Finite),
+  options: S.Union([
+    S.Struct({
+      downloadId: S.mutableKey(S.String.pipe(S.UndefinedOr, S.optionalKey)),
+      historyOnly: S.mutableKey(S.Boolean.pipe(S.UndefinedOr, S.optionalKey))
+    }),
+    S.Undefined
+  ]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('MergeCatalogListInput', {
+    description:
+      'Explicit input record for MergeCatalogListInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived MergeCatalogListInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type MergeCatalogListInput = typeof MergeCatalogListInput.Type
+/** mergeCatalogList with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the mergeCatalogList contract)
+ *
+ * ```ts
+ * import { mergeCatalogList } from './agent-thread-patch.js'
+ * void mergeCatalogList
+ * ```
+ *
+ */
+export const mergeCatalogList: {
+  (): (input: MergeCatalogListInput) => AgentThreadSummary[]
+  (input: MergeCatalogListInput): AgentThreadSummary[]
+} = recordFunction((input: MergeCatalogListInput): AgentThreadSummary[] =>
+  mergeCatalogListBody(input.rows, input.memory, input.requestedRevision, input.options)
+)

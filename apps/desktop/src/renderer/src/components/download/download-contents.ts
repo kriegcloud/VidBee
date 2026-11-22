@@ -1,8 +1,8 @@
-import { sourceMediaKind } from '@shared/source-media-kind'
 import type {
   DownloadContentPart,
   DownloadContentState
 } from '@vidbee/ui/components/ui/download-content-stack'
+import { sourceMediaKind } from '../../../../compatibility/shared/source-media-kind'
 import { transcriptProgressLabelKey } from '../../lib/transcript-library'
 import type { DownloadRecord } from '../../store/downloads'
 import type { TranscriptSnapshotView } from '../../store/transcripts'

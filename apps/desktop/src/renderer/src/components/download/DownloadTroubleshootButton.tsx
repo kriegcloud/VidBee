@@ -2,12 +2,12 @@ import { Button } from '@renderer/components/ui/button'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
 import { AGENT_WORKSPACE_ID } from '@shared/agent-chat'
-import { AI_CHAT_PROMPT_ID } from '@shared/ai-prompts'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2, Sparkles } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { AI_CHAT_PROMPT_ID } from '../../../../compatibility/shared/ai-prompts'
 
 /** Open a dedicated diagnostic conversation and durably send one task-specific request. */
 export function DownloadTroubleshootButton({ taskId }: { taskId: string }) {

@@ -24,6 +24,10 @@ import { ipcEvents, ipcServices } from '@renderer/lib/ipc'
 import { cn } from '@renderer/lib/utils'
 import type { TranscriptSegmentView } from '@renderer/store/transcripts'
 import { buildAssDocument, buildSrtDocument } from '@shared/subtitle-export'
+import { AlignLeft, Captions, Copy, FileText, Flame, Layers, List, Mic, Video } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import {
   buildExportUnits,
   buildTranscriptExportFileName,
@@ -33,11 +37,7 @@ import {
   type TranscriptExportGrouping,
   type TranscriptExportStyle,
   type TranscriptVideoEncode
-} from '@shared/transcript-export'
-import { AlignLeft, Captions, Copy, FileText, Flame, Layers, List, Mic, Video } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+} from '../../../../compatibility/shared/transcript-export'
 
 interface TranscriptExportDialogProps {
   isAudio?: boolean

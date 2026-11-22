@@ -10,7 +10,7 @@ import {
   type Task,
   type TaskCreationMetadata
 } from '@vidbee/task-queue-legacy'
-import { agentTaskSchema } from '../../shared/agent-task'
+import { agentTaskSchema } from '../../compatibility/shared/agent-task'
 import {
   buildAudioFormatPreference,
   buildVideoFormatPreference

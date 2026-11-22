@@ -17,7 +17,7 @@
     "build:unpack": "bun run --cwd apps/desktop build:unpack",
     "build:win": "bun run --cwd apps/desktop build:win",
     "build:ytdlp": "bun run --cwd apps/desktop build:ytdlp",
-    "check": "bun run check:legacy && turbo run check --filter=@vidbee/identity --filter=@vidbee/standards --filter=vidbee-extension --filter=@vidbee/cli --filter=@vidbee/cli-legacy --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/task-queue-legacy --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/transcription --filter=@vidbee/transcription-legacy --filter=@vidbee/subscriptions-core --filter=@vidbee/subscriptions-core-legacy --filter=@vidbee/browser-capture --filter=@vidbee/browser-capture-legacy && bun run port:check && bun run check:desktop:ported",
+    "check": "bun run check:shared && bun run check:legacy && turbo run check --filter=@vidbee/identity --filter=@vidbee/standards --filter=vidbee-extension --filter=@vidbee/cli --filter=@vidbee/cli-legacy --filter=@vidbee/schema --filter=@vidbee/logger --filter=@vidbee/i18n --filter=@vidbee/db --filter=@vidbee/task-queue --filter=@vidbee/task-queue-legacy --filter=@vidbee/downloader-core --filter=@vidbee/downloader-core-legacy --filter=@vidbee/transcription --filter=@vidbee/transcription-legacy --filter=@vidbee/subscriptions-core --filter=@vidbee/subscriptions-core-legacy --filter=@vidbee/browser-capture --filter=@vidbee/browser-capture-legacy && bun run port:check && bun run check:desktop:ported",
     "check:i18n": "bun run --cwd apps/desktop check:i18n",
     "db:generate": "bun run --cwd apps/desktop db:generate",
     "db:migrate": "bun run --cwd apps/desktop db:migrate",
@@ -47,7 +47,8 @@
     "standards:check": "node --import tsx tooling/standards/src/cli.ts check",
     "docs:check": "node --import tsx tooling/standards/src/cli.ts docs",
     "standards:baseline": "node --import tsx tooling/standards/src/cli.ts baseline",
-    "check:desktop:ported": "biome check apps/desktop/src/main/logging apps/desktop/src/shared/logging apps/desktop/src/preload/logging apps/desktop/src/renderer/src/logging apps/desktop/test/desktop-logging.spec.ts apps/desktop/test/desktop-otlp.spec.ts"
+    "check:desktop:ported": "biome check apps/desktop/src/main/logging apps/desktop/src/shared/logging apps/desktop/src/preload/logging apps/desktop/src/renderer/src/logging apps/desktop/test/desktop-logging.spec.ts apps/desktop/test/desktop-otlp.spec.ts",
+    "check:shared": "node scripts/desktop-foundation/shared-ledger.mjs && bunx --bun tsc --noEmit -p scripts/desktop-foundation/tsconfig.parity.json && tsrs -p scripts/desktop-foundation/tsconfig.strict-shared.json && node scripts/desktop-foundation/shared-doc-examples.mjs && node --import tsx scripts/desktop-foundation/shared-laws.entry.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

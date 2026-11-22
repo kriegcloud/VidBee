@@ -33,7 +33,7 @@ export async function lifecycleObservations(transform = source => source) {
     jotai:{useAtom:()=>[{theme:'system'}],useSetAtom:()=>noop,useAtomValue:()=>[]},'next-themes':{useTheme:()=>({setTheme:noop})},
     './lib/ipc':{ipcEvents:b.ipcEvents,ipcServices:{}},'./hooks/use-import-local-media':{useImportLocalMedia:()=>({applyImportResult:noop})},
     './lib/url':{withDesktopUtm:x=>x},'./desktop-chrome':{DesktopChromeContext:{Provider:noop}},
-    $require:id=>id.startsWith('./')||id.startsWith('@renderer/')?auto:undefined
+    $require:(id,filename)=>filename.includes('/src/shared/')?undefined:id.startsWith('./')||id.startsWith('@renderer/')?auto:undefined
   })('apps/desktop/src/renderer/src/app-layout.tsx')
   const module=loadLayout(b,h,navigation)
   const emit=()=>b.ipcRenderer.emit('app:show-home',{})
@@ -87,7 +87,7 @@ export async function lifecycleObservations(transform = source => source) {
     const Component=sourceLoader({$transform:(source,file)=>locateLifecycleState(transform(source,file),file),react:hooksApi.react,$navigator:{userAgent:'Mac fixture'},
       'react/jsx-runtime':{jsx:(_type,props)=>props},jotai:{useAtomValue:()=>null},'react-i18next':{useTranslation:()=>({t:x=>x})},
       '@renderer/lib/ipc':{ipcServices:{app:{getPlatform:()=>{requests.push('platform');return platform.promise}}}},
-      $require:id=>id.startsWith('@renderer/')||id.startsWith('@vidbee/')||id==='sonner'||id.startsWith('./')?auto:undefined
+      $require:(id,filename)=>filename.includes('/src/shared/')?undefined:id.startsWith('@renderer/')||id.startsWith('@vidbee/')||id==='sonner'||id.startsWith('./')?auto:undefined
     })('apps/desktop/src/renderer/src/components/transcript/TranscriptShareImageDialog.tsx').TranscriptShareImageDialog
     const initial=hooksApi.render(()=>Component({open:mode!=='closed',payload:null}));const off=hooksApi.effects[0]()
     if(mode==='late')off()

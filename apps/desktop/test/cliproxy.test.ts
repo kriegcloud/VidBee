@@ -3,12 +3,12 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { readCliProxyToken } from '../src/main/lib/cliproxy'
 import {
   aiProviderNeedsApiKey,
   isAiProviderModelBlocked,
   resolveAiProviderBaseUrl
-} from '../src/shared/ai-presets'
+} from '../src/compatibility/shared/ai-presets'
+import { readCliProxyToken } from '../src/main/lib/cliproxy'
 
 const fixture = () => {
   const home = mkdtempSync(join(tmpdir(), 'vidbee-cliproxy-'))

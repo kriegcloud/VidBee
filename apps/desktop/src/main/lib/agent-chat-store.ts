@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import type { Database } from 'better-sqlite3'
+import { sanitizeAgentConversationTitle } from '../../compatibility/shared/agent-history'
+import { durableAgentEvent } from '../../compatibility/shared/agent-thread-patch'
 import type {
   AgentArtifact,
   AgentChatRun,
   AgentRunEvent,
   AgentThread
 } from '../../shared/agent-chat'
-import { sanitizeAgentConversationTitle } from '../../shared/agent-history'
-import { durableAgentEvent } from '../../shared/agent-thread-patch'
 import { agentDirectoryMeta, readDirectoryThreads, readPromptThreadView } from './agent-directory'
 import { agentSavePlan, publicAgentPatch, publicAgentThread } from './agent-run-event'
 import type { SessionEntry } from './agent-session-types'

@@ -1,9 +1,12 @@
 import { Button } from '@renderer/components/ui/button'
 import { openSettingsTab } from '@renderer/lib/settings-navigation'
-import { aiPromptErrorNeedsProviderSettings, isIncompleteAiStreamError } from '@shared/ai-run'
 import type { AiPromptErrorCode } from '@shared/ai-types'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
+import {
+  aiPromptErrorNeedsProviderSettings,
+  isIncompleteAiStreamError
+} from '../../../../compatibility/shared/ai-run'
 
 const GUIDE_KEY: Record<AiPromptErrorCode, string> = {
   'sign-in-required': 'transcript.promptGuide.signInRequired',

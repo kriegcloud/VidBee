@@ -8,9 +8,9 @@ import {
   agentAiSettingsSchema,
   agentSettingsSchema,
   agentTtsModelSchema
-} from '../../shared/agent-settings'
-import { AI_PROVIDER_PRESETS, getAiProviderPreset } from '../../shared/ai-presets'
-import { mediaTransformSchema } from '../../shared/media-transform'
+} from '../../compatibility/shared/agent-settings'
+import { AI_PROVIDER_PRESETS, getAiProviderPreset } from '../../compatibility/shared/ai-presets'
+import { mediaTransformSchema } from '../../compatibility/shared/media-transform'
 import { settingsManager } from '../settings'
 import { isOutsideDownloadPath } from './agent-tool-approval'
 import { ffmpegManager } from './ffmpeg-manager'

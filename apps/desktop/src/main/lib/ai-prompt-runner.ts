@@ -9,8 +9,8 @@ import {
 } from '@earendil-works/pi-ai'
 import { stream, streamSimple } from '@earendil-works/pi-ai/compat'
 import { BrowserWindow } from 'electron'
-import { aiProviderNeedsApiKey } from '../../shared/ai-presets'
-import { resolveAiPromptContent } from '../../shared/ai-prompts'
+import { aiProviderNeedsApiKey } from '../../compatibility/shared/ai-presets'
+import { resolveAiPromptContent } from '../../compatibility/shared/ai-prompts'
 import {
   AI_PROMPT_RECOVERY_DELAYS_MS,
   classifyAiPromptError,
@@ -18,7 +18,7 @@ import {
   formatAiPromptError,
   idlePromptRunSnapshot,
   isRecoverableAiPromptError
-} from '../../shared/ai-run'
+} from '../../compatibility/shared/ai-run'
 import type {
   AiPromptErrorCode,
   AiPromptRunInput,

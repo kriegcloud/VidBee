@@ -64,7 +64,6 @@ import {
   upsertTranscriptAtom
 } from '@renderer/store/transcripts'
 import { buildPromptTranscriptText } from '@shared/ai-prompt-text'
-import { shareCardSourceByline } from '@shared/types/share-card'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { DragRegion, NoDrag } from '@vidbee/ui/components/ui/drag-region'
 import {
@@ -93,6 +92,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { type PanelImperativeHandle, useDefaultLayout, usePanelRef } from 'react-resizable-panels'
 import { toast } from 'sonner'
+import { shareCardSourceByline } from '../../../compatibility/shared/types/share-card'
 import {
   getCodecLabel,
   getFormatLabel,

@@ -2,14 +2,14 @@ import { open, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { nativeImage, nativeTheme } from 'electron'
 import { z } from 'zod'
-import { selectedAgentMessages } from '../../shared/agent-chat'
-import { artifactsForMessage } from '../../shared/agent-markdown'
-import { aiPromptLabel } from '../../shared/ai-prompts'
+import { artifactsForMessage } from '../../compatibility/shared/agent-markdown'
+import { aiPromptLabel } from '../../compatibility/shared/ai-prompts'
 import {
   type ShareCardPayload,
   shareCardSourceByline,
   sharePromptUserText
-} from '../../shared/types/share-card'
+} from '../../compatibility/shared/types/share-card'
+import { selectedAgentMessages } from '../../shared/agent-chat'
 import { getAgentChatStore } from '../lib/agent-chat-store'
 import { getPromptRunSnapshot } from '../lib/ai-prompt-runner'
 import { aiStore } from '../lib/ai-store'

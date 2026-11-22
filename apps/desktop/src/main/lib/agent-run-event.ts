@@ -1,22 +1,22 @@
-import type {
-  AgentCatalogNotice,
-  AgentThread,
-  AgentThreadPatch,
-  AgentThreadSummary
-} from '../../shared/agent-chat'
 import {
   agentConversationTitle,
   agentThreadIsRunning,
   agentThreadLatestRun,
   agentThreadNeedsApproval,
   agentThreadUpdatedAt
-} from '../../shared/agent-history'
+} from '../../compatibility/shared/agent-history'
 import {
   type AgentPersistScope,
   projectAgentPatch,
   projectAgentThread,
   selectedAgentRunView
-} from '../../shared/agent-thread-patch'
+} from '../../compatibility/shared/agent-thread-patch'
+import type {
+  AgentCatalogNotice,
+  AgentThread,
+  AgentThreadPatch,
+  AgentThreadSummary
+} from '../../shared/agent-chat'
 import { agentActivity } from './agent-activity'
 import { peekDesktopTaskQueueRef } from './queue-ref'
 

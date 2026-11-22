@@ -6,7 +6,7 @@ import {
 } from '@vidbee/task-queue-legacy'
 import { Type } from 'typebox'
 import { z } from 'zod'
-import { agentTaskParameters } from '../../shared/agent-task'
+import { agentTaskParameters } from '../../compatibility/shared/agent-task'
 import { createAgentCapabilityTools } from './agent-capability-tools'
 import { type AgentToolContext, defineAgentTool } from './agent-tools'
 

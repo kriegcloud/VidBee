@@ -1,33 +1,169 @@
-import type { CookieSiteMatch, NetscapeCookieInput } from '@vidbee/downloader-core/cookie-setup'
+import { CookieSiteMatch, NetscapeCookieInput } from '@vidbee/downloader-core/Cookie.model'
+import { $DesktopId } from '@vidbee/identity/packages'
+import { LiteralKit } from '@vidbee/schema/LiteralKit'
+import * as S from 'effect/Schema'
+
+const $I = $DesktopId.create('shared/extension-cookies')
 
 /** Remembered browser profiles in cookie priority order, without credentials. */
-export interface ExtensionCookieSourcePreference {
-  id: string
-  browser: string
-  /** Derived from the trusted extension origin; older records are filled on reconnect. */
-  variant?: 'dev' | 'store'
-  /** Last successful handshake, persisted without writing on every heartbeat. */
-  lastConnectedAt?: number
-}
+const ExtensionCookieSourcePreferenceFields = S.Struct({
+  id: S.String.pipe(S.mutableKey),
+  browser: S.String.pipe(S.mutableKey),
+  variant: LiteralKit(['dev', 'store']).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  lastConnectedAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ExtensionCookieSourcePreferenceFields', {
+    description: 'Shared ExtensionCookieSourcePreferenceFields schema used by the boundary models.'
+  })
+)
+
+/** ExtensionCookieSourcePreference shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ExtensionCookieSourcePreference input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ExtensionCookieSourcePreference } from './extension-cookies.js'
+ * strictEqual(S.is(ExtensionCookieSourcePreference)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ExtensionCookieSourcePreference: S.Codec<
+  typeof ExtensionCookieSourcePreferenceFields.Type,
+  typeof ExtensionCookieSourcePreferenceFields.Encoded
+> = S.StructWithRest(ExtensionCookieSourcePreferenceFields, [S.Record(S.String, S.Unknown)]).pipe(
+  $I.annoteSchema('ExtensionCookieSourcePreference', {
+    description: 'ExtensionCookieSourcePreference shared boundary data.'
+  })
+)
+/** Decoded mutable ExtensionCookieSourcePreference data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the ExtensionCookieSourcePreference contract)
+ *
+ * ```ts
+ * import { ExtensionCookieSourcePreference } from './extension-cookies.js'
+ * void ExtensionCookieSourcePreference
+ * ```
+ *
+ */
+export type ExtensionCookieSourcePreference = typeof ExtensionCookieSourcePreference.Type
 
 /** One remembered extension, retained in Settings even while it is offline. */
-export interface ExtensionCookieSource extends ExtensionCookieSourcePreference {
-  /** Older clients identify the browser instead of an individual extension installation. */
-  legacy?: boolean
-  connected: boolean
-  lastSeenAt?: number
-  sites: CookieSiteMatch[]
-}
+/** ExtensionCookieSource shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ExtensionCookieSource input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ExtensionCookieSource } from './extension-cookies.js'
+ * strictEqual(S.is(ExtensionCookieSource)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ExtensionCookieSource = S.Struct({
+  ...ExtensionCookieSourcePreferenceFields.fields,
+  ...S.Struct({
+    legacy: S.Boolean.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    connected: S.Boolean.pipe(S.mutableKey),
+    lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+    sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey)
+  }).fields
+}).pipe(
+  $I.annoteSchema('ExtensionCookieSource', {
+    description: 'ExtensionCookieSource shared boundary data.'
+  })
+)
+/** Decoded mutable ExtensionCookieSource data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the ExtensionCookieSource contract)
+ *
+ * ```ts
+ * import { ExtensionCookieSource } from './extension-cookies.js'
+ * void ExtensionCookieSource
+ * ```
+ *
+ */
+export type ExtensionCookieSource = typeof ExtensionCookieSource.Type
 
 /** Live browser-extension cookie bridge shown on the cookies settings page. */
-export interface ExtensionCookieConnection {
-  connected: boolean
-  browser?: string
-  lastSeenAt?: number
-  sites: CookieSiteMatch[]
-  activeSourceId?: string
-  sources: ExtensionCookieSource[]
-}
+/** ExtensionCookieConnection shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ExtensionCookieConnection input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ExtensionCookieConnection } from './extension-cookies.js'
+ * strictEqual(S.is(ExtensionCookieConnection)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ExtensionCookieConnection = S.Struct({
+  connected: S.Boolean.pipe(S.mutableKey),
+  browser: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  lastSeenAt: S.Finite.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sites: S.Array(CookieSiteMatch).pipe(S.mutable, S.mutableKey),
+  activeSourceId: S.String.pipe(S.UndefinedOr, S.optionalKey, S.mutableKey),
+  sources: S.Array(ExtensionCookieSource).pipe(S.mutable, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ExtensionCookieConnection', {
+    description: 'ExtensionCookieConnection shared boundary data.'
+  })
+)
+/** Decoded mutable ExtensionCookieConnection data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the ExtensionCookieConnection contract)
+ *
+ * ```ts
+ * import { ExtensionCookieConnection } from './extension-cookies.js'
+ * void ExtensionCookieConnection
+ * ```
+ *
+ */
+export type ExtensionCookieConnection = typeof ExtensionCookieConnection.Type
 
 /** Cookie rows the extension posts back for one download URL. */
-export type ExtensionCookieRow = NetscapeCookieInput
+/** ExtensionCookieRow shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ExtensionCookieRow input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ExtensionCookieRow } from './extension-cookies.js'
+ * strictEqual(S.is(ExtensionCookieRow)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ExtensionCookieRow = NetscapeCookieInput.pipe(
+  $I.annoteSchema('ExtensionCookieRow', { description: 'ExtensionCookieRow shared boundary data.' })
+)
+/** Decoded mutable ExtensionCookieRow data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the ExtensionCookieRow contract)
+ *
+ * ```ts
+ * import { ExtensionCookieRow } from './extension-cookies.js'
+ * void ExtensionCookieRow
+ * ```
+ *
+ */
+export type ExtensionCookieRow = typeof ExtensionCookieRow.Type

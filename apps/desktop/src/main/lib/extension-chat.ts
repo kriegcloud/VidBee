@@ -2,15 +2,15 @@ import { randomBytes } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { extname } from 'node:path'
+import { isUuid } from '../../compatibility/shared/agent-history'
+import { selectedAgentRunView } from '../../compatibility/shared/agent-thread-patch'
+import { AI_CHAT_PROMPT_ID } from '../../compatibility/shared/ai-prompts'
 import {
   AGENT_MAX_MESSAGE_IMAGES,
   AGENT_THINKING_LEVELS,
   AGENT_WORKSPACE_ID
 } from '../../shared/agent-chat'
-import { isUuid } from '../../shared/agent-history'
-import { selectedAgentRunView } from '../../shared/agent-thread-patch'
 import { agentUiResponseSchema } from '../../shared/agent-ui'
-import { AI_CHAT_PROMPT_ID } from '../../shared/ai-prompts'
 import type { ExtensionChatCommand, ExtensionChatState } from '../../shared/extension-chat'
 import { resolveAgentArtifact } from './agent-artifacts'
 import {

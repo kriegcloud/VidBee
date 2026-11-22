@@ -1,4 +1,4 @@
-import type { ShareImageLayout } from '@shared/types/share-card'
+import type { ShareImageLayout } from '../../../compatibility/shared/types/share-card'
 
 interface Band {
   top: number

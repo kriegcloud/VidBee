@@ -1,5 +1,5 @@
+import { hasDisplayMetadata } from '../../compatibility/shared/utils/pending-download'
 import type { DownloadOptions } from '../../shared/types'
-import { hasDisplayMetadata } from '../../shared/utils/pending-download'
 import { buildVideoInfoDownloadMetadata } from '../../shared/utils/video-info-metadata'
 import { scopedLoggers } from '../utils/logger'
 import { fetchVideoInfo } from './yt-dlp-info'

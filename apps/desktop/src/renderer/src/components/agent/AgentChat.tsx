@@ -22,16 +22,8 @@ import {
   draftAgentImages,
   selectedAgentMessages
 } from '@shared/agent-chat'
-import { artifactsForMessage } from '@shared/agent-markdown'
 import type { AgentUiResponse } from '@shared/agent-ui'
-import {
-  AI_CHAT_PROMPT_ID,
-  AI_OVERVIEW_PROMPT_ID,
-  agentChatPrompt,
-  aiPromptDescription
-} from '@shared/ai-prompts'
 import type { AiPrompt } from '@shared/ai-types'
-import { sharePromptUserText } from '@shared/types/share-card'
 import { AgentChatComposer } from '@vidbee/ui/components/agent-chat-composer'
 import { useAgentMessageSend } from '@vidbee/ui/components/agent-message-send'
 import { AgentConversationLayout } from '@vidbee/ui/components/agent-workspace'
@@ -40,6 +32,14 @@ import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { artifactsForMessage } from '../../../../compatibility/shared/agent-markdown'
+import {
+  AI_CHAT_PROMPT_ID,
+  AI_OVERVIEW_PROMPT_ID,
+  agentChatPrompt,
+  aiPromptDescription
+} from '../../../../compatibility/shared/ai-prompts'
+import { sharePromptUserText } from '../../../../compatibility/shared/types/share-card'
 import { AgentUiProvider } from './AgentUiCards'
 import { ChatSuggestions } from './ChatSuggestions'
 

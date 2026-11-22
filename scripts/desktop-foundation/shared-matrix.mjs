@@ -14,12 +14,12 @@ export function sharedMatrixObservations() {
     {id:'g',name:'Name',modelId:'m8',presetId:'p|q',baseUrl:'url'},
     {id:'h',name:'Name',modelId:'m9',presetId:'p',baseUrl:'q|url'}]
   out.providers={input:providers,names:providers.map(groups.aiProviderName),groups:groups.groupAiProviders(providers),reverse:groups.groupAiProviders([...providers].reverse())}
-  out.providerCatalog=load('apps/desktop/src/shared/ai-presets.ts').AI_PROVIDER_PRESETS
-  const files=load('apps/desktop/src/shared/utils/download-file.ts')
+  out.providerCatalog=load('apps/desktop/src/compatibility/shared/ai-presets.ts').AI_PROVIDER_PRESETS
+  const files=load('apps/desktop/src/compatibility/shared/utils/download-file.ts')
   out.files=[]
   for(const title of ['Title','  ',''])for(const saved of [undefined,'','  ','Title.f123.mp4','Title.mp4'])for(const recorded of [undefined,'','/fixture/Title.mp4'])out.files.push({title,saved:saved??'<undefined>',recorded:recorded??'<undefined>',names:files.buildFileNameCandidates(title,'mp4',saved),paths:files.buildFilePathCandidates('/fixture',title,'mp4',saved,recorded)})
   class CalendarDate extends Date {setHours(...args){return this.setUTCHours(...args)}}
-  const history=sourceLoader({$glob:()=>({}),$Date:CalendarDate,$Intl:{DateTimeFormat:class extends Intl.DateTimeFormat{constructor(locale,options){super(locale,{...options,timeZone:'UTC'})}}}})('apps/desktop/src/shared/agent-history.ts')
+  const history=sourceLoader({$glob:()=>({}),$Date:CalendarDate,$Intl:{DateTimeFormat:class extends Intl.DateTimeFormat{constructor(locale,options){super(locale,{...options,timeZone:'UTC'})}}}})('apps/desktop/src/compatibility/shared/agent-history.ts')
   // Literal coordinates are independent of startOfLocalDay and grouping.
   const now=1583755200000,midnight=1583712000000
   const items=[0,-1,1,2,6,7,8].flatMap((days,index)=>[{id:`${index}a`,updatedAt:midnight-days*86400000},{id:`${index}b`,updatedAt:midnight-days*86400000}])
@@ -33,7 +33,7 @@ export function sharedMatrixObservations() {
     ['video-localization','subtitleExportInputSchema',{sourceKey:'fixture',format:'srt'}],['video-localization','dubbingInputSchema',{sourceKey:'fixture'}],
     ['tts-models','ttsModelIdSchema','unknown-family-v1']]
   for(const [file,name,valid] of definitions) {
-    const schema=load(`apps/desktop/src/shared/${file}.ts`)[name]
+    const schema=load(`apps/desktop/src/compatibility/shared/${file}.ts`)[name]
     assert(schema.safeParse(valid).success,`Missing accepted seed for ${name}`)
     const inputs=[undefined,null,false,0,'',{},valid,typeof valid==='object'?{...valid,unexpected:true}:'bad / id']
     if(name==='agentTaskSchema')inputs.push({kind:'conversion',parentId:'fixture',format:'mp4'},{kind:'transcription',parentId:'fixture'},{kind:'model-download',asrTier:'minimal'})

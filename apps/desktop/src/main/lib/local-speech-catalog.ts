@@ -10,7 +10,7 @@ import {
   type TtsModelDefinition,
   ttsModelFamily,
   ttsModelIdSchema
-} from '../../shared/tts-models'
+} from '../../compatibility/shared/tts-models'
 import snapshot from './tts-catalog.json'
 
 export interface SpeechAsset {

@@ -1,10 +1,10 @@
 import { createHash, randomBytes } from 'node:crypto'
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { isExtensionSourceUrl } from '../../shared/extension-source-url'
 import type {
   ExtensionTranscriptInput,
   ExtensionTranscriptSnapshot
-} from '../../shared/extension-transcript'
+} from '../../compatibility/shared/extension-transcript'
+import { isExtensionSourceUrl } from '../../shared/extension-source-url'
 import { applyExtensionCors, extensionRequestOrigin, replyExtensionJson } from './extension-origin'
 import { emptyCaptionSnapshot, extractRemoteCaptions } from './remote-captions'
 

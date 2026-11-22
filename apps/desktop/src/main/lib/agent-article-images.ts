@@ -1,6 +1,9 @@
 import type { AgentTool } from '@earendil-works/pi-agent-core'
+import {
+  bindArticleImageArtifacts,
+  unboundArticleImageTimes
+} from '../../compatibility/shared/agent-markdown'
 import type { AgentArtifact, AgentChatRun } from '../../shared/agent-chat'
-import { bindArticleImageArtifacts, unboundArticleImageTimes } from '../../shared/agent-markdown'
 
 /** Article body after capture, plus clocks that still have no exclusive frame. */
 export interface MaterializedArticleImages {

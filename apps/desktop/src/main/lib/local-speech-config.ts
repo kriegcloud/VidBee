@@ -1,6 +1,6 @@
 import { existsSync, lstatSync, readdirSync, readFileSync, realpathSync } from 'node:fs'
 import path from 'node:path'
-import { getTtsModel, type TtsModelId } from '../../shared/tts-models'
+import { getTtsModel, type TtsModelId } from '../../compatibility/shared/tts-models'
 
 export const REFERENCE_SAMPLE_RATE = 24_000
 export const REFERENCE_MAX_SECONDS = 30

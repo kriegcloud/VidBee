@@ -1,4 +1,4 @@
-import { encodeAgentError } from '../../shared/agent-errors'
+import { encodeAgentError } from '../../compatibility/shared/agent-errors'
 import { DEFAULT_WIRE_BUDGET, type WireBudget, wireUnits } from './agent-budget'
 
 /**

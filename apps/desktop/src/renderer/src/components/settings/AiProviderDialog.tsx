@@ -14,11 +14,6 @@ import { Label } from '@renderer/components/ui/label'
 import { ipcServices } from '@renderer/lib/ipc'
 import { cn } from '@renderer/lib/utils'
 import { type AgentThinkingLevel, PROVIDER_THINKING_EFFORT_LEVELS } from '@shared/agent-chat'
-import {
-  aiProviderNeedsApiKey,
-  aiProviderRequiresBaseUrl,
-  getAiProviderPreset
-} from '@shared/ai-presets'
 import { aiProviderName } from '@shared/ai-provider-groups'
 import type {
   AiProviderConfig,
@@ -37,6 +32,11 @@ import {
 import { Check, Loader2 } from 'lucide-react'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  aiProviderNeedsApiKey,
+  aiProviderRequiresBaseUrl,
+  getAiProviderPreset
+} from '../../../../compatibility/shared/ai-presets'
 import { AiProviderIcon } from './ai-provider-icon'
 
 /** Match Input / Test connection: same height, radius, border, and fill. */

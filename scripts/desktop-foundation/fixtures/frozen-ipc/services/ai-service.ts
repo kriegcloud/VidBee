@@ -1,0 +1,488 @@
+import { shell } from 'electron'
+import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
+import type {
+  AgentChatInput,
+  AgentImageUpload,
+  AgentThinkingLevel,
+  AgentThread,
+  AgentThreadSummary
+} from '../../shared-port/agent-chat'
+import { AI_PROVIDER_PRESETS } from '../../shared-port/ai-presets'
+import type {
+  AiPrompt,
+  AiPromptRunInput,
+  AiPromptRunSnapshot,
+  AiPromptWriteInput,
+  AiProviderPreset,
+  AiProviderPresetId,
+  AiProviderTestResult,
+  AiProviderWriteInput,
+  AiSettingsSnapshot
+} from '../../shared-port/ai-types'
+import type { GitHubSkillInstallInput, GitHubSkillSource } from '../../shared-port/skill-install'
+import { saveAgentArtifact } from '../../../../../apps/desktop/src/main/lib/agent-artifacts'
+import {
+  renameAgentThread as commitAgentThreadTitle,
+  getAgentThinkingOptions,
+  openAgentThread,
+  readAgentEvents,
+  removeAgentImage,
+  deleteAgentThread as removeAgentThread,
+  decideAgentTool as resolveAgentToolDecision,
+  selectAgentBranch,
+  selectAgentImages,
+  sendAgentMessage,
+  setAgentThinkingLevel,
+  createAgentThread as startBlankAgentThread,
+  stopAgentRun
+} from '../../../../../apps/desktop/src/main/lib/agent-chat-runner'
+import { getAgentComposerOptions, selectAgentComposerModel } from '../../../../../apps/desktop/src/main/lib/agent-composer'
+import { listAgentConversations } from '../../../../../apps/desktop/src/main/lib/agent-conversations'
+import { takeAgentNotificationTarget } from '../../../../../apps/desktop/src/main/lib/agent-notifications'
+import { parseAgentSkill } from '../../../../../apps/desktop/src/main/lib/agent-skill-document'
+import {
+  inspectGitHubSkills,
+  readGitHubSkill,
+  readSkillUpload
+} from '../../../../../apps/desktop/src/main/lib/agent-skill-install'
+import { readAgentUiTasks } from '../../../../../apps/desktop/src/main/lib/agent-ui-tasks'
+import {
+  type CatalogModelCapabilities,
+  type CatalogModelOption,
+  listCatalogModelOptions,
+  lookupCatalogModelCapabilities
+} from '../../../../../apps/desktop/src/main/lib/ai-model'
+import { getPromptRunSnapshot, startPromptRun, stopPromptRun } from '../../../../../apps/desktop/src/main/lib/ai-prompt-runner'
+import { testProviderConnection } from '../../../../../apps/desktop/src/main/lib/ai-provider-test'
+import { type AiRemoteModelsInput, listRemoteProviderModels } from '../../../../../apps/desktop/src/main/lib/ai-remote-models'
+import { aiStore } from '../../../../../apps/desktop/src/main/lib/ai-store'
+import { dislikeCloudResult } from '../../../../../apps/desktop/src/main/lib/cloud-device'
+import { loadCloudModels } from '../../../../../apps/desktop/src/main/lib/cloud-models'
+import { settingsManager } from '../../../../../apps/desktop/src/main/settings'
+
+/** Conversations with messages, newest first. */
+function listHistorySummaries(): AgentThreadSummary[] {
+  return listAgentConversations()
+}
+
+class AiService extends IpcService {
+  static readonly groupName = 'ai'
+
+  /** Read live public task facts for a bounded set of Agent card IDs. */
+  @IpcMethod()
+  getAgentUiTasks(_context: IpcContext, ids: string[]) {
+    return readAgentUiTasks(ids)
+  }
+
+  /** Consume the pending system notification click after the renderer mounts. */
+  @IpcMethod()
+  takeAgentNotificationTarget() {
+    return takeAgentNotificationTarget()
+  }
+
+  /** Read credential-free model menu options shared with the extension. */
+  @IpcMethod()
+  async getAgentComposerOptions() {
+    return await getAgentComposerOptions()
+  }
+
+  /** Apply a Composer model selection through the common Desktop settings service. */
+  @IpcMethod()
+  async selectAgentComposerModel(_context: IpcContext, value: string) {
+    await selectAgentComposerModel(value)
+  }
+
+  /** Synchronize the next-message effort without altering a reply already running. */
+  @IpcMethod()
+  setAgentThinkingLevel(
+    _context: IpcContext,
+    input: { threadId: string; level: AgentThinkingLevel }
+  ): AgentThread {
+    return setAgentThinkingLevel(input.threadId, input.level)
+  }
+
+  /** Load supported thinking levels without exposing provider credentials. */
+  @IpcMethod()
+  async getAgentThinkingOptions() {
+    return await getAgentThinkingOptions()
+  }
+
+  /** Load the persistent conversation for one video and agent. */
+  @IpcMethod()
+  getAgentThread(
+    _context: IpcContext,
+    input: { downloadId: string; promptId: string; threadId?: string }
+  ): AgentThread {
+    return openAgentThread(input.downloadId, input.promptId, input.threadId)
+  }
+
+  /** Start a blank Agent conversation in the workspace or on a library video. */
+  @IpcMethod()
+  createAgentThread(_context: IpcContext, input: { downloadId: string }): AgentThread {
+    return startBlankAgentThread(input.downloadId)
+  }
+
+  /** Submit a follow-up or regenerate one reply without overwriting its branch. */
+  @IpcMethod()
+  sendAgentMessage(_context: IpcContext, input: AgentChatInput): AgentThread {
+    return sendAgentMessage(input)
+  }
+
+  /** Resolve a pending management-tool approval from the activity rail. */
+  @IpcMethod()
+  decideAgentTool(
+    _context: IpcContext,
+    input: { threadId: string; toolCallId: string; approved: boolean; remember: boolean }
+  ): void {
+    resolveAgentToolDecision(input)
+  }
+
+  /** Import picked or pasted images before admitting a message. */
+  @IpcMethod()
+  async selectAgentImages(
+    _context: IpcContext,
+    threadId: string,
+    files?: AgentImageUpload[]
+  ): Promise<AgentThread> {
+    return await selectAgentImages(threadId, files)
+  }
+
+  /** Remove only an attachment that has not been sent in a user message. */
+  @IpcMethod()
+  async removeAgentImage(
+    _context: IpcContext,
+    input: { threadId: string; imageId: string }
+  ): Promise<AgentThread> {
+    return await removeAgentImage(input.threadId, input.imageId)
+  }
+
+  /** Cancel only the selected conversation's model and media work. */
+  @IpcMethod()
+  async stopAgentRun(_context: IpcContext, threadId: string): Promise<AgentThread | null> {
+    return await stopAgentRun(threadId)
+  }
+
+  /** Restore the conversation below the selected reply version. */
+  @IpcMethod()
+  selectAgentBranch(
+    _context: IpcContext,
+    input: { threadId: string; messageId: string }
+  ): AgentThread {
+    return selectAgentBranch(input.threadId, input.messageId)
+  }
+
+  /** Recover missed events and the current committed snapshot. */
+  @IpcMethod()
+  getAgentEvents(_context: IpcContext, input: { threadId: string; after: number }) {
+    return readAgentEvents(input.threadId, input.after)
+  }
+
+  /** List conversations with messages or selected image drafts. */
+  @IpcMethod()
+  listAgentHistory(_context: IpcContext): AgentThreadSummary[] {
+    return listHistorySummaries()
+  }
+
+  /** List every conversation on one video, including unused blank chats. */
+  @IpcMethod()
+  listAgentThreads(_context: IpcContext, input: { downloadId: string }): AgentThreadSummary[] {
+    return listAgentConversations(input.downloadId)
+  }
+
+  /** Rename a conversation tab without changing its messages. */
+  @IpcMethod()
+  renameAgentThread(
+    _context: IpcContext,
+    input: { threadId: string; title: string }
+  ): AgentThreadSummary[] {
+    commitAgentThreadTitle(input.threadId, input.title)
+    return listHistorySummaries()
+  }
+
+  /** Delete one conversation without removing its source video. */
+  @IpcMethod()
+  async deleteAgentThread(_context: IpcContext, threadId: string): Promise<AgentThreadSummary[]> {
+    await removeAgentThread(threadId)
+    return listHistorySummaries()
+  }
+
+  /** Export a selected attachment without accepting filesystem paths from the renderer. */
+  @IpcMethod()
+  async saveAgentArtifact(
+    _context: IpcContext,
+    input: { threadId: string; artifactId: string }
+  ): Promise<boolean> {
+    return await saveAgentArtifact(input.threadId, input.artifactId)
+  }
+
+  /**
+   * Return configured providers, the active provider, and prompts. API keys are omitted.
+   */
+  @IpcMethod()
+  getSnapshot(_context: IpcContext): AiSettingsSnapshot {
+    return aiStore.getSnapshot()
+  }
+
+  /**
+   * Return the built-in provider catalog for the settings grid.
+   */
+  @IpcMethod()
+  listPresets(_context: IpcContext): AiProviderPreset[] {
+    return [...AI_PROVIDER_PRESETS]
+  }
+
+  /**
+   * Fill the provider dialog from the pi-ai catalog, or null when the model id is unknown.
+   *
+   * @param input Provider preset and model id from the dialog.
+   */
+  @IpcMethod()
+  lookupCatalogModel(
+    _context: IpcContext,
+    input: { presetId: AiProviderPresetId; modelId: string }
+  ): CatalogModelCapabilities | null {
+    return lookupCatalogModelCapabilities(input)
+  }
+
+  /**
+   * List catalog models the provider dialog can pick or create from.
+   *
+   * @param presetId Built-in provider id from the dialog.
+   */
+  @IpcMethod()
+  listCatalogModels(_context: IpcContext, presetId: AiProviderPresetId): CatalogModelOption[] {
+    return listCatalogModelOptions(presetId)
+  }
+
+  /**
+   * List models the typed (or saved) key can see on the provider host.
+   *
+   * @param input Dialog credentials, including an optional saved provider id.
+   */
+  @IpcMethod()
+  async listRemoteModels(
+    _context: IpcContext,
+    input: AiRemoteModelsInput
+  ): Promise<CatalogModelOption[]> {
+    return await listRemoteProviderModels(input)
+  }
+
+  /**
+   * Create or update a provider from the shared dialog.
+   *
+   * @param input Dialog values, including an optional API key.
+   */
+  @IpcMethod()
+  upsertProvider(_context: IpcContext, input: AiProviderWriteInput): AiSettingsSnapshot {
+    aiStore.upsertProvider(input)
+    return aiStore.getSnapshot()
+  }
+
+  /**
+   * Delete a configured provider.
+   *
+   * @param id Provider id.
+   */
+  @IpcMethod()
+  deleteProvider(_context: IpcContext, id: string): AiSettingsSnapshot {
+    return aiStore.deleteProvider(id)
+  }
+
+  /**
+   * Enable the provider used for transcript prompts.
+   *
+   * @param id Provider id, or null to clear.
+   */
+  @IpcMethod()
+  setActiveProvider(_context: IpcContext, id: string | null): AiSettingsSnapshot {
+    return aiStore.setActiveProvider(id)
+  }
+
+  /** Advertise the current managed model catalog and server-owned billing rates. */
+  @IpcMethod()
+  async getCloudModels(_context: IpcContext) {
+    return await loadCloudModels()
+  }
+
+  /** Validate the chosen managed model against Cloud before persisting the selection. */
+  @IpcMethod()
+  async setCloudModel(_context: IpcContext, id: string): Promise<AiSettingsSnapshot> {
+    const catalog = await loadCloudModels()
+    if (!catalog.models.some((model) => model.id === id)) {
+      throw new Error('Cloud model is unavailable')
+    }
+    return aiStore.setCloudModel(id)
+  }
+
+  /**
+   * Create or update a prompt.
+   *
+   * @param input Skill metadata and instructions.
+   */
+  @IpcMethod()
+  upsertPrompt(_context: IpcContext, input: AiPromptWriteInput): AiPrompt {
+    return aiStore.upsertPrompt(input)
+  }
+
+  /** Create a personal copy of an official skill, retaining its complete supporting resources. */
+  @IpcMethod()
+  customizeSkill(_context: IpcContext, name: string): AiPrompt {
+    const skill = aiStore.getPrompt(name)
+    if (!skill?.isPreset) {
+      throw new Error('Unknown built-in skill')
+    }
+    return aiStore.upsertPrompt({
+      previousName: name,
+      name,
+      description: skill.description,
+      content: skill.content
+    })
+  }
+
+  /** Import a portable SKILL.md as a new general skill, without overwriting existing names. */
+  @IpcMethod()
+  importSkillDocument(_context: IpcContext, document: string): AiPrompt {
+    const skill = parseAgentSkill(document)
+    if (aiStore.getPrompt(skill.name)) {
+      throw new Error('A skill with this name already exists')
+    }
+    return aiStore.upsertPrompt({
+      name: skill.name,
+      description: skill.description,
+      content: skill.body,
+      frontmatter: skill.frontmatter
+    })
+  }
+
+  /** Import a document or ZIP with the same validated, atomic directory installation. */
+  @IpcMethod()
+  importSkillUpload(_context: IpcContext, input: { name: string; bytes: Uint8Array }): AiPrompt {
+    return aiStore.installSkill(readSkillUpload(input.name, input.bytes))
+  }
+
+  /** Find selectable skills in a public GitHub repository at a fixed commit. */
+  @IpcMethod()
+  async inspectGitHubSkills(_context: IpcContext, url: string): Promise<GitHubSkillSource> {
+    return await inspectGitHubSkills(url)
+  }
+
+  /** Install one selected GitHub skill with its scripts, references and assets. */
+  @IpcMethod()
+  async importGitHubSkill(_context: IpcContext, input: GitHubSkillInstallInput): Promise<AiPrompt> {
+    return aiStore.installSkill(await readGitHubSkill(input))
+  }
+
+  /** Change transcript auto-run without modifying skill availability or on-disk instructions. */
+  @IpcMethod()
+  setSkillAutoRun(
+    _context: IpcContext,
+    input: { name: string; autoRun: boolean }
+  ): AiSettingsSnapshot {
+    return aiStore.setSkillAutoRun(input.name, input.autoRun)
+  }
+
+  /** Change only whether a skill has a shortcut in the transcript sidebar. */
+  @IpcMethod()
+  setSkillTranscriptVisibility(
+    _context: IpcContext,
+    input: { name: string; showInTranscript: boolean }
+  ): AiSettingsSnapshot {
+    return aiStore.setSkillTranscriptVisibility(input.name, input.showInTranscript)
+  }
+
+  /** Export the selected document independently of transcript auto-run. */
+  @IpcMethod()
+  exportSkillDocument(_context: IpcContext, id: string): string {
+    return aiStore.exportSkillDocument(id)
+  }
+
+  /** Reveal only a registered skill folder or the managed skill library. */
+  @IpcMethod()
+  async openSkillDirectory(_context: IpcContext, id?: string): Promise<void> {
+    if (id && aiStore.getPrompt(id)?.isPreset) {
+      throw new Error('Built-in skills are read-only; create a custom copy first')
+    }
+    const error = await shell.openPath(aiStore.getSkillDirectory(id))
+    if (error) {
+      throw new Error(error)
+    }
+  }
+
+  /**
+   * Delete a prompt.
+   *
+   * @param id Prompt id.
+   */
+  @IpcMethod()
+  deletePrompt(_context: IpcContext, id: string): AiSettingsSnapshot {
+    return aiStore.deletePrompt(id)
+  }
+
+  /**
+   * Re-insert any missing built-in prompts.
+   */
+  @IpcMethod()
+  restoreDefaultPrompts(_context: IpcContext): AiSettingsSnapshot {
+    return aiStore.restoreDefaultPrompts()
+  }
+
+  /**
+   * Start a prompt run in the main process. Returns immediately; tokens arrive on `ai:prompt-run`.
+   *
+   * @param input Transcript text plus ids.
+   */
+  /** Record feedback for a result actually delivered by Cloud. */
+  @IpcMethod()
+  async dislikePrompt(_context: IpcContext, resultId: string): Promise<void> {
+    await dislikeCloudResult(resultId)
+  }
+
+  @IpcMethod()
+  startPrompt(_context: IpcContext, input: AiPromptRunInput): AiPromptRunSnapshot {
+    return startPromptRun({
+      ...input,
+      uiLanguage: input.uiLanguage || String(settingsManager.get('language') ?? 'en')
+    })
+  }
+
+  /**
+   * Abort an in-flight prompt. Leaving the transcript page does not abort it.
+   *
+   * @param input Download and prompt ids.
+   */
+  @IpcMethod()
+  stopPrompt(
+    _context: IpcContext,
+    input: { downloadId: string; promptId: string }
+  ): AiPromptRunSnapshot {
+    return stopPromptRun(input.downloadId, input.promptId)
+  }
+
+  /**
+   * Restore a run after the renderer remounts.
+   *
+   * @param input Download and prompt ids.
+   */
+  @IpcMethod()
+  getPromptRun(
+    _context: IpcContext,
+    input: { downloadId: string; promptId: string }
+  ): AiPromptRunSnapshot {
+    return getPromptRunSnapshot(input.downloadId, input.promptId)
+  }
+
+  /**
+   * Send a short ping with the dialog values so the user can check the model.
+   *
+   * @param input Dialog values, including an optional API key.
+   */
+  @IpcMethod()
+  async testProvider(
+    _context: IpcContext,
+    input: AiProviderWriteInput
+  ): Promise<AiProviderTestResult> {
+    return testProviderConnection(input)
+  }
+}
+
+export { AiService }

@@ -1,5 +1,8 @@
 import type { TranscriptSegmentView } from '@renderer/store/transcripts'
-import { buildExportUnits, type TranscriptExportUnit } from '@shared/transcript-export'
+import {
+  buildExportUnits,
+  type TranscriptExportUnit
+} from '../../../compatibility/shared/transcript-export'
 
 /** Two subtitle lines of Latin copy. */
 const MAX_LATIN_CUE_CHARS = 84

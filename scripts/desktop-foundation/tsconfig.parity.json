@@ -1,0 +1,36 @@
+{
+  "extends": "../../apps/desktop/tsconfig.node.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "typeRoots": [
+      "../../node_modules/@types"
+    ],
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@shared/*": [
+        "../../apps/desktop/src/shared/*"
+      ],
+      "@main/*": [
+        "../../apps/desktop/src/main/*"
+      ],
+      "@renderer/*": [
+        "../../apps/desktop/src/renderer/src/*"
+      ]
+    }
+  },
+  "include": [],
+  "files": [
+    "shared-type-parity.ts",
+    "../../node_modules/vite/client.d.ts",
+    "../../node_modules/electron-vite/node.d.ts"
+  ]
+}

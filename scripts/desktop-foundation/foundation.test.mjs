@@ -1,3 +1,5 @@
+import './shared-complete.test.mjs'
+import './shared-port.test.mjs'
 import { expect, it } from '@effect/vitest'
 import * as Effect from 'effect/Effect'
 import fs from 'node:fs'
