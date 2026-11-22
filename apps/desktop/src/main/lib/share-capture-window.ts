@@ -15,6 +15,9 @@ import {
   type ShareCaptureRenderMessage,
   type ShareCardPayload
 } from '../../compatibility/shared/types/share-card'
+import { failure as nativeCapacityFailure } from '../../renderer/src/transport/DocumentDelivery.errors'
+import { registerFoundationWindow } from '../legacy/foundation-windows'
+import type { NativeRetention } from '../NativeFoundation.model'
 import { scopedLoggers } from '../utils/logger'
 import { splitShareImage } from './share-image-split'
 
@@ -57,6 +60,7 @@ export interface ShareCaptureWindowLike {
 }
 
 export interface ShareCaptureDeps {
+  onWindowCreated?: (window: ShareCaptureWindowLike) => void
   BrowserWindow: new (options: object) => ShareCaptureWindowLike
   clipboard: { writeImage: (image: ShareCaptureImage) => void }
   ipcMain: {
@@ -343,6 +347,7 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
         backgroundThrottling: false
       }
     })
+    deps.onWindowCreated?.(window)
     window.webContents.setBackgroundThrottling(false)
     window.on('closed', () => {
       if (shareWindow === window) {
@@ -374,11 +379,12 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
    * @param payload Serializable card props.
    */
   const captureShareCardPngOnce = async (
-    payload: ShareCardPayload
+    payload: ShareCardPayload,
+    retention?: NativeRetention
   ): Promise<{ png: Buffer; layout: ShareCaptureReadyMessage['layout'] }> => {
     const window = await ensureShareCaptureWindow()
     try {
-      return await paintShareCapture(window, payload)
+      return await paintShareCapture(window, payload, retention)
     } finally {
       destroyShareCaptureWindow()
     }
@@ -392,7 +398,8 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
    */
   const paintShareCapture = async (
     window: ShareCaptureWindowLike,
-    payload: ShareCardPayload
+    payload: ShareCardPayload,
+    retention?: NativeRetention
   ): Promise<{ png: Buffer; layout: ShareCaptureReadyMessage['layout'] }> => {
     const requestId = nextRequestId
     nextRequestId += 1
@@ -407,6 +414,15 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
     const height = Math.ceil(size.height)
     const scaleValue = await window.webContents.executeJavaScript(DEVICE_PIXEL_RATIO_SCRIPT)
     const scaleFactor = typeof scaleValue === 'number' && scaleValue > 0 ? scaleValue : 1
+    // Charge raster strips, native images, stitching and PNG conversion before
+    // the first compositor/native allocation on the new RPC path. Legacy callers
+    // keep their established host-owned policy and do not supply this authority.
+    const pixelWidth = Math.round((width + 1) * scaleFactor),
+      pixelHeight = Math.round(height * scaleFactor)
+    const rasterBytes = pixelWidth * pixelHeight * 4 * 6 + 1024 * 1024
+    if (retention && !retention.reserve(rasterBytes)) {
+      throw nativeCapacityFailure('NativeCapacity')
+    }
     const maxCssEdge = shareCaptureMaxCssEdge(scaleFactor)
     const strips: ShareCaptureImage[] = []
     // Keep the compositor viewport stable; crop the last strip instead of resizing it.
@@ -457,8 +473,8 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
   }
 
   /** Capture a share card without overlapping another hidden-window export. */
-  const captureShareCard = (payload: ShareCardPayload) =>
-    serializeCapture(() => captureShareCardPngOnce(payload))
+  const captureShareCard = (payload: ShareCardPayload, retention?: NativeRetention) =>
+    serializeCapture(() => captureShareCardPngOnce(payload, retention))
 
   /** Export a single diagram using the same serialized private renderer and destroy it on every outcome. */
   const exportMermaidDiagram = (
@@ -492,8 +508,10 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
     })
 
   /** Capture a full poster without changing its original layout. */
-  const captureShareCardPng = async (payload: ShareCardPayload): Promise<Buffer> =>
-    (await captureShareCard(payload)).png
+  const captureShareCardPng = async (
+    payload: ShareCardPayload,
+    retention?: NativeRetention
+  ): Promise<Buffer> => (await captureShareCard(payload, retention)).png
 
   /** Capture and paginate the same rendered layout so page breaks cannot go stale. */
   const captureShareCardPages = async (
@@ -520,6 +538,14 @@ export const createShareCaptureHost = (deps: ShareCaptureDeps) => {
 
 const defaultHost = createShareCaptureHost({
   BrowserWindow,
+  onWindowCreated: (window) => {
+    const native = BrowserWindow.getAllWindows().find(
+      (candidate) => candidate.webContents === window.webContents
+    )
+    if (native) {
+      registerFoundationWindow(native.webContents, 'capture')
+    }
+  },
   clipboard: {
     writeImage: (image) => {
       if (!image.toPNG) {

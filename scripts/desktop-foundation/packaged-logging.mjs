@@ -23,10 +23,11 @@ export async function packagedLogging(owned,cdp,command) {
   // Capture the actual compiled encoder at the mounted renderer entrypoint.
   // This is an adapter seam, not a product API or a copied implementation.
   const archive=path.join(owned.build,'resources/app.asar')
-  const entry=asar.listPackage(archive).find(file=>file.includes('/renderer/assets/index-')&&file.endsWith('.js')&&asar.extractFile(archive,file.slice(1)).toString().includes('var encodeDesktopLog ='))
+  const entry=asar.listPackage(archive).find(file=>file.includes('/renderer/assets/')&&file.endsWith('.js')&&asar.extractFile(archive,file.slice(1)).toString().includes('var encodeDesktopLog ='))
   assert(entry,'Logging adapter needs updating: compiled encoder missing')
   const code=asar.extractFile(archive,entry.slice(1)).toString()
-  const offset=code.indexOf('(0, import_client.createRoot)(rootElement)')
+  const factory=code.indexOf('var makeDesktopDocument =');
+  const offset=factory>=0?factory:code.indexOf('(0, import_client.createRoot)(rootElement)')
   assert(offset>=0,'Logging adapter needs updating: renderer root missing')
   await command('Debugger.enable')
   const breakpoint=await command('Debugger.setBreakpointByUrl',{url:'vidbee://renderer/assets/'+path.basename(entry),lineNumber:code.slice(0,offset).split('\n').length-1})

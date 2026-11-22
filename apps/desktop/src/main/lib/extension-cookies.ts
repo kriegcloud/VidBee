@@ -19,7 +19,7 @@ import type {
   ExtensionCookieSourcePreference
 } from '../../shared/extension-cookies'
 import { VIDBEE_DEV_EXTENSION_ORIGIN } from '../../shared/extension-identity'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { applyExtensionCors, extensionRequestOrigin, replyExtensionJson } from './extension-origin'
 

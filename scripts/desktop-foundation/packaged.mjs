@@ -1,3 +1,4 @@
+import { captureRendererFoundation, packagedServices } from './packaged-services.mjs'
 import { packagedLogging } from './packaged-logging.mjs'
 import { launchOwned, stopOwned, descendantPid } from './owned-process.mjs'
 import { packagedControls } from './packaged-controls.mjs'
@@ -73,6 +74,13 @@ if (args.includes('--worker')) {
     finally { cdp.close(); control.close() }
     process.exit(0)
   }
+    if(path.basename(owned.run)==='restart') {
+      await captureRendererFoundation(owned,cdp,command)
+      const result=await cdp.evaluate('__services.clients.settings.getAll().then(value=>({theme:value.theme,retained:value.foundationRestart}))')
+      assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails))
+      assert.deepEqual(result.result.value,{theme:'dark',retained:{retained:['synthetic',7]}})
+      await fs.writeFile(path.join(owned.run,'new-client-restart-proof.json'),JSON.stringify({process:'restarted',read:result.result.value}))
+    }
   const rawPath = path.join(owned.run, args.includes('--portable') ? 'portable/Data/UserData/config.json' : 'userdata/config.json')
   const readRaw = async () => JSON.parse(await fs.readFile(rawPath, 'utf8'))
   const storage = { constructor: await readRaw() }
@@ -174,6 +182,12 @@ if (args.includes('--worker')) {
       return true
     })()`)
     if (restartWrite.exceptionDetails) throw new Error(JSON.stringify(restartWrite.exceptionDetails))
+    if(path.basename(owned.run)==='returning') {
+      await captureRendererFoundation(owned,cdp,command)
+      const result=await cdp.evaluate("__services.clients.settings.set('theme','dark').then(()=>__services.clients.settings.getAll()).then(value=>value.theme)")
+      assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));assert.equal(result.result.value,'dark')
+      await fs.writeFile(path.join(owned.run,'new-client-restart-proof.json'),JSON.stringify({process:'before-restart',written:result.result.value}))
+    }
     observations.screens = []
     for (const route of ['/settings', '/about']) {
       const screen = await cdp.evaluate(`(async () => {
@@ -252,6 +266,7 @@ if (args.includes('--worker')) {
     assert(!close.exceptionDetails)
     observations.minimizeClose = { nativeWindowInspection, minimized: minimize.result.value, closed: close.result.value }
     if (args.includes('--quit')) {
+      await fs.writeFile(path.join(owned.run,'services-proof.json'),JSON.stringify(await packagedServices(owned,cdp,command),null,2))
       const scheduled = await cdp.evaluate(`setTimeout(() => { void window.electron.ipcRenderer.invoke('app.quit') }, 25); true`)
       assert(!scheduled.exceptionDetails)
       const deadline = Date.now() + 15000

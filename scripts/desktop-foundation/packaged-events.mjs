@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict'
 import path from 'node:path'
 import * as asar from '@electron/asar'
-import { mainInspector } from './inspector.mjs'
+import { mainInspector, captureFoundationMain } from './inspector.mjs'
 import { setTimeout as delay } from 'node:timers/promises'
 // All implementation-dependent adapter knowledge lives here. Locator failures are
 // setup failures, never evidence that the characterized behavior changed.
 function showHomeLocator(archive) {
   const missing = detail => {throw new Error(`Show Home adapter needs updating: ${detail}`)}
   const rootBinding='(0, import_client.createRoot)(rootElement)'
-  const effectText='ipcEvents.on(APP_ICON_SHOW_HOME_CHANNEL'
+  const effectText='foundationEvents.on(APP_ICON_SHOW_HOME_CHANNEL'
   for(const file of asar.listPackage(archive).filter(file=>file.includes('/renderer/assets/index-')&&file.endsWith('.js'))) {
     const code=asar.extractFile(archive,file.slice(1)).toString(),offset=code.indexOf(rootBinding)
     if(offset<0)continue
     if(!code.includes(effectText))missing('consumer effect locator missing')
-    return {entry:file,line:code.slice(0,offset).split('\n').length-1,effectText,capture:'globalThis.__foundationClient=import_client;true',pause:pending=>Promise.race([pending,delay(10000).then(()=>missing('renderer breakpoint not reached'))]),missing}
+    return {entry:file,line:code.slice(0,offset).split('\n').length-1,effectText,capture:'globalThis.__foundationClient=import_client;globalThis.__foundationClients=foundationClients;globalThis.__foundationDocument=getDesktopDocument();true',pause:pending=>Promise.race([pending,delay(10000).then(()=>missing('renderer breakpoint not reached'))]),missing}
   }
   return missing('renderer root binding missing')
 }
@@ -22,10 +22,11 @@ export async function packagedEvents(owned,cdp,command) {
   const run=async expression=>{const result=await main.evaluate(expression);assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
   const renderer=async expression=>{const result=await cdp.evaluate(expression);assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value}
   const electron="process.mainModule.require('electron')"
-  const send=async(channel,value)=>run(`${electron}.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().startsWith('vidbee://renderer')).webContents.send(${JSON.stringify(channel)},${JSON.stringify(value)})`)
+  const send=async(channel,value)=>run(`(()=>{const contents=${electron}.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().startsWith('vidbee://renderer')).webContents;contents.send(${JSON.stringify(channel)},${JSON.stringify(value)});__foundationNative.events[${JSON.stringify(channel==='app:show-home'?'home':'kernel')}].publish(String(contents.id),${channel==='app:show-home'?'undefined':JSON.stringify(value)});return true})()`)
   try {
     // React's commit hook exposes the actual mounted AppLayout effect. Gate only
     // its setup/cleanup boundaries; never replace its callback or navigation code.
+    await captureFoundationMain(main,()=>renderer("window.electron.ipcRenderer.invoke('app.getVersion')"))
     const locator=showHomeLocator(path.join(owned.build,'resources/app.asar'))
     await command('Page.enable')
     const hook=await command('Page.addScriptToEvaluateOnNewDocument',{source:`
@@ -89,18 +90,23 @@ export async function packagedEvents(owned,cdp,command) {
     const newLiveRoute=await renderer('location.hash');assert.equal(newLiveRoute,'#/')
     // Interpose only the owned main host's snapshot completion. The actual packaged
     // preload, IPC invocation, renderer hook, atom and KernelGate still execute.
-    await run(`globalThis.__foundationIpc=${electron}.ipcMain;globalThis.__foundationOldStatus=__foundationIpc._invokeHandlers.get('app.getYtDlpKernelStatus');__foundationIpc.removeHandler('app.getYtDlpKernelStatus');__foundationIpc.handle('app.getYtDlpKernelStatus',()=>new Promise(resolve=>{globalThis.__foundationStatusResolve=resolve}));true`)
+    await command('Debugger.enable')
+    const kernelBreakpoint=await command('Debugger.setBreakpointByUrl',{url:'vidbee://renderer/assets/'+path.basename(locator.entry),lineNumber:locator.line})
+    const kernelPaused=command('$paused')
     await renderer('location.reload();true')
-    for(let i=0;i<100;i++){if(await run("typeof globalThis.__foundationStatusResolve==='function'"))break;await delay(50)}
+    const kernelFrame=await locator.pause(kernelPaused)
+    await command('Debugger.evaluateOnCallFrame',{callFrameId:kernelFrame.callFrames[0].callFrameId,expression:`globalThis.__foundationOldStatus=foundationClients.app.getYtDlpKernelStatus;foundationClients.app.getYtDlpKernelStatus=()=>new Promise((resolve,reject)=>{__foundationOldStatus().then(()=>{globalThis.__foundationStatusResolve=resolve},reject)});true`,returnByValue:true})
+    await command('Debugger.removeBreakpoint',{breakpointId:kernelBreakpoint.breakpointId});await command('Debugger.resume');await command('Debugger.disable')
+    for(let i=0;i<100;i++){if(await renderer("typeof globalThis.__foundationStatusResolve==='function'"))break;await delay(50)}
     const live={error:null,nodeVersion:'race-node',preparationStep:null,progress:null,ready:true,source:'bundled',state:'up-to-date',ytDlpVersion:'race-ytdlp'}
     const stale={error:'stale failure',nodeVersion:null,preparationStep:null,progress:null,ready:false,source:null,state:'unavailable',ytDlpVersion:null}
     await send('ytdlp-kernel:status',live);await delay(100)
-    await run(`__foundationStatusResolve(${JSON.stringify(stale)});true`);await delay(300)
+    await renderer(`__foundationStatusResolve(${JSON.stringify(stale)});true`);await delay(300)
     await renderer(`location.hash='/about';true`);await delay(500)
     const raced=await renderer(`({body:document.body.innerText,route:location.hash})`)
     assert(raced.body.includes('race-ytdlp'),'Stale snapshot replaced newer kernel event')
     assert(!raced.body.includes('stale failure'))
-    await run(`__foundationIpc.removeHandler('app.getYtDlpKernelStatus');__foundationIpc.handle('app.getYtDlpKernelStatus',__foundationOldStatus);true`)
+    // Reload restores the original client adapter after the controlled snapshot completion.
     await renderer('location.reload();true');await delay(1500)
     return {home:{beforeMount,slow,absent,resubscribed,liveRoute,beforeReload,afterReload,newLiveRoute},kernel:{live,stale,raced}}
   } finally {main.close()}

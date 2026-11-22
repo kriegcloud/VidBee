@@ -1,270 +1,199 @@
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { normalizeSubtitleLanguages } from '@vidbee/downloader-core/subtitle-languages'
-import { detectSystemProfile } from '@vidbee/i18n/legacy/system-locale'
-import { parseTranscriptionProvider } from '@vidbee/transcription/cloud'
-import { parseAsrTier } from '@vidbee/transcription-legacy'
-import { parseDownloadMirror } from '@vidbee/transcription-legacy/download-mirrors'
-import { app } from 'electron'
-import { parseTtsModelId } from '../compatibility/shared/tts-models'
-import { parseAgentPermissionMode } from '../shared/agent-permissions'
-import type { AppSettings } from '../shared/types'
-import { defaultSettings } from '../shared/types'
-import { shouldShowWhatsNew, WHATS_NEW_ID } from '../shared/whats-new'
-import { resolveStartupDownloadPath } from './lib/download-path-policy'
-import { readElectronLocaleHints } from './lib/system-locale'
-import {
-  getPortableDownloadsPath,
-  isPortableMode,
-  portableRoot,
-  previousPortableRoot,
-  rememberPortableRoot
-} from './portable'
-import { scopedLoggers } from './utils/logger'
+import { normalizeSubtitleLanguages } from "@vidbee/downloader-core/subtitle-languages";
+import { $DesktopId } from "@vidbee/identity/packages";
+import { DEFAULT_ASR_TIER, parseAsrTier } from "@vidbee/transcription/asr";
+import { parseTranscriptionProvider } from "@vidbee/transcription/cloud";
+import { DEFAULT_DOWNLOAD_MIRROR, parseDownloadMirror } from "@vidbee/transcription/download-mirrors";
+import * as A from "effect/Array";
+import * as Effect from "effect/Effect";
+import * as O from "effect/Option";
+import * as P from "effect/Predicate";
+import * as Result from "effect/Result";
+import * as S from "effect/Schema";
+import * as Str from "effect/String";
+import { RpcObserved } from "../renderer/src/transport/RpcObservation.model.js";
+import { parseAgentPermissionMode } from "../shared/agent-permissions.js";
+import { SettingsDecodeError } from "../shared/Settings.errors.js";
+import { projectSettings, SettingValue } from "../shared/Settings.model.js";
+import { DEFAULT_TTS_MODEL_ID, TtsModelId } from "../shared/Tts.model.js";
+import { WHATS_NEW_ID } from "../shared/whats-new.js";
+import type { SettingsOperations } from "./Settings.service.js";
+import type { SettingsStoreOperations } from "./SettingsStore.service.js";
 
-// Use require for electron-store to avoid CommonJS/ESM issues
-const ElectronStore = require('electron-store')
-// Access the default export
-const Store = ElectronStore.default || ElectronStore
+const $I = $DesktopId.create("main/settings");
+const tts = (value: unknown) => S.decodeUnknownOption(TtsModelId)(value).pipe(O.getOrElse(() => DEFAULT_TTS_MODEL_ID));
+const logError = (message: string, original: unknown) =>
+  Effect.logError(message, original).pipe(Effect.annotateLogs("electron-log.scope", "system"));
 
-const OLD_DEFAULT_DOWNLOAD_PATH = path.join(os.homedir(), 'Downloads')
-const ensureDirectoryExists = (dir: string) => {
-  try {
-    fs.mkdirSync(dir, { recursive: true })
-  } catch (error) {
-    scopedLoggers.system.error('Failed to ensure download directory:', error)
-  }
-}
-
-const resolveDefaultDownloadPath = () => {
-  if (isPortableMode) {
-    return getPortableDownloadsPath()
-  }
-
-  return path.join(os.homedir(), 'Downloads', 'VidBee')
-}
-
-const DEFAULT_DOWNLOAD_PATH = resolveDefaultDownloadPath()
-const REQUIRED_LAUNCH_AT_LOGIN = false
-
-/**
- * Resolve the electron-store JSON path used for app settings.
- *
- * @returns Absolute path, or null when Electron userData is unavailable.
+/** Implements normalization, startup repairs and persistence sequencing over qualified synchronous drivers. Building this service performs no host work; initialize runs at the original import-time point.
+ * **Example** (Use an injected settings implementation)
+ * ```ts
+ * import { makeSettings } from './settings.js'
+ * import type { SettingsStoreOperations } from './SettingsStore.service.js'
+ * export const readTheme = (store: SettingsStoreOperations) => makeSettings(store).get('theme')
+ * // initialize the implementation once, then execute reads with the current authority.
+ * ```
+ * @category constructors
+ * @since 0.0.0
  */
-const resolveSettingsStorePath = (): string | null => {
-  try {
-    return path.join(app.getPath('userData'), 'config.json')
-  } catch {
-    return null
-  }
-}
-
-class SettingsManager {
-  // biome-ignore lint/suspicious/noExplicitAny: electron-store requires dynamic import
-  private readonly store: any
-  private readonly hadExistingStore: boolean
-
-  constructor() {
-    const storePath = resolveSettingsStorePath()
-    this.hadExistingStore = Boolean(storePath && fs.existsSync(storePath))
-    this.store = new Store({
-      cwd: storePath ? path.dirname(storePath) : undefined,
-      defaults: {
-        ...defaultSettings,
-        downloadPath: DEFAULT_DOWNLOAD_PATH,
-        launchAtLogin: isPortableMode ? REQUIRED_LAUNCH_AT_LOGIN : defaultSettings.launchAtLogin
-      }
-    })
-    this.ensureDownloadDirectory()
-    this.ensureRequiredSettings()
-    this.acknowledgeFreshInstallWhatsNew()
-    rememberPortableRoot()
-  }
-
-  get<K extends keyof AppSettings>(key: K): AppSettings[K] {
-    if (isPortableMode && key === 'launchAtLogin') {
-      return REQUIRED_LAUNCH_AT_LOGIN as AppSettings[K]
-    }
-
-    if (key === 'asrTier') {
-      return parseAsrTier(this.store.get(key)) as AppSettings[K]
-    }
-
-    if (key === 'ttsModelId') {
-      return parseTtsModelId(this.store.get(key)) as AppSettings[K]
-    }
-
-    if (key === 'transcriptionProvider') {
-      return parseTranscriptionProvider(this.store.get(key)) as AppSettings[K]
-    }
-
-    if (key === 'downloadMirror') {
-      return parseDownloadMirror(this.store.get(key)) as AppSettings[K]
-    }
-
-    if (key === 'agentManagementTools') {
-      return parseAgentPermissionMode(this.store.get(key)) as AppSettings[K]
-    }
-
-    return this.store.get(key)
-  }
-
-  set<K extends keyof AppSettings>(key: K, value: AppSettings[K]): void {
-    if (isPortableMode && key === 'launchAtLogin') {
-      this.store.set(key, REQUIRED_LAUNCH_AT_LOGIN)
-      return
-    }
-
-    if (key === 'downloadPath' && typeof value === 'string') {
-      ensureDirectoryExists(value)
-    }
-    this.store.set(key, key === 'agentManagementTools' ? parseAgentPermissionMode(value) : value)
-  }
-
-  getAll(): AppSettings {
+export const makeSettings = (store: SettingsStoreOperations): SettingsOperations => {
+  const configuration = store.configuration;
+  const mkdir = (value: unknown) =>
+    store.mkdir(value).pipe(Effect.catch((error) => logError("Failed to ensure download directory:", error.original)));
+  const get = Effect.fn("Settings.get")(function* (key: string) {
+    const config = yield* configuration;
+    if (config.portable && key === "launchAtLogin") return false;
+    const value = yield* store.get(key);
+    if (key === "asrTier") return parseAsrTier(value, DEFAULT_ASR_TIER);
+    if (key === "ttsModelId") return tts(value);
+    if (key === "transcriptionProvider") return parseTranscriptionProvider(value);
+    if (key === "downloadMirror") return parseDownloadMirror(value, DEFAULT_DOWNLOAD_MIRROR);
+    if (key === "agentManagementTools") return parseAgentPermissionMode(value);
+    return value;
+  });
+  const set = Effect.fn("Settings.set")(function* (key: string, value: unknown) {
+    const config = yield* configuration;
+    if (config.portable && key === "launchAtLogin") return yield* store.set(key, false);
+    if (key === "downloadPath" && P.isString(value)) yield* mkdir(value);
+    yield* store.set(key, key === "agentManagementTools" ? parseAgentPermissionMode(value) : value);
+  });
+  const getAll = Effect.gen(function* () {
+    const config = yield* configuration;
+    const raw = yield* store.document;
+    const login = config.portable
+      ? false
+      : ((yield* store.document).launchAtLogin ?? config.effectiveDefaults.launchAtLogin);
+    const tier = parseAsrTier((yield* store.document).asrTier, DEFAULT_ASR_TIER);
+    const model = tts((yield* store.document).ttsModelId);
+    const provider = parseTranscriptionProvider((yield* store.document).transcriptionProvider);
+    const permission = parseAgentPermissionMode((yield* store.document).agentManagementTools);
+    const mirror = parseDownloadMirror((yield* store.document).downloadMirror, DEFAULT_DOWNLOAD_MIRROR);
     return {
-      ...defaultSettings,
-      downloadPath: DEFAULT_DOWNLOAD_PATH,
-      ...this.store.store,
-      launchAtLogin: isPortableMode
-        ? REQUIRED_LAUNCH_AT_LOGIN
-        : (this.store.store.launchAtLogin ?? defaultSettings.launchAtLogin),
-      asrTier: parseAsrTier(this.store.store.asrTier),
-      ttsModelId: parseTtsModelId(this.store.store.ttsModelId),
-      transcriptionProvider: parseTranscriptionProvider(this.store.store.transcriptionProvider),
-      agentManagementTools: parseAgentPermissionMode(this.store.store.agentManagementTools),
-      downloadMirror: parseDownloadMirror(this.store.store.downloadMirror)
-    }
-  }
-
-  /**
-   * On a first install, persist the UI language from OS language + timezone.
-   * Returning users keep the language they already chose.
-   */
-  applyFreshInstallLocale(): void {
-    if (this.hadExistingStore) {
-      return
-    }
-    const profile = detectSystemProfile(readElectronLocaleHints())
-    if (this.store.get('language') !== profile.language) {
-      this.store.set('language', profile.language)
-    }
-    scopedLoggers.system.info(
-      `Fresh install locale ${profile.language} (china mirrors ${profile.preferChina})`
-    )
-  }
-
-  setAll(settings: Partial<AppSettings>): void {
-    for (const [key, value] of Object.entries(settings)) {
-      if (isPortableMode && key === 'launchAtLogin') {
-        this.store.set(key, REQUIRED_LAUNCH_AT_LOGIN)
-        continue
-      }
-
-      if (key === 'downloadPath' && typeof value === 'string') {
-        ensureDirectoryExists(value)
-      }
-      this.store.set(
-        key as keyof AppSettings,
-        key === 'agentManagementTools' ? parseAgentPermissionMode(value) : value
-      )
-    }
-  }
-
-  reset(): void {
-    this.store.clear()
-    this.store.set({
-      ...defaultSettings,
-      downloadPath: DEFAULT_DOWNLOAD_PATH,
-      launchAtLogin: isPortableMode ? REQUIRED_LAUNCH_AT_LOGIN : defaultSettings.launchAtLogin
-    })
-  }
-
-  /**
-   * True when this returning user has not dismissed the current What's New card.
-   */
-  shouldPromptWhatsNew(): boolean {
-    return shouldShowWhatsNew({
-      isReturningUser: this.hadExistingStore,
-      lastSeenWhatsNew: this.get('lastSeenWhatsNew')
-    })
-  }
-
-  /**
-   * Persist that the current What's New card has been shown.
-   */
-  markWhatsNewSeen(): void {
-    this.set('lastSeenWhatsNew', WHATS_NEW_ID)
-  }
-
-  /**
-   * Stamp a fresh install so the first-run user is not treated as an updater later.
-   */
-  private acknowledgeFreshInstallWhatsNew(): void {
-    if (!this.shouldPromptWhatsNew()) {
-      this.markWhatsNewSeen()
-    }
-  }
-
-  private ensureDownloadDirectory(): void {
-    try {
-      const currentPath: string | undefined = this.store.get('downloadPath')
-      const normalizedDownloadPath = resolveStartupDownloadPath({
-        currentPath,
-        defaultPath: DEFAULT_DOWNLOAD_PATH,
-        oldDefaultPath: OLD_DEFAULT_DOWNLOAD_PATH,
-        portableMode: isPortableMode,
-        portableRoot,
-        previousPortableRoot
-      })
-
-      if (normalizedDownloadPath !== currentPath) {
-        this.store.set('downloadPath', normalizedDownloadPath)
-      }
-      ensureDirectoryExists(normalizedDownloadPath)
-    } catch (error) {
-      scopedLoggers.system.error('Failed to verify download directory:', error)
-    }
-  }
-
-  private ensureRequiredSettings(): void {
-    try {
-      const storedPermissionMode = this.store.get('agentManagementTools')
-      const permissionMode = parseAgentPermissionMode(storedPermissionMode)
-      if (storedPermissionMode !== permissionMode) {
-        this.store.set('agentManagementTools', permissionMode)
-      }
-      if (isPortableMode && this.store.get('launchAtLogin') !== REQUIRED_LAUNCH_AT_LOGIN) {
-        this.store.set('launchAtLogin', REQUIRED_LAUNCH_AT_LOGIN)
-      }
-      const storedTier = this.store.get('asrTier')
-      const parsedTier = parseAsrTier(storedTier)
-      if (storedTier !== parsedTier) {
-        this.store.set('asrTier', parsedTier)
-      }
-      const storedSubtitleLanguages = this.store.get('subtitleLanguages')
-      const parsedSubtitleLanguages = normalizeSubtitleLanguages(
-        Array.isArray(storedSubtitleLanguages)
-          ? storedSubtitleLanguages.filter(
-              (language): language is string => typeof language === 'string'
-            )
-          : undefined
-      )
+      ...config.effectiveDefaults,
+      ...raw,
+      launchAtLogin: login,
+      asrTier: tier,
+      ttsModelId: model,
+      transcriptionProvider: provider,
+      agentManagementTools: permission,
+      downloadMirror: mirror,
+    };
+  });
+  const shouldPromptWhatsNew = Effect.gen(function* () {
+    const config = yield* configuration;
+    const raw = yield* get("lastSeenWhatsNew");
+    const lastSeen = raw === null || raw === undefined ? "" : yield* store.trim(raw);
+    return lastSeen !== WHATS_NEW_ID && (P.isTruthy(lastSeen) || config.hadExistingStore);
+  });
+  const markWhatsNewSeen = set("lastSeenWhatsNew", WHATS_NEW_ID);
+  const ensureDownloadDirectory = Effect.gen(function* () {
+    const config = yield* configuration;
+    const current = yield* store.get("downloadPath");
+    let normalized: unknown = current;
+    if (!P.isTruthy(current) || current === config.oldDefaultDownloadPath) normalized = config.defaultDownloadPath;
+    else if (config.portable && P.isTruthy(config.previousPortableRoot)) {
+      const from = yield* store.resolve(config.previousPortableRoot);
+      const to = yield* store.resolve(current);
+      const relative = yield* store.relative(from, to);
       if (
-        !Array.isArray(storedSubtitleLanguages) ||
-        storedSubtitleLanguages.length !== parsedSubtitleLanguages.length ||
-        storedSubtitleLanguages.some(
-          (language, index) => language !== parsedSubtitleLanguages[index]
-        )
+        relative === "" ||
+        (P.isTruthy(relative) && !Str.startsWith("..")(relative) && !(yield* store.isAbsolute(relative)))
       ) {
-        this.store.set('subtitleLanguages', parsedSubtitleLanguages)
+        const suffix = yield* store.relative(config.previousPortableRoot, current);
+        normalized = yield* store.join(config.portableRoot, suffix);
       }
-    } catch (error) {
-      scopedLoggers.system.error('Failed to enforce required settings:', error)
     }
-  }
-}
-
-export const settingsManager = new SettingsManager()
+    if (normalized !== current) yield* store.set("downloadPath", normalized);
+    yield* mkdir(normalized);
+  }).pipe(Effect.catch((error) => logError("Failed to verify download directory:", error.original)));
+  const ensureRequiredSettings = Effect.gen(function* () {
+    const config = yield* configuration;
+    const storedPermission = yield* store.get("agentManagementTools");
+    const permission = parseAgentPermissionMode(storedPermission);
+    if (permission !== storedPermission) yield* store.set("agentManagementTools", permission);
+    if (config.portable && (yield* store.get("launchAtLogin")) !== false) yield* store.set("launchAtLogin", false);
+    const storedTier = yield* store.get("asrTier");
+    const tier = parseAsrTier(storedTier, DEFAULT_ASR_TIER);
+    if (storedTier !== tier) yield* store.set("asrTier", tier);
+    const languages = yield* store.get("subtitleLanguages");
+    const parsed = normalizeSubtitleLanguages(A.isArray(languages) ? A.filter(languages, P.isString) : undefined);
+    if (
+      !A.isArray(languages) ||
+      languages.length !== parsed.length ||
+      A.some(A.zip(languages, parsed), ([left, right]) => left !== right)
+    )
+      yield* store.set("subtitleLanguages", parsed);
+  }).pipe(Effect.catch((error) => logError("Failed to enforce required settings:", error.original)));
+  const initialize = Effect.gen(function* () {
+    yield* store.initialize;
+    yield* ensureDownloadDirectory;
+    yield* ensureRequiredSettings;
+    if (!(yield* shouldPromptWhatsNew)) yield* markWhatsNewSeen;
+    yield* store.marker;
+  });
+  const freshLocale = Effect.gen(function* () {
+    if ((yield* configuration).hadExistingStore) return;
+    const profile = yield* store.locale;
+    if ((yield* store.get("language")) !== profile.language) yield* store.set("language", profile.language);
+    yield* Effect.logInfo(`Fresh install locale ${profile.language} (china mirrors ${profile.preferChina})`).pipe(
+      Effect.annotateLogs("electron-log.scope", "system")
+    );
+  });
+  const setAll = Effect.fn("Settings.setAll")(function* (entries: ReadonlyArray<readonly [string, unknown]>) {
+    for (const [key, value] of entries) yield* set(key, value);
+  });
+  const reset = Effect.gen(function* () {
+    const config = yield* configuration;
+    yield* store.clear;
+    yield* store.replace(config.effectiveDefaults);
+  });
+  const view = Effect.gen(function* () {
+    const raw = yield* getAll;
+    const config = yield* configuration;
+    const result = projectSettings({ document: raw, defaults: config.effectiveDefaults });
+    if (Result.isFailure(result))
+      return yield* SettingsDecodeError.make({ operation: "getAll", issue: "Invalid effective settings defaults" });
+    if (result.success.invalidKeys.length > 0)
+      yield* Effect.logWarning("Invalid setting keys:", result.success.invalidKeys).pipe(
+        Effect.annotateLogs("electron-log.scope", "system")
+      );
+    return result.success.settings;
+  });
+  const getTyped = Effect.fn("Settings.getTyped")(function* (key: Parameters<SettingsOperations["getTyped"]>[0]) {
+    const raw = yield* get(key);
+    const config = yield* configuration;
+    // Type-side validation retains ordered unknown preference subgraphs.
+    const projected = projectSettings({
+      document: { ...config.effectiveDefaults, [key]: raw },
+      defaults: config.effectiveDefaults,
+    });
+    if (Result.isFailure(projected))
+      return yield* SettingsDecodeError.make({ operation: "get", issue: "Invalid effective settings defaults" });
+    if (projected.success.invalidKeys.length > 0)
+      yield* Effect.logWarning("Invalid setting keys:", [key]).pipe(
+        Effect.annotateLogs("electron-log.scope", "system")
+      );
+    return yield* S.decodeEffect(
+      SettingValue.pipe(
+        RpcObserved,
+        S.toType,
+        $I.annoteSchema("selectedValue", { description: "Selected normalized setting value." })
+      )
+    )(projected.success.settings[key]).pipe(
+      Effect.mapError(() => SettingsDecodeError.make({ operation: "get", issue: "Invalid normalized setting value" }))
+    );
+  });
+  return {
+    initialize,
+    get,
+    getAll,
+    set,
+    setAll,
+    reset,
+    freshLocale,
+    shouldPromptWhatsNew,
+    markWhatsNewSeen,
+    view,
+    getTyped,
+    setTyped: (updates) => setAll(A.map(updates, (update): readonly [string, unknown] => [update.key, update.value])),
+  };
+};

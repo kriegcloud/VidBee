@@ -541,6 +541,12 @@ export const measureValue = (input: unknown): number | undefined => {
       }
       return 128 + 4 * (value.length + escapes + 2) + measureFrame(value).utf8 + escapes + 2;
     }
+    if (P.isBigInt(value)) {
+      // Observation codecs preserve bigint as decimal text. Account for that
+      // temporary text as well as the retained native value, just as for strings.
+      const encoded = visit(value.toString(), ancestors, depth + 1);
+      return encoded === undefined ? undefined : 256 + encoded;
+    }
     if (value === null || value === undefined || P.isBoolean(value) || P.isNumber(value)) return 128;
     if (!P.isObjectOrArray(value) || ancestors.includes(value)) return undefined;
     let size = 256;

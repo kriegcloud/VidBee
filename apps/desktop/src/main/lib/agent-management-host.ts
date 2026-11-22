@@ -16,7 +16,7 @@ import {
   buildVideoFormatPreference
 } from '../../shared/utils/format-preferences'
 import { sanitizeFilenameTemplate } from '../download-engine/args-builder'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { isOutsideDownloadPath } from './agent-tool-approval'
 import { enqueueAsrModelDownload } from './asr-model-task'
 import { getDatabaseConnection } from './database'

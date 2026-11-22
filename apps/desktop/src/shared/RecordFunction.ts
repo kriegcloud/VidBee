@@ -17,13 +17,13 @@
 export const recordFunction = <A extends object, B>(
   body: (input: A) => B
 ): {
-  (): (input: A) => B
-  (input: A): B
+  (): (input: A) => B;
+  (input: A): B;
 } => {
-  function apply(): (input: A) => B
-  function apply(input: A): B
+  function apply(): (input: A) => B;
+  function apply(input: A): B;
   function apply(input?: A): B | ((input: A) => B) {
-    return input === undefined ? body : body(input)
+    return input === undefined ? body : body(input);
   }
-  return apply
-}
+  return apply;
+};

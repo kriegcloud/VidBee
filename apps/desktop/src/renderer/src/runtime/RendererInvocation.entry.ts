@@ -246,7 +246,7 @@ export const makeInvocationEntry = (runtime: ManagedRuntime.ManagedRuntime<never
  * @since 0.0.0
  */
 export const makeTransportFailureOwner = (registry: AtomRegistry.AtomRegistry) => {
-  const atom = Atom.make<O.Option<TransportFailure>>(O.none());
+  const atom = Atom.make<O.Option<TransportFailure>>(O.none()).pipe(Atom.keepAlive);
   let live = true;
   return {
     atom,

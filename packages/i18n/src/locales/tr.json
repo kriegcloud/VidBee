@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Birden fazla bağlantıyı aynı anda eklemek için Tek Tıkla İndirme'yi açın",
     "clickToCopy": "Ayrıntıları kopyalamak için tıklayın",
     "clipboardEmpty": "Pano boş",
+    "desktopConnectionLost": "Masaüstü uygulamasıyla bağlantı kesildi. Yeniden bağlanmak için bu pencereyi yeniden yükleyin.",
     "downloadFailed": "İndirme başarısız",
     "downloadNecessaryFilesFailed": "Gerekli dosyalar indirilemedi. Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.",
     "emptyUrl": "Lütfen URL girin",

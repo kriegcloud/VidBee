@@ -41,7 +41,7 @@ import {
   updateAgentProgressSpec
 } from '../../shared/agent-ui'
 import type { AiPrompt } from '../../shared/ai-types'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { type AgentArticleSection, writeSectionedArticle } from './agent-article'
 import { materializeAgentArticleImages, rejectUnboundArticleImages } from './agent-article-images'

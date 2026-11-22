@@ -1,6 +1,6 @@
-import { ipcServices } from '@renderer/lib/ipc'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { foundationClients } from '../lib/foundation'
 import { logger } from '../lib/logger'
 
 /**
@@ -52,7 +52,7 @@ export function useIpcExample() {
     setLoading(true)
     try {
       // Get platform info from app service
-      const platform = await ipcServices?.app.getPlatform()
+      const platform = await foundationClients.app.getPlatform()
       toast.success(`Platform: ${platform}`)
       return { platform }
     } catch (error) {
@@ -68,7 +68,7 @@ export function useIpcExample() {
   const getAppVersion = async () => {
     setLoading(true)
     try {
-      const version = await ipcServices?.app.getVersion()
+      const version = await foundationClients.app.getVersion()
       setResponse(`App Version: ${version}`)
       toast.success(`应用版本: ${version}`)
       return version
@@ -84,8 +84,8 @@ export function useIpcExample() {
   const getAppInfo = async () => {
     setLoading(true)
     try {
-      const version = await ipcServices?.app.getVersion()
-      const platform = await ipcServices?.app.getPlatform()
+      const version = await foundationClients.app.getVersion()
+      const platform = await foundationClients.app.getPlatform()
       const info = { name: 'VidBeep', version, platform }
       setResponse(`App: ${info.name} v${info.version} (${info.platform})`)
       toast.success(`应用: ${info.name} v${info.version}`)

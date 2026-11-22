@@ -2,7 +2,7 @@
   "sourceRevision": "aeb83777",
   "architectureApproval": "User-carried architect answers 2, 3, 4, 5 in this implementation continuation",
   "reviewStatus": "Independent implementation review is arranged by the orchestrator; this is not an attestation of that review.",
-  "structuralCount": 239,
+  "structuralCount": 243,
   "structuralSubjects": [
     {
       "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
@@ -11,7 +11,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "8380f703e58385837936c7b066622f14670dd473ec319bf6ba22e0cdaf6fd6fb"
+      "digest": "c99ced285c640030c5aa747a455ceed81d829dbc21cfe67c0cb4f7f1c1dc2090"
     },
     {
       "file": "apps/desktop/src/shared/AgentFailure.model.ts",
@@ -120,6 +120,42 @@
       "count": 1,
       "maximum": 1,
       "digest": "bb957deb0108b5c196206e5cbec142dd11a9f35d6c28ea08a60ceb3360e14107"
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "declaration": "AppInformation",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "4b8983691711bfe8cca2dbd39d769babc8724e49b790397cbd0e2d6584febe8a"
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "declaration": "DownloaderStatus",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "4b8983691711bfe8cca2dbd39d769babc8724e49b790397cbd0e2d6584febe8a"
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "declaration": "MessageBoxOptions",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "4b8983691711bfe8cca2dbd39d769babc8724e49b790397cbd0e2d6584febe8a"
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "declaration": "MessageBoxResult",
+      "construction": "structural for legacy construction",
+      "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
+      "count": 1,
+      "maximum": 1,
+      "digest": "4b8983691711bfe8cca2dbd39d769babc8724e49b790397cbd0e2d6584febe8a"
     },
     {
       "file": "apps/desktop/src/shared/BuiltinSkill.model.ts",
@@ -1973,7 +2009,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "63207abca086c3d9103378c6e72b8955df0a16f8977a1c439f5a0205fccb1aa0"
+      "digest": "f01713fd9b67f8b312502f50cae6b8a958e9c65ada9051db9638117ec15f4d46"
     },
     {
       "file": "apps/desktop/src/shared/types/mermaid-export.ts",
@@ -1982,7 +2018,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "63207abca086c3d9103378c6e72b8955df0a16f8977a1c439f5a0205fccb1aa0"
+      "digest": "f01713fd9b67f8b312502f50cae6b8a958e9c65ada9051db9638117ec15f4d46"
     },
     {
       "file": "apps/desktop/src/shared/types/player.ts",
@@ -2009,7 +2045,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2018,7 +2054,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2027,7 +2063,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2036,7 +2072,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2045,7 +2081,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2054,7 +2090,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2063,7 +2099,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2072,7 +2108,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/share-card.ts",
@@ -2081,7 +2117,7 @@
       "architectureDecision": "User-carried architect answer 2; foundation section 3 plain object APIs use structs",
       "count": 1,
       "maximum": 1,
-      "digest": "a6d70f27e23038b65aaef478b63ce7c466c90541c11a902712e5567a91a6f95d"
+      "digest": "70bbc990c930f1ec811bfbe0569ae98d705e5fd64e8ca5c083e378873503e2f1"
     },
     {
       "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
@@ -2812,8 +2848,7 @@
         "apps/desktop/src/main/lib/local-speech-config.ts",
         "apps/desktop/src/main/lib/local-speech-runtime.ts",
         "apps/desktop/src/main/lib/local-speech-worker.ts",
-        "apps/desktop/src/main/lib/video-dubbing.ts",
-        "apps/desktop/src/main/settings.ts"
+        "apps/desktop/src/main/lib/video-dubbing.ts"
       ],
       "originalSignatures": [
         "function ttsModelFamily(id: string): TtsFamily | null",
@@ -2870,7 +2905,7 @@
       "digest": "09ce3063c1447af1f4702b394b917bd43ca948dec707766aa28560ee9bf74f30",
       "consumers": [
         "apps/desktop/src/main/ipc/services/file-system-service.ts",
-        "apps/desktop/src/main/ipc/services/window-service.ts",
+        "apps/desktop/src/main/legacy/window-service.ts",
         "apps/desktop/src/main/lib/extension-chat-actions.ts",
         "apps/desktop/src/main/lib/share-capture-window.ts",
         "apps/desktop/src/main/lib/share-image-split.ts",
@@ -3614,8 +3649,7 @@
         "apps/desktop/src/main/lib/local-speech-config.ts",
         "apps/desktop/src/main/lib/local-speech-runtime.ts",
         "apps/desktop/src/main/lib/local-speech-worker.ts",
-        "apps/desktop/src/main/lib/video-dubbing.ts",
-        "apps/desktop/src/main/settings.ts"
+        "apps/desktop/src/main/lib/video-dubbing.ts"
       ],
       "tests": [
         "scripts/desktop-foundation/shared-complete.test.mjs",
@@ -3632,7 +3666,7 @@
       "digest": "09ce3063c1447af1f4702b394b917bd43ca948dec707766aa28560ee9bf74f30",
       "consumers": [
         "apps/desktop/src/main/ipc/services/file-system-service.ts",
-        "apps/desktop/src/main/ipc/services/window-service.ts",
+        "apps/desktop/src/main/legacy/window-service.ts",
         "apps/desktop/src/main/lib/extension-chat-actions.ts",
         "apps/desktop/src/main/lib/share-capture-window.ts",
         "apps/desktop/src/main/lib/share-image-split.ts",
@@ -3791,7 +3825,7 @@
       "decision": "D1",
       "deletionPhase": 10,
       "executable": true,
-      "digest": "224c0f39977e499873a27748566ae1112a14d26ad008b338331a7f204416b18c",
+      "digest": "be671e0d6a17653e9431f6325c43c7e9020f948e11181eba4cf806ae725d0e73",
       "consumers": [
         "scripts/desktop-foundation/fixtures/frozen-ipc/index.ts"
       ],
@@ -3911,7 +3945,7 @@
       "decision": "D1",
       "deletionPhase": 10,
       "executable": true,
-      "digest": "0a261c93eb4c7e6ffbdb7de5e19db500958edde2c56537b738347ab14cb0e276",
+      "digest": "18d207ce013669657eae23b6bb4e6ced0ea16e80c4ad6b31987ac1e2e5693eb6",
       "consumers": [
         "scripts/desktop-foundation/fixtures/frozen-ipc/index.ts"
       ],
@@ -3941,7 +3975,7 @@
       "decision": "D1",
       "deletionPhase": 10,
       "executable": true,
-      "digest": "79875025240efa6b5603e795e3732e1971ae6a9ab2b0cd8494625a4e2cf147e6",
+      "digest": "2b610f13245bf1960a4d34da2bbc647441d30327bac7e7b50b0613db0c92f863",
       "consumers": [
         "scripts/desktop-foundation/fixtures/frozen-ipc/index.ts"
       ],
@@ -5053,10 +5087,12 @@
       "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
       "digest": "45e90353fc28ec4d2d5754a52ca84ce96f7405ce3b529b2e7b133e2fe2b5e5fb",
       "consumers": [
+        "apps/desktop/src/main/FoundationHosts.driver.ts",
         "apps/desktop/src/main/config/logger-config.ts",
+        "apps/desktop/src/main/legacy/foundation-events.ts",
         "apps/desktop/src/main/logging/ElectronLog.driver.ts",
         "apps/desktop/src/preload/index.ts",
-        "apps/desktop/src/renderer/src/main.tsx",
+        "apps/desktop/src/renderer/src/legacy/document.ts",
         "apps/desktop/src/shared/logging/DesktopLog.service.ts",
         "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
         "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
@@ -5081,6 +5117,7 @@
       "file": "apps/desktop/src/shared/logging/DesktopLog.service.ts",
       "digest": "57ae4445ed74b6036420923c0c5be9cbc62afdb5eae496d7e6ea3da6106236cd",
       "consumers": [
+        "apps/desktop/src/main/legacy/foundation-runtime.ts",
         "apps/desktop/src/main/logging/ElectronLog.driver.ts",
         "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
         "apps/desktop/src/shared/logging/ForwardLogger.layer.ts"
@@ -5122,6 +5159,7 @@
       "consumers": [
         "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
         "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+        "apps/desktop/src/renderer/src/runtime/DesktopAtomRuntime.entry.ts",
         "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
         "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
         "scripts/desktop-foundation/logging-fix.test.mjs"
@@ -5145,6 +5183,7 @@
       "file": "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
       "digest": "bd52fc10938ef4b5b0a518a3a2763abca6372a32352e5c345a18e747a58d0533",
       "consumers": [
+        "apps/desktop/src/main/legacy/foundation-runtime.ts",
         "apps/desktop/src/main/logging/DesktopLogger.layer.ts",
         "apps/desktop/src/main/logging/ElectronLog.driver.ts",
         "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
@@ -5167,7 +5206,8 @@
       "digest": "5f3d7a11ea7215c3eed59c4967e45604435383dd4809f3a7e346537e32c06df4",
       "consumers": [
         "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
-        "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts"
+        "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+        "apps/desktop/src/renderer/src/runtime/DesktopAtomRuntime.entry.ts"
       ],
       "declarations": [
         "forwardingLogger"

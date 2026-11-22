@@ -19,7 +19,7 @@ import { agentDirectorySummary } from '../lib/agent-run-event'
 import { getPromptRunSnapshot, startPromptRun, stopPromptRun } from '../lib/ai-prompt-runner'
 import { getDesktopTaskQueue } from '../lib/task-queue-host'
 import { readTranscriptDetail } from '../lib/transcript-host'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { defineMcpTool, mcpId, mcpLimit, mcpOffset, mcpPage } from './tool'
 
 const threadSchema = z.object({ threadId: mcpId })

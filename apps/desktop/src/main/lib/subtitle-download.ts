@@ -2,7 +2,7 @@ import { open, rm } from 'node:fs/promises'
 import { resolveSubtitleLanguages } from '@vidbee/downloader-core/subtitle-languages'
 import { z } from 'zod'
 import { buildSrtDocument, buildVttDocument } from '../../shared/subtitle-export'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { libraryExportPath } from './library-export'
 import { extractRemoteCaptions } from './remote-captions'
 

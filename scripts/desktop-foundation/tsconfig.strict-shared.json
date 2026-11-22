@@ -89,6 +89,11 @@
     "../../node_modules/vite/client.d.ts",
     "../../apps/desktop/src/shared/Settings.model.ts",
     "../../apps/desktop/src/shared/Settings.errors.ts",
-    "../../apps/desktop/src/shared/Settings.rpc.ts"
+    "../../apps/desktop/src/shared/Settings.rpc.ts",
+    "../../apps/desktop/src/shared/App.model.ts",
+    "../../apps/desktop/src/shared/DesktopOperation.errors.ts",
+    "../../apps/desktop/src/shared/App.rpc.ts",
+    "../../apps/desktop/src/shared/Window.rpc.ts",
+    "../../apps/desktop/src/shared/Desktop.rpc.ts"
   ]
 }

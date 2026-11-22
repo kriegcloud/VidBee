@@ -1,7 +1,9 @@
 import type { YtDlpKernelStatus } from '@shared/types'
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
-import { ipcEvents, ipcServices } from '../lib/ipc'
+import { getDesktopDocument } from '../legacy/document'
+import { foundationClients, foundationEvents } from '../lib/foundation'
+import { projectFoundationAtom } from '../lib/foundation-state'
 import { logger } from '../lib/logger'
 
 export const initialYtDlpKernelStatus: YtDlpKernelStatus = {
@@ -15,7 +17,7 @@ export const initialYtDlpKernelStatus: YtDlpKernelStatus = {
   ytDlpVersion: null
 }
 
-export const ytdlpKernelStatusAtom = atom<YtDlpKernelStatus>(initialYtDlpKernelStatus)
+export const ytdlpKernelStatusAtom = projectFoundationAtom(getDesktopDocument().atoms.kernel)
 
 /**
  * Subscribe to kernel state before loading its snapshot and expose fatal retry.
@@ -37,8 +39,8 @@ export function useYtDlpKernelStatus(): {
       receivedLiveStatus = true
       setStatus(rawStatus as YtDlpKernelStatus)
     }
-    const listener = ipcEvents.on('ytdlp-kernel:status', handleStatus)
-    void ipcServices.app
+    const listener = foundationEvents.on('ytdlp-kernel:status', handleStatus)
+    void foundationClients.app
       .getYtDlpKernelStatus()
       .then((snapshot) => {
         if (!(disposed || receivedLiveStatus)) {
@@ -49,7 +51,7 @@ export function useYtDlpKernelStatus(): {
 
     return () => {
       disposed = true
-      ipcEvents.removeListener('ytdlp-kernel:status', listener)
+      foundationEvents.removeListener('ytdlp-kernel:status', listener)
     }
   }, [setStatus])
 
@@ -57,7 +59,7 @@ export function useYtDlpKernelStatus(): {
    * Retry local preparation and immediately store the returned snapshot.
    */
   const retry = useCallback(async (): Promise<void> => {
-    const nextStatus = await ipcServices.app.retryYtDlpKernelPreparation()
+    const nextStatus = await foundationClients.app.retryYtDlpKernelPreparation()
     setStatus(nextStatus)
   }, [setStatus])
 

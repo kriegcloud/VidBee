@@ -17,7 +17,7 @@ import { hydrateDownloadMetadata } from '../lib/download-metadata'
 import { historyManager } from '../lib/history-manager'
 import { subtitleDownloadSchema } from '../lib/subtitle-download'
 import { getDesktopTaskQueue } from '../lib/task-queue-host'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { defineMcpTool, mcpId, mcpLimit, mcpOffset, mcpPage, mcpWebUrl } from './tool'
 
 const downloadSchema = z.object({

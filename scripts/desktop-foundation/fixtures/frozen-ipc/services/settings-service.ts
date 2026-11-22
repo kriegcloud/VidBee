@@ -2,7 +2,7 @@ import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
 import type { AppSettings } from '../../shared-port/types'
 import { updateDesktopSettings } from '../../../../../apps/desktop/src/main/lib/settings-host'
 import { applyDesktopQueueConcurrency } from '../../../../../apps/desktop/src/main/lib/task-queue-host'
-import { settingsManager } from '../../../../../apps/desktop/src/main/settings'
+import { settingsManager } from '../../../../../apps/desktop/src/main/legacy/settings'
 import { applyAutoLaunchSetting } from '../../../../../apps/desktop/src/main/utils/auto-launch'
 import { applyDockVisibility } from '../../../../../apps/desktop/src/main/utils/dock'
 

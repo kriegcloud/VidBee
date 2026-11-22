@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "开启一键下载，即可一次添加多个链接",
     "clickToCopy": "点击复制详情",
     "clipboardEmpty": "剪贴板为空",
+    "desktopConnectionLost": "与桌面应用的连接已断开。请重新加载此窗口以重新连接。",
     "downloadFailed": "下载失败",
     "downloadNecessaryFilesFailed": "必要文件下载失败。请检查网络后再试",
     "emptyUrl": "请输入链接",

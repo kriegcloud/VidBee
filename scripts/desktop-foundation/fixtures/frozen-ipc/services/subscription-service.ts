@@ -15,7 +15,7 @@ import {
   projectSubscriptionForRenderer,
   removeDesktopSubscription
 } from '../../../../../apps/desktop/src/main/lib/subscriptions-host'
-import { settingsManager } from '../../../../../apps/desktop/src/main/settings'
+import { settingsManager } from '../../../../../apps/desktop/src/main/legacy/settings'
 
 interface CreateSubscriptionOptions extends SubscriptionDownloadPreferences {
   url: string

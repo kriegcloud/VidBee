@@ -1,7 +1,7 @@
 import { type TranslationDictionary, translationResources } from '@vidbee/i18n'
 import { normalizeLanguageCode } from '@vidbee/i18n/languages'
 import { app, BrowserWindow, dialog } from 'electron'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { peekDesktopTaskQueueRef } from './queue-ref'
 import {
   buildQuitConfirmCopy,

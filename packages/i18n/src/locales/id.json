@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Aktifkan Unduh Sekali Klik untuk menambahkan beberapa tautan sekaligus",
     "clickToCopy": "Klik untuk menyalin detail",
     "clipboardEmpty": "Clipboard kosong",
+    "desktopConnectionLost": "Koneksi ke aplikasi desktop terputus. Muat ulang jendela ini untuk terhubung kembali.",
     "downloadFailed": "Unduhan gagal",
     "downloadNecessaryFilesFailed": "Gagal mengunduh file yang diperlukan. Silakan periksa jaringan Anda dan coba lagi",
     "emptyUrl": "Silakan masukkan URL",

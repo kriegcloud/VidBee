@@ -1,6 +1,7 @@
 import log from '../utils/logger'
 import { stopAllAgentRuns } from './agent-chat-runner'
 import { stopAllPromptRuns } from './ai-prompt-runner'
+import { takeFoundationDisposal } from './foundation-disposal'
 import { allowAppQuit } from './quit-confirmation-host'
 import { stopDesktopInstagramProfileMappings } from './task-queue-host'
 import { takeTelemetryDisposal } from './telemetry-disposal'
@@ -40,6 +41,18 @@ const stopTelemetryBeforeQuit = (): Promise<void> | undefined => {
   })
 }
 
+const finishQuit = (): Promise<void> | undefined => {
+  const telemetry = stopTelemetryBeforeQuit()
+  if (telemetry) {
+    return telemetry
+  }
+  prepared = true
+  return undefined
+}
+const finishFoundation = (
+  foundation: (() => Promise<void>) | undefined
+): Promise<void> | undefined => (foundation ? foundation().then(finishQuit) : finishQuit())
+
 /** Stop AI work once before either normal quit or the updater closes windows. */
 export const prepareAppQuit = (): Promise<void> => {
   if (!preparation) {
@@ -54,12 +67,8 @@ export const prepareAppQuit = (): Promise<void> => {
           log.warn('Failed to stop AI work before quitting:', result.reason)
         }
       }
-      const telemetry = stopTelemetryBeforeQuit()
-      if (telemetry) {
-        return telemetry
-      }
-      prepared = true
-      return undefined
+      const foundation = takeFoundationDisposal()
+      return finishFoundation(foundation)
     })
   }
   return preparation
