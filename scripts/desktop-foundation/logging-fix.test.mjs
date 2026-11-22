@@ -18,7 +18,9 @@ vi.mock('electron-log/main', () => ({ default: new Proxy({}, { get(_target, key)
   if (key === 'scope') return scope => Object.fromEntries(['error','warn','info','verbose','debug','silly'].map(level => [level, (...args) => { host.calls.push({level,scope,args});host.native?.scope(scope)[level](...args) }]))
   return (...args) => { host.calls.push({level:key,scope:'',args});host.native?.[key](...args) }
 } }) }))
-import { encodeDesktopLog } from '../../apps/desktop/src/shared/logging/DesktopLogWire.driver.ts'
+import * as O from 'effect/Option'
+import { DesktopLogBudgets } from '../../apps/desktop/src/shared/logging/DesktopLogWire.model.ts'
+import { encodeDesktopLog, inspectDesktopLog, DesktopLogTruncation } from '../../apps/desktop/src/shared/logging/DesktopLogWire.driver.ts'
 const turns = async () => { for(let n=0;n<50;n++) await Promise.resolve() }
 function configuration(environment) {
   const consoleOutput=[], fileOutput=[], ipcOutput=[]
@@ -88,42 +90,132 @@ for(const failure of ['invalid-endpoint','acquisition'])it(`keeps the app loggin
     expect(host.calls.at(-1).args).toEqual(['app-still-running'])
   } finally {await runtime.dispose();for(const spy of spies)spy.mockRestore()}
 })
-for(const outcome of ['resolve','reject','timeout'])it(`prepares quit once with telemetry ${outcome}, then runs both cleanup listeners once`, async () => {
+for(const outcome of ['off','resolve','reject','throw','timeout','repeat-quit','during-disposal','late-reject'])it(`actual quit callbacks keep exact order with telemetry ${outcome}`, async () => {
   vi.useFakeTimers()
-  const trace=[];const app=new EventEmitter();let prepared,disposeCalls=0,otherCleanup=0,mainCleanup=0,quitCalls=0
-  let release
-  const pending=new Promise(resolve=>{release=resolve})
-  const dispose=()=>{disposeCalls++;trace.push('telemetry');return outcome==='resolve'?Promise.resolve():outcome==='reject'?Promise.reject(Error('DISPOSAL_HEADER_CANARY')):pending}
-  const log={warn:(...args)=>trace.push(['warn',...args]),info(){},transports:{console:{},file:{getFile:()=>({path:'/synthetic/main.log'})},ipc:{}},errorHandler:{startCatching(){}}}
-  const load=sourceLoader({electron:{app:Object.assign(app,{getVersion:()=> 'test'}),ipcMain:new EventEmitter()},$process:{env:{NODE_ENV:'production',VIDBEE_OTLP_ENABLED:'1',VIDBEE_OTLP_ENDPOINT:'http://127.0.0.1/unused'}},'@vidbee/logger/legacy':{initVidbeeLogger(){}},'../logging/ElectronLog.driver':{electronLog:log,receiveDesktopLog(){}},'../logging/DesktopLogging.entry':{createDesktopLogging:()=>({dispose})},'../utils/logger':log,'./quit-confirmation-host':{allowAppQuit:()=>trace.push('allow')},'./ai-prompt-runner':{stopAllPromptRuns:()=>{trace.push('prompts');return Promise.resolve()}},'./agent-chat-runner':{stopAllAgentRuns:()=>{trace.push('agents');return Promise.resolve()}},'./task-queue-host':{stopDesktopInstagramProfileMappings:()=>{trace.push('mappings');return Promise.resolve()}}})
-  const owner=load('apps/desktop/src/main/lib/app-quit.ts')
+  const trace=[],app=new EventEmitter(),ipcMain=new EventEmitter(),pending=Promise.withResolvers()
+  let disposeCalls=0,otherCleanup=0,mainCleanup=0,quitCalls=0
+  const dispose=()=>{disposeCalls++;trace.push('telemetry');if(outcome==='throw')throw Error('DISPOSAL_HEADER_CANARY');return outcome==='reject'?Promise.reject(Error('DISPOSAL_HEADER_CANARY')):['timeout','during-disposal','late-reject'].includes(outcome)?pending.promise:Promise.resolve()}
+  const log={initialize(){},error(){},warn:(...args)=>trace.push(['warn',...args]),info(){},transports:{console:{},file:{getFile:()=>({path:'/synthetic/main.log'})},ipc:{}},errorHandler:{startCatching(){}}}
+  const noop=()=>{}
+  const overrides={electron:{app:Object.assign(app,{isPackaged:true,getVersion:()=> 'test',getPath:()=>'/synthetic/profile',setPath:noop,setName:noop,commandLine:{appendSwitch:noop},requestSingleInstanceLock:()=>true,whenReady:()=>new Promise(()=>{})}),ipcMain,protocol:{registerSchemesAsPrivileged:noop},BrowserWindow:{getAllWindows:()=>[]}},$process:{argv:['fixture'],platform:'linux',on:noop,env:{NODE_ENV:'production',VIDBEE_OTLP_ENABLED:outcome==='off'?'0':'1',VIDBEE_OTLP_ENDPOINT:'http://127.0.0.1/unused'}},'@vidbee/logger/legacy':{initVidbeeLogger(){}},'../logging/ElectronLog.driver':{electronLog:log,receiveDesktopLog(){}},'../logging/DesktopLogging.entry':{createDesktopLogging:()=>({dispose})},'../utils/logger':log,'./quit-confirmation-host':{allowAppQuit:()=>trace.push('allow')},'./ai-prompt-runner':{stopAllPromptRuns:()=>{trace.push('prompts');return Promise.resolve()}},'./agent-chat-runner':{stopAllAgentRuns:()=>{trace.push('agents');return Promise.resolve()}},'./task-queue-host':{stopDesktopInstagramProfileMappings:()=>{trace.push('mappings');return Promise.resolve()}}}
+  const load=sourceLoader(overrides),owner=load('apps/desktop/src/main/lib/app-quit.ts')
   load('apps/desktop/src/main/config/logger-config.ts').configureLogger()
-  app.on('before-quit', event=>{if(!owner.isAppQuitPrepared()){event.preventDefault();if(!owner.isAppQuitting())prepared=owner.prepareAppQuit().then(()=>app.quit())}})
-  app.on('will-quit',()=>{mainCleanup++});app.on('will-quit',()=>{otherCleanup++})
+  Object.assign(overrides,{'./logging/ElectronLog.driver':{electronLog:log},'./config/logger-config':{configureLogger:noop},'./lib/app-quit':owner,'./lib/auth-client':{setupDesktopAuth:noop},'./lib/privileged-schemes':{installPrivilegedSchemeCollector:()=>noop},'./lib/ipc-coalescer':{createKeyedCoalescer:()=>({})},'./lib/quit-confirmation-host':{deferAppQuitIfNeeded:()=>false},'./lib/ytdlp-kernel-host':{stopYtDlpKernelService:()=>trace.push('kernel')},'./lib/download-facade':{downloadEngine:{on:noop,flushDownloadSession:()=>trace.push('session flush')}},'./lib/player-host':{stopPlayerHost:()=>trace.push('player')},'./lib/share-capture-window':{destroyShareCaptureWindow:()=>{mainCleanup++;trace.push('share window')}},'./tray':{destroyTray:()=>trace.push('tray')},'./local-api':{stopExtensionApiServer:()=>{trace.push('extension');return Promise.resolve()}},'./lib/subscriptions-host':{getDesktopSubscriptions:()=>({on:noop}),stopDesktopSubscriptions:()=>{trace.push('subscriptions');return Promise.resolve()}},$require:id=>id.startsWith('node:')||id.startsWith('@shared/')?undefined:{}})
+  sourceLoader(overrides)('apps/desktop/src/main/index.ts')
+  app.on('will-quit',()=>{otherCleanup++;trace.push('second cleanup')})
   app.quit=()=>{quitCalls++;let prevented=false;const event={preventDefault(){prevented=true}};app.emit('before-quit',event);if(!prevented)app.emit('will-quit',event)}
   try {
-    app.quit();await turns();if(outcome==='timeout'){expect(otherCleanup).toBe(0);await vi.advanceTimersByTimeAsync(2001)}
-    await prepared;await turns()
-    expect(disposeCalls).toBe(1);expect(mainCleanup).toBe(1);expect(otherCleanup).toBe(1);expect(quitCalls).toBe(2)
-    for(const step of ['allow','prompts','agents','mappings'])expect(trace.filter(value=>value===step)).toHaveLength(1)
-    expect(trace.indexOf('telemetry')).toBeGreaterThan(trace.indexOf('mappings'))
-    expect(JSON.stringify(trace)).not.toContain('DISPOSAL_HEADER_CANARY')
-  } finally {release();vi.useRealTimers()}
+    app.quit()
+    const preparation=owner.prepareAppQuit()
+    expect(owner.prepareAppQuit()).toBe(preparation)
+    if(outcome==='repeat-quit')app.quit()
+    await turns()
+    if(outcome==='during-disposal'){expect(disposeCalls).toBe(1);expect(mainCleanup).toBe(0);app.quit();expect(owner.prepareAppQuit()).toBe(preparation);pending.resolve()}
+    if(['timeout','late-reject'].includes(outcome)){expect(otherCleanup).toBe(0);await vi.advanceTimersByTimeAsync(2001)}
+    await preparation;await turns()
+    if(outcome==='late-reject'){pending.reject(Error('LATE_REJECTION_CANARY'));await turns()}
+    expect(disposeCalls).toBe(outcome==='off'?0:1);expect(mainCleanup).toBe(1);expect(otherCleanup).toBe(1);expect(quitCalls).toBe(['repeat-quit','during-disposal'].includes(outcome)?3:2)
+    expect(trace.filter(value=>typeof value==='string')).toEqual(['allow','prompts','agents','mappings',...(outcome==='off'?[]:['telemetry']),'kernel','session flush','player','share window','tray','extension','subscriptions','second cleanup'])
+    expect(JSON.stringify(trace)).not.toContain('DISPOSAL_HEADER_CANARY');expect(JSON.stringify(trace)).not.toContain('LATE_REJECTION_CANARY')
+    if(outcome==='late-reject')expect(trace.filter(Array.isArray)).toEqual([['warn','Desktop telemetry shutdown timed out; continuing quit.'],['warn','Desktop telemetry shutdown failed; continuing quit.']])
+  } finally {pending.resolve();vi.useRealTimers()}
 })
 
 it('validates graph references and preserves collision-shaped arguments and sparse arrays', () => {
   host.native=undefined;host.calls.length=0
   const sparse=[];sparse.length=3;sparse[2]='tail'
   const collision={format:'vidbee-log-graph/1',root:{_tag:'Reference',index:999},nodes:[]}
-  const error=new Error('outer',{cause:new Error('inner')});error.cause.back=error
+  const error=new TypeError('outer',{cause:new RangeError('inner')});error.stack='OUTER_COMPLETE_STACK\nframe-one\nframe-two';error.cause.stack='INNER_COMPLETE_STACK\nroot';error.cause.back=error
   const packet=encodeDesktopLog(DesktopLogEntry.make({level:'info',scope:'',args:[collision,sparse,error]}))
   receiveDesktopLog(structuredClone(packet))
   expect(host.calls).toHaveLength(1)
   const args=host.calls[0].args
   expect(args[0]).toEqual(collision);expect(args[1]).toHaveLength(3);expect(0 in args[1]).toBe(false);expect(args[1][2]).toBe('tail')
-  expect(args[2].cause.message).toBe('inner');expect(args[2].cause.back).toBe(args[2])
+  expect(args[2].cause.message).toBe('inner');expect(args[2].cause.back).toBe(args[2]);expect(args[2].name).toBe('TypeError');expect(args[2].stack).toBe(error.stack);expect(args[2].cause.name).toBe('RangeError');expect(args[2].cause.stack).toBe(error.cause.stack)
   expect(Object.getOwnPropertyDescriptor(args[2],'cause').enumerable).toBe(false)
   host.calls.length=0
   for(const malformed of [{...packet,root:{_tag:'Reference',index:999}}, {...packet,nodes:[{_tag:'Array',length:0,fields:[['length',true,{_tag:'Value',value:1}]]}]}])expect(()=>receiveDesktopLog(malformed)).not.toThrow()
   expect(host.calls).toEqual([])
+})
+
+function graphArray(length,key) {
+ return {format:'vidbee-log-graph/1',root:{_tag:'Reference',index:0},nodes:[
+  {_tag:'Record',fields:[['level',true,{_tag:'Value',value:'info'}],['scope',true,{_tag:'Value',value:''}],['args',true,{_tag:'Reference',index:1}]]},
+  {_tag:'Array',length,fields:key===undefined?[]:[[key,true,{_tag:'Value',value:'oversized'}]]}
+ ]}
+}
+for(const [label,create] of [
+ ['reviewer sparse 288-byte shape',()=>graphArray(200000)],
+ ['indexed-key growth',()=>graphArray(0,'200000')],
+ ['per-node array cap',()=>({...graphArray(0),nodes:[...graphArray(0).nodes,{_tag:'Array',length:1025,fields:[]}]})],
+ ['too many arguments',()=>graphArray(DesktopLogBudgets.maxArguments+1)],
+ ['huge string',()=>({level:'info',scope:'',args:['x'.repeat(DesktopLogBudgets.maxStringLength+1)]})],
+ ['deep nesting',()=>{let value='end';for(let i=0;i<DesktopLogBudgets.maxDepth+5;i++)value={child:value};return {level:'info',scope:'',args:[value]}}],
+ ['many small raw nodes',()=>({level:'info',scope:'',args:[Array.from({length:257},()=>({x:1}))]})],
+ ['many small wire nodes',()=>({...graphArray(0),nodes:[...graphArray(0).nodes,...Array.from({length:256},()=>({_tag:'Record',fields:[]}))]})],
+ ['aggregate fields',()=>({level:'info',scope:'',args:[Array.from({length:10},()=>Object.fromEntries(Array.from({length:220},(_,i)=>['k'+i,1])))]})],
+ ['aggregate payload',()=>({level:'info',scope:'',args:Array.from({length:8},()=> 'x'.repeat(DesktopLogBudgets.maxStringLength))})],
+ ['raw argument limit',()=>({level:'info',scope:'',args:Array(DesktopLogBudgets.maxArguments+1).fill(1)})],
+ ['raw array length',()=>({level:'info',scope:'',args:[Array(200000)]})],
+ ['throwing accessor',()=>Object.defineProperty({},'args',{enumerable:true,get(){throw Error('must never execute')}})],
+ ['wrong wire root',()=>({...graphArray(0),root:{_tag:'Value',value:{level:'info',scope:'',args:[]}}})],
+ ['wire chain depth',()=>{const packet=graphArray(1,'0');packet.nodes[1].fields=[['0',true,{_tag:'Reference',index:2}]];for(let i=0;i<40;i++)packet.nodes.push({_tag:'Record',fields:[['next',true,i===39?{_tag:'Value',value:'end'}:{_tag:'Reference',index:i+3}]]});return packet}],
+])it(`rejects ${label} before reconstruction with bounded work and no recursive diagnostic`,()=>{
+ host.native=undefined;host.calls.length=0
+ const input=create(),result=inspectDesktopLog(input)
+ if(label==='reviewer sparse 288-byte shape')expect(JSON.stringify(input)).toHaveLength(288)
+ expect(O.isNone(result.entry)).toBe(true)
+ expect(result.work.allocatedNodes).toBe(0);expect(result.work.allocatedSlots).toBe(0)
+ expect(result.work.inspected).toBeLessThanOrEqual(DesktopLogBudgets.maxInspectedValues+1)
+ expect(()=>receiveDesktopLog(input)).not.toThrow();expect(host.calls).toEqual([])
+})
+it('bounds aggregate array slots before allocation, even when each declared length fits',()=>{
+ const packet=graphArray(0)
+ for(let i=0;i<5;i++)packet.nodes.push({_tag:'Array',length:1024,fields:[]})
+ const result=inspectDesktopLog(packet)
+ expect(O.isNone(result.entry)).toBe(true);expect(result.work.allocatedNodes).toBe(0);expect(result.work.allocatedSlots).toBe(0)
+})
+it('sender visibly replaces every over-budget entry with a small admissible marker',()=>{
+ for(const args of [Array(65).fill(1),[Array(200000)],['x'.repeat(16385)],[Array.from({length:257},()=>({x:1}))],Array(8).fill('x'.repeat(16384))]){
+  const packet=encodeDesktopLog(DesktopLogEntry.make({level:'info',scope:'canary',args}))
+  const result=inspectDesktopLog(packet)
+  expect(O.isSome(result.entry)).toBe(true)
+  expect(result.entry.value.args).toEqual([DesktopLogTruncation])
+  expect(result.work.allocatedSlots).toBeLessThan(10)
+ }
+})
+it('does not invoke a sender accessor and still delivers one visible marker',async()=>{
+ let getterCalls=0,attempts=0
+ const value=Object.defineProperty({},'secret',{enumerable:true,get(){getterCalls++;throw Error('secret-canary')}})
+ host.native=undefined;host.calls.length=0
+ const runtime=createRendererLogger(packet=>{attempts++;receiveDesktopLog(packet)})
+ try {await runtime.runPromise(desktopLog(DesktopLogEntry.make({level:'info',scope:'',args:[value]})));expect(getterCalls).toBe(0);expect(attempts).toBe(1);expect(host.calls[0].args).toEqual([DesktopLogTruncation])}finally{await runtime.dispose()}
+})
+it('keeps trusted local native logging unbudgeted',async()=>{
+ host.native=undefined;host.calls.length=0
+ const runtime=createDesktopLogging(OtlpConfiguration.make({enabled:false,endpoint:'',version:''}))
+ const large='x'.repeat(DesktopLogBudgets.maxStringLength+1),args=Array(65).fill(large)
+ try{await runtime.runPromise(desktopLog(DesktopLogEntry.make({level:'info',scope:'local',args})));expect(host.calls).toHaveLength(1);expect(host.calls[0].args).toEqual(args)}finally{await runtime.dispose()}
+})
+
+it('rejects duplicate keys and nonenumerable schema fields cannot bypass preflight',()=>{
+ host.native=undefined;host.calls.length=0
+ const duplicate=graphArray(0)
+ duplicate.nodes.push({_tag:'Array',length:1024,fields:[]})
+ duplicate.nodes[0].fields.push(['args',true,{_tag:'Reference',index:2}])
+ const hiddenArgs=Object.defineProperty({level:'info',scope:''},'args',{value:['x'.repeat(16385)]})
+ const hiddenNodes=Object.defineProperty({format:'vidbee-log-graph/1',root:{_tag:'Reference',index:0}},'nodes',{value:Array(200000)})
+ const date=new Date(0);date.details='x'.repeat(16385)
+ for(const input of [duplicate,hiddenArgs,hiddenNodes,{level:'info',scope:'',args:[date]}]){
+  const result=inspectDesktopLog(input);expect(O.isNone(result.entry)).toBe(true);expect(result.work.allocatedNodes).toBe(0);expect(result.work.allocatedSlots).toBe(0);expect(()=>receiveDesktopLog(input)).not.toThrow()
+ }
+ expect(host.calls).toEqual([])
+})
+
+it('rejects an application Error.stack accessor without calling it',()=>{
+ host.native=undefined;host.calls.length=0;let calls=0
+ const error=Object.defineProperty(new Error('custom'),'stack',{get(){calls++;throw Error('GETTER_CANARY')}})
+ const packet=encodeDesktopLog(DesktopLogEntry.make({level:'info',scope:'',args:[error]}))
+ receiveDesktopLog(packet)
+ expect(calls).toBe(0);expect(host.calls).toHaveLength(1);expect(host.calls[0].args).toEqual([DesktopLogTruncation])
 })

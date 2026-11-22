@@ -7,9 +7,12 @@ import type { DesktopLogWire } from "../../shared/logging/DesktopLogWire.model.j
  * ```ts
  * import { createPreloadLogger } from "./PreloadLogger.entry.js"
  * import type { DesktopLogWire } from "../../shared/logging/DesktopLogWire.model.js"
+ * import * as Effect from "effect/Effect"
  * const entries: Array<DesktopLogWire> = []
- * const runtime = createPreloadLogger((entry) => { entries.push(entry) })
- * void runtime.dispose()
+ * const runtime = createPreloadLogger(entry => { entries.push(entry) })
+ * await runtime.runPromise(Effect.logInfo("ready"))
+ * console.assert(entries.length === 1)
+ * await runtime.dispose()
  * ```
  * @category runtime
  * @since 0.0.0

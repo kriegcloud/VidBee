@@ -15,8 +15,13 @@ import { DesktopLogSink } from "./DesktopLog.service.js";
  * **Example** (Install on an executing runtime)
  * ```ts
  * import { DesktopMinimumLogLevelLive } from "./DesktopLogger.layer.js"
- * const minimum = DesktopMinimumLogLevelLive
- * void minimum
+ * import { createRendererLogger } from "../../renderer/src/logging/RendererLogger.entry.js"
+ * import * as Effect from "effect/Effect"
+ * import * as References from "effect/References"
+ * import * as Layer from "effect/Layer"
+ * const runtime = createRendererLogger(() => {})
+ * console.assert(await runtime.runPromise(DesktopMinimumLogLevelLive.pipe(Layer.fresh, Layer.build, Effect.flatMap(context => Effect.provideContext(References.MinimumLogLevel, context)), Effect.scoped)) === "All")
+ * await runtime.dispose()
  * ```
  * @category layers
  * @since 0.0.0
@@ -67,9 +72,16 @@ const logger = Effect.map(DesktopLogSink, (sink) =>
  * ```ts
  * import { DesktopLoggerLive } from "./DesktopLogger.layer.js"
  * import { DesktopLogSink } from "./DesktopLog.service.js"
+ * import { createRendererLogger } from "../../renderer/src/logging/RendererLogger.entry.js"
+ * import * as Effect from "effect/Effect"
  * import * as Layer from "effect/Layer"
- * const live = DesktopLoggerLive.pipe(Layer.provide(Layer.succeed(DesktopLogSink, { emit: () => {} })))
- * void live
+ * const messages: Array<unknown> = []
+ * const live = DesktopLoggerLive.pipe(Layer.provide(Layer.succeed(DesktopLogSink, { emit: entry => { messages.push(...entry.args) } })))
+ * const runtime = createRendererLogger(() => {})
+ * // Isolate this sample from the owner's existing logger memoization.
+ * await runtime.runPromise(live.pipe(Layer.fresh, Layer.build, Effect.flatMap(context => Effect.provideContext(Effect.logInfo("ready"), context)), Effect.scoped))
+ * console.assert(messages[0] === "ready")
+ * await runtime.dispose()
  * ```
  * @category layers
  * @since 0.0.0
@@ -79,10 +91,19 @@ export const DesktopLoggerLive = Layer.mergeAll(Logger.layer([logger]), DesktopM
 /** Keep electron-log's level and scope while entering Effect logging.
  * **Example** (Log a verbose argument vector)
  * ```ts
- * import { desktopLog } from "./DesktopLogger.layer.js"
+ * import { desktopLog, DesktopLoggerLive } from "./DesktopLogger.layer.js"
  * import { DesktopLogEntry } from "./DesktopLog.model.js"
- * const log = desktopLog(DesktopLogEntry.make({ level: "verbose", scope: "engine", args: ["started", 2] }))
- * void log
+ * import { DesktopLogSink } from "./DesktopLog.service.js"
+ * import { createRendererLogger } from "../../renderer/src/logging/RendererLogger.entry.js"
+ * import * as Effect from "effect/Effect"
+ * import * as Layer from "effect/Layer"
+ * const seen: Array<DesktopLogEntry> = []
+ * const live = DesktopLoggerLive.pipe(Layer.provide(Layer.succeed(DesktopLogSink, { emit: entry => { seen.push(entry) } })))
+ * const runtime = createRendererLogger(() => {})
+ * // Isolate this sample from the owner's existing logger memoization.
+ * await runtime.runPromise(live.pipe(Layer.fresh, Layer.build, Effect.flatMap(context => Effect.provideContext(desktopLog(DesktopLogEntry.make({ level: "verbose", scope: "engine", args: ["started", 2] })), context)), Effect.scoped))
+ * console.assert(seen[0]?.level === "verbose" && seen[0]?.args[1] === 2)
+ * await runtime.dispose()
  * ```
  * @category logging
  * @since 0.0.0

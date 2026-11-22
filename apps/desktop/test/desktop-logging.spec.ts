@@ -221,11 +221,17 @@ it.layer(DesktopMainLoggerLive)((test) => {
         { name: "root", stack: () => "root-stack", parent: undefined },
         (parent, n) => ({ name: `frame-${n}`, stack: () => `full-stack-${n}`, parent })
       );
+      class ReasonNote extends Context.Service<ReasonNote, string>()("vidbee/test/desktop-logging.spec/ReasonNote") {}
       const cause = Cause.combine(
         Cause.combine(Cause.fail("failure"), Cause.die("defect")),
         Cause.interrupt(424242)
       ).pipe(
-        Cause.annotate(Context.make(Cause.StackTrace, chain).pipe(Context.add(Cause.InterruptorStackTrace, chain)))
+        Cause.annotate(
+          Context.make(Cause.StackTrace, chain).pipe(
+            Context.add(Cause.InterruptorStackTrace, chain),
+            Context.add(ReasonNote, "custom-reason")
+          )
+        )
       );
       yield* Effect.logError("context", cause).pipe(
         Effect.annotateLogs({ requestId: "request-1" }),
@@ -234,7 +240,12 @@ it.layer(DesktopMainLoggerLive)((test) => {
       expect(fake.calls).toHaveLength(1);
       expect(fake.calls[0]?.args[0]).toBe("context");
       expect(fake.calls[0]?.args[1]).toEqual({ cause: Cause.pretty(cause) });
-      expect(fake.calls[0]?.args[2]).toMatchObject({
+      const frames = [
+        ...A.map(A.reverse(A.range(1, 14)), (n) => ({ name: `frame-${n}`, stack: `full-stack-${n}` })),
+        { name: "root", stack: "root-stack" },
+      ];
+      expect(frames).toHaveLength(15);
+      expect(fake.calls[0]?.args[2]).toEqual({
         effect: {
           annotations: { requestId: "request-1" },
           spans: [["request-span", expect.any(Number)]],
@@ -242,16 +253,23 @@ it.layer(DesktopMainLoggerLive)((test) => {
             {
               kind: "Fail",
               error: "failure",
-              stack: expect.arrayContaining([
-                { name: "frame-14", stack: "full-stack-14" },
-                { name: "frame-1", stack: "full-stack-1" },
-              ]),
+              annotations: { "vidbee/test/desktop-logging.spec/ReasonNote": "custom-reason" },
+              stack: frames,
+              interruptorStack: frames,
             },
-            { kind: "Die", defect: "defect" },
+            {
+              kind: "Die",
+              defect: "defect",
+              annotations: { "vidbee/test/desktop-logging.spec/ReasonNote": "custom-reason" },
+              stack: frames,
+              interruptorStack: frames,
+            },
             {
               kind: "Interrupt",
               fiberId: 424242,
-              interruptorStack: expect.arrayContaining([{ name: "frame-14", stack: "full-stack-14" }]),
+              annotations: { "vidbee/test/desktop-logging.spec/ReasonNote": "custom-reason" },
+              stack: frames,
+              interruptorStack: frames,
             },
           ],
         },

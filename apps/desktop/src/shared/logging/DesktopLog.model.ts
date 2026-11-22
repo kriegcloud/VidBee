@@ -9,7 +9,7 @@ const $I = $DesktopId.create("shared/logging/DesktopLog.model");
  * ```ts
  * import { DesktopLogLevel } from "./DesktopLog.model.js"
  * import * as S from "effect/Schema"
- * S.is(DesktopLogLevel)("verbose")
+ * console.assert(S.is(DesktopLogLevel)("verbose"))
  * ```
  * @category models
  * @since 0.0.0
@@ -24,7 +24,7 @@ export const DesktopLogLevel = LiteralKit(["error", "warn", "info", "verbose", "
  * ```ts
  * import type { DesktopLogLevel } from "./DesktopLog.model.js"
  * const level: DesktopLogLevel = "info"
- * void level
+ * console.assert(level === "info")
  * ```
  * @category models
  * @since 0.0.0
@@ -35,7 +35,7 @@ export type DesktopLogLevel = typeof DesktopLogLevel.Type;
  * **Example** (Capture an empty context)
  * ```ts
  * import { DesktopLogContext } from "./DesktopLog.model.js"
- * DesktopLogContext.make({ reasons: [], annotations: {}, spans: [] })
+ * console.assert(DesktopLogContext.make({ reasons: [], annotations: {}, spans: [] }).reasons.length === 0)
  * ```
  * @category models
  * @since 0.0.0
@@ -56,7 +56,7 @@ export class DesktopLogContext extends S.Opaque<DesktopLogContext, { readonly br
  * **Example** (Construct an entry)
  * ```ts
  * import { DesktopLogEntry } from "./DesktopLog.model.js"
- * DesktopLogEntry.make({ level: "info", scope: "main", args: ["ready", { count: 2 }] })
+ * console.assert(DesktopLogEntry.make({ level: "info", scope: "main", args: ["ready", { count: 2 }] }).args.length === 2)
  * ```
  * @category models
  * @since 0.0.0
@@ -78,7 +78,7 @@ export class DesktopLogEntry extends S.Opaque<DesktopLogEntry, { readonly brand:
  * **Example** (Identify the channel)
  * ```ts
  * import { DesktopLogChannel } from "./DesktopLog.model.js"
- * DesktopLogChannel === "vidbee:log"
+ * console.assert(DesktopLogChannel === "vidbee:log")
  * ```
  * @category configuration
  * @since 0.0.0

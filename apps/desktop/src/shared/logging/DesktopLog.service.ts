@@ -8,7 +8,11 @@ const $I = $DesktopId.create("shared/logging/DesktopLog.service");
  * **Example** (Inject a sink)
  * ```ts
  * import { DesktopLogSink } from "./DesktopLog.service.js"
- * DesktopLogSink.of({ emit: () => {} })
+ * import { DesktopLogEntry } from "./DesktopLog.model.js"
+ * const scopes: Array<string> = []
+ * const sink = DesktopLogSink.of({ emit: entry => { scopes.push(entry.scope) } })
+ * sink.emit(DesktopLogEntry.make({ level: "info", scope: "worker", args: ["ready"] }))
+ * console.assert(scopes[0] === "worker")
  * ```
  * @category services
  * @since 0.0.0

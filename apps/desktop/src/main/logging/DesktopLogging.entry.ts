@@ -10,9 +10,12 @@ import type { OtlpConfiguration } from "./Otlp.model.js";
 /** Observed application logging owner; failed telemetry falls back to native logging.
  * **Example** (Observe readiness)
  * ```ts
+ * import { createDesktopLogging } from "./DesktopLogging.entry.js"
  * import type { DesktopLogging } from "./DesktopLogging.entry.js"
- * const ready = (logging: DesktopLogging) => logging.ready
- * void ready
+ * import { OtlpConfiguration } from "./Otlp.model.js"
+ * const owner: DesktopLogging = createDesktopLogging(OtlpConfiguration.make({ enabled: false, endpoint: "", version: "" }))
+ * console.assert(await owner.ready)
+ * await owner.dispose()
  * ```
  * @category runtime
  * @since 0.0.0
@@ -30,7 +33,8 @@ export interface DesktopLogging {
  * import { OtlpConfiguration } from "./Otlp.model.js"
  * import * as Layer from "effect/Layer"
  * const logging = createDesktopLoggingWith(OtlpConfiguration.make({ enabled: false, endpoint: "", version: "" }), Layer.empty)
- * void logging.ready.then(() => logging.dispose())
+ * console.assert(await logging.ready)
+ * await logging.dispose()
  * ```
  * @category runtime
  * @since 0.0.0
@@ -68,8 +72,11 @@ export const createDesktopLoggingWith: {
  * ```ts
  * import { createDesktopLogging } from "./DesktopLogging.entry.js"
  * import { OtlpConfiguration } from "./Otlp.model.js"
+ * import * as Effect from "effect/Effect"
  * const logging = createDesktopLogging(OtlpConfiguration.make({ enabled: false, endpoint: "", version: "" }))
- * void logging.ready.then(() => logging.dispose())
+ * console.assert(await logging.ready)
+ * console.assert(await logging.runPromise(Effect.succeed("ready")) === "ready")
+ * await logging.dispose()
  * ```
  * @category runtime
  * @since 0.0.0

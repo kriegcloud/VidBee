@@ -15,7 +15,7 @@ import type * as References from "effect/References";
  * import { logArguments } from "@vidbee/logger/arguments"
  * import * as Cause from "effect/Cause"
  * const details = { count: 2 }
- * logArguments(["done", details], Cause.empty)[1] === details
+ * console.assert(logArguments(["done", details], Cause.empty)[1] === details)
  * ```
  * @category formatting
  * @since 0.0.0
@@ -41,7 +41,7 @@ const frames = (first: References.StackFrame | undefined) =>
  * import { causeReasons } from "@vidbee/logger/arguments"
  * import * as Cause from "effect/Cause"
  * const reasons = causeReasons(Cause.combine(Cause.fail("failed"), Cause.interrupt(42)))
- * reasons.length // 2
+ * console.assert(reasons.length === 2)
  * ```
  * @category formatting
  * @since 0.0.0

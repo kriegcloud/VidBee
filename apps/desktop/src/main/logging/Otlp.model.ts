@@ -7,7 +7,7 @@ const $I = $DesktopId.create("main/logging/Otlp.model");
  * **Example** (Default-off configuration)
  * ```ts
  * import { OtlpConfiguration } from "./Otlp.model.js"
- * OtlpConfiguration.make({ enabled: false, endpoint: "", version: "2.4.0" })
+ * console.assert(OtlpConfiguration.make({ enabled: false, endpoint: "", version: "2.4.0" }).enabled === false)
  * ```
  * @category models
  * @since 0.0.0
@@ -24,7 +24,7 @@ export class OtlpConfiguration extends S.Opaque<OtlpConfiguration, { readonly br
  * **Example** (Remain off for other truthy text)
  * ```ts
  * import { otlpEnabled } from "./Otlp.model.js"
- * otlpEnabled("true") // false
+ * console.assert(otlpEnabled("true") === false)
  * ```
  * @category configuration
  * @since 0.0.0

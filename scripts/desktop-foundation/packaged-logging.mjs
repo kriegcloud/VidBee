@@ -39,7 +39,8 @@ export async function packagedLogging(owned,cdp,command) {
   await command('Debugger.resume');await command('Debugger.disable');await delay(1000)
   const send=await cdp.evaluate(`(()=>{
    const circle={label:'cycle'};circle.self=circle;
-   const corpus=[[{nested:{error:new Error('outer',{cause:new Error('inner')})}}],[circle],[undefined],[42n],[],['unscoped']];
+   const error=new TypeError('outer',{cause:new RangeError('inner')});error.stack='OUTER_COMPLETE_STACK';error.cause.stack='INNER_COMPLETE_STACK';
+   const corpus=[[{nested:{error}}],[circle],[undefined],[42n],[],['unscoped']];
    for(let i=0;i<corpus.length;i++)window.electron.ipcRenderer.send('vidbee:log',__fix1Encode({level:'info',scope:i===5?'':'fix1-boundary',args:corpus[i]}));
    for(const level of ['error','warn','info','verbose','debug','silly'])window.electron.ipcRenderer.send('vidbee:log',__fix1Encode({level,scope:'fix1-boundary',args:['level:'+level]}));return true;
   })()`)
@@ -48,12 +49,12 @@ export async function packagedLogging(owned,cdp,command) {
   for(let i=0;i<100;i++){receipt=await run(`(()=>{const rows=globalThis.__fix1Messages;return {ingress:globalThis.__fix1Ingress,count:rows.length}})()`);if(receipt.ingress>=12)break;await delay(20)}
   const result=await run(`(()=>{
    const r=globalThis.__fix1Messages;
-   return {ingress:globalThis.__fix1Ingress,count:r.length,object:r[0]?.data[0]?.nested?.error?.message,nestedCause:r[0]?.data[0]?.nested?.error?.cause?.message,
+   return {ingress:globalThis.__fix1Ingress,count:r.length,object:r[0]?.data[0]?.nested?.error?.message,nestedCause:r[0]?.data[0]?.nested?.error?.cause?.message,errorName:r[0]?.data[0]?.nested?.error?.name,errorStack:r[0]?.data[0]?.nested?.error?.stack,causeName:r[0]?.data[0]?.nested?.error?.cause?.name,causeStack:r[0]?.data[0]?.nested?.error?.cause?.stack,
     circular:r[1]?.data[0]?.self===r[1]?.data[0],undefinedKept:r[2]?.data.length===1&&r[2]?.data[0]===undefined,
     bigintKept:typeof r[3]?.data[0]==='bigint'&&r[3]?.data[0]===42n,empty:r[4]?.data.length===0,
     unscoped:!r[5]?.scope,levels:r.slice(6).map(row=>row.level)};
   })()`)
-  assert.deepEqual(result,{ingress:12,count:12,object:'outer',nestedCause:'inner',circular:true,undefinedKept:true,bigintKept:true,empty:true,unscoped:true,levels:['error','warn','info','verbose','debug','silly']})
+  assert.deepEqual(result,{ingress:12,count:12,object:'outer',nestedCause:'inner',errorName:'TypeError',errorStack:'OUTER_COMPLETE_STACK',causeName:'RangeError',causeStack:'INNER_COMPLETE_STACK',circular:true,undefinedKept:true,bigintKept:true,empty:true,unscoped:true,levels:['error','warn','info','verbose','debug','silly']})
   let requests
   for(let i=0;i<100;i++){try{requests=JSON.parse(await fs.readFile(path.join(owned.run,'otlp.json'),'utf8'));break}catch{await delay(20)}}
   assert(requests,'Enabled packaged SDK did not export')

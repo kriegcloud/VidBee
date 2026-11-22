@@ -15,8 +15,13 @@ import type { OtlpConfiguration } from "./Otlp.model.js";
  * ```ts
  * import { otlpLayer } from "./Otlp.layer.js"
  * import { OtlpConfiguration } from "./Otlp.model.js"
- * const Live = otlpLayer(OtlpConfiguration.make({ enabled: true, endpoint: "http://127.0.0.1:4318/v1/traces", version: "2.4.0" }))
- * void Live
+ * import { createDesktopLoggingWith } from "./DesktopLogging.entry.js"
+ * import * as Effect from "effect/Effect"
+ * // Run in a main entrypoint with an IPv4-loopback collector listening.
+ * const config = OtlpConfiguration.make({ enabled: true, endpoint: "http://127.0.0.1:4318/v1/traces", version: "2.4.0" })
+ * const runtime = createDesktopLoggingWith(config, otlpLayer(config))
+ * console.assert(await runtime.runPromise(Effect.succeed("traced").pipe(Effect.withSpan("example.ready"))) === "traced")
+ * await runtime.dispose()
  * ```
  * @category layers
  * @since 0.0.0
@@ -32,10 +37,16 @@ export const otlpLayer = (configuration: OtlpConfiguration) =>
  * ```ts
  * import { otlpLayerWithExporter } from "./Otlp.layer.js"
  * import { OtlpConfiguration } from "./Otlp.model.js"
- * import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto"
- * const config = OtlpConfiguration.make({ enabled: true, endpoint: "http://127.0.0.1:4318/v1/traces", version: "test" })
- * const live = otlpLayerWithExporter(config, () => new OTLPTraceExporter({ url: config.endpoint }))
- * void live
+ * import { createDesktopLoggingWith } from "./DesktopLogging.entry.js"
+ * import * as Effect from "effect/Effect"
+ * let exported = 0
+ * const config = OtlpConfiguration.make({ enabled: true, endpoint: "http://127.0.0.1/unused", version: "test" })
+ * const live = otlpLayerWithExporter(config, () => ({ export: (spans, done) => { exported += spans.length; done({ code: 0 }) }, shutdown: () => Promise.resolve() }))
+ * const runtime = createDesktopLoggingWith(config, live)
+ * console.assert(await runtime.ready)
+ * await runtime.runPromise(Effect.void.pipe(Effect.withSpan("example.ready")))
+ * await runtime.dispose()
+ * console.assert(exported === 2) // acquisition's ready span plus this example's span
  * ```
  * @category layers
  * @since 0.0.0
