@@ -1,7 +1,7 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
+import type { DownloadLogIpcPayload } from '../compatibility/shared/live-log'
 import type { IpcServices } from '../main/ipc'
 import type { authClient } from '../main/lib/auth-client'
-import type { DownloadLogIpcPayload } from '../shared/live-log'
 
 export type { DownloadLogIpcPayload }
 

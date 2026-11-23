@@ -10,13 +10,13 @@ import {
   type Task,
   type TaskCreationMetadata
 } from '@vidbee/task-queue-legacy'
-import { agentTaskSchema } from '../../shared/agent-task'
+import { agentTaskSchema } from '../../compatibility/shared/agent-task'
 import {
   buildAudioFormatPreference,
   buildVideoFormatPreference
 } from '../../shared/utils/format-preferences'
 import { sanitizeFilenameTemplate } from '../download-engine/args-builder'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { isOutsideDownloadPath } from './agent-tool-approval'
 import { enqueueAsrModelDownload } from './asr-model-task'
 import { getDatabaseConnection } from './database'

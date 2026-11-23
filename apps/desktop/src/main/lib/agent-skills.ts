@@ -3,7 +3,7 @@ import {
   FEEDBACK_GITHUB_URL,
   FEEDBACK_REPORT_FILENAME
 } from '@vidbee/ui/lib/feedback-diagnostics'
-import { AI_OVERVIEW_PROMPT_ID } from '../../shared/ai-prompts'
+import { AI_OVERVIEW_PROMPT_ID } from '../../compatibility/shared/ai-prompts'
 import { BUILTIN_SKILLS } from '../../shared/builtin-skills'
 import { type AgentSkill, parseAgentSkill } from './agent-skill-document'
 

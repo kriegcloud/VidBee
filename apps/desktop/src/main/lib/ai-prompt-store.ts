@@ -1,5 +1,8 @@
 import { applyPromptRunMigrations } from '@vidbee/db/legacy/prompt-runs'
-import { isEphemeralPromptRunDownloadId, isTerminalPromptRunStatus } from '../../shared/ai-run'
+import {
+  isEphemeralPromptRunDownloadId,
+  isTerminalPromptRunStatus
+} from '../../compatibility/shared/ai-run'
 import type {
   AiPromptErrorCode,
   AiPromptRunSnapshot,

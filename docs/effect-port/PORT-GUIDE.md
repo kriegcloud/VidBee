@@ -624,3 +624,45 @@ explicitly supplies a replacement. Capturing it as a default argument when const
 layer breaks later module replacement and changes existing callback oracles. Native EOF also
 requires the stock writable's endOnDone option: enable it only for extended invocations and
 prove two writes followed by EOF against a real child. A mocked Sink can conceal a missing EOF.
+
+## Desktop partial ownership (phase 9.0)
+
+Desktop retains its original legacy configs and their checks. The three
+`apps/desktop/tsconfig.ported.{node,web,test}.json` configs extend the strict
+base and use exact `files` roots, with no glob include/exclude. The desktop
+ownership manifest and baseline use version 1, with a `files` array of
+`{ file, partition, capability, environments }` and a `renames` array of
+`{ from, to }`. Paths are repository-relative; environments are `node`, `web`
+and `test`. Shared roots may name multiple environments. Every desktop TS/TSX
+file, including declarations, workers, tests and build configs, needs ownership.
+The initial inventory has no strict roots and promotes no application source.
+
+To promote a file, set its partition to `strict`, record its capability and
+all compiler environments, add it to the matching configs' `files` arrays,
+and update the baseline in the same change. Strict dependencies must also be
+strict in the importing environment. Package imports retain package ownership;
+legacy compatibility implementations cannot enter a strict desktop graph.
+The checker applies the existing textual rules to resolved strict desktop
+files, including tests, and separately runs native compiler diagnostics.
+
+`port:check` compares the working baseline and the baseline at the target
+revision. The default target is `main`, or `origin/$GITHUB_BASE_REF` on a pull
+request. Set `PORT_CHECK_TARGET` to an explicit revision for another target.
+An unavailable target fails closed. Only a target predating the baseline file
+starts with empty historical membership. Never reduce historical strict
+membership. A rename records its explicit old-to-new identity, preserves every
+strict environment and removes the old path from current ownership.
+
+Graph extraction uses the installed tsrs Node launcher under plain Node,
+with separate stdout/stderr capture through close and EOF. Listings must be
+nonempty, newline terminated, contain only complete existing canonical file
+paths and contain every explicit root. Empty strict partitions skip graph extraction: the installed compiler returns
+an empty successful listing for an empty `files` list. Such output cannot prove
+a nonempty graph. They still run the separate native diagnostic/config check. No
+application placeholder file is introduced. Nonempty environments run in
+parallel, including diagnostics for empty partitions.
+
+`node --test scripts/port-check.test.mjs scripts/port-desktop.test.mjs` runs
+negative ownership/capture fixtures and removes protections in isolated copies
+to prove their assertions detect regressions. Copies live on disk under the
+ignored `.cache/ratchet-tests` tree and are deleted after each case.

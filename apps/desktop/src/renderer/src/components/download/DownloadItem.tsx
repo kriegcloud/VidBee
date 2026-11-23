@@ -52,7 +52,7 @@ import { toast } from 'sonner'
 import {
   buildFilePathCandidates,
   normalizeSavedFileName
-} from '../../../../shared/utils/download-file'
+} from '../../../../compatibility/shared/utils/download-file'
 import { useCachedThumbnail } from '../../hooks/use-cached-thumbnail'
 import type { DownloadSelectionModifiers } from '../../hooks/use-download-selection'
 import { useLocalPoster } from '../../hooks/use-local-poster'

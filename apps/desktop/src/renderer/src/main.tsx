@@ -1,14 +1,20 @@
+import { getDesktopDocument } from './legacy/document'
+import { DesktopAtomProvider } from './runtime/DesktopAtomProvider'
 import '@vitejs/plugin-react/preamble'
 import './assets/main.css'
 import './assets/global.css'
 
-import { isShareCaptureHash } from '@shared/types/share-card'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { isShareCaptureHash } from '../../compatibility/shared/types/share-card'
 import App from './App'
 import { ShareCapturePage } from './pages/ShareCapture'
 import './i18n'
+import i18n from './i18n'
 import { logger } from './lib/logger'
+
+/** Effect logging runner for document-owned work. */
+export const rendererLogging = getDesktopDocument().runtime
 
 // Setup global error handlers
 setupGlobalErrorHandlers()
@@ -16,8 +22,8 @@ setupGlobalErrorHandlers()
 // Get app version asynchronously
 let appVersion: string | undefined
 if (window?.api && window.electron?.ipcRenderer) {
-  import('./lib/ipc')
-    .then(({ ipcServices }) => ipcServices.app.getVersion())
+  import('./lib/foundation')
+    .then(({ foundationClients }) => foundationClients.app.getVersion())
     .then((version) => {
       appVersion = version
     })
@@ -87,8 +93,28 @@ const rootElement = document.getElementById('root')
 if (!rootElement) {
   throw new Error('Root element not found')
 }
-createRoot(rootElement).render(
+const documentOwner = getDesktopDocument()
+const root = createRoot(rootElement)
+const render = root.render.bind(root)
+const unmount = root.unmount.bind(root)
+// These are explicit permanent departures; React effect replay only borrows the registry.
+root.render = (children) => {
+  if (children === null) {
+    void documentOwner.close()
+  }
+  render(children)
+}
+root.unmount = () => {
+  void documentOwner.close()
+  unmount()
+}
+root.render(
   <StrictMode>
-    {isShareCaptureHash(window.location.hash) ? <ShareCapturePage /> : <App />}
+    <DesktopAtomProvider
+      document={documentOwner}
+      failureMessage={() => i18n.t('errors.desktopConnectionLost')}
+    >
+      {isShareCaptureHash(window.location.hash) ? <ShareCapturePage /> : <App />}
+    </DesktopAtomProvider>
   </StrictMode>
 )

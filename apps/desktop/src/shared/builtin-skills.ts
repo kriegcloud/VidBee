@@ -1,22 +1,26 @@
-import { parse } from 'yaml'
+import * as A from 'effect/Array'
+import * as R from 'effect/Record'
+import { parseBuiltinSkill } from '../drivers/shared/BuiltinSkill.driver'
 
-/** Repository skill files are the only authored source for built-in names, descriptions and instructions. */
-export const BUILTIN_SKILLS = Object.values(
-  import.meta.glob<string>('../../../../skills/*/SKILL.md', {
-    eager: true,
-    query: '?raw',
-    import: 'default'
-  })
-).map((document) => {
-  const match = document.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/)
-  if (!match?.[1]) {
-    throw new Error('Built-in SKILL.md requires YAML frontmatter')
-  }
-  const metadata = parse(match[1]) as { name: string; description: string }
-  return {
-    name: metadata.name,
-    description: metadata.description,
-    content: document.slice(match[0].length).trim(),
-    document
-  }
-})
+/** Eager repository skills; raw glob order and this filename remain the build-time contract.
+ *
+ * **Example** (Access the BUILTIN_SKILLS contract)
+ *
+ * ```ts
+ * import { BUILTIN_SKILLS } from './builtin-skills.js'
+ * void BUILTIN_SKILLS
+ * ```
+ *
+ * @category constants
+ * @since 0.0.0
+ */
+export const BUILTIN_SKILLS = A.map(
+  R.values(
+    import.meta.glob<string>('../../../../skills/*/SKILL.md', {
+      eager: true,
+      query: '?raw',
+      import: 'default'
+    })
+  ),
+  parseBuiltinSkill
+)

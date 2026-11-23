@@ -6,6 +6,18 @@ import type { Api, Context, FetchFunction, ImageContent, Model } from '@earendil
 import { isMediaTaskKind } from '@vidbee/task-queue-legacy'
 import { app, BrowserWindow } from 'electron'
 import {
+  type AgentFailure,
+  AgentUserError,
+  parseAgentError
+} from '../../compatibility/shared/agent-errors'
+import { isUuid, sanitizeAgentConversationTitle } from '../../compatibility/shared/agent-history'
+import { unboundArticleImageTimes } from '../../compatibility/shared/agent-markdown'
+import {
+  AI_CHAT_PROMPT_ID,
+  agentChatPrompt,
+  resolveAiPromptContent
+} from '../../compatibility/shared/ai-prompts'
+import {
   AGENT_MAX_MESSAGE_IMAGES,
   AGENT_THINKING_LEVELS,
   AGENT_WORKSPACE_ID,
@@ -21,9 +33,6 @@ import {
   agentThinkingElapsedMs,
   draftAgentImages
 } from '../../shared/agent-chat'
-import { type AgentFailure, AgentUserError, parseAgentError } from '../../shared/agent-errors'
-import { isUuid, sanitizeAgentConversationTitle } from '../../shared/agent-history'
-import { unboundArticleImageTimes } from '../../shared/agent-markdown'
 import { type AgentPermissionMode, parseAgentPermissionMode } from '../../shared/agent-permissions'
 import {
   agentUiHasProgress,
@@ -31,9 +40,8 @@ import {
   agentUiResponseText,
   updateAgentProgressSpec
 } from '../../shared/agent-ui'
-import { AI_CHAT_PROMPT_ID, agentChatPrompt, resolveAiPromptContent } from '../../shared/ai-prompts'
 import type { AiPrompt } from '../../shared/ai-types'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { type AgentArticleSection, writeSectionedArticle } from './agent-article'
 import { materializeAgentArticleImages, rejectUnboundArticleImages } from './agent-article-images'

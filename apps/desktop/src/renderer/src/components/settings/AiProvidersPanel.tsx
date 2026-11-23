@@ -14,7 +14,6 @@ import { useCloudAccount } from '@renderer/hooks/use-cloud-account'
 import { formatAiCredits } from '@renderer/lib/ai-credits'
 import { ipcServices } from '@renderer/lib/ipc'
 import { logger } from '@renderer/lib/logger'
-import { AI_PROVIDER_PRESETS } from '@shared/ai-presets'
 import { type AiProviderGroup, groupAiProviders } from '@shared/ai-provider-groups'
 import type {
   AiProviderPreset,
@@ -28,6 +27,7 @@ import { Check, Plus, Trash2 } from 'lucide-react'
 import { type KeyboardEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { AI_PROVIDER_PRESETS } from '../../../../compatibility/shared/ai-presets'
 import { AiProviderDialog } from './AiProviderDialog'
 import { AiProviderIcon } from './ai-provider-icon'
 

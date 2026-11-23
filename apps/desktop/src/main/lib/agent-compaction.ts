@@ -1,5 +1,5 @@
 import { type AssistantMessage, type Context, isContextOverflow } from '@earendil-works/pi-ai'
-import { isRecoverableAiPromptError } from '../../shared/ai-run'
+import { isRecoverableAiPromptError } from '../../compatibility/shared/ai-run'
 import { estimateTokens } from './agent-budget'
 import { agentTextPage } from './agent-memory'
 

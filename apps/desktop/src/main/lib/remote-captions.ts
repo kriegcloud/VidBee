@@ -10,14 +10,14 @@ import { lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import type {
   ExtensionTranscriptSnapshot,
   ExtensionTranscriptTrack
-} from '../../shared/extension-transcript'
+} from '../../compatibility/shared/extension-transcript'
 import {
   captionCuesFromPayload,
   classifyCaptionExtractError,
   parseCaptionSidecarName,
   pickExtensionCaptionTrack
-} from '../../shared/extension-transcript'
-import { settingsManager } from '../settings'
+} from '../../compatibility/shared/extension-transcript'
+import { settingsManager } from '../settings.compatibility'
 import { createBoundedTextBuffer } from './bounded-output-buffer'
 import { buildCaptionExtractArgs } from './command-utils'
 import { applyExtensionCookieSettings } from './extension-cookies'

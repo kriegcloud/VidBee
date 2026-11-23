@@ -1,10 +1,13 @@
 import { rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { captionLanguageForMatch } from '@vidbee/transcription'
+import { resolveTtsSpeaker } from '../../compatibility/shared/tts-models'
+import {
+  type DubbingInput,
+  dubbingInputSchema
+} from '../../compatibility/shared/video-localization'
 import { buildAssDocument } from '../../shared/subtitle-export'
-import { resolveTtsSpeaker } from '../../shared/tts-models'
-import { type DubbingInput, dubbingInputSchema } from '../../shared/video-localization'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { runAgentMediaProcess, withAgentMedia } from './agent-media'
 import { type IndexedSubtitleCue, resolveSpokenCues } from './dubbing-text'
 import { escapeFfmpegSubtitlePath } from './export-video-subtitles-args'

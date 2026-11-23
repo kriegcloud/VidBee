@@ -28,6 +28,7 @@ import { useAppIconPlaybackMenu } from './hooks/use-app-icon-playback-menu'
 import { useDownloadEvents } from './hooks/use-download-events'
 import { useHistorySync } from './hooks/use-history-sync'
 import { useImportLocalMedia } from './hooks/use-import-local-media'
+import { foundationClients, foundationEvents } from './lib/foundation'
 import { ipcEvents, ipcServices } from './lib/ipc'
 import { logger } from './lib/logger'
 import { continueDesktopSignIn, openSettingsTab } from './lib/settings-navigation'
@@ -158,14 +159,14 @@ export function AppLayout() {
   }, [navigate])
 
   useEffect(() => {
-    const unsubscribe = ipcEvents.on(APP_ICON_SHOW_HOME_CHANNEL, () => {
+    const unsubscribe = foundationEvents.on(APP_ICON_SHOW_HOME_CHANNEL, () => {
       if (normalizePathname(pathnameRef.current) === '/') {
         return
       }
       void navigate({ to: '/' })
     })
     return () => {
-      ipcEvents.removeListener(APP_ICON_SHOW_HOME_CHANNEL, unsubscribe)
+      foundationEvents.removeListener(APP_ICON_SHOW_HOME_CHANNEL, unsubscribe)
     }
   }, [navigate])
 
@@ -213,10 +214,10 @@ export function AppLayout() {
 
   useEffect(() => {
     loadSettings()
-    const listener = window.api.on('settings:changed', () => {
+    const listener = foundationEvents.on('settings:changed', () => {
       void loadSettings()
     })
-    return () => window.api.removeListener('settings:changed', listener)
+    return () => foundationEvents.removeListener('settings:changed', listener)
   }, [loadSettings])
 
   useEffect(() => {
@@ -303,7 +304,7 @@ export function AppLayout() {
   useEffect(() => {
     const getRuntimeInfo = async () => {
       try {
-        const version = await ipcServices.app.getVersion()
+        const version = await foundationClients.app.getVersion()
         setAppVersion(version)
       } catch (error) {
         logger.error('Failed to get runtime info:', error)

@@ -15,7 +15,7 @@ import {
   projectSubscriptionForRenderer,
   removeDesktopSubscription
 } from '../../lib/subscriptions-host'
-import { settingsManager } from '../../settings'
+import { settingsManager } from '../../settings.compatibility'
 
 interface CreateSubscriptionOptions extends SubscriptionDownloadPreferences {
   url: string

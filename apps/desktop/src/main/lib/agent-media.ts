@@ -8,13 +8,13 @@ import { buildDownloadArgs } from '@vidbee/downloader-core-legacy/yt-dlp-args'
 import type { Task } from '@vidbee/task-queue-legacy'
 import { lowerChildPriority } from '@vidbee/task-queue-legacy/process'
 import { app, nativeImage } from 'electron'
-import type { AgentArtifact } from '../../shared/agent-chat'
 import {
   agentUnusableVideoError,
   type SourceMediaKind,
   sourceMediaKind
-} from '../../shared/source-media-kind'
-import { settingsManager } from '../settings'
+} from '../../compatibility/shared/source-media-kind'
+import type { AgentArtifact } from '../../shared/agent-chat'
+import { settingsManager } from '../settings.compatibility'
 import { applyExtensionCookieSettings } from './extension-cookies'
 import { ffmpegManager } from './ffmpeg-manager'
 import { getDesktopTaskQueueRef } from './queue-ref'

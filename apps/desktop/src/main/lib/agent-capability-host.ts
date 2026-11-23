@@ -8,10 +8,10 @@ import {
   agentAiSettingsSchema,
   agentSettingsSchema,
   agentTtsModelSchema
-} from '../../shared/agent-settings'
-import { AI_PROVIDER_PRESETS, getAiProviderPreset } from '../../shared/ai-presets'
-import { mediaTransformSchema } from '../../shared/media-transform'
-import { settingsManager } from '../settings'
+} from '../../compatibility/shared/agent-settings'
+import { AI_PROVIDER_PRESETS, getAiProviderPreset } from '../../compatibility/shared/ai-presets'
+import { mediaTransformSchema } from '../../compatibility/shared/media-transform'
+import { settingsManager } from '../settings.compatibility'
 import { isOutsideDownloadPath } from './agent-tool-approval'
 import { ffmpegManager } from './ffmpeg-manager'
 import { probeLocalMedia } from './media-probe'

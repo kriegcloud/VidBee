@@ -49,7 +49,7 @@ import {
   TranscriptionExecutor
 } from '@vidbee/transcription-legacy'
 import { app, powerSaveBlocker } from 'electron'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { AsrModelExecutor } from './asr-model-executor'
 import { resolveBrowserCaptureSidecarScript } from './browser-capture-sidecar-path'

@@ -6,9 +6,9 @@ import {
   type AgentThread,
   selectedAgentMessages
 } from '@shared/agent-chat'
-import { idlePromptRunSnapshot } from '@shared/ai-run'
 import type { AiPromptRunSnapshot, AiPromptRunStatus } from '@shared/ai-types'
 import { useEffect, useRef, useState } from 'react'
+import { idlePromptRunSnapshot } from '../../../compatibility/shared/ai-run'
 
 /** Latest run status plus timestamp so a new result can show the tab mark again. */
 export interface PromptRunStatusView {

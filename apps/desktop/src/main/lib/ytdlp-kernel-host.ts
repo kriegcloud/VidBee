@@ -4,7 +4,7 @@ import {
   preferChinaMirrors
 } from '@vidbee/transcription-legacy/download-mirrors'
 import { app } from 'electron'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { isVendoredYtDlpBuild, resolveBundledResourcesPath } from './bundled-resources-path'
 import { readElectronLocaleHints } from './system-locale'

@@ -409,6 +409,23 @@ bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/m
 bun run test:golden --build /path/to/baseline/linux-unpacked --models /path/to/models --loopback-only --subset transcription
 ```
 
+Supplied-model runs need a scratch path that the bundled yt-dlp preserves under
+`--trim-filenames 120`. Its existing filename preparation splits the **whole
+output path** at the last two dots, then truncates the first part to 120
+characters. A deep dotted phase directory such as `gate-9.0` can therefore
+truncate an ancestor directory during the automatic media-download cases. The
+resulting `output.filePath` lies outside the exact known roots and correctly
+fails normalization. This is an existing vendored-tool limitation, not an ASR
+startup failure. Do not broaden the normalizer or update goldens for it.
+
+From the standard worktree layout, use an actual disk-backed directory under
+`$PWD/.cache/asr-goldens` (no symlink to a deep dotted lane path). The launcher
+canonicalizes paths, so a symlink does not remove the physical-path limitation.
+For another layout, check the bundled tool's `--get-filename` result with the
+intended absolute output template, `--trim-filenames 120`, and a synthetic
+`--load-info-json` input before launching the suite. Retain the input and exact
+output in scratch. The phase-9.0 report records this environment diagnosis.
+
 A complete invocation with `--models` first compares all original documents on
 a profile without supplied models, then launches a separate supplied-model
 scenario. This matters because the original model-status golden explicitly pins

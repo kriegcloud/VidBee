@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { setImmediate } from 'node:timers/promises'
-import { getTtsModel, type TtsModelId } from '../../shared/tts-models'
+import { getTtsModel, type TtsModelId } from '../../compatibility/shared/tts-models'
 import {
   localSpeechConfig,
   POCKET_REFERENCE_SECONDS,

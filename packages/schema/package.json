@@ -5,10 +5,13 @@
   "type": "module",
   "exports": {
     ".": "./src/LiteralKit/index.ts",
-    "./LiteralKit": "./src/LiteralKit/index.ts"
+    "./LiteralKit": "./src/LiteralKit/index.ts",
+    "./Option": "./src/Option.ts",
+    "./SchemaUtils/withStatics": "./src/SchemaUtils/withStatics.ts"
   },
   "dependencies": {
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "@vidbee/identity": "workspace:^"
   },
   "devDependencies": {
     "@effect/vitest": "catalog:",

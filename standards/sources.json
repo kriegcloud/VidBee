@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "referenceRevision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+  "sources": [
+    {
+      "source": ".patterns/jsdoc-documentation.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "f2aa6fa115be60ead4f30ec627e19384f0489810e686175920a600479be050dc",
+      "local": "standards/jsdoc-documentation.md",
+      "localDigest": "2fc8aeb2cdaa06f5e7be96b06429bf6ca5d630016d7c00070f1f664739520646",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/crispen/SKILL.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "3b00c3625f87788597e76213008c4c96a2f7c38b99475df53ed1692adf011712",
+      "local": "standards/crispen.md",
+      "localDigest": "d8ef32804087163ea93112c21a42a5d1bbaa7dd2ca73ad22acc500eedbab5678",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/effect-first-development/SKILL.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "287e6de24df70ffd76b74d99b7172e706eaea444adaf25ff9ef88e1c3243f30c",
+      "local": "standards/effect-first-development.md",
+      "localDigest": "229a86a5ad496419a0a66bc75add46d0155417cfb28057dd40fcba443e6f6059",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/jsdoc-annotation-specialist/SKILL.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "839e541fd231dd818de9131751ea4a4224a8dd14e6d13a1fce0966bbd2bbecb7",
+      "local": "standards/jsdoc-annotation-specialist.md",
+      "localDigest": "07b6635786b03539f07198f46019183604f4c5ad9566991c542c1fe70d705d40",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": "standards/schema-first-development-prompt.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "c76b354ef99cd50954ca705c4b4f27c4e3b46c9f09796ab81c8229a1f32ec4e2",
+      "local": "standards/schema-first-development-prompt.md",
+      "localDigest": "7e4620fd1407c0bbbfc9ee48505d99744aa546d6f348b215b7cd04f77ec1a8db",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/schema-first-development/SKILL.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "f44b81f50a5cc2286264a454d03dba48cf2029db4841525b643191c0b86efa9d",
+      "local": "standards/references/schema-first/SKILL.md",
+      "localDigest": "9ad9cbc480d1473804ba7ef45963a57495fae69bce473c8e701200b869ec77e2",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/schema-first-development/references/examples.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "bd4c198f2e96d9270b3091421b7cc83922437ca7cb7fc18e808685c51918b809",
+      "local": "standards/references/schema-first/examples.md",
+      "localDigest": "b9aa1204fc04c8bf84d8b5fafd58aaf946b7ee082a51687db3fb741b6d4f4c4b",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/schema-first-development/references/local-primitives.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "73c39e59d4b6fc252e897ed618197a526efcc908cbe34b3323d6cef3af0aeff6",
+      "local": "standards/references/schema-first/local-primitives.md",
+      "localDigest": "abfd46214ad0e0b5f49366b282405eafc5c66911c6a2ddbd05417cef13e659ca",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/schema-first-development/references/pattern-catalog.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "bf5de63e607b3f16ad1a358712335769b2dd4bb65e6ab4ce7ae4fa8bac6c0aff",
+      "local": "standards/references/schema-first/pattern-catalog.md",
+      "localDigest": "87286950658e7604154ef956b3a6bd8691f1ca11bb134cd4b7e2b0362561dbd3",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/schema-first-development/references/repo-laws.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "fae28b42ca9e060b0c44d284337bbe2bab8185173d4d9c2b27e7a1488140222b",
+      "local": "standards/references/schema-first/repo-laws.md",
+      "localDigest": "fe55d890d2fc1ef79ee0166c55641c91d8720d305a392fa6100f89f39cbaede3",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/jsdoc-annotation-specialist/references/agent-lifting-and-greps.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "ac26df3d8d0e11304edcdb9321f69891671bd93419505e608ec6e076070f98f6",
+      "local": "standards/references/jsdoc/agent-lifting-and-greps.md",
+      "localDigest": "a110ec4300b46c81cf997ecdafbedfdf595d879a366d847cf9722ece05f3b04a",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/jsdoc-annotation-specialist/references/annotation-patterns.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "4e3380222cc6a2a3f60e4c8cd2faefd428f612b33b5e4a448555eb81131ccb66",
+      "local": "standards/references/jsdoc/annotation-patterns.md",
+      "localDigest": "a8c970cfd2b8776854cab7345ac08e789469b7e9508eeab7c1e417ff245b60df",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/jsdoc-annotation-specialist/references/conventions.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "e9a6212073014f9614909f41f65be612ee0ae196c44517222d92411bc14c9b69",
+      "local": "standards/references/jsdoc/conventions.md",
+      "localDigest": "2dc0aaa3a410e7c6bed4b30f788d89046714b1da20c79ee84c1ba041ec145d5b",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    },
+    {
+      "source": ".claude/skills/crispen/references/crispening.md",
+      "revision": "71d246dc5a49d3f41222308b866d42c220cf1ee4",
+      "sourceDigest": "70fe646db70db19736baf19cd28485906e27ca2e4a7b1b8b778cc8a6f061ebc0",
+      "local": "standards/references/crispen/crispening.md",
+      "localDigest": "b0b7d28cf30c6a4f023c2a538ac452f126874ea7a2396097de082d6330837286",
+      "adaptations": [
+        "VidBee authority, graph, actual exports and commands",
+        "D1-D5 applicability and unchanged mandatory gates",
+        "upstream-first APIs and local reference paths"
+      ]
+    }
+  ]
+}

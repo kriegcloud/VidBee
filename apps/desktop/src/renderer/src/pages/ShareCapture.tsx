@@ -4,15 +4,15 @@ import { RemoteImageProvider } from '@renderer/components/ui/remote-image'
 import { waitForShareCard } from '@renderer/lib/capture-prompt-share'
 import { measureShareImageLayout } from '@renderer/lib/share-image-layout'
 import { MERMAID_EXPORT_CHANNEL, type MermaidExportPayload } from '@shared/types/mermaid-export'
+import { ThemeProvider } from 'next-themes'
+import { useEffect, useRef, useState } from 'react'
 import {
   SHARE_CAPTURE_READY_CHANNEL,
   SHARE_CAPTURE_RENDER_CHANNEL,
   type ShareCaptureReadyMessage,
   type ShareCaptureRenderMessage,
   type ShareCardPayload
-} from '@shared/types/share-card'
-import { ThemeProvider } from 'next-themes'
-import { useEffect, useRef, useState } from 'react'
+} from '../../../compatibility/shared/types/share-card'
 
 /**
  * Hidden-window page that paints one share card and reports its box to main.

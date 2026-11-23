@@ -1,7 +1,6 @@
 import { aiModelIconComponent } from '@renderer/components/settings/ai-provider-icon'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 import type { AgentRunStatus } from '@shared/agent-chat'
-import { AI_CHAT_PROMPT_ID } from '@shared/ai-prompts'
 import type { AiSettingsSnapshot } from '@shared/ai-types'
 import { useNavigate } from '@tanstack/react-router'
 import {
@@ -10,6 +9,7 @@ import {
 } from '@vidbee/ui/components/ui/download-content-stack'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AI_CHAT_PROMPT_ID } from '../../../../compatibility/shared/ai-prompts'
 import { aiPromptLabel } from '../../lib/ai-prompt-label'
 import { cn } from '../../lib/utils'
 import type { AgentTaskActivity } from '../../store/agent-tasks'

@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Attiva il download con un clic per aggiungere più link contemporaneamente",
     "clickToCopy": "Clicca per copiare i dettagli",
     "clipboardEmpty": "Gli appunti sono vuoti",
+    "desktopConnectionLost": "La connessione all’app desktop è stata interrotta. Ricarica questa finestra per riconnetterti.",
     "downloadFailed": "Download fallito",
     "downloadNecessaryFilesFailed": "Errore nel download dei file necessari. Controlla la tua rete e riprova",
     "emptyUrl": "Inserisci un URL",

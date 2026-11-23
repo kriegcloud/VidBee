@@ -1,67 +1,76 @@
-import { normalizeLanguageCode } from '@vidbee/i18n/languages'
-import { atom } from 'jotai'
+import { atom, type Getter, type Setter } from 'jotai'
 import type { AppSettings } from '../../../shared/types'
-import { defaultSettings } from '../../../shared/types'
 import i18n from '../i18n'
-import { ipcServices } from '../lib/ipc'
+import { getDesktopDocument } from '../legacy/document'
+import { foundationEffects, isFoundationDeparture, runFoundationEffect } from '../lib/foundation'
+import { projectFoundationAtom } from '../lib/foundation-state'
 import { logger } from '../lib/logger'
+import { makePreferenceHost } from '../runtime/Preferences.driver'
+import { makeSettingsActions } from '../runtime/Settings.atoms'
 
 // Settings atom
-export const settingsAtom = atom<AppSettings>(defaultSettings)
-export const settingsLoadedAtom = atom(false)
+export const settingsAtom = projectFoundationAtom(getDesktopDocument().atoms.settings)
+export const settingsLoadedAtom = projectFoundationAtom(getDesktopDocument().atoms.settingsLoaded)
 export const enableDownloadNotificationsAtom = atom(
   (get) => get(settingsAtom).enableDownloadNotifications
 )
 
-// Load settings from main process
-export const loadSettingsAtom = atom(null, async (_get, set) => {
-  try {
-    const settings = await ipcServices.settings.getAll()
-    const savedLanguage = normalizeLanguageCode(settings.language)
-    const currentLanguage = normalizeLanguageCode(i18n.language)
-
-    if (currentLanguage !== savedLanguage) {
-      try {
-        await i18n.changeLanguage(savedLanguage)
-      } catch (error) {
-        logger.error('Failed to apply saved language:', error)
-      }
+const observeFailure =
+  (message: string) =>
+  (error: unknown): void => {
+    if (!isFoundationDeparture(error)) {
+      logger.error(message, error)
     }
-
-    set(settingsAtom, { ...settings, language: savedLanguage })
-    set(settingsLoadedAtom, true)
-  } catch (error) {
-    logger.error('Failed to load settings:', error)
   }
+// Legacy Jotai actions only bind their write seam to the strict action owner.
+const host = makePreferenceHost({
+  language: () => i18n.language,
+  changeLanguage: (language) => i18n.changeLanguage(language),
+  report: (message, error) => logger.error(message, error)
 })
-
-// Save a specific setting
+const actions = (get: Getter, set: Setter) =>
+  makeSettingsActions({
+    state: {
+      read: () => get(settingsAtom),
+      write: (value) => set(settingsAtom, value),
+      loaded: () => set(settingsLoadedAtom, true),
+      capture: (value) => {
+        const snapshot = getDesktopDocument().storage.capture(
+          getDesktopDocument().atoms.settings,
+          value
+        )
+        return {
+          release: snapshot.release,
+          restore: () => {
+            snapshot.restore()
+            set(settingsAtom, value)
+          }
+        }
+      }
+    },
+    calls: foundationEffects().settings,
+    host
+  })
+export const loadSettingsAtom = atom(null, (get, set) =>
+  runFoundationEffect(actions(get, set).load, observeFailure('Failed to load settings:'))
+)
 export const saveSettingAtom = atom(
   null,
-  async (get, set, update: { key: keyof AppSettings; value: AppSettings[keyof AppSettings] }) => {
-    const previousSettings = get(settingsAtom)
-    const nextSettings = { ...previousSettings, [update.key]: update.value }
-    set(settingsAtom, nextSettings)
-
-    try {
-      await ipcServices.settings.set(update.key, update.value)
-    } catch (error) {
-      set(settingsAtom, previousSettings)
-      logger.error('Failed to save setting:', error)
-    }
+  (get, set, update: { key: keyof AppSettings; value: AppSettings[keyof AppSettings] }) => {
+    const prepared = actions(get, set).prepareSave(update)
+    return runFoundationEffect(prepared.effect, (error) => {
+      try {
+        prepared.refuse(!isFoundationDeparture(error))
+      } catch (rollbackError) {
+        logger.error('Failed to save setting:', rollbackError)
+      }
+      observeFailure('Failed to save setting:')(error)
+    })
   }
 )
-
-// Save all settings
-export const saveAllSettingsAtom = atom(
-  null,
-  async (get, set, newSettings: Partial<AppSettings>) => {
-    try {
-      await ipcServices.settings.setAll(newSettings)
-      const settings = get(settingsAtom)
-      set(settingsAtom, { ...settings, ...newSettings })
-    } catch (error) {
-      logger.error('Failed to save settings:', error)
-    }
-  }
+export const saveAllSettingsAtom = atom(null, (get, set, settings: Partial<AppSettings>) =>
+  runFoundationEffect(
+    actions(get, set).saveAll({ entries: Object.entries(settings), settings }),
+    observeFailure('Failed to save settings:')
+  )
 )

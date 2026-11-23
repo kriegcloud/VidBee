@@ -1,5 +1,5 @@
+import type { DubbingInput } from '../../compatibility/shared/video-localization'
 import type { SubtitleCue } from '../../shared/subtitle-export'
-import type { DubbingInput } from '../../shared/video-localization'
 
 export interface IndexedSubtitleCue extends SubtitleCue {
   /** One-based position in the complete saved source, retained when clip filtering removes cues. */

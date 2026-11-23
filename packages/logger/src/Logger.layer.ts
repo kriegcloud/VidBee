@@ -1,8 +1,7 @@
-import * as A from "effect/Array";
-import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
+import { logArguments } from "./LogArguments.js";
 import { ClientSink, NodeSink } from "./Logger.service.js";
 import type { LogLevel } from "./Logger.model.js";
 import type { LogSink } from "./Logger.service.js";
@@ -17,9 +16,7 @@ const sinkLogger = (sink: LogSink) =>
           : options.logLevel === "Debug" || options.logLevel === "Trace"
             ? "debug"
             : "info";
-    const messages = A.isArray(options.message) ? options.message : [options.message];
-    const cause = Cause.pretty(options.cause);
-    sink.emit(level, cause === "" ? messages : [...messages, { cause }]);
+    sink.emit(level, logArguments(options.message, options.cause));
   });
 export const nodeLoggerLayer = Logger.layer([Effect.map(NodeSink, sinkLogger)]);
 export const clientLoggerLayer = Logger.layer([Effect.map(ClientSink, sinkLogger)]);

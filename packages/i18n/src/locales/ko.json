@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "여러 링크를 한 번에 추가하려면 원클릭 다운로드를 켜세요",
     "clickToCopy": "세부 정보 복사하려면 클릭",
     "clipboardEmpty": "클립보드가 비어있음",
+    "desktopConnectionLost": "데스크톱 앱과의 연결이 끊어졌습니다. 다시 연결하려면 이 창을 새로고침하세요.",
     "downloadFailed": "다운로드 실패",
     "downloadNecessaryFilesFailed": "필수 파일 다운로드 실패. 네트워크를 확인하고 다시 시도하세요",
     "emptyUrl": "URL을 입력하세요",

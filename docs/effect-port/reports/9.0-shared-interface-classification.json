@@ -1,0 +1,272 @@
+[
+  {
+    "file": "apps/desktop/src/shared/agent-history.ts",
+    "declaration": "AgentHistoryCalendar",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-history.ts",
+    "declaration": "AgentConversationTitleInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-history.ts",
+    "declaration": "AgentHistoryDisplayTitleInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "ArtifactIdFromUrlInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "ClockFromImageInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "MatchArtifactByClockInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "BindArticleImageArtifactsInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "UnboundArticleImageTimesInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "CitedArtifactIdsInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "EmbedArtifactDataUrisInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "ArtifactsForMessageInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-markdown.ts",
+    "declaration": "SplitAgentResponseMediaInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ObserveAgentSeqInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "RequestAgentRecoveryInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "SettleAgentRecoveryInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ProjectAgentRunInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ProjectAgentThreadInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ProjectAgentPatchInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "AgentEventMatchesInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ApplyAgentThreadPatchInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "AcceptAgentThreadInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "ApplyAgentRunEventInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "RememberCatalogInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+    "declaration": "MergeCatalogListInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-presets.ts",
+    "declaration": "ResolveAiProviderBaseUrlInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-presets.ts",
+    "declaration": "IsAiProviderModelBlockedInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "AgentChatPromptInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "ResolveAiPromptContentInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "CanonicalizeAiPromptContentInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "AiPromptLabelInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "AiPromptDescriptionInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-prompts.ts",
+    "declaration": "MergeDefaultAiPromptsInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-run.ts",
+    "declaration": "IdlePromptRunSnapshotInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-run.ts",
+    "declaration": "PromptTabIndicatorInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-run.ts",
+    "declaration": "FormatAiPromptErrorInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/ai-run.ts",
+    "declaration": "ClassifyAiPromptErrorInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/extension-chat-state.ts",
+    "declaration": "ExtensionChatEventInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
+    "declaration": "OverviewSourceLookup",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/live-log.ts",
+    "declaration": "AppendCappedLogInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/media-transform.ts",
+    "declaration": "BuildMediaTransformArgsInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/overview-result.ts",
+    "declaration": "OverviewPlayheadInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/transcript-export.ts",
+    "declaration": "BuildTranscriptExportInput",
+    "classification": "callback-or-protocol",
+    "reason": "Carries executable callbacks or a lazy iterable protocol; remains a capability contract."
+  },
+  {
+    "file": "apps/desktop/src/shared/transcript-export.ts",
+    "declaration": "BuildExportUnitsInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/transcript-export.ts",
+    "declaration": "BuildTranscriptExportFileNameInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  },
+  {
+    "file": "apps/desktop/src/shared/transcript-export.ts",
+    "declaration": "BuildVideoSubtitleExportFileNameInput",
+    "classification": "pure-data-schema",
+    "reason": "Schema-derived structural record for legacy construction."
+  }
+]

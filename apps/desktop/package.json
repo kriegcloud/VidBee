@@ -74,6 +74,8 @@
     "@vidbee/downloader-core": "workspace:^",
     "@vidbee/browser-capture": "workspace:^",
     "@vidbee/i18n": "workspace:^",
+    "@vidbee/identity": "workspace:^",
+    "@vidbee/schema": "workspace:^",
     "@vidbee/logger": "workspace:^",
     "@vidbee/subscriptions-core": "workspace:^",
     "@vidbee/transcription": "workspace:^",
@@ -90,6 +92,7 @@
     "electron-ipc-decorator": "catalog:",
     "electron-log": "catalog:",
     "electron-store": "catalog:",
+    "effect": "catalog:",
     "i18next": "catalog:",
     "jiti": "catalog:",
     "jotai": "catalog:",
@@ -117,7 +120,12 @@
     "@vidbee/downloader-core-legacy": "workspace:^",
     "@vidbee/browser-capture-legacy": "workspace:^",
     "@vidbee/subscriptions-core-legacy": "workspace:^",
-    "@vidbee/transcription-legacy": "workspace:^"
+    "@vidbee/transcription-legacy": "workspace:^",
+    "@effect/opentelemetry": "catalog:",
+    "@opentelemetry/exporter-trace-otlp-proto": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
+    "@opentelemetry/sdk-trace-node": "catalog:",
+    "@opentelemetry/api-logs": "catalog:"
   },
   "optionalDependencies": {
     "sherpa-onnx-darwin-arm64": "catalog:",
@@ -127,10 +135,11 @@
     "sherpa-onnx-win-x64": "catalog:"
   },
   "devDependencies": {
-    "@effect/vitest": "catalog:",
     "@biomejs/biome": "catalog:",
-    "@electron/asar": "catalog:",
+    "@effect/atom-react": "catalog:",
+    "@effect/vitest": "catalog:",
     "@electron-toolkit/tsconfig": "catalog:",
+    "@electron/asar": "catalog:",
     "@iconify/json": "catalog:",
     "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
@@ -146,6 +155,8 @@
     "react-dom": "catalog:",
     "typescript": "catalog:",
     "unplugin-icons": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "@effect/platform-bun": "catalog:",
+    "protobufjs": "catalog:"
   }
 }

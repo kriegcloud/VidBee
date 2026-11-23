@@ -1,0 +1,4134 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "file": "apps/desktop/drizzle.config.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/electron.vite.config.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/renderer-react-resolve.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/assets.d.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/config/logger-config.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/download-engine/args-builder.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/download-engine/format-utils.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/env.d.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/index.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/DocumentSubscriptions.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/DocumentSubscriptions.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcAdmission.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcAdmission.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcServer.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/ElectronRpcServer.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/Publication.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/index.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/account-service.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/ai-service.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/app-service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/browser-cookies-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/download-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/file-system-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/history-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/mcp-service.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/player-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/settings-service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/site-icon-url.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/subscription-service.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/thumbnail-service.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/transcript-service.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/ipc/services/window-service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/DesktopNotifications.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/JsonSyntax.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/OriginalFailure.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/SynchronousHost.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-activity.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-article-images.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-article-review.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-article.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-artifacts.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-budget.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-capability-host.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-capability-tools.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-chat-runner.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-chat-store.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-cloud-budget.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-cloud-request.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-cloud-slots.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-compaction.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-composer.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-context.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-conversations.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-directory.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-document.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-durable-session.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-durable-tasks.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-durable-tools.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-events.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-evidence.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-extension-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-image-attachments.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-management-host.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-management-tools.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-media.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-memory.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-model-profile.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-model-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-notifications.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-output.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-permissions.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-plugin-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-progress.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-run-context.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-run-event.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-run-machine.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-run-timers.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-session-types.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-session.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skill-document.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skill-files.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skill-install.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skill-migration.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skill-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-skills.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-subtitles.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-task-wait.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-tool-approval.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-tool-loading.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-tools.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-transcript.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-ui-response.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-ui-tasks.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-ui-tool.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-usage.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/agent-web-access.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-model.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-prompt-runner.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-prompt-store.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-provider-test.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-remote-models.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-secrets.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-skill-auto-run.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ai-store.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/app-icon-menu.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/app-quit.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/asr-model-executor.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/asr-model-task.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/auth-client.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/automation-descriptor.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/bounded-output-buffer.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/browser-capture-sidecar-path.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/browser-cookie-access.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/bundled-resources-path.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cancelled-download-parts.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cliproxy.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cloud-capabilities.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cloud-device.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cloud-models.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cloud-subtitle-evidence.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/cloud-transcription.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/command-utils.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/concurrency-limiter.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database-path.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database/migrate.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/database/schema.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/desktop-console-format.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/download-facade.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/download-metadata.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/download-path-policy.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/download-power-save.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/download-queue-events.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/dubbing-text.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/export-video-subtitles-args.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/export-video-subtitles.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat-actions.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat-cards.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat-events.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat-requests.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat-source.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-chat.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-cookies.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-origin.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-overview.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-token.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/extension-transcript.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ffmpeg-manager.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/gallery-dl-manager.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/history-manager.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/import-local-media.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ipc-coalescer.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/legacy/JsonSyntax.compat.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation-compatibility",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/library-export.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-api-guard.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-poster-args.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-poster.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-speech-catalog.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-speech-config.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-speech-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-speech-timing.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/local-speech-worker.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/markdown-export.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/markdown-pdf.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/media-probe.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/media-transform-executor.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/mermaid-diagrams.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/path-resolver.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/playable-media.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/player-host.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/privileged-schemes.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/profile-subscriptions.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/projection.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/queue-ref.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/quit-confirmation-host.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/quit-confirmation.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/remote-captions.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/renderer-console-log.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/renderer-csp.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/settings-effects.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/settings-host.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/share-capture-window.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/share-image-split.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/social-media-file.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/social-profile-manager.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/social-session-keyring.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/social-session-manager.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/source-file.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/startup-dependencies.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/subscription-enqueue.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/subscriptions-host.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/subtitle-download-executor.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/subtitle-download.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/system-locale.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/task-queue-host.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/task-queue-migrate-policy.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/task-queue-migrate.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/thumbnail-cache.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/thumbnail-download.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/transcript-host.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/transcript-list-snapshot.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/transcript-queue-index.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/transcript-stage-history.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/transcription-worker-path.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/video-dubbing.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/video-library-files.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/video-library-host.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/video-localization.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/window-state.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/youtube-extractor-args.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/yt-dlp-info.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/yt-dlp-metadata-command.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ytdlp-kernel-command.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ytdlp-kernel-host.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ytdlp-kernel-model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ytdlp-kernel-service.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/ytdlp-manager.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/local-api.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/ai-tools.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/config.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/export-tools.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/http.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/server.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/settings-tools.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/subscription-tools.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/task-tools.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/tool.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/mcp/transcript-tools.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/portable.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/ApplicationOperations.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/ApplicationOperations.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/SynchronousHost.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/settings.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/tray.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/utils/auto-launch.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/utils/dock.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/utils/logger.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/utils/path-helpers.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/preload/DesktopRpcBridge.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/preload/index.d.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/preload/index.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/App.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/app-layout.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/agent/AgentChat.tsx",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/agent/AgentUiCards.tsx",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/agent/ChatSuggestions.tsx",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/AgentTaskIndicator.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/CookiesSetupDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadHistoryVirtualList.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadItem.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadParseErrorBanner.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadRecordContextMenuItems.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadSelectionContextMenuItems.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadTaskTree.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/DownloadTroubleshootButton.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/PlaylistDownload.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/PlaylistDownloadGroup.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/SingleVideoDownload.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/UnifiedDownloadHistory.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/audio-format-preferences.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/download-contents.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/download-item-utils.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/format-presentation.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/download/playlist-expanded-state.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/error/ErrorBoundary.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/error/ErrorPage.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/feedback/FeedbackLinks.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/kernel/DownloadEngineRow.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/kernel/KernelPreparationScreen.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/kernel/kernel-error-report.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/playlist/PlaylistPreviewCard.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/AccountPanel.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/AiPromptsPanel.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/AiProviderDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/AiProvidersPanel.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/AsrModelPicker.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/CloudCacheStatistics.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/CloudTranscriptionSettings.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/CookiesSetupPanel.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/CreditHistory.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/CreditReservations.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/ExtensionCookieSources.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/GitHubSkillDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/McpCapabilities.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/McpPanel.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/SettingsSectionNav.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/SkillDetailsDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/account-table.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/ai-model-icon.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/ai-provider-icon.tsx",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/asr-family-icon.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/asr-model-row.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/settings/asr-model-shared.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/subscription/SubscriptionFormDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/subscription/useProfileSubscribe.tsx",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentChatMessageView.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentChatRunFeedback.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentChatScrollState.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentEventStream.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentReasoningSelect.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentResponseContent.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentResponseShareCard.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AgentThinkingContent.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/AsrUpgradeDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/PromptClockText.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/SpeakerAvatar.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/SpeakerCountDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TabUnderline.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptAgentMessageRow.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptAudioEqualizer.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptAudioStage.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptCaptionShareCard.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptCaptionsPane.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptExportDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptInfoPane.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptModelsBanner.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptOverviewResult.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaybackBar.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaybackBarView.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaybackHost.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaybackSlot.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaybackStandby.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlayerNotice.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPlaylistPopover.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptProgressThinking.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptGuidance.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptHistory.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptPane.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptShareCard.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptPromptThinking.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptShareCardChrome.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptShareImageDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptSidePanel.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptSourceSwitch.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptSpeakersPane.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/TranscriptVideoJsPlayer.tsx",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/transcript/share-card-logo.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/accordion.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/add-url-popover.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/badge.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/bubble.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/button.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/card.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/checkbox.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/command-menu.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/context-menu.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/dialog.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/download-dialog-layout.tsx",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/dropdown-menu.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/hover-card.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/image-with-placeholder.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/input.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/item.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/label.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/message-scroller.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/message.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/popover.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/progress.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/radio-group.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/remote-image.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/resizable.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/response.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/scroll-area.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/select.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/separator.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/sheet.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/sidebar.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/slider.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/sonner.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/streamdown-plugins.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/switch.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/table.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/tabs.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/textarea.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/title-bar.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/ui/tooltip.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/video/AdvancedOptions.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/components/whats-new/WhatsNewDialog.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/data/popularSites.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/desktop-chrome.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/env.d.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-agent-chat.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-agent-task-events.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-app-icon-playback-menu.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-bilingual-captions.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-cached-thumbnail.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-cloud-account.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-download-events.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-download-origin-contexts.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-download-selection.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-extension-cookie-connection.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-history-sync.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-import-local-media.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-ipc-example.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-local-poster.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-prompt-run.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-streaming-transcript.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-transcript-media-player.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/hooks/use-transcript-playback-position.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/i18n.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/ai-credits.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/ai-prompt-label.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/capture-prompt-share.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/desktop-value-cohorts.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-error-guidance.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-list-focus.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-list-geometry.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-list-rows.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-list-scroll-margin.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-task-tree.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-transfer-locate.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/download-url.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/format-clock.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/ipc.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/local-file-link.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/local-file-src.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/local-poster-input.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/logger.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/mermaid-export.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/open-context-menu.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/pele-mermaid-plugin.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/pick-local-media.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/plain-translate.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/prompt-markdown.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/settings-navigation.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/share-card-fill.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/share-image-layout.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/skill-usage-suggestions.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/thinking-header.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-bilingual.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-caption-selection.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-detail-merge.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-follow.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-index.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-karaoke.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-library.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-playback-position.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-playback-source.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-playback.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-player-frame.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-playlist-fly.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-playlist.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-search.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-speakers.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-stream.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-tab-scroll.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-tab-search.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-view-transition.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-virtual.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/transcript-vtt.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/url.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/utils.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/main.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/About.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/Chat.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/Home.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/Settings.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/ShareCapture.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/Subscriptions.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/Transcript.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/router.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/RendererInvocation.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/StreamRecovery.atoms.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/agent-chat-launch.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/agent-tasks.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/cookie-setup.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/download-live-patch.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/downloads.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/settings.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/subscriptions.ts",
+      "partition": "legacy",
+      "capability": "9.2-subscriptions",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-models.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-playback-cues.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-playback.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-playlist.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-prompt-tab.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcript-reading.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/transcripts.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/video-request-coordinator.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/video.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/store/ytdlp-kernel.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DesktopRpcBridge.d.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DesktopRpcConnection.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/DocumentDelivery.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/ElectronRpc.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/ElectronRpcClient.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcCensus.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcField.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/RpcObservation.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Ai.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/AiNative.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Cloud.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Downloads.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Integration.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Integration.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/RemoteCaptions.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/StoredThread.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Subscription.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/transport/census/Transcript.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-chat.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-errors.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-export.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-history.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-markdown.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-notifications.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-permissions.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-progress.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-settings.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-subtitles.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-task.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-thread-patch.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/agent-ui.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-presets.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-prompt-text.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-prompts.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-provider-groups.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-run.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-thinking.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ai-types.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/app-icon-menu.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/builtin-skills.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/constants.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat-state.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-chat.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-cookies.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-identity.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview-reuse.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-overview.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-source-url.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/extension-transcript.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/live-log.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/mcp.ts",
+      "partition": "legacy",
+      "capability": "9.5-integrations",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/media-transform.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/overview-result.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/skill-install.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/source-media-kind.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/subtitle-export.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/transcript-export.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/tts-models.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/auth.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/index.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ipc.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/mermaid-export.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/player.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/share-card.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/ytdlp-kernel.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/download-file.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/format-preferences.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/native-playable.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/pending-download.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/utils/video-info-metadata.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/video-identity.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/video-localization.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/whats-new.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/test/ElectronLifecycle.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/test/ElectronLifecycle.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/test/TransportRuntime.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/agent-skill-permissions.spec.ts",
+      "partition": "legacy",
+      "capability": "9.4-ai",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/cliproxy.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/concurrency-limiter.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/foundation-transport.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/gallery-source.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/list-marquee-scroll.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/local-poster-input.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/local-poster.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/social-session-keyring.node.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/thumbnail-download.test.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/transcription-lifecycle.test.ts",
+      "partition": "legacy",
+      "capability": "9.3-transcription",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/upstream-history-sync.test.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/vendored-runtime.test.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/video-library-files.test.ts",
+      "partition": "legacy",
+      "capability": "9.1-downloads",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopConsoleFormat.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/DesktopLogging.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/ElectronLog.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/logging/Otlp.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/preload/logging/PreloadLogger.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/logging/RendererLogger.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLog.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/ForwardLogger.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/test/desktop-logging.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/test/desktop-otlp.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/telemetry-disposal.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/logging/DesktopLogWire.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-errors.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-history.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-markdown.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-settings.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-subtitles.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-task.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/agent-thread-patch.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-presets.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-prompts.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/ai-run.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-chat-state.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-overview-reuse.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/extension-transcript.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/live-log.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/media-transform.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/overview-result.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/source-media-kind.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/transcript-export.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/tts-models.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/types/share-card.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/download-file.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/utils/pending-download.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/compatibility/shared/video-localization.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/drivers/shared/BuiltinSkill.driver.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentAttachment.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentFailure.model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentPatch.model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/AgentUi.model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/AiPromptIds.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/ArrayHelpers.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/BuiltinSkill.model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/RawMessage.model.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/RecordFunction.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/StrictObject.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Tts.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/types/Desktop.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/test/settings-model.spec.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Settings.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsEnvironment.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsStore.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsStore.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/Settings.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/Settings.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/SettingsApplication.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/App.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/App.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/DesktopOperation.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Window.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/runtime/LegacyEffect.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/App.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/Window.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/AppHost.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/AppHost.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/WindowHost.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/WindowHost.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationHosts.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/settings.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/registrar.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/app-service.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/window-service.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/settings-service.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-runtime.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationEvents.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/shared/Desktop.rpc.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationStreams.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationHandlers.layer.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/FoundationServer.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-boot.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/lib/foundation-disposal.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationClient.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Foundation.atoms.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/DesktopAtomRuntime.entry.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationCalls.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/DesktopAtomProvider.tsx",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/document.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/foundation.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/lib/foundation-state.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-events.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/legacy/foundation-windows.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/settings.compatibility.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["node"]
+    },
+    {
+      "file": "apps/desktop/src/main/NativeFoundation.model.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/PreferenceHost.errors.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Preferences.driver.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/Settings.atoms.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationStorage.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/About.atoms.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/pages/SettingsScreen.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/SettingsPanels.tsx",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/SettingsPanels.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/runtime/FoundationFailures.service.ts",
+      "partition": "strict",
+      "capability": "9.0-foundation",
+      "environments": ["node", "web", "test"]
+    },
+    {
+      "file": "apps/desktop/src/renderer/src/legacy/kernel-error-report.ts",
+      "partition": "legacy",
+      "capability": "9.0-foundation",
+      "environments": ["web"]
+    }
+  ],
+  "renames": []
+}

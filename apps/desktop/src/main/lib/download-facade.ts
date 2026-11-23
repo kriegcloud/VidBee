@@ -50,7 +50,8 @@ import {
   type TaskInput,
   type TaskQueueAPI
 } from '@vidbee/task-queue-legacy'
-import { appendCappedLog } from '../../shared/live-log'
+import { appendCappedLog } from '../../compatibility/shared/live-log'
+import { buildPendingDownloadItem } from '../../compatibility/shared/utils/pending-download'
 import type {
   DownloadItem,
   DownloadOptions,
@@ -61,8 +62,7 @@ import type {
   VideoInfo,
   VideoInfoCommandResult
 } from '../../shared/types'
-import { buildPendingDownloadItem } from '../../shared/utils/pending-download'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { scopedLoggers } from '../utils/logger'
 import { cancelledPartTargets, deleteCancelledDownloadParts } from './cancelled-download-parts'
 import { toSharedSettings } from './command-utils'

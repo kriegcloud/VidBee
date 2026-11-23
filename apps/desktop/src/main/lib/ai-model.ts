@@ -7,12 +7,15 @@ import {
   type Model
 } from '@earendil-works/pi-ai/compat'
 import {
+  getAiProviderPreset,
+  resolveAiProviderBaseUrl
+} from '../../compatibility/shared/ai-presets'
+import {
   type AgentThinkingLevel,
   type AgentThinkingOptions,
   PROVIDER_THINKING_EFFORT_LEVELS,
   type ProviderDefaultThinkingLevel
 } from '../../shared/agent-chat'
-import { getAiProviderPreset, resolveAiProviderBaseUrl } from '../../shared/ai-presets'
 import type { AiProviderPresetId } from '../../shared/ai-types'
 
 type PiKnownProvider =

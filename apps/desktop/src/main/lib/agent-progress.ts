@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { AgentMessage } from '@earendil-works/pi-agent-core'
-import type { AgentErrorCode } from '../../shared/agent-errors'
-import { encodeAgentError, parseAgentError } from '../../shared/agent-errors'
+import type { AgentErrorCode } from '../../compatibility/shared/agent-errors'
+import { encodeAgentError, parseAgentError } from '../../compatibility/shared/agent-errors'
 
 /**
  * Structural view of one assistant turn.

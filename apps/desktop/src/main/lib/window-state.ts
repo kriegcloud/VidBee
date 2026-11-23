@@ -1,6 +1,6 @@
 import { app, type BrowserWindow } from 'electron'
-import log from 'electron-log/main'
 import type ElectronStore from 'electron-store'
+import { electronLog as log } from '../logging/ElectronLog.driver'
 
 const ElectronStoreModule = require('electron-store')
 const Store: typeof ElectronStore = ElectronStoreModule.default || ElectronStoreModule

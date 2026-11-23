@@ -2,7 +2,6 @@ import { Button } from '@renderer/components/ui/button'
 import { Response } from '@renderer/components/ui/response'
 import { ipcServices } from '@renderer/lib/ipc'
 import type { AgentArtifact } from '@shared/agent-chat'
-import { ARTIFACT_REFERENCE, splitAgentResponseMedia } from '@shared/agent-markdown'
 import {
   Attachment,
   AttachmentAction,
@@ -15,6 +14,10 @@ import {
 import { Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import {
+  ARTIFACT_REFERENCE,
+  splitAgentResponseMedia
+} from '../../../../compatibility/shared/agent-markdown'
 
 export { ARTIFACT_REFERENCE }
 

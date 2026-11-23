@@ -1,4 +1,4 @@
-import type { AgentFailure } from '../../shared/agent-errors'
+import type { AgentFailure } from '../../compatibility/shared/agent-errors'
 
 const INACTIVITY_MS = 5 * 60 * 1000
 const WALL_CLOCK_MS = 60 * 60 * 1000

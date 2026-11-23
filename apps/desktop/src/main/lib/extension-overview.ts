@@ -1,18 +1,18 @@
 import { createHash, randomBytes } from 'node:crypto'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { isDownloadTaskKind } from '@vidbee/task-queue-legacy'
-import { AI_OVERVIEW_PROMPT_ID } from '../../shared/ai-prompts'
-import type { AiPromptRunSnapshot } from '../../shared/ai-types'
-import type {
-  ExtensionOverviewInput,
-  ExtensionOverviewSnapshot
-} from '../../shared/extension-overview'
+import { AI_OVERVIEW_PROMPT_ID } from '../../compatibility/shared/ai-prompts'
 import {
   isReusableOverviewSnapshot,
   type OverviewDownloadMatch,
   resolveExtensionOverviewTarget,
   snapshotFromOverviewThread
-} from '../../shared/extension-overview-reuse'
+} from '../../compatibility/shared/extension-overview-reuse'
+import type { AiPromptRunSnapshot } from '../../shared/ai-types'
+import type {
+  ExtensionOverviewInput,
+  ExtensionOverviewSnapshot
+} from '../../shared/extension-overview'
 import { isExtensionSourceUrl } from '../../shared/extension-source-url'
 import { getAgentChatStore } from './agent-chat-store'
 import {

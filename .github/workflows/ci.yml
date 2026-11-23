@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
+        with:
+          # The ownership ratchet reads the baseline from the PR target revision.
+          fetch-depth: 0
 
       - name: Install Node.js
         uses: actions/setup-node@v4

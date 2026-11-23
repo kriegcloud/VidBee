@@ -5,7 +5,7 @@ import {
   agentAiSettingsSchema,
   agentSettingsSchema,
   agentTtsModelSchema
-} from '../../shared/agent-settings'
+} from '../../compatibility/shared/agent-settings'
 import { type AgentToolContext, defineAgentTool } from './agent-tools'
 
 /** Advertise validated application capabilities independently of the current media's modality. */

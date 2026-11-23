@@ -8,7 +8,8 @@
     "./client": "./src/client.ts",
     "./script": "./src/script.mjs",
     "./legacy": "./src/legacy/node.ts",
-    "./legacy/client": "./src/legacy/client.ts"
+    "./legacy/client": "./src/legacy/client.ts",
+    "./arguments": "./src/LogArguments.ts"
   },
   "types": "./src/node.ts",
   "scripts": {

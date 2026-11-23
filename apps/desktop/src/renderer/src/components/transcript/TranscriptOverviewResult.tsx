@@ -1,12 +1,12 @@
 import type { AgentArtifact } from '@shared/agent-chat'
+import { AgentOverview } from '@vidbee/ui/components/agent-overview'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   hasOverviewStructure,
   overviewPlayhead,
   parseOverviewMarkdown
-} from '@shared/overview-result'
-import { AgentOverview } from '@vidbee/ui/components/agent-overview'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+} from '../../../../compatibility/shared/overview-result'
 import { AgentResponseContent } from './AgentResponseContent'
 
 interface TranscriptOverviewResultProps {

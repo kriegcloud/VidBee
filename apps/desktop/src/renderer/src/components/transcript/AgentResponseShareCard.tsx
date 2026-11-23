@@ -1,7 +1,7 @@
 import { TranscriptCaptionShareCard } from '@renderer/components/transcript/TranscriptCaptionShareCard'
 import { TranscriptPromptShareCard } from '@renderer/components/transcript/TranscriptPromptShareCard'
-import type { ShareCardPayload } from '@shared/types/share-card'
 import type { Ref } from 'react'
+import type { ShareCardPayload } from '../../../../compatibility/shared/types/share-card'
 
 interface AgentResponseShareCardProps {
   cardRef?: Ref<HTMLDivElement>

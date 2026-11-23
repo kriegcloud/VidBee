@@ -1,57 +1,17 @@
-import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
-import type { AppSettings } from '../../../shared/types'
-import { updateDesktopSettings } from '../../lib/settings-host'
-import { applyDesktopQueueConcurrency } from '../../lib/task-queue-host'
-import { settingsManager } from '../../settings'
-import { applyAutoLaunchSetting } from '../../utils/auto-launch'
-import { applyDockVisibility } from '../../utils/dock'
+import { makeSettingsApplication } from "../../SettingsApplication.service.js";
 
-class SettingsService extends IpcService {
-  static readonly groupName = 'settings'
-
-  @IpcMethod()
-  get<K extends keyof AppSettings>(_context: IpcContext, key: K): AppSettings[K] {
-    return settingsManager.get(key)
-  }
-
-  @IpcMethod()
-  set<K extends keyof AppSettings>(_context: IpcContext, key: K, value: AppSettings[K]): void {
-    updateDesktopSettings({ [key]: value })
-  }
-
-  @IpcMethod()
-  getAll(_context: IpcContext): AppSettings {
-    return settingsManager.getAll()
-  }
-
-  @IpcMethod()
-  setAll(_context: IpcContext, settings: Partial<AppSettings>): void {
-    updateDesktopSettings(settings)
-  }
-
-  @IpcMethod()
-  reset(_context: IpcContext): void {
-    settingsManager.reset()
-    applyDockVisibility(settingsManager.get('hideDockIcon'))
-    applyAutoLaunchSetting(settingsManager.get('launchAtLogin'))
-    applyDesktopQueueConcurrency()
-  }
-
-  /**
-   * True when a returning user should see the current What's New card.
-   */
-  @IpcMethod()
-  shouldPromptWhatsNew(_context: IpcContext): boolean {
-    return settingsManager.shouldPromptWhatsNew()
-  }
-
-  /**
-   * Record that the current What's New card has been dismissed.
-   */
-  @IpcMethod()
-  markWhatsNewSeen(_context: IpcContext): void {
-    settingsManager.markWhatsNewSeen()
-  }
-}
-
-export { SettingsService }
+/** Settings mutations share the same application coordinator for typed RPCs and raw compatibility callers. The native shell supplies transcript scheduling and live-window broadcast callbacks.
+ * **Example** (Inspect the shared update factory)
+ * ```ts
+ * import { settingsApplication } from './settings-service.js'
+ * import type { SettingsApplicationPrimitives } from '../../SettingsApplication.service.js'
+ * import type { SettingsOperations } from '../../Settings.service.js'
+ * import type { SynchronousCall } from '../../lib/SynchronousHost.service.js'
+ * export const update = ({settings,call,native}: {settings:SettingsOperations;call:SynchronousCall;native:SettingsApplicationPrimitives}) =>
+ *   settingsApplication({settings,call,native}).update
+ * // Updates persist before side effects; reset has its own application sequence.
+ * ```
+ * @category services
+ * @since 0.0.0
+ */
+export const settingsApplication = makeSettingsApplication;

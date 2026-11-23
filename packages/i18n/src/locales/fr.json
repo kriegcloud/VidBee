@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Activez le téléchargement en un clic pour ajouter plusieurs liens à la fois",
     "clickToCopy": "Cliquez pour copier les détails",
     "clipboardEmpty": "Le presse-papiers est vide",
+    "desktopConnectionLost": "La connexion à l’application de bureau a été perdue. Rechargez cette fenêtre pour vous reconnecter.",
     "downloadFailed": "Échec du téléchargement",
     "downloadNecessaryFilesFailed": "Échec du téléchargement des fichiers nécessaires. Veuillez vérifier votre réseau et réessayer",
     "emptyUrl": "Veuillez entrer une URL",

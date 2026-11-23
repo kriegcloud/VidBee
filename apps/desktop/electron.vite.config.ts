@@ -21,8 +21,12 @@ const bundledWorkspacePackages = [
   '@vidbee/browser-capture',
   '@vidbee/browser-capture-legacy',
   '@vidbee/i18n',
+  '@vidbee/identity',
+  '@vidbee/schema',
   '@vidbee/ui',
   '@vidbee/logger',
+  '@vidbee/schema',
+  '@vidbee/identity',
   '@vidbee/task-queue',
   '@vidbee/task-queue-legacy',
   '@vidbee/subscriptions-core',
@@ -34,7 +38,8 @@ const bundledWorkspacePackages = [
   '@earendil-works/chord',
   '@earendil-works/pi-agent-core',
   '@earendil-works/pi-telemetry',
-  'zod'
+  'zod',
+  'effect'
 ]
 const nativeRuntimeExternals = [
   'electron',

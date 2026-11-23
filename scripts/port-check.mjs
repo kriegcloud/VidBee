@@ -1,3 +1,4 @@
+import { checkDesktop } from './port-desktop.mjs'
 import { execFileSync } from 'node:child_process'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, dirname, join } from 'node:path'
@@ -28,7 +29,7 @@ function extendsBase(file, seen = new Set()) {
     return target.endsWith('/tsconfig.base.json') || (existsSync(target) && extendsBase(target, seen))
   })
 }
-export function check(root) {
+export function check(root, desktopFiles = []) {
   const units = ['apps', 'packages'].flatMap((folder) => existsSync(join(root, folder)) ? walk(join(root, folder)) : [])
     .filter((file) => /\/tsconfig(?:\.[^/]*)?\.json$/.test(file))
     .map((file) => ({ file: relative(root, file), ported: extendsBase(file) }))
@@ -45,43 +46,47 @@ export function check(root) {
   for (const plugin of base.compilerOptions?.plugins ?? []) {
     if (plugin.overrides && Object.keys(plugin.overrides).length > 0) add('tsconfig.base.json', 'overrides', 1, 'Diagnostic overrides must stay empty')
   }
-  const roots = [...new Set(units.filter((unit) => unit.ported).map((unit) => dirname(unit.file)))]
+  const roots = [...new Set(units.filter((unit) => unit.ported && !unit.file.startsWith('apps/desktop/')).map((unit) => dirname(unit.file)))]
   if (existsSync(join(root, '.git'))) {
-    const paths = roots.flatMap((directory) => ['src', 'test'].map((name) => join(directory, name)))
+    const paths = [...roots.flatMap((directory) => ['src', 'test'].map((name) => join(directory, name))), ...desktopFiles.map((file) => join(root, file))]
     if (paths.length) {
       const files = execFileSync('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '-z', '--', ...paths], { cwd: root, encoding: 'utf8' })
       for (const file of files.split('\0').filter(Boolean).sort()) add(file, 'ignored-source', 1, 'Git-ignored file in a ported source or test tree')
     }
   }
-  for (const directory of roots) {
-    for (const absolute of walk(join(root, directory)).filter((file) => /\.[cm]?[jt]sx?$/.test(file))) {
-      const file = relative(root, absolute)
-      const text = readFileSync(absolute, 'utf8')
-      const entry = /(?:^|\/)legacy\//.test(file) || /(?:^|\/)(?:index|main|entry|cli)\.[cm]?[jt]sx?$/.test(file) || /\.entry\.[cm]?[jt]sx?$/.test(file)
-      const rules = [
-        ['diagnostics', /(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)@effect-diagnostics|@effect-diagnostics/g, false],
-        ['promise', /\bEffect\s*\.\s*(?:promise|tryPromise)\b/g, /\.driver\.ts$/.test(file)],
-        ['runtime', /\bEffect\s*\.\s*run\w*\b|\bManagedRuntime\b/g, entry],
-        // The owner's standing rules (plan section 5 item 6) and the no-suppression rule (item 2).
-        ['suppression', /@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|eslint-disable/g, false],
-        ['native-collection', /\bnew\s+(?:Map|Set)\b/g, false],
-        ['node-http', /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)["'](?:node:)?https?["']/g, false],
-        ['node-sqlite-before-cutover', /(?:from\s*|import\s*\()["'](?:@effect\/sql-sqlite-node(?:\/[^"']*)?|@vidbee\/db\/node)["']/g, file.startsWith('packages/db/')],
-        ['zod', /from\s+["']zod(?:\/[^"']*)?["']/g, false]
-      ]
-      for (const [rule, pattern, exempt] of rules) {
-        if (exempt) continue
-        for (const match of text.matchAll(pattern)) add(file, rule, text.slice(0, match.index).split('\n').length, match[0])
-      }
+  for (const absolute of [...roots.flatMap((directory) => walk(join(root, directory)).filter((file) => /\.[cm]?[jt]sx?$/.test(file))), ...desktopFiles.map((file) => join(root, file))]) {
+    const file = relative(root, absolute)
+    const text = readFileSync(absolute, 'utf8')
+    const entry = /(?:^|\/)legacy\//.test(file) || /(?:^|\/)(?:index|main|entry|cli)\.[cm]?[jt]sx?$/.test(file) || /\.entry\.[cm]?[jt]sx?$/.test(file)
+    const rules = [
+      ['diagnostics', /(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)@effect-diagnostics|@effect-diagnostics/g, false],
+      ['promise', /\bEffect\s*\.\s*(?:promise|tryPromise)\b/g, /\.driver\.ts$/.test(file)],
+      ['runtime', /\bEffect\s*\.\s*run\w*\b|\bManagedRuntime\b/g, entry],
+      // The owner's standing rules (plan section 5 item 6) and the no-suppression rule (item 2).
+      ['suppression', /@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|eslint-disable/g, false],
+      ['native-collection', /\bnew\s+(?:Map|Set)\b/g, false],
+      ['node-http', /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)["'](?:node:)?https?["']/g, false],
+      ['node-sqlite-before-cutover', /(?:from\s*|import\s*\()["'](?:@effect\/sql-sqlite-node(?:\/[^"']*)?|@vidbee\/db\/node)["']/g, file.startsWith('packages/db/')],
+      ['zod', /from\s+["']zod(?:\/[^"']*)?["']/g, false]
+    ]
+    for (const [rule, pattern, exempt] of rules) {
+      if (exempt) continue
+      for (const match of text.matchAll(pattern)) add(file, rule, text.slice(0, match.index).split('\n').length, match[0])
     }
   }
   return { units, violations }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const result = check(process.cwd())
+  let desktop
+  let failure
+  try { desktop = await checkDesktop(process.cwd(), check(process.cwd()).units) } catch (error) { failure = error.message }
+  const result = check(process.cwd(), desktop?.files)
+  result.desktop = desktop
+  if (failure) result.violations.push({ file: "apps/desktop/port-units.json", rule: "desktop-ownership", line: 1, detail: failure })
   if (process.argv.includes('--json')) process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)
   else {
     console.table(result.units.map((unit) => ({ unit: unit.file, status: unit.ported ? 'ported' : 'unported' })))
+    if (desktop) console.log(`Desktop partially ported: ${desktop.strict} strict; ${desktop.legacy} legacy; memberships ${JSON.stringify(desktop.memberships)}`)
     if (result.violations.length) console.table(result.violations)
     process.stdout.write(`${result.units.filter((unit) => unit.ported).length} ported configs; ${result.violations.length} violations\n`)
   }

@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Ative o download com um clique para adicionar vários links de uma vez",
     "clickToCopy": "Clique para copiar detalhes",
     "clipboardEmpty": "Área de transferência vazia",
+    "desktopConnectionLost": "A ligação à aplicação de computador foi perdida. Recarregue esta janela para voltar a ligar.",
     "downloadFailed": "Download falhou",
     "downloadNecessaryFilesFailed": "Falha ao baixar arquivos necessários. Verifique sua rede e tente novamente",
     "emptyUrl": "Por favor, insira uma URL",

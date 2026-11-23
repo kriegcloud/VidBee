@@ -1,28 +1,39 @@
-import { isDownloadTaskKind, type TaskKind } from '@vidbee/task-queue-legacy'
-import { type AgentThread, selectedAgentMessages } from './agent-chat'
-import { AI_OVERVIEW_PROMPT_ID } from './ai-prompts'
-import type { AiPromptRunSnapshot, AiPromptRunStatus } from './ai-types'
-import { videoIdentityFromUrl } from './video-identity'
+import { $DesktopId } from '@vidbee/identity/packages'
+import { TaskKind } from '@vidbee/task-queue/Task.model'
+import { isDownloadTaskKind } from '@vidbee/task-queue/types'
+import * as A from 'effect/Array'
+import { pipe } from 'effect/Function'
+import * as O from 'effect/Option'
+import * as Order from 'effect/Order'
+import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
+import * as Str from 'effect/String'
+import { AI_OVERVIEW_PROMPT_ID } from './AiPromptIds.js'
+import { type AgentThread, selectedAgentMessages } from './agent-chat.js'
+import { AiPromptRunSnapshot, type AiPromptRunStatus } from './ai-types.js'
+import { recordFunction } from './RecordFunction.js'
+import { videoIdentityFromUrl } from './video-identity.js'
+
+const $I = $DesktopId.create('shared/extension-overview-reuse')
 
 /** Download-shaped row used to match an extension watch URL to Desktop history. */
-export interface OverviewDownloadMatch {
-  id: string
-  kind: TaskKind
-  input: { url: string }
-  updatedAt: number
-}
 
 /** Attach an existing Desktop Overview, start on that download, or use an ephemeral job. */
-export interface ExtensionOverviewTarget {
-  downloadId: string
-  reused: boolean
-  snapshot: AiPromptRunSnapshot | null
-}
 
 /**
  * True when an existing Overview is worth showing instead of starting another run.
  *
  * @param snapshot Live agent or prompt-run result for one download.
+ *
+ * **Example** (Access the isReusableOverviewSnapshot contract)
+ *
+ * ```ts
+ * import { isReusableOverviewSnapshot } from './extension-overview-reuse.js'
+ * void isReusableOverviewSnapshot
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function isReusableOverviewSnapshot(snapshot: AiPromptRunSnapshot): boolean {
   if (snapshot.status === 'running') {
@@ -31,24 +42,41 @@ export function isReusableOverviewSnapshot(snapshot: AiPromptRunSnapshot): boole
   if (snapshot.status === 'idle') {
     return false
   }
-  return Boolean(snapshot.text.trim())
+  return P.isTruthy(Str.trim(snapshot.text))
 }
 
 /**
  * Project the selected Overview agent reply onto the extension snapshot contract.
  *
  * @param thread Persisted Desktop agent thread for this video.
+ *
+ * **Example** (Access the snapshotFromOverviewThread contract)
+ *
+ * ```ts
+ * import { snapshotFromOverviewThread } from './extension-overview-reuse.js'
+ * void snapshotFromOverviewThread
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function snapshotFromOverviewThread(thread: AgentThread): AiPromptRunSnapshot | null {
-  const assistant = [...selectedAgentMessages(thread)]
-    .reverse()
-    .find((message) => message.role === 'assistant')
-  if (!assistant) {
+  const assistant = pipe(
+    selectedAgentMessages(thread),
+    A.reverse,
+    A.findFirst((message) => message.role === 'assistant'),
+    O.getOrUndefined
+  )
+  if (assistant === undefined) {
     return null
   }
-  const run = thread.runs.find((item) => item.id === assistant.runId)
+  const run = pipe(
+    thread.runs,
+    A.findFirst((item) => item.id === assistant.runId),
+    O.getOrUndefined
+  )
   const status = overviewStatusFromAgent(run?.status, assistant.text)
-  if (!status) {
+  if (status === null) {
     return null
   }
   return {
@@ -59,7 +87,7 @@ export function snapshotFromOverviewThread(thread: AgentThread): AiPromptRunSnap
     thinking: assistant.thinking,
     thinkingMs: assistant.thinkingMs ?? 0,
     error: run?.error ?? null,
-    errorCode: run?.error ? 'unknown' : null,
+    errorCode: P.isTruthy(run?.error) ? 'unknown' : null,
     updatedAt: run?.updatedAt ?? assistant.createdAt
   }
 }
@@ -83,7 +111,7 @@ function overviewStatusFromAgent(
   if (runStatus === 'error') {
     return 'error'
   }
-  return text.trim() ? 'completed' : null
+  return Str.trim(text).length > 0 ? 'completed' : null
 }
 
 /**
@@ -92,31 +120,80 @@ function overviewStatusFromAgent(
  * @param sourceUrl Watch URL from the extension tab.
  * @param tasks Local download history rows.
  * @param hasReusableOverview True when that download already has a showable Overview.
+ *
+ * **Example** (Import the OverviewSourceLookup contract)
+ *
+ * ```ts
+ * export type { OverviewSourceLookup } from './extension-overview-reuse.js'
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
-export function findDownloadIdForSourceUrl(
-  sourceUrl: string,
-  tasks: readonly OverviewDownloadMatch[],
-  hasReusableOverview: (downloadId: string) => boolean = () => false
-): string | null {
-  const identity = videoIdentityFromUrl(sourceUrl)
-  if (!identity) {
-    return null
-  }
-  const matches = tasks.filter(
-    (task) => isDownloadTaskKind(task.kind) && videoIdentityFromUrl(task.input.url) === identity
-  )
-  if (matches.length === 0) {
-    return null
-  }
-  const withOverview = matches.filter((task) => hasReusableOverview(task.id))
-  const pool = withOverview.length > 0 ? withOverview : matches
-  return [...pool].sort((left, right) => right.updatedAt - left.updatedAt)[0]?.id ?? null
+export interface OverviewSourceLookup {
+  readonly sourceUrl: string
+  readonly tasks: readonly OverviewDownloadMatch[]
+  readonly hasReusableOverview: (downloadId: string) => boolean
 }
+/** findDownloadIdForSourceUrl shared contract.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the findDownloadIdForSourceUrl contract)
+ *
+ * ```ts
+ * import { findDownloadIdForSourceUrl } from './extension-overview-reuse.js'
+ * void findDownloadIdForSourceUrl
+ * ```
+ *
+ */
+export const findDownloadIdForSourceUrl: {
+  (): (input: OverviewSourceLookup) => string | null
+  (input: OverviewSourceLookup): string | null
+} = recordFunction(
+  ({ sourceUrl, tasks, hasReusableOverview }: OverviewSourceLookup): string | null => {
+    const identity = videoIdentityFromUrl(sourceUrl)
+    if (identity === null) {
+      return null
+    }
+    const matches = A.filter(
+      tasks,
+      (task, index) =>
+        index in tasks &&
+        isDownloadTaskKind(task.kind) &&
+        videoIdentityFromUrl(task.input.url) === identity
+    )
+    if (matches.length === 0) {
+      return null
+    }
+    const withOverview = A.filter(matches, (task) => hasReusableOverview(task.id))
+    const pool = withOverview.length > 0 ? withOverview : matches
+    return (
+      A.sort(
+        [...pool],
+        Order.make<OverviewDownloadMatch>((left, right) => {
+          const difference = right.updatedAt - left.updatedAt
+          return difference < 0 ? -1 : difference > 0 ? 1 : 0
+        })
+      )[0]?.id ?? null
+    )
+  }
+)
 
 /**
  * Reuse a Desktop download's Overview when possible; otherwise bind work to that download.
  *
  * @param input Source URL, regenerate flag, local tasks, and a live Overview lookup.
+ *
+ * **Example** (Access the resolveExtensionOverviewTarget contract)
+ *
+ * ```ts
+ * import { resolveExtensionOverviewTarget } from './extension-overview-reuse.js'
+ * void resolveExtensionOverviewTarget
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export function resolveExtensionOverviewTarget(input: {
   forceRegenerate: boolean
@@ -126,18 +203,115 @@ export function resolveExtensionOverviewTarget(input: {
   overviewFor: (downloadId: string) => AiPromptRunSnapshot | null
 }): ExtensionOverviewTarget {
   if (input.forceRegenerate) {
-    return { downloadId: input.ephemeralDownloadId, reused: false, snapshot: null }
+    return {
+      downloadId: input.ephemeralDownloadId,
+      reused: false,
+      snapshot: null
+    }
   }
-  const downloadId = findDownloadIdForSourceUrl(input.sourceUrl, input.tasks, (id) => {
-    const snapshot = input.overviewFor(id)
-    return Boolean(snapshot && isReusableOverviewSnapshot(snapshot))
+  const downloadId = findDownloadIdForSourceUrl({
+    sourceUrl: input.sourceUrl,
+    tasks: input.tasks,
+    hasReusableOverview: (id) => {
+      const snapshot = input.overviewFor(id)
+      return snapshot !== null && P.isTruthy(snapshot) && isReusableOverviewSnapshot(snapshot)
+    }
   })
-  if (!downloadId) {
-    return { downloadId: input.ephemeralDownloadId, reused: false, snapshot: null }
+  if (downloadId === null) {
+    return {
+      downloadId: input.ephemeralDownloadId,
+      reused: false,
+      snapshot: null
+    }
   }
   const snapshot = input.overviewFor(downloadId)
-  if (snapshot && isReusableOverviewSnapshot(snapshot)) {
-    return { downloadId, reused: true, snapshot }
+  if (snapshot !== null && isReusableOverviewSnapshot(snapshot)) {
+    return {
+      downloadId,
+      reused: true,
+      snapshot
+    }
   }
-  return { downloadId, reused: false, snapshot: null }
+  return {
+    downloadId,
+    reused: false,
+    snapshot: null
+  }
 }
+
+/** OverviewDownloadMatch shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid OverviewDownloadMatch input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { OverviewDownloadMatch } from './extension-overview-reuse.js'
+ * strictEqual(S.is(OverviewDownloadMatch)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const OverviewDownloadMatch = S.Struct({
+  id: S.String.pipe(S.mutableKey),
+  kind: TaskKind.pipe(S.mutableKey),
+  input: S.Struct({
+    url: S.String.pipe(S.mutableKey)
+  }).pipe(S.mutableKey),
+  updatedAt: S.Finite.pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('OverviewDownloadMatch', {
+    description: 'OverviewDownloadMatch shared boundary data.'
+  })
+)
+/** Decoded mutable OverviewDownloadMatch data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the OverviewDownloadMatch contract)
+ *
+ * ```ts
+ * import { OverviewDownloadMatch } from './extension-overview-reuse.js'
+ * void OverviewDownloadMatch
+ * ```
+ *
+ */
+export type OverviewDownloadMatch = typeof OverviewDownloadMatch.Type
+
+/** ExtensionOverviewTarget shared data; structural for legacy construction.
+ *
+ * **Example** (Reject invalid ExtensionOverviewTarget input)
+ *
+ * ```ts
+ * import { strictEqual } from 'node:assert'
+ * import * as S from 'effect/Schema'
+ * import { ExtensionOverviewTarget } from './extension-overview-reuse.js'
+ * strictEqual(S.is(ExtensionOverviewTarget)(Symbol.for('invalid-model')), false)
+ * ```
+ *
+ * @category schemas
+ * @since 0.0.0
+ */
+export const ExtensionOverviewTarget = S.Struct({
+  downloadId: S.String.pipe(S.mutableKey),
+  reused: S.Boolean.pipe(S.mutableKey),
+  snapshot: S.Union([AiPromptRunSnapshot, S.Null]).pipe(S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ExtensionOverviewTarget', {
+    description: 'ExtensionOverviewTarget shared boundary data.'
+  })
+)
+/** Decoded mutable ExtensionOverviewTarget data.
+ * @category type-level
+ * @since 0.0.0
+ *
+ * **Example** (Access the ExtensionOverviewTarget contract)
+ *
+ * ```ts
+ * import { ExtensionOverviewTarget } from './extension-overview-reuse.js'
+ * void ExtensionOverviewTarget
+ * ```
+ *
+ */
+export type ExtensionOverviewTarget = typeof ExtensionOverviewTarget.Type

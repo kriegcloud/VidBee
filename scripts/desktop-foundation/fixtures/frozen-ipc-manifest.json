@@ -1,0 +1,101 @@
+{
+  "revision": "aeb83777",
+  "files": [
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/index.ts",
+      "source": "apps/desktop/src/main/ipc/index.ts",
+      "sourceDigest": "774760ebae834dcc3dcb029f15a5b3ba03de01cb3602aa210ae125818bdbf899",
+      "digest": "774760ebae834dcc3dcb029f15a5b3ba03de01cb3602aa210ae125818bdbf899"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/account-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/account-service.ts",
+      "sourceDigest": "e62d3d2d0f0a0cd00e8cf8abd51b273b1aebf13b9071f259e3ba12d5921a79d5",
+      "digest": "f81f34662615b19111200f0a729096bbdc3cb0c74be55ea4a6935f532214841d"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/ai-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/ai-service.ts",
+      "sourceDigest": "0b1ada4448f6a7ca2c288f834a387577f6a378a96cf8a6602e5d8a594b415caa",
+      "digest": "be671e0d6a17653e9431f6325c43c7e9020f948e11181eba4cf806ae725d0e73"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/app-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/app-service.ts",
+      "sourceDigest": "199a0f6b7cca2d53b497ebb8760b472ae23953346fd5bc0ec40f249fd665dab9",
+      "digest": "a50eaa6100d580b75ba053dd20f326b6f69c170a63ffadff3c6624a65161cd52"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/browser-cookies-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/browser-cookies-service.ts",
+      "sourceDigest": "73db7165527377d6d2b7458f0f912f4bae0b513962b8295b319c29c1a8ccb0fd",
+      "digest": "58db9beeede8165e50b7899f847319266c1fa99e825dcfb90b3c40aee4046277"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/download-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/download-service.ts",
+      "sourceDigest": "b5e3249331800a9de4cfc031dd52eef6d20690b3eb5615945033e0f7288f06ee",
+      "digest": "816ae9c17052c395aadc1e16bf110d9e9a31c5823e373728177e2b8f7dd37c32"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/file-system-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/file-system-service.ts",
+      "sourceDigest": "d8799a175af29c90dd0fd8903f3a3ec1b0f815528c95e978035c61d31cbeb41c",
+      "digest": "46f7e8c79c734131009a05757dfc0cde07f5dd6215b2e7d5722e6370367f3d87"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/history-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/history-service.ts",
+      "sourceDigest": "51c5ba60e8392b0b22208482f93934c2b185022e925e7a5d6ed23b90a4a3dc30",
+      "digest": "0389ba78399d42be227333ffdc85068ba1a140fe4b6d260888a992b2177b7e00"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/mcp-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/mcp-service.ts",
+      "sourceDigest": "14206a769ccf48c52f3cb514b91ae351d768f8f1aaff02f857938d1b2d1add61",
+      "digest": "03ae1757a83f98197b06d7ee77531cf4f98d697467f9e9be5872c8c1e2882f80"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/player-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/player-service.ts",
+      "sourceDigest": "ae75295db09fd12174b7640ef5918e19871fc26e50fe55206e0c192c00e7089f",
+      "digest": "af307025f9b2c902e8b68e715fec7c63a8b5ff31aa991db5a283253fd45a1765"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/settings-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/settings-service.ts",
+      "sourceDigest": "f40be279e89512f311ce58d78639f70d4410bef3f66eae31d05a69aaca4bf0a1",
+      "digest": "18d207ce013669657eae23b6bb4e6ced0ea16e80c4ad6b31987ac1e2e5693eb6"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/site-icon-url.ts",
+      "source": "apps/desktop/src/main/ipc/services/site-icon-url.ts",
+      "sourceDigest": "13d6aecc8cf01bddce8bbfa047b60c405a06c39ba69df98bd90f24f63d1dc25c",
+      "digest": "13d6aecc8cf01bddce8bbfa047b60c405a06c39ba69df98bd90f24f63d1dc25c"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/subscription-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/subscription-service.ts",
+      "sourceDigest": "44db7584437c9587989fcbbef3fec9dc770b25fd8b2144c8f3be9f8f28bddc5c",
+      "digest": "2b610f13245bf1960a4d34da2bbc647441d30327bac7e7b50b0613db0c92f863"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/thumbnail-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/thumbnail-service.ts",
+      "sourceDigest": "f74e13cd8493373782c07af37d7527e06da28fa12cfe608651eeb180f55e0e0b",
+      "digest": "263a2f8e2df23fb40a20cc76e718dfa9975d0e0c98b807b16685e3072cacba83"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/transcript-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/transcript-service.ts",
+      "sourceDigest": "1b56d11d4abed9b8e4dc0163d8407e1c9f1c6a7d81b06120d913bf01188925d6",
+      "digest": "7934aef5c9ad90e29f63abb774b1634b0c97fab9f5669127fb4ca1c6f4da0eb2"
+    },
+    {
+      "file": "scripts/desktop-foundation/fixtures/frozen-ipc/services/window-service.ts",
+      "source": "apps/desktop/src/main/ipc/services/window-service.ts",
+      "sourceDigest": "86da99560af2c44aaca669bd22bcd1d2725d07069ffe51714538198414333962",
+      "digest": "5bbfaad29f421e1f16699d52e184f79873397b3c510818202f79d9b194b430eb"
+    }
+  ]
+}

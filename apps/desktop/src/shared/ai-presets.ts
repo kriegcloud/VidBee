@@ -1,8 +1,27 @@
-import type { AiProviderPreset, AiProviderPresetId } from './ai-types'
+import { $DesktopId } from '@vidbee/identity/packages'
+import * as A from 'effect/Array'
+import * as HM from 'effect/HashMap'
+import * as O from 'effect/Option'
+import * as P from 'effect/Predicate'
+import * as S from 'effect/Schema'
+import * as Str from 'effect/String'
+import { type AiProviderPreset, AiProviderPresetId } from './ai-types'
+import { recordFunction } from './RecordFunction.js'
 
+const $I = $DesktopId.create('shared/ai-presets')
 /**
  * Built-in OpenAI-compatible providers. Preset base URLs stay in the catalog so
  * the settings dialog can hide the field unless the user picks Custom.
+ *
+ * **Example** (Access the AI_PROVIDER_PRESETS contract)
+ *
+ * ```ts
+ * import { AI_PROVIDER_PRESETS } from './ai-presets.js'
+ * void AI_PROVIDER_PRESETS
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export const AI_PROVIDER_PRESETS: readonly AiProviderPreset[] = [
   {
@@ -203,17 +222,28 @@ export const AI_PROVIDER_PRESETS: readonly AiProviderPreset[] = [
     website: 'open.bigmodel.cn'
   }
 ] as const
-
-const PRESET_BY_ID = new Map(AI_PROVIDER_PRESETS.map((preset) => [preset.id, preset]))
+const PRESET_BY_ID = HM.fromIterable(
+  A.map(AI_PROVIDER_PRESETS, (preset): [string, AiProviderPreset] => [preset.id, preset])
+)
 
 /**
  * Look up a built-in provider by id.
  *
  * @param id Preset id from settings or storage.
  * @returns The catalog entry, or undefined when the id is unknown.
+ *
+ * **Example** (Access the getAiProviderPreset contract)
+ *
+ * ```ts
+ * import { getAiProviderPreset } from './ai-presets.js'
+ * void getAiProviderPreset
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export const getAiProviderPreset = (id: string): AiProviderPreset | undefined =>
-  PRESET_BY_ID.get(id as AiProviderPresetId)
+  O.getOrUndefined(HM.get(PRESET_BY_ID, id))
 
 /**
  * Resolve the base URL a provider should use.
@@ -224,21 +254,34 @@ export const getAiProviderPreset = (id: string): AiProviderPreset | undefined =>
  * @param presetId Built-in provider id.
  * @param userBaseUrl Optional URL typed in the dialog.
  */
-export const resolveAiProviderBaseUrl = (
-  presetId: AiProviderPresetId,
-  userBaseUrl?: string
-): string => {
+function resolveAiProviderBaseUrlBody(presetId: AiProviderPresetId, userBaseUrl?: string): string {
   const preset = getAiProviderPreset(presetId)
-  if (preset?.requiresBaseUrl) {
-    return userBaseUrl?.trim() ?? ''
+  if (P.isTruthy(preset?.requiresBaseUrl)) {
+    return (
+      (userBaseUrl === undefined || userBaseUrl === null ? undefined : Str.trim(userBaseUrl)) ?? ''
+    )
   }
-  return preset?.baseUrl ?? userBaseUrl?.trim() ?? ''
+  return (
+    preset?.baseUrl ??
+    (userBaseUrl === undefined || userBaseUrl === null ? undefined : Str.trim(userBaseUrl)) ??
+    ''
+  )
 }
 
 /**
  * True when the dialog should ask for a base URL.
  *
  * @param presetId Built-in provider id.
+ *
+ * **Example** (Access the aiProviderRequiresBaseUrl contract)
+ *
+ * ```ts
+ * import { aiProviderRequiresBaseUrl } from './ai-presets.js'
+ * void aiProviderRequiresBaseUrl
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export const aiProviderRequiresBaseUrl = (presetId: AiProviderPresetId): boolean =>
   getAiProviderPreset(presetId)?.requiresBaseUrl === true
@@ -247,6 +290,16 @@ export const aiProviderRequiresBaseUrl = (presetId: AiProviderPresetId): boolean
  * True when the provider needs an API key to run.
  *
  * @param presetId Built-in provider id.
+ *
+ * **Example** (Access the aiProviderNeedsApiKey contract)
+ *
+ * ```ts
+ * import { aiProviderNeedsApiKey } from './ai-presets.js'
+ * void aiProviderNeedsApiKey
+ * ```
+ *
+ * @category utilities
+ * @since 0.0.0
  */
 export const aiProviderNeedsApiKey = (presetId: AiProviderPresetId): boolean =>
   getAiProviderPreset(presetId)?.needsApiKey !== false
@@ -262,8 +315,109 @@ const CLIPROXY_BLOCKED_MODEL = /claude|anthropic|\b(?:opus|sonnet|haiku|fable)\b
  * @param presetId Built-in provider id.
  * @param modelId Requested model id.
  */
-export const isAiProviderModelBlocked = (presetId: AiProviderPresetId, modelId: string): boolean =>
-  presetId === 'cliproxy' && CLIPROXY_BLOCKED_MODEL.test(modelId)
-
+function isAiProviderModelBlockedBody(presetId: AiProviderPresetId, modelId: string): boolean {
+  return presetId === 'cliproxy' && CLIPROXY_BLOCKED_MODEL.test(modelId)
+}
+/** CLIPROXY_BLOCKED_MODEL_ERROR shared contract.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the CLIPROXY_BLOCKED_MODEL_ERROR contract)
+ *
+ * ```ts
+ * import { CLIPROXY_BLOCKED_MODEL_ERROR } from './ai-presets.js'
+ * void CLIPROXY_BLOCKED_MODEL_ERROR
+ * ```
+ *
+ */
 export const CLIPROXY_BLOCKED_MODEL_ERROR =
   'Claude models are not available through CLIProxyAPI. Use the Anthropic provider with an API key.'
+
+/** Record contract for resolveAiProviderBaseUrl. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the ResolveAiProviderBaseUrlInput contract)
+ *
+ * ```ts
+ * import { ResolveAiProviderBaseUrlInput } from './ai-presets.js'
+ * void ResolveAiProviderBaseUrlInput
+ * ```
+ *
+ */
+export const ResolveAiProviderBaseUrlInput = S.Struct({
+  presetId: S.mutableKey(AiProviderPresetId),
+  userBaseUrl: S.Union([S.String, S.Undefined]).pipe(S.UndefinedOr, S.optionalKey, S.mutableKey)
+}).pipe(
+  $I.annoteSchema('ResolveAiProviderBaseUrlInput', {
+    description:
+      'Explicit input record for ResolveAiProviderBaseUrlInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived ResolveAiProviderBaseUrlInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type ResolveAiProviderBaseUrlInput = typeof ResolveAiProviderBaseUrlInput.Type
+/** resolveAiProviderBaseUrl with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the resolveAiProviderBaseUrl contract)
+ *
+ * ```ts
+ * import { resolveAiProviderBaseUrl } from './ai-presets.js'
+ * void resolveAiProviderBaseUrl
+ * ```
+ *
+ */
+export const resolveAiProviderBaseUrl: {
+  (): (input: ResolveAiProviderBaseUrlInput) => string
+  (input: ResolveAiProviderBaseUrlInput): string
+} = recordFunction((input: ResolveAiProviderBaseUrlInput): string =>
+  resolveAiProviderBaseUrlBody(input.presetId, input.userBaseUrl)
+)
+/** Record contract for isAiProviderModelBlocked. structural for legacy construction.
+ * @category ports
+ * @since 0.0.0
+ *
+ * **Example** (Access the IsAiProviderModelBlockedInput contract)
+ *
+ * ```ts
+ * import { IsAiProviderModelBlockedInput } from './ai-presets.js'
+ * void IsAiProviderModelBlockedInput
+ * ```
+ *
+ */
+export const IsAiProviderModelBlockedInput = S.Struct({
+  presetId: S.mutableKey(AiProviderPresetId),
+  modelId: S.mutableKey(S.String)
+}).pipe(
+  $I.annoteSchema('IsAiProviderModelBlockedInput', {
+    description:
+      'Explicit input record for IsAiProviderModelBlockedInput; structural for legacy construction.'
+  })
+)
+/** Schema-derived IsAiProviderModelBlockedInput input.
+ * @category type-level
+ * @since 0.0.0
+ */
+export type IsAiProviderModelBlockedInput = typeof IsAiProviderModelBlockedInput.Type
+/** isAiProviderModelBlocked with an explicit record and zero-argument pipeable form.
+ * @category utilities
+ * @since 0.0.0
+ *
+ * **Example** (Access the isAiProviderModelBlocked contract)
+ *
+ * ```ts
+ * import { isAiProviderModelBlocked } from './ai-presets.js'
+ * void isAiProviderModelBlocked
+ * ```
+ *
+ */
+export const isAiProviderModelBlocked: {
+  (): (input: IsAiProviderModelBlockedInput) => boolean
+  (input: IsAiProviderModelBlockedInput): boolean
+} = recordFunction((input: IsAiProviderModelBlockedInput): boolean =>
+  isAiProviderModelBlockedBody(input.presetId, input.modelId)
+)

@@ -1,130 +1,87 @@
-import os from 'node:os'
-import type { YtDlpKernelStatus } from '@shared/types'
-import { app, BrowserWindow, dialog } from 'electron'
-import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
-import { ffmpegManager } from '../../lib/ffmpeg-manager'
-import { getYtDlpKernelService } from '../../lib/ytdlp-kernel-host'
-import { ytdlpManager } from '../../lib/ytdlp-manager'
-import { scopedLoggers } from '../../utils/logger'
-import { buildSiteIconFallbackUrl, buildSiteIconUrl } from './site-icon-url'
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import * as Str from "effect/String";
+import { DesktopApp } from "../../App.service.js";
+import { AppHost } from "../../AppHost.service.js";
+import type { AppOperations } from "../../App.service.js";
+import type { AppHostOperations } from "../../AppHost.service.js";
+import type { NativeRetention } from "../../NativeFoundation.model.js";
 
-class AppService extends IpcService {
-  static readonly groupName = 'app'
-
-  @IpcMethod()
-  getVersion(_context: IpcContext): string {
-    return app.getVersion()
-  }
-
-  @IpcMethod()
-  getPlatform(_context: IpcContext): string {
-    return os.platform()
-  }
-
-  @IpcMethod()
-  async getDownloaderStatus(
-    _context: IpcContext
-  ): Promise<{ ytdlpReady: boolean; ffmpegReady: boolean }> {
-    const ffmpegReady = await ffmpegManager.isReady()
-    return { ytdlpReady: ytdlpManager.isReady(), ffmpegReady }
-  }
-
-  /**
-   * Return the current yt-dlp and Deno kernel status.
-   */
-  @IpcMethod()
-  getYtDlpKernelStatus(_context: IpcContext): YtDlpKernelStatus {
-    return getYtDlpKernelService().getStatus()
-  }
-
-  /**
-   * Retry local kernel preparation after a fatal startup failure.
-   */
-  @IpcMethod()
-  async retryYtDlpKernelPreparation(_context: IpcContext): Promise<YtDlpKernelStatus> {
-    const service = getYtDlpKernelService()
-    await service.prepare()
-    return service.getStatus()
-  }
-
-  @IpcMethod()
-  getOsVersion(_context: IpcContext): string {
-    const platform = os.platform()
+/** Implements application sequencing over independently adapted native primitives. Retry uses the same preparation engine; it does not transfer ownership of that engine to the foundation runtime.
+ * **Example** (Read sequential downloader readiness)
+ * ```ts
+ * import { makeApp } from './app-service.js'
+ * import type { AppHostOperations } from '../../AppHost.service.js'
+ * export const readiness = (host:AppHostOperations) => makeApp(host).getDownloaderStatus
+ * // ffmpeg readiness settles before the synchronous yt-dlp readiness read.
+ * ```
+ * @category constructors
+ * @since 0.0.0
+ */
+export const makeApp = (host: AppHostOperations): AppOperations => ({
+  getVersion: host.version,
+  getPlatform: host.platform,
+  getYtDlpKernelStatus: host.kernelStatus,
+  quit: host.quit,
+  showMessageBox: host.messageBox,
+  getDownloaderStatus: Effect.gen(function* () {
+    const ffmpegReady = yield* host.ffmpegReady;
+    const ytdlpReady = yield* host.ytdlpReady;
+    return { ytdlpReady, ffmpegReady };
+  }),
+  retryYtDlpKernelPreparation: Effect.gen(function* () {
+    const kernel = yield* host.acquireKernel;
+    yield* kernel.prepare;
+    return yield* kernel.status;
+  }),
+  getOsVersion: Effect.gen(function* () {
+    const platform = yield* host.platform;
     const platformLabel =
-      platform === 'darwin'
-        ? 'macOS'
-        : platform === 'win32'
-          ? 'Windows'
-          : platform === 'linux'
-            ? 'Linux'
-            : platform
-    const systemVersion =
-      typeof (process as { getSystemVersion?: () => string }).getSystemVersion === 'function'
-        ? (process as { getSystemVersion: () => string }).getSystemVersion()
-        : typeof os.version === 'function'
-          ? os.version()
-          : os.release()
-
-    if (platform === 'win32') {
-      const buildToken = systemVersion.split('.').at(-1) ?? ''
-      const buildNumber = Number.parseInt(buildToken, 10)
-      const windowsName =
-        Number.isFinite(buildNumber) && buildNumber >= 22_000 ? 'Windows 11' : 'Windows 10'
+      platform === "darwin" ? "macOS" : platform === "win32" ? "Windows" : platform === "linux" ? "Linux" : platform;
+    const systemVersion = yield* host.systemVersion;
+    if (platform === "win32") {
+      const buildNumber = Number.parseInt(Str.split(systemVersion, ".").at(-1) ?? "", 10);
+      const windowsName = Number.isFinite(buildNumber) && buildNumber >= 22_000 ? "Windows 11" : "Windows 10";
       return Number.isFinite(buildNumber)
         ? `${windowsName} (build ${buildNumber})`
-        : `${platformLabel} ${systemVersion}`.trim()
+        : Str.trim(`${platformLabel} ${systemVersion}`);
     }
-
-    return `${platformLabel} ${systemVersion}`.trim()
-  }
-
-  @IpcMethod()
-  quit(_context: IpcContext): void {
-    app.quit()
-  }
-
-  @IpcMethod()
-  async showMessageBox(
-    _context: IpcContext,
-    options: Electron.MessageBoxOptions
-  ): Promise<Electron.MessageBoxReturnValue> {
-    const window = BrowserWindow.getFocusedWindow()
-    if (window) {
-      return dialog.showMessageBox(window, options)
+    return Str.trim(`${platformLabel} ${systemVersion}`);
+  }),
+  getSiteIcon: Effect.fn("App.getSiteIcon")(function* (domain: string, retention?: NativeRetention) {
+    const trimmed = Str.toLowerCase(Str.trim(domain));
+    const first = Str.split(trimmed, "/")[0];
+    const normalized = (first === undefined ? undefined : Str.trim(first)) || trimmed;
+    const urls = [`https://${normalized}/favicon.ico`, `https://favicon.im/${encodeURIComponent(normalized)}`];
+    for (const url of urls) {
+      const image = yield* host
+        .fetchIcon(url, retention)
+        .pipe(
+          Effect.catch((error) =>
+            Effect.as(
+              Effect.logError(`Failed to fetch site icon for ${domain}: ${String(error.original)}`).pipe(
+                Effect.annotateLogs("electron-log.scope", "system")
+              ),
+              null
+            )
+          )
+        );
+      if (image !== null) return image;
     }
-
-    return dialog.showMessageBox(options)
-  }
-
-  @IpcMethod()
-  /**
-   * Fetches a site icon and returns it as a data URL.
-   */
-  async getSiteIcon(_context: IpcContext, domain: string): Promise<string | null> {
-    const iconUrls = [buildSiteIconUrl(domain), buildSiteIconFallbackUrl(domain)]
-    for (const iconUrl of iconUrls) {
-      try {
-        const response = await fetch(iconUrl)
-        if (!response.ok) {
-          continue
-        }
-
-        const contentType = response.headers.get('content-type') || 'image/png'
-        if (!(contentType.includes('image/') || contentType.includes('icon'))) {
-          continue
-        }
-
-        const arrayBuffer = await response.arrayBuffer()
-        const buffer = Buffer.from(arrayBuffer)
-        const base64 = buffer.toString('base64')
-        return `data:${contentType};base64,${base64}`
-      } catch (error) {
-        scopedLoggers.system.error(`Failed to fetch site icon for ${domain}: ${String(error)}`)
-      }
-    }
-
-    return null
-  }
-}
-
-export { AppService }
+    return null;
+  }),
+});
+/** Supplies the application implementation without performing native work during layer acquisition.
+ * **Example** (Build the application layer with a driver)
+ * ```ts
+ * import { AppLive } from './app-service.js'
+ * import * as Layer from 'effect/Layer'
+ * export const acquire = Layer.build(AppLive)
+ * // Supply AppHost and an application scope.
+ * ```
+ * @category layers
+ * @since 0.0.0
+ */
+export const AppLive = Layer.effect(DesktopApp)(
+  Effect.map(AppHost, (host) => ({ forCall: (call) => makeApp(host.forCall(call)) }))
+);

@@ -4,6 +4,15 @@ import { logger } from '@vidbee/logger/legacy/client'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createIpcProxy } from 'electron-ipc-decorator/client'
 import type { IpcServices } from '../main/ipc'
+import type {} from '../renderer/src/transport/DesktopRpcBridge'
+import { DesktopLogChannel } from '../shared/logging/DesktopLog.model'
+import { makePreloadBridge } from './DesktopRpcBridge.driver'
+import { createPreloadLogger } from './logging/PreloadLogger.entry'
+
+/** Effect logging runner for preload-owned work. */
+export const preloadLogging = createPreloadLogger((entry) =>
+  ipcRenderer.send(DesktopLogChannel, entry)
+)
 
 // Create type-safe IPC proxy using electron-ipc-decorator
 const ipcServices = createIpcProxy<IpcServices>(ipcRenderer)
@@ -49,6 +58,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('vidbeeRpc', makePreloadBridge(ipcRenderer))
   } catch (error) {
     logger.error('Failed to expose APIs in context bridge:', error)
   }
@@ -57,4 +67,8 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-expect-error (define in dts)
   window.api = api
+  Object.defineProperty(window, 'vidbeeRpc', {
+    value: makePreloadBridge(ipcRenderer),
+    configurable: true
+  })
 }

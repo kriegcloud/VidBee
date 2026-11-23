@@ -2,13 +2,13 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ASR_TIER_IDS } from '@vidbee/transcription/asr'
 import { z } from 'zod'
-import { buildAssDocument, buildSrtDocument, buildVttDocument } from '../../shared/subtitle-export'
 import {
   buildExportUnits,
   buildTranscriptExportText,
   type TranscriptExportGrouping,
   type TranscriptExportStyle
-} from '../../shared/transcript-export'
+} from '../../compatibility/shared/transcript-export'
+import { buildAssDocument, buildSrtDocument, buildVttDocument } from '../../shared/subtitle-export'
 import { manageAgentAsr, updateAgentSettings } from '../lib/agent-capability-host'
 import { createAgentTask } from '../lib/agent-management-host'
 import { exportVideoWithSubtitles } from '../lib/export-video-subtitles'

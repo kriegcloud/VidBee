@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "Turn on One-Click Download to add multiple links at once",
     "clickToCopy": "Click to copy details",
     "clipboardEmpty": "Clipboard is empty",
+    "desktopConnectionLost": "Desktop connection lost. Reload this window to reconnect.",
     "downloadFailed": "Download failed",
     "downloadNecessaryFilesFailed": "Failed to download necessary files. Please check your network and try again",
     "emptyUrl": "Please enter a URL",

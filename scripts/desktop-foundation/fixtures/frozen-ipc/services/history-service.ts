@@ -1,0 +1,55 @@
+import { type IpcContext, IpcMethod, IpcService } from 'electron-ipc-decorator'
+import type { DownloadHistoryItem } from '../../shared-port/types'
+import { historyManager } from '../../../../../apps/desktop/src/main/lib/history-manager'
+
+class HistoryService extends IpcService {
+  static readonly groupName = 'history'
+
+  @IpcMethod()
+  getHistory(_context: IpcContext): DownloadHistoryItem[] {
+    return historyManager.getHistory()
+  }
+
+  @IpcMethod()
+  getHistoryById(_context: IpcContext, id: string): Promise<DownloadHistoryItem | undefined> {
+    return historyManager.getHistoryById(id)
+  }
+
+  @IpcMethod()
+  addHistoryItem(_context: IpcContext, item: DownloadHistoryItem): void {
+    historyManager.addHistoryItem(item)
+  }
+
+  @IpcMethod()
+  removeHistoryItem(_context: IpcContext, id: string): Promise<boolean> {
+    return historyManager.removeHistoryItem(id)
+  }
+
+  @IpcMethod()
+  removeHistoryItems(_context: IpcContext, ids: string[]): Promise<number> {
+    return historyManager.removeHistoryItems(ids)
+  }
+
+  @IpcMethod()
+  removeHistoryByPlaylistId(_context: IpcContext, playlistId: string): Promise<number> {
+    return historyManager.removeHistoryByPlaylistId(playlistId)
+  }
+
+  @IpcMethod()
+  clearHistory(_context: IpcContext): Promise<void> {
+    return historyManager.clearHistory()
+  }
+
+  @IpcMethod()
+  getHistoryCount(_context: IpcContext): {
+    active: number
+    completed: number
+    error: number
+    cancelled: number
+    total: number
+  } {
+    return historyManager.getHistoryCount()
+  }
+}
+
+export { HistoryService }

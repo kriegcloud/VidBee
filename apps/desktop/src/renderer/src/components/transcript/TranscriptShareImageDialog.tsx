@@ -2,12 +2,13 @@ import { aiPromptLabel } from '@renderer/lib/ai-prompt-label'
 import { captureShareImageBlob, copyShareImageBlob } from '@renderer/lib/capture-prompt-share'
 import { ipcServices } from '@renderer/lib/ipc'
 import { agentTaskAiSnapshotAtom } from '@renderer/store/agent-tasks'
-import type { ShareCardPayload } from '@shared/types/share-card'
 import { AgentShareImageDialog } from '@vidbee/ui/components/agent-share-image-dialog'
 import { useAtomValue } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import type { ShareCardPayload } from '../../../../compatibility/shared/types/share-card'
+import { foundationClients } from '../../lib/foundation'
 import { AgentResponseShareCard } from './AgentResponseShareCard'
 
 /** Adapt native capture, save dialogs and the macOS share sheet to the common share UI. */
@@ -44,7 +45,7 @@ export function TranscriptShareImageDialog({
       return
     }
     let cancelled = false
-    void ipcServices.app
+    void foundationClients.app
       .getPlatform()
       .then((value) => {
         if (!cancelled) {

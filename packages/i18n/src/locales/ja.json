@@ -315,6 +315,7 @@
     "batchRequiresOneClick": "複数のリンクをまとめて追加するには、ワンクリックダウンロードをオンにしてください",
     "clickToCopy": "詳細をコピーするにはクリック",
     "clipboardEmpty": "クリップボードが空です",
+    "desktopConnectionLost": "デスクトップアプリとの接続が切れました。このウィンドウを再読み込みして再接続してください。",
     "downloadFailed": "ダウンロードに失敗",
     "downloadNecessaryFilesFailed": "必要なファイルのダウンロードに失敗しました。ネットワークを確認して再試行してください",
     "emptyUrl": "URLを入力してください",

@@ -2,7 +2,7 @@ import type { Database as BetterSqlite3Instance } from 'better-sqlite3'
 import DatabaseConstructor from 'better-sqlite3'
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
-import log from 'electron-log/main'
+import { electronLog as log } from '../logging/ElectronLog.driver'
 import { runMigrations } from './database/migrate'
 import { getDatabaseFilePath } from './database-path'
 

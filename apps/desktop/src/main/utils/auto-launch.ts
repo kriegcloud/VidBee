@@ -1,5 +1,5 @@
 import { app } from 'electron'
-import log from 'electron-log/main'
+import { electronLog as log } from '../logging/ElectronLog.driver'
 import { isPortableMode } from '../portable'
 
 const SUPPORTED_PLATFORMS = new Set(['darwin', 'win32'])

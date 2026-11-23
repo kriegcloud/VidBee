@@ -19,11 +19,14 @@ import {
 import { Switch } from '@renderer/components/ui/switch'
 import { aiPromptLabel } from '@renderer/lib/ai-prompt-label'
 import { skillUsageSuggestions } from '@renderer/lib/skill-usage-suggestions'
-import { aiPromptDescription, isTranscriptSkillSidebarEnabled } from '@shared/ai-prompts'
 import type { AiPrompt } from '@shared/ai-types'
 import { CopyPlus, Download, FolderOpen, MessageCircle, Trash2 } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  aiPromptDescription,
+  isTranscriptSkillSidebarEnabled
+} from '../../../../compatibility/shared/ai-prompts'
 
 interface SkillDetailsDialogProps {
   preferencesSaving?: boolean

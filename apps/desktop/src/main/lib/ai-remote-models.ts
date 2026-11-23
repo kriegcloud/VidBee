@@ -2,7 +2,7 @@ import {
   aiProviderNeedsApiKey,
   isAiProviderModelBlocked,
   resolveAiProviderBaseUrl
-} from '../../shared/ai-presets'
+} from '../../compatibility/shared/ai-presets'
 import type { AiProviderPresetId } from '../../shared/ai-types'
 import { scopedLoggers } from '../utils/logger'
 import type { CatalogModelOption } from './ai-model'

@@ -3,8 +3,8 @@ import path from 'node:path'
 import { resolveSubtitleLanguages } from '@vidbee/downloader-core/subtitle-languages'
 import { ListInputSchema, sanitizeOutput, type Task } from '@vidbee/task-queue-legacy'
 import { z } from 'zod'
-import { agentSettingsSchema } from '../../shared/agent-settings'
-import { agentTaskParameters } from '../../shared/agent-task'
+import { agentSettingsSchema } from '../../compatibility/shared/agent-settings'
+import { agentTaskParameters } from '../../compatibility/shared/agent-task'
 import type { DownloadOptions } from '../../shared/types'
 import {
   buildAudioFormatPreference,
@@ -17,7 +17,7 @@ import { hydrateDownloadMetadata } from '../lib/download-metadata'
 import { historyManager } from '../lib/history-manager'
 import { subtitleDownloadSchema } from '../lib/subtitle-download'
 import { getDesktopTaskQueue } from '../lib/task-queue-host'
-import { settingsManager } from '../settings'
+import { settingsManager } from '../settings.compatibility'
 import { defineMcpTool, mcpId, mcpLimit, mcpOffset, mcpPage, mcpWebUrl } from './tool'
 
 const downloadSchema = z.object({

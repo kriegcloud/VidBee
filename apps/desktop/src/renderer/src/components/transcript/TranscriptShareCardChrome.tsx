@@ -1,9 +1,9 @@
 import { SHARE_CARD_LOGO_SRC } from '@renderer/components/transcript/share-card-logo'
 import { RemoteImage } from '@renderer/components/ui/remote-image'
 import { SHARE_CARD_WASH, useCoverFillColor } from '@renderer/lib/share-card-fill'
-import { SHARE_CARD_WIDTH } from '@shared/types/share-card'
 import { EXPORT_BRAND } from '@vidbee/ui/lib/export-brand'
 import type { CSSProperties, ReactNode, Ref } from 'react'
+import { SHARE_CARD_WIDTH } from '../../../../compatibility/shared/types/share-card'
 
 export { SHARE_CARD_WASH, SHARE_CARD_WIDTH }
 

@@ -1,5 +1,5 @@
-import { ipcServices } from '@renderer/lib/ipc'
-import type { ShareCardPayload } from '@shared/types/share-card'
+import type { ShareCardPayload } from '../../../compatibility/shared/types/share-card'
+import { foundationClients } from './foundation'
 
 // biome-ignore lint/performance/noBarrelFile: Preserve existing imports while sharing native and browser export naming.
 export { exportBaseFileName, exportFileName, shareImageFileName } from '@shared/agent-export'
@@ -136,8 +136,8 @@ export const waitForShareCard = async (element: HTMLElement): Promise<void> => {
  * @param payload Serializable card props from the visible preview.
  */
 export const captureShareImageBlob = async (payload: ShareCardPayload): Promise<Blob> => {
-  const png = await ipcServices.window.captureShareCard(payload)
-  return new Blob([png], { type: 'image/png' })
+  const png = await foundationClients.window.captureShareCard(payload)
+  return new Blob([Uint8Array.from(png).buffer], { type: 'image/png' })
 }
 
 /**
@@ -146,5 +146,5 @@ export const captureShareImageBlob = async (payload: ShareCardPayload): Promise<
  * @param png PNG bytes from `captureShareImageBlob`.
  */
 export const copyShareImageBlob = async (png: Blob): Promise<void> => {
-  await ipcServices.window.writeShareImage(await png.arrayBuffer())
+  await foundationClients.window.writeShareImage(await png.arrayBuffer())
 }
