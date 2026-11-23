@@ -71,10 +71,10 @@ else { process.stdout.write(mode === 'version' ? '2025.01.01\\n' : 'golden-probe
   env.VIDBEE_API = undefined
   env.VIDBEE_TOKEN = undefined
   env.NODE_OPTIONS = undefined
-  const invoke = async (args, extra = {}, nodeArgs = []) => {
+  const invoke = async (args, extra = {}, nodeArgs = [], timeoutMs = 180_000) => {
     const output = await command(process.execPath, [...nodeArgs, cli, ...args], {
       env: { ...env, ...extra },
-      timeoutMs: 180_000
+      timeoutMs
     })
     raw.push({ args, output })
     const value = {
@@ -88,8 +88,8 @@ else { process.stdout.write(mode === 'version' ? '2025.01.01\\n' : 'golden-probe
     }
     return value
   }
-  const run = async (name, args, extra, nodeArgs) => {
-    const value = await invoke(args, extra, nodeArgs)
+  const run = async (name, args, extra, nodeArgs, timeoutMs) => {
+    const value = await invoke(args, extra, nodeArgs, timeoutMs)
     await record(`cli-additions/${name}`, value)
     return value
   }
@@ -166,9 +166,10 @@ else { process.stdout.write(mode === 'version' ? '2025.01.01\\n' : 'golden-probe
     const success = await run('desktop-wait-success', argsFor('cli-wait', 'cli-wait.mp4', true))
     assert.equal(success.code, 0)
     await run('wait-non-success', argsFor('cli-failure', '404-cli.mp4', true))
-    const retryArgs = argsFor('cli-retry-scheduled', '500-cli.mp4', true)
+    // HTTP 429 has a fixed 30s queue backoff; capture must end before a second attempt.
+    const retryArgs = argsFor('cli-retry-scheduled', '429-cli.mp4', true)
     retryArgs[retryArgs.indexOf('--vidbee-max-attempts') + 1] = '3'
-    const retry = await run('wait-retry-scheduled', retryArgs)
+    const retry = await run('wait-retry-scheduled', retryArgs, {}, [], 20_000)
     await call('manage_task', { id: retry.stdout.task.id, action: 'cancel' })
     // --help is forwarded to yt-dlp and admitted; it is not CLI help.
     const help = await run('help-forwarded', [...common, '--help'])

@@ -67,6 +67,7 @@ describe('offline loopback media server', () => {
     for (const code of [404, 500]) {
       expect((await fetch(`${server.url}/${code}.mp4`)).status).toBe(code)
     }
+    expect((await fetch(`${server.url}/429-cli.mp4`)).status).toBe(429)
     expect((await fetch(`${server.url}/recover.mp4`)).status).toBe(404)
     server.recover()
     expect(await (await fetch(`${server.url}/recover.mp4`)).text()).toBe(bytes.toString())
