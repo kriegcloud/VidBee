@@ -437,6 +437,7 @@ export const browserProfilesLayer = (options: ProfileOptions) =>
           yield* collect(profile, payload);
           profile.pages += 1;
           lastResponse = yield* timers.now;
+          if (adapter.sideList?.(url) === true) return;
           finished = finished || (yield* attempt("feed complete", () => adapter.complete(payload)));
         });
         const listener = Effect.fn("BrowserProfiles.responseListener")(function* (response: ResponseRef) {

@@ -3,6 +3,7 @@ import { toPlaywrightCookies } from "../src/cookies.js";
 import { capturePageUrl } from "../src/drm.js";
 import {
   chatVideoByOrdinal,
+  onlyFansAdapter,
   onlyFansChatMediaResponse,
   onlyFansChatResponse,
   onlyFansPurchasedResponse,
@@ -35,4 +36,11 @@ it("supports both declared forms of every native dual helper", () => {
     },
   ];
   expect(toPlaywrightCookies(1000)(rows)).toEqual(toPlaywrightCookies(rows, 1000));
+});
+
+it("treats the OnlyFans pinned-posts list as a side list that cannot end a map", () => {
+  const base = "https://onlyfans.com/api2/v2/users/7/posts";
+  expect(onlyFansAdapter.sideList?.(new URL(`${base}?skip_users=all&pinned=1&counters=0&format=infinite`))).toBe(true);
+  expect(onlyFansAdapter.sideList?.(new URL(`${base}/medias?limit=10&order=publish_date_desc`))).toBe(false);
+  expect(onlyFansAdapter.sideList?.(new URL(`${base}?limit=10&pinned=0`))).toBe(false);
 });

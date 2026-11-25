@@ -166,11 +166,16 @@ const placeVideoInPage = ({ expected, width, height }) => {
 const removeMarkerInPage = () => document.getElementById("vidbee-grab-mark")?.remove();
 const profileScrollInPage = ({ nested, chat }) => {
   const step = Math.max(600, window.innerHeight * 0.8) * (chat ? -1 : 1);
-  if (!nested) {
+  // At the end of a loaded feed the scroll no longer moves and fires no scroll event,
+  // so infinite loaders never re-arm. Back off half a step so the next pass scrolls again.
+  const scrollWindow = () => {
     const before = window.scrollY;
     window.scrollBy(0, step);
-    return window.scrollY !== before;
-  }
+    if (window.scrollY !== before) return true;
+    window.scrollBy(0, -step / 2);
+    return false;
+  };
+  if (!nested) return scrollWindow();
   const candidates = [...document.querySelectorAll("main, section, div")]
     .map((element) => ({ element, bounds: element.getBoundingClientRect() }))
     .filter(
@@ -196,9 +201,8 @@ const profileScrollInPage = ({ nested, chat }) => {
       return true;
     }
   }
-  const before = window.scrollY;
-  window.scrollBy(0, step);
-  return window.scrollY !== before;
+  if (choices[0] !== undefined) choices[0].element.scrollTop -= step / 2;
+  return scrollWindow();
 };
 const viewportInPage = () => ({ width: window.innerWidth, height: window.innerHeight });
 // The original inline Playwright init callback is anonymous.

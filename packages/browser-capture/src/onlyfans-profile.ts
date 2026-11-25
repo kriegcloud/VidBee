@@ -235,6 +235,8 @@ export interface BrowserProfileAdapter {
     nested: boolean;
     chat: boolean;
   };
+  /** Feed responses that add items but are a separate short list, so they never end a map. */
+  sideList?: (url: URL) => boolean;
 }
 export const onlyFansAdapter: BrowserProfileAdapter = {
   name: "OnlyFans",
@@ -257,6 +259,9 @@ export const onlyFansAdapter: BrowserProfileAdapter = {
         ? onlyFansPurchasedResponseDataFirst(url, profile.purchasedUserId)
         : url.origin === "https://onlyfans.com" && Str.startsWith(`/api2/v2/users/${ownerId}/posts`)(url.pathname),
   complete: (payload) => record(payload).hasMore === false,
+  // The profile page also fetches pinned posts from the same /posts path with `pinned=1`;
+  // that short list reports `hasMore: false` and must not end the timeline map.
+  sideList: (url) => url.searchParams.get("pinned") === "1",
   queueUrl: (item, profile) =>
     onlyFansMessageUrl(item, profile) ??
     (profile.purchasedUserId !== undefined && P.isTruthy(profile.purchasedUserId)
