@@ -9,6 +9,7 @@ export const RecorderInput = S.Struct({
   fps: S.Finite.pipe(S.optional, S.mutableKey),
   originX: S.Finite.pipe(S.optional, S.mutableKey),
   originY: S.Finite.pipe(S.optional, S.mutableKey),
+  sourceUrl: S.String.pipe(S.optional, S.mutableKey),
 });
 export type RecorderInput = typeof RecorderInput.Type;
 export const RecorderStart = S.Struct({

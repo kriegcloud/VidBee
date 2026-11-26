@@ -24,9 +24,19 @@ class GalleryDlManager {
     const resources = resolveBundledResourcesPath(['gallery-dl-extractors'])
     const modules = path.join(resources, 'gallery-dl-extractors')
     const sessionArgs = url ? socialSessionManager.cookieArgs(url) : null
+    // Social collections replace this list per category and tag files in their own recorder.
+    const sourceMetadata = [
+      {
+        name: 'python',
+        event: 'after',
+        function: `${path.join(modules, 'source_metadata.py')}:tag`
+      }
+    ]
     return [
       '-o',
       `extractor.module-sources=${JSON.stringify([modules, null])}`,
+      '-o',
+      `extractor.postprocessors=${JSON.stringify(sourceMetadata)}`,
       ...(sessionArgs
         ? [
             ...buildGalleryDlRuntimeArgs({

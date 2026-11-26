@@ -7,6 +7,7 @@ import io
 import json
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 import subprocess
 import tempfile
@@ -22,6 +23,7 @@ MODULE = Path(__file__).resolve().parents[1] / 'resources/gallery-dl-extractors/
 spec = importlib.util.spec_from_file_location('vidbee_social_test', MODULE)
 social = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(social)
+EXIFTOOL = social.source_metadata._tool
 PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2r5sAAAAASUVORK5CYII=')
 
 
@@ -104,6 +106,10 @@ class SocialMediaTest(unittest.TestCase):
         config.set(('extractor', 'vidbee-social'), 'run-id', 'fixture')
         config.set(('extractor', 'vidbee-social'), 'source', {'platform': 'x', 'owner': 'fixture'})
         config.set(('extractor',), 'sleep-request', 0)
+        # Byte-exact assertions below expect untagged files; one test opts back in.
+        exiftool = patch.object(social.source_metadata, '_tool', return_value=None)
+        exiftool.start()
+        self.addCleanup(exiftool.stop)
 
     def run_download(self, url='https://x.com/fixture/status/1', **options):
         config.set(('extractor', 'vidbee-social'), 'options', options)
@@ -147,6 +153,31 @@ class SocialMediaTest(unittest.TestCase):
         self.assertEqual(result['downloaded'], 0)
         self.assertEqual(result['existing'], 2)
         self.assertEqual(Handler.requests, 2)
+
+    @unittest.skipUnless(shutil.which('exiftool'), 'exiftool is not installed')
+    def test_source_urls_are_embedded_without_breaking_deduplication(self):
+        Fixture.same_content = True
+        with patch.object(social.source_metadata, '_tool', EXIFTOOL):
+            status, result = self.run_download()
+            self.assertEqual(status, 0)
+            self.assertEqual(result['downloaded'], 1)
+            self.assertEqual(result['existing'], 1)
+            saved = list((Path(self.temp.name) / 'X/fixture').glob('*.png'))
+            self.assertEqual(len(saved), 1)
+            read = subprocess.run(['exiftool', '-j', '-XMP-dc:Source', '-XMP-dc:Relation', '-EXIF:UserComment', str(saved[0])],
+                                  capture_output=True, check=True)
+            tags = json.loads(read.stdout)[0]
+            self.assertEqual(tags['Source'], 'https://x.com/i/web/status/1')
+            self.assertEqual(tags['UserComment'], 'https://x.com/i/web/status/1')
+            self.assertEqual(tags['Relation'], Fixture.asset_url + '/image.png')
+            self.assertEqual(os.getxattr(saved[0], 'user.xdg.origin.url'), (Fixture.asset_url + '/image.png').encode())
+            self.assertEqual(os.getxattr(saved[0], 'user.xdg.referrer.url'), b'https://x.com/i/web/status/1')
+            # Tagged files still verify, and an untagged repost still matches its origin bytes.
+            status, result = self.run_download()
+            self.assertEqual(status, 0)
+            self.assertEqual(result['downloaded'], 0)
+            self.assertEqual(result['existing'], 2)
+            self.assertEqual(Handler.requests, 2)
 
     def test_x_existing_nested_file_is_reused_without_downloading_again(self):
         self.run_download(maxPosts=1)

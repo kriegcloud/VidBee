@@ -94,6 +94,7 @@ export const CaptureLive = Layer.effect(
             fps: playing.fps,
             originX: playing.originX,
             originY: playing.originY,
+            sourceUrl: job.url,
             env,
           };
           recorder = yield* recorderService.start({ ...recorderInput, includeAudio: startWithAudio }).pipe(

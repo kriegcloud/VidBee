@@ -9,6 +9,7 @@ import {
   onlyFansPurchasedResponse,
 } from "../src/onlyfans-profile.js";
 import { evenSize } from "../src/quality.js";
+import { buildRecorderArgs } from "../src/recorder.js";
 
 it("supports both declared forms of every native dual helper", () => {
   expect(evenSize(1080)(1919)).toEqual(evenSize(1919, 1080));
@@ -43,4 +44,12 @@ it("treats the OnlyFans pinned-posts list as a side list that cannot end a map",
   expect(onlyFansAdapter.sideList?.(new URL(`${base}?skip_users=all&pinned=1&counters=0&format=infinite`))).toBe(true);
   expect(onlyFansAdapter.sideList?.(new URL(`${base}/medias?limit=10&order=publish_date_desc`))).toBe(false);
   expect(onlyFansAdapter.sideList?.(new URL(`${base}?limit=10&pinned=0`))).toBe(false);
+});
+
+it("records the captured page URL in the MP4 comment tag only when known", () => {
+  const input = { display: ":90", width: 4, height: 6, outputPath: "/fixture/out.mp4", includeAudio: false };
+  const tagged = buildRecorderArgs({ ...input, sourceUrl: "https://onlyfans.com/123/fixture" });
+  expect(tagged.slice(-3)).toEqual(["-metadata", "comment=https://onlyfans.com/123/fixture", "/fixture/out.mp4"]);
+  expect(buildRecorderArgs(input)).not.toContain("-metadata");
+  expect(buildRecorderArgs({ ...input, sourceUrl: "" })).not.toContain("-metadata");
 });

@@ -274,6 +274,8 @@
       "48000",
       "-ac",
       "2",
+      "-metadata",
+      "comment=https://fixture.invalid/video",
       "/fixture/output.mp4"
     ],
     {

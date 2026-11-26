@@ -5,6 +5,7 @@ quality, durable deduplication, and a versioned JSON-lines completion protocol.
 """
 import datetime
 import hashlib
+import importlib.util
 import json
 import logging
 import os
@@ -33,6 +34,33 @@ GRAPH_CATEGORIES = {"following", "followers", "list-members"}
 
 # Incremental refresh: stop after this many consecutive already-mapped posts.
 KNOWN_RUN_STOP = 12
+
+
+def _load_source_metadata():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "source_metadata.py")
+    spec = importlib.util.spec_from_file_location("vidbee_source_metadata", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+source_metadata = _load_source_metadata()
+
+
+def post_page_url(child, data, post_id, author, kind):
+    """The page a viewer opens for this post; embedded in every saved file."""
+    if child.category == "twitter":
+        return f"https://x.com/i/web/status/{post_id}"
+    if child.category == "tiktok":
+        post_type = "photo" if kind == "image" else "video"
+        return f"https://www.tiktok.com/@{author}/{post_type}/{post_id}"
+    permalink = data.get("permalink")
+    if child.category == "reddit" and isinstance(permalink, str) and permalink.startswith("/"):
+        return "https://www.reddit.com" + permalink
+    post_url = data.get("post_url")
+    if isinstance(post_url, str) and post_url.startswith("https://"):
+        return post_url
+    return child.url
 
 
 def load_known_items(path):
@@ -126,6 +154,12 @@ class Manifest:
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, path TEXT, size INTEGER, sha256 TEXT, width INTEGER, height INTEGER, quality TEXT)")
         self.db.execute("CREATE INDEX IF NOT EXISTS assets_sha256 ON assets (sha256)")
+        # Source URLs are embedded after download, so sha256 hashes the tagged file on
+        # disk; origin_sha256 keeps the downloaded bytes for cross-post deduplication.
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(assets)")}
+        if "origin_sha256" not in columns:
+            self.db.execute("ALTER TABLE assets ADD COLUMN origin_sha256 TEXT")
+        self.db.execute("CREATE INDEX IF NOT EXISTS assets_origin_sha256 ON assets (origin_sha256)")
         self.db.execute("CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY, summary TEXT NOT NULL)")
         self.db.execute("CREATE TEMP TABLE seen (kind TEXT, id TEXT, PRIMARY KEY(kind,id))")
         self.run_id = run_id
@@ -160,27 +194,32 @@ class Manifest:
     def duplicate_content(self, path, width, height):
         sha256 = digest(path)
         account_directory = os.path.dirname(path)
-        for saved, size, saved_width, saved_height in self.db.execute(
-                "SELECT path,size,width,height FROM assets WHERE sha256=? AND quality='highest-v1'", (sha256,)):
+        for saved, size, saved_sha256, saved_width, saved_height in self.db.execute(
+                "SELECT path,size,sha256,width,height FROM assets "
+                "WHERE (sha256=? OR origin_sha256=?) AND quality='highest-v1'", (sha256, sha256)):
             if saved == path or os.path.realpath(saved) != saved:
                 continue
             if os.path.commonpath((saved, account_directory)) != account_directory:
                 continue
             if (os.path.isfile(saved) and os.path.getsize(saved) == size and size > 0 and
                     (not width or saved_width >= width) and (not height or saved_height >= height) and
-                    digest(saved) == sha256):
+                    digest(saved) == saved_sha256):
                 return saved
         return None
 
     def alias(self, key, saved):
-        self.db.execute("INSERT OR REPLACE INTO assets SELECT ?,path,size,sha256,width,height,quality FROM assets WHERE path=? LIMIT 1", (key, saved))
+        self.db.execute("INSERT OR REPLACE INTO assets (id,path,size,sha256,width,height,quality,origin_sha256) "
+                        "SELECT ?,path,size,sha256,width,height,quality,origin_sha256 FROM assets WHERE path=? LIMIT 1",
+                        (key, saved))
         self.db.commit()
 
-    def record(self, key, path, width, height):
+    def record(self, key, path, width, height, origin_sha256=None):
         size = os.path.getsize(path)
         if size <= 0:
             raise ValueError("Empty media file")
-        self.db.execute("INSERT OR REPLACE INTO assets VALUES (?,?,?,?,?,?,?)", (key, path, size, digest(path), width, height, "highest-v1"))
+        self.db.execute("INSERT OR REPLACE INTO assets (id,path,size,sha256,width,height,quality,origin_sha256) "
+                        "VALUES (?,?,?,?,?,?,?,?)",
+                        (key, path, size, digest(path), width, height, "highest-v1", origin_sha256))
         self.db.commit()
         return size
 
@@ -303,7 +342,9 @@ class VidBeeSocialExtractor(Extractor):
                 self.summary["totalSize"] += os.path.getsize(duplicate)
                 self.event("progress")
                 return
-        size = self.manifest.record(data["vb_key"], filename, width, height)
+        origin_sha256 = digest(filename)
+        source_metadata.tag_file(filename, data.get("vb_page_url"), data.get("_url"))
+        size = self.manifest.record(data["vb_key"], filename, width, height, origin_sha256)
         self.asset(filename, data["vb_kind"])
         self.asset_done = True
         self.summary["downloaded"] += 1
@@ -483,7 +524,8 @@ class VidBeeSocialExtractor(Extractor):
                 platform = {"twitter": "X", "reddit": "Reddit", "tiktok": "TikTok", "instagram": "Instagram"}.get(child.category, safe(child.category))
                 metadata = {**data, "vb_platform": platform, "vb_owner": safe(data.get("subreddit") or author),
                             "vb_post": safe(post_id), "vb_asset": safe(asset_id), "vb_key": key,
-                            "vb_kind": kind, "vb_width": width, "vb_height": height, "extension": ext}
+                            "vb_kind": kind, "vb_width": width, "vb_height": height, "extension": ext,
+                            "vb_page_url": post_page_url(child, data, post_id, author, kind)}
                 if child.category in ("tiktok", "twitter"):
                     relative_path = (platform, metadata["vb_owner"],
                                      f"{metadata['vb_post']}_{metadata['vb_asset']}.{ext}")
@@ -497,12 +539,7 @@ class VidBeeSocialExtractor(Extractor):
                     self.summary["images" if kind == "image" else "videos"] += 1
                 if self.inspect_mode:
                     if self.config("map-items", False) and child.category in ("twitter", "tiktok"):
-                        if child.category == "twitter":
-                            post_url = f"https://x.com/i/web/status/{post_id}"
-                        else:
-                            post_type = "photo" if kind == "image" else "video"
-                            post_url = f"https://www.tiktok.com/@{author}/{post_type}/{post_id}"
-                        item = {"id": post_id, "url": post_url, "kind": kind, "author": author}
+                        item = {"id": post_id, "url": metadata["vb_page_url"], "kind": kind, "author": author}
                         date = data.get("date")
                         if isinstance(date, datetime.datetime):
                             item["date"] = int(date.replace(tzinfo=datetime.timezone.utc).timestamp() * 1000)

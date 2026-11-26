@@ -49,6 +49,10 @@ export const buildRecorderArgs = (input: RecorderInput): string[] => {
   } else {
     args.push("-an");
   }
+  // Record the captured page in the MP4 comment tag, as yt-dlp does for downloads.
+  if (input.sourceUrl !== undefined && Predicate.isTruthy(input.sourceUrl)) {
+    args.push("-metadata", `comment=${input.sourceUrl}`);
+  }
   args.push(input.outputPath);
   return args;
 };
